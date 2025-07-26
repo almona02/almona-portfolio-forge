@@ -1,0 +1,177 @@
+# Almona Portfolio Blackbox Rules
+
+## Project Overview
+This is a React-based portfolio website for Almona, showcasing industrial machinery, fabrication services, and company capabilities. The project uses TypeScript, Vite, and modern web technologies.
+
+## Technology Stack
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **State Management**: React Context + Custom Hooks
+- **Testing**: Vitest + React Testing Library
+- **Build**: Vite with optimization for production
+
+## Key Features
+- 3D model viewer for machinery
+- AR (Augmented Reality) capabilities
+- Multi-language support (Arabic/English)
+- E-commerce functionality for machinery sales
+- Quote generation system
+- Used machinery marketplace
+- Portfolio showcase
+- Contact forms with SMS integration
+
+## Development Guidelines
+
+### Code Style
+- Use TypeScript for all new files
+- Follow functional component patterns with hooks
+- Use consistent naming conventions (camelCase for variables, PascalCase for components)
+- Implement proper error boundaries
+- Use semantic HTML elements
+
+### File Structure
+- Place components in `src/components/` with feature-based organization
+- Store constants in `src/constants/`
+- Use `src/types/` for TypeScript interfaces
+- Place pages in `src/pages/`
+- Store assets in `src/assets/` or `public/` appropriately
+
+### Performance
+- Use lazy loading for routes and heavy components
+- Implement proper image optimization
+- Minimize bundle size with tree-shaking
+- Use React.memo for expensive components
+- Implement proper caching strategies
+
+### Security
+- Sanitize all user inputs
+- Use HTTPS in production
+- Implement proper CORS policies
+- Validate file uploads
+- Use environment variables for sensitive data
+
+### Testing
+- Write unit tests for utilities and hooks
+- Implement integration tests for user flows
+- Use snapshot testing for UI components
+- Test responsive design across devices
+
+## Environment Variables
+- `VITE_API_URL`: Backend API endpoint
+- `VITE_SMS_API_KEY`: SMS service API key
+- `VITE_GOOGLE_ANALYTICS_ID`: Google Analytics tracking ID
+- `VITE_MAPS_API_KEY`: Google Maps API key
+- `VITE_AR_API_KEY`: AR/3D model service API key
+
+## Build Commands
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+- `npm run preview`: Preview production build
+- `npm run test`: Run test suite
+- `npm run test:ui`: Run tests with UI
+- `npm run lint`: Run ESLint
+- `npm run type-check`: Run TypeScript compiler
+
+## Deployment
+- Build output goes to `dist/` directory
+- Optimized for static hosting (Netlify, Vercel, etc.)
+- Configure proper redirects for SPA routing
+- Set up CDN for static assets
+
+## Browser Support
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+- Mobile browsers (iOS Safari, Chrome Mobile)
+
+## Accessibility
+- WCAG 2.1 AA compliance
+- Keyboard navigation support
+- Screen reader compatibility
+- High contrast mode support
+- Focus management for modals
+
+## SEO
+- Meta tags for all pages
+- Structured data (JSON-LD)
+- Sitemap generation
+- Robots.txt configuration
+- Open Graph tags for social sharing
+
+## Monitoring
+- Google Analytics 4
+- Performance monitoring with Web Vitals
+- Error tracking with Sentry
+- Uptime monitoring
+
+## Content Management
+- Use JSON files for static content
+- Implement CMS integration for dynamic content
+- Image optimization pipeline
+- CDN integration for media assets
+
+## Internationalization
+- Arabic (RTL) and English (LTR) support
+- Dynamic language switching
+- Proper text direction handling
+- Localized date/number formats
+
+## API Integration
+- RESTful API design
+- Proper error handling
+- Loading states for async operations
+- Retry mechanisms for failed requests
+- Offline capability with service worker
+
+## Security Headers
+- Content-Security-Policy
+- X-Frame-Options
+- X-Content-Type-Options
+- Referrer-Policy
+- Permissions-Policy
+
+## Performance Budget
+- Initial bundle: < 200KB
+- Time to Interactive: < 3s
+- First Contentful Paint: < 1.5s
+- Largest Contentful Paint: < 2.5s
+- Total page weight: < 1MB
+
+## Development Workflow
+1. Create feature branch from main
+2. Implement feature with tests
+3. Run linting and type checking
+4. Test across devices and browsers
+5. Create pull request with description
+6. Code review and approval
+7. Merge to main branch
+8. Deploy to staging for final testing
+9. Deploy to production
+
+## Common Patterns
+- Use custom hooks for reusable logic
+- Implement proper loading and error states
+- Use skeleton screens for better UX
+- Implement infinite scroll for lists
+- Use optimistic updates for better UX
+- Implement proper form validation
+- Use debouncing for search inputs
+- Implement proper focus management
+
+## Third-party Integrations
+- Google Maps for location services
+- Stripe for payment processing
+- SendGrid for email notifications
+- Twilio for SMS notifications
+- Cloudinary for image optimization
+- Algolia for search functionality
+
+## Maintenance
+- Regular dependency updates
+- Security audits
+- Performance monitoring
+- SEO audits
+- Accessibility audits
+- Cross-browser testing
+- Mobile responsiveness testing

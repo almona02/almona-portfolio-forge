@@ -4,8 +4,6 @@ import { initReactI18next } from 'react-i18next';
 // Import translation files
 import enServices from '/locales/en/services.json';
 import arServices from '/locales/ar/services.json';
-import enProducts from '/public/locales/en/products.json';
-import arProducts from '/public/locales/ar/products.json';
 
 // Common translations (we'll create these)
 const enCommon = {
@@ -78,36 +76,50 @@ const arCommon = {
   }
 };
 
-const resources = {
-  en: {
-    services: enServices,
-    products: enProducts,
-    common: enCommon
-  },
-  ar: {
-    services: arServices,
-    products: arProducts,
-    common: arCommon
+// Load products data dynamically
+const loadProductsData = async () => {
+  try {
+    const [enProductsData, arProductsData] = await Promise.all([
+      fetch('/locales/en/products.json').then(res => res.json()),
+      fetch('/locales/ar/products.json').then(res => res.json())
+    ]);
+
+    const resources = {
+      en: {
+        services: enServices,
+        products: enProductsData,
+        common: enCommon
+      },
+      ar: {
+        services: arServices,
+        products: arProductsData,
+        common: arCommon
+      }
+    };
+
+    i18n
+      .use(initReactI18next)
+      .init({
+        resources,
+        lng: localStorage.getItem('language') || 'en',
+        fallbackLng: 'en',
+        defaultNS: 'common',
+        ns: ['common', 'services', 'products'],
+        
+        interpolation: {
+          escapeValue: false, // React already escapes values
+        },
+        
+        react: {
+          useSuspense: false,
+        },
+      });
+  } catch (error) {
+    console.error('Failed to load products data:', error);
   }
 };
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    lng: localStorage.getItem('language') || 'en',
-    fallbackLng: 'en',
-    defaultNS: 'common',
-    ns: ['common', 'services', 'products'],
-    
-    interpolation: {
-      escapeValue: false, // React already escapes values
-    },
-    
-    react: {
-      useSuspense: false,
-    },
-  });
+loadProductsData();
 
 export default i18n;
 

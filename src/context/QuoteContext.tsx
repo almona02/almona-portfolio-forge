@@ -1,6 +1,6 @@
 
-import { QuoteContext } from './QuoteContext';
-import { Machine } from '@/types';
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { Machine } from '../types/machine';
 
 interface QuoteItem {
   product: Machine;

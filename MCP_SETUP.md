@@ -37,7 +37,7 @@ Windows: %APPDATA%\Code\User\globalStorage\blackboxapp.blackboxagent\settings\bl
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "your-github-token-here"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
       }
     },
     "fetch": {

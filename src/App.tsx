@@ -1,5 +1,5 @@
-import { Toaster } from "@/shared/ui/ui/toaster";
-import { Toaster as Sonner } from "@/shared/ui/ui/sonner";
+import { Toaster } from "@/shared/ui/ui/toaster.tsx";
+import { Toaster as Sonner } from "@/shared/ui/ui/sonner.tsx";
 import { TooltipProvider } from "@/shared/ui/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -43,8 +43,8 @@ const LoadingSpinner = () => (
   </div>
 );
 
-import { QuoteProvider } from "./context/QuoteContext";
-import { AuthProvider } from "./context/AuthContext";
+import { QuoteProvider } from "./context/QuoteContext.tsx";
+import { AuthProvider } from "./context/AuthContext.tsx";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
