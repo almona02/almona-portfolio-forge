@@ -100,16 +100,16 @@ const Footer = () => {
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 text-almona-orange mr-2 mt-0.5" />
                 <span className="text-gray-400">
-                  ALMONA Co. Headquarters, Cairo, Egypt
+                  ALMONA Co. 13B/18 Tarik Ibn Ziad st. Taawen , Haram , Giza, Egypt
                 </span>
               </li>
               <li className="flex items-center">
                 <Phone className="h-5 w-5 text-almona-orange mr-2" />
-                <span className="text-gray-400">+20 123 456 7890</span>
+                <span className="text-gray-400">+20 100 309 7177</span>
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 text-almona-orange mr-2" />
-                <span className="text-gray-400">info@almona.eg</span>
+                <span className="text-gray-400">almona02@yahoo.com</span>
               </li>
             </ul>
           </div>

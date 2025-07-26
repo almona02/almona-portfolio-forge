@@ -1,5 +1,6 @@
-
+ 
 import type { Config } from "tailwindcss";
+import tailwindRtl from "tailwindcss-rtl";
 
 export default {
 	darkMode: ["class"],
@@ -24,7 +25,7 @@ export default {
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
-				foreground: 'hsl(var(--foreground))',
+				    --foreground: 215 14.3% 56.9%;
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
@@ -122,5 +123,5 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [require("tailwindcss-animate"), tailwindRtl],
 } satisfies Config;

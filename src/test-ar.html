@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR Test Page</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script type="module">
+    import { ARButton } from 'https://unpkg.com/three@0.132.2/examples/jsm/webxr/ARButton.js';
+    import * as THREE from 'https://unpkg.com/three@0.132.2/build/three.module.js';
+    
+    // Basic AR scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.xr.enabled = true;
+    document.body.appendChild(renderer.domElement);
+    
+    // Add AR button
+    document.body.appendChild(ARButton.createButton(renderer));
+    
+    // Simple cube for testing
+    const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+    const material = new THREE.MeshBasicMaterial({ color: 0xff5f1f });
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.z = -1;
+    scene.add(cube);
+    
+    // Animation loop
+    function animate() {
+      renderer.setAnimationLoop(() => {
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      });
+    }
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+    // Start animation when AR session begins
+    renderer.xr.addEventListener('sessionstart', animate);
+  </script>
+</body>
+</html>

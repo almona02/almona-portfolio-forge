@@ -20,6 +20,22 @@ const ServicesSection = () => {
       path: "/services/sales"
     },
     {
+      title: "Used Machines",
+      description: "Browse and sell used aluminum and UPVC machines",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
+          <rect x="3" y="7" width="18" height="13" rx="2" ry="2"></rect>
+          <path d="M16 3v4"></path>
+          <path d="M8 3v4"></path>
+          <path d="M3 11h18"></path>
+          <path d="M7 16h.01"></path>
+          <path d="M11 16h.01"></path>
+          <path d="M15 16h.01"></path>
+        </svg>
+      ),
+      path: "/usedmachines"
+    },
+    {
       title: "Maintenance & Support",
       description: "Expert maintenance and technical support for all machinery",
       icon: (

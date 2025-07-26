@@ -1,0 +1,110 @@
+{
+  "title": "Industrial Equipment Services",
+  "subtitle": "Comprehensive maintenance, support and logistics solutions for your industrial equipment",
+  "egypt_support_cta": "Get Egyptian Support",
+  "tabs": {
+    "overview": "Overview",
+    "register": "Register Machine",
+    "dashboard": "Maintenance Dashboard",
+    "portal": "Customer Portal",
+    "nile_logistics": "Nile Logistics",
+    "egypt_support": "Egypt Support",
+    "ai": "AI Features"
+  },
+  "cards": {
+    "maintenance": {
+      "title": "Preventive Maintenance",
+      "description": "Scheduled maintenance to keep your equipment running at peak performance",
+      "features": [
+        "Custom maintenance schedules",
+        "Remote diagnostics",
+        "Automated service reminders"
+      ],
+      "action": "Schedule Maintenance"
+    },
+    "emergency": {
+      "title": "24/7 Emergency Support",
+      "description": "Immediate assistance for critical equipment failures",
+      "features": [
+        "2-hour response guarantee",
+        "Egyptian technical specialists",
+        "Mobile repair units"
+      ],
+      "action": "Request Emergency Support"
+    },
+    "training": {
+      "title": "Operator Training",
+      "description": "Comprehensive training programs for equipment operators",
+      "features": [
+        "Certified instructors",
+        "On-site or virtual sessions",
+        "Customized training materials"
+      ],
+      "action": "View Training Programs"
+    },
+    "nile_logistics": {
+      "title": "Nile River Logistics",
+      "description": "Specialized transport solutions along the Nile River",
+      "features": [
+        "Heavy equipment transport",
+        "Custom clearance assistance",
+        "Real-time shipment tracking"
+      ],
+      "action": "Calculate Transport Cost"
+    }
+  },
+  "connected_network": {
+    "title": "Connected Equipment Network",
+    "serial": "Serial",
+    "installed": "Installed",
+    "show_map": "Show Map View",
+    "show_list": "Show List View",
+    "active_warranty": "Active Warranty"
+  },
+  "tech_highlights": {
+    "badge": "Technology",
+    "title": "Advanced Service Technology",
+    "description": "Our Egyptian operations leverage cutting-edge technology to deliver superior service",
+    "features": [
+      "IoT-enabled equipment monitoring",
+      "AI-powered predictive maintenance",
+      "Augmented reality repair guides",
+      "Blockchain-based service records"
+    ]
+  },
+  "service_network": {
+    "title": "Egyptian Service Network",
+    "description": "Our nationwide network of technical specialists covers all major industrial zones"
+  },
+  "standards": {
+    "title": "Egyptian Industrial Standards",
+    "description": "All services comply with Egyptian Industrial Standard ES 1109 for equipment maintenance",
+    "cta": "View Compliance Certificate"
+  },
+  "old_page_title": "Services Page Under Maintenance",
+  "old_page_message": "We're upgrading our services page to better serve the Egyptian market",
+  "old_page_instruction": "Please visit our new services page during this transition",
+  "old_page_link": "Go to New Services Page",
+  "direct_url": "Direct URL",
+  "shop": {
+    "buttons": {
+      "quick_view": "Quick View",
+      "load_more": "Load More"
+    }
+  },
+  "reviews": {
+    "section_title": "Customer Reviews",
+    "write_review": "Write a Review",
+    "your_name": "Your Name",
+    "your_rating": "Your Rating",
+    "your_comment": "Your Comment",
+    "comment_placeholder": "Share your experience with this product...",
+    "submit_review": "Submit Review",
+    "customer_reviews": "Customer Reviews",
+    "no_reviews": "No reviews yet. Be the first to review this product!",
+    "review_submitted_success": "Review submitted successfully!"
+  },
+  "recently_viewed": {
+    "title": "Recently Viewed Products"
+  }
+}

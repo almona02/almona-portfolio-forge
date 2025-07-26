@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Model Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .viewer-container {
+            width: 100%;
+            height: 600px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .controls {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 200px;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            font-size: 18px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>3D Model Test Page</h1>
+            <p>Testing AR Code Object Capture Model</p>
+        </div>
+        
+        <div class="viewer-container">
+            <iframe 
+                src="http://localhost:3001/3d-test" 
+                width="100%" 
+                height="100%" 
+                frameborder="0"
+                title="3D Model Viewer">
+            </iframe>
+        </div>
+        
+        <div class="controls">
+            <h3>Quick Controls</h3>
+            <div class="control-group">
+                <label>Scale:</label>
+                <input type="range" id="scaleSlider" min="0.5" max="2" step="0.1" value="1">
+                <span id="scaleValue">1.0x</span>
+            </div>
+            <div class="control-group">
+                <label>Auto Rotate:</label>
+                <input type="checkbox" id="autoRotate">
+            </div>
+            <div class="control-group">
+                <button onclick="resetView()">Reset View</button>
+            </div>
+        </div>
+        
+        <div class="info">
+            <h3>Model Information</h3>
+            <ul>
+                <li><strong>File:</strong> AR-Code-Object-Capture-app-1752786892 (1).glb</li>
+                <li><strong>Size:</strong> ~13.4 MB</li>
+                <li><strong>Format:</strong> GLB (Binary glTF)</li>
+                <li><strong>Features:</strong> Interactive 3D model with orbit controls</li>
+            </ul>
+            
+            <h4>Usage Instructions:</h4>
+            <ul>
+                <li><strong>Rotate:</strong> Click and drag to rotate the model</li>
+                <li><strong>Zoom:</strong> Use mouse wheel to zoom in/out</li>
+                <li><strong>Pan:</strong> Right-click and drag to pan</li>
+                <li><strong>Reset:</strong> Use the reset button to restore default view</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function resetView() {
+            // This would communicate with the React app if needed
+            console.log('Reset view requested');
+        }
+    </script>
+</body>
+</html>

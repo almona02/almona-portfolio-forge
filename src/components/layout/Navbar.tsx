@@ -3,11 +3,15 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Home, Menu, Search, ShoppingCart, X } from "lucide-react";
+import { useQuote } from "@/context/QuoteContext";
+import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { quoteItems } = useQuote();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,9 +35,11 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "YILMAZ Machines", path: "/products/machines" },
-    { name: "ALFAPEN Profiles", path: "/products/profiles" },
+    // Removed UPVC Windows, UPVC Doors, Aluminum Thermal Break as per user request
+    { name: "Fabrication Workflow Detail", path: "/workflows/fabrication-detail" },
     { name: "Services", path: "/services" },
-    { name: "Shop", path: "/shop" },
+    { name: "Used Machines", path: "/usedmachines" },
+    { name: "Shop", path: "/Shop" },
     { name: "About Us", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
@@ -76,16 +82,36 @@ const Navbar = () => {
           <Button variant="ghost" size="icon">
             <Search className="h-5 w-5" />
           </Button>
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/quote">
+              <ShoppingCart className="h-5 w-5" />
+              {quoteItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                  {quoteItems.length}
+                </span>
+              )}
+            </Link>
+          </Button>
           <Button 
             variant="default" 
             className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
             asChild
           >
             <Link to="/shop">
-              <ShoppingCart className="h-4 w-4 mr-2" />
               Shop Now
             </Link>
           </Button>
+          {user ? (
+            <Button variant="ghost" onClick={logout}>
+              Logout
+            </Button>
+          ) : (
+            <Button variant="ghost" asChild>
+              <Link to="/login">
+                Login
+              </Link>
+            </Button>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -131,7 +157,7 @@ const Navbar = () => {
             <div className="mt-auto p-4 border-t border-gray-800">
               <Button 
                 variant="default" 
-                className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white"
+                className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white mb-4"
                 asChild
               >
                 <Link to="/shop" onClick={handleCloseMobileMenu}>
@@ -139,6 +165,27 @@ const Navbar = () => {
                   Shop Now
                 </Link>
               </Button>
+              <Button 
+                variant="outline" 
+                className="w-full"
+                asChild
+              >
+                <Link to="/quote" onClick={handleCloseMobileMenu}>
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  View Quote ({quoteItems.length})
+                </Link>
+              </Button>
+              {user ? (
+                <Button variant="outline" className="w-full" onClick={logout}>
+                  Logout
+                </Button>
+              ) : (
+                <Button variant="outline" className="w-full" asChild>
+                  <Link to="/login" onClick={handleCloseMobileMenu}>
+                    Login
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         )}

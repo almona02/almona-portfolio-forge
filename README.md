@@ -1,73 +1,49 @@
-# Welcome to your Lovable project
+# ALMONA Industrial Solutions Platform
 
-## Project info
+## Overview
+A comprehensive platform for Egyptian aluminum & UPVC fabricators featuring:
+- Intelligent spare parts ordering system
+- Equipment comparison tools
+- AI-powered maintenance recommendations
+- Augmented Reality guides
 
-**URL**: https://lovable.dev/projects/8c0a6969-aa85-450b-967c-a23ff49e7f8f
+## Key Features
 
-## How can I edit this code?
+### Smart Spare Parts System
+- **AI Part Finder**: Identify parts via image, voice, or description
+- **Predictive Inventory**: AI-driven demand forecasting
+- **AR Installation Guides**: Step-by-step part replacement
+- **Dynamic Pricing**: Genuine, local, and 3D-printable options
 
-There are several ways of editing your application.
+### Technical Stack
+- **Frontend**: React, TypeScript, TailwindCSS
+- **AI Services**: Google Cloud Vision, TensorFlow.js
+- **AR**: WebXR, Three.js
+- **State Management**: TanStack Query
+- **Build**: Vite
 
-**Use Lovable**
+## Project Structure
+See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for complete directory layout and routing.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/8c0a6969-aa85-450b-967c-a23ff49e7f8f) and start prompting.
+## Development Setup
 
-Changes made via Lovable will be committed automatically to this repo.
+1. Install dependencies:
+```bash
+npm install
+```
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+2. Start development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+3. Run tests:
+```bash
+npm test
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Deployment
+Production builds are automatically deployed via CI/CD pipeline.
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/8c0a6969-aa85-450b-967c-a23ff49e7f8f) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first.

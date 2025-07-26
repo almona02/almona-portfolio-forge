@@ -6,6 +6,7 @@ import FeaturedProducts from "@/components/home/FeaturedProducts";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useEffect } from "react";
+import LogisticsPartners from "@/components/local/LogisticsPartners";
 
 const Index = () => {
   useEffect(() => {
