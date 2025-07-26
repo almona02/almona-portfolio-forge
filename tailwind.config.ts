@@ -25,7 +25,7 @@ export default {
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
-				    --foreground: 215 14.3% 56.9%;
+				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
@@ -123,5 +123,5 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate"), tailwindRtl],
+	plugins: [tailwindRtl],
 } satisfies Config;
