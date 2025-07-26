@@ -1,7 +1,17 @@
+import { Certification } from './certification';
 export interface Machine {
   id: string;
-  serialNumber: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  category: string;
+  manufacturer: string;
   model: string;
+  serialNumber: string;
+  releaseDate: Date;
+  type: string;
+  powerSpec: string;
+  dimensions: string;
   installationDate: Date;
   warrantyExpiry: Date;
   location: {
@@ -21,15 +31,19 @@ export interface Machine {
   };
   connected: boolean;
   owner: Customer;
-}
-
-export interface Customer {
-  id: string;
-  name: string;
-  facilities: Facility[];
-  contacts: ContactPerson[];
-  serviceContract: ServiceContract;
-  accessLevel: 'basic' | 'premium' | 'enterprise';
+  specifications: {
+    key: string;
+    value: string;
+  }[];
+  certifications: Certification[];
+  stock: number;
+  tags: string[];
+  pricing?: {
+    currency: "EGP" | "USD" | "EUR";
+    basePrice?: number;
+    installationCost?: number;
+    warrantyYears?: number;
+  };
 }
 
 export interface ServiceEvent {
@@ -43,34 +57,32 @@ export interface ServiceEvent {
   followUpRequired: boolean;
 }
 
+export interface Customer {
+  id: string;
+  name: string;
+  facilities: Facility[];
+  contacts: ContactPerson[];
+  serviceContract: ServiceContract;
+  accessLevel: 'basic' | 'premium' | 'enterprise';
+}
+
 export interface Facility {
   id: string;
   name: string;
   address: string;
-  geoCoordinates?: string;
 }
 
 export interface ContactPerson {
   id: string;
   name: string;
-  email: string;
-  phone: string;
-  role: string;
 }
 
 export interface ServiceContract {
   id: string;
-  startDate: Date;
-  endDate: Date;
-  terms: string;
-  coverageLevel: 'basic' | 'premium' | 'enterprise';
+  type: string;
 }
 
 export interface Part {
   id: string;
   name: string;
-  partNumber: string;
-  manufacturer: string;
-  price: number;
-  stockQuantity: number;
 }

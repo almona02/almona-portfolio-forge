@@ -4,29 +4,33 @@ import i18n from "@/lib/i18n";
 import { inventory } from "@/data/inventory";
 import { useQuote } from "@/context/QuoteContext";
 import { toast } from "sonner";
-import { Machine, Product, Part, Certification } from "@/types";
-import { EgyptCertification, MachineSpec } from "@/types/shop";
+import { Machine, Part } from "../types/machine";
+import { Product } from "../types/product";
+import { UniqueProduct } from "../types/unique-product";
+import { Certification } from "../types/certification";
+import { EgyptCertification } from "../types/shop";
 
 // Components
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import AiEquipmentAdvisor from "@/components/shop/ai-advisor/AiEquipmentAdvisor";
-import { IndustrialProductCard } from "@/components/shop/IndustrialProductCard";
-import { Skeleton } from "@/shared/ui/ui/skeleton";
-import { EquipmentComparisonTool } from "@/components/shop/EquipmentComparisonTool";
-import FreightCalculator from "@/components/shop/FreightCalculator";
-import EgyptianStandardsGuide from "@/components/shop/EgyptianStandardsGuide";
-import EgyptianTechnicalSupportHub from "@/components/shop/EgyptianTechnicalSupportHub";
-import { ProductQuickView } from "@/components/shop/ProductQuickView";
-import { RecentlyViewedProducts } from "@/components/shop/RecentlyViewedProducts";
+import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
+import AiEquipmentAdvisor from "../components/shop/ai-advisor/AiEquipmentAdvisor";
+import { IndustrialProductCard } from "../components/shop/IndustrialProductCard";
+import { Skeleton } from "../shared/ui/ui/skeleton";
+import { EquipmentComparisonTool } from "../components/shop/EquipmentComparisonTool";
+import FreightCalculator from "../components/shop/FreightCalculator";
+import EgyptianStandardsGuide from "../components/shop/EgyptianStandardsGuide";
+import EgyptianTechnicalSupportHub from "../components/shop/EgyptianTechnicalSupportHub";
+import { ProductQuickView } from "../components/shop/ProductQuickView";
+import { RecentlyViewedProducts } from "../components/shop/RecentlyViewedProducts";
 
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 // UI
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
-import { Input } from "@/shared/ui/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/select";
-import { NeonButton } from "@/shared/ui/ui/neon-button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../shared/ui/ui/tabs";
+import { Input } from "../shared/ui/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../shared/ui/ui/select";
+import { NeonButton } from "../shared/ui/ui/neon-button";
+import { Button } from "../shared/ui/ui/button";
 
 // Data
 import { yilmazMachines, yilmazParts } from "@/constants/productsData";
@@ -34,11 +38,11 @@ import { yilmazMachines as yilmazMachinesSpecs } from "@/constants/yilmazMachine
 import { uniqueProducts } from "@/constants/uniqueProductsData";
 
 // Enhanced Type Definitions
-type ProductTab = 
-  | 'industrial-machines' 
-  | 'industrial-parts' 
-  | 'egypt-standards' 
-  | 'nile-logistics' 
+type ProductTab =
+  | 'industrial-machines'
+  | 'industrial-parts'
+  | 'egypt-standards'
+  | 'nile-logistics'
   | 'local-support'
   | 'unique-prototypes'
   | 'unique-custom-fabrications';
@@ -49,24 +53,62 @@ interface ShopFilters {
   sortBy: 'featured' | 'price-low' | 'price-high' | 'name';
 }
 
-type ShopProduct = Machine | Product | Part;
+// Define ShopMachine with additional properties
+interface ShopMachine extends Machine {
+  stock: number;
+  pricing?: {
+    currency: "EGP" | "USD" | "EUR";
+    basePrice?: number;
+    installationCost?: number;
+    warrantyYears?: number;
+  };
+}
+
+interface CommonProduct {
+  id: string;
+  name: string;
+  category?: string;
+  tags?: string[];
+  stock?: number;
+}
+
+type ShopProduct = (ShopMachine | Product | Part | UniqueProduct) & CommonProduct;
+
+// Type guards
+function isPart(product: ShopProduct): product is Part & CommonProduct {
+  return 'partNumber' in product;
+}
+
+function isProduct(product: ShopProduct): product is Product & CommonProduct {
+  return 'sku' in product;
+}
+
+function isShopMachine(product: ShopProduct): product is ShopMachine & CommonProduct {
+  return 'manufacturer' in product && 'model' in product;
+}
+
+function isUniqueProduct(product: ShopProduct): product is UniqueProduct & CommonProduct {
+  return 'uniqueId' in product;
+}
 
 // Custom hook for shop state management
-function useShopState() {
+const PRODUCTS_PER_LOAD = 9;
+
+// Custom hook for shop state management
+    function useShopState() {
   const [activeTab, setActiveTab] = useState<ProductTab>('industrial-machines');
   const [viewMode, setViewMode] = useState<'grid' | 'configurator'>('grid');
   const [advisorOpen, setAdvisorOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
-  const [quickViewProduct, setQuickViewProduct] = useState<Machine | null>(null);
+  const [quickViewProduct, setQuickViewProduct] = useState<ShopMachine | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [comparisonList, setComparisonList] = useState<Machine[]>([]);
+  const [comparisonList, setComparisonList] = useState<ShopMachine[]>([]);
   const [filters, setFilters] = useState<ShopFilters>({
     searchTerm: "",
     category: "all",
     sortBy: "featured"
   });
-  const [displayedProductCount, setDisplayedProductCount] = useState(9); // Initially display 9 products
-  const PRODUCTS_PER_LOAD = 9; // Number of products to load each time
+  const [displayedProductCount, setDisplayedProductCount] = useState(PRODUCTS_PER_LOAD);
 
   return {
     activeTab,
@@ -82,7 +124,11 @@ function useShopState() {
     comparisonList,
     setComparisonList,
     filters,
-    setFilters
+    setFilters,
+    displayedProductCount,
+    setDisplayedProductCount,
+    quickViewProduct,
+    setQuickViewProduct
   };
 }
 
@@ -103,7 +149,11 @@ const ShopEnhanced = () => {
     comparisonList,
     setComparisonList,
     filters,
-    setFilters
+    setFilters,
+    displayedProductCount,
+    setDisplayedProductCount,
+    quickViewProduct,
+    setQuickViewProduct
   } = useShopState();
 
   // Memoized data processing
@@ -113,10 +163,10 @@ const ShopEnhanced = () => {
       const stock = inventory[product.id] ?? 0;
       return {
         ...product,
-        specifications: machineSpecs?.specifications 
-          ? Object.entries(machineSpecs.specifications).map(([key, value]) => `${key}: ${value}`)
+        specifications: machineSpecs?.specifications
+          ? Object.entries(machineSpecs.specifications).map(([key, value]) => ({ key, value }))
           : product.specifications || [],
-        certifications: machineSpecs?.egyptCertifications || product.certifications || [],
+        certifications: machineSpecs?.certifications || product.certifications || [],
         stock,
       };
     });
@@ -141,7 +191,7 @@ const ShopEnhanced = () => {
   }, [setFilters]);
 
   // Toggle comparison
-  const handleToggleCompare = useCallback((product: Machine) => {
+  const handleToggleCompare = useCallback((product: ShopMachine) => {
     setComparisonList(prev => {
       const exists = prev.some(p => p.id === product.id);
       return exists 
@@ -177,31 +227,32 @@ const ShopEnhanced = () => {
 
     if (filters.searchTerm.trim()) {
       const searchTerm = filters.searchTerm.toLowerCase();
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.name.toLowerCase().includes(searchTerm) ||
-        (p.description && p.description.toLowerCase().includes(searchTerm))
+        (isShopMachine(p) && p.description && p.description.toLowerCase().includes(searchTerm)) ||
+        (isShopMachine(p) && p.specifications && p.specifications.some(spec => spec.value.toLowerCase().includes(searchTerm)))
       );
     }
 
     if (filters.category !== "all") {
-      filtered = filtered.filter(p => p.category === filters.category);
+      filtered = filtered.filter(p => (p as Machine).category === filters.category);
     }
 
-    filtered.sort((a, b) => {
-      switch (filters.sortBy) {
-        case "price-low":
-          return ((a as Machine).pricing?.basePrice || 0) - ((b as Machine).pricing?.basePrice || 0);
-        case "price-high":
-          return ((b as Machine).pricing?.basePrice || 0) - ((a as Machine).pricing?.basePrice || 0);
-        case "name":
-          return a.name.localeCompare(b.name);
-        default:
-          return 0;
-      }
-    });
+          filtered.sort((a, b) => {
+            switch (filters.sortBy) {
+              case "price-low":
+                return ((a as ShopMachine).pricing?.basePrice || 0) - ((b as ShopMachine).pricing?.basePrice || 0);
+              case "price-high":
+                return ((b as ShopMachine).pricing?.basePrice || 0) - ((a as ShopMachine).pricing?.basePrice || 0);
+              case "name":
+                return a.name.localeCompare(b.name);
+              default:
+                return 0;
+            }
+          });
 
     return filtered;
-  }, [activeTab, enhancedProducts, uniqueProductsArray, filters, displayedProductCount]);
+  }, [activeTab, enhancedProducts, uniqueProductsArray, filters]);
 
   // Loading simulation
   useEffect(() => {
@@ -322,13 +373,13 @@ const ShopEnhanced = () => {
                         title={product.name}
                         description={product.description || ""}
                         imageUrl={product.imageUrl}
-                        price={formatPrice((product as Machine).pricing?.basePrice)}
-                        features={(product as Machine).specifications || []}
+                        price={formatPrice((product as ShopMachine).pricing?.basePrice)}
+                        features={(product as Machine).serviceHistory.map(e => e.type) || []}
                         badges={[
-                          ...(product as any).tags || [],
-                          ...((product as Machine).certifications || [])
+                          ...(product as Machine).tags || [],
+                          ...((product as Machine).healthMetrics.components ? Object.keys((product as Machine).healthMetrics.components) : [])
                         ]}
-                        stock={(product as any).stock}
+                        stock={(product as { stock?: number }).stock ?? 0}
                         actions={[
                           {
                             label: t("shop.buttons.configure"),
@@ -339,7 +390,7 @@ const ShopEnhanced = () => {
                           },
                           {
                             label: t("shop.buttons.quick_view"),
-                            action: () => setQuickViewProduct(product as Machine)
+                            action: () => setQuickViewProduct(product as ShopMachine)
                           },
                           {
                             label: t("shop.buttons.add_to_quote"),
@@ -354,7 +405,7 @@ const ShopEnhanced = () => {
                               : t("shop.buttons.compare"),
                             action: () => {
                               if ('specifications' in product) {
-                                handleToggleCompare(product as Machine);
+                                handleToggleCompare(product as ShopMachine);
                               }
                             }
                           }
@@ -371,7 +422,6 @@ const ShopEnhanced = () => {
             <div className="text-center mt-8">
               <Button
                 onClick={() => setDisplayedProductCount(prev => prev + PRODUCTS_PER_LOAD)}
-                variant="outline"
                 className="bg-almona-dark border-almona-light"
               >
                 {t('shop.buttons.load_more')}
@@ -382,10 +432,10 @@ const ShopEnhanced = () => {
           {/* Comparison Tool */}
           {comparisonList.length > 0 && (
             <div className="mt-8">
-              <EquipmentComparisonTool 
-                selectedMachines={comparisonList} 
-                allMachines={enhancedProducts} 
-                onToggleMachine={handleToggleCompare} 
+              <EquipmentComparisonTool
+                selectedMachines={comparisonList}
+                allMachines={enhancedProducts}
+                onToggleMachine={handleToggleCompare}
               />
             </div>
           )}
