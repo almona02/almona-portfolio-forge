@@ -1,5 +1,22 @@
-import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async';
+import App from './App';
+import { registerServiceWorker } from './lib/serviceWorkerRegistration';
+import { reportWebVitals } from './lib/performance';
+import './index.css';
 
-createRoot(document.getElementById("root")!).render(<App />);
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <HelmetProvider>
+      <App />
+    </HelmetProvider>
+  </React.StrictMode>
+);
+
+
+// Register service worker in production
+if (import.meta.env.PROD) {
+  registerServiceWorker();
+  reportWebVitals(console.log);
+}

@@ -1,0 +1,38 @@
+{
+  "shop": {
+    "tabs": {
+      "industrial-machines": "الآلات الصناعية",
+      "industrial-parts": "قطع الغيار الصناعية",
+      "unique-prototypes": "النماذج الفريدة",
+      "unique-custom-fabrications": "التصنيع المخصص الفريد",
+      "profiles": "الملفات الشخصية",
+      "reports": "التقارير"
+    },
+    "products": {
+      "KM-212": {
+        "title": "يلماز KM-212",
+        "description": "آلة قطع CNC عالية الدقة."
+      },
+      "DC-421-PBS": {
+        "title": "يلماز DC-421-PBS",
+        "description": "معالج عمود مزدوج للمهام الثقيلة."
+      }
+    },
+    "buttons": {
+      "configure": "تكوين",
+      "requestQuote": "طلب عرض سعر",
+      "compare": "مقارنة",
+      "viewInAR": "عرض في مكانك"
+    },
+    "labels": {
+      "price": "السعر",
+      "contactWhatsApp": "اتصل عبر واتساب"
+    },
+    "messages": {
+      "localShipping": "حاسبة الشحن المحلي",
+      "cashOnDelivery": "الدفع عند الاستلام",
+      "ramadanMode": "وضع رمضان",
+      "eidMode": "وضع العيد"
+    }
+  }
+}

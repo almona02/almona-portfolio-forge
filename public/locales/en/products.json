@@ -1,0 +1,38 @@
+{
+  "shop": {
+    "tabs": {
+      "industrial-machines": "Industrial Machines",
+      "industrial-parts": "Industrial Parts",
+      "unique-prototypes": "Unique Prototypes",
+      "unique-custom-fabrications": "Custom Fabrications",
+      "profiles": "Profiles",
+      "reports": "Reports"
+    },
+    "products": {
+      "KM-212": {
+        "title": "YILMAZ KM-212",
+        "description": "High precision CNC cutting machine."
+      },
+      "DC-421-PBS": {
+        "title": "YILMAZ DC-421-PBS",
+        "description": "Dual column processor for heavy-duty tasks."
+      }
+    },
+    "buttons": {
+      "configure": "Configure",
+      "requestQuote": "Request Quote",
+      "compare": "Compare",
+      "viewInAR": "View in Your Space"
+    },
+    "labels": {
+      "price": "Price",
+      "contactWhatsApp": "Contact via WhatsApp"
+    },
+    "messages": {
+      "localShipping": "Local Shipping Calculator",
+      "cashOnDelivery": "Cash on Delivery",
+      "ramadanMode": "Ramadan Mode",
+      "eidMode": "Eid Mode"
+    }
+  }
+}

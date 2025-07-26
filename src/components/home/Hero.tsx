@@ -1,8 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, Phone } from "lucide-react";
+import { NeonButton } from "@/shared/ui/ui/neon-button";
+import ResponsiveImage from "@/shared/ui/ui/ResponsiveImage";
 
 const Hero = () => {
   const [activeSlide, setActiveSlide] = useState(0);
@@ -57,6 +58,8 @@ const Hero = () => {
             src={slide.image}
             alt={slide.title}
             className="w-full h-full object-cover"
+            sizes="100vw"
+            loading={index === activeSlide ? "eager" : "lazy"}
           />
         </div>
       ))}
@@ -84,24 +87,28 @@ const Hero = () => {
                   {slide.subtitle}
                 </h2>
                 <div className="flex flex-wrap gap-4 animate-fade-in" style={{animationDelay: "0.3s"}}>
-                  <Button
-                    asChild
-                    className="bg-gradient-orange hover:bg-almona-orange-dark text-white px-6 py-6"
+                  <NeonButton
+                    variant="industrial"
+                    glow="industrialGlow"
                     size="lg"
+                    className="px-6 py-6"
                   >
-                    <Link to={slide.link}>
+                    <Link to={slide.link} className="flex items-center gap-2">
                       Explore {slide.title}
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                      <ArrowRight className="h-5 w-5" />
                     </Link>
-                  </Button>
-                  <Button
-                    asChild
+                  </NeonButton>
+                  <NeonButton
                     variant="outline"
-                    className="border-white/20 hover:bg-white/10 text-white"
+                    glow="subtle"
                     size="lg"
+                    className="border-white/20 text-white"
                   >
-                    <Link to="/contact">Contact Us</Link>
-                  </Button>
+                    <Link to="/contact" className="flex items-center gap-2">
+                      <Phone className="h-5 w-5" />
+                      Contact Us
+                    </Link>
+                  </NeonButton>
                 </div>
               </div>
             )}

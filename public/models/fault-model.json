@@ -1,0 +1,85 @@
+{
+  "modelTopology": {
+    "class_name": "Sequential",
+    "config": {
+      "name": "sequential",
+      "layers": [
+        {
+          "class_name": "InputLayer",
+          "config": {
+            "batch_input_shape": [null, 44100, 1],
+            "dtype": "float32",
+            "name": "input_1"
+          }
+        },
+        {
+          "class_name": "Conv1D",
+          "config": {
+            "activation": "relu",
+            "activity_regularizer": null,
+            "dtype": "float32",
+            "filters": 32,
+            "kernel_size": [5],
+            "name": "conv1d",
+            "padding": "same",
+            "strides": [1],
+            "trainable": true,
+            "use_bias": true
+          }
+        },
+        {
+          "class_name": "MaxPooling1D",
+          "config": {
+            "name": "max_pooling1d",
+            "padding": "valid",
+            "pool_size": [4],
+            "strides": [4]
+          }
+        },
+        {
+          "class_name": "Flatten",
+          "config": {
+            "data_format": "channels_last",
+            "name": "flatten"
+          }
+        },
+        {
+          "class_name": "Dense",
+          "config": {
+            "activation": "sigmoid",
+            "name": "dense",
+            "units": 1,
+            "use_bias": true
+          }
+        }
+      ]
+    }
+  },
+  "weightsManifest": [
+    {
+      "paths": ["group1-shard1of1.bin"],
+      "weights": [
+        {
+          "name": "conv1d/kernel",
+          "shape": [5, 1, 32],
+          "dtype": "float32"
+        },
+        {
+          "name": "conv1d/bias",
+          "shape": [32],
+          "dtype": "float32"
+        },
+        {
+          "name": "dense/kernel",
+          "shape": [352800, 1],
+          "dtype": "float32"
+        },
+        {
+          "name": "dense/bias",
+          "shape": [1],
+          "dtype": "float32"
+        }
+      ]
+    }
+  ]
+}

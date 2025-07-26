@@ -1,0 +1,2 @@
+[model.completion.local]
+model_id = "deepseek-coder-v2-lite"
