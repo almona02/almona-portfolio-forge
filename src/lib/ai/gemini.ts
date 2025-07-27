@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_KEY);
+const geminiKey = import.meta.env.VITE_GEMINI_KEY;
+const genAI = geminiKey ? new GoogleGenerativeAI(geminiKey) : null;
 
 export const EGYPTIAN_MARKET_CONTEXT = `
 
@@ -17,6 +18,10 @@ Egyptian Market Considerations:
 `;
 
 export const getEquipmentRecommendation = async (query: string) => {
+  if (!genAI) {
+    return 'AI service not configured. Please contact support.';
+  }
+  
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
   
   const prompt = `${EGYPTIAN_MARKET_CONTEXT}
@@ -42,6 +47,10 @@ export const getEquipmentRecommendation = async (query: string) => {
 };
 
 export const getWorkshopLayout = async (requirements: string) => {
+  if (!genAI) {
+    return 'AI service not configured. Please contact support.';
+  }
+  
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
   
   const prompt = `${EGYPTIAN_MARKET_CONTEXT}
@@ -66,6 +75,10 @@ export const getWorkshopLayout = async (requirements: string) => {
 };
 
 export const identifyPartFromImage = async (imageBase64: string) => {
+  if (!genAI) {
+    return 'AI service not configured. Please contact support.';
+  }
+  
   const model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
   
   const prompt = `${EGYPTIAN_MARKET_CONTEXT}
