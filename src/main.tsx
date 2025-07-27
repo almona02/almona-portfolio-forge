@@ -14,9 +14,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>
 );
 
-
+// Temporarily disable service worker registration for debugging
 // Register service worker in production
-if (import.meta.env.PROD) {
-  registerServiceWorker();
-  reportWebVitals(console.log);
-}
+// if (import.meta.env.PROD) {
+//   registerServiceWorker();
+//   reportWebVitals(console.log);
+// }

@@ -36,8 +36,11 @@ const RESET_TIMEOUT = 30000;
 
 async function checkServiceHealth() {
   try {
+    const endpoint = import.meta.env.VITE_AI_API_ENDPOINT;
+    if (!endpoint) return false;
+    
     validateAIEnv();
-    const response = await fetch(`${import.meta.env.VITE_AI_API_ENDPOINT}/health`);
+    const response = await fetch(`${endpoint}/health`);
     return response.ok;
   } catch {
     return false;
