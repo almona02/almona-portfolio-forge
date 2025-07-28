@@ -4,7 +4,7 @@ import i18n from "@/lib/i18n";
 import { inventory } from "@/data/inventory";
 import { useQuote } from "@/context/QuoteContext";
 import { toast } from "sonner";
-import { Machine, Product, Part, Certification } from "@/types";
+import { Machine, Product, Part, Certification } from "@/types/index";
 import { EgyptCertification, MachineSpec } from "@/types/shop";
 
 // Components
@@ -27,6 +27,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import { Input } from "@/shared/ui/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/select";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
+import { Button } from "@/shared/ui/ui/button";
 
 // Data
 import { yilmazMachines, yilmazParts } from "@/constants/productsData";
@@ -51,6 +52,8 @@ interface ShopFilters {
 
 type ShopProduct = Machine | Product | Part;
 
+const PRODUCTS_PER_LOAD = 9; // Number of products to load each time
+
 // Custom hook for shop state management
 function useShopState() {
   const [activeTab, setActiveTab] = useState<ProductTab>('industrial-machines');
@@ -65,8 +68,7 @@ function useShopState() {
     category: "all",
     sortBy: "featured"
   });
-  const [displayedProductCount, setDisplayedProductCount] = useState(9); // Initially display 9 products
-  const PRODUCTS_PER_LOAD = 9; // Number of products to load each time
+  const [displayedProductCount, setDisplayedProductCount] = useState(PRODUCTS_PER_LOAD);
 
   return {
     activeTab,
@@ -77,12 +79,16 @@ function useShopState() {
     setAdvisorOpen,
     selectedProduct,
     setSelectedProduct,
+    quickViewProduct,
+    setQuickViewProduct,
     isLoading,
     setIsLoading,
     comparisonList,
     setComparisonList,
     filters,
-    setFilters
+    setFilters,
+    displayedProductCount,
+    setDisplayedProductCount
   };
 }
 
@@ -98,12 +104,16 @@ const ShopEnhanced = () => {
     setAdvisorOpen,
     selectedProduct,
     setSelectedProduct,
+    quickViewProduct,
+    setQuickViewProduct,
     isLoading,
     setIsLoading,
     comparisonList,
     setComparisonList,
     filters,
-    setFilters
+    setFilters,
+    displayedProductCount,
+    setDisplayedProductCount
   } = useShopState();
 
   // Memoized data processing
@@ -201,7 +211,7 @@ const ShopEnhanced = () => {
     });
 
     return filtered;
-  }, [activeTab, enhancedProducts, uniqueProductsArray, filters, displayedProductCount]);
+  }, [activeTab, enhancedProducts, uniqueProductsArray, filters]);
 
   // Loading simulation
   useEffect(() => {
@@ -270,7 +280,7 @@ const ShopEnhanced = () => {
                     value={filters.category} 
                     onValueChange={(value) => handleFilterChange('category', value)}
                   >
-                    <SelectTrigger className="w-[180px] bg-almona-dark border-almona-light">
+                    <SelectTrigger className="w-[180px] bg-almona-darker border-almona-light">
                       <SelectValue placeholder={t("shop.filter_by_category")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -284,7 +294,7 @@ const ShopEnhanced = () => {
                     value={filters.sortBy} 
                     onValueChange={(value) => handleFilterChange('sortBy', value)}
                   >
-                    <SelectTrigger className="w-[180px] bg-almona-dark border-almona-light">
+                    <SelectTrigger className="w-[180px] bg-almona-darker border-almona-light">
                       <SelectValue placeholder={t("shop.sort_by")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -325,10 +335,10 @@ const ShopEnhanced = () => {
                         price={formatPrice((product as Machine).pricing?.basePrice)}
                         features={(product as Machine).specifications || []}
                         badges={[
-                          ...(product as any).tags || [],
+                          ...((product as Machine).tags || []),
                           ...((product as Machine).certifications || [])
                         ]}
-                        stock={(product as any).stock}
+                        stock={'stock' in product ? (product as { stock: number }).stock : undefined}
                         actions={[
                           {
                             label: t("shop.buttons.configure"),
@@ -371,7 +381,6 @@ const ShopEnhanced = () => {
             <div className="text-center mt-8">
               <Button
                 onClick={() => setDisplayedProductCount(prev => prev + PRODUCTS_PER_LOAD)}
-                variant="outline"
                 className="bg-almona-dark border-almona-light"
               >
                 {t('shop.buttons.load_more')}

@@ -1,51 +1,31 @@
 import React, { useState } from 'react';
-import { Button } from '../../shared/ui/ui/button';
-import { Input } from '../../shared/ui/ui/input';
+import { Button } from '@/shared/ui/ui/button';
+import { Input } from '@/shared/ui/ui/input';
 
-interface ContactVerificationProps {
-  onComplete: () => void;
-  onBack: () => void;
-}
+const ContactVerification = ({ onComplete, onBack }) => {
+  const [formData, setFormData] = useState({});
 
-const ContactVerification: React.FC<ContactVerificationProps> = ({ onComplete, onBack }) => {
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [errors, setErrors] = useState<{ phone?: string; email?: string }>({});
-
-  const validate = () => {
-    const newErrors: { phone?: string; email?: string } = {};
-    if (!phone) newErrors.phone = 'يرجى إدخال رقم الهاتف';
-    if (!email || !/\S+@\S+\.\S+/.test(email)) newErrors.email = 'يرجى إدخال بريد إلكتروني صحيح';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validate()) {
-      onComplete();
-    }
+  const handleCompleteClick = () => {
+    onComplete(formData);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 text-right max-w-md mx-auto">
-      <div>
-        <label className="block mb-1 font-semibold">رقم الهاتف</label>
-        <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
-        {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+    <div>
+      <h3 className="text-xl font-semibold mb-4">Seller Information</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Input name="name" placeholder="Your Name" onChange={handleChange} />
+        <Input name="phone" placeholder="Phone Number" onChange={handleChange} />
+        <Input name="email" placeholder="Email Address" onChange={handleChange} />
       </div>
-      <div>
-        <label className="block mb-1 font-semibold">البريد الإلكتروني</label>
-        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+      <div className="flex justify-between mt-8">
+        <Button variant="outline" onClick={onBack}>Back</Button>
+        <Button onClick={handleCompleteClick}>Submit</Button>
       </div>
-      <div className="flex justify-between">
-        <Button variant="outline" type="button" onClick={onBack}>
-          رجوع
-        </Button>
-        <Button type="submit">تأكيد</Button>
-      </div>
-    </form>
+    </div>
   );
 };
 
