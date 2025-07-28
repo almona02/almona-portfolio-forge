@@ -1,0 +1,96 @@
+{
+  "metrics": [
+    {
+      "name": "api_errors",
+      "query": "rate(fastapi_http_requests_total{status=~'5..'}[1m])",
+      "alert": "> 0.1",
+      "description": "API error rate"
+    },
+    {
+      "name": "celery_queue",
+      "query": "celery_tasks_waiting_count",
+      "alert": "> 10",
+      "description": "Celery task queue length"
+    },
+    {
+      "name": "response_time",
+      "query": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+      "alert": "> 0.8",
+      "description": "95th percentile response time"
+    },
+    {
+      "name": "memory_usage",
+      "query": "process_resident_memory_bytes / 1024 / 1024",
+      "alert": "> 1000",
+      "description": "Memory usage in MB"
+    },
+    {
+      "name": "cpu_usage",
+      "query": "rate(process_cpu_seconds_total[5m]) * 100",
+      "alert": "> 80",
+      "description": "CPU usage percentage"
+    },
+    {
+      "name": "disk_usage",
+      "query": "disk_used_percent",
+      "alert": "> 85",
+      "description": "Disk usage percentage"
+    }
+  ],
+  "alerts": [
+    {
+      "name": "HighErrorRate",
+      "condition": "api_errors > 0.1",
+      "duration": "5m",
+      "severity": "warning",
+      "message": "High API error rate detected"
+    },
+    {
+      "name": "LongQueue",
+      "condition": "celery_queue > 10",
+      "duration": "2m",
+      "severity": "critical",
+      "message": "Celery queue is backing up"
+    },
+    {
+      "name": "SlowResponse",
+      "condition": "response_time > 0.8",
+      "duration": "3m",
+      "severity": "warning",
+      "message": "API response time is slow"
+    },
+    {
+      "name": "HighMemory",
+      "condition": "memory_usage > 1000",
+      "duration": "5m",
+      "severity": "critical",
+      "message": "High memory usage detected"
+    }
+  ],
+  "dashboard": {
+    "title": "Almona API Monitoring",
+    "refresh": "30s",
+    "panels": [
+      {
+        "title": "Request Rate",
+        "type": "graph",
+        "query": "rate(fastapi_http_requests_total[5m])"
+      },
+      {
+        "title": "Error Rate",
+        "type": "graph",
+        "query": "rate(fastapi_http_requests_total{status=~'5..'}[5m])"
+      },
+      {
+        "title": "Response Time",
+        "type": "graph",
+        "query": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))"
+      },
+      {
+        "title": "Active Connections",
+        "type": "stat",
+        "query": "sum(up)"
+      }
+    ]
+  }
+}

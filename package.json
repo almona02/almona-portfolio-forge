@@ -10,9 +10,17 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:watch": "vitest watch",
+    "test:api": "cd python_backend && python -m pytest tests/run_tests.py -v",
+    "test:react": "vitest run src/hooks/__tests__ --coverage",
+    "test:security": "cd python_backend && python -m pytest tests/security_test.py",
+    "test:performance": "cd python_backend && python -m pytest tests/performance_test.py",
+    "test:full": "npm run test:api && npm run test:react && npm run test:security && npm run test:performance",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "analyze": "vite build"
+    "analyze": "vite build",
+    "deploy:staging": "ENV=staging docker-compose -f docker-compose.staging.yml up --build -d",
+    "deploy:production": "ENV=prod docker-compose -f docker-compose.prod.yml up --build -d",
+    "load-test": "locust -f python_backend/tests/load_test.py"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -86,7 +94,7 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-rtl": "^0.9.0",
-    "three": "^0.155.0",
+    "three": "^0.178.0",
     "vaul": "^0.9.3",
     "web-vitals": "^5.0.3",
     "zod": "^3.25.76",

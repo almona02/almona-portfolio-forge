@@ -5,20 +5,35 @@ import { QuoteRequestStepper } from '@/components/quotes/QuoteRequestStepper';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 
+// Define interfaces for the quote data
+interface QuoteProduct {
+  id: string;
+  name: string;
+}
+
+interface QuoteService {
+  id: string;
+  name: string;
+}
+
+interface ContactInfo {
+  name?: string;
+  email?: string;
+  phone?: string;
+  company?: string;
+}
+
+interface QuoteData {
+  products?: QuoteProduct[];
+  services?: QuoteService[];
+  contactInfo?: ContactInfo;
+}
+
 const QuoteRequestPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [initialData, setInitialData] = useState<{
-    products?: any[];
-    services?: any[];
-    contactInfo?: {
-      name?: string;
-      email?: string;
-      phone?: string;
-      company?: string;
-    };
-  }>({});
+  const [initialData, setInitialData] = useState<QuoteData>({});
 
   React.useEffect(() => {
     // Parse query parameters for pre-filled data
@@ -41,7 +56,7 @@ const QuoteRequestPage: React.FC = () => {
     }
   }, [location]);
 
-  const handleSubmit = async (quoteData: any) => {
+  const handleSubmit = async (quoteData: QuoteData) => {
     try {
       // Simulate API call
       console.log('Quote submitted:', quoteData);

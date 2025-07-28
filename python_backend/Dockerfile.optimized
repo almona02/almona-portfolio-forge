@@ -1,0 +1,70 @@
+# Multi-stage optimized Dockerfile for ALMONA backend
+FROM python:3.11-alpine as builder
+
+# Install build dependencies
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    libffi-dev \
+    postgresql-dev \
+    jpeg-dev \
+    zlib-dev \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy requirements and install dependencies
+COPY requirements-enhanced.txt .
+RUN pip install --no-cache-dir -r requirements-enhanced.txt
+
+# Production stage
+FROM python:3.11-alpine as production
+
+# Install runtime dependencies only
+RUN apk add --no-cache \
+    libpq \
+    libjpeg \
+    zlib \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1
+
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Create non-root user
+RUN addgroup -g 1001 -S almona && \
+    adduser -S almona -u 1001
+
+# Set working directory
+WORKDIR /app
+
+# Copy application code
+COPY --chown=almona:almona . .
+
+# Create uploads directory
+RUN mkdir -p uploads && chown almona:almona uploads
+
+# Switch to non-root user
+USER almona
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:8000/health')"
+
+# Run the application
+CMD ["uvicorn", "apis.main:app", "--host", "0.0.0.0", "--port", "8000"]
