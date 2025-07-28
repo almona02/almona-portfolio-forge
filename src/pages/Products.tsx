@@ -24,6 +24,7 @@ import { Badge } from "@/shared/ui/ui/badge";
 import { Eye } from "lucide-react";
 import { yilmazMachines, alfapenProfiles } from "@/constants/productsData";
 import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
+import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
 
 const Products = () => {
   const { toast } = useToast();
@@ -35,11 +36,32 @@ const Products = () => {
   const [showCompareDialog, setShowCompareDialog] = useState(false);
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Machine | null>(null);
+  const [show3DModel, setShow3DModel] = useState(false);
+  const [selectedMachineFor3D, setSelectedMachineFor3D] = useState<Machine | null>(null);
+  const [wizardOpen, setWizardOpen] = useState(false);
 
   // Load saved comparisons on mount
   useEffect(() => {
     const loaded = loadComparisons();
     setSavedComparisons(loaded);
+  }, []);
+
+  // Handle the custom event to open the 3D model dialog
+  useEffect(() => {
+    const handleOpen3DModel = (event: CustomEvent) => {
+      const { machineId, machineName } = event.detail;
+      const machine = yilmazMachines.find(m => m.id === machineId);
+      if (machine) {
+        setSelectedMachineFor3D(machine);
+        setShow3DModel(true);
+      }
+    };
+
+    window.addEventListener('open3DModel', handleOpen3DModel as EventListener);
+
+    return () => {
+      window.removeEventListener('open3DModel', handleOpen3DModel as EventListener);
+    };
   }, []);
 
   const handleSelectMachine = (machine: Machine, selected: boolean) => {
@@ -115,6 +137,7 @@ const Products = () => {
                 Premium aluminum & PVC processing machines from Turkey's leading manufacturer.
                 Authorized dealer since 2000.
               </p>
+              <Button onClick={() => setWizardOpen(true)} className="mt-4">Machine Recommendation Wizard</Button>
             </div>
 
             <Tabs defaultValue="yilmaz" className="mb-8">
@@ -335,6 +358,17 @@ const Products = () => {
           contactInfo: {}
         }}
       />
+
+      {selectedMachineFor3D && (
+        <Model3DDialog
+          isOpen={show3DModel}
+          onClose={() => setShow3DModel(false)}
+          machineName={selectedMachineFor3D.name}
+          modelPath={selectedMachineFor3D.modelPath || "/models/AR-Code-Object-Capture-app-1752786892 (1).glb"}
+        />
+      )}
+
+      <MachineRecommendationWizard open={wizardOpen} onOpenChange={setWizardOpen} />
     </>
   );
 };

@@ -9,24 +9,61 @@ import { yilmazMachines, Machine } from "@/constants/productsData";
 import { Button } from "@/shared/ui/ui/button";
 import { Download, Eye } from "lucide-react";
 import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
+import { toast } from "sonner";
+
+// Type for data from the API
+interface ApiReview {
+  id: string;
+  productId: string;
+  rating: number;
+  comment: string;
+  reviewerName: string;
+  date?: string;
+  createdAt?: string;
+}
+
+// Type for data passed to the view components
+interface ViewReview {
+  id: string;
+  rating: number;
+  comment: string;
+  reviewerName: string;
+  date: string;
+}
 
 const MachineDetail: React.FC = () => {
   const { machineId } = useParams<{ machineId: string }>();
   const [show3DModel, setShow3DModel] = useState(false);
-  const [reviews, setReviews] = useState<any[]>([]); // State to hold reviews
+  const [reviews, setReviews] = useState<ViewReview[]>([]);
   const { t } = useTranslation('shop');
   const { addRecentlyViewed } = useRecentlyViewed();
 
   useEffect(() => {
     if (machineId) {
-      getReviewsByProductId(machineId).then(setReviews);
+      getReviewsByProductId(machineId).then((apiReviews: ApiReview[]) => {
+        const adaptedReviews: ViewReview[] = apiReviews.map(r => ({
+          id: r.id,
+          rating: r.rating,
+          comment: r.comment,
+          reviewerName: r.reviewerName,
+          date: r.date || r.createdAt || new Date().toISOString(),
+        }));
+        setReviews(adaptedReviews);
+      });
       addRecentlyViewed(machineId);
     }
   }, [machineId, addRecentlyViewed]);
 
   const handleAddReview = async (rating: number, comment: string, reviewerName: string) => {
     if (!machineId) return;
-    const newReview = await addReview({ productId: machineId, rating, comment, reviewerName });
+    const newReviewFromApi: ApiReview = await addReview({ productId: machineId, rating, comment, reviewerName });
+    const newReview: ViewReview = {
+        id: newReviewFromApi.id,
+        rating: newReviewFromApi.rating,
+        comment: newReviewFromApi.comment,
+        reviewerName: newReviewFromApi.reviewerName,
+        date: newReviewFromApi.date || newReviewFromApi.createdAt || new Date().toISOString(),
+    };
     setReviews(prev => [...prev, newReview]);
     toast.success(t('reviews.review_submitted_success'));
   };
@@ -119,7 +156,7 @@ const MachineDetail: React.FC = () => {
 
       {machine.specPdf && (
         <div className="mb-6">
-          <Button asChild variant="outline">
+          <Button asChild>
             <a 
               href={machine.specPdf} 
               download

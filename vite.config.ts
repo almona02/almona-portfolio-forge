@@ -16,5 +16,15 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three'],
+          drei: ['@react-three/drei'],
+          vendor: ['react', 'react-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-slider']
+        }
+      }
+    }
   }
 });
