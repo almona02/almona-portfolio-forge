@@ -1,164 +1,133 @@
-# ALMONA Industrial Solutions - Complete Project Structure
+# Project Structure Documentation
 
-## Project Overview
-A comprehensive platform for Egyptian aluminum & UPVC fabricators featuring intelligent spare parts ordering, equipment comparison tools, AI-powered maintenance recommendations, and AR guides.
+This document provides a comprehensive overview of the ALMONA Industrial Solutions Platform directory structure, including both frontend and Python backend components.
 
-## 📁 Project Tree (Updated 2024)
+## Root Directory Structure
 
 ```
 almona-portfolio-forge/
-├── 📁 Root Configuration Files
-│   ├── .blackboxrules - Blackbox AI configuration
-│   ├── .gitignore - Git ignore patterns
-│   ├── .env.example - Environment variables template
-│   ├── components.json - Shadcn/ui configuration
-│   ├── package.json - Project dependencies & scripts
-│   ├── tsconfig.json - TypeScript configuration
-│   ├── vite.config.ts - Vite build configuration
-│   ├── tailwind.config.ts - Tailwind CSS configuration
-│   ├── postcss.config.js - PostCSS configuration
-│   └── eslint.config.js - ESLint configuration
-
-├── 📁 Documentation
-│   ├── README.md - Main project documentation
-│   ├── PROJECT_STRUCTURE.md - This file
-│   ├── NEW_PROJECT_TREE.md - Detailed project tree
-│   ├── CODE_PRINCIPLES_EVALUATION.md - Code quality standards
-│   ├── RESTRUCTURING_PLAN.md - Migration strategy
-│   └── 📁 docs/
-│       ├── README.md - Documentation index
-│       ├── project-structure.md - Detailed structure
-│       └── generate-structure.js - Structure generator script
-
-├── 📁 Source Code (src/)
-│   ├── 📁 Components
-│   │   ├── 📁 layout/ - Layout components
-│   │   │   ├── Navbar.tsx - Main navigation
-│   │   │   └── Footer.tsx - Site footer
-│   │   ├── 📁 home/ - Homepage components
-│   │   │   ├── Hero.tsx - Hero section
-│   │   │   ├── AboutSection.tsx - About section
-│   │   │   ├── FeaturedProducts.tsx - Featured products
-│   │   │   └── ServicesSection.tsx - Services section
-│   │   ├── 📁 products/ - Product components
-│   │   │   ├── machines/ - Machine components
-│   │   │   └── profiles/ - Profile components
-│   │   ├── 📁 services/ - Service components
-│   │   │   ├── MaintenanceDashboard.tsx - Maintenance system
-│   │   │   ├── MachineHealthCheck.tsx - Health monitoring
-│   │   │   └── CustomerPortal.tsx - Customer portal
-│   │   ├── 📁 shop/ - E-commerce components
-│   │   │   ├── 3d-configurator/ - 3D product configurator
-│   │   │   ├── ai-advisor/ - AI equipment advisor
-│   │   │   ├── ar/ - Augmented reality features
-│   │   │   └── fabrication-report/ - Report generator
-│   │   ├── 📁 used-machines/ - Used machines marketplace
-│   │   │   ├── MachineSpecsForm.tsx - Machine listing form
-│   │   │   ├── UsedMachineCard.tsx - Machine display card
-│   │   │   └── UsedMachineDetails.tsx - Detailed view
-│   │   └── 📁 ui/ - Reusable UI components
-│   │       └── [shadcn/ui components...]
-│   │
-│   ├── 📁 Pages - Main application pages
-│   │   ├── Index.tsx - Homepage
-│   │   ├── About.tsx - About page
-│   │   ├── Products.tsx - Products listing
-│   │   ├── Services.tsx - Services page
-│   │   ├── Shop.tsx - E-commerce shop
-│   │   ├── UsedMachines.tsx - Used machines marketplace
-│   │   ├── Contact.tsx - Contact page
-│   │   └── Portfolio.tsx - Project portfolio
-│   │
-│   ├── 📁 Lib - Utility libraries
-│   │   ├── ai/ - AI services
-│   │   │   ├── faultDetection.ts - AI fault detection
-│   │   │   └── SparePartsService.ts - Spare parts AI
-│   │   ├── reports/ - Report generation
-│   │   ├── utils.ts - General utilities
-│   │   └── i18n.ts - Internationalization
-│   │
-│   ├── 📁 Constants - Application constants
-│   │   ├── productsData.ts - Product data
-│   │   ├── portfolioData.ts - Portfolio data
-│   │   └── yilmazMachines.ts - Machine specifications
-│   │
-│   └── 📁 Types - TypeScript type definitions
-│       ├── machine.ts - Machine types
-│       ├── shop.ts - E-commerce types
-│       └── maintenance.d.ts - Maintenance types
-
-├── 📁 Public Assets (public/)
-│   ├── 📁 images/
-│   │   ├── machines/ - Machine images
-│   │   └── profiles/ - Profile images
-│   ├── 📁 documents/specs/ - Technical specifications
-│   ├── 📁 models/ - 3D models & AI models
-│   ├── 📁 locales/ - Translation files
-│   └── service-worker.js - PWA service worker
-
-├── 📁 Locales - Internationalization
-│   ├── ar/ - Arabic translations
-│   └── en/ - English translations
-
-└── 📁 Build Outputs
-    ├── dist/ - Production build
-    └── bundle-stats.html - Bundle analysis
+├── .blackboxrules                    # Blackbox AI configuration
+├── .env.example                      # Environment variables template
+├── .gitignore                        # Git ignore rules
+├── README.md                         # Project overview and setup
+├── UPDATED_README.md                 # Updated documentation with Python backend
+├── package.json                      # Frontend dependencies and scripts
+├── python_backend/                   # NEW: Python backend directory
+│   ├── apis/                         # FastAPI endpoints
+│   │   └── main.py                   # Main FastAPI application
+│   ├── ai_services/                  # AI/ML service modules
+│   │   ├── part_detection/           # Part identification services
+│   │   └── preprocessing/            # Data preprocessing utilities
+│   ├── core/                         # Core backend configurations
+│   │   ├── celery_app.py             # Celery configuration
+│   │   └── config.py                 # Application configuration
+│   ├── monitoring/                   # Monitoring and dashboards
+│   │   └── dashboard.json            # Grafana dashboard configuration
+│   ├── tests/                        # Test suites
+│   │   ├── security_test.py          # Security vulnerability testing
+│   │   ├── load_test.py              # Load testing with Locust
+│   │   ├── benchmark.py              # Performance benchmarking
+│   │   └── test_api.py               # API endpoint testing
+│   ├── uploads/                      # File upload storage
+│   ├── docker-compose.yml            # Docker container orchestration
+│   ├── Dockerfile                    # Docker container configuration
+│   ├── requirements.txt              # Python dependencies
+│   └── TESTING_GUIDE.md              # Backend testing documentation
+├── src/                              # Frontend source code
+│   ├── components/                   # React components
+│   ├── constants/                    # Application constants
+│   ├── context/                      # React context providers
+│   ├── data/                         # Static data files
+│   ├── hooks/                        # Custom React hooks
+│   ├── lib/                          # Utility libraries
+│   ├── pages/                        # Page components
+│   ├── types/                        # TypeScript type definitions
+│   └── vite-env.d.ts                 # Vite environment types
+├── public/                           # Static assets
+├── docs/                             # Project documentation
+├── locales/                          # Translation files
+├── dist/                             # Production build output
+├── tests/                            # Frontend test files
+├── vitest.config.ts                  # Vitest testing configuration
+├── vite.config.ts                    # Vite build configuration
+├── tailwind.config.ts                # Tailwind CSS configuration
+├── tsconfig.json                     # TypeScript configuration
+└── package.json                      # Frontend dependencies
 ```
 
-## 🚀 Key Features & Components
+## Python Backend Detailed Structure
 
-### AI-Powered Systems
-- **Fault Detection**: TensorFlow.js based equipment monitoring
-- **Spare Parts AI**: Google Cloud Vision for part identification
-- **Predictive Maintenance**: ML-driven maintenance scheduling
+### apis/
+FastAPI application structure with modular endpoints:
+- **main.py**: Main FastAPI application entry point
+- **routers/**: API route definitions
+- **models/**: Pydantic models for request/response validation
+- **middleware/**: Custom middleware for authentication, logging, etc.
 
-### AR/VR Features
-- **3D Product Configurator**: WebGL-based customization
-- **AR Installation Guides**: WebXR implementation
-- **Virtual Showroom**: Three.js powered visualization
+### ai_services/
+AI and machine learning service modules:
+- **part_detection/**: Computer vision services for part identification
+- **preprocessing/**: Data preprocessing utilities
 
-### E-commerce Platform
-- **Used Machines Marketplace**: Complete buying/selling system
-- **Spare Parts Shop**: AI-enhanced product discovery
-- **Equipment Comparison**: Side-by-side analysis tools
+### core/
+Core backend infrastructure:
+- **celery_app.py**: Celery configuration for async task processing
+- **config.py**: Application configuration management
 
-### Technical Highlights
-- **Progressive Web App**: Service worker & offline support
-- **Responsive Design**: Mobile-first approach
-- **Performance Optimized**: Code splitting & lazy loading
-- **SEO Ready**: Meta tags & structured data
+### monitoring/
+Monitoring and observability:
+- **dashboard.json**: Grafana dashboard configuration
 
-## 🛠 Development Commands
+### tests/
+Comprehensive test suite:
+- **security_test.py**: Security vulnerability testing
+- **load_test.py**: Load testing with Locust
+- **benchmark.py**: Performance benchmarking
+- **test_api.py**: API endpoint testing
+
+## Unified Test Commands
+The project now supports unified testing across frontend and backend:
 
 ```bash
-# Development
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run preview      # Preview production build
+# Run all tests
+npm run test:full
 
-# Testing
-npm test            # Run tests
-npm run test:ui     # Run tests with UI
+# Run security tests
+npm run test:security
 
-# Code Quality
-npm run lint        # Run ESLint
-npm run type-check  # TypeScript checking
+# Run load tests
+npm run test:load
+
+# Run frontend tests
+npm run test:frontend
+
+# Run backend tests
+npm run test:backend
 ```
 
-## 📊 Project Statistics
-- **Languages**: TypeScript, JavaScript, CSS
-- **Framework**: React 18 + Vite
-- **Styling**: TailwindCSS + shadcn/ui
-- **Testing**: Vitest + React Testing Library
-- **Build**: Vite + TypeScript
-- **Deployment**: Static hosting ready
+## Environment Variables
+Key environment variables for the integrated system:
 
-## 🔄 Recent Updates
-- Added Used Machines marketplace
-- Implemented AI fault detection system
-- Enhanced AR/VR capabilities
-- Improved mobile responsiveness
-- Added comprehensive testing suite
+### Frontend
+- `VITE_API_URL`: Backend API endpoint
+- `VITE_SMS_API_KEY`: SMS service API key
+- `VITE_GOOGLE_ANALYTICS_ID`: Google Analytics tracking ID
+- `VITE_MAPS_API_KEY`: Google Maps API key
+- `VITE_AR_API_KEY`: AR/3D model service API key
 
----
-*Last updated: December 2024*
+### Backend
+- `DATABASE_URL`: PostgreSQL connection string
+- `REDIS_URL`: Redis connection string
+- `SECRET_KEY`: JWT secret key
+- `CELERY_BROKER_URL`: Celery message broker
+- `AI_MODEL_PATH`: Path to trained AI models
+
+## Docker Configuration
+The Python backend includes Docker support:
+- **Dockerfile**: Container configuration for the backend
+- **docker-compose.yml**: Multi-service orchestration including:
+  - PostgreSQL database
+  - Redis cache
+  - FastAPI application
+  - Celery worker
+  - Monitoring stack (Prometheus + Grafana)
