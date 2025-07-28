@@ -22,6 +22,8 @@ import EgyptianStandardsGuide from "../components/shop/EgyptianStandardsGuide";
 import EgyptianTechnicalSupportHub from "../components/shop/EgyptianTechnicalSupportHub";
 import { ProductQuickView } from "../components/shop/ProductQuickView";
 import { RecentlyViewedProducts } from "../components/shop/RecentlyViewedProducts";
+import { DurabilityDetailsModal } from "../components/shop/DurabilityDetailsModal";
+import { DurabilityInfo } from "../components/shop/DurabilityDetailsModal";
 
 import ErrorBoundary from "@/components/ErrorBoundary";
 
@@ -109,6 +111,8 @@ const PRODUCTS_PER_LOAD = 9;
     sortBy: "featured"
   });
   const [displayedProductCount, setDisplayedProductCount] = useState(PRODUCTS_PER_LOAD);
+  const [showDurabilityModal, setShowDurabilityModal] = useState(false);
+  const [selectedDurabilityProduct, setSelectedDurabilityProduct] = useState<{ info: DurabilityInfo; name: string } | null>(null);
 
   return {
     activeTab,
@@ -128,7 +132,11 @@ const PRODUCTS_PER_LOAD = 9;
     displayedProductCount,
     setDisplayedProductCount,
     quickViewProduct,
-    setQuickViewProduct
+    setQuickViewProduct,
+    showDurabilityModal,
+    setShowDurabilityModal,
+    selectedDurabilityProduct,
+    setSelectedDurabilityProduct
   };
 }
 
@@ -153,7 +161,11 @@ const ShopEnhanced = () => {
     displayedProductCount,
     setDisplayedProductCount,
     quickViewProduct,
-    setQuickViewProduct
+    setQuickViewProduct,
+    showDurabilityModal,
+    setShowDurabilityModal,
+    selectedDurabilityProduct,
+    setSelectedDurabilityProduct
   } = useShopState();
 
   // Memoized data processing
@@ -161,6 +173,18 @@ const ShopEnhanced = () => {
     return yilmazMachines.map(product => {
       const machineSpecs = yilmazMachinesSpecs.find(spec => spec.id === product.id);
       const stock = inventory[product.id] ?? 0;
+      
+      // Dummy durability info for demonstration
+      const durabilityInfo = {
+        score: Math.floor(Math.random() * 3) + 3, // Random score between 3 and 5
+        maintenanceInterval: product.category === "cutting" ? "Every 3 months or 500 operating hours" : "Every 6 months or 1000 operating hours",
+        keyDurabilityFeatures: [
+          "High-grade steel frame",
+          "Precision-engineered components",
+          "Corrosion-resistant coating"
+        ]
+      };
+
       return {
         ...product,
         specifications: machineSpecs?.specifications
@@ -168,6 +192,7 @@ const ShopEnhanced = () => {
           : product.specifications || [],
         certifications: machineSpecs?.certifications || product.certifications || [],
         stock,
+        durabilityInfo, // Add durability info
       };
     });
   }, []);
@@ -380,6 +405,11 @@ const ShopEnhanced = () => {
                           ...((product as Machine).healthMetrics.components ? Object.keys((product as Machine).healthMetrics.components) : [])
                         ]}
                         stock={(product as { stock?: number }).stock ?? 0}
+                        durabilityInfo={(product as ShopMachine).durabilityInfo}
+                        onDurabilityClick={(info) => {
+                          setSelectedDurabilityProduct({ info, name: product.name });
+                          setShowDurabilityModal(true);
+                        }}
                         actions={[
                           {
                             label: t("shop.buttons.configure"),
@@ -452,6 +482,15 @@ const ShopEnhanced = () => {
         </div>
       </main>
       <Footer />
+
+      {showDurabilityModal && selectedDurabilityProduct && (
+        <DurabilityDetailsModal
+          isOpen={showDurabilityModal}
+          onClose={() => setShowDurabilityModal(false)}
+          durabilityInfo={selectedDurabilityProduct.info}
+          productName={selectedDurabilityProduct.name}
+        />
+      )}
     </div>
   );
 };
