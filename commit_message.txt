@@ -1,0 +1,12 @@
+feat: Implement performance optimizations and Vercel Analytics
+
+This commit addresses several performance-related issues and integrates Vercel Analytics:
+
+- Updated `three.js` and `three-mesh-bvh` dependencies to compatible versions.
+- Optimized bundle size by configuring `vite.config.ts` with:
+    - `target: 'esnext'` for better tree-shaking.
+    - Adjusted `chunkSizeWarningLimit`.
+    - Strategic `manualChunks` for Three.js libraries.
+- Added `.vercelignore` for improved cache control.
+- Integrated `rollup-plugin-visualizer` for bundle analysis.
+- Added Vercel Analytics to `src/App.tsx` for performance monitoring.

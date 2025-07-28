@@ -10,6 +10,12 @@ const EgyptCertificationBadge = ({ standard }: { standard: string }) => (
   </div>
 );
 
+interface DurabilityInfo {
+  score: number; // e.g., 1-5 or 1-100
+  maintenanceInterval: string; // e.g., "Every 6 months", "1000 operating hours"
+  keyDurabilityFeatures: string[];
+}
+
 interface IndustrialProductCardProps {
   title: string;
   description: string;
@@ -23,6 +29,8 @@ interface IndustrialProductCardProps {
     label: string;
     action: () => void;
   }[];
+  durabilityInfo?: DurabilityInfo;
+  onDurabilityClick?: (info: DurabilityInfo) => void;
 }
 
 export const IndustrialProductCard = ({
@@ -35,6 +43,8 @@ export const IndustrialProductCard = ({
   egyptCertifications = [],
   stock,
   actions,
+  durabilityInfo,
+  onDurabilityClick,
 }: IndustrialProductCardProps) => {
   return (
     <Card className="bg-almona-darker border-almona-light/20 hover:border-almona-light/40 transition-colors h-full flex flex-col">
@@ -96,6 +106,24 @@ export const IndustrialProductCard = ({
             </div>
           ))}
         </div>
+        {durabilityInfo && (
+          <div className="mt-4 pt-4 border-t border-almona-light/20">
+            <h4 className="font-semibold text-lg mb-2">Durability Insights</h4>
+            <div className="flex items-center mb-2">
+              <span className="text-orange-500 font-bold text-xl mr-2">{durabilityInfo.score}/5</span>
+              <span className="text-gray-300">Durability Score</span>
+            </div>
+            <p className="text-sm text-gray-400 mb-2">Recommended Maintenance: {durabilityInfo.maintenanceInterval}</p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => onDurabilityClick && onDurabilityClick(durabilityInfo)}
+              className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+            >
+              View Maintenance Details
+            </Button>
+          </div>
+        )}
         <div className="text-2xl font-bold text-orange-500">{price}</div>
       </CardContent>
       <CardFooter className="p-6 pt-0">
