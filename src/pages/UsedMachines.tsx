@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/shared/ui/ui/button';
@@ -11,12 +11,23 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/u
 import { ChevronRight, MapPin, Factory, Calendar, Gauge } from 'lucide-react';
 import { usedMachines } from '@/data/usedMachines';
 import SellUsedMachineForm from '@/components/used-machines/SellUsedMachineForm';
+import { useAuth } from '@/context/AuthContext';
 
 const UsedMachines = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('browse');
   const [searchQuery, setSearchQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('all');
   const [machineTypeFilter, setMachineTypeFilter] = useState('all');
+
+  const handleSellClick = () => {
+    if (user) {
+      navigate('/usedmachines/sell');
+    } else {
+      navigate('/login');
+    }
+  };
 
   const machineTypes = [
     { value: 'all', label: 'All Types' },
@@ -57,7 +68,7 @@ const UsedMachines = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 className="bg-white text-orange-700 hover:bg-orange-100"
-                onClick={() => setActiveTab('sell')}
+                onClick={handleSellClick}
               >
                 Sell Your Used Machines
               </Button>

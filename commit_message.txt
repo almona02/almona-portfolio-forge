@@ -1,12 +1,8 @@
-feat: Implement performance optimizations and Vercel Analytics
+feat: Add durability and maintenance insights to shop products
 
-This commit addresses several performance-related issues and integrates Vercel Analytics:
+This commit introduces new features to the shop page to highlight machine durability and provide maintenance recommendations:
 
-- Updated `three.js` and `three-mesh-bvh` dependencies to compatible versions.
-- Optimized bundle size by configuring `vite.config.ts` with:
-    - `target: 'esnext'` for better tree-shaking.
-    - Adjusted `chunkSizeWarningLimit`.
-    - Strategic `manualChunks` for Three.js libraries.
-- Added `.vercelignore` for improved cache control.
-- Integrated `rollup-plugin-visualizer` for bundle analysis.
-- Added Vercel Analytics to `src/App.tsx` for performance monitoring.
+- Enhanced `IndustrialProductCard.tsx` to display a durability score and a "View Maintenance Details" button.
+- Created `DurabilityDetailsModal.tsx` to show detailed information on durability features and maintenance intervals.
+- Integrated `DurabilityDetailsModal` into `Shop-enhanced.tsx`, managing its state and passing relevant product data.
+- Added dummy durability data to `enhancedProducts` in `Shop-enhanced.tsx` for demonstration purposes.

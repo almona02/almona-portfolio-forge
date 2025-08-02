@@ -5,6 +5,49 @@ import { Button } from "@/components/ui/button";
 import { Home, Menu, Search, ShoppingCart, X } from "lucide-react";
 import { useQuote } from "@/context/QuoteContext";
 import { useAuth } from "@/context/AuthContext";
+import { motion, AnimatePresence } from "framer-motion";
+
+const NavLink = ({ to, children, isActive, isMobile, onClick }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`relative text-sm font-medium transition-colors duration-300 ${
+        isActive ? "text-almona-orange" : "text-gray-300 hover:text-almona-orange-light"
+      } ${
+        isMobile ? "text-lg flex items-center gap-3" : ""
+      }`}
+    >
+      {isMobile && children.props.icon}
+      {children.props.name}
+      {!isMobile && (
+        <AnimatePresence>
+          {isHovered && (
+            <motion.div
+              layoutId="underline"
+              className="absolute bottom-0 left-0 h-0.5 w-full bg-gradient-orange"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+          )}
+        </AnimatePresence>
+      )}
+      {isActive && !isMobile && (
+        <motion.div
+          layoutId="underline"
+          className="absolute bottom-0 left-0 h-0.5 w-full bg-gradient-orange"
+          initial={false}
+          animate={{ opacity: 1 }}
+        />
+      )}
+    </Link>
+  );
+};
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -15,11 +58,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 20);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -33,10 +72,9 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { name: "Home", path: "/" },
+    { name: "Home", path: "/", icon: <Home className="h-5 w-5" /> },
     { name: "YILMAZ Machines", path: "/products/machines" },
-    // Removed UPVC Windows, UPVC Doors, Aluminum Thermal Break as per user request
-    { name: "Fabrication Workflow Detail", path: "/workflows/fabrication-detail" },
+    { name: "Fabrication Workflow", path: "/workflows/fabrication-detail" },
     { name: "Services", path: "/services" },
     { name: "Used Machines", path: "/usedmachines" },
     { name: "Shop", path: "/Shop" },
@@ -51,9 +89,12 @@ const Navbar = () => {
   };
 
   return (
-    <header
-      className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${
-        isScrolled ? "py-2 bg-almona-dark-default/90 backdrop-blur-md shadow-lg" : "py-4 bg-transparent"
+    <motion.header
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ type: "spring", stiffness: 50, damping: 15 }}
+      className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 py-4 ${
+        isScrolled ? "bg-almona-dark/95 backdrop-blur-xl shadow-2xl" : "bg-almona-dark/80 backdrop-blur-md"
       }`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
@@ -64,17 +105,9 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-8">
           {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
-              className={`text-sm font-medium transition-colors hover:text-almona-orange relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-almona-orange after:transition-all after:duration-300 ${
-                isActive(link.path)
-                  ? "text-almona-orange after:w-full"
-                  : "text-gray-300"
-              }`}
-            >
-              {link.name}
-            </Link>
+            <NavLink key={link.name} to={link.path} isActive={isActive(link.path)}>
+              <div name={link.name} />
+            </NavLink>
           ))}
         </nav>
 
@@ -92,25 +125,24 @@ const Navbar = () => {
               )}
             </Link>
           </Button>
-          <Button 
-            variant="default" 
-            className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
-            asChild
-          >
-            <Link to="/shop">
-              Shop Now
-            </Link>
-          </Button>
           {user ? (
-            <Button variant="ghost" onClick={logout}>
-              Logout
-            </Button>
+            <>
+              <Button variant="ghost" onClick={logout}>
+                Logout
+              </Button>
+              <Button variant="default" className="bg-gradient-orange hover:bg-almona-orange-dark text-white" asChild>
+                <Link to="/portal">Portal</Link>
+              </Button>
+            </>
           ) : (
-            <Button variant="ghost" asChild>
-              <Link to="/login">
-                Login
-              </Link>
-            </Button>
+            <>
+              <Button variant="ghost" asChild>
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button variant="default" className="bg-gradient-orange hover:bg-almona-orange-dark text-white" asChild>
+                <Link to="/register">Register</Link>
+              </Button>
+            </>
           )}
         </div>
 
@@ -125,72 +157,67 @@ const Navbar = () => {
         </Button>
 
         {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden fixed inset-0 bg-almona-dark-default/95 z-50 flex flex-col animate-fade-in">
-            <div className="flex items-center justify-between p-4 border-b border-gray-800">
-              <span className="text-2xl font-bold text-gradient-orange">ALMONA</span>
-              <Button
-                variant="ghost"
-                size="icon"
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/60 z-40"
                 onClick={handleCloseMobileMenu}
+              />
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="lg:hidden fixed top-0 right-0 h-full w-80 bg-almona-dark/95 backdrop-blur-xl z-50 flex flex-col"
               >
-                <X className="h-6 w-6" />
-              </Button>
-            </div>
-            <nav className="flex flex-col p-4 space-y-6 mt-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  onClick={handleCloseMobileMenu}
-                  className={`text-lg font-medium transition-colors hover:text-almona-orange flex items-center gap-3 ${
-                    isActive(link.path)
-                      ? "text-almona-orange"
-                      : "text-gray-300"
-                  }`}
-                >
-                  {link.name === "Home" && <Home className="h-5 w-5" />}
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
-            <div className="mt-auto p-4 border-t border-gray-800">
-              <Button 
-                variant="default" 
-                className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white mb-4"
-                asChild
-              >
-                <Link to="/shop" onClick={handleCloseMobileMenu}>
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Shop Now
-                </Link>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full"
-                asChild
-              >
-                <Link to="/quote" onClick={handleCloseMobileMenu}>
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  View Quote ({quoteItems.length})
-                </Link>
-              </Button>
-              {user ? (
-                <Button variant="outline" className="w-full" onClick={logout}>
-                  Logout
-                </Button>
-              ) : (
-                <Button variant="outline" className="w-full" asChild>
-                  <Link to="/login" onClick={handleCloseMobileMenu}>
-                    Login
-                  </Link>
-                </Button>
-              )}
-            </div>
-          </div>
-        )}
+                <div className="flex items-center justify-between p-4 border-b border-gray-800">
+                  <span className="text-2xl font-bold text-gradient-orange">ALMONA</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleCloseMobileMenu}
+                  >
+                    <X className="h-6 w-6" />
+                  </Button>
+                </div>
+                <nav className="flex flex-col p-4 space-y-6 mt-8">
+                  {navLinks.map((link) => (
+                    <NavLink key={link.name} to={link.path} isActive={isActive(link.path)} isMobile onClick={handleCloseMobileMenu}>
+                      <div name={link.name} icon={link.icon} />
+                    </NavLink>
+                  ))}
+                </nav>
+                <div className="mt-auto p-4 border-t border-gray-800 space-y-4">
+                  {user ? (
+                    <>
+                      <Button variant="outline" className="w-full" onClick={logout}>
+                        Logout
+                      </Button>
+                      <Button variant="default" className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white" asChild>
+                        <Link to="/portal" onClick={handleCloseMobileMenu}>Portal</Link>
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="outline" className="w-full" asChild>
+                        <Link to="/login" onClick={handleCloseMobileMenu}>Login</Link>
+                      </Button>
+                      <Button variant="default" className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white" asChild>
+                        <Link to="/register" onClick={handleCloseMobileMenu}>Register</Link>
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
-    </header>
+    </motion.header>
   );
 };
 
