@@ -1,6 +1,7 @@
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Machine } from '../types/machine';
+import { useAuth } from './AuthContext'; // Import useAuth
 
 interface QuoteItem {
   product: Machine;
@@ -13,6 +14,13 @@ interface QuoteContextType {
   removeFromQuote: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearQuote: () => void;
+  // Add user info to the context
+  userInfo: {
+    id?: string;
+    name?: string;
+    email?: string;
+    company?: string;
+  };
 }
 
 const QuoteContext = createContext<QuoteContextType | undefined>(undefined);
@@ -31,6 +39,20 @@ interface QuoteProviderProps {
 
 export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   const [quoteItems, setQuoteItems] = useState<QuoteItem[]>([]);
+  const [userInfo, setUserInfo] = useState({});
+  const { user } = useAuth(); // Get user from AuthContext
+
+  // Update user info when auth state changes
+  useEffect(() => {
+    if (user) {
+      setUserInfo({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        company: user.company,
+      });
+    }
+  }, [user]);
 
   const addToQuote = (product: Machine) => {
     setQuoteItems(prevItems => {
@@ -65,7 +87,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   };
 
   return (
-    <QuoteContext.Provider value={{ quoteItems, addToQuote, removeFromQuote, updateQuantity, clearQuote }}>
+    <QuoteContext.Provider value={{ quoteItems, addToQuote, removeFromQuote, updateQuantity, clearQuote, userInfo }}>
       {children}
     </QuoteContext.Provider>
   );

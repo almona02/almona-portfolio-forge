@@ -28,6 +28,10 @@ const QuoteConfirmationPage = lazy(() => import("./pages/QuoteConfirmationPage")
 const ModelViewerDemo = lazy(() => import("./pages/ModelViewerDemo"));
 const ModelViewerTest = lazy(() => import("./pages/ModelViewerTest"));
 const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const CustomerPortal = lazy(() => import("./pages/CustomerPortal"));
+const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute"));
+const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine"));
 
 
 // Apply dark mode by default
@@ -54,8 +58,8 @@ const App = () => (
         <SEO />
         <Toaster />
         <Sonner />
-        <QuoteProvider>
-          <AuthProvider>
+        <AuthProvider>
+          <QuoteProvider>
             <BrowserRouter>
               <Analytics />
             <Routes>
@@ -262,6 +266,34 @@ const App = () => (
                   </Suspense>
                 } 
               />
+              <Route 
+                path="/register" 
+                element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <Register />
+                  </Suspense>
+                } 
+              />
+              <Route 
+                path="/portal" 
+                element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ProtectedRoute>
+                      <CustomerPortal />
+                    </ProtectedRoute>
+                  </Suspense>
+                } 
+              />
+              <Route 
+                path="/usedmachines/sell" 
+                element={
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ProtectedRoute>
+                      <SellUsedMachine />
+                    </ProtectedRoute>
+                  </Suspense>
+                } 
+              />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
 
               <Route 
@@ -274,8 +306,8 @@ const App = () => (
               />
             </Routes>
           </BrowserRouter>
-        </AuthProvider>
         </QuoteProvider>
+        </AuthProvider>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>

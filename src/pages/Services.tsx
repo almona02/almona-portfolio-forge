@@ -14,9 +14,9 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/shared/ui/ui/tabs";
-import { Input } from "@/shared/ui/ui/input";
-import { Button } from "@/shared/ui/ui/button";
-import { Badge } from "@/shared/ui/ui/badge";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const Services = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -33,7 +33,12 @@ const Services = () => {
     <div className="flex flex-col min-h-screen bg-almona-dark text-white">
       <Navbar />
       <main className="flex-grow pt-24">
-        <div className="container mx-auto px-4 py-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="container mx-auto px-4 py-12"
+        >
           {/* Hero Section */}
           <div className="mb-16 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -58,7 +63,7 @@ const Services = () => {
 
           {/* Main Services Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4 max-w-4xl mx-auto mb-12">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 max-w-4xl mx-auto mb-12 bg-almona-darker/60 backdrop-blur-sm border border-almona-light/20 p-2 rounded-lg">
               <TabsTrigger value="overview">Services Overview</TabsTrigger>
               <TabsTrigger value="register">Register Machine</TabsTrigger>
               <TabsTrigger value="dashboard">Maintenance Dashboard</TabsTrigger>
@@ -67,131 +72,120 @@ const Services = () => {
 
             {/* Services Overview */}
             <TabsContent value="overview">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                <ServiceCard
-                  icon="wrench"
-                  title="Preventive Maintenance"
-                  description="Scheduled servicing to maximize equipment lifespan"
-                  features={[
-                    "Custom maintenance plans",
-                    "AI-driven scheduling",
-                    "Warranty compliance tracking"
-                  ]}
-                  actionText="Schedule Maintenance"
-                  onActionClick={() => setScheduleMaintenanceOpen(true)}
-                />
-                <ServiceCard
-                  icon="bolt"
-                  title="Emergency Repairs"
-                  description="24/7 critical response team"
-                  features={[
-                    "2-hour response guarantee",
-                    "Original spare parts",
-                    "Mobile repair units"
-                  ]}
-                  actionText="Request Emergency Service"
-                  onActionClick={() => setEmergencyDialogOpen(true)}
-                />
-                <ServiceCard
-                  icon="graduation-cap"
-                  title="Operator Training"
-                  description="Certification programs for your team"
-                  features={[
-                    "On-site or virtual training",
-                    "Machine-specific certification",
-                    "Performance analytics"
-                  ]}
-                  actionText="View Training Programs"
-                  onActionClick={() => setOperatorTrainingOpen(true)}
-                />
-              </div>
-
-              <div className="bg-almona-darker/50 p-8 rounded-lg">
-                <h2 className="text-2xl font-bold mb-6">Connected Machine Network</h2>
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold">
-                    {machineView === "list" ? "Registered Equipment" : "Facility Map View"}
-                  </h3>
-          <Button 
-            className="border border-white text-white hover:bg-white hover:text-black transition rounded px-4 py-2"
-            onClick={() => setMachineView(machineView === "list" ? "map" : "list")}
-          >
-            {machineView === "list" ? "Show Map View" : "Show List View"}
-          </Button>
+              <motion.div
+                key="overview"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                  <ServiceCard
+                    icon="wrench"
+                    title="Preventive Maintenance"
+                    description="Scheduled servicing to maximize equipment lifespan"
+                    features={[
+                      "Custom maintenance plans",
+                      "AI-driven scheduling",
+                      "Warranty compliance tracking"
+                    ]}
+                    actionText="Schedule Maintenance"
+                    onActionClick={() => setScheduleMaintenanceOpen(true)}
+                  />
+                  <ServiceCard
+                    icon="bolt"
+                    title="Emergency Repairs"
+                    description="24/7 critical response team"
+                    features={[
+                      "2-hour response guarantee",
+                      "Original spare parts",
+                      "Mobile repair units"
+                    ]}
+                    actionText="Request Emergency Service"
+                    onActionClick={() => setEmergencyDialogOpen(true)}
+                  />
+                  <ServiceCard
+                    icon="graduation-cap"
+                    title="Operator Training"
+                    description="Certification programs for your team"
+                    features={[
+                      "On-site or virtual training",
+                      "Machine-specific certification",
+                      "Performance analytics"
+                    ]}
+                    actionText="View Training Programs"
+                    onActionClick={() => setOperatorTrainingOpen(true)}
+                  />
                 </div>
-                
-                {machineView === "list" ? (
-                  <div className="grid gap-4">
-                    {/* Sample machine - in reality would map through registered machines */}
-                    <div className="p-4 border border-almona-light/20 rounded-lg flex justify-between items-center">
-                      <div>
-                        <h4 className="font-medium">YILMAZ PRO-5000</h4>
-                        <p className="text-sm text-gray-400">Serial: YM-5K-238492 | Installed: 15/03/2022</p>
+                <div className="bg-almona-darker/50 p-8 rounded-lg">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-lg font-semibold">
+                      {machineView === "list" ? "Registered Equipment" : "Facility Map View"}
+                    </h3>
+                    <Button 
+                      className="border border-white text-white hover:bg-white hover:text-black transition rounded px-4 py-2"
+                      onClick={() => setMachineView(machineView === "list" ? "map" : "list")}
+                    >
+                      {machineView === "list" ? "Show Map View" : "Show List View"}
+                    </Button>
+                  </div>
+                  
+                  {machineView === "list" ? (
+                    <div className="grid gap-4">
+                      {/* Sample machine - in reality would map through registered machines */}
+                      <div className="p-4 border border-almona-light/20 rounded-lg flex justify-between items-center">
+                        <div>
+                          <h4 className="font-medium">YILMAZ PRO-5000</h4>
+                          <p className="text-sm text-gray-400">Serial: YM-5K-238492 | Installed: 15/03/2022</p>
+                        </div>
+                        <Badge variant="secondary">Active Warranty</Badge>
                       </div>
-                      <Badge variant="secondary">Active Warranty</Badge>
                     </div>
-                  </div>
-                ) : (
-                  <div className="h-96 bg-almona-dark rounded-lg flex items-center justify-center">
-                    <p>Interactive facility map with machine locations would appear here</p>
-                  </div>
-                )}
-              </div>
+                  ) : (
+                    <div className="h-96 bg-almona-dark rounded-lg flex items-center justify-center">
+                      <p>Interactive facility map with machine locations would appear here</p>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             </TabsContent>
 
             {/* Machine Registration */}
             <TabsContent value="register">
-              <MachineRegistrationEnhanced />
+              <motion.div
+                key="register"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <MachineRegistrationEnhanced />
+              </motion.div>
             </TabsContent>
 
             {/* Maintenance Dashboard */}
             <TabsContent value="dashboard">
-              <MaintenanceDashboard />
+              <motion.div
+                key="dashboard"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <MaintenanceDashboard />
+              </motion.div>
             </TabsContent>
 
             {/* Customer Portal */}
             <TabsContent value="portal">
-              <CustomerPortal />
-          </TabsContent>
+              <motion.div
+                key="portal"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <CustomerPortal />
+              </motion.div>
+            </TabsContent>
           </Tabs>
-
-          {/* Unique Technology Highlights */}
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div>
-              <Badge className="mb-4">Patent Pending</Badge>
-              <h2 className="text-3xl font-bold mb-6">Machine DNA Technology</h2>
-              <p className="text-gray-400 mb-6">
-                Our proprietary registration system creates a complete digital fingerprint for each machine, 
-                enabling predictive maintenance and personalized service recommendations.
-              </p>
-              <ul className="space-y-4">
-                <li className="flex items-start">
-                  <span className="text-orange-500 mr-2">✓</span>
-                  <span>Automatic warranty validation and tracking</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-orange-500 mr-2">✓</span>
-                  <span>Equipment health scoring system</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-orange-500 mr-2">✓</span>
-                  <span>Spare parts consumption forecasting</span>
-                </li>
-              </ul>
-            </div>
-            <div className="bg-almona-darker rounded-lg p-8 border border-almona-light/20">
-              <h3 className="text-xl font-semibold mb-4">Real-time Service Network</h3>
-              <div className="aspect-video bg-almona-dark rounded flex items-center justify-center mb-4">
-                <p>Live map of service technicians and parts inventory would display here</p>
-              </div>
-              <p className="text-gray-400">
-                Our connected service ecosystem ensures the right technician with the right parts 
-                arrives at your facility faster than ever before.
-              </p>
-            </div>
-          </div>
-        </div>
+        </motion.div>
       </main>
       <Footer />
       <OperatorTrainingIncentiveDialog
