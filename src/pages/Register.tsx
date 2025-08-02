@@ -20,7 +20,7 @@ const registerSchema = z.object({
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export const Register = () => {
-  const { register: signUp, loading } = useAuth();
+  const { signUp, loading } = useAuth();
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
   });
