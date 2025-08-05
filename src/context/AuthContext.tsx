@@ -89,29 +89,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signUp = async (userData: any) => {
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: userData.email,
-      password: userData.password,
-    });
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email: userData.email,
+    password: userData.password,
+    options: {
+      emailRedirectTo: `${window.location.origin}/login`, // This uses your actual domain
+    },
+  });
 
-    if (authError) throw authError;
+  if (authError) throw authError;
 
-    if (authData.user) {
-        // Insert the new user into the 'customers' table
-        const { error: dbError } = await supabase.from('customers').insert([
-          {
-            id: authData.user.id,
-            name: userData.name,
-            email: userData.email,
-            company: userData.company,
-          },
-        ]);
+  if (authData.user) {
+    const { error: dbError } = await supabase.from('customers').insert([
+      {
+        id: authData.user.id,
+        name: userData.name,
+        email: userData.email,
+        company: userData.company,
+        sector: userData.sector,
+      },
+    ]);
 
-        if (dbError) throw dbError;
-    } else {
-        throw new Error("User not created in Supabase Auth.");
-    }
-  };
+    if (dbError) throw dbError;
+  }
+};
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
