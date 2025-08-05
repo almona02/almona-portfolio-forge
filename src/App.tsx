@@ -49,7 +49,7 @@ const LoadingSpinner = () => (
 
 import { QuoteProvider } from "./context/QuoteContext.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
-// import { Analytics } from "@vercel/analytics"; // Temporarily commented out to fix build issues
+import { Analytics } from "@vercel/analytics/react";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -61,7 +61,7 @@ const App = () => (
         <AuthProvider>
           <QuoteProvider>
             <BrowserRouter>
-              {/* <Analytics /> */} {/* Temporarily commented out to fix build issues */}
+              <Analytics />
             <Routes>
               <Route 
                 path="/" 

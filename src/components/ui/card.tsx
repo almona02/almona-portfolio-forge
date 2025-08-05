@@ -29,6 +29,14 @@ export const CardTitle = ({ children, className = "", ...props }: CardProps) => 
   );
 };
 
+export const CardDescription = ({ children, className = "", ...props }: CardProps) => {
+  return (
+    <p className={`text-sm text-muted-foreground ${className}`} {...props}>
+      {children}
+    </p>
+  );
+};
+
 export const CardContent = ({ children, className = "", ...props }: CardProps) => {
   return (
     <div className={`p-6 pt-0 ${className}`} {...props}>
