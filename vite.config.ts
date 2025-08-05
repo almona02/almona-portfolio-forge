@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 1000,
       assetsInlineLimit: 4096, // 4kb
       rollupOptions: {
+        input: 'index.html',
         output: {
           manualChunks: {
             three: ['three', 'three-mesh-bvh'],
