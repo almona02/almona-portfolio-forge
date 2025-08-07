@@ -10,8 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Phone } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { FacebookLoginButton } from '@/components/auth/FacebookLoginButton';
+import { SmsOtpModal } from '@/components/auth/SmsOtpModal';
 
 const Login = () => {
   const [email, setEmail] = useState('almona02@yahoo.com');
@@ -145,6 +147,7 @@ const Login = () => {
                   <GoogleIcon />
                   Sign In with Google
                 </Button>
+                <FacebookLoginButton onSuccess={() => navigate('/')} />
               </motion.div>
               <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
                 Don't have an account?{' '}
@@ -152,6 +155,35 @@ const Login = () => {
                   Sign up
                 </a>
               </div>
+              <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
+                Or login with phone number
+              </div>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7, duration: 0.5 }}>
+                <Button onClick={() => setShowSmsOtpModal(true)} className="w-full mt-2 bg-green-600 text-white hover:bg-green-700 flex items-center justify-center">
+                  <Phone className="w-5 h-5 mr-2" />
+                  Login with Phone Number
+                </Button>
+              </motion.div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </main>
+      {showSmsOtpModal && (
+        <SmsOtpModal
+          isOpen={showSmsOtpModal}
+          onClose={() => setShowSmsOtpModal(false)}
+          onSuccess={() => {
+            toast.success('Logged in successfully with phone number!');
+            navigate('/');
+          }}
+        />
+      )}
+      <Footer />
+    </div>
+  );
+};
+
+export default Login;
             </CardContent>
           </Card>
         </motion.div>
