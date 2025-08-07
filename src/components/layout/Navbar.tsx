@@ -72,7 +72,6 @@ const Navbar = () => {
       transition={{ type: "spring", stiffness: 50, damping: 15 }}
       className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 py-4 bg-almona-dark/85 backdrop-blur-md shadow-2xl`}
     >
-    >
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <span className="text-3xl font-bold text-gradient-orange">
