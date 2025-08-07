@@ -184,13 +184,4 @@ const Login = () => {
 };
 
 export default Login;
-            </CardContent>
-          </Card>
-        </motion.div>
-      </main>
-      <Footer />
-    </div>
-  );
-};
-
-export default Login;
+            
