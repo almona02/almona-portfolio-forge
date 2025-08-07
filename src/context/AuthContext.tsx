@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { jwtDecode } from "jwt-decode";
 
 // Define a more detailed User interface
 interface User {
@@ -7,6 +8,9 @@ interface User {
   email?: string;
   name?: string;
   company?: string;
+  phone_number?: string;
+  country_code?: string;
+  avatar_url?: string;
   // Add other relevant user properties
 }
 
@@ -18,6 +22,8 @@ interface AuthContextType {
   signUp: (userData: any) => Promise<void>; // Accept a user data object
   signOut: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
+  signInWithPhoneNumber: (phoneNumber: string, countryCode: string, otp: string) => Promise<void>;
+  signInWithFacebook: (accessToken: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,13 +43,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          // Fetch user details from your 'customers' table
+        const token = localStorage.getItem('jwt_token');
+        if (token) {
+          const decoded: any = jwtDecode(token);
+          // In a real app, you'd verify token with backend
+          // For now, assume valid and fetch user data
           const { data: customer, error } = await supabase
             .from('customers')
             .select('*')
-            .eq('id', session.user.id)
+            .eq('id', decoded.sub)
             .single();
           
           if (error) throw error;
@@ -54,6 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (error) {
         console.error('Error checking session:', error);
         setUser(null);
+        localStorage.removeItem('jwt_token');
       } finally {
         setLoading(false);
       }
@@ -61,31 +70,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        const { data: customer, error } = await supabase
-          .from('customers')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (error) {
-          console.error('Error fetching customer on auth change:', error);
-          setUser(null);
-        } else {
-          setUser(customer);
-        }
-      } else {
-        setUser(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    // No longer listening to onAuthStateChange from Supabase for custom auth flows
+    // If you still use Supabase for email/password, you might keep a separate listener
   }, []);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+    // After successful Supabase login, you might want to fetch user data and set it
+    const { data: { user: supabaseUser } } = await supabase.auth.getUser();
+    if (supabaseUser) {
+      const { data: customer, error: dbError } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('id', supabaseUser.id)
+        .single();
+      if (dbError) throw dbError;
+      setUser(customer);
+    }
   };
 
   const signUp = async (userData: any) => {
@@ -117,6 +119,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
+    localStorage.removeItem('jwt_token');
+    setUser(null);
   };
 
   const signInWithGoogle = async () => {
@@ -129,8 +133,64 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (error) throw error;
   };
 
+  const signInWithPhoneNumber = async (phoneNumber: string, countryCode: string, otp: string) => {
+    const res = await fetch('/api/auth/sms/verify-otp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ phone_number: phoneNumber, country_code: countryCode, otp }),
+    });
+    const data = await res.json();
+
+    if (data.success && data.access_token) {
+      localStorage.setItem('jwt_token', data.access_token);
+      const decoded: any = jwtDecode(data.access_token);
+      // Fetch user data from your backend or decode from token if sufficient
+      const { data: customer, error } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('id', decoded.sub)
+        .single();
+      
+      if (error) throw error;
+      setUser(customer);
+    } else {
+      throw new Error(data.message || 'Phone number verification failed.');
+    }
+  };
+
+  const signInWithFacebook = async (accessToken: string) => {
+    const res = await fetch('/api/auth/facebook/callback', {
+      method: 'GET', // Changed to GET as per backend update
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // For GET, parameters are in URL, not body. This function will be called after redirect.
+      // The actual token exchange happens on the backend.
+      // This function might not be directly used if the flow is a full redirect.
+      // Instead, the Login.tsx will handle the redirect and the AuthProvider will check for token.
+    });
+    const data = await res.json();
+
+    if (data.success && data.access_token) {
+      localStorage.setItem('jwt_token', data.access_token);
+      const decoded: any = jwtDecode(data.access_token);
+      const { data: customer, error } = await supabase
+        .from('customers')
+        .select('*')
+        .eq('id', decoded.sub)
+        .single();
+      
+      if (error) throw error;
+      setUser(customer);
+    } else {
+      throw new Error(data.message || 'Facebook login failed.');
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, signInWithGoogle }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, signInWithGoogle, signInWithPhoneNumber, signInWithFacebook }}>
       {children}
     </AuthContext.Provider>
   );

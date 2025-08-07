@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home, Menu, Search, ShoppingCart, X } from "lucide-react";
+import { Menu, X, Home, ShoppingCart, Phone, Mail } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuote } from "@/context/QuoteContext";
 import { useAuth } from "@/context/AuthContext";
-import { motion, AnimatePresence } from "framer-motion";
 
 const NavLink = ({ to, children, isActive, isMobile, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -17,34 +16,12 @@ const NavLink = ({ to, children, isActive, isMobile, onClick }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`relative text-sm font-medium transition-colors duration-300 ${
-        isActive ? "text-almona-orange" : "text-gray-300 hover:text-almona-orange-light"
-      } ${
-        isMobile ? "text-lg flex items-center gap-3" : ""
-      }`}
+        isActive
+          ? "text-almona-orange"
+          : "text-gray-300 hover:text-almona-orange-light"
+      } ${isMobile ? "text-lg flex items-center gap-3" : ""}`}
     >
-      {isMobile && children.props.icon}
-      {children.props.name}
-      {!isMobile && (
-        <AnimatePresence>
-          {isHovered && (
-            <motion.div
-              layoutId="underline"
-              className="absolute bottom-0 left-0 h-0.5 w-full bg-gradient-orange"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
-          )}
-        </AnimatePresence>
-      )}
-      {isActive && !isMobile && (
-        <motion.div
-          layoutId="underline"
-          className="absolute bottom-0 left-0 h-0.5 w-full bg-gradient-orange"
-          initial={false}
-          animate={{ opacity: 1 }}
-        />
-      )}
+      <div name={children.props.name} />
     </Link>
   );
 };
@@ -93,19 +70,24 @@ const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 50, damping: 15 }}
-      className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 py-4 ${
-        isScrolled ? "bg-almona-dark/95 backdrop-blur-xl shadow-2xl" : "bg-almona-dark/80 backdrop-blur-md"
-      }`}
+      className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 py-4 bg-almona-dark/85 backdrop-blur-md shadow-2xl`}
+    >
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <span className="text-3xl font-bold text-gradient-orange">ALMONA</span>
+          <span className="text-3xl font-bold text-gradient-orange">
+            ALMONA
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-8">
           {navLinks.map((link) => (
-            <NavLink key={link.name} to={link.path} isActive={isActive(link.path)}>
+            <NavLink
+              key={link.name}
+              to={link.path}
+              isActive={isActive(link.path)}
+            >
               <div name={link.name} />
             </NavLink>
           ))}
@@ -113,7 +95,7 @@ const Navbar = () => {
 
         <div className="hidden lg:flex items-center gap-4">
           <Button variant="ghost" size="icon">
-            <Search className="h-5 w-5" />
+            <ShoppingCart className="h-5 w-5" />
           </Button>
           <Button variant="ghost" size="icon" asChild>
             <Link to="/quote">
@@ -130,7 +112,11 @@ const Navbar = () => {
               <Button variant="ghost" onClick={logout}>
                 Logout
               </Button>
-              <Button variant="default" className="bg-gradient-orange hover:bg-almona-orange-dark text-white" asChild>
+              <Button
+                variant="default"
+                className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
+                asChild
+              >
                 <Link to="/portal">Portal</Link>
               </Button>
             </>
@@ -139,7 +125,11 @@ const Navbar = () => {
               <Button variant="ghost" asChild>
                 <Link to="/login">Login</Link>
               </Button>
-              <Button variant="default" className="bg-gradient-orange hover:bg-almona-orange-dark text-white" asChild>
+              <Button
+                variant="default"
+                className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
+                asChild
+              >
                 <Link to="/register">Register</Link>
               </Button>
             </>
@@ -172,10 +162,12 @@ const Navbar = () => {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="lg:hidden fixed top-0 right-0 h-full w-80 bg-almona-dark/95 backdrop-blur-xl z-50 flex flex-col"
+                className="lg:hidden fixed top-0 right-0 h-full w-80 bg-almona-dark/85 backdrop-blur-xl z-50 flex flex-col"
               >
                 <div className="flex items-center justify-between p-4 border-b border-gray-800">
-                  <span className="text-2xl font-bold text-gradient-orange">ALMONA</span>
+                  <span className="text-2xl font-bold text-gradient-orange">
+                    ALMONA
+                  </span>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -186,28 +178,52 @@ const Navbar = () => {
                 </div>
                 <nav className="flex flex-col p-4 space-y-6 mt-8">
                   {navLinks.map((link) => (
-                    <NavLink key={link.name} to={link.path} isActive={isActive(link.path)} isMobile onClick={handleCloseMobileMenu}>
-                      <div name={link.name} icon={link.icon} />
+                    <NavLink
+                      key={link.name}
+                      to={link.path}
+                      isActive={isActive(link.path)}
+                      isMobile
+                      onClick={handleCloseMobileMenu}
+                    >
+                      <div name={link.name} />
                     </NavLink>
                   ))}
                 </nav>
                 <div className="mt-auto p-4 border-t border-gray-800 space-y-4">
                   {user ? (
                     <>
-                      <Button variant="outline" className="w-full" onClick={logout}>
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={logout}
+                      >
                         Logout
                       </Button>
-                      <Button variant="default" className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white" asChild>
-                        <Link to="/portal" onClick={handleCloseMobileMenu}>Portal</Link>
+                      <Button
+                        variant="default"
+                        className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white"
+                        asChild
+                      >
+                        <Link to="/portal" onClick={handleCloseMobileMenu}>
+                          Portal
+                        </Link>
                       </Button>
                     </>
                   ) : (
                     <>
                       <Button variant="outline" className="w-full" asChild>
-                        <Link to="/login" onClick={handleCloseMobileMenu}>Login</Link>
+                        <Link to="/login" onClick={handleCloseMobileMenu}>
+                          Login
+                        </Link>
                       </Button>
-                      <Button variant="default" className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white" asChild>
-                        <Link to="/register" onClick={handleCloseMobileMenu}>Register</Link>
+                      <Button
+                        variant="default"
+                        className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white"
+                        asChild
+                      >
+                        <Link to="/register" onClick={handleCloseMobileMenu}>
+                          Register
+                        </Link>
                       </Button>
                     </>
                   )}

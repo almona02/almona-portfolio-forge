@@ -10,12 +10,15 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Login = () => {
   const [email, setEmail] = useState('almona02@yahoo.com');
   const [password, setPassword] = useState('momo1234');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const { signIn: login, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
 
@@ -45,64 +48,104 @@ const Login = () => {
     }
   };
 
+  const GoogleIcon = () => (
+    <svg className="w-5 h-5 mr-2" viewBox="0 0 48 48">
+      <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039L38.804 9.81C34.553 6.186 29.658 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" />
+      <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039L38.804 9.81C34.553 6.186 29.658 4 24 4C16.318 4 9.656 8.337 6.306 14.691z" />
+      <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
+      <path fill="#1976D2" d="M43.611 20.083H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.012 35.245 44 30.028 44 24c0-1.341-.138-2.65-.389-3.917z" />
+    </svg>
+  );
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-almona-dark">
       <Navbar />
       <main className="flex-grow flex items-center justify-center p-4 bg-cover bg-center" style={{ backgroundImage: "url('/images/machines/processing-center.jpg')" }}>
-        <div className="w-full max-w-md mx-auto backdrop-blur-sm bg-white/30 dark:bg-black/50 rounded-2xl shadow-xl">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md mx-auto backdrop-blur-sm bg-white/30 dark:bg-black/50 rounded-2xl shadow-xl"
+        >
           <Card className="bg-transparent border-0">
             <CardHeader className="text-center">
-              <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white">Welcome Back</CardTitle>
+              <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ delay: 0.2, duration: 0.5 }}>
+                <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white">Welcome Back</CardTitle>
+              </motion.div>
               <CardDescription className="text-gray-600 dark:text-gray-300">
                 Sign in to access your account
               </CardDescription>
             </CardHeader>
             <CardContent>
               {error && (
-                <Alert variant="destructive" className="mb-4">
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+                  <Alert variant="destructive" className="mb-4">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                </motion.div>
               )}
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-700 dark:text-gray-200">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="bg-white/80 dark:bg-almona-dark/80 border-gray-300 dark:border-almona-light focus:ring-2 focus:ring-almona-light"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-700 dark:text-gray-200">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="bg-white/80 dark:bg-almona-dark/80 border-gray-300 dark:border-almona-light focus:ring-2 focus:ring-almona-light"
-                  />
-                </div>
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.5 }}>
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-gray-700 dark:text-gray-200">Email</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="pl-10 bg-white/80 dark:bg-almona-dark/80 border-gray-300 dark:border-almona-light focus:ring-2 focus:ring-almona-light"
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.5 }}>
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-gray-700 dark:text-gray-200">Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <Input
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className="pl-10 pr-10 bg-white/80 dark:bg-almona-dark/80 border-gray-300 dark:border-almona-light focus:ring-2 focus:ring-almona-light"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      >
+                        {showPassword ? <EyeOff /> : <Eye />}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
                 <div className="flex items-center justify-between">
                   <a href="#" className="text-sm text-almona-light hover:underline">
                     Forgot password?
                   </a>
                 </div>
-                <Button type="submit" className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white hover:from-orange-600 hover:to-yellow-600" disabled={loading}>
-                  {loading ? 'Signing In...' : 'Sign In'}
-                </Button>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.5 }}>
+                  <Button type="submit" className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white hover:from-orange-600 hover:to-yellow-600" disabled={loading}>
+                    {loading ? 'Signing In...' : 'Sign In'}
+                  </Button>
+                </motion.div>
               </form>
               <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
                 Or continue with
               </div>
-              <Button onClick={handleGoogleSignIn} className="w-full mt-2 bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 dark:bg-almona-dark dark:text-white dark:border-almona-light dark:hover:bg-almona-darker">
-                Sign In with Google
-              </Button>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.5 }}>
+                <Button onClick={handleGoogleSignIn} className="w-full mt-2 bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 dark:bg-almona-dark dark:text-white dark:border-almona-light dark:hover:bg-almona-darker flex items-center justify-center">
+                  <GoogleIcon />
+                  Sign In with Google
+                </Button>
+              </motion.div>
               <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
                 Don't have an account?{' '}
                 <a href="/signup" className="font-medium text-almona-light hover:underline">
@@ -111,7 +154,7 @@ const Login = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
       </main>
       <Footer />
     </div>
