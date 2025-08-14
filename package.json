@@ -20,7 +20,8 @@
     "analyze": "vite build",
     "deploy:staging": "ENV=staging docker-compose -f docker-compose.staging.yml up --build -d",
     "deploy:production": "ENV=prod docker-compose -f docker-compose.prod.yml up --build -d",
-    "load-test": "locust -f python_backend/tests/load_test.py"
+        "load-test": "locust -f python_backend/tests/load_test.py"
+  }, // Added to force Vercel redeploy
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
