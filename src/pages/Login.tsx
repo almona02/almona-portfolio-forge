@@ -21,6 +21,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showSmsOtpModal, setShowSmsOtpModal] = useState(false);
   const { signIn: login, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
 
@@ -60,36 +61,40 @@ const Login = () => {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-almona-dark">
+    <div className="flex flex-col min-h-screen bg-almona-dark">
       <Navbar />
-      <main className="flex-grow flex items-center justify-center p-4 bg-cover bg-center" style={{ backgroundImage: "url('/images/machines/processing-center.jpg')" }}>
+      <main 
+        className="flex-grow flex items-center justify-center p-4 bg-cover bg-center relative" 
+        style={{ backgroundImage: "url('/images/machines/processing-center.jpg')" }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-almona-dark/80 via-transparent to-almona-dark/80" />
         <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md mx-auto backdrop-blur-sm bg-white/30 dark:bg-black/50 rounded-2xl shadow-xl"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="w-full max-w-md mx-auto backdrop-blur-lg bg-black/60 rounded-2xl shadow-2xl overflow-hidden"
         >
-          <Card className="bg-transparent border-0">
-            <CardHeader className="text-center">
-              <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} transition={{ delay: 0.2, duration: 0.5 }}>
-                <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white">Welcome Back</CardTitle>
+          <Card className="bg-transparent border-0 text-white">
+            <CardHeader className="text-center p-8">
+              <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }}>
+                <CardTitle className="text-4xl font-bold text-gradient-orange">Welcome Back</CardTitle>
               </motion.div>
-              <CardDescription className="text-gray-600 dark:text-gray-300">
-                Sign in to access your account
+              <CardDescription className="text-gray-300 pt-2">
+                Sign in to continue to Almona
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-8">
               {error && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
-                  <Alert variant="destructive" className="mb-4">
+                  <Alert variant="destructive" className="mb-6 bg-red-500/20 border-red-500/50 text-red-300">
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 </motion.div>
               )}
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.5 }}>
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-gray-700 dark:text-gray-200">Email</Label>
+                    <Label htmlFor="email">Email</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                       <Input
@@ -99,14 +104,14 @@ const Login = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        className="pl-10 bg-white/80 dark:bg-almona-dark/80 border-gray-300 dark:border-almona-light focus:ring-2 focus:ring-almona-light"
+                        className="pl-10 bg-almona-dark/80 border-almona-light/30 focus:ring-2 focus:ring-almona-light focus:border-almona-light"
                       />
                     </div>
                   </div>
                 </motion.div>
                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.5 }}>
                   <div className="space-y-2">
-                    <Label htmlFor="password" className="text-gray-700 dark:text-gray-200">Password</Label>
+                    <Label htmlFor="password">Password</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                       <Input
@@ -116,54 +121,54 @@ const Login = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        className="pl-10 pr-10 bg-white/80 dark:bg-almona-dark/80 border-gray-300 dark:border-almona-light focus:ring-2 focus:ring-almona-light"
+                        className="pl-10 pr-10 bg-almona-dark/80 border-almona-light/30 focus:ring-2 focus:ring-almona-light focus:border-almona-light"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 hover:text-white"
                       >
                         {showPassword ? <EyeOff /> : <Eye />}
                       </button>
                     </div>
                   </div>
                 </motion.div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-end">
                   <a href="#" className="text-sm text-almona-light hover:underline">
                     Forgot password?
                   </a>
                 </div>
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.5 }}>
-                  <Button type="submit" className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white hover:from-orange-600 hover:to-yellow-600" disabled={loading}>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }}>
+                  <Button type="submit" className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white font-bold py-3" disabled={loading}>
                     {loading ? 'Signing In...' : 'Sign In'}
                   </Button>
                 </motion.div>
               </form>
-              <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
-                Or continue with
+              
+              <div className="my-6 flex items-center">
+                <div className="flex-grow border-t border-gray-600"></div>
+                <span className="mx-4 text-gray-400 text-sm">OR</span>
+                <div className="flex-grow border-t border-gray-600"></div>
               </div>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.5 }}>
-                <Button onClick={handleGoogleSignIn} className="w-full mt-2 bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 dark:bg-almona-dark dark:text-white dark:border-almona-light dark:hover:bg-almona-darker flex items-center justify-center">
+
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }} className="space-y-4">
+                <Button onClick={handleGoogleSignIn} variant="outline" className="w-full bg-transparent border-almona-light/30 hover:bg-almona-light/10 flex items-center justify-center">
                   <GoogleIcon />
                   Sign In with Google
                 </Button>
                 <FacebookLoginButton onSuccess={() => navigate('/')} />
-              </motion.div>
-              <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
-                Don't have an account?{' '}
-                <a href="/signup" className="font-medium text-almona-light hover:underline">
-                  Sign up
-                </a>
-              </div>
-              <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-300">
-                Or login with phone number
-              </div>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7, duration: 0.5 }}>
-                <Button onClick={() => setShowSmsOtpModal(true)} className="w-full mt-2 bg-green-600 text-white hover:bg-green-700 flex items-center justify-center">
+                <Button onClick={() => setShowSmsOtpModal(true)} variant="outline" className="w-full bg-transparent border-almona-light/30 hover:bg-almona-light/10 flex items-center justify-center">
                   <Phone className="w-5 h-5 mr-2" />
                   Login with Phone Number
                 </Button>
               </motion.div>
+
+              <div className="mt-8 text-center text-sm text-gray-400">
+                Don't have an account?{' '}
+                <a href="/register" className="font-medium text-almona-light hover:underline">
+                  Sign up
+                </a>
+              </div>
             </CardContent>
           </Card>
         </motion.div>

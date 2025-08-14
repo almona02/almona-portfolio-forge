@@ -1,8 +1,0 @@
-feat: Add durability and maintenance insights to shop products
-
-This commit introduces new features to the shop page to highlight machine durability and provide maintenance recommendations:
-
-- Enhanced `IndustrialProductCard.tsx` to display a durability score and a "View Maintenance Details" button.
-- Created `DurabilityDetailsModal.tsx` to show detailed information on durability features and maintenance intervals.
-- Integrated `DurabilityDetailsModal` into `Shop-enhanced.tsx`, managing its state and passing relevant product data.
-- Added dummy durability data to `enhancedProducts` in `Shop-enhanced.tsx` for demonstration purposes.

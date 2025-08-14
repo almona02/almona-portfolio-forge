@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  python:
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app:rw
+      - ./uploads:/app/uploads:rw
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+    command: celery -A core.celery_app worker --loglevel=info
+    volumes:
+      - ./:/app:rw
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  redis_data:
