@@ -1,0 +1,47 @@
+name: CI/CD Pipeline
+
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t almona-ai-service -f python_backend/Dockerfile.gpu ./python_backend
+
+      - name: Run Trivy scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'almona-ai-service'
+          format: 'table'
+          exit-code: '0' # Set to 0 to not fail the build on vulnerabilities, change to 1 for strictness
+          severity: 'CRITICAL,HIGH'
+
+      - name: Run Contract Tests
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/python_backend:/app \
+            -v ${{ github.workspace }}/public/images/machines:/app/public/images/machines \
+            -e MLFLOW_TRACKING_URI=file:/app/mlruns \
+            -e VALID_API_KEYS=${{ secrets.VALID_API_KEYS }} \
+            almona-ai-service \
+            pytest /app/tests/test_contracts.py
+
+      - name: Run Chaos Tests
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/python_backend:/app \
+            -v ${{ github.workspace }}/public/images/machines:/app/public/images/machines \
+            -e MLFLOW_TRACKING_URI=file:/app/mlruns \
+            -e VALID_API_KEYS=${{ secrets.VALID_API_KEYS }} \
+            almona-ai-service \
+            pytest /app/tests/test_chaos.py
