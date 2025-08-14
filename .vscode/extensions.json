@@ -1,5 +1,41 @@
 {
-    "recommendations": [
-        "blackboxapp.blackbox"
-    ]
+  "recommendations": [
+    "blackboxapp.blackbox",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-eslint",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    "ms-vscode.vscode-json",
+    "usernamehw.errorlens",
+    "ms-python.python",
+    "ms-python.flake8",
+    "ms-python.black-formatter",
+    "ms-vscode.test-adapter-converter",
+    "hbenl.vscode-test-explorer",
+    "ms-playwright.playwright",
+    "ms-vscode.vscode-react-native",
+    "steoates.autoimport-es6-ts",
+    "ms-vscode.vscode-typescript-next",
+    "bradlc.vscode-tailwindcss",
+    "formulahendry.auto-close-tag",
+    "ms-vscode.vscode-css-peek",
+    "zignd.html-css-class-completion",
+    "ms-vscode.vscode-html-language-features",
+    "ms-vscode.vscode-emmet",
+    "ms-vscode.vscode-markdown",
+    "yzhang.markdown-all-in-one",
+    "ms-vscode.vscode-docker",
+    "ms-vscode.vscode-git",
+    "eamodio.gitlens",
+    "ms-vscode.vscode-github",
+    "github.copilot",
+    "github.copilot-chat",
+    "ms-vscode.vscode-thunder-client",
+    "humao.rest-client",
+    "ms-vscode.vscode-vitest",
+    "ms-vscode.vscode-storybook"
+  ],
+  "unwantedRecommendations": ["ms-vscode.vscode-typescript", "hookyqr.beautify"]
 }

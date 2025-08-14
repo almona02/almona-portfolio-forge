@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,12 +11,13 @@ import { Icons } from "@/components/ui/icons";
 import { WorkflowDiagram } from "@/components/about/WorkflowDiagram";
 import { LocalStandardsTable } from "@/components/comparison/LocalStandardsTable";
 import { EfficiencyCalculator } from "@/components/comparison/EfficiencyCalculator";
+import { ArrowLeft } from 'lucide-react';
 
 const FabricationWorkflowDetail = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("upvc");
   const [searchTerm, setSearchTerm] = useState("");
-  const [expandedStep, setExpandedStep] = useState<number | null>(null);
+  const [expandedStep, setExpandedStep] = useState<number | null>(0);
 
   const workflowData = {
     upvc: {
@@ -287,324 +289,295 @@ const FabricationWorkflowDetail = () => {
     setExpandedStep(expandedStep === index ? null : index);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { type: 'spring', stiffness: 100 }
+    }
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-4">
-        <Button
-          onClick={() => navigate("/")}
-          className="flex items-center bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700"
+    <div className="bg-almona-dark text-white min-h-screen">
+      <div className="container mx-auto px-4 py-8">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <Button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 bg-almona-light/10 hover:bg-almona-light/20 text-almona-light rounded-full mb-8"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+        </motion.div>
+
+        <motion.div 
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
         >
-          <Icons.chevronLeft className="h-4 w-4 mr-2" />
-          Back to Home
-        </Button>
-      </div>
+          <Badge variant="secondary" className="mb-4 text-lg py-2 px-4 bg-almona-orange/10 text-almona-orange border-almona-orange/30">
+            مصر - Egypt
+          </Badge>
+          <h1 className="text-5xl font-bold text-gradient-orange mb-4">Egyptian Fabrication Workflows</h1>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            Specialized processes developed for Egypt's unique climate and market needs
+          </p>
+        </motion.div>
 
-      <div className="text-center mb-10">
-        <Badge variant="secondary" className="mb-4 text-lg py-1 px-3">
-          مصر - مصر - مصر
-        </Badge>
-        <h1 className="text-4xl font-bold mb-4">Egyptian Fabrication Workflows</h1>
-        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          Specialized processes developed for Egypt's climate and market needs
-        </p>
-      </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-almona-dark/80 rounded-lg p-1">
+            <TabsTrigger value="upvc" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md">UPVC Systems</TabsTrigger>
+            <TabsTrigger value="aluminum" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md">Aluminum</TabsTrigger>
+            <TabsTrigger value="glass" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md">Glass Processing</TabsTrigger>
+            <TabsTrigger value="hardware" className="py-3 data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md">Hardware</TabsTrigger>
+          </TabsList>
+        </Tabs>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
-        <TabsList className="grid w-full grid-cols-4 bg-muted/50">
-          <TabsTrigger value="upvc" className="py-3 data-[state=active]:bg-primary data-[state=active]:text-white">
-            UPVC Systems
-          </TabsTrigger>
-          <TabsTrigger value="aluminum" className="py-3 data-[state=active]:bg-primary data-[state=active]:text-white">
-            Aluminum
-          </TabsTrigger>
-          <TabsTrigger value="glass" className="py-3 data-[state=active]:bg-primary data-[state=active]:text-white">
-            Glass Processing
-          </TabsTrigger>
-          <TabsTrigger value="hardware" className="py-3 data-[state=active]:bg-primary data-[state=active]:text-white">
-            Hardware
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+        <motion.div 
+          className="flex flex-col lg:flex-row gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <div className="lg:w-2/3">
+            <motion.div 
+              className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6 p-4 bg-almona-dark/60 backdrop-blur-sm rounded-xl border border-almona-light/10"
+              variants={itemVariants}
+            >
+              <div>
+                <h2 className="text-2xl font-bold text-white">{workflowData[activeTab].title}</h2>
+                <p className="text-gray-400">{workflowData[activeTab].description}</p>
+              </div>
+              <div className="w-full md:w-64">
+                <Input
+                  placeholder="Search steps..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="bg-almona-dark/80 border-almona-light/30 focus:ring-2 focus:ring-almona-light focus:border-almona-light"
+                />
+              </div>
+            </motion.div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        <div className="lg:w-2/3">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6 p-4 bg-muted/30 rounded-lg">
-            <div>
-              <h2 className="text-2xl font-bold">{workflowData[activeTab].title}</h2>
-              <p className="text-muted-foreground">{workflowData[activeTab].description}</p>
-            </div>
-            <div className="w-full md:w-64">
-              <Input
-                placeholder="Search workflow steps..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white dark:bg-gray-800"
-              />
-            </div>
-          </div>
-
-          <Card className="mb-6">
-            <CardHeader className="bg-muted/50">
-              <CardTitle className="flex items-center gap-2">
-                <Icons.workflow className="h-5 w-5 text-primary" />
-                <span className="text-xl">Process Steps</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="divide-y">
-                {filteredSteps.map((step, index) => (
-                  <div 
-                    key={index} 
-                    className="p-6 hover:bg-muted/30 cursor-pointer transition-colors"
+            <motion.div className="space-y-4" variants={itemVariants}>
+              {filteredSteps.map((step, index) => (
+                <Card 
+                  key={index} 
+                  className="bg-almona-dark/60 backdrop-blur-sm border border-almona-light/10 rounded-xl overflow-hidden"
+                >
+                  <CardHeader 
+                    className="p-6 cursor-pointer flex items-center justify-between hover:bg-almona-light/5 transition-colors"
                     onClick={() => toggleStep(index)}
                   >
-                    <div className="flex items-start gap-4">
-                      <Badge variant="outline" className="mt-1 h-8 w-8 flex items-center justify-center text-lg">
+                    <div className="flex items-center gap-4">
+                      <Badge variant="outline" className="h-10 w-10 flex items-center justify-center text-lg border-almona-orange text-almona-orange">
                         {index + 1}
                       </Badge>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="text-lg font-medium">{step.title}</h3>
-                            <p className="text-muted-foreground">{step.description}</p>
-                          </div>
-                          <Button
-                            size="icon"
-                            className="bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700"
-                          >
-                            {expandedStep === index ? 
-                              <Icons.chevronUp className="h-5 w-5" /> : 
-                              <Icons.chevronDown className="h-5 w-5" />
-                            }
-                          </Button>
-                        </div>
-
-                        {expandedStep === index && (
-                          <div className="mt-4 space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2">
-                                  <Icons.tip className="h-4 w-4 text-blue-500" />
-                                  Professional Tips
-                                </h4>
-                                <ul className="space-y-2 text-sm">
-                                  {step.tips.map((tip, i) => (
-                                    <li key={i} className="flex items-start">
-                                      <span className="mr-2">•</span>
-                                      {tip}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                              
-                              <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
-                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2">
-                                  <Icons.egypt className="h-4 w-4 text-amber-500" />
-                                  Egypt-Specific Advice
-                                </h4>
-                                <p className="text-sm">{step.egyptTip}</p>
-                              </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div className="bg-red-50 dark:bg-red-900/10 p-4 rounded-lg border border-red-200 dark:border-red-800">
-                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2">
-                                  <Icons.warning className="h-4 w-4 text-red-500" />
-                                  Common Challenges in Egypt
-                                </h4>
-                                <ul className="space-y-2 text-sm">
-                                  {step.commonIssues.map((issue, i) => (
-                                    <li key={i} className="flex items-start">
-                                      <span className="mr-2">•</span>
-                                      {issue}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                              
-                              <div className="bg-green-50 dark:bg-green-900/10 p-4 rounded-lg border border-green-200 dark:border-green-800">
-                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2">
-                                  <Icons.solution className="h-4 w-4 text-green-500" />
-                                  Recommended Solutions
-                                </h4>
-                                <ul className="space-y-2 text-sm">
-                                  {step.solutions.map((solution, i) => (
-                                    <li key={i} className="flex items-start">
-                                      <span className="mr-2">•</span>
-                                      {solution}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        )}
+                      <div>
+                        <h3 className="text-lg font-medium text-white">{step.title}</h3>
+                        <p className="text-gray-400">{step.description}</p>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                    <motion.div animate={{ rotate: expandedStep === index ? 180 : 0 }}>
+                      <Icons.chevronDown className="h-5 w-5" />
+                    </motion.div>
+                  </CardHeader>
+                  <AnimatePresence>
+                    {expandedStep === index && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                      >
+                        <CardContent className="p-6 pt-0">
+                          <div className="mt-4 space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="bg-almona-light/5 p-4 rounded-lg border border-almona-light/10">
+                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2 text-almona-light">
+                                  <Icons.tip className="h-4 w-4" />
+                                  Professional Tips
+                                </h4>
+                                <ul className="space-y-2 text-sm text-gray-300">
+                                  {step.tips.map((tip, i) => (
+                                    <li key={i} className="flex items-start"><span className="mr-2 text-almona-orange">•</span>{tip}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                              
+                              <div className="bg-almona-orange/10 p-4 rounded-lg border border-almona-orange/30">
+                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2 text-almona-orange">
+                                  <Icons.egypt className="h-4 w-4" />
+                                  Egypt-Specific Advice
+                                </h4>
+                                <p className="text-sm text-gray-200">{step.egyptTip}</p>
+                              </div>
+                            </div>
 
-          <WorkflowDiagram workflowType={activeTab} />
-        </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="bg-red-500/10 p-4 rounded-lg border border-red-500/30">
+                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2 text-red-400">
+                                  <Icons.warning className="h-4 w-4" />
+                                  Common Challenges
+                                </h4>
+                                <ul className="space-y-2 text-sm text-gray-300">
+                                  {step.commonIssues.map((issue, i) => (
+                                    <li key={i} className="flex items-start"><span className="mr-2 text-red-500">•</span>{issue}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                              
+                              <div className="bg-green-500/10 p-4 rounded-lg border border-green-500/30">
+                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2 text-green-400">
+                                  <Icons.solution className="h-4 w-4" />
+                                  Recommended Solutions
+                                </h4>
+                                <ul className="space-y-2 text-sm text-gray-300">
+                                  {step.solutions.map((solution, i) => (
+                                    <li key={i} className="flex items-start"><span className="mr-2 text-green-500">•</span>{solution}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Card>
+              ))}
+            </motion.div>
 
-        <div className="lg:w-1/3 space-y-6">
-          <Card>
-            <CardHeader className="bg-muted/50">
-              <CardTitle className="flex items-center gap-2">
-                <Icons.standard className="h-5 w-5 text-primary" />
-                <span className="text-xl">Egyptian Standards</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <LocalStandardsTable
-                standards={workflowData[activeTab].standards}
-                region="Egypt"
-              />
-              <div className="mt-4 text-sm text-muted-foreground">
-                <p className="flex items-start">
-                  <Icons.info className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-                  Available at Egyptian Organization for Standardization (EOS) offices
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <EfficiencyCalculator materialType={activeTab} />
-
-          <Card>
-            <CardHeader className="bg-muted/50">
-              <CardTitle className="flex items-center gap-2">
-                <Icons.support className="h-5 w-5 text-primary" />
-                <span className="text-xl">Egyptian Support Network</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <h3 className="font-medium mb-1 flex items-center gap-2">
-                    <Icons.phone className="h-4 w-4" />
-                    Technical Hotline
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Arabic-speaking support: <span className="font-mono">0122 345 6789</span>
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Hours: Sat-Thu 8AM-5PM (GMT+2)
-                  </p>
-                </div>
-                
-                <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                  <h3 className="font-medium mb-1 flex items-center gap-2">
-                    <Icons.training className="h-4 w-4" />
-                    Training Centers
-                  </h3>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li className="flex items-start">
-                      <span className="mr-2">•</span>
-                      <span>
-                        <strong>Cairo:</strong> 10th of Ramadan City, Thursdays
-                      </span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="mr-2">•</span>
-                      <span>
-                        <strong>Alexandria:</strong> Borg El Arab, Tuesdays
-                      </span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="mr-2">•</span>
-                      <span>
-                        <strong>Upper Egypt:</strong> Assiut, Monthly workshops
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-                
-                <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
-                  <h3 className="font-medium mb-1 flex items-center gap-2">
-                    <Icons.certificate className="h-4 w-4" />
-                    Egyptian Fabricator Certification
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Hours: Sat-Thu 8AM-5PM (GMT+2) (السبت-الخميس ٨ص-٥م)
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Ministry of Trade & Industry recognized program
-                  </p>
-                  <Button className="text-primary pl-0 mt-2 underline underline-offset-2 hover:text-primary/80">
-                    View Certification Requirements
-                  </Button>
-                </div>
-                
-                <Button className="w-full mt-2 border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center">
-                  <Icons.calendar className="mr-2 h-4 w-4" />
-                  Schedule On-Site Consultation
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="bg-muted/50">
-              <CardTitle className="flex items-center gap-2">
-                <Icons.challenge className="h-5 w-5 text-primary" />
-                <span className="text-xl">Egypt-Specific Challenges</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3">
-                {workflowData[activeTab].challenges.map((challenge, i) => (
-                  <li key={i} className="flex items-start">
-                    <Icons.warning className="h-5 w-5 text-amber-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span>{challenge}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-4 text-sm text-muted-foreground">
-                <p className="flex items-start">
-                  <Icons.info className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-                  Solutions tailored for these challenges are included in each workflow step
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      <div className="mt-12 bg-gradient-to-r from-amber-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 p-8 rounded-lg border border-amber-200 dark:border-amber-800">
-        <div className="max-w-4xl mx-auto text-center">
-          <Badge variant="secondary" className="mb-4">
-            Egyptian Fabricators Program
-          </Badge>
-          <h2 className="text-2xl font-bold mb-4">Need a Custom Workflow Solution?</h2>
-          <p className="text-muted-foreground mb-6">
-            Our Egyptian engineering team will visit your facility to develop a fabrication 
-            process tailored to your specific:
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-              <Icons.factory className="h-8 w-8 mx-auto mb-2" />
-              <p>Factory Conditions</p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-              <Icons.climate className="h-8 w-8 mx-auto mb-2" />
-              <p>Regional Climate</p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
-              <Icons.product className="h-8 w-8 mx-auto mb-2" />
-              <p>Product Mix</p>
-            </div>
+            <motion.div variants={itemVariants} className="mt-8">
+              <WorkflowDiagram workflowType={activeTab} />
+            </motion.div>
           </div>
-          <Button className="bg-primary hover:bg-primary/90">
-            Request Free Workflow Audit
-          </Button>
-          <p className="text-sm text-muted-foreground mt-4">
-            Available for factories in Cairo, Alexandria, 10th of Ramadan, and 6th of October cities
-          </p>
-        </div>
+
+          <div className="lg:w-1/3 space-y-6">
+            <motion.div variants={itemVariants}>
+              <Card className="bg-almona-dark/60 backdrop-blur-sm border border-almona-light/10 rounded-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl text-white">
+                    <Icons.standard className="h-5 w-5 text-almona-orange" />
+                    Egyptian Standards
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <LocalStandardsTable standards={workflowData[activeTab].standards} region="Egypt" />
+                  <p className="mt-4 text-sm text-gray-400 flex items-start">
+                    <Icons.info className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-almona-light" />
+                    Available at Egyptian Organization for Standardization (EOS) offices
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div variants={itemVariants}>
+              <EfficiencyCalculator materialType={activeTab} />
+            </motion.div>
+
+            <motion.div variants={itemVariants}>
+              <Card className="bg-almona-dark/60 backdrop-blur-sm border border-almona-light/10 rounded-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl text-white">
+                    <Icons.support className="h-5 w-5 text-almona-orange" />
+                    Egyptian Support Network
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-almona-light/5 rounded-lg border border-almona-light/10">
+                    <h3 className="font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.phone className="h-4 w-4" />Technical Hotline</h3>
+                    <p className="text-sm text-gray-400">Arabic-speaking support: <span className="font-mono text-white">0122 345 6789</span></p>
+                    <p className="text-sm text-gray-400 mt-1">Hours: Sat-Thu 8AM-5PM (GMT+2)</p>
+                  </div>
+                  
+                  <div className="p-4 bg-almona-light/5 rounded-lg border border-almona-light/10">
+                    <h3 className="font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.training className="h-4 w-4" />Training Centers</h3>
+                    <ul className="text-sm text-gray-400 space-y-1">
+                      <li className="flex items-start"><span className="mr-2 text-almona-orange">•</span><strong>Cairo:</strong> 10th of Ramadan City, Thursdays</li>
+                      <li className="flex items-start"><span className="mr-2 text-almona-orange">•</span><strong>Alexandria:</strong> Borg El Arab, Tuesdays</li>
+                      <li className="flex items-start"><span className="mr-2 text-almona-orange">•</span><strong>Upper Egypt:</strong> Assiut, Monthly workshops</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="p-4 bg-almona-light/5 rounded-lg border border-almona-light/10">
+                    <h3 className="font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.certificate className="h-4 w-4" />Egyptian Fabricator Certification</h3>
+                    <p className="text-sm text-gray-400">Ministry of Trade & Industry recognized program</p>
+                    <Button variant="link" className="text-almona-orange p-0 h-auto mt-2 hover:underline">View Certification Requirements</Button>
+                  </div>
+                  
+                  <Button className="w-full bg-almona-orange hover:bg-almona-orange/90 text-white flex items-center justify-center">
+                    <Icons.calendar className="mr-2 h-4 w-4" />
+                    Schedule On-Site Consultation
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div variants={itemVariants}>
+              <Card className="bg-almona-dark/60 backdrop-blur-sm border border-almona-light/10 rounded-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl text-white">
+                    <Icons.challenge className="h-5 w-5 text-almona-orange" />
+                    Egypt-Specific Challenges
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-3 text-gray-300">
+                    {workflowData[activeTab].challenges.map((challenge, i) => (
+                      <li key={i} className="flex items-start">
+                        <Icons.warning className="h-5 w-5 text-amber-500 mr-3 mt-0.5 flex-shrink-0" />
+                        <span>{challenge}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-4 text-sm text-gray-400 flex items-start">
+                    <Icons.info className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-almona-light" />
+                    Solutions for these challenges are in each workflow step.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </motion.div>
+
+        <motion.div 
+          className="mt-12 bg-gradient-to-r from-almona-orange/10 to-almona-light/10 p-8 rounded-2xl border border-almona-orange/30"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
+          <div className="max-w-4xl mx-auto text-center">
+            <Badge variant="secondary" className="mb-4 bg-almona-orange/20 text-almona-orange border-almona-orange/50">
+              Egyptian Fabricators Program
+            </Badge>
+            <h2 className="text-3xl font-bold text-white mb-4">Need a Custom Workflow Solution?</h2>
+            <p className="text-gray-300 mb-6">
+              Our Egyptian engineering team will visit your facility to develop a fabrication 
+              process tailored to your specific:
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-almona-dark/50 p-6 rounded-lg"><Icons.factory className="h-10 w-10 mx-auto mb-3 text-almona-orange" /><p>Factory Conditions</p></div>
+              <div className="bg-almona-dark/50 p-6 rounded-lg"><Icons.climate className="h-10 w-10 mx-auto mb-3 text-almona-orange" /><p>Regional Climate</p></div>
+              <div className="bg-almona-dark/50 p-6 rounded-lg"><Icons.product className="h-10 w-10 mx-auto mb-3 text-almona-orange" /><p>Product Mix</p></div>
+            </div>
+            <Button size="lg" className="bg-gradient-orange hover:bg-almona-orange-dark text-white font-bold py-3 px-8">
+              Request Free Workflow Audit
+            </Button>
+            <p className="text-sm text-gray-400 mt-4">
+              Available for factories in Cairo, Alexandria, 10th of Ramadan, and 6th of October cities
+            </p>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
