@@ -35,7 +35,7 @@ const registerSchema = z.object({
   sector: z.enum(['ALUMINIUM', 'UPVC'], {
     errorMap: () => ({ message: 'Please select a sector' })
   }),
-  workshopCity: z.string().min(1, 'Please select a city'),
+  workshopLocation: z.string().min(1, 'Please select a location'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -150,12 +150,12 @@ export const Register = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="workshopCity">Workshop City</Label>
+                    <Label htmlFor="workshopLocation">Workshop Location</Label>
                     <div className="relative">
                       <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <Select onValueChange={(value) => setValue('workshopCity', value)}>
+                      <Select onValueChange={(value) => setValue('workshopLocation', value)}>
                         <SelectTrigger className="pl-10 bg-almona-dark/80 border-almona-light/30 focus:ring-2 focus:ring-almona-light focus:border-almona-light">
-                          <SelectValue placeholder="Select your city" />
+                          <SelectValue placeholder="Select your location" />
                         </SelectTrigger>
                         <SelectContent className="bg-almona-dark/95 text-white border-almona-light/30">
                           {egyptianCities.map(city => (
@@ -164,7 +164,7 @@ export const Register = () => {
                         </SelectContent>
                       </Select>
                     </div>
-                    {errors.workshopCity && <p className="text-red-400 text-sm">{errors.workshopCity.message}</p>}
+                    {errors.workshopLocation && <p className="text-red-400 text-sm">{errors.workshopLocation.message}</p>}
                   </div>
                 </div>
 
