@@ -4,9 +4,11 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { EmergencyServiceDialog } from "@/components/services/EmergencyServiceDialog";
-import { MachineRegistrationEnhanced } from "@/components/services/MachineRegistration";
-import { MaintenanceDashboard } from "@/components/services/MaintenanceDashboard";
-import { CustomerPortal } from "@/components/services/CustomerPortal";
+import { lazy, Suspense } from "react";
+
+const MachineRegistrationEnhanced = lazy(() => import("@/components/services/MachineRegistration"));
+const MaintenanceDashboard = lazy(() => import("@/components/services/MaintenanceDashboard"));
+const CustomerPortal = lazy(() => import("@/components/services/CustomerPortal"));
 import { ScheduleMaintenance } from "@/components/services/ScheduleMaintenance";
 import { OperatorTrainingIncentiveDialog } from "@/components/services/OperatorTrainingIncentiveDialog";
 import {
@@ -158,7 +160,9 @@ const Services = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <MachineRegistrationEnhanced />
+                <Suspense fallback={<div>Loading...</div>}>
+                  <MachineRegistrationEnhanced />
+                </Suspense>
               </motion.div>
             </TabsContent>
 
@@ -170,7 +174,9 @@ const Services = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <MaintenanceDashboard />
+                <Suspense fallback={<div>Loading...</div>}>
+                  <MaintenanceDashboard />
+                </Suspense>
               </motion.div>
             </TabsContent>
 
@@ -182,7 +188,9 @@ const Services = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <CustomerPortal />
+                <Suspense fallback={<div>Loading...</div>}>
+                  <CustomerPortal />
+                </Suspense>
               </motion.div>
             </TabsContent>
           </Tabs>
