@@ -75,118 +75,15 @@ export default defineConfig(({ mode }) => {
 
         output: {
           // Advanced chunking strategy
-          manualChunks: (id) => {
-            // Vendor chunks for better caching
-            if (id.includes("node_modules")) {
-              // React ecosystem
-              if (id.includes("react") || id.includes("react-dom")) {
-                return "react-vendor";
-              }
-
-              // UI libraries
-              if (id.includes("@radix-ui") || id.includes("lucide-react")) {
-                return "ui-vendor";
-              }
-
-              // 3D and graphics libraries
-              if (
-                id.includes("three") ||
-                id.includes("@react-three") ||
-                id.includes("three-mesh-bvh")
-              ) {
-                return "graphics-vendor";
-              }
-
-              // AI and ML libraries
-              if (
-                id.includes("@google/generative-ai") ||
-                id.includes("@huggingface/inference") ||
-                id.includes("@tensorflow/tfjs")
-              ) {
-                return "ai-vendor";
-              }
-
-              // Charts and data visualization
-              if (
-                id.includes("chart.js") ||
-                id.includes("react-chartjs-2") ||
-                id.includes("recharts")
-              ) {
-                return "charts-vendor";
-              }
-
-              // Animation libraries
-              if (id.includes("framer-motion")) {
-                return "animation-vendor";
-              }
-
-              // Internationalization
-              if (id.includes("i18next") || id.includes("react-i18next")) {
-                return "i18n-vendor";
-              }
-
-              // Utilities
-              if (
-                id.includes("date-fns") ||
-                id.includes("zod") ||
-                id.includes("clsx") ||
-                id.includes("class-variance-authority")
-              ) {
-                return "utils-vendor";
-              }
-
-              // State management
-              if (
-                id.includes("zustand") ||
-                id.includes("@tanstack/react-query")
-              ) {
-                return "state-vendor";
-              }
-
-              // Routing
-              if (id.includes("react-router")) {
-                return "router-vendor";
-              }
-
-              // PDF and file handling
-              if (id.includes("pdf-lib") || id.includes("file-saver")) {
-                return "files-vendor";
-              }
-
-              // HTTP and API
-              if (id.includes("axios")) {
-                return "http-vendor";
-              }
-
-              // Everything else
-              return "vendor";
-            }
-
-            // App chunks
-            if (id.includes("/src/pages/")) {
-              return "pages";
-            }
-
-            if (id.includes("/src/components/")) {
-              return "components";
-            }
-
-            if (id.includes("/src/lib/")) {
-              return "lib";
-            }
+          manualChunks: {
+            "react-vendor": ["react", "react-dom", "react-router-dom"],
+            "three-vendor": ["three", "@react-three/drei", "@react-three/fiber"],
+            "ui-vendor": ["@radix-ui/react-accordion", "lucide-react"],
+            // Add more manual chunks here for other large dependencies
           },
 
           // Optimize chunk names for caching
-          chunkFileNames: (chunkInfo) => {
-            const facadeModuleId = chunkInfo.facadeModuleId
-              ? chunkInfo.facadeModuleId
-                  .split("/")
-                  .pop()
-                  ?.replace(".tsx", "")
-                  .replace(".ts", "")
-              : "chunk";
-            return `js/${facadeModuleId}-[hash].js`;
-          },
+          chunkFileNames: 'js/[name]-[hash].js',
 
           assetFileNames: (assetInfo) => {
             const info = assetInfo.name?.split(".") || [];
