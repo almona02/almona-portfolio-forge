@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 import { CompanyTimeline } from "@/components/about/CompanyTimeline";
+import { TeamProfiles } from "@/components/about/TeamProfiles";
+import { CompanyValues } from "@/components/about/CompanyValues";
+import { CustomerTestimonials } from "@/components/about/CustomerTestimonials";
 import { Button } from "@/shared/ui/ui/button";
 
 const About = () => {
@@ -38,6 +41,12 @@ const About = () => {
           support, helping them compete in global markets.
         </p>
       </div>
+
+      <TeamProfiles />
+
+      <CompanyValues />
+
+      <CustomerTestimonials />
     </div>
   );
 };
