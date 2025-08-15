@@ -25,12 +25,18 @@ import { Eye } from "lucide-react";
 import { yilmazMachines, alfapenProfiles } from "@/constants/productsData";
 import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
 import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
+import { AdvancedFilters } from "@/components/products/AdvancedFilters";
 
 const Products = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortOption, setSortOption] = useState("featured");
+  const [advancedFilters, setAdvancedFilters] = useState({
+    power: [0, 100],
+    price: [0, 100000],
+    tags: {},
+  });
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
   const [savedComparisons, setSavedComparisons] = useState<Machine[][]>([]);
   const [showCompareDialog, setShowCompareDialog] = useState(false);
@@ -105,7 +111,11 @@ const Products = () => {
     const matchesSearch = machine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       machine.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === "all" || machine.category === categoryFilter;
-    return matchesSearch && matchesCategory;
+    const matchesPower = machine.powerSpec.consumption >= advancedFilters.power[0] && machine.powerSpec.consumption <= advancedFilters.power[1];
+    const matchesPrice = machine.price >= advancedFilters.price[0] && machine.price <= advancedFilters.price[1];
+    const selectedTags = Object.keys(advancedFilters.tags).filter(tag => advancedFilters.tags[tag]);
+    const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => machine.tags.includes(tag));
+    return matchesSearch && matchesCategory && matchesPower && matchesPrice && matchesTags;
   });
 
   const sortedYilmazMachines = [...filteredYilmazMachines].sort((a, b) => {
@@ -147,120 +157,127 @@ const Products = () => {
               </TabsList>
               
               <TabsContent value="yilmaz">
-                {/* Machine filtering and sorting controls */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                  <div className="w-full md:w-1/2">
-                    <Input
-                      placeholder="Search machines..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="bg-almona-darker border-almona-light"
-                    />
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                  <div className="lg:col-span-1">
+                    <AdvancedFilters onFilterChange={setAdvancedFilters} />
                   </div>
-                  <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                    <Select
-                      value={categoryFilter}
-                      onValueChange={setCategoryFilter}
-                    >
-                      <SelectTrigger className="w-[180px] bg-almona-darker border-almona-light">
-                        <SelectValue placeholder="Filter by category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Categories</SelectItem>
-                        <SelectItem value="cutting-machines">Cutting Machines</SelectItem>
-                        <SelectItem value="welding-machines">Welding Machines</SelectItem>
-                        <SelectItem value="processing-centers">Processing Centers</SelectItem>
-                        <SelectItem value="milling-machines">Milling Machines</SelectItem>
-                        <SelectItem value="cnc-machines">CNC Machines</SelectItem>
-                        <SelectItem value="production-lines">Production Lines</SelectItem>
-                        <SelectItem value="cleaning-machines">Cleaning Machines</SelectItem>
-                        <SelectItem value="routing-machines">Routing Machines</SelectItem>
-                        <SelectItem value="accessories">Accessories</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select
-                      value={sortOption}
-                      onValueChange={setSortOption}
-                    >
-                      <SelectTrigger className="w-[180px] bg-almona-darker border-almona-light">
-                        <SelectValue placeholder="Sort by" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="featured">Featured</SelectItem>
-                        <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                        <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-                        <SelectItem value="newest">Newest</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="lg:col-span-3">
+                    {/* Machine filtering and sorting controls */}
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                      <div className="w-full md:w-1/2">
+                        <Input
+                          placeholder="Search machines..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="bg-almona-darker border-almona-light"
+                        />
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                        <Select
+                          value={categoryFilter}
+                          onValueChange={setCategoryFilter}
+                        >
+                          <SelectTrigger className="w-[180px] bg-almona-darker border-almona-light">
+                            <SelectValue placeholder="Filter by category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All Categories</SelectItem>
+                            <SelectItem value="cutting-machines">Cutting Machines</SelectItem>
+                            <SelectItem value="welding-machines">Welding Machines</SelectItem>
+                            <SelectItem value="processing-centers">Processing Centers</SelectItem>
+                            <SelectItem value="milling-machines">Milling Machines</SelectItem>
+                            <SelectItem value="cnc-machines">CNC Machines</SelectItem>
+                            <SelectItem value="production-lines">Production Lines</SelectItem>
+                            <SelectItem value="cleaning-machines">Cleaning Machines</SelectItem>
+                            <SelectItem value="routing-machines">Routing Machines</SelectItem>
+                            <SelectItem value="accessories">Accessories</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Select
+                          value={sortOption}
+                          onValueChange={setSortOption}
+                        >
+                          <SelectTrigger className="w-[180px] bg-almona-darker border-almona-light">
+                            <SelectValue placeholder="Sort by" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="featured">Featured</SelectItem>
+                            <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                            <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                            <SelectItem value="newest">Newest</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Machine listings */}
+                    {filteredYilmazMachines.length === 0 ? (
+                      <div className="text-center py-12">
+                        <h3 className="text-xl font-medium mb-2">No machines found</h3>
+                        <p className="text-gray-400">
+                          Try adjusting your search or filter criteria
+                        </p>
+                        <Button
+                          variant="outline"
+                          className="mt-4"
+                          onClick={() => {
+                            setSearchTerm("");
+                            setCategoryFilter("all");
+                          }}
+                        >
+                          Clear filters
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                        {sortedYilmazMachines.map((machine) => (
+                          <div key={machine.id} className="relative">
+                            <ProductCard
+                              isSelected={selectedMachines.some(m => m.id === machine.id)}
+                              onSelect={(selected) => handleSelectMachine(machine, selected)}
+                              title={machine.name}
+                              description={machine.description}
+                              imageUrl={machine.imageUrl}
+                              features={[
+                                `Type: ${machine.type}`,
+                                `Power: ${machine.powerSpec.consumption}`,
+                                `Dimensions: ${machine.dimensions.length} × ${machine.dimensions.width} × ${machine.dimensions.height}`,
+                              ]}
+                              tags={machine.tags}
+                              ctaText="Request Quote"
+                              onCtaClick={() => {
+                                setSelectedProduct(machine);
+                                setShowQuoteDialog(true);
+                              }}
+                              badge={machine.featured ? "Featured" : undefined}
+                            />
+                            {(machine.id === "ym-028" || 
+                              machine.id === "ym-029" || 
+                              machine.id === "ym-030" || 
+                              machine.name.toLowerCase().includes("fr 223") ||
+                              machine.name.toLowerCase().includes("fr223")) && (
+                              <div className="absolute bottom-20 right-4 z-10">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const event = new CustomEvent('open3DModel', {
+                                      detail: { machineId: machine.id, machineName: machine.name }
+                                    });
+                                    window.dispatchEvent(event);
+                                  }}
+                                  className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                                >
+                                  <Eye className="w-3 h-3" />
+                                  3D
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
-
-                {/* Machine listings */}
-                {filteredYilmazMachines.length === 0 ? (
-                  <div className="text-center py-12">
-                    <h3 className="text-xl font-medium mb-2">No machines found</h3>
-                    <p className="text-gray-400">
-                      Try adjusting your search or filter criteria
-                    </p>
-                    <Button
-                      variant="outline"
-                      className="mt-4"
-                      onClick={() => {
-                        setSearchTerm("");
-                        setCategoryFilter("all");
-                      }}
-                    >
-                      Clear filters
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {sortedYilmazMachines.map((machine) => (
-                      <div key={machine.id} className="relative">
-                        <ProductCard
-                          isSelected={selectedMachines.some(m => m.id === machine.id)}
-                          onSelect={(selected) => handleSelectMachine(machine, selected)}
-                          title={machine.name}
-                          description={machine.description}
-                          imageUrl={machine.imageUrl}
-                          features={[
-                            `Type: ${machine.type}`,
-                            `Power: ${machine.powerSpec.consumption}`,
-                            `Dimensions: ${machine.dimensions.length} × ${machine.dimensions.width} × ${machine.dimensions.height}`,
-                          ]}
-                          tags={machine.tags}
-                          ctaText="Request Quote"
-                          onCtaClick={() => {
-                            setSelectedProduct(machine);
-                            setShowQuoteDialog(true);
-                          }}
-                          badge={machine.featured ? "Featured" : undefined}
-                        />
-                        {(machine.id === "ym-028" || 
-                          machine.id === "ym-029" || 
-                          machine.id === "ym-030" || 
-                          machine.name.toLowerCase().includes("fr 223") ||
-                          machine.name.toLowerCase().includes("fr223")) && (
-                          <div className="absolute bottom-20 right-4 z-10">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const event = new CustomEvent('open3DModel', {
-                                  detail: { machineId: machine.id, machineName: machine.name }
-                                });
-                                window.dispatchEvent(event);
-                              }}
-                              className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                            >
-                              <Eye className="w-3 h-3" />
-                              3D
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
               </TabsContent>
 
               <TabsContent value="alfapen">
