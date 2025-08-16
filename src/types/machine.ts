@@ -1,9 +1,10 @@
-import { Certification } from './certification';
+import { Certification } from "./certification";
 export interface Machine {
   id: string;
   name: string;
   description: string;
   imageUrl: string;
+  modelPath?: string;
   category: string;
   manufacturer: string;
   model: string;
@@ -49,7 +50,7 @@ export interface Machine {
 export interface ServiceEvent {
   id: string;
   date: Date;
-  type: 'maintenance' | 'repair' | 'inspection';
+  type: "maintenance" | "repair" | "inspection";
   technician: string;
   duration: number;
   partsUsed: Part[];
@@ -63,7 +64,7 @@ export interface Customer {
   facilities: Facility[];
   contacts: ContactPerson[];
   serviceContract: ServiceContract;
-  accessLevel: 'basic' | 'premium' | 'enterprise';
+  accessLevel: "basic" | "premium" | "enterprise";
 }
 
 export interface Facility {

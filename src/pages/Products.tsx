@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import ProductCard from "@/shared/ui/ui/ProductCard";
+import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
 import CompareBar from "@/components/comparison/CompareBar";
 import CompareDialog from "@/components/comparison/CompareDialog";
+import Footer from "@/components/layout/Footer";
+import Navbar from "@/components/layout/Navbar";
+import { AdvancedFilters } from "@/components/products/AdvancedFilters";
 import { QuoteRequestDialog } from "@/components/quotes/QuoteRequestDialog";
-import { Machine } from "@/types/index";
-import { saveComparison, loadComparisons } from "@/lib/comparisonStorage";
+import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
+import { alfapenProfiles, yilmazMachines } from "@/constants/productsData";
 import { useToast } from "@/hooks/useToast";
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
+import { loadComparisons, saveComparison } from "@/lib/comparisonStorage";
+import { Badge } from "@/shared/ui/ui/badge";
+import { Button } from "@/shared/ui/ui/button";
 import { Input } from "@/shared/ui/ui/input";
+import ProductCard from "@/shared/ui/ui/ProductCard";
 import {
   Select,
   SelectContent,
@@ -18,14 +20,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/ui/select";
-import { Button } from "@/shared/ui/ui/button";
 import { Separator } from "@/shared/ui/ui/separator";
-import { Badge } from "@/shared/ui/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
+import type { Machine } from "@/types/machine";
 import { Eye } from "lucide-react";
-import { yilmazMachines, alfapenProfiles } from "@/constants/productsData";
-import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
-import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
-import { AdvancedFilters } from "@/components/products/AdvancedFilters";
+import { useEffect, useState } from "react";
 
 const Products = () => {
   const { toast } = useToast();
@@ -38,35 +37,37 @@ const Products = () => {
     tags: {},
   });
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
-  const [savedComparisons, setSavedComparisons] = useState<Machine[][]>([]);
   const [showCompareDialog, setShowCompareDialog] = useState(false);
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Machine | null>(null);
   const [show3DModel, setShow3DModel] = useState(false);
-  const [selectedMachineFor3D, setSelectedMachineFor3D] = useState<Machine | null>(null);
+  const [selectedMachineFor3D, setSelectedMachineFor3D] =
+    useState<Machine | null>(null);
   const [wizardOpen, setWizardOpen] = useState(false);
 
   // Load saved comparisons on mount
   useEffect(() => {
-    const loaded = loadComparisons();
-    setSavedComparisons(loaded);
+    loadComparisons();
   }, []);
 
   // Handle the custom event to open the 3D model dialog
   useEffect(() => {
     const handleOpen3DModel = (event: CustomEvent) => {
-      const { machineId, machineName } = event.detail;
-      const machine = yilmazMachines.find(m => m.id === machineId);
+      const { machineId } = event.detail;
+      const machine = yilmazMachines.find((m) => m.id === machineId);
       if (machine) {
         setSelectedMachineFor3D(machine);
         setShow3DModel(true);
       }
     };
 
-    window.addEventListener('open3DModel', handleOpen3DModel as EventListener);
+    window.addEventListener("open3DModel", handleOpen3DModel as EventListener);
 
     return () => {
-      window.removeEventListener('open3DModel', handleOpen3DModel as EventListener);
+      window.removeEventListener(
+        "open3DModel",
+        handleOpen3DModel as EventListener
+      );
     };
   }, []);
 
@@ -80,14 +81,14 @@ const Products = () => {
         });
         return;
       }
-      setSelectedMachines(prev => [...prev, machine]);
+      setSelectedMachines((prev) => [...prev, machine]);
     } else {
-      setSelectedMachines(prev => prev.filter(m => m.id !== machine.id));
+      setSelectedMachines((prev) => prev.filter((m) => m.id !== machine.id));
     }
   };
 
   const handleRemoveMachine = (machineId: string) => {
-    setSelectedMachines(prev => prev.filter(m => m.id !== machineId));
+    setSelectedMachines((prev) => prev.filter((m) => m.id !== machineId));
   };
 
   const handleClearSelection = () => {
@@ -96,7 +97,6 @@ const Products = () => {
 
   const handleSaveComparison = () => {
     saveComparison(selectedMachines);
-    setSavedComparisons(prev => [...prev, selectedMachines]);
     toast({
       title: "Comparison saved",
       description: "You can access this comparison later",
@@ -107,25 +107,43 @@ const Products = () => {
     document.title = "Products - ALMONA";
   }, []);
 
-  const filteredYilmazMachines = yilmazMachines.filter((machine) => {
-    const matchesSearch = machine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredMachines = yilmazMachines.filter((machine) => {
+    const matchesSearch =
+      machine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       machine.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || machine.category === categoryFilter;
-    const matchesPower = machine.powerSpec.consumption >= advancedFilters.power[0] && machine.powerSpec.consumption <= advancedFilters.power[1];
-    const matchesPrice = machine.price >= advancedFilters.price[0] && machine.price <= advancedFilters.price[1];
-    const selectedTags = Object.keys(advancedFilters.tags).filter(tag => advancedFilters.tags[tag]);
-    const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => machine.tags.includes(tag));
-    return matchesSearch && matchesCategory && matchesPower && matchesPrice && matchesTags;
+    const matchesCategory =
+      categoryFilter === "all" || machine.category === categoryFilter;
+    const matchesPower =
+      machine.powerSpec.consumption >= advancedFilters.power[0] &&
+      machine.powerSpec.consumption <= advancedFilters.power[1];
+    const matchesPrice =
+      machine.price >= advancedFilters.price[0] &&
+      machine.price <= advancedFilters.price[1];
+    const selectedTags = Object.keys(advancedFilters.tags).filter(
+      (tag) => advancedFilters.tags[tag]
+    );
+    const matchesTags =
+      selectedTags.length === 0 ||
+      selectedTags.every((tag) => machine.tags.includes(tag));
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesPower &&
+      matchesPrice &&
+      matchesTags
+    );
   });
 
-  const sortedYilmazMachines = [...filteredYilmazMachines].sort((a, b) => {
+  const sortedMachines = [...filteredMachines].sort((a, b) => {
     switch (sortOption) {
       case "name-asc":
         return a.name.localeCompare(b.name);
       case "name-desc":
         return b.name.localeCompare(a.name);
       case "newest":
-        return new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime();
+        return (
+          new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
+        );
       case "featured":
       default:
         return a.featured ? -1 : b.featured ? 1 : 0;
@@ -144,10 +162,12 @@ const Products = () => {
                 <span className="text-gradient-orange">YILMAZ Machines</span>
               </h1>
               <p className="text-gray-400 max-w-3xl mx-auto">
-                Premium aluminum & PVC processing machines from Turkey's leading manufacturer.
-                Authorized dealer since 2000.
+                Premium aluminum & PVC processing machines from Turkey's leading
+                manufacturer. Authorized dealer since 2000.
               </p>
-              <Button onClick={() => setWizardOpen(true)} className="mt-4">Machine Recommendation Wizard</Button>
+              <Button onClick={() => setWizardOpen(true)} className="mt-4">
+                Machine Recommendation Wizard
+              </Button>
             </div>
 
             <Tabs defaultValue="yilmaz" className="mb-8">
@@ -155,7 +175,7 @@ const Products = () => {
                 <TabsTrigger value="yilmaz">YILMAZ Machines</TabsTrigger>
                 <TabsTrigger value="alfapen">ALFAPEN Profiles</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="yilmaz">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                   <div className="lg:col-span-1">
@@ -182,15 +202,33 @@ const Products = () => {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="all">All Categories</SelectItem>
-                            <SelectItem value="cutting-machines">Cutting Machines</SelectItem>
-                            <SelectItem value="welding-machines">Welding Machines</SelectItem>
-                            <SelectItem value="processing-centers">Processing Centers</SelectItem>
-                            <SelectItem value="milling-machines">Milling Machines</SelectItem>
-                            <SelectItem value="cnc-machines">CNC Machines</SelectItem>
-                            <SelectItem value="production-lines">Production Lines</SelectItem>
-                            <SelectItem value="cleaning-machines">Cleaning Machines</SelectItem>
-                            <SelectItem value="routing-machines">Routing Machines</SelectItem>
-                            <SelectItem value="accessories">Accessories</SelectItem>
+                            <SelectItem value="cutting-machines">
+                              Cutting Machines
+                            </SelectItem>
+                            <SelectItem value="welding-machines">
+                              Welding Machines
+                            </SelectItem>
+                            <SelectItem value="processing-centers">
+                              Processing Centers
+                            </SelectItem>
+                            <SelectItem value="milling-machines">
+                              Milling Machines
+                            </SelectItem>
+                            <SelectItem value="cnc-machines">
+                              CNC Machines
+                            </SelectItem>
+                            <SelectItem value="production-lines">
+                              Production Lines
+                            </SelectItem>
+                            <SelectItem value="cleaning-machines">
+                              Cleaning Machines
+                            </SelectItem>
+                            <SelectItem value="routing-machines">
+                              Routing Machines
+                            </SelectItem>
+                            <SelectItem value="accessories">
+                              Accessories
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                         <Select
@@ -203,7 +241,9 @@ const Products = () => {
                           <SelectContent>
                             <SelectItem value="featured">Featured</SelectItem>
                             <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                            <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                            <SelectItem value="name-desc">
+                              Name (Z-A)
+                            </SelectItem>
                             <SelectItem value="newest">Newest</SelectItem>
                           </SelectContent>
                         </Select>
@@ -211,15 +251,16 @@ const Products = () => {
                     </div>
 
                     {/* Machine listings */}
-                    {filteredYilmazMachines.length === 0 ? (
+                    {filteredMachines.length === 0 ? (
                       <div className="text-center py-12">
-                        <h3 className="text-xl font-medium mb-2">No machines found</h3>
+                        <h3 className="text-xl font-medium mb-2">
+                          No machines found
+                        </h3>
                         <p className="text-gray-400">
                           Try adjusting your search or filter criteria
                         </p>
                         <Button
-                          variant="outline"
-                          className="mt-4"
+                          className="mt-4 border border-almona-light hover:bg-almona-light/10"
                           onClick={() => {
                             setSearchTerm("");
                             setCategoryFilter("all");
@@ -230,11 +271,15 @@ const Products = () => {
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                        {sortedYilmazMachines.map((machine) => (
+                        {sortedMachines.map((machine) => (
                           <div key={machine.id} className="relative">
                             <ProductCard
-                              isSelected={selectedMachines.some(m => m.id === machine.id)}
-                              onSelect={(selected) => handleSelectMachine(machine, selected)}
+                              isSelected={selectedMachines.some(
+                                (m) => m.id === machine.id
+                              )}
+                              onSelect={(selected) =>
+                                handleSelectMachine(machine, selected)
+                              }
                               title={machine.name}
                               description={machine.description}
                               imageUrl={machine.imageUrl}
@@ -251,18 +296,24 @@ const Products = () => {
                               }}
                               badge={machine.featured ? "Featured" : undefined}
                             />
-                            {(machine.id === "ym-028" || 
-                              machine.id === "ym-029" || 
-                              machine.id === "ym-030" || 
+                            {(machine.id === "ym-028" ||
+                              machine.id === "ym-029" ||
+                              machine.id === "ym-030" ||
                               machine.name.toLowerCase().includes("fr 223") ||
                               machine.name.toLowerCase().includes("fr223")) && (
                               <div className="absolute bottom-20 right-4 z-10">
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    const event = new CustomEvent('open3DModel', {
-                                      detail: { machineId: machine.id, machineName: machine.name }
-                                    });
+                                    const event = new CustomEvent(
+                                      "open3DModel",
+                                      {
+                                        detail: {
+                                          machineId: machine.id,
+                                          machineName: machine.name,
+                                        },
+                                      }
+                                    );
                                     window.dispatchEvent(event);
                                   }}
                                   className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
@@ -304,36 +355,44 @@ const Products = () => {
             <Separator className="my-12 bg-almona-light/20" />
 
             <div className="bg-almona-darker/50 p-8 rounded-lg">
-              <h2 className="text-2xl font-bold mb-4">Why Choose YILMAZ Machines?</h2>
+              <h2 className="text-2xl font-bold mb-4">
+                Why Choose YILMAZ Machines?
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-gradient-orange">
-                    <Badge variant="outline" className="mr-2">1</Badge>
+                    <Badge variant="outline" className="mr-2">
+                      1
+                    </Badge>
                     Premium Quality
                   </h3>
                   <p className="text-gray-400">
-                    Manufactured with high-grade materials and precision engineering for
-                    exceptional durability and performance.
+                    Manufactured with high-grade materials and precision
+                    engineering for exceptional durability and performance.
                   </p>
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-gradient-orange">
-                    <Badge variant="outline" className="mr-2">2</Badge>
+                    <Badge variant="outline" className="mr-2">
+                      2
+                    </Badge>
                     Technical Support
                   </h3>
                   <p className="text-gray-400">
-                    Our expert team provides comprehensive installation, training and
-                    maintenance services.
+                    Our expert team provides comprehensive installation,
+                    training and maintenance services.
                   </p>
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-2 text-gradient-orange">
-                    <Badge variant="outline" className="mr-2">3</Badge>
+                    <Badge variant="outline" className="mr-2">
+                      3
+                    </Badge>
                     Genuine Parts
                   </h3>
                   <p className="text-gray-400">
-                    We supply original spare parts with warranty to ensure optimal machine
-                    performance.
+                    We supply original spare parts with warranty to ensure
+                    optimal machine performance.
                   </p>
                 </div>
               </div>
@@ -351,7 +410,9 @@ const Products = () => {
         onExport={handleSaveComparison}
         onShare={() => {
           navigator.clipboard.writeText(
-            `${window.location.origin}/compare?ids=${selectedMachines.map(m => m.id).join(',')}`
+            `${window.location.origin}/compare?ids=${selectedMachines
+              .map((m) => m.id)
+              .join(",")}`
           );
           toast({
             title: "Link copied",
@@ -372,7 +433,7 @@ const Products = () => {
         initialData={{
           products: selectedProduct ? [selectedProduct] : selectedMachines,
           services: [],
-          contactInfo: {}
+          contactInfo: {},
         }}
       />
 
@@ -381,11 +442,17 @@ const Products = () => {
           isOpen={show3DModel}
           onClose={() => setShow3DModel(false)}
           machineName={selectedMachineFor3D.name}
-          modelPath={selectedMachineFor3D.modelPath || "/models/AR-Code-Object-Capture-app-1752786892 (1).glb"}
+          modelPath={
+            selectedMachineFor3D.modelPath ||
+            "/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
+          }
         />
       )}
 
-      <MachineRecommendationWizard open={wizardOpen} onOpenChange={setWizardOpen} />
+      <MachineRecommendationWizard
+        open={wizardOpen}
+        onOpenChange={setWizardOpen}
+      />
     </>
   );
 };
