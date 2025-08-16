@@ -3,15 +3,15 @@ import { useParams, Link } from "react-router-dom";
 import { alfapenProfiles, Profile } from "../../constants/productsData";
 import { ReviewForm } from "@/components/shop/ReviewForm";
 import { ReviewList } from "@/components/shop/ReviewList";
-import { getReviewsByProductId, addReview } from "@/lib/reviewsApi";
+import { getReviewsByProductId, addReview, Review } from "@/lib/reviewsApi";
 import { useTranslation } from "react-i18next";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { toast } from "sonner";
 
 const ProfileDetail: React.FC = () => {
   const { profileId } = useParams<{ profileId: string }>();
-  const [reviews, setReviews] = useState<any[]>([]);
-  const { t } = useTranslation('shop');
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const { t } = useTranslation("shop");
   const { addRecentlyViewed } = useRecentlyViewed();
 
   useEffect(() => {
@@ -21,11 +21,20 @@ const ProfileDetail: React.FC = () => {
     }
   }, [profileId, addRecentlyViewed]);
 
-  const handleAddReview = async (rating: number, comment: string, reviewerName: string) => {
+  const handleAddReview = async (
+    rating: number,
+    comment: string,
+    reviewerName: string
+  ) => {
     if (!profileId) return;
-    const newReview = await addReview({ productId: profileId, rating, comment, reviewerName });
-    setReviews(prev => [...prev, newReview]);
-    toast.success(t('reviews.review_submitted_success'));
+    const newReview = await addReview({
+      productId: profileId,
+      rating,
+      comment,
+      reviewerName,
+    });
+    setReviews((prev) => [...prev, newReview]);
+    toast.success(t("reviews.review_submitted_success"));
   };
 
   const profile: Profile | undefined = alfapenProfiles.find(
@@ -73,7 +82,9 @@ const ProfileDetail: React.FC = () => {
       </Link>
 
       <div className="mt-12">
-        <h2 className="text-3xl font-bold mb-6 text-gradient-orange">{t('reviews.section_title')}</h2>
+        <h2 className="text-3xl font-bold mb-6 text-gradient-orange">
+          {t("reviews.section_title")}
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <ReviewForm productId={profile.id} onSubmit={handleAddReview} />
           <ReviewList reviews={reviews} />

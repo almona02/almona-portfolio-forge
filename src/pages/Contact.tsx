@@ -14,7 +14,9 @@ import { motion } from "framer-motion";
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().regex(/^\+20[0-9]{10}$/, "Phone must be +20 followed by 10 digits"),
+  phone: z
+    .string()
+    .regex(/^\+20[0-9]{10}$/, "Phone must be +20 followed by 10 digits"),
   subject: z.string().min(5, "Subject must be at least 5 characters"),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
@@ -24,7 +26,11 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm<ContactFormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
   });
 
@@ -54,7 +60,8 @@ const Contact = () => {
               <span className="text-gradient-orange">Contact Us</span>
             </h1>
             <p className="text-gray-400 max-w-2xl mx-auto">
-              Have questions or need assistance? Our team is ready to help you with any inquiries.
+              Have questions or need assistance? Our team is ready to help you
+              with any inquiries.
             </p>
           </motion.div>
 
@@ -67,76 +74,98 @@ const Contact = () => {
               className="bg-almona-darker p-8 rounded-xl border border-almona-light/20"
             >
               <h2 className="text-2xl font-semibold mb-6">Send us a message</h2>
-              
+
               {submitSuccess && (
                 <div className="mb-6 p-4 bg-green-900/30 border border-green-500 rounded-lg">
-                  <p className="text-green-400">Your message has been sent successfully!</p>
+                  <p className="text-green-400">
+                    Your message has been sent successfully!
+                  </p>
                 </div>
               )}
-              
+
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="name">Full Name</Label>
-                    <Input 
-                      id="name" 
-                      className="mt-2 bg-almona-dark border-almona-light/30" 
+                    <Input
+                      id="name"
+                      className="mt-2 bg-almona-dark border-almona-light/30"
                       placeholder="Your name"
-                      {...register('name')}
+                      {...register("name")}
                     />
-                    {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
+                    {errors.name && (
+                      <p className="text-red-400 text-sm mt-1">
+                        {errors.name.message}
+                      </p>
+                    )}
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="email">Email Address</Label>
-                    <Input 
-                      id="email" 
-                      type="email" 
-                      className="mt-2 bg-almona-dark border-almona-light/30" 
+                    <Input
+                      id="email"
+                      type="email"
+                      className="mt-2 bg-almona-dark border-almona-light/30"
                       placeholder="you@example.com"
-                      {...register('email')}
+                      {...register("email")}
                     />
-                    {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>}
+                    {errors.email && (
+                      <p className="text-red-400 text-sm mt-1">
+                        {errors.email.message}
+                      </p>
+                    )}
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input 
-                      id="phone" 
-                      className="mt-2 bg-almona-dark border-almona-light/30" 
+                    <Input
+                      id="phone"
+                      className="mt-2 bg-almona-dark border-almona-light/30"
                       placeholder="+20XXXXXXXXXX"
-                      {...register('phone')}
+                      {...register("phone")}
                     />
-                    {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone.message}</p>}
+                    {errors.phone && (
+                      <p className="text-red-400 text-sm mt-1">
+                        {errors.phone.message}
+                      </p>
+                    )}
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="subject">Subject</Label>
-                    <Input 
-                      id="subject" 
-                      className="mt-2 bg-almona-dark border-almona-light/30" 
+                    <Input
+                      id="subject"
+                      className="mt-2 bg-almona-dark border-almona-light/30"
                       placeholder="How can we help?"
-                      {...register('subject')}
+                      {...register("subject")}
                     />
-                    {errors.subject && <p className="text-red-400 text-sm mt-1">{errors.subject.message}</p>}
+                    {errors.subject && (
+                      <p className="text-red-400 text-sm mt-1">
+                        {errors.subject.message}
+                      </p>
+                    )}
                   </div>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="message">Message</Label>
-                  <Textarea 
-                    id="message" 
-                    className="mt-2 bg-almona-dark border-almona-light/30 min-h-[150px]" 
+                  <Textarea
+                    id="message"
+                    className="mt-2 bg-almona-dark border-almona-light/30 min-h-[150px]"
                     placeholder="Your message here..."
-                    {...register('message')}
+                    {...register("message")}
                   />
-                  {errors.message && <p className="text-red-400 text-sm mt-1">{errors.message.message}</p>}
+                  {errors.message && (
+                    <p className="text-red-400 text-sm mt-1">
+                      {errors.message.message}
+                    </p>
+                  )}
                 </div>
-                
-                <Button 
-                  type="submit" 
+
+                <Button
+                  type="submit"
                   className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white py-3"
                   disabled={isSubmitting}
                 >
@@ -144,7 +173,7 @@ const Contact = () => {
                 </Button>
               </form>
             </motion.div>
-            
+
             {/* Contact Info & Map */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -153,60 +182,69 @@ const Contact = () => {
               className="space-y-8"
             >
               <div className="bg-almona-darker p-8 rounded-xl border border-almona-light/20">
-                <h2 className="text-2xl font-semibold mb-6">Contact Information</h2>
-                
+                <h2 className="text-2xl font-semibold mb-6">
+                  Contact Information
+                </h2>
+
                 <div className="space-y-6">
                   <div className="flex items-start">
                     <MapPin className="h-6 w-6 text-almona-orange mr-4 mt-1" />
                     <div>
                       <h3 className="font-medium text-lg mb-1">Our Location</h3>
                       <p className="text-gray-400">
-                        15th Industrial Zone, 6th of October City<br />
+                        ALMONA Co. 13B/18 Tarik Ibn Ziad st. Taawen , Haram ,
+                        Giza, Egypt
+                        <br />
                         Giza Governorate, Egypt
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start">
                     <Phone className="h-6 w-6 text-almona-orange mr-4 mt-1" />
                     <div>
                       <h3 className="font-medium text-lg mb-1">Phone</h3>
                       <p className="text-gray-400">
-                        +20 100 123 4567<br />
-                        +20 155 987 6543
+                        +20 100 309 7177
+                        <br />
+                        +20 235 856 305
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start">
                     <Mail className="h-6 w-6 text-almona-orange mr-4 mt-1" />
                     <div>
                       <h3 className="font-medium text-lg mb-1">Email</h3>
                       <p className="text-gray-400">
-                        info@almona.com<br />
-                        support@almona.com
+                        almona02@yahoo.com
+                        <br />
+                        Info@almona.com
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start">
                     <Clock className="h-6 w-6 text-almona-orange mr-4 mt-1" />
                     <div>
-                      <h3 className="font-medium text-lg mb-1">Working Hours</h3>
+                      <h3 className="font-medium text-lg mb-1">
+                        Working Hours
+                      </h3>
                       <p className="text-gray-400">
-                        Sunday - Thursday: 8:00 AM - 5:00 PM<br />
-                        Friday & Saturday: Closed
+                        Saturday - Thursday: 10:00 AM - 8:00 PM
+                        <br />
+                        Friday: Closed
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-almona-darker p-1 rounded-xl border border-almona-light/20 overflow-hidden">
                 <div className="rounded-lg overflow-hidden h-80">
                   <iframe
                     title="Almona Location"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3458.215826123969!2d30.95079731511479!3d29.937155981921395!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1458576f6c3d13a7%3A0x3a0f0d7f0d4f4b4f!2s6th%20of%20October%20City%2C%20Giza%20Governorate!5e0!3m2!1sen!2seg!4v1651234567890!5m2!1sen!2seg"
+                    src="https://www.google.com/maps/place/Yilmaz+machine/@29.997034,31.1610963,17z/data=!3m1!4b1!4m6!3m5!1s0x1458452786e7c71d:0x3b8c19b580db70e!8m2!3d29.997034!4d31.1636712!16s%2Fg%2F11nn4nvz79?entry=ttu&g_ep=EgoyMDI1MDgxMy4wIKXMDSoASAFQAw%3D%3D"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
