@@ -3,7 +3,7 @@ import CompareBar from "@/components/comparison/CompareBar";
 import CompareDialog from "@/components/comparison/CompareDialog";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
-import { AdvancedFilters } from "@/components/products/AdvancedFilters";
+
 import { QuoteRequestDialog } from "@/components/quotes/QuoteRequestDialog";
 import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
 import { alfapenProfiles, yilmazMachines } from "@/constants/productsData";
@@ -31,11 +31,7 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortOption, setSortOption] = useState("featured");
-  const [advancedFilters, setAdvancedFilters] = useState({
-    power: [0, 100],
-    price: [0, 100000],
-    tags: {},
-  });
+  
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
   const [showCompareDialog, setShowCompareDialog] = useState(false);
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
@@ -163,9 +159,7 @@ const Products = () => {
 
               <TabsContent value="yilmaz">
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                  <div className="lg:col-span-1">
-                    <AdvancedFilters onFilterChange={setAdvancedFilters} />
-                  </div>
+                  
                   <div className="lg:col-span-4">
                     {/* Machine filtering and sorting controls */}
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
