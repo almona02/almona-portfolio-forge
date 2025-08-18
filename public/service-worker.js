@@ -9,7 +9,7 @@ const STATIC_ASSETS = [
   "/",
   "/index.html",
   "/favicon.ico",
-  "/logo.png",
+  "/logo.svg",
   "/placeholder.svg",
   "/robots.txt",
   "/manifest.json",
@@ -329,8 +329,8 @@ self.addEventListener("push", (event) => {
 
   const options = {
     body: event.data ? event.data.text() : "New notification from ALMONA",
-    icon: "/logo.png",
-    badge: "/logo.png",
+    icon: "/logo.svg",
+    badge: "/logo.svg",
     vibrate: [200, 100, 200],
     data: {
       dateOfArrival: Date.now(),
