@@ -125,7 +125,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <motion.img
-            src="/logo.png"
+            src={NewLogo}
             alt="Almona Logo"
             className="h-10 w-auto"
             initial={{ x: -50, opacity: 0 }}
