@@ -52,6 +52,15 @@ interface ShopFilters {
 
 type ShopProduct = Machine | Product | Part;
 
+// Type guards
+function isMachine(product: ShopProduct): product is Machine {
+  return 'specifications' in product && 'pricing' in product;
+}
+
+function isProduct(product: ShopProduct): product is Product {
+  return 'price' in product && 'stock' in product;
+}
+
 const PRODUCTS_PER_LOAD = 9; // Number of products to load each time
 
 // Custom hook for shop state management
@@ -326,51 +335,99 @@ const ShopEnhanced = () => {
                       <Skeleton key={index} className="w-full h-96" />
                     ))
                   ) : (
-                    filteredProducts.slice(0, displayedProductCount).map((product) => (
-                      <IndustrialProductCard
-                        key={product.id}
-                        title={product.name}
-                        description={product.description || ""}
-                        imageUrl={product.imageUrl}
-                        price={formatPrice((product as Machine).pricing?.basePrice)}
-                        features={(product as Machine).specifications || []}
-                        badges={[
-                          ...((product as Machine).tags || []),
-                          ...((product as Machine).certifications || [])
-                        ]}
-                        stock={'stock' in product ? (product as { stock: number }).stock : undefined}
-                        actions={[
-                          {
-                            label: t("shop.buttons.configure"),
-                            action: () => {
-                              setSelectedProduct(product.id);
-                              setViewMode("configurator");
-                            }
-                          },
-                          {
-                            label: t("shop.buttons.quick_view"),
-                            action: () => setQuickViewProduct(product as Machine)
-                          },
-                          {
-                            label: t("shop.buttons.add_to_quote"),
-                            action: () => {
-                              addToQuote(product as Machine);
-                              toast.success(`${product.name} has been added to your quote.`);
-                            }
-                          },
-                          {
-                            label: comparisonList.some(p => p.id === product.id) 
-                              ? t("shop.buttons.remove_compare") 
-                              : t("shop.buttons.compare"),
-                            action: () => {
-                              if ('specifications' in product) {
-                                handleToggleCompare(product as Machine);
-                              }
-                            }
-                          }
-                        ]}
-                      />
-                    ))
+                    filteredProducts.slice(0, displayedProductCount).map((product) => {
+                      if (isMachine(product)) {
+                        return (
+                          <IndustrialProductCard
+                            key={product.id}
+                            title={product.name}
+                            description={product.description || ""}
+                            imageUrl={product.imageUrl}
+                            price={formatPrice(product.pricing?.basePrice)}
+                            features={product.specifications.map(spec => `${spec.key}: ${spec.value}`)}
+                            badges={product.tags}
+                            egyptCertifications={product.certifications.map(c => c.standard)}
+                            stock={product.stock}
+                            actions={[
+                              {
+                                label: t("shop.buttons.configure"),
+                                action: () => {
+                                  setSelectedProduct(product.id);
+                                  setViewMode("configurator");
+                                },
+                              },
+                              {
+                                label: t("shop.buttons.quick_view"),
+                                action: () => setQuickViewProduct(product),
+                              },
+                              {
+                                label: t("shop.buttons.add_to_quote"),
+                                action: () => {
+                                  addToQuote(product as any);
+                                  toast.success(`${product.name} has been added to your quote.`);
+                                },
+                              },
+                              {
+                                label: comparisonList.some((p) => p.id === product.id)
+                                  ? t("shop.buttons.remove_compare")
+                                  : t("shop.buttons.compare"),
+                                action: () => {
+                                  if ("specifications" in product) {
+                                    handleToggleCompare(product);
+                                  }
+                                },
+                              },
+                            ]}
+                          />
+                        );
+                      } else if (isProduct(product)) {
+                        return (
+                          <IndustrialProductCard
+                            key={product.id}
+                            title={product.name}
+                            description={product.description || ""}
+                            imageUrl={product.imageUrl}
+                            price={formatPrice(product.price)}
+                            features={[]}
+                            badges={product.tags}
+                            egyptCertifications={[]}
+                            stock={product.stock}
+                            actions={[
+                              {
+                                label: t("shop.buttons.add_to_quote"),
+                                action: () => {
+                                  addToQuote(product as any);
+                                  toast.success(`${product.name} has been added to your quote.`);
+                                },
+                              },
+                            ]}
+                          />
+                        );
+                      } else { // Part
+                        return (
+                          <IndustrialProductCard
+                            key={product.id}
+                            title={product.name}
+                            description={product.description || ""}
+                            imageUrl={product.imageUrl || ""}
+                            price={"N/A"}
+                            features={[]}
+                            badges={[]}
+                            egyptCertifications={[]}
+                            stock={undefined}
+                            actions={[
+                              {
+                                label: t("shop.buttons.add_to_quote"),
+                                action: () => {
+                                  addToQuote(product as any);
+                                  toast.success(`${product.name} has been added to your quote.`);
+                                },
+                              },
+                            ]}
+                          />
+                        );
+                      }
+                    })
                   )}
                 </ErrorBoundary>
               </div>

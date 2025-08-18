@@ -117,6 +117,7 @@ const Services = () => {
                     ]}
                     actionText="View Training Programs"
                     onActionClick={() => setOperatorTrainingOpen(true)}
+                    highlight={true}
                   />
                 </div>
                 <div className="bg-almona-darker/50 p-8 rounded-lg">
