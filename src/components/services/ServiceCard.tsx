@@ -12,6 +12,7 @@ interface ServiceCardProps {
   egyptSpecific?: boolean;
   machineModel?: string;
   onActionClick?: () => void;
+  highlight?: boolean;
 }
 
 interface SparePart {
@@ -70,10 +71,11 @@ export const ServiceCard = ({
   actionText,
   egyptSpecific = false,
   machineModel = "",
-  onActionClick
+  onActionClick,
+  highlight = false,
 }: ServiceCardProps) => {
   return (
-    <div className="bg-almona-darker/50 border border-almona-light/20 rounded-lg p-6 flex flex-col h-full">
+    <div className={`bg-almona-darker/50 border border-almona-light/20 rounded-lg p-6 flex flex-col h-full ${highlight ? 'shadow-lg shadow-almona-light/20' : ''}`}>
       <div className="flex items-center gap-3 mb-4">
         <div className="bg-almona-dark/50 p-3 rounded-full">
           {iconMap[icon]}
