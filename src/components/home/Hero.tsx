@@ -1,35 +1,38 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Phone } from "lucide-react";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
 import ResponsiveImage from "@/shared/ui/ui/ResponsiveImage";
+import Logo from "@/assets/almona-new-logo.svg"; // Update path
 
 const Hero = () => {
   const [activeSlide, setActiveSlide] = useState(0);
-  
+
   const slides = [
     {
       title: "YILMAZ Machines",
       subtitle: "Premium Quality Aluminium & PVC Processing Machines",
       description: "Authorized dealer in Egypt since 2000",
-      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200",
-      link: "/products/machines"
+      image:
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200",
+      link: "/products/machines",
     },
     {
       title: "ALFAPEN Profiles",
       subtitle: "High-Performance UPVC Window & Door Systems",
       description: "Superior quality profiles for modern construction",
-      image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=1200",
-      link: "/products/profiles"
+      image:
+        "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&w=1200",
+      link: "/products/profiles",
     },
     {
       title: "ALMONA Co.",
       subtitle: "Your Trusted Partner Since 1991",
       description: "Expert consultation, sales and service",
-      image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1200",
-      link: "/about"
-    }
+      image:
+        "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1200",
+      link: "/about",
+    },
   ];
 
   useEffect(() => {
@@ -83,10 +86,16 @@ const Hero = () => {
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 text-white animate-slide-in">
                   <span className="text-gradient-orange">{slide.title}</span>
                 </h1>
-                <h2 className="text-xl sm:text-2xl lg:text-3xl text-gray-200 mb-6 animate-slide-in" style={{animationDelay: "0.1s"}}>
+                <h2
+                  className="text-xl sm:text-2xl lg:text-3xl text-gray-200 mb-6 animate-slide-in"
+                  style={{ animationDelay: "0.1s" }}
+                >
                   {slide.subtitle}
                 </h2>
-                <div className="flex flex-wrap gap-4 animate-fade-in" style={{animationDelay: "0.3s"}}>
+                <div
+                  className="flex flex-wrap gap-4 animate-fade-in"
+                  style={{ animationDelay: "0.3s" }}
+                >
                   <NeonButton
                     variant="industrial"
                     glow="industrialGlow"

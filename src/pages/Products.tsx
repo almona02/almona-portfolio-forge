@@ -113,24 +113,9 @@ const Products = () => {
       machine.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory =
       categoryFilter === "all" || machine.category === categoryFilter;
-    const matchesPower =
-      machine.powerSpec.consumption >= advancedFilters.power[0] &&
-      machine.powerSpec.consumption <= advancedFilters.power[1];
-    const matchesPrice =
-      machine.price >= advancedFilters.price[0] &&
-      machine.price <= advancedFilters.price[1];
-    const selectedTags = Object.keys(advancedFilters.tags).filter(
-      (tag) => advancedFilters.tags[tag]
-    );
-    const matchesTags =
-      selectedTags.length === 0 ||
-      selectedTags.every((tag) => machine.tags.includes(tag));
     return (
       matchesSearch &&
-      matchesCategory &&
-      matchesPower &&
-      matchesPrice &&
-      matchesTags
+      matchesCategory
     );
   });
 
@@ -181,7 +166,7 @@ const Products = () => {
                   <div className="lg:col-span-1">
                     <AdvancedFilters onFilterChange={setAdvancedFilters} />
                   </div>
-                  <div className="lg:col-span-3">
+                  <div className="lg:col-span-4">
                     {/* Machine filtering and sorting controls */}
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                       <div className="w-full md:w-1/2">
