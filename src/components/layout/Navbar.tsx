@@ -44,7 +44,7 @@ const NavLink = ({
     >
       {isMobile && icon && <span className="text-almona-orange">{icon}</span>}
       <span
-        className={`${
+        className={`${ 
           isActive ? "text-white" : "text-gray-400 group-hover:text-white"
         }`}
       >
@@ -100,11 +100,6 @@ const Navbar = () => {
       path: "/services",
       icon: <Users className="h-5 w-5" />,
     },
-    {
-      name: "Used Machines",
-      path: "/usedmachines",
-      icon: <Store className="h-5 w-5" />,
-    },
     { name: "Shop", path: "/Shop", icon: <ShoppingCart className="h-5 w-5" /> },
     { name: "About Us", path: "/about", icon: <Info className="h-5 w-5" /> },
     { name: "Contact", path: "/contact", icon: <Mail className="h-5 w-5" /> },
@@ -130,7 +125,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <motion.img
-            src="/logo.svg"
+            src="/logo.png"
             alt="Almona Logo"
             className="h-10 w-auto"
             initial={{ x: -50, opacity: 0 }}
@@ -169,7 +164,7 @@ const Navbar = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.3 }}
           >
-            <Button variant="ghost" size="icon" asChild>
+            <Button size="icon" asChild className="bg-transparent">
               <Link to="/quote">
                 <ShoppingCart className="h-6 w-6 text-gray-300 hover:text-white" />
                 {quoteItems.length > 0 && (
@@ -188,9 +183,8 @@ const Navbar = () => {
                 transition={{ delay: 0.8, duration: 0.3 }}
               >
                 <Button
-                  variant="ghost"
                   onClick={signOut}
-                  className="text-gray-300 hover:text-white"
+                  className="text-gray-300 hover:text-white bg-transparent"
                 >
                   Logout
                 </Button>
@@ -201,7 +195,6 @@ const Navbar = () => {
                 transition={{ delay: 0.9, duration: 0.3 }}
               >
                 <Button
-                  variant="default"
                   className="bg-gradient-orange hover:bg-almona-orange-dark text-white rounded-full px-6"
                   asChild
                 >
@@ -217,9 +210,8 @@ const Navbar = () => {
                 transition={{ delay: 0.8, duration: 0.3 }}
               >
                 <Button
-                  variant="ghost"
                   asChild
-                  className="text-gray-300 hover:text-white"
+                  className="text-gray-300 hover:text-white bg-transparent"
                 >
                   <Link to="/login">Login</Link>
                 </Button>
@@ -230,7 +222,6 @@ const Navbar = () => {
                 transition={{ delay: 0.9, duration: 0.3 }}
               >
                 <Button
-                  variant="default"
                   className="bg-gradient-orange hover:bg-almona-orange-dark text-white rounded-full px-6"
                   asChild
                 >
@@ -243,9 +234,8 @@ const Navbar = () => {
 
         {/* Mobile Menu Button */}
         <Button
-          variant="ghost"
           size="icon"
-          className="lg:hidden text-gray-300 hover:text-white"
+          className="lg:hidden text-gray-300 hover:text-white bg-transparent"
           onClick={() => setIsMobileMenuOpen(true)}
         >
           <Menu className="h-7 w-7" />
@@ -274,10 +264,9 @@ const Navbar = () => {
                     ALMONA
                   </span>
                   <Button
-                    variant="ghost"
                     size="icon"
                     onClick={handleCloseMobileMenu}
-                    className="text-gray-300 hover:text-white"
+                    className="text-gray-300 hover:text-white bg-transparent"
                   >
                     <X className="h-7 w-7" />
                   </Button>
@@ -300,14 +289,12 @@ const Navbar = () => {
                   {user ? (
                     <>
                       <Button
-                        variant="outline"
                         className="w-full border-almona-light/30 text-white hover:bg-almona-light/10"
                         onClick={signOut}
                       >
                         Logout
                       </Button>
                       <Button
-                        variant="default"
                         className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white"
                         asChild
                       >
@@ -319,7 +306,6 @@ const Navbar = () => {
                   ) : (
                     <>
                       <Button
-                        variant="outline"
                         className="w-full border-almona-light/30 text-white hover:bg-almona-light/10"
                         asChild
                       >
@@ -328,7 +314,6 @@ const Navbar = () => {
                         </Link>
                       </Button>
                       <Button
-                        variant="default"
                         className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white"
                         asChild
                       >
