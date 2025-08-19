@@ -22,7 +22,7 @@ interface Milestone {
   };
 }
 
-import { timelineData } from './timelineData';
+import { MILESTONES } from './timelineData';
 
 const TimelineNode = ({ milestone, active, onClick }: { milestone: Milestone; active: boolean; onClick: () => void }) => {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -203,7 +203,7 @@ export const CompanyTimeline = () => {
 
             {activeMilestone.media && <MediaGallery media={activeMilestone.media} />}
 
-            <Tabs defaultValue="details" className="mt-6">
+            <Tabs value="details" onValueChange={() => {}} className="mt-6">
               <TabsList className="grid w-full grid-cols-2 bg-almona-darker">
                 <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="impact">Impact</TabsTrigger>

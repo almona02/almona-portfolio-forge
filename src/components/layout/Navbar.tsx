@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import NewLogo from "@/assets/almona-new-logo.svg";
 import { useAuth } from "@/context/AuthContext";
 import { useQuote } from "@/context/QuoteContext";
 import { AnimatePresence, motion } from "framer-motion";
@@ -13,6 +14,7 @@ import {
   Users,
   Wrench,
   X,
+  ChevronDown,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -64,6 +66,7 @@ const NavLink = ({
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [servicesSubmenuOpen, setServicesSubmenuOpen] = useState(false);
   const location = useLocation();
   const { quoteItems } = useQuote();
   const { user, signOut } = useAuth();
@@ -83,6 +86,15 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
+  const servicesSubmenu = [
+    { name: "Machine Sales", path: "/services/sales" },
+    { name: "Maintenance & Support", path: "/services/maintenance" },
+    { name: "Spare Parts", path: "/services/spare-parts" },
+    { name: "Technical Training", path: "/services/training" },
+    { name: "Fabrication Services", path: "/services/fabrication" },
+    { name: "Consulting", path: "/services/consulting" },
+  ];
+
   const navLinks = [
     { name: "Home", path: "/", icon: <Home className="h-5 w-5" /> },
     {
@@ -99,6 +111,7 @@ const Navbar = () => {
       name: "Services",
       path: "/services",
       icon: <Users className="h-5 w-5" />,
+      hasSubmenu: true,
     },
     { name: "Shop", path: "/Shop", icon: <ShoppingCart className="h-5 w-5" /> },
     { name: "About Us", path: "/about", icon: <Info className="h-5 w-5" /> },
@@ -150,10 +163,50 @@ const Navbar = () => {
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2 + index * 0.05, duration: 0.3 }}
+              className="relative"
             >
-              <NavLink to={link.path} isActive={isActive(link.path)}>
-                {link.name}
-              </NavLink>
+              {link.hasSubmenu ? (
+                <div
+                  className="relative group"
+                  onMouseEnter={() => setServicesSubmenuOpen(true)}
+                  onMouseLeave={() => setServicesSubmenuOpen(false)}
+                >
+                  <div className="flex items-center gap-1 cursor-pointer">
+                    <NavLink to={link.path} isActive={isActive(link.path)}>
+                      {link.name}
+                    </NavLink>
+                    <ChevronDown className="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
+                  </div>
+                  
+                  <AnimatePresence>
+                    {servicesSubmenuOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full left-0 mt-2 w-56 bg-almona-dark/95 backdrop-blur-lg border border-almona-light/20 rounded-lg shadow-xl z-50"
+                      >
+                        <div className="py-2">
+                          {servicesSubmenu.map((submenuItem) => (
+                            <Link
+                              key={submenuItem.name}
+                              to={submenuItem.path}
+                              className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-almona-light/10 transition-colors"
+                            >
+                              {submenuItem.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <NavLink to={link.path} isActive={isActive(link.path)}>
+                  {link.name}
+                </NavLink>
+              )}
             </motion.div>
           ))}
         </nav>
@@ -273,16 +326,60 @@ const Navbar = () => {
                 </div>
                 <nav className="flex flex-col p-6 space-y-2 mt-4">
                   {navLinks.map((link) => (
-                    <NavLink
-                      key={link.name}
-                      to={link.path}
-                      isActive={isActive(link.path)}
-                      isMobile
-                      onClick={handleCloseMobileMenu}
-                      icon={link.icon}
-                    >
-                      {link.name}
-                    </NavLink>
+                    <div key={link.name}>
+                      {link.hasSubmenu ? (
+                        <div>
+                          <div
+                            className="flex items-center justify-between py-2 cursor-pointer"
+                            onClick={() => setServicesSubmenuOpen(!servicesSubmenuOpen)}
+                          >
+                            <div className="flex items-center gap-4">
+                              <span className="text-almona-orange">{link.icon}</span>
+                              <span className="text-lg text-gray-400 hover:text-white">
+                                {link.name}
+                              </span>
+                            </div>
+                            <ChevronDown 
+                              className={`h-4 w-4 text-gray-400 transition-transform ${
+                                servicesSubmenuOpen ? 'rotate-180' : ''
+                              }`} 
+                            />
+                          </div>
+                          <AnimatePresence>
+                            {servicesSubmenuOpen && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="ml-8 space-y-1"
+                              >
+                                {servicesSubmenu.map((submenuItem) => (
+                                  <Link
+                                    key={submenuItem.name}
+                                    to={submenuItem.path}
+                                    onClick={handleCloseMobileMenu}
+                                    className="block py-2 text-gray-400 hover:text-white transition-colors"
+                                  >
+                                    {submenuItem.name}
+                                  </Link>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      ) : (
+                        <NavLink
+                          to={link.path}
+                          isActive={isActive(link.path)}
+                          isMobile
+                          onClick={handleCloseMobileMenu}
+                          icon={link.icon}
+                        >
+                          {link.name}
+                        </NavLink>
+                      )}
+                    </div>
                   ))}
                 </nav>
                 <div className="mt-auto p-6 border-t border-gray-800 space-y-4">
