@@ -1,10 +1,40 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
 import { inventory } from "@/data/inventory";
 import { useQuote } from "@/context/QuoteContext";
 import { toast } from "sonner";
-import { Machine, Product, Part, Certification } from "@/types/index";
+// Types
+interface Machine {
+  id: string;
+  name: string;
+  description?: string;
+  imageUrl: string;
+  specifications: { key: string; value: string }[];
+  pricing?: { basePrice: number };
+  certifications: { standard: string }[];
+  tags: string[];
+  category: string;
+  stock: number;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  description?: string;
+  imageUrl: string;
+  price: number;
+  stock: number;
+  tags: string[];
+  category: string;
+}
+
+interface Part {
+  id: string;
+  name: string;
+  description?: string;
+  imageUrl?: string;
+  category: string;
+}
 import { EgyptCertification, MachineSpec } from "@/types/shop";
 
 // Components
@@ -102,7 +132,6 @@ function useShopState() {
 }
 
 const ShopEnhanced = () => {
-  const { t } = useTranslation('shop');
   const { addToQuote } = useQuote();
   const {
     activeTab,
@@ -145,19 +174,19 @@ const ShopEnhanced = () => {
 
   // Format price with proper localization
   const formatPrice = useCallback((price?: number) => {
-    if (!price) return t("shop.contact_quote");
+    if (!price) return "Contact for Quote";
     const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
     return new Intl.NumberFormat(locale, {
       style: "currency",
       currency: "EGP",
       minimumFractionDigits: 0
     }).format(price);
-  }, [t]);
+  }, []);
 
   // Handle filter changes
   const handleFilterChange = useCallback((key: keyof ShopFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
-  }, [setFilters]);
+  }, []);
 
   // Toggle comparison
   const handleToggleCompare = useCallback((product: Machine) => {
@@ -167,7 +196,7 @@ const ShopEnhanced = () => {
         ? prev.filter(p => p.id !== product.id)
         : [...prev, product].slice(0, 4);
     });
-  }, [setComparisonList]);
+  }, []);
 
   // Memoized filtering logic
   const filteredProducts = useMemo(() => {
@@ -229,11 +258,11 @@ const ShopEnhanced = () => {
   }, [setIsLoading]);
 
   const menuData = [
-    { label: t("shop.tabs.industrial-machines"), key: "industrial-machines" },
-    { label: t("shop.tabs.industrial-parts"), key: "industrial-parts" },
-    { label: t("shop.tabs.egypt-standards"), key: "egypt-standards" },
-    { label: t("shop.tabs.nile-logistics"), key: "nile-logistics" },
-    { label: t("shop.tabs.local-support"), key: "local-support" }
+    { label: "Industrial Machines", key: "industrial-machines" },
+    { label: "Industrial Parts", key: "industrial-parts" },
+    { label: "Egypt Standards", key: "egypt-standards" },
+    { label: "Nile Logistics", key: "nile-logistics" },
+    { label: "Local Support", key: "local-support" }
   ];
 
   
@@ -246,10 +275,10 @@ const ShopEnhanced = () => {
         <div className="container mx-auto px-4 py-12">
           <div className="mb-16 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              <span className="text-gradient-orange">{t("shop.title.yilmaz_authorized")}</span>
+              <span className="text-gradient-orange">YILMAZ Authorized Dealer</span>
             </h1>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-              {t("shop.subtitle.authorized_dealer")}
+              Premium industrial machinery and equipment for Egyptian manufacturers
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
               <NeonButton 
@@ -257,7 +286,7 @@ const ShopEnhanced = () => {
                 size="lg" 
                 onClick={() => setAdvisorOpen(true)}
               >
-                {t("shop.buttons.ai_advisor")}
+                AI Equipment Advisor
               </NeonButton>
               
             </div>
@@ -278,7 +307,7 @@ const ShopEnhanced = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 bg-almona-darker p-4 rounded-lg">
                 <div className="w-full md:w-1/2">
                   <Input 
-                    placeholder={t("shop.search_placeholder")} 
+                    placeholder="Search products..." 
                     className="bg-almona-dark border-almona-light"
                     value={filters.searchTerm}
                     onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
@@ -290,13 +319,13 @@ const ShopEnhanced = () => {
                     onValueChange={(value) => handleFilterChange('category', value)}
                   >
                     <SelectTrigger className="w-[180px] bg-almona-darker border-almona-light">
-                      <SelectValue placeholder={t("shop.filter_by_category")} />
+                      <SelectValue placeholder="Filter by Category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">{t("shop.filters.all_categories")}</SelectItem>
-                      <SelectItem value="cutting">{t("shop.filters.cutting")}</SelectItem>
-                      <SelectItem value="welding">{t("shop.filters.welding")}</SelectItem>
-                      <SelectItem value="processing">{t("shop.filters.processing")}</SelectItem>
+                      <SelectItem value="all">All Categories</SelectItem>
+                      <SelectItem value="cutting">Cutting</SelectItem>
+                      <SelectItem value="welding">Welding</SelectItem>
+                      <SelectItem value="processing">Processing</SelectItem>
                     </SelectContent>
                   </Select>
                   <Select 
@@ -304,13 +333,13 @@ const ShopEnhanced = () => {
                     onValueChange={(value) => handleFilterChange('sortBy', value)}
                   >
                     <SelectTrigger className="w-[180px] bg-almona-darker border-almona-light">
-                      <SelectValue placeholder={t("shop.sort_by")} />
+                      <SelectValue placeholder="Sort By" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="featured">{t("shop.sort.featured")}</SelectItem>
-                      <SelectItem value="price-low">{t("shop.sort.price_low")}</SelectItem>
-                      <SelectItem value="price-high">{t("shop.sort.price_high")}</SelectItem>
-                      <SelectItem value="name">{t("shop.sort.name")}</SelectItem>
+                      <SelectItem value="featured">Featured</SelectItem>
+                      <SelectItem value="price-low">Price: Low to High</SelectItem>
+                      <SelectItem value="price-high">Price: High to Low</SelectItem>
+                      <SelectItem value="name">Name</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -329,7 +358,7 @@ const ShopEnhanced = () => {
             {/* Product Grid */}
             <TabsContent value={activeTab}>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <ErrorBoundary fallback={<div>{t("shop.errors.product_load")}</div>}>
+                <ErrorBoundary fallback={<div>Error loading products</div>}>
                   {isLoading ? (
                     Array.from({ length: 6 }).map((_, index) => (
                       <Skeleton key={index} className="w-full h-96" />
@@ -350,18 +379,18 @@ const ShopEnhanced = () => {
                             stock={product.stock}
                             actions={[
                               {
-                                label: t("shop.buttons.configure"),
+                                label: "Configure",
                                 action: () => {
                                   setSelectedProduct(product.id);
                                   setViewMode("configurator");
                                 },
                               },
                               {
-                                label: t("shop.buttons.quick_view"),
+                                label: "Quick View",
                                 action: () => setQuickViewProduct(product),
                               },
                               {
-                                label: t("shop.buttons.add_to_quote"),
+                                label: "Add to Quote",
                                 action: () => {
                                   addToQuote(product as any);
                                   toast.success(`${product.name} has been added to your quote.`);
@@ -369,8 +398,8 @@ const ShopEnhanced = () => {
                               },
                               {
                                 label: comparisonList.some((p) => p.id === product.id)
-                                  ? t("shop.buttons.remove_compare")
-                                  : t("shop.buttons.compare"),
+                                  ? "Remove Compare"
+                                  : "Compare",
                                 action: () => {
                                   if ("specifications" in product) {
                                     handleToggleCompare(product);
@@ -394,7 +423,7 @@ const ShopEnhanced = () => {
                             stock={product.stock}
                             actions={[
                               {
-                                label: t("shop.buttons.add_to_quote"),
+                                label: "Add to Quote",
                                 action: () => {
                                   addToQuote(product as any);
                                   toast.success(`${product.name} has been added to your quote.`);
@@ -417,7 +446,7 @@ const ShopEnhanced = () => {
                             stock={undefined}
                             actions={[
                               {
-                                label: t("shop.buttons.add_to_quote"),
+                                label: "Add to Quote",
                                 action: () => {
                                   addToQuote(product as any);
                                   toast.success(`${product.name} has been added to your quote.`);
@@ -440,7 +469,7 @@ const ShopEnhanced = () => {
                 onClick={() => setDisplayedProductCount(prev => prev + PRODUCTS_PER_LOAD)}
                 className="bg-almona-dark border-almona-light"
               >
-                {t('shop.buttons.load_more')}
+                Load More
               </Button>
             </div>
           )}

@@ -1,215 +1,375 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Label } from '@/shared/ui/ui/label';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/shared/ui/ui/card';
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/shared/ui/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/ui/avatar';
-import { Search, MessageSquare, FileText, Video, User, Settings, LogOut } from 'lucide-react';
-import { useAuth } from '@/lib/auth';
-import { AuthForm } from '@/components/contact/AuthForm';
-import { Ticket, Machine } from '@/types';
-import { MyMachines } from './MyMachines';
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/context/AuthContext';
+import { api } from '@/lib/api';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { toast } from 'sonner';
+import { motion } from 'framer-motion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { 
+  Package, 
+  Wrench, 
+  FileText, 
+  Download, 
+  Calendar, 
+  Clock, 
+  Search,
+  Plus,
+  AlertTriangle,
+  CheckCircle,
+  Clock4
+} from 'lucide-react';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 
-// NOTE: Retaining these interfaces for parts of the component that are not yet refactored.
-interface KnowledgeItem {
-  id: string;
-  title: string;
-  type: 'article' | 'video' | 'guide';
-  category: string;
-  lastUpdated: string;
-}
+const CustomerPortal = () => {
+  const { user } = useAuth();
 
-interface FabricationRecord {
-  id: string;
-  date: string;
-  materialEfficiency: number;
-  cutQuality: number;
-  maintenanceImpact: string;
-}
-
-const FabricationHistory = ({ machineId }: { machineId: string }) => {
-  const [history, setHistory] = useState<FabricationRecord[]>([
-    { id: '1', date: '2023-11-01', materialEfficiency: 85, cutQuality: 90, maintenanceImpact: 'Low downtime, no issues' },
-    { id: '2', date: '2023-11-10', materialEfficiency: 80, cutQuality: 88, maintenanceImpact: 'Minor blade wear detected' },
-    { id: '3', date: '2023-11-15', materialEfficiency: 82, cutQuality: 85, maintenanceImpact: 'Scheduled maintenance performed' },
-  ]);
-
-  return (
-    <Card>
-      <CardHeader><CardTitle>Fabrication Performance</CardTitle></CardHeader>
-      <CardContent>
-        <Tabs defaultValue="efficiency">
-          <TabsList>
-            <TabsTrigger value="efficiency">Material Efficiency</TabsTrigger>
-            <TabsTrigger value="quality">Cut Quality</TabsTrigger>
-            <TabsTrigger value="maintenance">Maintenance Impact</TabsTrigger>
-          </TabsList>
-          <TabsContent value="efficiency"><ul>{history.map(r => <li key={r.id}>{r.date}: {r.materialEfficiency}%</li>)}</ul></TabsContent>
-          <TabsContent value="quality"><ul>{history.map(r => <li key={r.id}>{r.date}: {r.cutQuality}%</li>)}</ul></TabsContent>
-          <TabsContent value="maintenance"><ul>{history.map(r => <li key={r.id}>{r.date}: {r.maintenanceImpact}</li>)}</ul></TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
-  );
-};
-
-export const CustomerPortal = () => {
-  const { user, login, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('tickets');
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [machines, setMachines] = useState<Machine[]>([]);
-
-  const [knowledgeBase, setKnowledgeBase] = useState<KnowledgeItem[]>([
-    { id: '1', title: 'Hydraulic System Maintenance Guide', type: 'guide', category: 'Maintenance', lastUpdated: '2023-10-15' },
-    { id: '2', title: 'Troubleshooting Electrical Issues', type: 'article', category: 'Troubleshooting', lastUpdated: '2023-09-28' },
-  ]);
-
-  const [newTicket, setNewTicket] = useState({
-    title: '',
-    description: '',
-    priority: 'medium' as Ticket['priority'],
-    machineId: '',
-    attachments: [] as File[],
+  const { data: machines, isLoading: isLoadingMachines, error: machinesError } = useQuery({
+    queryKey: ['machines', user?.id],
+    queryFn: () => api.fetchUserMachines(user!.id),
+    enabled: !!user,
   });
 
-  useEffect(() => {
-    if (user) {
-      const mockMachines: Machine[] = [
-        { id: 'machine-001', name: 'Yilmaz DC 421 PBS', description: 'Cutting machine', imageUrl: '', category: 'cutting-machines', releaseDate: '2022-01-01', type: 'Semi-Automatic', powerSpec: { voltage: '400V', frequency: '50Hz', phase: '3', consumption: '2.2 kW' }, dimensions: { length: '1200mm', width: '800mm', height: '1500mm' }, specifications: [] },
-        { id: 'machine-002', name: 'Yilmaz FR 221 S', description: 'Copy router', imageUrl: '', category: 'processing-centers', releaseDate: '2021-06-15', type: 'Manual', powerSpec: { voltage: '230V', frequency: '50Hz', phase: '1', consumption: '1.1 kW' }, dimensions: { length: '700mm', width: '600mm', height: '1300mm' }, specifications: [] },
-      ];
-      setMachines(mockMachines);
+  const { data: tickets, isLoading: isLoadingTickets, error: ticketsError } = useQuery({
+    queryKey: ['tickets', user?.id],
+    queryFn: () => api.fetchUserTickets(user!.id),
+    enabled: !!user,
+  });
 
-      const mockTickets: Ticket[] = [
-        { id: '1', title: 'Hydraulic system leak', description: 'Small leak observed near the main pump.', status: 'in-progress', priority: 'high', userId: user.id, machineId: 'machine-001', createdAt: '2023-11-10', updatedAt: '2023-11-12' },
-        { id: '2', title: 'Software update request', description: 'Requesting version 2.1.', status: 'open', priority: 'medium', userId: user.id, machineId: 'machine-002', createdAt: '2023-11-15', updatedAt: '2023-11-15' },
-      ];
-      setTickets(mockTickets);
-    }
-  }, [user]);
+  const { data: documents, isLoading: isLoadingDocuments, error: documentsError } = useQuery({
+    queryKey: ['documents', user?.id],
+    queryFn: () => api.fetchUserDocuments(user!.id),
+    enabled: !!user,
+  });
 
-  const createTicket = () => {
-    if (!user) return;
-    const ticket: Ticket = {
-      id: (tickets.length + 1).toString(),
-      title: newTicket.title,
-      description: newTicket.description,
-      status: 'open',
-      priority: newTicket.priority,
-      userId: user.id,
-      machineId: newTicket.machineId,
-      attachments: newTicket.attachments.map(f => f.name),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    setTickets([...tickets, ticket]);
-    setNewTicket({ title: '', description: '', priority: 'medium', machineId: '', attachments: [] });
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'low': return 'bg-blue-500/10 text-blue-500';
-      case 'medium': return 'bg-yellow-500/10 text-yellow-500';
-      case 'high': return 'bg-orange-500/10 text-orange-500';
-      case 'critical': return 'bg-red-500/10 text-red-500';
-      default: return '';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'open': return 'bg-gray-500/10 text-gray-500';
-      case 'in-progress': return 'bg-blue-500/10 text-blue-500';
-      case 'resolved': return 'bg-green-500/10 text-green-500';
-      case 'closed': return 'bg-purple-500/10 text-purple-500';
-      default: return '';
-    }
-  };
-
-  const getTypeIcon = (type: string) => {
-    if (type === 'article' || type === 'guide') return <FileText className="h-4 w-4" />;
-    if (type === 'video') return <Video className="h-4 w-4" />;
-    return null;
-  };
-
-  if (!user) {
-    return <AuthForm onLogin={login} />;
+  if (isLoadingMachines || isLoadingTickets || isLoadingDocuments) {
+    return (
+      <div className="flex flex-col min-h-screen bg-almona-dark">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-almona-orange"></div>
+        </div>
+      </div>
+    );
   }
 
+  if (machinesError) {
+    toast.error(machinesError.message || 'Failed to fetch machines.');
+  }
+
+  if (ticketsError) {
+    toast.error(ticketsError.message || 'Failed to fetch tickets.');
+  }
+
+  if (documentsError) {
+    toast.error(documentsError.message || 'Failed to fetch documents.');
+  }
+
+  const getStatusBadge = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'open':
+        return <Badge variant="outline" className="bg-blue-500/20 text-blue-300 border-blue-500/50"><Clock4 className="h-3 w-3 mr-1" /> Open</Badge>;
+      case 'in progress':
+        return <Badge variant="outline" className="bg-amber-500/20 text-amber-300 border-amber-500/50"><Clock className="h-3 w-3 mr-1" /> In Progress</Badge>;
+      case 'resolved':
+        return <Badge variant="outline" className="bg-green-500/20 text-green-300 border-green-500/50"><CheckCircle className="h-3 w-3 mr-1" /> Resolved</Badge>;
+      case 'urgent':
+        return <Badge variant="outline" className="bg-red-500/20 text-red-300 border-red-500/50"><AlertTriangle className="h-3 w-3 mr-1" /> Urgent</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { type: 'spring', stiffness: 100 }
+    }
+  };
+
   return (
-    <div className="flex h-full bg-almona-dark text-white">
-      <div className="w-64 bg-almona-darker/50 border-r border-almona-light/20 p-4 flex flex-col">
-        <div className="flex items-center gap-3 mb-8">
-          <Avatar><AvatarImage src="" /><AvatarFallback>{user.name.charAt(0)}</AvatarFallback></Avatar>
-          <div><p className="font-medium">{user.name}</p><p className="text-sm text-gray-400 capitalize">{user.role}</p></div>
-        </div>
-        <nav className="flex-1 space-y-1">
-          <Button variant="ghost" className="w-full justify-start" onClick={() => setActiveTab('tickets')}><MessageSquare className="h-4 w-4 mr-2" />Service Tickets</Button>
-          <Button variant="ghost" className="w-full justify-start" onClick={() => setActiveTab('knowledge')}><FileText className="h-4 w-4 mr-2" />Knowledge Base</Button>
-          <Button variant="ghost" className="w-full justify-start" onClick={() => setActiveTab('my-machines')}><User className="h-4 w-4 mr-2" />My Machines</Button>
-          {user.role === 'admin' && (<Button variant="ghost" className="w-full justify-start" onClick={() => setActiveTab('analytics')}><Settings className="h-4 w-4 mr-2" />Analytics</Button>)}
-        </nav>
-        <Button variant="ghost" className="w-full justify-start mt-auto" onClick={logout}><LogOut className="h-4 w-4 mr-2" />Sign Out</Button>
-      </div>
+    <div className="flex flex-col min-h-screen bg-almona-dark text-white">
+      <Navbar />
+      <main className="flex-grow pt-24 pb-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="container mx-auto px-4"
+        >
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name || user?.email}</h1>
+            <p className="text-gray-400">Manage your machines, support tickets, and account details</p>
+          </div>
 
-      <div className="flex-1 p-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5 mb-6">
-            <TabsTrigger value="tickets">Service Tickets</TabsTrigger>
-            <TabsTrigger value="knowledge">Knowledge Base</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="fabrication">Fabrication</TabsTrigger>
-            <TabsTrigger value="my-machines">My Machines</TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="machines" className="mb-8">
+            <TabsList className="grid w-full grid-cols-3 bg-almona-dark/80 rounded-lg p-1">
+              <TabsTrigger value="machines" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">My Machines</TabsTrigger>
+              <TabsTrigger value="support" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">Support Tickets</TabsTrigger>
+              <TabsTrigger value="documents" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">Documents</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="tickets">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader><CardTitle>Create New Service Ticket</CardTitle></CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div><Label htmlFor="title">Title</Label><Input id="title" value={newTicket.title} onChange={(e) => setNewTicket({ ...newTicket, title: e.target.value })} /></div>
-                    <div><Label htmlFor="description">Description</Label><Input id="description" value={newTicket.description} onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })} /></div>
-                    <div>
-                      <Label htmlFor="priority">Priority</Label>
-                      <Select value={newTicket.priority} onValueChange={(v) => setNewTicket({ ...newTicket, priority: v as Ticket['priority'] })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="low">Low</SelectItem><SelectItem value="medium">Medium</SelectItem><SelectItem value="high">High</SelectItem><SelectItem value="critical">Critical</SelectItem></SelectContent></Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="machine">Machine</Label>
-                      <Select value={newTicket.machineId} onValueChange={(v) => setNewTicket({ ...newTicket, machineId: v })}><SelectTrigger><SelectValue placeholder="Select machine" /></SelectTrigger><SelectContent>{machines.map(m => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}</SelectContent></Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="attachments">Attachments</Label>
-                      <Input id="attachments-input" type="file" multiple className="hidden" onChange={(e) => setNewTicket({ ...newTicket, attachments: Array.from(e.target.files || []) })} />
-                      <Button variant="outline" onClick={() => document.getElementById('attachments-input')?.click()}>Upload Files</Button>
-                      {newTicket.attachments.length > 0 && <div className="mt-2 text-sm text-gray-400">{newTicket.attachments.map(f => f.name).join(', ')}</div>}
-                    </div>
+            <TabsContent value="machines">
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="space-y-6"
+              >
+                <motion.div variants={itemVariants} className="flex justify-between items-center">
+                  <div className="relative w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input placeholder="Search machines..." className="pl-10 bg-almona-dark/60 border-almona-light/30" />
                   </div>
-                </CardContent>
-                <CardFooter><Button className="w-full" onClick={createTicket}>Submit Ticket</Button></CardFooter>
-              </Card>
-              <Card>
-                <CardHeader><CardTitle>My Service Tickets</CardTitle></CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader><TableRow><TableHead>ID</TableHead><TableHead>Title</TableHead><TableHead>Status</TableHead><TableHead>Priority</TableHead><TableHead>Machine</TableHead><TableHead>Updated</TableHead></TableRow></TableHeader>
-                    <TableBody>{tickets.map((ticket) => (<TableRow key={ticket.id}><TableCell>#{ticket.id}</TableCell><TableCell>{ticket.title}</TableCell><TableCell><Badge className={getStatusColor(ticket.status)}>{ticket.status}</Badge></TableCell><TableCell><Badge className={getPriorityColor(ticket.priority)}>{ticket.priority}</Badge></TableCell><TableCell>{machines.find(m => m.id === ticket.machineId)?.name || 'N/A'}</TableCell><TableCell>{new Date(ticket.updatedAt).toLocaleDateString()}</TableCell></TableRow>))}</TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+                  <Button className="bg-gradient-orange hover:bg-almona-orange-dark text-white">
+                    <Plus className="h-4 w-4 mr-2" /> Register New Machine
+                  </Button>
+                </motion.div>
 
-          <TabsContent value="knowledge"><Card><CardHeader><CardTitle>Knowledge Base</CardTitle></CardHeader><CardContent>...</CardContent></Card></TabsContent>
-          <TabsContent value="analytics"><Card><CardHeader><CardTitle>Analytics</CardTitle></CardHeader><CardContent>...</CardContent></Card></TabsContent>
-          <TabsContent value="fabrication"><FabricationHistory machineId="machine-123" /></TabsContent>
-          <TabsContent value="my-machines"><MyMachines machines={machines} /></TabsContent>
-        </Tabs>
-      </div>
+                {machines && machines.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {machines.map((machine, index) => (
+                      <motion.div 
+                        key={machine.id}
+                        variants={itemVariants}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm hover:border-almona-orange/50 transition-colors h-full">
+                          <CardHeader className="pb-3">
+                            <div className="flex justify-between items-start">
+                              <CardTitle className="text-xl">{machine.name}</CardTitle>
+                              <Badge variant="secondary" className="bg-green-500/20 text-green-300 border-green-500/50">Active</Badge>
+                            </div>
+                            <CardDescription className="text-gray-400">{machine.model}</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-3 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Serial Number:</span>
+                                <span className="font-mono">{machine.serialNumber || 'N/A'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Installation Date:</span>
+                                <span>{machine.installationDate || 'N/A'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Warranty:</span>
+                                <span className="text-green-400">Active until 2025</span>
+                              </div>
+                            </div>
+                            <div className="flex gap-2 mt-4 pt-4 border-t border-almona-light/10">
+                              <Button variant="outline" size="sm" className="flex-1 border-almona-light/30 text-almona-light hover:bg-almona-light/10">
+                                <Wrench className="h-4 w-4 mr-2" /> Service History
+                              </Button>
+                              <Button size="sm" className="flex-1 bg-almona-orange/20 text-almona-orange hover:bg-almona-orange/30 border-almona-orange/30">
+                                <FileText className="h-4 w-4 mr-2" /> Manuals
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <motion.div 
+                    variants={itemVariants}
+                    className="text-center py-12 border border-dashed border-almona-light/30 rounded-lg"
+                  >
+                    <Package className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-400 mb-2">No machines registered yet</h3>
+                    <p className="text-gray-500 mb-4">Register your first machine to get started with support and services</p>
+                    <Button className="bg-gradient-orange hover:bg-almona-orange-dark text-white">
+                      <Plus className="h-4 w-4 mr-2" /> Register Machine
+                    </Button>
+                  </motion.div>
+                )}
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="support">
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="space-y-6"
+              >
+                <motion.div variants={itemVariants} className="flex justify-between items-center">
+                  <div className="relative w-64">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input placeholder="Search tickets..." className="pl-10 bg-almona-dark/60 border-almona-light/30" />
+                  </div>
+                  <Button className="bg-gradient-orange hover:bg-almona-orange-dark text-white">
+                    <Plus className="h-4 w-4 mr-2" /> Create New Ticket
+                  </Button>
+                </motion.div>
+
+                {tickets && tickets.length > 0 ? (
+                  <div className="space-y-4">
+                    {tickets.map((ticket, index) => (
+                      <motion.div 
+                        key={ticket.id}
+                        variants={itemVariants}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm hover:border-almona-orange/50 transition-colors">
+                          <CardContent className="p-6">
+                            <div className="flex justify-between items-start mb-4">
+                              <div>
+                                <h3 className="font-semibold text-lg">{ticket.subject}</h3>
+                                <p className="text-gray-400 text-sm">Ticket #{ticket.id.slice(0, 8)}</p>
+                              </div>
+                              {getStatusBadge(ticket.status)}
+                            </div>
+                            <p className="text-gray-300 mb-4">{ticket.description}</p>
+                            <div className="flex justify-between items-center text-sm text-gray-400">
+                              <div className="flex items-center">
+                                <Calendar className="h-4 w-4 mr-1" />
+                                Created: {new Date(ticket.createdAt).toLocaleDateString()}
+                              </div>
+                              <div className="flex items-center">
+                                <Clock className="h-4 w-4 mr-1" />
+                                Last updated: {new Date(ticket.updatedAt).toLocaleDateString()}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <motion.div 
+                    variants={itemVariants}
+                    className="text-center py-12 border border-dashed border-almona-light/30 rounded-lg"
+                  >
+                    <FileText className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-400 mb-2">No support tickets yet</h3>
+                    <p className="text-gray-500 mb-4">Create your first support ticket to get help with your machines</p>
+                    <Button className="bg-gradient-orange hover:bg-almona-orange-dark text-white">
+                      <Plus className="h-4 w-4 mr-2" /> Create Ticket
+                    </Button>
+                  </motion.div>
+                )}
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="documents">
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="space-y-6"
+              >
+                <motion.div variants={itemVariants} className="relative w-64">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input placeholder="Search documents..." className="pl-10 bg-almona-dark/60 border-almona-light/30" />
+                </motion.div>
+
+                {documents && documents.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {documents.map((document, index) => (
+                      <motion.div 
+                        key={document.id}
+                        variants={itemVariants}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm hover:border-almona-orange/50 transition-colors h-full">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-lg">{document.title}</CardTitle>
+                            <CardDescription className="text-gray-400">{document.type}</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="flex justify-between items-center text-sm text-gray-400 mb-4">
+                              <span>Uploaded: {new Date(document.uploadDate).toLocaleDateString()}</span>
+                              <span>{document.size}</span>
+                            </div>
+                            <Button variant="outline" className="w-full border-almona-light/30 text-almona-light hover:bg-almona-light/10">
+                              <Download className="h-4 w-4 mr-2" /> Download
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <motion.div 
+                    variants={itemVariants}
+                    className="text-center py-12 border border-dashed border-almona-light/30 rounded-lg"
+                  >
+                    <FileText className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-400 mb-2">No documents available</h3>
+                    <p className="text-gray-500">Your manuals, warranties, and other documents will appear here</p>
+                  </motion.div>
+                )}
+              </motion.div>
+            </TabsContent>
+          </Tabs>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12"
+          >
+            <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center">
+                  <Package className="h-5 w-5 mr-2 text-almona-orange" /> Registered Machines
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{machines?.length || 0}</p>
+                <p className="text-sm text-gray-400 mt-1">Total machines in your account</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center">
+                  <FileText className="h-5 w-5 mr-2 text-almona-orange" /> Active Tickets
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{tickets?.filter(t => t.status !== 'resolved').length || 0}</p>
+                <p className="text-sm text-gray-400 mt-1">Open support requests</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center">
+                  <Download className="h-5 w-5 mr-2 text-almona-orange" /> Documents
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{documents?.length || 0}</p>
+                <p className="text-sm text-gray-400 mt-1">Available manuals & resources</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
+      </main>
+      <Footer />
     </div>
   );
 };
+
+export default CustomerPortal;

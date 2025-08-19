@@ -14,6 +14,8 @@ export default defineConfig(({ mode }) => {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
       __VERSION__: JSON.stringify(process.env.npm_package_version || "1.0.0"),
+      // Add global polyfills for Node.js modules
+      global: "globalThis",
     },
     server: {
       host: "::",
@@ -33,10 +35,12 @@ export default defineConfig(({ mode }) => {
       ...(isProduction
         ? [
             visualizer({
-              filename: "dist/stats.html",
+              filename: "dist/stats.json",
               open: false,
               gzipSize: true,
               brotliSize: true,
+              template: "raw-data",
+              sourcemap: true,
             }),
           ]
         : []),
@@ -45,6 +49,12 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
+        // Add Node.js module polyfills
+        "stream": path.resolve(__dirname, "./src/lib/polyfills/stream.ts"),
+        "http": path.resolve(__dirname, "./src/lib/polyfills/http.ts"),
+        "https": path.resolve(__dirname, "./src/lib/polyfills/https.ts"),
+        "url": path.resolve(__dirname, "./src/lib/polyfills/url.ts"),
+        "zlib": path.resolve(__dirname, "./src/lib/polyfills/zlib.ts"),
       },
     },
 
@@ -63,7 +73,7 @@ export default defineConfig(({ mode }) => {
       target: "esnext",
       minify: isProduction ? "esbuild" : false,
       sourcemap: !isProduction,
-      chunkSizeWarningLimit: 1000,
+      chunkSizeWarningLimit: 500, // Reduced from 1000 to 500kb
       assetsInlineLimit: 4096, // 4kb
 
       // Rollup options for advanced bundling
@@ -74,12 +84,25 @@ export default defineConfig(({ mode }) => {
         external: [],
 
         output: {
-          // Advanced chunking strategy
+          // Improved chunking strategy to reduce bundle sizes
           manualChunks: {
-            "react-vendor": ["react", "react-dom", "react-router-dom"],
-            "three-vendor": ["three", "@react-three/drei", "@react-three/fiber"],
-            "ui-vendor": ["@radix-ui/react-accordion", "lucide-react"],
-            // Add more manual chunks here for other large dependencies
+            "react-vendor": ["react", "react-dom"],
+            "router-vendor": ["react-router-dom"],
+            "query-vendor": ["@tanstack/react-query"],
+            "three-vendor": ["three"],
+            "three-react": ["@react-three/drei", "@react-three/fiber"],
+            "ui-vendor": [
+              "@radix-ui/react-accordion",
+              "@radix-ui/react-dialog", 
+              "@radix-ui/react-dropdown-menu",
+              "@radix-ui/react-select",
+              "@radix-ui/react-tabs"
+            ],
+            "form-vendor": ["react-hook-form", "@hookform/resolvers", "zod"],
+            "chart-vendor": ["chart.js", "react-chartjs-2", "recharts"],
+            "motion-vendor": ["framer-motion"],
+            "icons-vendor": ["lucide-react"],
+            "supabase-vendor": ["@supabase/supabase-js"],
           },
 
           // Optimize chunk names for caching
@@ -107,22 +130,29 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
+    },
 
-      // Optimize dependencies
-      optimizeDeps: {
-        include: [
-          "react",
-          "react-dom",
-          "react-router-dom",
-          "@tanstack/react-query",
-          "framer-motion",
-          "lucide-react",
-        ],
-        exclude: [
-          // Exclude large libraries that should be loaded on demand
-          "@tensorflow/tfjs",
-          "three",
-        ],
+    // Optimize dependencies
+    optimizeDeps: {
+      include: [
+        "react",
+        "react-dom",
+        "react-router-dom",
+        "@tanstack/react-query",
+        "framer-motion",
+        "lucide-react",
+        "@supabase/supabase-js",
+      ],
+      exclude: [
+        // Exclude large libraries that should be loaded on demand
+        "@tensorflow/tfjs",
+        "three",
+      ],
+      // Add Node.js polyfills for dependencies
+      esbuildOptions: {
+        define: {
+          global: "globalThis",
+        },
       },
     },
 
