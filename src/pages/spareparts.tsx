@@ -22,6 +22,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
+import { type VariantProps } from "class-variance-authority";
 import { Input } from "@/shared/ui/ui/input";
 import { Card, CardContent } from "@/shared/ui/ui/card";
 import {
@@ -276,8 +277,7 @@ const SpareParts = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button 
                 onClick={() => setAiWizardOpen(true)}
-                className="bg-gradient-orange hover:bg-almona-orange-dark text-white px-8 py-6 rounded-full group"
-                size="lg"
+                className="bg-gradient-orange hover:bg-almona-orange-dark text-white px-8 py-6 rounded-full group h-11"
               >
                 <Sparkles className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
                 AI Part Finder
@@ -285,9 +285,7 @@ const SpareParts = () => {
               </Button>
               
               <Button 
-                variant="outline" 
-                className="border-almona-light text-white hover:bg-almona-light/10 px-8 py-6 rounded-full"
-                size="lg"
+                className="border border-almona-light text-white hover:bg-almona-light/10 px-8 py-6 rounded-full h-11"
               >
                 <Download className="mr-2 h-5 w-5" />
                 Parts Catalog
