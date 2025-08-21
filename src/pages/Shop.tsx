@@ -318,12 +318,28 @@ const Shop = () => {
     return yilmazMachines.map(product => {
       const machineSpecs = yilmazMachinesSpecs.find(spec => spec.id === product.id);
       const stock = inventory[product.id] ?? 0;
+
+      const parsedSpecifications = (machineSpecs?.specifications || product.specifications || []).map(spec => {
+        if (typeof spec === 'string') {
+          const parts = spec.split(':');
+          const key = parts[0]?.trim();
+          const value = parts.slice(1).join(':').trim();
+          return { key, value };
+        }
+        return spec; // Assume it's already in the correct format
+      });
+
+      const parsedCertifications = (machineSpecs?.certifications || product.certifications || []).map(cert => {
+        if (typeof cert === 'string') {
+          return { standard: cert };
+        }
+        return cert; // Assume it's already in the correct format
+      });
+
       return {
         ...product,
-        specifications: machineSpecs?.specifications 
-          ? Object.entries(machineSpecs.specifications).map(([key, value]) => ({ key, value }))
-          : product.specifications || [],
-        certifications: machineSpecs?.egyptCertifications || product.certifications || [],
+        specifications: parsedSpecifications,
+        certifications: parsedCertifications,
         stock,
         rating: Math.random() * 2 + 3, // Random rating between 3-5
         reviewCount: Math.floor(Math.random() * 50) + 5,
@@ -332,7 +348,7 @@ const Shop = () => {
         discount: Math.random() > 0.9 ? Math.floor(Math.random() * 30) + 5 : undefined
       };
     });
-  }, []);
+  }, [inventory, yilmazMachines, yilmazMachinesSpecs]);
 
   const uniqueProductsArray = useMemo(() => uniqueProducts, []);
   const allParts = useMemo(() => yilmazParts, []);
