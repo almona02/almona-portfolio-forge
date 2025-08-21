@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Facebook } from "lucide-react";
 import { toast } from "sonner";
@@ -10,24 +10,86 @@ interface FacebookLoginButtonProps {
 export const FacebookLoginButton: React.FC<FacebookLoginButtonProps> = ({
   onSuccess,
 }) => {
+  const [sdkLoaded, setSdkLoaded] = useState(false);
+
+  useEffect(() => {
+    // Load Facebook SDK
+    const loadFacebookSDK = () => {
+      if ((window as any).FB) {
+        setSdkLoaded(true);
+        return;
+      }
+
+      // Create script element
+      const script = document.createElement('script');
+      script.src = 'https://connect.facebook.net/en_US/sdk.js';
+      script.async = true;
+      script.defer = true;
+      script.crossOrigin = 'anonymous';
+      
+      script.onload = () => {
+        (window as any).FB.init({
+          appId: process.env.VITE_FACEBOOK_APP_ID || '1234567890', // Replace with your Facebook App ID
+          cookie: true,
+          xfbml: true,
+          version: 'v18.0'
+        });
+        setSdkLoaded(true);
+      };
+
+      script.onerror = () => {
+        console.error('Failed to load Facebook SDK');
+        toast.error('Failed to load Facebook SDK');
+      };
+
+      document.head.appendChild(script);
+    };
+
+    loadFacebookSDK();
+  }, []);
+
   const handleFacebookLogin = async () => {
     try {
-      // Initialize Facebook SDK
-      if (!(window as any).FB) {
-        toast.error("Facebook SDK not loaded");
+      // Check if Facebook SDK is loaded
+      if (!(window as any).FB || !sdkLoaded) {
+        toast.error("Facebook SDK not loaded. Please try again later.");
         return;
       }
 
       (window as any).FB.login(
         async (response: any) => {
           if (response.authResponse) {
-            // Redirect to backend for OAuth flow
-            const res = await fetch("/api/auth/facebook/login");
-            const data = await res.json();
-            if (data.url) {
-              window.location.href = data.url;
-            } else {
-              toast.error("Failed to initiate Facebook login.");
+            try {
+              // Get user info from Facebook
+              (window as any).FB.api('/me', { fields: 'name,email' }, async (userInfo: any) => {
+                try {
+                  // Send to backend for processing
+                  const res = await fetch("/api/auth/facebook/callback", {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      accessToken: response.authResponse.accessToken,
+                      userInfo: userInfo
+                    })
+                  });
+                  
+                  const data = await res.json();
+                  if (data.success) {
+                    toast.success("Successfully logged in with Facebook!");
+                    onSuccess();
+                  } else {
+                    toast.error(data.message || "Failed to complete Facebook login.");
+                  }
+                } catch (error) {
+                  console.error("Backend Facebook login error:", error);
+                  toast.error("Failed to complete Facebook login.");
+                }
+              });
+            } catch (error) {
+              console.error("Facebook API error:", error);
+              toast.error("Failed to get user information from Facebook.");
             }
           } else {
             toast.error("Facebook login cancelled or failed.");
@@ -36,6 +98,7 @@ export const FacebookLoginButton: React.FC<FacebookLoginButtonProps> = ({
         { scope: "email,public_profile" }
       );
     } catch (error) {
+      console.error("Facebook login error:", error);
       toast.error("Facebook login failed");
     }
   };
@@ -43,10 +106,11 @@ export const FacebookLoginButton: React.FC<FacebookLoginButtonProps> = ({
   return (
     <Button
       onClick={handleFacebookLogin}
-      className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center"
+      disabled={!sdkLoaded}
+      className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white flex items-center justify-center"
     >
       <Facebook className="w-5 h-5 mr-2" />
-      Facebook
+      {sdkLoaded ? 'Facebook' : 'Loading Facebook...'}
     </Button>
   );
 };

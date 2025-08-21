@@ -37,6 +37,8 @@ const Register = lazy(() => import("./pages/Register"));
 const CustomerPortal = lazy(() => import("./pages/CustomerPortal"));
 const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute"));
 const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine"));
+const FabricationServices = lazy(() => import("./pages/FabricationServices"));
+const SpareParts = lazy(() => import("./pages/SpareParts"));
 
 // Apply dark mode by default
 import { ThemeProvider } from "next-themes";
@@ -295,6 +297,22 @@ const App = () => (
                         <ProtectedRoute>
                           <SellUsedMachine />
                         </ProtectedRoute>
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/fabrication-services"
+                    element={
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <FabricationServices />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/spare-parts"
+                    element={
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <SpareParts />
                       </Suspense>
                     }
                   />

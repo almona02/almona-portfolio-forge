@@ -14,8 +14,8 @@ const Footer = () => {
           <div>
             <h3 className="text-xl font-bold text-gradient-orange mb-4">ALMONA Co.</h3>
             <p className="text-gray-400 mb-4">
-              Authorized dealer of YILMAZ machines and ALFAPEN profiles in Egypt since 1991.
-              Delivering quality products and services to the aluminum and UPVC industry.
+              Authorized dealer of YILMAZ machines and ALFAPEN profiles in Egypt . company established 1991.
+              Delivering quality products and services to the equipments and machinery industry.
             </p>
             <div className="flex space-x-3">
               <Button size="icon" variant="outline" className="rounded-full border-almona-orange">
