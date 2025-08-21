@@ -1,5 +1,3 @@
-// Create a new file: src/pages/SpareParts.tsx
-
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,7 +20,6 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
-import { type VariantProps } from "class-variance-authority";
 import { Input } from "@/shared/ui/ui/input";
 import { Card, CardContent } from "@/shared/ui/ui/card";
 import {
@@ -114,8 +111,7 @@ const spareParts: SparePart[] = [
     },
     isCritical: false,
     popularity: 88
-  },
-  // Add more parts as needed...
+  }
 ];
 
 const partCategories: PartCategory[] = [
@@ -203,57 +199,6 @@ const SpareParts = () => {
     });
   };
 
-  const handleAiWizardNext = () => {
-    if (aiStep < 3) {
-      setAiStep(prev => prev + 1);
-    } else {
-      // Process AI recommendations
-      setAiWizardOpen(false);
-      setAiStep(0);
-      // Apply filters based on AI selections
-      if (aiSelections.machine) setSelectedMachine(aiSelections.machine);
-      if (aiSelections.category) setSelectedCategory(aiSelections.category);
-    }
-  };
-
-  const handleAiSelection = (step: string, value: string) => {
-    setAiSelections(prev => ({ ...prev, [step]: value }));
-  };
-
-  const aiSteps = [
-    {
-      question: "Which machine are you looking parts for?",
-      options: yilmazMachines.map(machine => ({
-        value: machine.id,
-        label: machine.name
-      }))
-    },
-    {
-      question: "What type of part do you need?",
-      options: partCategories.map(cat => ({
-        value: cat.id,
-        label: cat.name
-      }))
-    },
-    {
-      question: "What specific issue are you experiencing?",
-      options: [
-        { value: "wear", label: "Normal wear and tear" },
-        { value: "breakage", label: "Part breakage" },
-        { value: "performance", label: "Performance issues" },
-        { value: "preventive", label: "Preventive maintenance" }
-      ]
-    },
-    {
-      question: "How urgently do you need this part?",
-      options: [
-        { value: "critical", label: "Critical - Machine is down" },
-        { value: "urgent", label: "Urgent - Needed within days" },
-        { value: "planned", label: "Planned - For future maintenance" }
-      ]
-    }
-  ];
-
   return (
     <div className="flex flex-col min-h-screen bg-almona-dark text-white">
       <Navbar />
@@ -273,24 +218,6 @@ const SpareParts = () => {
             <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
               Original manufacturer parts with warranty for optimal machine performance and longevity
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button 
-                onClick={() => setAiWizardOpen(true)}
-                className="bg-gradient-orange hover:bg-almona-orange-dark text-white px-8 py-6 rounded-full group h-11"
-              >
-                <Sparkles className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                AI Part Finder
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              
-              <Button 
-                className="border border-almona-light text-white hover:bg-almona-light/10 px-8 py-6 rounded-full h-11"
-              >
-                <Download className="mr-2 h-5 w-5" />
-                Parts Catalog
-              </Button>
-            </div>
           </motion.div>
 
           {/* Search and Filter Bar */}
@@ -312,9 +239,8 @@ const SpareParts = () => {
               </div>
               
               <Button 
-                variant="outline" 
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 border-almona-light/30 text-white hover:bg-almona-light/10"
+                className="flex items-center gap-2 border-almona-light/30 text-white hover:bg-almona-light/10 bg-transparent border"
               >
                 <Filter className="h-4 w-4" />
                 Filters
@@ -325,88 +251,6 @@ const SpareParts = () => {
                 )}
               </Button>
             </div>
-
-            {/* Expanded Filters */}
-            <AnimatePresence>
-              {showFilters && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-                >
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Machine</label>
-                    <Select value={selectedMachine} onValueChange={setSelectedMachine}>
-                      <SelectTrigger className="bg-almona-dark border-almona-light/30">
-                        <SelectValue placeholder="All Machines" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Machines</SelectItem>
-                        {yilmazMachines.map(machine => (
-                          <SelectItem key={machine.id} value={machine.id}>
-                            {machine.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Category</label>
-                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                      <SelectTrigger className="bg-almona-dark border-almona-light/30">
-                        <SelectValue placeholder="All Categories" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Categories</SelectItem>
-                        {partCategories.map(category => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Subcategory</label>
-                    <Select value={selectedSubcategory} onValueChange={setSelectedSubcategory}>
-                      <SelectTrigger className="bg-almona-dark border-almona-light/30">
-                        <SelectValue placeholder="All Subcategories" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Subcategories</SelectItem>
-                        {selectedCategory !== "all" && 
-                          partCategories
-                            .find(cat => cat.id === selectedCategory)
-                            ?.subcategories.map(sub => (
-                              <SelectItem key={sub} value={sub}>
-                                {sub.split('-').map(word => 
-                                  word.charAt(0).toUpperCase() + word.slice(1)
-                                ).join(' ')}
-                              </SelectItem>
-                            ))
-                        }
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="flex items-center">
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={inStockOnly}
-                        onChange={(e) => setInStockOnly(e.target.checked)}
-                        className="rounded border-almona-light/30 text-almona-orange focus:ring-almona-orange"
-                      />
-                      <span className="text-sm">In stock only</span>
-                    </label>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </motion.div>
 
           {/* Results Section */}
@@ -437,21 +281,6 @@ const SpareParts = () => {
                     </button>
                   ))}
                 </div>
-
-                <div className="mt-8 pt-6 border-t border-almona-light/20">
-                  <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-                  <div className="space-y-2">
-                    <Button variant="link" className="text-gray-400 hover:text-white justify-start p-0">
-                      Compatibility Guide
-                    </Button>
-                    <Button variant="link" className="text-gray-400 hover:text-white justify-start p-0">
-                      Installation Manuals
-                    </Button>
-                    <Button variant="link" className="text-gray-400 hover:text-white justify-start p-0">
-                      Warranty Information
-                    </Button>
-                  </div>
-                </div>
               </div>
             </motion.div>
 
@@ -481,12 +310,8 @@ const SpareParts = () => {
                 <div className="text-center py-12">
                   <h3 className="text-xl font-medium mb-2">No parts found</h3>
                   <p className="text-gray-400 mb-4">
-                    Try adjusting your search criteria or use our AI Part Finder
+                    Try adjusting your search criteria
                   </p>
-                  <Button onClick={() => setAiWizardOpen(true)}>
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Use AI Part Finder
-                  </Button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -574,108 +399,6 @@ const SpareParts = () => {
       </main>
 
       <Footer />
-
-      {/* AI Part Finder Wizard Modal */}
-      <AnimatePresence>
-        {aiWizardOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
-            onClick={() => setAiWizardOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-almona-dark border border-almona-light/20 rounded-lg shadow-2xl max-w-2xl w-full flex flex-col"
-              onClick={e => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="p-6 border-b border-almona-light/20">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-semibold flex items-center gap-3">
-                    <Sparkles className="text-almona-orange h-6 w-6" />
-                    AI Part Finder
-                  </h3>
-                  <Button variant="ghost" size="icon" onClick={() => setAiWizardOpen(false)} className="text-gray-400 hover:text-white">
-                    <X className="h-5 w-5" />
-                  </Button>
-                </div>
-                {/* Progress Bar */}
-                <div className="mt-4">
-                  <div className="bg-almona-darker rounded-full h-2.5">
-                    <motion.div
-                      className="bg-almona-orange h-2.5 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${((aiStep + 1) / aiSteps.length) * 100}%` }}
-                      transition={{ duration: 0.5, ease: "easeInOut" }}
-                    />
-                  </div>
-                  <p className="text-right text-sm text-gray-400 mt-1">Step {aiStep + 1} of {aiSteps.length}</p>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-6 flex-grow overflow-y-auto">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={aiStep}
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <h4 className="text-xl font-medium mb-6 text-center">
-                      {aiSteps[aiStep].question}
-                    </h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[40vh] overflow-y-auto pr-2">
-                      {aiSteps[aiStep].options.map(option => (
-                        <button
-                          key={option.value}
-                          onClick={() => handleAiSelection(`step${aiStep}`, option.value)}
-                          className={`w-full text-left p-4 rounded-lg transition-all duration-200 flex items-center justify-between border-2 ${
-                            aiSelections[`step${aiStep}`] === option.value
-                              ? 'bg-almona-orange/20 border-almona-orange'
-                              : 'bg-almona-darker/50 border-almona-light/20 hover:border-almona-orange/50'
-                          }`}
-                        >
-                          <span className="font-medium">{option.label}</span>
-                          {aiSelections[`step${aiStep}`] === option.value && (
-                            <motion.div initial={{scale: 0.5, opacity: 0}} animate={{scale: 1, opacity: 1}}>
-                              <CheckCircle className="h-5 w-5 text-almona-orange" />
-                            </motion.div>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-
-              {/* Footer */}
-              <div className="flex justify-between p-6 border-t border-almona-light/20 bg-almona-darker/30 rounded-b-lg">
-                <Button
-                  variant="outline"
-                  onClick={() => aiStep > 0 ? setAiStep(prev => prev - 1) : setAiWizardOpen(false)}
-                  className="border-almona-light/30"
-                >
-                  {aiStep > 0 ? 'Back' : 'Cancel'}
-                </Button>
-                <Button
-                  onClick={handleAiWizardNext}
-                  disabled={!aiSelections[`step${aiStep}`]}
-                  className="bg-gradient-orange hover:bg-almona-orange-dark"
-                >
-                  {aiStep < aiSteps.length - 1 ? 'Next' : 'Find Parts'}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
