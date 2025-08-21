@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { EnhancedGLBViewer } from '../components/3d-model/EnhancedGLBViewer';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
@@ -66,12 +66,6 @@ export function ModelViewerDemo() {
               <CardContent className="h-[500px] p-0">
                 <EnhancedGLBViewer
                   modelPath={modelPath}
-                  scale={scale}
-                  autoRotate={autoRotate}
-                  autoRotateSpeed={autoRotateSpeed}
-                  shadows={true}
-                  onLoad={handleLoad}
-                  onError={handleError}
                 />
               </CardContent>
             </Card>

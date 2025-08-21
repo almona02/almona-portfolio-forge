@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
-import NewLogo from "@/assets/almona-new-logo.svg";
+import NewLogo from "@/assets/logo.png";
 import { useAuth } from "@/context/AuthContext";
 import { useQuote } from "@/context/QuoteContext";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  Home,
   Info,
   Mail,
   Menu,
@@ -67,6 +66,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [servicesSubmenuOpen, setServicesSubmenuOpen] = useState(false);
+  const [productsSubmenuOpen, setProductsSubmenuOpen] = useState(false);
   const location = useLocation();
   const { quoteItems } = useQuote();
   const { user, signOut } = useAuth();
@@ -89,23 +89,23 @@ const Navbar = () => {
   const servicesSubmenu = [
     { name: "Machine Sales", path: "/services/sales" },
     { name: "Maintenance & Support", path: "/services/maintenance" },
-    { name: "Spare Parts", path: "/services/spare-parts" },
+    { name: "Spare Parts", path: "/spare-parts" },
     { name: "Technical Training", path: "/services/training" },
-    { name: "Fabrication Services", path: "/services/fabrication" },
+    { name: "Fabrication Services", path: "/fabrication-services" },
+    { name: "Fabrication Workflow", path: "/workflows/fabrication-detail" },
     { name: "Consulting", path: "/services/consulting" },
   ];
 
+  const productsSubmenu = [
+    { name: "YILMAZ Machines", path: "/products/machines" },
+  ];
+
   const navLinks = [
-    { name: "Home", path: "/", icon: <Home className="h-5 w-5" /> },
     {
-      name: "YILMAZ Machines",
-      path: "/products/machines",
+      name: "Products",
+      path: "/products",
       icon: <Settings className="h-5 w-5" />,
-    },
-    {
-      name: "Fabrication Workflow",
-      path: "/workflows/fabrication-detail",
-      icon: <Wrench className="h-5 w-5" />,
+      hasSubmenu: true,
     },
     {
       name: "Services",
@@ -131,25 +131,54 @@ const Navbar = () => {
       transition={{ type: "spring", stiffness: 50, damping: 20 }}
       className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-almona-dark/95 backdrop-blur-lg shadow-lg"
-          : "bg-transparent"
+          ? "bg-almona-dark/98 backdrop-blur-xl shadow-lg border-b border-almona-light/10"
+          : "bg-almona-dark/20 backdrop-blur-sm"
       } py-3`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <motion.img
-            src={NewLogo}
-            alt="Almona Logo"
-            className="h-10 w-auto"
+          <motion.div
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-          />
+          >
+            <img
+              src={NewLogo}
+              alt="Almona Logo"
+              className={`relative w-auto transition-all duration-500 ${
+                isScrolled 
+                  ? "h-8" 
+                  : "h-10"
+              }`}
+            />
+          </motion.div>
+          
           <motion.span
-            className="text-3xl font-bold text-gradient-orange"
+            className={`text-2xl sm:text-3xl font-bold transition-all duration-500 ${
+              isScrolled
+                ? "drop-shadow-md"
+                : "drop-shadow-2xl"
+            }`}
+            style={{
+              background: isScrolled 
+                ? 'linear-gradient(135deg, #ff8c00, #ffa500)'
+                : 'linear-gradient(135deg, #ff8c00, #ffa500, #ffffff, #e2e8f0)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              filter: isScrolled 
+                ? 'drop-shadow(0 2px 4px rgba(255, 140, 0, 0.4))' 
+                : 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))'
+            }}
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
+            whileHover={{
+              scale: 1.02,
+              filter: isScrolled 
+                ? 'drop-shadow(0 4px 8px rgba(255, 140, 0, 0.6))' 
+                : 'drop-shadow(0 6px 12px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.4))'
+            }}
           >
             ALMONA
           </motion.span>
@@ -168,8 +197,19 @@ const Navbar = () => {
               {link.hasSubmenu ? (
                 <div
                   className="relative group"
-                  onMouseEnter={() => setServicesSubmenuOpen(true)}
-                  onMouseLeave={() => setServicesSubmenuOpen(false)}
+                  onMouseEnter={() => {
+                    if (link.name === "Services") {
+                      setServicesSubmenuOpen(true);
+                      setProductsSubmenuOpen(false);
+                    } else if (link.name === "Products") {
+                      setProductsSubmenuOpen(true);
+                      setServicesSubmenuOpen(false);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    setServicesSubmenuOpen(false);
+                    setProductsSubmenuOpen(false);
+                  }}
                 >
                   <div className="flex items-center gap-1 cursor-pointer">
                     <NavLink to={link.path} isActive={isActive(link.path)}>
@@ -179,7 +219,7 @@ const Navbar = () => {
                   </div>
                   
                   <AnimatePresence>
-                    {servicesSubmenuOpen && (
+                    {(servicesSubmenuOpen && link.name === "Services") && (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -189,6 +229,27 @@ const Navbar = () => {
                       >
                         <div className="py-2">
                           {servicesSubmenu.map((submenuItem) => (
+                            <Link
+                              key={submenuItem.name}
+                              to={submenuItem.path}
+                              className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-almona-light/10 transition-colors"
+                            >
+                              {submenuItem.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                    {(productsSubmenuOpen && link.name === "Products") && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full left-0 mt-2 w-56 bg-almona-dark/95 backdrop-blur-lg border border-almona-light/20 rounded-lg shadow-xl z-50"
+                      >
+                        <div className="py-2">
+                          {productsSubmenu.map((submenuItem) => (
                             <Link
                               key={submenuItem.name}
                               to={submenuItem.path}
@@ -313,9 +374,38 @@ const Navbar = () => {
                 className="lg:hidden fixed top-0 right-0 h-full w-full max-w-xs bg-almona-dark/95 backdrop-blur-xl z-50 flex flex-col"
               >
                 <div className="flex items-center justify-between p-4 border-b border-gray-800">
-                  <span className="text-2xl font-bold text-gradient-orange">
-                    ALMONA
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <div className="relative p-2.5 rounded-xl bg-gradient-to-br from-almona-orange/20 via-almona-orange/10 to-transparent backdrop-blur-md border border-almona-orange/30 shadow-lg">
+                      {/* Glow effect */}
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-almona-orange/10 to-transparent blur-sm" />
+                      
+                      <img
+                        src={NewLogo}
+                        alt="Almona Logo"
+                        className="relative h-8 w-auto opacity-95 brightness-110 contrast-115 saturate-125"
+                        style={{
+                          filter: 'drop-shadow(0 3px 8px rgba(255, 95, 31, 0.7)) hue-rotate(8deg)',
+                          imageRendering: 'auto',
+                          WebkitBackfaceVisibility: 'hidden',
+                          backfaceVisibility: 'hidden',
+                          transform: 'translateZ(0)',
+                          mixBlendMode: 'normal'
+                        }}
+                      />
+                    </div>
+                    <span 
+                      className="text-xl font-bold"
+                      style={{
+                        background: 'linear-gradient(135deg, #ff8c00 0%, #ffa500 80%, #ffb347 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                        filter: 'drop-shadow(0 2px 4px rgba(255, 140, 0, 0.4))'
+                      }}
+                    >
+                      ALMONA
+                    </span>
+                  </div>
                   <Button
                     size="icon"
                     onClick={handleCloseMobileMenu}
@@ -331,7 +421,15 @@ const Navbar = () => {
                         <div>
                           <div
                             className="flex items-center justify-between py-2 cursor-pointer"
-                            onClick={() => setServicesSubmenuOpen(!servicesSubmenuOpen)}
+                            onClick={() => {
+                              if (link.name === "Services") {
+                                setServicesSubmenuOpen(!servicesSubmenuOpen);
+                                setProductsSubmenuOpen(false);
+                              } else if (link.name === "Products") {
+                                setProductsSubmenuOpen(!productsSubmenuOpen);
+                                setServicesSubmenuOpen(false);
+                              }
+                            }}
                           >
                             <div className="flex items-center gap-4">
                               <span className="text-almona-orange">{link.icon}</span>
@@ -341,12 +439,13 @@ const Navbar = () => {
                             </div>
                             <ChevronDown 
                               className={`h-4 w-4 text-gray-400 transition-transform ${
-                                servicesSubmenuOpen ? 'rotate-180' : ''
+                                (link.name === "Services" && servicesSubmenuOpen) || 
+                                (link.name === "Products" && productsSubmenuOpen) ? 'rotate-180' : ''
                               }`} 
                             />
                           </div>
                           <AnimatePresence>
-                            {servicesSubmenuOpen && (
+                            {(servicesSubmenuOpen && link.name === "Services") && (
                               <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
@@ -355,6 +454,26 @@ const Navbar = () => {
                                 className="ml-8 space-y-1"
                               >
                                 {servicesSubmenu.map((submenuItem) => (
+                                  <Link
+                                    key={submenuItem.name}
+                                    to={submenuItem.path}
+                                    onClick={handleCloseMobileMenu}
+                                    className="block py-2 text-gray-400 hover:text-white transition-colors"
+                                  >
+                                    {submenuItem.name}
+                                  </Link>
+                                ))}
+                              </motion.div>
+                            )}
+                            {(productsSubmenuOpen && link.name === "Products") && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="ml-8 space-y-1"
+                              >
+                                {productsSubmenu.map((submenuItem) => (
                                   <Link
                                     key={submenuItem.name}
                                     to={submenuItem.path}
