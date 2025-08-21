@@ -123,7 +123,7 @@ interface ShopFilters {
 type ShopProduct = Machine | Product | Part;
 
 function isMachine(product: ShopProduct): product is Machine {
-  return 'specifications' in product;
+  return 'specifications' in product && 'certifications' in product;
 }
 
 function isProduct(product: ShopProduct): product is Product {
