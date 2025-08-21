@@ -38,7 +38,7 @@ const CustomerPortal = lazy(() => import("./pages/CustomerPortal.tsx"));
 const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute.tsx"));
 const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine.tsx"));
 const FabricationServices = lazy(() => import("./pages/FabricationServices.tsx"));
-const SpareParts = lazy(() => import("./pages/SpareParts.tsx"));
+const SpareParts = lazy(() => import("@/pages/SpareParts.tsx"));
 
 // Apply dark mode by default
 import { ThemeProvider } from "next-themes";
