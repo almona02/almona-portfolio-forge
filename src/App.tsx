@@ -6,39 +6,39 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import SEO from "./components/SEO";
 import ErrorBoundary from "./components/ErrorBoundary";
-import UsedMachineDetailPage from "./pages/UsedMachineDetail";
+import UsedMachineDetailPage from "./pages/UsedMachineDetail.tsx";
 
 // Lazy load all page components for better performance
 const Index = lazy(() => import("./pages/Index"));
-const Products = lazy(() => import("./pages/Products"));
-const Services = lazy(() => import("./pages/Services"));
-const ServicesNew = lazy(() => import("./pages/Services"));
-const Contact = lazy(() => import("./pages/Contact"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const Portfolio = lazy(() => import("./pages/Portfolio"));
-const Shop = lazy(() => import("./pages/Shop"));
-const MachineDetail = lazy(() => import("./pages/machines/MachineDetail"));
-const ProfileDetail = lazy(() => import("./pages/profiles/ProfileDetail"));
-const About = lazy(() => import("./pages/About"));
+const Products = lazy(() => import("./pages/Products.tsx"));
+const Services = lazy(() => import("./pages/Services.tsx"));
+const ServicesNew = lazy(() => import("./pages/Services.tsx"));
+const Contact = lazy(() => import("./pages/Contact.tsx"));
+const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const Portfolio = lazy(() => import("./pages/Portfolio.tsx"));
+const Shop = lazy(() => import("./pages/Shop.tsx"));
+const MachineDetail = lazy(() => import("./pages/machines/MachineDetail.tsx"));
+const ProfileDetail = lazy(() => import("./pages/profiles/ProfileDetail.tsx"));
+const About = lazy(() => import("./pages/About.tsx"));
 
 const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail"));
 const UsedMachines = lazy(() => import("./pages/UsedMachines"));
 const FabricationWorkflowDetail = lazy(
-  () => import("./pages/FabricationWorkflowDetail")
+  () => import("./pages/FabricationWorkflowDetail.tsx")
 );
-const QuotePage = lazy(() => import("./pages/QuotePage"));
+const QuotePage = lazy(() => import("./pages/QuotePage.tsx"));
 const QuoteConfirmationPage = lazy(
-  () => import("./pages/QuoteConfirmationPage")
+  () => import("./pages/QuoteConfirmationPage.tsx")
 );
-const ModelViewerDemo = lazy(() => import("./pages/ModelViewerDemo"));
-const ModelViewerTest = lazy(() => import("./pages/ModelViewerTest"));
-const Login = lazy(() => import("./pages/Login"));
-const Register = lazy(() => import("./pages/Register"));
-const CustomerPortal = lazy(() => import("./pages/CustomerPortal"));
-const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute"));
-const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine"));
-const FabricationServices = lazy(() => import("./pages/FabricationServices"));
-const SpareParts = lazy(() => import("./pages/SpareParts"));
+const ModelViewerDemo = lazy(() => import("./pages/ModelViewerDemo.tsx"));
+const ModelViewerTest = lazy(() => import("./pages/ModelViewerTest.tsx"));
+const Login = lazy(() => import("./pages/Login.tsx"));
+const Register = lazy(() => import("./pages/Register.tsx"));
+const CustomerPortal = lazy(() => import("./pages/CustomerPortal.tsx"));
+const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute.tsx"));
+const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine.tsx"));
+const FabricationServices = lazy(() => import("./pages/FabricationServices.tsx"));
+const SpareParts = lazy(() => import("./pages/SpareParts.tsx"));
 
 // Apply dark mode by default
 import { ThemeProvider } from "next-themes";
