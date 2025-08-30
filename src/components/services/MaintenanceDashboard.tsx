@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/shared/ui/ui/button";
 import { MachineHealthCheck } from "./MachineHealthCheck";
 
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/shared/ui/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/shared/ui/ui/progress";
 import { Badge } from "@/shared/ui/ui/badge";
 import { AlertCircle, Clock, CheckCircle2, AlertTriangle, HardHat } from "lucide-react";
