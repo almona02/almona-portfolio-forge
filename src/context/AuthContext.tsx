@@ -126,10 +126,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) throw error;
       
-      if (data.user) {
-        setSupabaseUser(data.user);
-        await fetchUserProfile(data.user.id);
-      }
+      // The onAuthStateChange listener will handle setting the user and profile
       return data;
     } catch (error) {
       console.error('Sign in error:', error);
