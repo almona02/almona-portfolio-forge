@@ -1,5 +1,5 @@
 {
-  "resolutions": {
+  "overrides": {
     "rollup": "^4.27.0"
   },
   "name": "vite_react_shadcn_ts",
