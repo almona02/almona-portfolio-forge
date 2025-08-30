@@ -130,6 +130,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSupabaseUser(data.user);
         await fetchUserProfile(data.user.id);
       }
+      return data;
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
