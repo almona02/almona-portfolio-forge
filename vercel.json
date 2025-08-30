@@ -3,7 +3,7 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "installCommand": "npm install --omit=optional",
+  "installCommand": "npm install",
   "framework": "vite",
   "rewrites": [
     {
@@ -40,7 +40,6 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production",
-    "ROLLUP_DISABLE_NATIVE": "true"
+    "NODE_ENV": "production"
   }
 }
