@@ -40,6 +40,7 @@
     }
   ],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "ROLLUP_DISABLE_NATIVE": "true"
   }
 }
