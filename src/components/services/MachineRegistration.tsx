@@ -6,7 +6,7 @@ import { Badge } from "@/shared/ui/ui/badge";
 import { useToast } from "@/shared/ui/ui/use-toast";
 import { QrCodeIcon, CheckCircle2, AlertCircle, ChevronRight, Camera, Upload, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EnhancedOperatorTrainingDialog } from './EnhancedOperatorTrainingDialog';
 
 interface MachineData {
@@ -73,6 +73,10 @@ export const MachineRegistrationEnhanced = () => {
   };
 
   const generateDigitalTwin = () => {
+    if (!machine.installationDate) {
+      toast({ title: "Missing Information", description: "Please select an installation date to continue.", variant: "destructive" });
+      return;
+    }
     setIsProcessing(true);
     setTimeout(() => {
       setMachine({ ...machine, digitalTwinId: `DT-${Math.random().toString(36).substring(2, 10).toUpperCase()}` });
