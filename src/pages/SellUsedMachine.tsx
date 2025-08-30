@@ -52,7 +52,7 @@ const SellUsedMachine = () => {
 
   const onSubmit = async (data: SellMachineFormValues) => {
     try {
-      await api.registerMachine({ ...data, customer_id: user.id, is_used: true });
+      await api.registerMachine({ ...data, user_id: user.id, is_used: true });
       toast.success('Your machine has been listed for sale!');
       navigate('/usedmachines');
     } catch (err: any) {

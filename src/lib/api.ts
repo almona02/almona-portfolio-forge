@@ -20,15 +20,17 @@ export const api = {
     }
 
     // Add user to customers table
-    await supabase.from('customers').insert([
-      {
-        id: user.id,
-        name: userData.name,
-        company: userData.company,
-        email: userData.email,
-      },
-    ]);
-
+    await supabase.from('profiles').insert([
+  {
+    id: user.id,
+    email: user.email,
+    full_name: userData.full_name,
+    company_name: userData.company_name,
+    phone: userData.phone,
+    sector: userData.sector,
+    role: 'customer' // Set the role here
+  }
+]);
     return user;
   },
   logout: async () => {
