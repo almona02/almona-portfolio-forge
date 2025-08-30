@@ -591,29 +591,66 @@ const enTranslations = {
       returnOrder: 'Return Order'
     }
   },
-  company: {
-    name: 'Almona Industrial Machinery',
-    tagline: 'Your Trusted Partner in Industrial Solutions',
-    about: {
-      title: 'About Almona',
-      description: 'Almona is the first and authorized dealer of YILMAZ machines since 2000, and we have built a distinguished reputation for excellence in both products and services.',
-      mission: 'Our Mission',
-      vision: 'Our Vision',
-      values: 'Our Values',
-      history: 'Our History',
-      team: 'Our Team',
-      certifications: 'Certifications',
-      awards: 'Awards'
-    },
-    services: {
-      title: 'Our Services',
-      installation: 'Installation',
-      maintenance: 'Maintenance',
-      repair: 'Repair',
-      training: 'Training',
-      consultation: 'Consultation',
-      support: 'Technical Support',
-      warranty: 'Warranty',
-      spareParts: 'Spare Parts'
-    },
-    contact: {
+    company: {
+      name: 'Almona Industrial Machinery',
+      tagline: 'Your Trusted Partner in Industrial Solutions',
+      about: {
+        title: 'About Almona',
+        description: 'Almona is the first and authorized dealer of YILMAZ machines since 2000, and we have built a distinguished reputation for excellence in both products and services.',
+        mission: 'Our Mission',
+        vision: 'Our Vision',
+        values: 'Our Values',
+        history: 'Our History',
+        team: 'Our Team',
+        certifications: 'Certifications',
+        awards: 'Awards'
+      },
+      services: {
+        title: 'Our Services',
+        installation: 'Installation',
+        maintenance: 'Maintenance',
+        repair: 'Repair',
+        training: 'Training',
+        consultation: 'Consultation',
+        support: 'Technical Support',
+        warranty: 'Warranty',
+        spareParts: 'Spare Parts'
+      },
+      contact: {
+        title: 'Contact Us',
+        address: 'Address',
+        phone: 'Phone',
+        email: 'Email',
+        workingHours: 'Working Hours',
+        getInTouch: 'Get in Touch',
+        sendMessage: 'Send Message',
+        messageSent: 'Message sent successfully',
+        messageError: 'Error sending message'
+      }
+    }
+  };
+  
+  // i18next initialization
+  const resources = {
+    ar: { translation: arTranslations },
+    en: { translation: enTranslations }
+  };
+  
+  i18n
+    .use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+      resources,
+      fallbackLng: 'en',
+      debug: false,
+      interpolation: {
+        escapeValue: false // React already escapes
+      },
+      detection: {
+        // default options from i18next-browser-languagedetector
+        order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+        caches: ['localStorage', 'cookie']
+      }
+    });
+  
+  export default i18n;
