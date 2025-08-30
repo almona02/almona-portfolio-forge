@@ -1,29 +1,48 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { jwtDecode } from "jwt-decode";
+import { supabase, getUserProfile } from '@/lib/supabase';
+import { Database } from '@/types/database';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
-// Define a more detailed User interface
+// Define enhanced User interface based on our database schema
 interface User {
   id: string;
   email?: string;
-  name?: string;
-  company?: string;
-  phone_number?: string;
-  country_code?: string;
-  avatar_url?: string;
-  // Add other relevant user properties
+  username?: string | null;
+  full_name?: string | null;
+  avatar_url?: string | null;
+  company_name?: string | null;
+  phone?: string | null;
+  sector?: Database['public']['Tables']['profiles']['Row']['sector'];
+  workshop_location?: string | null;
+  governorate?: string | null;
+  address?: Database['public']['Tables']['profiles']['Row']['address'];
+  tax_number?: string | null;
+  commercial_register?: string | null;
+  role: Database['public']['Tables']['profiles']['Row']['role'];
+  is_verified: boolean;
+  preferences: Database['public']['Tables']['profiles']['Row']['preferences'];
+  created_at: string;
+  updated_at: string;
 }
 
 // Define the shape of the Auth context
 interface AuthContextType {
   user: User | null;
+  supabaseUser: SupabaseUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (userData: any) => Promise<void>; // Accept a user data object
+  signUp: (userData: {
+    email: string;
+    password: string;
+    full_name: string;
+    company_name?: string;
+    phone?: string;
+    sector?: Database['public']['Tables']['profiles']['Row']['sector'];
+  }) => Promise<void>;
   signOut: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  signInWithPhoneNumber: (phoneNumber: string, countryCode: string, otp: string) => Promise<void>;
-  signInWithFacebook: (accessToken: string) => Promise<void>;
+  updateProfile: (updates: Database['public']['Tables']['profiles']['Update']) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -38,159 +57,210 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Fetch user profile data
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const profile = await getUserProfile(userId);
+      setUser(profile);
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      setUser(null);
+    }
+  };
+
   useEffect(() => {
-    const checkSession = async () => {
+    // Get initial session
+    const getInitialSession = async () => {
       try {
-        const token = localStorage.getItem('jwt_token');
-        if (token) {
-          const decoded: any = jwtDecode(token);
-          // In a real app, you'd verify token with backend
-          // For now, assume valid and fetch user data
-          const { data: customer, error } = await supabase
-            .from('customers')
-            .select('*')
-            .eq('id', decoded.sub)
-            .single();
-          
-          if (error) throw error;
-          setUser(customer);
-        } else {
-          setUser(null);
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          setLoading(false);
+          return;
+        }
+
+        if (session?.user) {
+          setSupabaseUser(session.user);
+          await fetchUserProfile(session.user.id);
         }
       } catch (error) {
-        console.error('Error checking session:', error);
-        setUser(null);
-        localStorage.removeItem('jwt_token');
+        console.error('Error in getInitialSession:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    checkSession();
+    getInitialSession();
 
-    // No longer listening to onAuthStateChange from Supabase for custom auth flows
-    // If you still use Supabase for email/password, you might keep a separate listener
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id);
+      
+      if (session?.user) {
+        setSupabaseUser(session.user);
+        await fetchUserProfile(session.user.id);
+      } else {
+        setSupabaseUser(null);
+        setUser(null);
+      }
+      
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    // After successful Supabase login, you might want to fetch user data and set it
-    const { data: { user: supabaseUser } } = await supabase.auth.getUser();
-    if (supabaseUser) {
-      const { data: customer, error: dbError } = await supabase
-        .from('customers')
-        .select('*')
-        .eq('id', supabaseUser.id)
-        .single();
-      if (dbError) throw dbError;
-      setUser(customer);
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password 
+      });
+      
+      if (error) throw error;
+      
+      if (data.user) {
+        setSupabaseUser(data.user);
+        await fetchUserProfile(data.user.id);
+      }
+    } catch (error) {
+      console.error('Sign in error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const signUp = async (userData: any) => {
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email: userData.email,
-    password: userData.password,
-    options: {
-      emailRedirectTo: `${window.location.origin}/login`, // This uses your actual domain
-    },
-  });
-
-  if (authError) throw authError;
-
-  if (authData.user) {
-    const { error: dbError } = await supabase.from('customers').insert([
-      {
-        id: authData.user.id,
-        name: userData.name,
+  const signUp = async (userData: {
+    email: string;
+    password: string;
+    full_name: string;
+    company_name?: string;
+    phone?: string;
+    sector?: Database['public']['Tables']['profiles']['Row']['sector'];
+  }) => {
+    setLoading(true);
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: userData.email,
-        company: userData.company,
-        sector: userData.sector,
-      },
-    ]);
+        password: userData.password,
+        options: {
+          data: {
+            full_name: userData.full_name,
+            company_name: userData.company_name,
+            phone: userData.phone,
+            sector: userData.sector,
+          },
+        },
+      });
 
-    if (dbError) throw dbError;
-  }
-};
+      if (authError) throw authError;
+
+      // Profile will be created automatically by the database trigger
+      // But we can update it with additional info if needed
+      if (authData.user) {
+        setSupabaseUser(authData.user);
+        
+        // Wait a moment for the trigger to create the profile, then fetch it
+        setTimeout(async () => {
+          try {
+            await fetchUserProfile(authData.user!.id);
+          } catch (error) {
+            console.error('Error fetching new user profile:', error);
+          }
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Sign up error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    localStorage.removeItem('jwt_token');
-    setUser(null);
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      setSupabaseUser(null);
+      setUser(null);
+    } catch (error) {
+      console.error('Sign out error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`,
-      },
-    });
-    if (error) throw error;
-  };
-
-  const signInWithPhoneNumber = async (phoneNumber: string, countryCode: string, otp: string) => {
-    const res = await fetch('/api/auth/sms/verify-otp', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ phone_number: phoneNumber, country_code: countryCode, otp }),
-    });
-    const data = await res.json();
-
-    if (data.success && data.access_token) {
-      localStorage.setItem('jwt_token', data.access_token);
-      const decoded: any = jwtDecode(data.access_token);
-      // Fetch user data from your backend or decode from token if sufficient
-      const { data: customer, error } = await supabase
-        .from('customers')
-        .select('*')
-        .eq('id', decoded.sub)
-        .single();
-      
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
       if (error) throw error;
-      setUser(customer);
-    } else {
-      throw new Error(data.message || 'Phone number verification failed.');
+    } catch (error) {
+      console.error('Google sign in error:', error);
+      throw error;
     }
   };
 
-  const signInWithFacebook = async (accessToken: string) => {
-    const res = await fetch('/api/auth/facebook/callback', {
-      method: 'GET', // Changed to GET as per backend update
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // For GET, parameters are in URL, not body. This function will be called after redirect.
-      // The actual token exchange happens on the backend.
-      // This function might not be directly used if the flow is a full redirect.
-      // Instead, the Login.tsx will handle the redirect and the AuthProvider will check for token.
-    });
-    const data = await res.json();
-
-    if (data.success && data.access_token) {
-      localStorage.setItem('jwt_token', data.access_token);
-      const decoded: any = jwtDecode(data.access_token);
-      const { data: customer, error } = await supabase
-        .from('customers')
-        .select('*')
-        .eq('id', decoded.sub)
+  const updateProfile = async (updates: Database['public']['Tables']['profiles']['Update']) => {
+    if (!user) throw new Error('No user logged in');
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id)
+        .select()
         .single();
-      
+
       if (error) throw error;
-      setUser(customer);
-    } else {
-      throw new Error(data.message || 'Facebook login failed.');
+      
+      setUser(data);
+    } catch (error) {
+      console.error('Update profile error:', error);
+      throw error;
     }
+  };
+
+  const refreshUser = async () => {
+    if (!supabaseUser) return;
+    
+    try {
+      await fetchUserProfile(supabaseUser.id);
+    } catch (error) {
+      console.error('Refresh user error:', error);
+      throw error;
+    }
+  };
+
+  const value = {
+    user,
+    supabaseUser,
+    loading,
+    signIn,
+    signUp,
+    signOut,
+    signInWithGoogle,
+    updateProfile,
+    refreshUser,
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, signInWithGoogle, signInWithPhoneNumber, signInWithFacebook }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
