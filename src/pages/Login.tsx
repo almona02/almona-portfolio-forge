@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Navbar from '@/components/layout/Navbar';
@@ -22,8 +22,15 @@ const Login = () => {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showSmsOtpModal, setShowSmsOtpModal] = useState(false);
-  const { signIn: login, signInWithGoogle } = useAuth();
+  const { signIn: login, signInWithGoogle, user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      toast.success('Logged in successfully!');
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,12 +38,10 @@ const Login = () => {
     setError(null);
     try {
       await login(email, password);
-      toast.success('Logged in successfully!');
-      navigate('/');
+      // Redirection is now handled by the useEffect hook.
     } catch (error: any) {
       setError(error.message || 'Login failed. Please check your credentials.');
       toast.error(error.message || 'Login failed.');
-    } finally {
       setLoading(false);
     }
   };
