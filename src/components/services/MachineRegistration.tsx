@@ -26,7 +26,6 @@ interface WarrantyExtension {
 }
 
 export const MachineRegistrationEnhanced = () => {
-  const { toast } = useToast();
   const [machine, setMachine] = useState<MachineData>({
     serialNumber: "",
     model: "",
