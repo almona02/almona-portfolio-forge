@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Button } from "@/shared/ui/ui/button";
-import { Input } from "@/shared/ui/ui/input";
-import { Label } from "@/shared/ui/ui/label";
-import { Badge } from "@/shared/ui/ui/badge";
-import { useToast } from "@/shared/ui/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/use-toast";
 import { QrCodeIcon, CheckCircle2, AlertCircle, ChevronRight, Camera, Upload, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
