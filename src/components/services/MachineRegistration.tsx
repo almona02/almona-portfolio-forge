@@ -92,7 +92,7 @@ export const MachineRegistrationEnhanced = () => {
     setMachine({ serialNumber: "", model: "", installationDate: "", warrantyValid: false, photos: [] });
   };
 
-  return (
+   return (
     <div className="max-w-4xl mx-auto">
       <AnimatePresence mode="wait">
         {step === "scan" && (
@@ -133,7 +133,7 @@ export const MachineRegistrationEnhanced = () => {
                       <Label htmlFor="photos">Upload Photos</Label>
                       <div className="flex items-center gap-2">
                         <Input id="photos" type="file" multiple accept="image/*" onChange={handleFileUpload} className="hidden" />
-                        <Button variant="outline" onClick={() => document.getElementById('photos')?.click()} className="w-full">
+                        <Button onClick={() => document.getElementById('photos')?.click()} className="w-full border border-gray-300">
                           <Upload className="mr-2 h-4 w-4" />
                           Upload Photos
                         </Button>
@@ -176,13 +176,13 @@ export const MachineRegistrationEnhanced = () => {
                   <div>
                     <Label>Warranty Status</Label>
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" onClick={checkWarranty} disabled={machine.warrantyValid || isProcessing} className="flex-1">
+                      <Button onClick={checkWarranty} disabled={machine.warrantyValid || isProcessing} className="flex-1 border border-gray-300">
                         {isProcessing ? "Checking..." : "Check Warranty"}
                       </Button>
                       {machine.warrantyValid ? (
                         <Badge className="flex items-center gap-1 bg-green-500/20 text-green-300"><CheckCircle2 className="h-4 w-4" /> Active</Badge>
                       ) : (
-                        <Badge variant="destructive" className="flex items-center gap-1"><AlertCircle className="h-4 w-4" /> Not Verified</Badge>
+                        <Badge className="flex items-center gap-1 bg-red-500/20 text-red-300"><AlertCircle className="h-4 w-4" /> Not Verified</Badge>
                       )}
                     </div>
                   </div>
@@ -195,7 +195,7 @@ export const MachineRegistrationEnhanced = () => {
                       <motion.div key={option.months} className="border border-almona-light/20 rounded-lg p-4 hover:border-orange-500/50 transition-colors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} whileHover={{ scale: 1.02 }}>
                         <h4 className="font-bold text-lg">{option.months} Months</h4>
                         <p className="text-2xl font-bold text-orange-500">{option.price} EGP</p>
-                        {option.egyptOnly && <Badge className="mb-2">Egypt Only</Badge>}
+                        {option.egyptOnly && <Badge className="mb-2 bg-blue-500/20 text-blue-300">Egypt Only</Badge>}
                         <ul className="text-sm text-gray-400 space-y-1 mt-2">
                           {option.features.map((feature, i) => (
                             <li key={i} className="flex items-start">
@@ -204,14 +204,14 @@ export const MachineRegistrationEnhanced = () => {
                             </li>
                           ))}
                         </ul>
-                        <Button className="w-full mt-3" variant="outline" size="sm">Add to Contract</Button>
+                        <Button className="w-full mt-3 border border-gray-300" size="sm">Add to Contract</Button>
                       </motion.div>
                     ))}
                   </div>
                 </motion.div>
 
                 <div className="flex justify-between mt-6">
-                  <Button variant="outline" onClick={() => setStep("scan")}>Back</Button>
+                  <Button onClick={() => setStep("scan")} className="border border-gray-300">Back</Button>
                   <Button onClick={generateDigitalTwin} disabled={!machine.installationDate || isProcessing} className="bg-gradient-to-r from-orange-500 to-red-500">
                     {isProcessing ? "Processing..." : "Generate Digital Twin"}
                     <ChevronRight className="ml-2 h-4 w-4" />
@@ -265,13 +265,13 @@ export const MachineRegistrationEnhanced = () => {
                 </div>
 
                 <div className="flex gap-4 mt-6">
-                  <Button className="flex-1" variant="outline" onClick={() => window.open('/shop?tab=reports', '_blank')}>
+                  <Button className="flex-1 border border-gray-300" onClick={() => window.open('/shop?tab=reports', '_blank')}>
                     Generate Report
                   </Button>
                   <Button className="flex-1 bg-gradient-to-r from-green-500 to-blue-500" onClick={completeRegistration}>
                     Complete Registration
                   </Button>
-                  <Button className="flex-1" variant="outline" onClick={() => setShowTrainingDialog(true)}>
+                  <Button className="flex-1 border border-gray-300" onClick={() => setShowTrainingDialog(true)}>
                     Operator Training
                   </Button>
                 </div>
