@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 import { Navigate, Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -151,4 +152,4 @@ const CustomerPortal = () => {
   );
 };
 
-export default CustomerPortal;
+export default withErrorBoundary(CustomerPortal);

@@ -41,6 +41,7 @@ interface AuthContextType {
   }) => Promise<void>;
   signOut: () => Promise<void>;
   signInWithGoogle: () => Promise<void>;
+  signInWithPhoneNumber: (phoneNumber: string, countryCode: string, otp: string) => Promise<void>;
   updateProfile: (updates: Database['public']['Tables']['profiles']['Update']) => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -214,6 +215,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const signInWithPhoneNumber = async (phoneNumber: string, countryCode: string, otp: string) => {
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        phone: `${countryCode}${phoneNumber}`,
+        token: otp,
+        type: 'sms',
+      });
+      if (error) throw error;
+      // The onAuthStateChange listener will handle setting the user and profile
+      return data;
+    } catch (error) {
+      console.error('SMS sign in error:', error);
+      throw error;
+    }
+  };
+
   const updateProfile = async (updates: Database['public']['Tables']['profiles']['Update']) => {
     if (!user) throw new Error('No user logged in');
     
@@ -253,6 +270,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signUp,
     signOut,
     signInWithGoogle,
+    signInWithPhoneNumber,
     updateProfile,
     refreshUser,
   };

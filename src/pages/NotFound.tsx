@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import SEO from "../components/SEO";
 
 const NotFound = () => {
@@ -124,4 +125,4 @@ const NotFound = () => {
   );
 };
 
-export default NotFound;
+export default withErrorBoundary(NotFound);

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { CheckCircle2, Wrench, Bolt, GraduationCap, Ship } from "lucide-react";
+import ElectricBorder from './ElectricBorder';
 
 interface ServiceCardProps {
   icon: "wrench" | "bolt" | "graduation-cap" | "ship";
@@ -75,38 +76,47 @@ export const ServiceCard = ({
   highlight = false,
 }: ServiceCardProps) => {
   return (
-    <div className={`bg-almona-darker/50 border border-almona-light/20 rounded-lg p-6 flex flex-col h-full ${highlight ? 'shadow-lg shadow-almona-light/20' : ''}`}>
-      <div className="flex items-center gap-3 mb-4">
-        <div className="bg-almona-dark/50 p-3 rounded-full">
-          {iconMap[icon]}
-        </div>
-        <div>
-          <h3 className="text-xl font-bold">{title}</h3>
-          {egyptSpecific && (
-            <Badge className="mt-1 bg-egyptian-blue">Egypt</Badge>
-          )}
-        </div>
-      </div>
-      
-      <p className="text-gray-400 mb-6">{description}</p>
-      
-      <div className="space-y-3 mb-6">
-        {features.map((feature, index) => (
-          <div key={index} className="flex items-start gap-2">
-            <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-500" />
-            <span className="text-sm">{feature}</span>
+    <ElectricBorder
+      className="h-full"
+      color="#FF8C00"
+      speed={1}
+      chaos={0.5}
+      thickness={highlight ? 3 : 2}
+      style={{ borderRadius: 16 }}
+    >
+      <div className="bg-almona-darker/50 p-6 flex flex-col h-full rounded-lg">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="bg-almona-dark/50 p-3 rounded-full">
+            {iconMap[icon]}
           </div>
-        ))}
-      </div>
-      
-      {/* Spare Parts Widget */}
-      {machineModel && <SparePartsWidget machineModel={machineModel} />}
+          <div>
+            <h3 className="text-xl font-bold">{title}</h3>
+            {egyptSpecific && (
+              <Badge className="mt-1 bg-egyptian-blue">Egypt</Badge>
+            )}
+          </div>
+        </div>
+        
+        <p className="text-gray-400 mb-6">{description}</p>
+        
+        <div className="space-y-3 mb-6">
+          {features.map((feature, index) => (
+            <div key={index} className="flex items-start gap-2">
+              <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-500" />
+              <span className="text-sm">{feature}</span>
+            </div>
+          ))}
+        </div>
+        
+        {/* Spare Parts Widget */}
+        {machineModel && <SparePartsWidget machineModel={machineModel} />}
 
-      <div className="mt-auto">
-        <Button className="w-full" onClick={onActionClick}>
-          {actionText}
-        </Button>
+        <div className="mt-auto">
+          <Button className="w-full" onClick={onActionClick}>
+            {actionText}
+          </Button>
+        </div>
       </div>
-    </div>
+    </ElectricBorder>
   );
 };

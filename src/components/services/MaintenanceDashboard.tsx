@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { MachineHealthCheck } from "./MachineHealthCheck";
 
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import * as Progress from "@radix-ui/react-progress";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, Clock, CheckCircle2, AlertTriangle, HardHat } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 
 interface MaintenanceEvent {
   id: string;
@@ -143,10 +143,57 @@ export const MaintenanceDashboard = () => {
       {/* ... existing code ... */}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="health">Health</TabsTrigger>
+          <TabsTrigger value="history">Service History</TabsTrigger>
+          <TabsTrigger value="docs">Documentation</TabsTrigger>
+        </TabsList>
         {/* ... existing code ... */}
 
         <TabsContent value="health">
-          {/* ... existing code ... */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Live Health Status</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h3 className="font-medium">Overall Score: {healthData.overallScore}%</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {Object.entries(healthData.components).map(([name, value]) => (
+                  <div key={name}>
+                    <p className="capitalize text-sm text-gray-400">{name}</p>
+                    <p className="font-bold text-lg">{value}%</p>
+                  </div>
+                ))}
+              </div>
+              {healthData.predictedFailure && (
+                <div className="p-4 bg-yellow-900/50 rounded-lg border border-yellow-700">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                    <h3 className="font-bold text-yellow-400">Predicted Failure</h3>
+                  </div>
+                  <p className="mt-2">
+                    Component{' '}
+                    <span className="font-bold">
+                      {healthData.predictedFailure.component}
+                    </span>{' '}
+                    has a{' '}
+                    <span className="font-bold">
+                      {healthData.predictedFailure.probability}%
+                    </span>{' '}
+                    failure probability around{' '}
+                    <span className="font-bold">
+                      {new Date(
+                        healthData.predictedFailure.estimatedTime
+                      ).toLocaleDateString()}
+                    </span>
+                    .
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="history">

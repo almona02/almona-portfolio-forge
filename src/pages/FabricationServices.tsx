@@ -39,6 +39,7 @@ import {
   Scan
 } from 'lucide-react';
 import Navbar from "@/components/layout/Navbar";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import Footer from "@/components/layout/Footer";
 
 const systemsData = {
@@ -1063,4 +1064,4 @@ const FabricationServices = () => {
   );
 };
 
-export default FabricationServices;
+export default withErrorBoundary(FabricationServices);

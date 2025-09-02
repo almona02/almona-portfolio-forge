@@ -50,7 +50,7 @@ export const MachineRegistrationEnhanced = () => {
       setMachine({ ...machine, serialNumber: "YM-5K-238492", model: "YILMAZ PRO-5000" });
       setQrScanning(false);
       setStep("details");
-      toast({ title: "Machine identified", description: "YILMAZ PRO-5000 (YM-5K-238492)", variant: "success" });
+      toast.success("Machine identified", { description: "YILMAZ PRO-5000 (YM-5K-238492)" });
     }, 1500);
   };
 
@@ -67,13 +67,13 @@ export const MachineRegistrationEnhanced = () => {
     setTimeout(() => {
       setMachine({ ...machine, warrantyValid: true });
       setIsProcessing(false);
-      toast({ title: "Warranty verified", description: "This machine has active warranty coverage until 2025", variant: "success" });
+      toast.success("Warranty verified", { description: "This machine has active warranty coverage until 2025" });
     }, 1000);
   };
 
   const generateDigitalTwin = () => {
     if (!machine.installationDate) {
-      toast({ title: "Missing Information", description: "Please select an installation date to continue.", variant: "destructive" });
+      toast.error("Missing Information", { description: "Please select an installation date to continue." });
       return;
     }
     setIsProcessing(true);
@@ -81,12 +81,12 @@ export const MachineRegistrationEnhanced = () => {
       setMachine({ ...machine, digitalTwinId: `DT-${Math.random().toString(36).substring(2, 10).toUpperCase()}` });
       setStep("confirm");
       setIsProcessing(false);
-      toast({ title: "Digital Twin Created", description: "Your machine now has a virtual representation", variant: "success" });
+      toast.success("Digital Twin Created", { description: "Your machine now has a virtual representation" });
     }, 2000);
   };
 
   const completeRegistration = () => {
-    toast({ title: "Registration Complete", description: "Machine successfully registered in our system", variant: "success" });
+    toast.success("Registration Complete", { description: "Machine successfully registered in our system" });
     setStep("scan");
     setMachine({ serialNumber: "", model: "", installationDate: "", warrantyValid: false, photos: [] });
   };
@@ -236,7 +236,7 @@ export const MachineRegistrationEnhanced = () => {
                       <div className="space-y-3">
                         <div><p className="text-sm text-gray-400">Serial Number</p><p className="font-mono text-orange-500">{machine.serialNumber}</p></div>
                         <div><p className="text-sm text-gray-400">Model</p><p className="font-bold">{machine.model}</p></div>
-                        <div><p className="text-sm text-gray-400">Installation Date</p><p>{new Date(machine.installationDate).toLocaleDateString()}</p></div>
+                        <div><p className="text-sm text-gray-400">Installation Date</p><p>{machine.installationDate ? new Date(machine.installationDate).toLocaleDateString() : 'N/A'}</p></div>
                         <div><p className="text-sm text-gray-400">Digital Twin ID</p><p className="font-mono text-green-500">{machine.digitalTwinId}</p></div>
                       </div>
                     </CardContent>

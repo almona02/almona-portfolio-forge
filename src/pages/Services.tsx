@@ -1,14 +1,24 @@
-
 import { useEffect, useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { EmergencyServiceDialog } from "@/components/services/EmergencyServiceDialog";
+import { SkeletonLoader } from "@/components/ui/SkeletonLoader";
 import { lazy, Suspense } from "react";
 
-const MachineRegistrationEnhanced = lazy(() => import("@/components/services/MachineRegistration"));
-const MaintenanceDashboard = lazy(() => import("@/components/services/MaintenanceDashboard"));
-const CustomerPortal = lazy(() => import("@/components/services/CustomerPortal"));
+const MachineRegistrationEnhanced = lazy(() =>
+  import("@/components/services/MachineRegistration").then((module) => ({
+    default: module.MachineRegistrationEnhanced,
+  }))
+);
+const MaintenanceDashboard = lazy(() =>
+  import("@/components/services/MaintenanceDashboard").then((module) => ({
+    default: module.MaintenanceDashboard,
+  }))
+);
+const CustomerPortal = lazy(() =>
+  import("@/components/services/CustomerPortal")
+);
 import { ScheduleMaintenance } from "@/components/services/ScheduleMaintenance";
 import { OperatorTrainingIncentiveDialog } from "@/components/services/OperatorTrainingIncentiveDialog";
 import {
@@ -19,6 +29,7 @@ import {
 } from "@/shared/ui/ui/tabs";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 import { Badge } from "@/components/ui/badge";
 
 const Services = () => {
@@ -119,6 +130,19 @@ const Services = () => {
                     onActionClick={() => setOperatorTrainingOpen(true)}
                     highlight={true}
                   />
+                  <ServiceCard
+                    icon="ship"
+                    title="Used Machinery Marketplace"
+                    description="Buy and sell pre-owned industrial equipment"
+                    features={[
+                      "Verified sellers",
+                      "Inspection reports",
+                      "Warranty options",
+                      "Financing available"
+                    ]}
+                    actionText="Browse Marketplace"
+                    highlight={true}
+                  />
                 </div>
                 <div className="bg-almona-darker/50 p-8 rounded-lg">
                   <div className="flex justify-between items-center mb-6">
@@ -161,7 +185,7 @@ const Services = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<SkeletonLoader />}>
                   <MachineRegistrationEnhanced />
                 </Suspense>
               </motion.div>
@@ -175,7 +199,7 @@ const Services = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<SkeletonLoader />}>
                   <MaintenanceDashboard />
                 </Suspense>
               </motion.div>
@@ -189,7 +213,7 @@ const Services = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense fallback={<SkeletonLoader />}>
                   <CustomerPortal />
                 </Suspense>
               </motion.div>
@@ -206,4 +230,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default withErrorBoundary(Services);

@@ -9,6 +9,7 @@ import { yilmazMachines, Machine } from "@/constants/productsData";
 import { Button } from "@/shared/ui/ui/button";
 import { Download, Eye } from "lucide-react";
 import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { toast } from "sonner";
 
 // Type for data from the API
@@ -196,4 +197,4 @@ const MachineDetail: React.FC = () => {
   );
 };
 
-export default MachineDetail;
+export default withErrorBoundary(MachineDetail);

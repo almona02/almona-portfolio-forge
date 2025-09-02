@@ -7,6 +7,7 @@ import { Button } from "@/shared/ui/ui/button";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { Factory, Users, Globe, Award, Target, Shield } from 'lucide-react';
 
 const About = () => {
@@ -208,4 +209,4 @@ const About = () => {
   );
 };
 
-export default About;
+export default withErrorBoundary(About);

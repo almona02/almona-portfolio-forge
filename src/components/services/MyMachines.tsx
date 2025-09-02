@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/ui/card';
-import { Machine } from '@/types';
+import { Database } from "@/lib/supabase";
+
+type Machine = Database["public"]["Tables"]["products"]["Row"];
 import { MachineRegistrationEnhanced } from './MachineRegistration';
 
 interface MyMachinesProps {
@@ -11,10 +13,10 @@ interface MyMachinesProps {
 const MachineCard = ({ machine }: { machine: Machine }) => (
   <Card>
     <CardHeader>
-      <CardTitle>{machine.name}</CardTitle>
+      <CardTitle>{machine.name_en}</CardTitle>
     </CardHeader>
     <CardContent>
-      <p><strong>Model:</strong> {machine.type}</p>
+      <p><strong>Model:</strong> {machine.model}</p>
       <p><strong>Category:</strong> {machine.category}</p>
     </CardContent>
   </Card>

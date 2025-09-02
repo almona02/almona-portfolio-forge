@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProjectCard from "@/shared/ui/ui/ProjectCard";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { portfolioData } from "@/constants/portfolioData";
 
 const Portfolio = () => {
@@ -33,4 +34,4 @@ const Portfolio = () => {
   );
 };
 
-export default Portfolio;
+export default withErrorBoundary(Portfolio);

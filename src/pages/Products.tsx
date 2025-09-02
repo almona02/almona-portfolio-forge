@@ -24,6 +24,7 @@ import { Separator } from "@/shared/ui/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import type { Machine } from "@/types/machine";
 import { Eye } from "lucide-react";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { useEffect, useState } from "react";
 
 const Products = () => {

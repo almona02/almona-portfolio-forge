@@ -15,6 +15,8 @@ import { motion } from 'framer-motion';
 import { FacebookLoginButton } from '@/components/auth/FacebookLoginButton';
 import { SmsOtpModal } from '@/components/auth/SmsOtpModal';
 
+import { withErrorBoundary } from '@/hocs/withErrorBoundary';
+
 const Login = () => {
   const [email, setEmail] = useState('almona02@yahoo.com');
   const [password, setPassword] = useState('momo1234');
@@ -193,5 +195,5 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default withErrorBoundary(Login);
             
