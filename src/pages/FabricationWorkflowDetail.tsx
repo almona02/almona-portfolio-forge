@@ -11,6 +11,7 @@ import { Icons } from "@/components/ui/icons";
 import { WorkflowDiagram } from "@/components/about/WorkflowDiagram";
 import { LocalStandardsTable } from "@/components/comparison/LocalStandardsTable";
 import { EfficiencyCalculator } from "@/components/comparison/EfficiencyCalculator";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { ArrowLeft } from 'lucide-react';
 
 const FabricationWorkflowDetail = () => {
@@ -583,4 +584,4 @@ const FabricationWorkflowDetail = () => {
   );
 };
 
-export default FabricationWorkflowDetail;
+export default withErrorBoundary(FabricationWorkflowDetail);

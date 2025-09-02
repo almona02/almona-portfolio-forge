@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { 
@@ -27,13 +27,30 @@ import Footer from '@/components/layout/Footer';
 const CustomerPortal = () => {
   const { user } = useAuth();
 
-  const { data: machines, isLoading: isLoadingMachines, error: machinesError } = useQuery({
-    queryKey: ['machines', user?.id],
-    queryFn: () => api.fetchUserMachines(user!.id),
-    enabled: !!user,
-  });
+  interface Machine {
+    id: string;
+    name: string;
+    model: string;
+    serialNumber?: string;
+    installationDate?: string;
+  }
+  
+  const { data: machines, isLoading: isLoadingMachines, error: machinesError } = useQuery<Machine[]>({
+      queryKey: ['machines', user?.id],
+      queryFn: () => api.fetchUserMachines(user!.id),
+      enabled: !!user,
+    });
 
-  const { data: tickets, isLoading: isLoadingTickets, error: ticketsError } = useQuery({
+  interface Ticket {
+    id: string;
+    subject: string;
+    status: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+  }
+
+  const { data: tickets, isLoading: isLoadingTickets, error: ticketsError } = useQuery<Ticket[]>({
     queryKey: ['tickets', user?.id],
     queryFn: () => api.fetchUserTickets(user!.id),
     enabled: !!user,
@@ -41,7 +58,7 @@ const CustomerPortal = () => {
 
   const { data: documents, isLoading: isLoadingDocuments, error: documentsError } = useQuery({
     queryKey: ['documents', user?.id],
-    queryFn: () => api.fetchUserDocuments(user!.id),
+    queryFn: () => api.get(`/users/${user!.id}/documents`).then(res => res.data),
     enabled: !!user,
   });
 
@@ -96,7 +113,7 @@ const CustomerPortal = () => {
     visible: { 
       y: 0, 
       opacity: 1,
-      transition: { type: 'spring', stiffness: 100 }
+      transition: { type: "spring" as const, stiffness: 100 }
     }
   };
 
@@ -115,7 +132,7 @@ const CustomerPortal = () => {
             <p className="text-gray-400">Manage your machines, support tickets, and account details</p>
           </div>
 
-          <Tabs defaultValue="machines" className="mb-8">
+          <Tabs value="machines" className="mb-8">
             <TabsList className="grid w-full grid-cols-3 bg-almona-dark/80 rounded-lg p-1">
               <TabsTrigger value="machines" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">My Machines</TabsTrigger>
               <TabsTrigger value="support" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">Support Tickets</TabsTrigger>

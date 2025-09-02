@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { EnhancedGLBViewer } from '../components/3d-model/EnhancedGLBViewer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { Button } from '@/components/ui/button';
 
 /**
@@ -158,4 +159,4 @@ export function ModelViewerTest() {
   )
 }
 
-export default ModelViewerTest
+export default withErrorBoundary(ModelViewerTest);

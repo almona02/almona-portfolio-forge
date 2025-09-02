@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import AiEquipmentAdvisor from '@/components/shop/ai-advisor/AiEquipmentAdvisor';
 import { EquipmentComparisonTool } from '@/components/shop/EquipmentComparisonTool';
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { IntelligentForm } from '@/components/contact/IntelligentForm';
 
 const AIFeatures = () => {
@@ -37,4 +38,4 @@ const AIFeatures = () => {
   );
 };
 
-export default AIFeatures;
+export default withErrorBoundary(AIFeatures);
