@@ -1,5 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import { Database } from '@/types/database'
+import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY as string
@@ -112,6 +113,78 @@ export const getProduct = async (id: string) => {
   if (error) throw error
   return data
 }
+
+// Categories helper functions
+export const getCategories = async (filters?: {
+  parentId?: string;
+  isActive?: boolean;
+}) => {
+  let query = supabase
+    .from('categories')
+    .select('*')
+    .order('sort_order', { ascending: true });
+
+  if (filters?.parentId !== undefined) {
+    query = query.eq('parent_id', filters.parentId);
+  }
+
+  if (filters?.isActive !== undefined) {
+    query = query.eq('is_active', filters.isActive);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+};
+
+// Product variants helper functions
+export const getProductVariants = async (productId: string) => {
+  const { data, error } = await supabase
+    .from('product_variants')
+    .select('*')
+    .eq('product_id', productId)
+    .eq('is_active', true)
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  return data;
+};
+
+// Product reviews helper functions
+export const getProductReviews = async (productId: string, filters?: {
+  isApproved?: boolean;
+  limit?: number;
+}) => {
+  let query = supabase
+    .from('product_reviews')
+    .select('*, profiles(full_name, avatar_url)')
+    .eq('product_id', productId)
+    .order('created_at', { ascending: false });
+
+  if (filters?.isApproved !== undefined) {
+    query = query.eq('is_approved', filters.isApproved);
+  }
+
+  if (filters?.limit) {
+    query = query.limit(filters.limit);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data;
+};
+
+export const createProductReview = async (reviewData: Database['public']['Tables']['product_reviews']['Insert']) => {
+  const { data, error } = await supabase
+    .from('product_reviews')
+    .insert(reviewData)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
 
 export const searchProducts = async (
   searchTerm: string,
@@ -336,6 +409,23 @@ export const markNotificationAsRead = async (notificationId: string) => {
   return data
 }
 
+// Real-time subscriptions
+export const subscribeToNotifications = (userId: string, callback: (payload: any) => void) => {
+  return supabase
+    .channel('notifications')
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'notifications',
+        filter: `user_id=eq.${userId}`,
+      },
+      callback
+    )
+    .subscribe();
+};
+
 // Pricing helper functions
 export const calculateTieredPrice = (basePrice: number, quantity: number): number => {
   // Define pricing tiers
@@ -355,19 +445,29 @@ export const calculateTieredPrice = (basePrice: number, quantity: number): numbe
 }
 
 // Storage helper functions
-export const uploadFile = async (
+export const uploadFileWithProgress = async (
   bucket: string,
   path: string,
   file: File,
-  options?: { cacheControl?: string; upsert?: boolean }
+  options?: { cacheControl?: string; upsert?: boolean },
+  onProgress?: (progress: number) => void
 ) => {
   const { data, error } = await supabase.storage
     .from(bucket)
-    .upload(path, file, options)
-  
-  if (error) throw error
-  return data
-}
+    .upload(path, file, {
+      ...options,
+      onUploadProgress: (progress) => {
+        if (onProgress) {
+          const progressPercent = (progress.loaded / progress.total) * 100;
+          onProgress(progressPercent);
+        }
+      },
+    });
+
+  if (error) throw error;
+  return data;
+};
+
 
 export const getPublicUrl = (bucket: string, path: string) => {
   const { data } = supabase.storage

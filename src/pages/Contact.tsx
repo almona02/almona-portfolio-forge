@@ -9,6 +9,7 @@ import { Input } from "@/shared/ui/ui/input";
 import { Textarea } from "@/shared/ui/ui/textarea";
 import { Label } from "@/shared/ui/ui/label";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { motion } from "framer-motion";
 
 const contactSchema = z.object({
@@ -262,4 +263,4 @@ const Contact = () => {
   );
 };
 
-export default Contact;
+export default withErrorBoundary(Contact);

@@ -6,6 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { AlertCircle, RotateCcw } from 'lucide-react';
 
 /**
@@ -182,4 +183,4 @@ export function ModelViewerDemo() {
   );
 }
 
-export default ModelViewerDemo;
+export default withErrorBoundary(ModelViewerDemo);
