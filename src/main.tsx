@@ -7,11 +7,21 @@ import { initializePerformanceMonitoring } from "./lib/performance";
 import { initializePolyfills } from "./lib/polyfills";
 import "./index.css";
 
-// Critical error boundary for early errors
+// Critical error boundary for early errors - optimized for performance
 class CriticalErrorBoundary extends React.Component<
   { children: React.ReactNode },
   { hasError: boolean; error?: Error }
 > {
+  private errorReportingQueue: Array<{
+    error: string;
+    stack?: string;
+    errorInfo: React.ErrorInfo;
+    url: string;
+    userAgent: string;
+    timestamp: string;
+  }> = [];
+  private reportingTimeout: NodeJS.Timeout | null = null;
+
   constructor(props: { children: React.ReactNode }) {
     super(props);
     this.state = { hasError: false };
@@ -24,22 +34,58 @@ class CriticalErrorBoundary extends React.Component<
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Critical application error:', error, errorInfo);
     
-    // Send error to monitoring service if available
-    if (import.meta.env.VITE_ERROR_REPORTING_ENDPOINT) {
-      fetch(import.meta.env.VITE_ERROR_REPORTING_ENDPOINT, {
+    // Batch error reporting to reduce network overhead
+    this.queueErrorReport({
+      error: error.message,
+      stack: error.stack,
+      errorInfo,
+      url: window.location.href,
+      userAgent: navigator.userAgent,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  private queueErrorReport = (errorData: {
+    error: string;
+    stack?: string;
+    errorInfo: React.ErrorInfo;
+    url: string;
+    userAgent: string;
+    timestamp: string;
+  }) => {
+    if (!import.meta.env.VITE_ERROR_REPORTING_ENDPOINT) return;
+    
+    this.errorReportingQueue.push(errorData);
+    
+    // Debounce error reporting to avoid multiple rapid requests
+    if (this.reportingTimeout) {
+      clearTimeout(this.reportingTimeout);
+    }
+    
+    this.reportingTimeout = setTimeout(() => {
+      this.flushErrorReports();
+    }, 1000); // Wait 1 second before sending
+  };
+
+  private flushErrorReports = async () => {
+    if (this.errorReportingQueue.length === 0) return;
+    
+    try {
+      await fetch(import.meta.env.VITE_ERROR_REPORTING_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          error: error.message,
-          stack: error.stack,
-          errorInfo,
-          url: window.location.href,
-          userAgent: navigator.userAgent,
-          timestamp: new Date().toISOString(),
+          errors: this.errorReportingQueue,
+          batchSize: this.errorReportingQueue.length,
         }),
-      }).catch(() => {}); // Silent fail
+      });
+    } catch (e) {
+      // Silent fail - don't let error reporting break the app
+    } finally {
+      this.errorReportingQueue = [];
+      this.reportingTimeout = null;
     }
-  }
+  };
 
   render() {
     if (this.state.hasError) {

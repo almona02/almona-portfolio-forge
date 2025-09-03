@@ -6,6 +6,7 @@ import { ReviewList } from "@/components/shop/ReviewList";
 import { getReviewsByProductId, addReview, Review } from "@/lib/reviewsApi";
 import { useTranslation } from "react-i18next";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { toast } from "sonner";
 
 const ProfileDetail: React.FC = () => {
@@ -94,4 +95,4 @@ const ProfileDetail: React.FC = () => {
   );
 };
 
-export default ProfileDetail;
+export default withErrorBoundary(ProfileDetail);

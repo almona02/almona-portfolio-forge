@@ -1,6 +1,7 @@
 import ErrorBoundary from '@/components/ErrorBoundary';
-import React from 'react';
+import React, { memo } from 'react';
 
+// Performance-optimized error boundary HOC
 export const withErrorBoundary = <P extends object>(
   Component: React.ComponentType<P>,
   fallback?: React.ReactNode
@@ -12,5 +13,7 @@ export const withErrorBoundary = <P extends object>(
   );
   
   WithErrorBoundary.displayName = `WithErrorBoundary(${Component.displayName || Component.name})`;
-  return WithErrorBoundary;
+  
+  // Return memoized HOC to prevent re-creation on parent re-renders
+  return memo(WithErrorBoundary);
 };

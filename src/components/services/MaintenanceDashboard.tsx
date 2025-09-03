@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import * as Progress from "@radix-ui/react-progress";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, Clock, CheckCircle2, AlertTriangle, HardHat } from "lucide-react";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 
@@ -35,7 +36,7 @@ interface MachineHealth {
   };
 }
 
-export const MaintenanceDashboard = () => {
+export const MaintenanceDashboard = withErrorBoundary(() => {
   const [healthData, setHealthData] = useState<MachineHealth>({
     overallScore: 82,
     components: {
@@ -270,4 +271,4 @@ export const MaintenanceDashboard = () => {
       </Tabs>
     </div>
   );
-};
+});

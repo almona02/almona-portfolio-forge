@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { QrCodeIcon, CheckCircle2, AlertCircle, ChevronRight, Camera, Upload, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { EnhancedOperatorTrainingDialog } from './EnhancedOperatorTrainingDialog';
 
 interface MachineData {
@@ -25,7 +26,7 @@ interface WarrantyExtension {
   features: string[];
 }
 
-export const MachineRegistrationEnhanced = () => {
+export const MachineRegistrationEnhanced = withErrorBoundary(() => {
   const [machine, setMachine] = useState<MachineData>({
     serialNumber: "",
     model: "",
@@ -282,4 +283,4 @@ export const MachineRegistrationEnhanced = () => {
       <EnhancedOperatorTrainingDialog open={showTrainingDialog} onOpenChange={setShowTrainingDialog} />
     </div>
   );
-};
+});
