@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 from core.config import settings
+from core.supabase_client import supabase_client
 
 router = APIRouter()
 
@@ -59,19 +60,31 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    # Mock user authentication
-    if form_data.username == "admin" and form_data.password == "password":
-        access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token = create_access_token(
-            data={"sub": form_data.username}, expires_delta=access_token_expires
+    try:
+        user_response = supabase_client.client.auth.sign_in_with_password({
+            "email": form_data.username,
+            "password": form_data.password,
+        })
+        
+        if user_response.user:
+            access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            access_token = create_access_token(
+                data={"sub": user_response.user.email}, expires_delta=access_token_expires
+            )
+            refresh_token = create_refresh_token(data={"sub": user_response.user.email})
+            return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
         )
-        refresh_token = create_refresh_token(data={"sub": form_data.username})
-        return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Incorrect username or password",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
 
 @router.post("/refresh", response_model=Token)
 async def refresh_access_token(refresh_token: str):
