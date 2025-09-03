@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { CheckCircle2, Wrench, Bolt, GraduationCap, Ship } from "lucide-react";
-import ElectricBorder from './ElectricBorder';
 
 interface ServiceCardProps {
   icon: "wrench" | "bolt" | "graduation-cap" | "ship";
@@ -76,14 +75,11 @@ export const ServiceCard = ({
   highlight = false,
 }: ServiceCardProps) => {
   return (
-    <ElectricBorder
-      className="h-full"
-      color="#FF8C00"
-      speed={1}
-      chaos={0.5}
-      thickness={highlight ? 3 : 2}
-      style={{ borderRadius: 16 }}
-    >
+    <div className={`h-full rounded-lg border-2 transition-all duration-300 hover:shadow-lg ${
+      highlight 
+        ? 'border-orange-500 shadow-orange-500/20 shadow-lg' 
+        : 'border-gray-600 hover:border-gray-500'
+    }`}>
       <div className="bg-almona-darker/50 p-6 flex flex-col h-full rounded-lg">
         <div className="flex items-center gap-3 mb-4">
           <div className="bg-almona-dark/50 p-3 rounded-full">
@@ -117,6 +113,6 @@ export const ServiceCard = ({
           </Button>
         </div>
       </div>
-    </ElectricBorder>
+    </div>
   );
 };

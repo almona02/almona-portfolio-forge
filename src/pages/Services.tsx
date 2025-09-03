@@ -3,6 +3,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { EmergencyServiceDialog } from "@/components/services/EmergencyServiceDialog";
+import { FormSkeleton } from "@/components/ui/FormSkeleton";
 import { SkeletonLoader } from "@/components/ui/SkeletonLoader";
 import { lazy, Suspense } from "react";
 
@@ -185,7 +186,7 @@ const Services = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <Suspense fallback={<SkeletonLoader />}>
+                <Suspense fallback={<FormSkeleton />}>
                   <MachineRegistrationEnhanced />
                 </Suspense>
               </motion.div>
@@ -199,7 +200,7 @@ const Services = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <Suspense fallback={<SkeletonLoader />}>
+                <Suspense fallback={<div className="space-y-4"><FormSkeleton /><FormSkeleton /></div>}>
                   <MaintenanceDashboard />
                 </Suspense>
               </motion.div>

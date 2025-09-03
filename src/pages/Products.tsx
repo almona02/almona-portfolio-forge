@@ -437,4 +437,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default withErrorBoundary(Products);

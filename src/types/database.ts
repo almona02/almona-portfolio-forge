@@ -117,6 +117,190 @@ export interface Database {
           updated_at?: string
         }
       }
+      service_tickets: {
+        Row: {
+          id: string
+          ticket_number: string
+          user_id: string
+          title: string
+          description: string | null
+          type: 'general' | 'technical' | 'billing' | 'sales' | 'spare_parts' | 'warranty' | 'complaint' | 'installation' | 'maintenance'
+          priority: 'low' | 'medium' | 'high' | 'critical' | 'urgent'
+          status: 'open' | 'assigned' | 'in_progress' | 'awaiting_parts' | 'awaiting_customer' | 'pending_approval' | 'resolved' | 'closed' | 'cancelled'
+          related_quote_id: string | null
+          related_order_id: string | null
+          related_product_id: string | null
+          assigned_to: string | null
+          assigned_at: string | null
+          assigned_by: string | null
+          sla_response_due: string | null
+          sla_resolution_due: string | null
+          first_response_at: string | null
+          sla_breached: boolean
+          escalated: boolean
+          escalated_at: string | null
+          contact_phone: string | null
+          contact_email: string | null
+          preferred_contact_method: string
+          site_location: string | null
+          machine_serial_number: string | null
+          resolution_summary: string | null
+          customer_satisfaction_rating: number | null
+          customer_feedback: string | null
+          created_at: string
+          updated_at: string
+          resolved_at: string | null
+          closed_at: string | null
+        }
+        Insert: {
+          ticket_number?: string
+          user_id: string
+          title: string
+          description?: string | null
+          type?: 'general' | 'technical' | 'billing' | 'sales' | 'spare_parts' | 'warranty' | 'complaint' | 'installation' | 'maintenance'
+          priority?: 'low' | 'medium' | 'high' | 'critical' | 'urgent'
+          status?: 'open' | 'assigned' | 'in_progress' | 'awaiting_parts' | 'awaiting_customer' | 'pending_approval' | 'resolved' | 'closed' | 'cancelled'
+          related_quote_id?: string | null
+          related_order_id?: string | null
+          related_product_id?: string | null
+          assigned_to?: string | null
+          assigned_at?: string | null
+          assigned_by?: string | null
+          contact_phone?: string | null
+          contact_email?: string | null
+          preferred_contact_method?: string
+          site_location?: string | null
+          machine_serial_number?: string | null
+          resolution_summary?: string | null
+          customer_satisfaction_rating?: number | null
+          customer_feedback?: string | null
+        }
+        Update: {
+          ticket_number?: string
+          title?: string
+          description?: string | null
+          type?: 'general' | 'technical' | 'billing' | 'sales' | 'spare_parts' | 'warranty' | 'complaint' | 'installation' | 'maintenance'
+          priority?: 'low' | 'medium' | 'high' | 'critical' | 'urgent'
+          status?: 'open' | 'assigned' | 'in_progress' | 'awaiting_parts' | 'awaiting_customer' | 'pending_approval' | 'resolved' | 'closed' | 'cancelled'
+          related_quote_id?: string | null
+          related_order_id?: string | null
+          related_product_id?: string | null
+          assigned_to?: string | null
+          assigned_at?: string | null
+          assigned_by?: string | null
+          sla_response_due?: string | null
+          sla_resolution_due?: string | null
+          first_response_at?: string | null
+          sla_breached?: boolean
+          escalated?: boolean
+          escalated_at?: string | null
+          contact_phone?: string | null
+          contact_email?: string | null
+          preferred_contact_method?: string
+          site_location?: string | null
+          machine_serial_number?: string | null
+          resolution_summary?: string | null
+          customer_satisfaction_rating?: number | null
+          customer_feedback?: string | null
+          updated_at?: string
+          resolved_at?: string | null
+          closed_at?: string | null
+        }
+      }
+      ticket_messages: {
+        Row: {
+          id: string
+          ticket_id: string
+          author_id: string
+          message: string
+          message_type: 'message' | 'spare_parts_request' | 'status_update' | 'assignment' | 'resolution' | 'internal_note'
+          is_internal_note: boolean
+          attachments: Array<{
+            filename: string
+            url: string
+            size: number
+            type: string
+          }>
+          spare_parts_details: {
+            parts: Array<{
+              sku: string
+              name: string
+              quantity: number
+              urgency: string
+            }>
+            estimated_cost?: number
+            delivery_timeline?: string
+            quote_id?: string
+          } | null
+          status_change: {
+            from: string
+            to: string
+            reason: string
+          } | null
+          time_spent_minutes: number | null
+          created_at: string
+          edited_at: string | null
+        }
+        Insert: {
+          ticket_id: string
+          author_id: string
+          message: string
+          message_type?: 'message' | 'spare_parts_request' | 'status_update' | 'assignment' | 'resolution' | 'internal_note'
+          is_internal_note?: boolean
+          attachments?: Array<{
+            filename: string
+            url: string
+            size: number
+            type: string
+          }>
+          spare_parts_details?: {
+            parts: Array<{
+              sku: string
+              name: string
+              quantity: number
+              urgency: string
+            }>
+            estimated_cost?: number
+            delivery_timeline?: string
+            quote_id?: string
+          } | null
+          status_change?: {
+            from: string
+            to: string
+            reason: string
+          } | null
+          time_spent_minutes?: number | null
+        }
+        Update: {
+          message?: string
+          message_type?: 'message' | 'spare_parts_request' | 'status_update' | 'assignment' | 'resolution' | 'internal_note'
+          is_internal_note?: boolean
+          attachments?: Array<{
+            filename: string
+            url: string
+            size: number
+            type: string
+          }>
+          spare_parts_details?: {
+            parts: Array<{
+              sku: string
+              name: string
+              quantity: number
+              urgency: string
+            }>
+            estimated_cost?: number
+            delivery_timeline?: string
+            quote_id?: string
+          } | null
+          status_change?: {
+            from: string
+            to: string
+            reason: string
+          } | null
+          time_spent_minutes?: number | null
+          edited_at?: string | null
+        }
+      }
       products: {
         Row: {
           id: string

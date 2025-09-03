@@ -164,13 +164,15 @@ export function monitorResourceLoading() {
   }
 }
 
-// Memory usage monitoring
+// Memory usage monitoring - optimized for performance
 export function monitorMemoryUsage() {
-  if ("memory" in performance) {
+  if ("memory" in performance && import.meta.env.PROD) {
     const memoryInfo = (performance as PerformanceWithMemory).memory;
 
     if (memoryInfo) {
-      setInterval(() => {
+      // Reduce frequency to every 2 minutes in production
+      // Only monitor in production to reduce development overhead
+      const interval = setInterval(() => {
         const memoryUsage = {
           used: memoryInfo.usedJSHeapSize,
           total: memoryInfo.totalJSHeapSize,
@@ -179,25 +181,32 @@ export function monitorMemoryUsage() {
             (memoryInfo.usedJSHeapSize / memoryInfo.jsHeapSizeLimit) * 100,
         };
 
-        // Warn if memory usage is high
-        if (memoryUsage.percentage > 80) {
-          console.warn("High memory usage detected:", memoryUsage);
+        // Only warn if memory usage is critically high (90%+)
+        if (memoryUsage.percentage > 90) {
+          console.warn("Critical memory usage detected:", memoryUsage);
+          
+          // Send to monitoring only for critical cases
+          if (import.meta.env.VITE_PERFORMANCE_ENDPOINT) {
+            fetch(import.meta.env.VITE_PERFORMANCE_ENDPOINT, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                type: "memory_critical",
+                ...memoryUsage,
+                timestamp: Date.now(),
+                url: window.location.href,
+              }),
+            }).catch(() => {}); // Silent fail
+          }
         }
+      }, 120000); // Check every 2 minutes instead of 30 seconds
 
-        // Send to monitoring if enabled
-        if (import.meta.env.VITE_PERFORMANCE_ENDPOINT) {
-          fetch(import.meta.env.VITE_PERFORMANCE_ENDPOINT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              type: "memory",
-              ...memoryUsage,
-              timestamp: Date.now(),
-              url: window.location.href,
-            }),
-          }).catch(() => {}); // Silent fail
+      // Clear interval when page is hidden to save resources
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          clearInterval(interval);
         }
-      }, 30000); // Check every 30 seconds
+      });
     }
   }
 }
