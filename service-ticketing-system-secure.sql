@@ -763,7 +763,9 @@ CREATE POLICY "Staff can manage escalations" ON public.ticket_escalations
 
 -- Ticket summary view
 DROP VIEW IF EXISTS public.ticket_summary;
-CREATE VIEW public.ticket_summary AS
+CREATE OR REPLACE VIEW public.ticket_summary
+WITH (security_invoker = true)
+AS 
 SELECT 
     st.id,
     st.ticket_number,
@@ -797,7 +799,9 @@ LEFT JOIN public.profiles p_assigned ON st.assigned_to = p_assigned.id;
 
 -- SLA performance view
 DROP VIEW IF EXISTS public.sla_performance;
-CREATE VIEW public.sla_performance AS
+CREATE OR REPLACE VIEW public.sla_performance
+WITH (security_invoker = true)
+AS
 SELECT 
     st.type,
     st.priority,

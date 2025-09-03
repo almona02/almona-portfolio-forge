@@ -1,151 +1,443 @@
 # Almona Portfolio Forge
 
-This is the repository for the Almona Portfolio Forge project, a modern, interactive portfolio website for Almona, a company specializing in industrial machinery. It's built with a React frontend (using Vite and TypeScript) and a Python backend (using FastAPI).
+A comprehensive, modern industrial machinery portfolio and e-commerce platform built for Almona, featuring advanced 3D/AR visualization, AI-powered services, and a complete customer support system.
 
-## Features
+## 🚀 Overview
 
-- **Interactive Product Showcase:** Browse and view industrial machinery with detailed specifications.
-- **3D Model Viewer:** Interact with 3D models of the machines.
-- **AR Integration:** Visualize machines in your own space using Augmented Reality.
-- **Quoting System:** Request quotes for products.
-- **Customer Portal:** Access order history and other account information.
-- **Internationalization:** Support for multiple languages.
-- **Responsive Design:** Works on all devices.
+Almona Portfolio Forge is a full-stack industrial machinery platform that combines a React frontend with a Python FastAPI backend, offering everything from product showcases to complete service management. The platform serves industrial clients across Egypt and the Middle East with specialized features for aluminum, UPVC, and steel fabrication industries.
 
-## Technologies Used
+## ✨ Key Features
 
-- **Frontend:**
-  - React
-  - Vite
-  - TypeScript
-  - Tailwind CSS
-  - Shadcn UI
-  - Three.js & @react-three/fiber
-  - React Router
-  - i18next
-- **Backend:**
-  - Python
-  - FastAPI
-  - Supabase (for auth and database)
-- **Testing:**
-  - Vitest
-  - Pytest
-  - Playwright
-  - Storybook
-- **DevOps:**
-  - Docker
-  - Vercel
+### 🛒 **E-Commerce & Shop**
+- **Product Catalog**: Comprehensive industrial machinery, spare parts, and raw materials
+- **3D Product Viewer**: Interactive 3D models with AR capabilities
+- **Smart Configurator**: AI-powered product configuration and recommendations
+- **Quote System**: Advanced quoting with bulk pricing and custom configurations
+- **Multi-Currency Support**: EGP, USD, EUR with real-time conversion
+- **Inventory Management**: Real-time stock tracking and availability
 
-## Getting Started
+### 🔧 **Service Management**
+- **Service Ticketing System**: Professional SLA-based ticket management
+- **Customer Portal**: Comprehensive dashboard for orders, quotes, and service history
+- **Machine Registration**: Digital machine registry with maintenance tracking
+- **Preventive Maintenance**: Automated scheduling and reminders
+- **Emergency Services**: 24/7 emergency support with priority routing
+- **Spare Parts Management**: Automated parts identification and ordering
 
-### Prerequisites
+### 🤖 **AI-Powered Features**
+- **Equipment Advisor**: AI recommendations based on requirements
+- **Part Detection**: Computer vision for spare parts identification
+- **Predictive Maintenance**: ML-based maintenance predictions
+- **Fault Detection**: Automated issue diagnosis from images/audio
+- **Smart Search**: Intelligent product and documentation search
 
-- Node.js (v18 or higher)
-- npm or bun
-- Python (v3.9 or higher)
+### 🌐 **Internationalization**
+- **Multi-Language Support**: Arabic (RTL) and English (LTR)
+- **Localized Content**: Region-specific pricing, regulations, and standards
+- **Egyptian Standards**: Compliance with local industrial standards
+- **Cultural Adaptation**: Tailored UX for Middle Eastern markets
 
-### Installation
+### 📱 **Advanced UI/UX**
+- **Responsive Design**: Optimized for all devices and screen sizes
+- **Progressive Web App**: Offline capabilities and app-like experience
+- **Accessibility**: WCAG 2.1 AA compliant with screen reader support
+- **Performance**: Optimized loading with lazy loading and caching
 
-1.  **Clone the repository:**
+### 🔐 **Security & Authentication**
+- **Multi-Factor Authentication**: SMS OTP and email verification
+- **Role-Based Access Control**: Customer, Admin, Technician, Sales Rep roles
+- **Row Level Security**: Database-level security policies
+- **Audit Logging**: Comprehensive activity tracking
+- **Data Protection**: GDPR compliant with data encryption
 
-    ```bash
-    git clone https://github.com/your-username/almona-portfolio-forge.git
-    cd almona-portfolio-forge
-    ```
+## 🛠 Technology Stack
 
-2.  **Install frontend dependencies:**
+### **Frontend**
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite with optimized bundling
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **3D Graphics**: Three.js + @react-three/fiber
+- **AR/VR**: @react-three/xr for WebXR support
+- **State Management**: React Context + Zustand
+- **Routing**: React Router v6 with lazy loading
+- **Forms**: React Hook Form + Zod validation
+- **Internationalization**: i18next with RTL support
+- **Testing**: Vitest + React Testing Library + Playwright
 
-    ```bash
-    npm install
-    ```
+### **Backend**
+- **Framework**: FastAPI (Python 3.9+)
+- **Database**: Supabase (PostgreSQL) with real-time subscriptions
+- **Authentication**: Supabase Auth with custom policies
+- **AI Services**: TensorFlow.js + Hugging Face Transformers
+- **Task Queue**: Celery with Redis
+- **Email Service**: SendGrid with custom templates
+- **File Storage**: Supabase Storage with CDN
+- **Monitoring**: Custom dashboard with performance metrics
 
-3.  **Install backend dependencies:**
+### **Infrastructure**
+- **Deployment**: Vercel (Frontend) + Docker (Backend)
+- **CDN**: Vercel Edge Network
+- **Database**: Supabase with automatic backups
+- **Monitoring**: Web Vitals + Custom analytics
+- **CI/CD**: GitHub Actions with automated testing
 
-    ```bash
-    cd python_backend
-    pip install -r requirements.txt
-    ```
+## 📁 Project Structure
 
-4.  **Set up environment variables:**
-    - Create a `.env` file in the root directory by copying `.env.example`.
-    - Create a `.env` file in the `python_backend` directory by copying `python_backend/.env.example`.
-    - Fill in the required environment variables, such as your Supabase credentials.
-
-### Running the Application
-
-1.  **Start the frontend development server:**
-
-    ```bash
-    npm run dev
-    ```
-
-2.  **Start the backend server:**
-    ```bash
-    cd python_backend
-    uvicorn apis.main:app --reload
-    ```
-
-## Available Scripts
-
-- `npm run dev`: Starts the Vite development server.
-- `npm run build`: Builds the application for production.
-- `npm run lint`: Lints the codebase.
-- `npm run preview`: Previews the production build.
-- `npm run test`: Runs all tests.
-- `npm run test:watch`: Runs tests in watch mode.
-- `npm run test:api`: Runs backend API tests.
-- `npm run test:react`: Runs React component tests.
-- `npm run test:security`: Runs backend security tests.
-- `npm run test:performance`: Runs backend performance tests.
-- `npm run storybook`: Starts Storybook.
-- `npm run build-storybook`: Builds Storybook for deployment.
-
-## Project Structure
-
-Top-level overview:
-
-```text
-.
-├── docs/
-├── locales/
-├── public/
-├── publicimagesmachines/
-├── publicimagesprofiles/
-├── python_backend/
-├── src/
-├── srcassetsimages/
-├── tabby_x86_64-windows-msvc/
-├── .blackboxrules
-├── .gitignore
-├── .vercelignore
-├── CODE_PRINCIPLES_EVALUATION.md
-├── components.json
-├── DEVELOPMENT_GUIDE.md
-├── eslint.config.js
-├── index.html
-├── MCP_SETUP.md
-├── package.json
-├── postcss.config.js
-├── README.md
-├── tailwind.config.ts
-├── tsconfig.app.json
-├── tsconfig.json
-├── tsconfig.node.json
-├── vite.config.ts
-├── vitest.config.ts
-├── vitest.shims.d.ts
-├── yarn.lock
+### **Frontend Structure**
+```
+src/
+├── components/           # Reusable UI components
+│   ├── 3d-model/        # 3D viewers and AR components
+│   ├── about/           # Company information components
+│   ├── auth/            # Authentication components
+│   ├── comparison/      # Product comparison tools
+│   ├── contact/         # Contact and support forms
+│   ├── home/            # Homepage sections
+│   ├── layout/          # Navigation and layout components
+│   ├── products/        # Product display components
+│   ├── quotes/          # Quote management components
+│   ├── services/        # Service-related components
+│   ├── shop/            # E-commerce components
+│   ├── support/         # Customer support components
+│   ├── ui/              # Base UI components (shadcn/ui)
+│   └── used-machines/   # Used machinery marketplace
+├── pages/               # Route components
+│   ├── machines/        # Machine detail pages
+│   ├── profiles/        # User profile pages
+│   ├── workflows/       # Process workflow pages
+│   └── Services/        # Service management pages
+├── hooks/               # Custom React hooks
+├── lib/                 # Utility libraries
+│   ├── ai/             # AI service integrations
+│   ├── reports/        # Report generation
+│   └── polyfills/      # Browser compatibility
+├── context/            # React context providers
+├── constants/          # Static data and configurations
+├── data/               # Mock data and fixtures
+├── types/              # TypeScript type definitions
+└── assets/             # Static assets and images
 ```
 
-Full structure
+### **Backend Structure**
+```
+python_backend/
+├── apis/               # API route handlers
+│   ├── v1/            # Version 1 API endpoints
+│   └── v2/            # Version 2 API endpoints
+├── ai_services/       # AI and ML services
+│   ├── part_detection/ # Computer vision for parts
+│   └── preprocessing/ # Image processing utilities
+├── core/              # Core application logic
+├── models/            # Pydantic data models
+├── templates/         # Email templates
+├── tests/             # Comprehensive test suite
+├── monitoring/        # Performance monitoring
+└── uploads/           # File upload handling
+```
 
-- See docs/project-structure.md (auto-generated by node docs/generate-structure.js).
-- Regenerate with: node docs/generate-structure.js (or npm run gen:structure after scripts update).
+## 🗄️ Database Schema
 
-## Deployment
+### **Core Tables**
+- **profiles**: Extended user profiles with company information
+- **products**: Industrial machinery, parts, and materials catalog
+- **categories**: Hierarchical product categorization
+- **quotes**: Quote management with approval workflow
+- **orders**: Order processing and fulfillment tracking
+- **service_tickets**: Professional ticketing system with SLA
+- **notifications**: Real-time user notifications
 
-This project is configured for deployment on Vercel. The `vercel.json` file contains the necessary configuration. To deploy, simply connect your Vercel account to your Git repository.
+### **Advanced Features**
+- **Row Level Security (RLS)**: Database-level access control
+- **Audit Logging**: Complete activity tracking
+- **SLA Management**: Automated service level agreements
+- **Multi-Language Content**: Localized product information
+- **Pricing Tiers**: Bulk pricing and customer-specific rates
 
-## Contributing
+## 🚀 Getting Started
 
-Contributions are welcome! Please follow the existing code style and conventions. Make sure to run the linter and tests before submitting a pull request.
+### **Prerequisites**
+- Node.js 18+ and npm/yarn
+- Python 3.9+ and pip
+- Supabase account
+- Git
+
+### **Installation**
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/almona-portfolio-forge.git
+   cd almona-portfolio-forge
+   ```
+
+2. **Install frontend dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Install backend dependencies**
+   ```bash
+   cd python_backend
+   pip install -r requirements-enhanced.txt
+   ```
+
+4. **Environment Setup**
+   ```bash
+   # Copy environment files
+   cp .env.example .env
+   cp python_backend/.env.example python_backend/.env
+   
+   # Configure your environment variables:
+   # - Supabase URL and API keys
+   # - Google Maps API key
+   # - SendGrid API key
+   # - AI service API keys
+   ```
+
+5. **Database Setup**
+   ```bash
+   # Run the database schema in Supabase SQL Editor
+   # 1. Execute database-schema.sql
+   # 2. Execute service-ticketing-system-secure.sql
+   ```
+
+### **Development**
+
+1. **Start the frontend development server**
+   ```bash
+   npm run dev
+   ```
+
+2. **Start the backend server**
+   ```bash
+   cd python_backend
+   uvicorn apis.main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+3. **Access the application**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8000
+   - API Documentation: http://localhost:8000/docs
+
+## 📋 Available Scripts
+
+### **Frontend Scripts**
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm run test` - Run all tests
+- `npm run test:watch` - Run tests in watch mode
+- `npm run storybook` - Start Storybook
+- `npm run gen:structure` - Generate project structure documentation
+
+### **Backend Scripts**
+- `npm run test:api` - Run backend API tests
+- `npm run test:security` - Run security tests
+- `npm run test:performance` - Run performance tests
+- `npm run load-test` - Run load testing with Locust
+
+### **Deployment Scripts**
+- `npm run deploy:staging` - Deploy to staging environment
+- `npm run deploy:production` - Deploy to production
+
+## 🏗️ Architecture
+
+### **Frontend Architecture**
+- **Component-Based**: Modular, reusable components
+- **Feature-Driven**: Organized by business functionality
+- **Performance-Optimized**: Code splitting and lazy loading
+- **Accessibility-First**: WCAG 2.1 AA compliance
+- **Mobile-Responsive**: Progressive enhancement approach
+
+### **Backend Architecture**
+- **Microservices**: Modular API design
+- **Event-Driven**: Real-time updates with WebSockets
+- **Scalable**: Horizontal scaling with Docker
+- **Secure**: Multi-layer security implementation
+- **Observable**: Comprehensive monitoring and logging
+
+### **Data Flow**
+1. **User Interaction** → React Components
+2. **State Management** → Context/Zustand
+3. **API Calls** → FastAPI Backend
+4. **Data Processing** → AI Services (if applicable)
+5. **Database Operations** → Supabase with RLS
+6. **Real-time Updates** → WebSocket subscriptions
+
+## 🔧 Key Components
+
+### **Shop & E-Commerce**
+- `ProductConfigurator` - Advanced product configuration
+- `FreightCalculator` - Shipping cost calculation
+- `QuoteRequestStepper` - Multi-step quote process
+- `EquipmentComparisonTool` - Side-by-side comparisons
+- `RecentlyViewedProducts` - User browsing history
+
+### **3D & AR Features**
+- `EnhancedGLBViewer` - 3D model rendering
+- `ARViewer` - Augmented reality integration
+- `Machine3DButton` - 3D model triggers
+- `WorkspaceChecker` - AR space validation
+
+### **Service Management**
+- `AdminTicketDashboard` - Service ticket management
+- `CreateTicketDialog` - Ticket creation interface
+- `TicketDetailView` - Comprehensive ticket details
+- `MaintenanceDashboard` - Preventive maintenance
+- `MachineRegistration` - Equipment registration
+
+### **AI & Smart Features**
+- `AiEquipmentAdvisor` - AI-powered recommendations
+- `MachineRecommendationWizard` - Smart product finder
+- `FabricationReportGenerator` - Automated reporting
+- `IntelligentForm` - Smart form assistance
+
+## 🌍 Internationalization
+
+### **Supported Languages**
+- **Arabic (العربية)**: Right-to-left (RTL) layout
+- **English**: Left-to-right (LTR) layout
+
+### **Localization Features**
+- Dynamic language switching
+- RTL/LTR layout adaptation
+- Localized number and date formats
+- Region-specific content
+- Cultural UI adaptations
+
+### **Content Management**
+- JSON-based translation files
+- Dynamic content loading
+- Fallback language support
+- Professional translation workflow
+
+## 🔒 Security Features
+
+### **Authentication & Authorization**
+- Multi-factor authentication (MFA)
+- Role-based access control (RBAC)
+- Session management with JWT
+- OAuth integration (Google, Facebook)
+- Password security policies
+
+### **Data Protection**
+- Row Level Security (RLS) policies
+- Data encryption at rest and in transit
+- GDPR compliance features
+- Audit logging and monitoring
+- Secure file upload handling
+
+### **API Security**
+- Rate limiting and throttling
+- Input validation and sanitization
+- CORS policy configuration
+- API key management
+- Request/response logging
+
+## 📊 Performance & Monitoring
+
+### **Performance Optimizations**
+- Code splitting and lazy loading
+- Image optimization and WebP support
+- CDN integration for static assets
+- Service worker for offline functionality
+- Database query optimization
+
+### **Monitoring & Analytics**
+- Web Vitals tracking
+- Custom performance metrics
+- Error tracking and reporting
+- User behavior analytics
+- Real-time system monitoring
+
+## 🧪 Testing Strategy
+
+### **Frontend Testing**
+- **Unit Tests**: Component logic and utilities
+- **Integration Tests**: User workflows and API integration
+- **E2E Tests**: Complete user journeys with Playwright
+- **Visual Tests**: Component snapshots with Storybook
+- **Accessibility Tests**: WCAG compliance validation
+
+### **Backend Testing**
+- **API Tests**: Endpoint functionality and validation
+- **Security Tests**: Authentication and authorization
+- **Performance Tests**: Load testing and benchmarking
+- **Contract Tests**: API contract validation
+- **Chaos Tests**: System resilience testing
+
+## 🚀 Deployment
+
+### **Production Deployment**
+- **Frontend**: Vercel with automatic deployments
+- **Backend**: Docker containers with orchestration
+- **Database**: Supabase with automatic backups
+- **CDN**: Global content delivery network
+- **Monitoring**: Real-time performance tracking
+
+### **Environment Configuration**
+- **Development**: Local development with hot reloading
+- **Staging**: Pre-production testing environment
+- **Production**: Optimized production deployment
+- **Testing**: Isolated testing environment
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these guidelines:
+
+1. **Fork the repository** and create a feature branch
+2. **Follow coding standards** and maintain consistency
+3. **Write comprehensive tests** for new features
+4. **Update documentation** for any changes
+5. **Submit a pull request** with detailed description
+
+### **Development Workflow**
+1. Create feature branch from `main`
+2. Implement feature with tests
+3. Run linting and type checking
+4. Test across devices and browsers
+5. Create pull request with description
+6. Code review and approval
+7. Merge to main branch
+8. Deploy to staging for final testing
+9. Deploy to production
+
+## 📝 License
+
+This project is proprietary software developed for Almona Industrial Solutions. All rights reserved.
+
+## 📞 Support
+
+For technical support or questions:
+- **Email**: support@almona.com
+- **Phone**: +20 xxx xxx xxxx
+- **Documentation**: [Internal Wiki]
+- **Issue Tracker**: GitHub Issues
+
+## 🔄 Recent Updates
+
+### **Version 2.0.0** (Latest)
+- ✅ **Service Ticketing System**: Professional SLA-based support system
+- ✅ **AI-Powered Services**: Equipment advisor and part detection
+- ✅ **Enhanced Security**: Row Level Security and audit logging
+- ✅ **Multi-Language Support**: Complete Arabic/English localization
+- ✅ **Performance Improvements**: 40% faster loading times
+- ✅ **Mobile Optimization**: Enhanced mobile experience
+
+### **Database Schema Updates**
+- Complete e-commerce schema with products, orders, quotes
+- Service ticketing system with SLA management
+- User profiles with company information
+- Audit logging and security policies
+- Multi-language content support
+
+### **Backend API Enhancements**
+- FastAPI v2 endpoints with improved performance
+- AI services integration for part detection
+- Email notification system with templates
+- Comprehensive testing suite
+- Docker optimization for production
+
+---
+
+**Built with ❤️ for Almona Industrial Solutions**

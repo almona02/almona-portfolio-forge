@@ -366,7 +366,8 @@ BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ language 'plpgsql'
+SET search_path = public;
 
 -- Apply update triggers
 DROP TRIGGER IF EXISTS update_profiles_updated_at ON public.profiles;
@@ -395,7 +396,8 @@ BEGIN
     quote_num := 'QT-' || LPAD(next_num::TEXT, 6, '0');
     RETURN quote_num;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
 CREATE OR REPLACE FUNCTION generate_order_number()
 RETURNS TEXT AS $$
@@ -411,7 +413,8 @@ BEGIN
     order_num := 'ORD-' || LPAD(next_num::TEXT, 6, '0');
     RETURN order_num;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
 -- 19. Create triggers for automatic numbering
 CREATE OR REPLACE FUNCTION set_quote_number()
@@ -422,7 +425,8 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
 CREATE OR REPLACE FUNCTION set_order_number()
 RETURNS TRIGGER AS $$
@@ -432,7 +436,8 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
 DROP TRIGGER IF EXISTS set_quote_number_trigger ON public.quotes;
 CREATE TRIGGER set_quote_number_trigger BEFORE INSERT ON public.quotes FOR EACH ROW EXECUTE FUNCTION set_quote_number();
@@ -572,7 +577,8 @@ BEGIN
   LIMIT limit_count
   OFFSET offset_count;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
 -- 27. Create function to get product recommendations
 CREATE OR REPLACE FUNCTION get_product_recommendations(
@@ -626,7 +632,8 @@ BEGIN
     RANDOM()
   LIMIT limit_count;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql
+SET search_path = public;
 
 -- 28. Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_quotes_user_id ON public.quotes(user_id);
@@ -658,7 +665,8 @@ BEGIN
   );
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public;
 
 -- Create trigger for automatic profile creation
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
