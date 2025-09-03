@@ -105,7 +105,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (session?.user) {
         setSupabaseUser(session.user);
-        await fetchUserProfile(session.user.id);
+        try {
+          await fetchUserProfile(session.user.id);
+        } catch (error) {
+          console.error('Error fetching user profile on auth state change:', error);
+          // Handle the error appropriately, e.g., sign out the user
+          await supabase.auth.signOut();
+        }
       } else {
         setSupabaseUser(null);
         setUser(null);
