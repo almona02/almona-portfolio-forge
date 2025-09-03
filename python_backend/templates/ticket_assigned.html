@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Assigned - {{ ticket.ticket_number }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #28a745;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+        }
+        .footer {
+            background-color: #6c757d;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 0 0 5px 5px;
+            font-size: 12px;
+        }
+        .ticket-info {
+            background-color: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #28a745;
+            border-radius: 3px;
+        }
+        .priority-high {
+            border-left-color: #dc3545;
+        }
+        .priority-critical {
+            border-left-color: #6f42c1;
+        }
+        .priority-urgent {
+            border-left-color: #fd7e14;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .btn:hover {
+            background-color: #1e7e34;
+        }
+        .assignment-notice {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📋 Ticket Assigned to You</h1>
+        <h2>{{ ticket.ticket_number }}</h2>
+    </div>
+    
+    <div class="content">
+        <p>Hello {{ technician_name or 'Technician' }},</p>
+        
+        <div class="assignment-notice">
+            <h3>🎯 Assignment Notice</h3>
+            <p>You have been assigned to work on ticket <strong>{{ ticket.ticket_number }}</strong>. Please review the details below and take appropriate action.</p>
+        </div>
+        
+        <div class="ticket-info priority-{{ ticket.priority }}">
+            <h3>📋 Ticket Details</h3>
+            <p><strong>Ticket Number:</strong> {{ ticket.ticket_number }}</p>
+            <p><strong>Title:</strong> {{ ticket.title }}</p>
+            <p><strong>Priority:</strong> 
+                <span style="text-transform: uppercase; font-weight: bold; color: 
+                    {% if ticket.priority == 'critical' %}#6f42c1
+                    {% elif ticket.priority == 'urgent' %}#fd7e14
+                    {% elif ticket.priority == 'high' %}#dc3545
+                    {% else %}#28a745{% endif %};">
+                    {{ ticket.priority }}
+                </span>
+            </p>
+            <p><strong>Type:</strong> {{ ticket.type|title }}</p>
+            <p><strong>Status:</strong> {{ ticket.status|title }}</p>
+            <p><strong>Created:</strong> {{ ticket.created_at|strftime('%Y-%m-%d %H:%M UTC') }}</p>
+            {% if ticket.assigned_at %}
+            <p><strong>Assigned:</strong> {{ ticket.assigned_at|strftime('%Y-%m-%d %H:%M UTC') }}</p>
+            {% endif %}
+        </div>
+        
+        {% if ticket.description %}
+        <div class="ticket-info">
+            <h3>📝 Problem Description</h3>
+            <p>{{ ticket.description }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="ticket-info">
+            <h3>👤 Customer Information</h3>
+            <p><strong>Name:</strong> {{ ticket.profiles.full_name or 'N/A' }}</p>
+            <p><strong>Email:</strong> {{ ticket.profiles.email or 'N/A' }}</p>
+            {% if ticket.contact_phone %}
+            <p><strong>Phone:</strong> {{ ticket.contact_phone }}</p>
+            {% endif %}
+            {% if ticket.profiles.company_name %}
+            <p><strong>Company:</strong> {{ ticket.profiles.company_name }}</p>
+            {% endif %}
+            {% if ticket.preferred_contact_method %}
+            <p><strong>Preferred Contact:</strong> {{ ticket.preferred_contact_method|title }}</p>
+            {% endif %}
+        </div>
+        
+        {% if ticket.machine_serial_number or ticket.site_location %}
+        <div class="ticket-info">
+            <h3>🔧 Machine/Site Information</h3>
+            {% if ticket.machine_serial_number %}
+            <p><strong>Machine Serial:</strong> {{ ticket.machine_serial_number }}</p>
+            {% endif %}
+            {% if ticket.site_location %}
+            <p><strong>Site Location:</strong> {{ ticket.site_location }}</p>
+            {% endif %}
+            {% if ticket.related_product %}
+            <p><strong>Related Product:</strong> {{ ticket.related_product.name_en or ticket.related_product.name_ar }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        {% if ticket.sla_response_due or ticket.sla_resolution_due %}
+        <div class="ticket-info">
+            <h3>⏰ SLA Requirements</h3>
+            {% if ticket.sla_response_due %}
+            <p><strong>Response Due:</strong> 
+                <span style="color: {% if ticket.sla_breached %}#dc3545{% else %}#28a745{% endif %};">
+                    {{ ticket.sla_response_due|strftime('%Y-%m-%d %H:%M UTC') }}
+                </span>
+            </p>
+            {% endif %}
+            {% if ticket.sla_resolution_due %}
+            <p><strong>Resolution Due:</strong> 
+                <span style="color: {% if ticket.sla_breached %}#dc3545{% else %}#28a745{% endif %};">
+                    {{ ticket.sla_resolution_due|strftime('%Y-%m-%d %H:%M UTC') }}
+                </span>
+            </p>
+            {% endif %}
+            {% if ticket.sla_breached %}
+            <p style="color: #dc3545; font-weight: bold;">⚠️ SLA has been breached!</p>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <a href="{{ base_url }}/technician/tickets/{{ ticket.id }}" class="btn">View & Work on Ticket</a>
+        </div>
+        
+        <div class="ticket-info">
+            <h3>📋 Your Action Items</h3>
+            <ul>
+                <li>Review all ticket details and customer information</li>
+                <li>Contact customer if additional information is needed</li>
+                <li>Update ticket status as you work on the issue</li>
+                <li>Document all actions taken in ticket comments</li>
+                <li>Ensure resolution meets SLA requirements</li>
+                {% if ticket.type == 'spare_parts' %}
+                <li>Check parts availability and create quote if needed</li>
+                {% endif %}
+                {% if ticket.type in ['installation', 'maintenance'] %}
+                <li>Schedule site visit if required</li>
+                {% endif %}
+            </ul>
+        </div>
+        
+        <p><strong>Need Help?</strong> Contact your supervisor or use the internal support channel for assistance.</p>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated notification from Almona Support System</p>
+        <p>Please do not reply to this email. Use the ticket system for all communications.</p>
+    </div>
+</body>
+</html>

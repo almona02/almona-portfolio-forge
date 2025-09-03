@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/useToast';
 import { QuoteRequestStepper } from '@/components/quotes/QuoteRequestStepper';
 import Navbar from '@/components/layout/Navbar';
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import Footer from '@/components/layout/Footer';
 
 // Define interfaces for the quote data
@@ -103,4 +104,4 @@ const QuoteRequestPage: React.FC = () => {
   );
 };
 
-export default QuoteRequestPage;
+export default withErrorBoundary(QuoteRequestPage);

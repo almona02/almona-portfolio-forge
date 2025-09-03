@@ -7,6 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from core.config import settings
 from apis.v1 import router as v1_router
 from apis.v2 import router as v2_router
+from apis.v2.notifications import router as notifications_router
 
 # Initialize Limiter
 limiter = Limiter(key_func=get_remote_address, default_limits=[settings.RATE_LIMIT])
@@ -35,6 +36,7 @@ app.add_middleware(
 # Mount the versioned APIs
 app.include_router(v1_router, prefix="/api/v1")
 app.include_router(v2_router, prefix="/api/v2")
+app.include_router(notifications_router, prefix="/api/v2/notifications", tags=["Email Notifications"])
 
 @app.get("/")
 async def root():

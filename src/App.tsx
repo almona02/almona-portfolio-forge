@@ -39,6 +39,7 @@ const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute.tsx")
 const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine.tsx"));
 const FabricationServices = lazy(() => import("./pages/FabricationServices.tsx"));
 const SpareParts = lazy(() => import("@/pages/SpareParts.tsx"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
 
 // Apply dark mode by default
 import { ThemeProvider } from "next-themes";
@@ -54,17 +55,18 @@ const LoadingSpinner = () => (
 
 import { QuoteProvider } from "./context/QuoteContext.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
+import { LoadingProvider } from "./context/LoadingContext.tsx";
 import { Analytics } from "@vercel/analytics/react";
 
 const App = () => (
-  <ErrorBoundary level="critical">
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-        <TooltipProvider>
-          <SEO />
-          <Toaster />
-          <Sonner />
-          <AuthProvider>
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+      <TooltipProvider>
+        <SEO />
+        <Toaster />
+        <Sonner />
+        <AuthProvider>
+          <LoadingProvider>
             <QuoteProvider>
               <BrowserRouter>
                 <Analytics />
@@ -316,6 +318,24 @@ const App = () => (
                       </Suspense>
                     }
                   />
+                  <Route
+                    path="/admin/dashboard"
+                    element={
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <ProtectedRoute>
+                          <AdminDashboard />
+                        </ProtectedRoute>
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/admin/demo"
+                    element={
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <AdminDashboard />
+                      </Suspense>
+                    }
+                  />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
 
                   <Route
@@ -329,11 +349,11 @@ const App = () => (
                 </Routes>
               </BrowserRouter>
             </QuoteProvider>
-          </AuthProvider>
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
+          </LoadingProvider>
+        </AuthProvider>
+      </TooltipProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
 );
 
 export default App;

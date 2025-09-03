@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/ui/ui/button';
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { CheckCircle } from 'lucide-react';
 
 const QuoteConfirmationPage: React.FC = () => {
@@ -60,4 +61,4 @@ const QuoteConfirmationPage: React.FC = () => {
   );
 };
 
-export default QuoteConfirmationPage;
+export default withErrorBoundary(QuoteConfirmationPage);

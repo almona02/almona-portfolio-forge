@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Message - {{ ticket.ticket_number }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #17a2b8;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+        }
+        .footer {
+            background-color: #6c757d;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 0 0 5px 5px;
+            font-size: 12px;
+        }
+        .ticket-info {
+            background-color: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #17a2b8;
+            border-radius: 3px;
+        }
+        .message-content {
+            background-color: #e9ecef;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .message-from-customer {
+            border-left-color: #28a745;
+            background-color: #d4edda;
+        }
+        .message-from-staff {
+            border-left-color: #ffc107;
+            background-color: #fff3cd;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #17a2b8;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .btn:hover {
+            background-color: #138496;
+        }
+        .priority-high {
+            border-left-color: #dc3545;
+        }
+        .priority-critical {
+            border-left-color: #6f42c1;
+        }
+        .priority-urgent {
+            border-left-color: #fd7e14;
+        }
+        .attachment-list {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            margin: 10px 0;
+        }
+        .spare-parts-details {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💬 New Message on Ticket</h1>
+        <h2>{{ ticket.ticket_number }}</h2>
+    </div>
+    
+    <div class="content">
+        <p>Hello {% if is_customer %}{{ ticket.profiles.full_name or 'Valued Customer' }}{% else %}{{ recipient_name or 'Team Member' }}{% endif %},</p>
+        
+        <p>A new message has been added to ticket <strong>{{ ticket.ticket_number }}</strong>.</p>
+        
+        <div class="ticket-info priority-{{ ticket.priority }}">
+            <h3>📋 Ticket Information</h3>
+            <p><strong>Ticket Number:</strong> {{ ticket.ticket_number }}</p>
+            <p><strong>Title:</strong> {{ ticket.title }}</p>
+            <p><strong>Priority:</strong> 
+                <span style="text-transform: uppercase; font-weight: bold; color: 
+                    {% if ticket.priority == 'critical' %}#6f42c1
+                    {% elif ticket.priority == 'urgent' %}#fd7e14
+                    {% elif ticket.priority == 'high' %}#dc3545
+                    {% else %}#28a745{% endif %};">
+                    {{ ticket.priority }}
+                </span>
+            </p>
+            <p><strong>Status:</strong> {{ ticket.status|title }}</p>
+        </div>
+        
+        <div class="message-content {% if message.author_id == ticket.user_id %}message-from-customer{% else %}message-from-staff{% endif %}">
+            <h3>💬 New Message</h3>
+            <p><strong>From:</strong> 
+                {% if message.author %}
+                    {{ message.author.full_name or 'Unknown User' }}
+                    {% if message.author.role %}
+                        ({{ message.author.role|title }})
+                    {% endif %}
+                {% else %}
+                    Unknown User
+                {% endif %}
+            </p>
+            <p><strong>Posted:</strong> {{ message.created_at|strftime('%Y-%m-%d %H:%M UTC') }}</p>
+            
+            {% if message.message_type == 'status_change' and message.status_change %}
+            <div style="background-color: #d1ecf1; padding: 10px; border-radius: 3px; margin: 10px 0;">
+                <p><strong>📊 Status Update:</strong></p>
+                <p>Status changed from <strong>{{ message.status_change.from|title }}</strong> to <strong>{{ message.status_change.to|title }}</strong></p>
+                {% if message.status_change.reason %}
+                <p><strong>Reason:</strong> {{ message.status_change.reason }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <div style="margin: 15px 0;">
+                <h4>Message:</h4>
+                <p style="white-space: pre-wrap;">{{ message.message }}</p>
+            </div>
+            
+            {% if message.attachments and message.attachments|length > 0 %}
+            <div class="attachment-list">
+                <h4>📎 Attachments:</h4>
+                <ul>
+                {% for attachment in message.attachments %}
+                    <li><a href="{{ attachment.url }}">{{ attachment.filename }}</a> ({{ attachment.size }})</li>
+                {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            {% if message.message_type == 'spare_parts_request' and message.spare_parts_details %}
+            <div class="spare-parts-details">
+                <h4>🔧 Spare Parts Request</h4>
+                {% if message.spare_parts_details.parts %}
+                <p><strong>Requested Parts:</strong></p>
+                <ul>
+                {% for part in message.spare_parts_details.parts %}
+                    <li>
+                        <strong>{{ part.name }}</strong> (SKU: {{ part.sku }})
+                        - Quantity: {{ part.quantity }}
+                        {% if part.urgency %}
+                        - Urgency: <span style="color: {% if part.urgency == 'high' %}#dc3545{% else %}#28a745{% endif %};">{{ part.urgency|title }}</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+                {% if message.spare_parts_details.estimated_cost %}
+                <p><strong>Estimated Cost:</strong> ${{ message.spare_parts_details.estimated_cost }}</p>
+                {% endif %}
+                {% if message.spare_parts_details.delivery_timeline %}
+                <p><strong>Delivery Timeline:</strong> {{ message.spare_parts_details.delivery_timeline }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            {% if message.time_spent_minutes %}
+            <p><strong>⏱️ Time Spent:</strong> {{ message.time_spent_minutes }} minutes</p>
+            {% endif %}
+        </div>
+        
+        {% if not is_customer %}
+        <div class="ticket-info">
+            <h3>👤 Customer Information</h3>
+            <p><strong>Name:</strong> {{ ticket.profiles.full_name or 'N/A' }}</p>
+            <p><strong>Email:</strong> {{ ticket.profiles.email or 'N/A' }}</p>
+            {% if ticket.contact_phone %}
+            <p><strong>Phone:</strong> {{ ticket.contact_phone }}</p>
+            {% endif %}
+            {% if ticket.profiles.company_name %}
+            <p><strong>Company:</strong> {{ ticket.profiles.company_name }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <div style="text-align: center; margin: 20px 0;">
+            {% if is_customer %}
+            <a href="{{ base_url }}/customer/tickets/{{ ticket.id }}" class="btn">View Full Conversation</a>
+            {% else %}
+            <a href="{{ base_url }}/admin/tickets/{{ ticket.id }}" class="btn">Respond to Ticket</a>
+            {% endif %}
+        </div>
+        
+        {% if is_customer %}
+        <div class="ticket-info">
+            <h3>💡 What's Next?</h3>
+            <ul>
+                <li>Review the message from our support team</li>
+                <li>Provide any additional information if requested</li>
+                <li>You can reply directly through the ticket system</li>
+                <li>You'll receive notifications for any updates</li>
+            </ul>
+        </div>
+        {% else %}
+        <div class="ticket-info">
+            <h3>📋 Action Required</h3>
+            <ul>
+                <li>Review the customer's message</li>
+                <li>Respond promptly to maintain SLA compliance</li>
+                <li>Update ticket status if needed</li>
+                <li>Document any actions taken</li>
+            </ul>
+        </div>
+        {% endif %}
+        
+        {% if ticket.sla_response_due or ticket.sla_resolution_due %}
+        <div class="ticket-info">
+            <h3>⏰ SLA Information</h3>
+            {% if ticket.sla_response_due %}
+            <p><strong>Response Due:</strong> 
+                <span style="color: {% if ticket.sla_breached %}#dc3545{% else %}#28a745{% endif %};">
+                    {{ ticket.sla_response_due|strftime('%Y-%m-%d %H:%M UTC') }}
+                </span>
+            </p>
+            {% endif %}
+            {% if ticket.sla_resolution_due %}
+            <p><strong>Resolution Due:</strong> 
+                <span style="color: {% if ticket.sla_breached %}#dc3545{% else %}#28a745{% endif %};">
+                    {{ ticket.sla_resolution_due|strftime('%Y-%m-%d %H:%M UTC') }}
+                </span>
+            </p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated notification from Almona Support System</p>
+        <p>Please do not reply to this email. Use the ticket system for all communications.</p>
+    </div>
+</body>
+</html>
