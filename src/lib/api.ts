@@ -87,32 +87,55 @@ export const api = {
   // Customer data
   // Fetch user-specific machines
    fetchUserMachines: async (userId: string): Promise<Machine[]> => {
-    const { data, error } = await supabase
-      .from('machines')
-      .select('*')
-      .eq('owner_id', userId)
-      .order('created_at', { ascending: false });
-    
-    if (error) {
+    try {
+      const { data, error } = await supabase
+        .from('machines')
+        .select('*')
+        .eq('owner_id', userId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    } catch (error: unknown) {
+      const err = error as { message?: string; code?: string };
+      const msg = err.message?.toLowerCase() || '';
+      // Gracefully handle missing table / RLS denial by returning empty array instead of hard failure
+      if (err.code === '42P01' || msg.includes('relation') && msg.includes('machines')) {
+        console.warn('[api.fetchUserMachines] machines table missing; returning empty list');
+        return [];
+      }
+      if (msg.includes('permission denied') || msg.includes('rls')) {
+        console.warn('[api.fetchUserMachines] RLS prevented access; returning empty list');
+        return [];
+      }
       console.error('Error fetching machines:', error);
-      throw new Error(error.message || 'Failed to fetch machines');
+      throw new Error(err.message || 'Failed to fetch machines');
     }
-    return data || [];
   },
 
   // Fetch user-specific tickets
   fetchUserTickets: async (userId: string): Promise<Ticket[]> => {
-    const { data, error } = await supabase
-      .from('service_tickets')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-    
-    if (error) {
+    try {
+      const { data, error } = await supabase
+        .from('service_tickets')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    } catch (error: unknown) {
+      const err = error as { message?: string; code?: string };
+      const msg = err.message?.toLowerCase() || '';
+      if (err.code === '42P01' || (msg.includes('relation') && msg.includes('service_tickets'))) {
+        console.warn('[api.fetchUserTickets] service_tickets table missing; returning empty list');
+        return [];
+      }
+      if (msg.includes('permission denied') || msg.includes('rls')) {
+        console.warn('[api.fetchUserTickets] RLS prevented access; returning empty list');
+        return [];
+      }
       console.error('Error fetching tickets:', error);
-      throw new Error(error.message || 'Failed to fetch tickets');
+      throw new Error(err.message || 'Failed to fetch tickets');
     }
-    return data || [];
   },
 
   // Register a new machine

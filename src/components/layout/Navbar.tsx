@@ -70,6 +70,19 @@ const Navbar = () => {
   const location = useLocation();
   const { quoteItems } = useQuote();
   const { user, signOut } = useAuth();
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      // Force a lightweight client-side redirect to home to ensure UI updates
+      window.setTimeout(() => {
+        if (location.pathname.startsWith('/portal') || location.pathname.startsWith('/support')) {
+          window.location.href = '/';
+        }
+      }, 50);
+    } catch (e) {
+      console.error('Logout failed', e);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -299,7 +312,7 @@ const Navbar = () => {
                 transition={{ delay: 0.8, duration: 0.3 }}
               >
                 <Button
-                  onClick={signOut}
+                  onClick={handleLogout}
                   className="text-gray-300 hover:text-white bg-transparent"
                 >
                   Logout
@@ -315,6 +328,19 @@ const Navbar = () => {
                   asChild
                 >
                   <Link to="/portal">Portal</Link>
+                </Button>
+              </motion.div>
+              <motion.div
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 1.0, duration: 0.3 }}
+              >
+                <Button
+                  variant="outline"
+                  className="border-almona-light/30 text-white rounded-full px-6 hover:bg-almona-light/10"
+                  asChild
+                >
+                  <Link to="/support">Support</Link>
                 </Button>
               </motion.div>
             </>
@@ -509,7 +535,7 @@ const Navbar = () => {
                     <>
                       <Button
                         className="w-full border-almona-light/30 text-white hover:bg-almona-light/10"
-                        onClick={signOut}
+                        onClick={handleLogout}
                       >
                         Logout
                       </Button>
@@ -519,6 +545,14 @@ const Navbar = () => {
                       >
                         <Link to="/portal" onClick={handleCloseMobileMenu}>
                           Portal
+                        </Link>
+                      </Button>
+                      <Button
+                        className="w-full border-almona-light/30 text-white hover:bg-almona-light/10"
+                        asChild
+                      >
+                        <Link to="/support" onClick={handleCloseMobileMenu}>
+                          Support
                         </Link>
                       </Button>
                     </>

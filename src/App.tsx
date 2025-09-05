@@ -2,7 +2,7 @@ import { Toaster } from "@/shared/ui/ui/toaster.tsx";
 import { Toaster as Sonner } from "@/shared/ui/ui/sonner.tsx";
 import { TooltipProvider } from "@/shared/ui/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import SEO from "./components/SEO";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -101,6 +101,7 @@ const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
 const CreateTicketPage = lazy(() => import("./pages/CreateTicketPage.tsx"));
 const RegisterMachinePage = lazy(() => import("./pages/RegisterMachinePage.tsx"));
 const CustomerSupport = lazy(() => import("./pages/CustomerSupport.tsx"));
+const SupportNewTicketMenu = lazy(() => import('./pages/SupportNewTicketMenu.tsx'));
 
 // Apply dark mode by default
 import { ThemeProvider } from "next-themes";
@@ -414,6 +415,16 @@ const App = () => (
                     element={
                       <Suspense fallback={<LoadingSpinner />}>
                         <ProtectedRoute>
+                          <Navigate to="/support/tickets/new" replace />
+                        </ProtectedRoute>
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/support/tickets/new"
+                    element={
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <ProtectedRoute>
                           <CreateTicketPage />
                         </ProtectedRoute>
                       </Suspense>
@@ -469,6 +480,16 @@ const App = () => (
                       <Suspense fallback={<LoadingSpinner />}>
                         <ProtectedRoute>
                           <CustomerSupport />
+                        </ProtectedRoute>
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/support/new"
+                    element={
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <ProtectedRoute>
+                          <Navigate to="/support/tickets/new" replace />
                         </ProtectedRoute>
                       </Suspense>
                     }

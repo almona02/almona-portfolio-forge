@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { getUserTickets } from '@/lib/ticketApi';
+import { getUserTickets } from '@/lib/ticketApi'; // retained for potential future advanced ticket view (not used in query now)
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
@@ -86,7 +86,7 @@ const CustomerPortal = () => {
 
   const { data: tickets = [], isLoading: isLoadingTickets, isFetching: isFetchingTickets, error: ticketsError } = useQuery({
     queryKey: ['tickets', user?.id],
-    queryFn: () => user ? getUserTickets(user.id).then(t => t as unknown as Ticket[]) : Promise.resolve([]),
+    queryFn: () => user ? api.fetchUserTickets(user.id) as Promise<Ticket[]> : Promise.resolve([]),
     enabled: !!user,
     staleTime: 60_000,
     refetchOnWindowFocus: false,

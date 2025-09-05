@@ -67,6 +67,7 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     related_quote_id: ticketData.related_quote_id || null,
     related_order_id: ticketData.related_order_id || null,
     related_product_id: ticketData.related_product_id || null,
+  maintenance_type: (ticketData as any).maintenance_type || null,
     contact_phone: ticketData.contact_phone || null,
     contact_email: ticketData.contact_email || null,
     preferred_contact_method: ticketData.preferred_contact_method || 'email',

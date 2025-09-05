@@ -13,7 +13,7 @@ import { TicketDetailView } from '@/components/support/TicketDetailView'
 import { TicketStatusBadge } from '@/components/support/TicketStatusBadge'
 import { TicketSourceAnalytics } from '@/components/support/TicketSourceAnalytics'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/ui/table'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+// Removed dropdown selects in favor of pill selectors for better visibility
 
 const CustomerSupport: React.FC = () => {
   const { user } = useAuth()
@@ -58,16 +58,39 @@ const CustomerSupport: React.FC = () => {
     setSearchTerm(value)
   }
 
-  const handleFilterChange = (key: keyof TicketFilters, value: string | string[]) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value === 'all' ? undefined : Array.isArray(value) ? value : [value]
-    }))
+  const toggleFilterValue = (key: keyof TicketFilters, value: string) => {
+    setFilters(prev => {
+      const current = (prev[key] as string[] | undefined) || []
+      const exists = current.includes(value)
+      const next = exists ? current.filter(v => v !== value) : [...current, value]
+      return { ...prev, [key]: (next as string[]).length ? (next as string[]) : undefined }
+    })
+  }
+
+  const setSingleFilter = (key: keyof TicketFilters, value: string) => {
+    setFilters(prev => ({ ...prev, [key]: value === 'all' ? undefined : [value] }))
   }
 
   const clearFilters = () => {
     setFilters({})
     setSearchTerm('')
+  }
+
+  const statusOptions = ['open','assigned','in_progress','resolved','closed'] as const
+  const typeOptions = ['general','technical','installation','maintenance','spare_parts','warranty'] as const
+  const priorityOptions = ['low','medium','high','urgent','critical'] as const
+
+  interface PillProps { active: boolean; onClick: () => void; children: React.ReactNode; tone?: string }
+  const Pill = ({ active, onClick, children, tone }: PillProps) => {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-almona-orange/60 focus:ring-offset-almona-dark capitalize ${active ? 'bg-almona-orange text-white border-almona-orange shadow-md' : 'bg-almona-dark/40 border-almona-light/20 text-gray-300 hover:border-almona-light/40'} ${tone || ''}`}
+      >
+        {children}
+      </button>
+    )
   }
 
   if (!user) {
@@ -154,72 +177,73 @@ const CustomerSupport: React.FC = () => {
         </div>
       )}
 
-      {/* Filters and Search */}
+      {/* Filters and Search (Enhanced) */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Filter Tickets</CardTitle>
+          <CardDescription>Click pills to toggle filters. Multiple selections per group allowed.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search tickets..."
-                  value={searchTerm}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-10"
-                />
+        <CardContent className="space-y-6">
+          <div className="relative max-w-xl">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search tickets..."
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+          <div className="space-y-4">
+            <div>
+              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2 flex items-center gap-2"><Filter className="h-3 w-3" /> Status</div>
+              <div className="flex flex-wrap gap-2">
+                {statusOptions.map(s => (
+                  <Pill key={s} active={!!filters.status?.includes(s)} onClick={() => toggleFilterValue('status', s)}>{s.replace('_',' ')}</Pill>
+                ))}
+                <Pill active={!filters.status} onClick={() => setSingleFilter('status','all')}>All</Pill>
               </div>
             </div>
-            
-            <Select value={filters.status?.[0] || ''} onValueChange={(value) => handleFilterChange('status', value)}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="open">Open</SelectItem>
-                <SelectItem value="assigned">Assigned</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="resolved">Resolved</SelectItem>
-                <SelectItem value="closed">Closed</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Select value={filters.type?.[0] || ''} onValueChange={(value) => handleFilterChange('type', value)}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="general">General</SelectItem>
-                <SelectItem value="technical">Technical</SelectItem>
-                <SelectItem value="installation">Installation</SelectItem>
-                <SelectItem value="maintenance">Maintenance</SelectItem>
-                <SelectItem value="spare_parts">Spare Parts</SelectItem>
-                <SelectItem value="warranty">Warranty</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Select value={filters.priority?.[0] || ''} onValueChange={(value) => handleFilterChange('priority', value)}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <SelectValue placeholder="Priority" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Priorities</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="critical">Critical</SelectItem>
-                <SelectItem value="urgent">Urgent</SelectItem>
-              </SelectContent>
-            </Select>
-            
-            <Button variant="outline" onClick={clearFilters}>
-              Clear Filters
-            </Button>
+            <div>
+              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Type</div>
+              <div className="flex flex-wrap gap-2">
+                {typeOptions.map(t => (
+                  <Pill key={t} active={!!filters.type?.includes(t)} onClick={() => toggleFilterValue('type', t)}>{t.replace('_',' ')}</Pill>
+                ))}
+                <Pill active={!filters.type} onClick={() => setSingleFilter('type','all')}>All</Pill>
+              </div>
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-wide text-muted-foreground mb-2">Priority</div>
+              <div className="flex flex-wrap gap-2">
+                {priorityOptions.map(p => (
+                  <Pill key={p} active={!!filters.priority?.includes(p)} onClick={() => toggleFilterValue('priority', p)}>{p}</Pill>
+                ))}
+                <Pill active={!filters.priority} onClick={() => setSingleFilter('priority','all')}>All</Pill>
+              </div>
+            </div>
           </div>
+          <div className="flex gap-3">
+            <Button variant="outline" size="sm" onClick={clearFilters}>Reset</Button>
+            <Button size="sm" onClick={handleCreateTicket} className="bg-almona-orange hover:bg-almona-orange-dark">Quick Create Ticket</Button>
+            <Button size="sm" variant="secondary" onClick={() => window.location.assign('/support/tickets/new')}>Advanced Create</Button>
+          </div>
+          {/* Active filter badges */}
+          {(filters.status || filters.type || filters.priority || searchTerm) && (
+            <div className="flex flex-wrap gap-2 pt-2">
+              {filters.status?.map(s => (
+                <Badge key={s} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('status', s)}>{s} ✕</Badge>
+              ))}
+              {filters.type?.map(t => (
+                <Badge key={t} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('type', t)}>{t.replace('_',' ')} ✕</Badge>
+              ))}
+              {filters.priority?.map(p => (
+                <Badge key={p} variant="outline" className="cursor-pointer" onClick={() => toggleFilterValue('priority', p)}>{p} ✕</Badge>
+              ))}
+              {searchTerm && (
+                <Badge variant="outline" className="cursor-pointer" onClick={() => setSearchTerm('')}>Search: {searchTerm} ✕</Badge>
+              )}
+            </div>
+          )}
         </CardContent>
       </Card>
 
