@@ -6,8 +6,18 @@ BEGIN;
 
 -- 1. Ensure ENUM types exist (reuse existing ticket_type etc. if present)
 DO $$ BEGIN
-    CREATE TYPE ticket_type AS ENUM ('general','technical','billing','sales','spare_parts','warranty','complaint','installation','maintenance');
+  CREATE TYPE ticket_type AS ENUM ('general','technical','billing','sales','spare_parts','warranty','complaint','installation','maintenance','other');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+-- Ensure new value 'other' exists if type pre-existed without it
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t
+    JOIN pg_enum e ON t.oid = e.enumtypid
+    WHERE t.typname = 'ticket_type' AND e.enumlabel = 'other'
+  ) THEN
+    ALTER TYPE ticket_type ADD VALUE 'other';
+  END IF;
+END $$;
 DO $$ BEGIN
     CREATE TYPE ticket_priority AS ENUM ('low','medium','high','critical','urgent');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;

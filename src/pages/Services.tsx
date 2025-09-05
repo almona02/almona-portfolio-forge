@@ -77,9 +77,12 @@ const Services = () => {
             onOpenChange={setScheduleMaintenanceOpen}
           />
 
-          <div className="text-center mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
             <Link to="/portal">
-              <Button variant="outline" className="text-white electric-border">Go to Customer Portal</Button>
+              <Button variant="outline" className="text-white electric-border">Customer Portal</Button>
+            </Link>
+            <Link to="/support">
+              <Button variant="outline" className="text-white electric-border">Customer Support</Button>
             </Link>
           </div>
           {/* Main Services Content */}
