@@ -12,6 +12,9 @@ export interface Machine {
   model: string;
   serial_number: string;
   owner_id: string;
+  installation_date?: string | null;
+  warranty_valid?: boolean | null;
+  photo_urls?: string[] | null;
 }
 
 // Service ticket shape (lightweight; for full shape use ServiceTicket from types/tickets if needed)
@@ -144,6 +147,9 @@ export const api = {
     model: string;
     serial_number: string;
     owner_id: string;
+    installation_date?: string | null;
+    warranty_valid?: boolean | null;
+    photo_urls?: string[] | null;
   }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as unknown as { from: (table: string) => any })
@@ -154,6 +160,17 @@ export const api = {
     
     if (error) throw error;
     return data;
+  },
+
+  // Upload a machine photo (returns public URL). Bucket must exist in Supabase storage.
+  uploadMachinePhoto: async (file: File, ownerId: string, serial: string) => {
+    const path = `${ownerId}/${serial}/${Date.now()}-${file.name}`;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const storage = (supabase as unknown as { storage: any }).storage.from('machine-photos');
+    const { error } = await storage.upload(path, file, { upsert: true });
+    if (error) throw error;
+    const { data: pub } = storage.getPublicUrl(path);
+    return pub.publicUrl as string;
   },
 
   // Create a new support ticket
