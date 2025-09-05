@@ -337,7 +337,7 @@ const CustomerPortal = () => {
                               <Button 
                                 size="sm" 
                                 className="flex-1 bg-almona-orange/20 text-almona-orange hover:bg-almona-orange/30 border-almona-orange/30"
-                                onClick={() => navigate('/portal/create-ticket', { state: { machineId: machine.id } })}
+                                onClick={() => navigate('/support/tickets/new', { state: { machineId: machine.id } })}
                               >
                                 <FileText className="h-4 w-4 mr-2" /> Support
                               </Button>
@@ -383,7 +383,7 @@ const CustomerPortal = () => {
                   </div>
                   <Button 
                     className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
-                    onClick={() => navigate('/portal/create-ticket')}
+                    onClick={() => navigate('/support/tickets/new')}
                   >
                     <Plus className="h-4 w-4 mr-2" /> Create New Ticket
                   </Button>
@@ -438,7 +438,7 @@ const CustomerPortal = () => {
                     <p className="text-gray-500 mb-6">Create your first support ticket to get help with your machines</p>
                     <Button 
                       className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
-                      onClick={() => navigate('/portal/create-ticket')}
+                      onClick={() => navigate('/support/tickets/new')}
                     >
                       <Plus className="h-4 w-4 mr-2" /> Create Ticket
                     </Button>

@@ -17,6 +17,13 @@ CREATE TABLE IF NOT EXISTS machines (
 
 EXCEPTION WHEN others THEN NULL; END $$;
 
+-- Add new optional lifecycle / metadata columns if missing
+DO $$ BEGIN
+  ALTER TABLE machines ADD COLUMN IF NOT EXISTS installation_date DATE;
+  ALTER TABLE machines ADD COLUMN IF NOT EXISTS warranty_valid BOOLEAN DEFAULT false;
+  ALTER TABLE machines ADD COLUMN IF NOT EXISTS photo_urls TEXT[]; -- store public URLs of uploaded photos
+EXCEPTION WHEN others THEN NULL; END $$;
+
 -- Enable Row Level Security
 DO $$ BEGIN
   ALTER TABLE machines ENABLE ROW LEVEL SECURITY;

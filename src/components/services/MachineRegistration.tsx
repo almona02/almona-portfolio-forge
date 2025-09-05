@@ -9,6 +9,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { EnhancedOperatorTrainingDialog } from './EnhancedOperatorTrainingDialog';
+import { useAuth } from '@/context/AuthContext';
+import { api } from '@/lib/api';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface MachineData {
   serialNumber: string;
@@ -27,6 +30,8 @@ interface WarrantyExtension {
 }
 
 export const MachineRegistrationEnhanced = withErrorBoundary(() => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [machine, setMachine] = useState<MachineData>({
     serialNumber: "",
     model: "",
@@ -38,6 +43,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
   const [step, setStep] = useState<"scan" | "details" | "confirm">("scan");
   const [isProcessing, setIsProcessing] = useState(false);
   const [showTrainingDialog, setShowTrainingDialog] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const warrantyExtensions: WarrantyExtension[] = [
     { months: 12, price: 15000, egyptOnly: true, features: ["Basic coverage", "Parts replacement", "Technical support"] },
@@ -55,11 +61,14 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
     }, 1500);
   };
 
+  const [rawFiles, setRawFiles] = useState<File[]>([]);
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const newPhotos = Array.from(files).map(file => URL.createObjectURL(file));
-      setMachine({ ...machine, photos: [...(machine.photos || []), ...newPhotos] });
+      const fileArr = Array.from(files);
+      const previews = fileArr.map(file => URL.createObjectURL(file));
+      setRawFiles(prev => [...prev, ...fileArr]);
+      setMachine({ ...machine, photos: [...(machine.photos || []), ...previews] });
     }
   };
 
@@ -86,10 +95,83 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
     }, 2000);
   };
 
-  const completeRegistration = () => {
-    toast.success("Registration Complete", { description: "Machine successfully registered in our system" });
-    setStep("scan");
-    setMachine({ serialNumber: "", model: "", installationDate: "", warrantyValid: false, photos: [] });
+  const completeRegistration = async () => {
+    if (!user) {
+      toast.error('Not signed in', { description: 'Please log in again to register the machine.' });
+      return;
+    }
+    if (isSaving) return; // guard double click
+
+    try {
+      setIsSaving(true);
+      const derivedName = machine.model || `Machine ${machine.serialNumber || ''}`.trim();
+
+      // Upload photos (best-effort: continue if some fail)
+      let uploadedUrls: string[] = [];
+      if (rawFiles.length) {
+        const uploads = await Promise.allSettled(
+          rawFiles.map(f => api.uploadMachinePhoto(f, user.id, machine.serialNumber || 'unassigned'))
+        );
+        uploadedUrls = uploads
+          .filter(r => r.status === 'fulfilled')
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map(r => (r as any).value as string);
+        const failed = uploads.filter(r => r.status === 'rejected').length;
+        if (failed) {
+          toast.warning('Some photos failed to upload', { description: `${failed} photo(s) could not be saved.` });
+        }
+      }
+
+      // Optimistic cache update: build new machine object
+      const optimisticMachine = {
+        id: `temp-${Date.now()}`,
+        created_at: new Date().toISOString(),
+        name: derivedName,
+        model: machine.model || 'Unknown Model',
+        serial_number: machine.serialNumber,
+        owner_id: user.id,
+        installation_date: machine.installationDate || null,
+        warranty_valid: machine.warrantyValid || false,
+        photo_urls: uploadedUrls.length ? uploadedUrls : null
+      };
+
+      const cacheKey = ['machines', user.id];
+      const previous = queryClient.getQueryData(cacheKey) as unknown[] | undefined;
+      queryClient.setQueryData(cacheKey, (old: unknown[] | undefined) => [optimisticMachine, ...(old || [])]);
+
+      try {
+        const saved = await api.registerMachine({
+          name: derivedName,
+            model: machine.model || 'Unknown Model',
+            serial_number: machine.serialNumber,
+            owner_id: user.id,
+            installation_date: machine.installationDate || null,
+            warranty_valid: machine.warrantyValid || false,
+            photo_urls: uploadedUrls.length ? uploadedUrls : null
+        });
+        // Replace optimistic entry
+        queryClient.setQueryData(cacheKey, (current: unknown) => {
+          const list = Array.isArray(current) ? current as Record<string, unknown>[] : [];
+          if (!list.length) return [saved];
+          return list.map(m => (m as { id?: string }).id === optimisticMachine.id ? saved : m);
+        });
+      } catch (persistErr) {
+        // Rollback optimistic item
+        queryClient.setQueryData(cacheKey, previous);
+        throw persistErr;
+      }
+      // Optionally revalidate in background (keeps UI fast)
+      queryClient.invalidateQueries({ queryKey: cacheKey, exact: true, refetchType: 'inactive' });
+      toast.success("Registration Complete", { description: "Machine successfully registered and synced." });
+      setStep("scan");
+      setMachine({ serialNumber: "", model: "", installationDate: "", warrantyValid: false, photos: [] });
+      setRawFiles([]);
+    } catch (err) {
+      const message = (err as { message?: string }).message || 'Failed to save machine to backend';
+      toast.error('Save Failed', { description: message });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
    return (
@@ -268,8 +350,8 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                   <Button className="flex-1 border border-gray-300" onClick={() => window.open('/shop?tab=reports', '_blank')}>
                     Generate Report
                   </Button>
-                  <Button className="flex-1 bg-gradient-to-r from-green-500 to-blue-500" onClick={completeRegistration}>
-                    Complete Registration
+                  <Button className="flex-1 bg-gradient-to-r from-green-500 to-blue-500" onClick={completeRegistration} disabled={isSaving}>
+                    {isSaving ? 'Saving...' : 'Complete Registration'}
                   </Button>
                   <Button className="flex-1 border border-gray-300" onClick={() => setShowTrainingDialog(true)}>
                     Operator Training
