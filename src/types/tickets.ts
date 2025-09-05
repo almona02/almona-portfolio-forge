@@ -1,5 +1,5 @@
 // Ticket system type definitions
-export type TicketType = 'general' | 'technical' | 'billing' | 'sales' | 'spare_parts' | 'warranty' | 'complaint' | 'installation' | 'maintenance'
+export type TicketType = 'general' | 'technical' | 'billing' | 'sales' | 'spare_parts' | 'warranty' | 'complaint' | 'installation' | 'maintenance' | 'other'
 export type TicketPriority = 'low' | 'medium' | 'high' | 'critical' | 'urgent'
 export type TicketStatus = 'open' | 'assigned' | 'in_progress' | 'awaiting_parts' | 'awaiting_customer' | 'pending_approval' | 'resolved' | 'closed' | 'cancelled'
 export type MessageType = 'message' | 'spare_parts_request' | 'status_update' | 'assignment' | 'resolution' | 'internal_note'
@@ -88,6 +88,7 @@ export interface CreateTicketData {
   related_product_id?: string
   related_quote_id?: string
   related_order_id?: string
+  maintenance_type?: 'preventive' | 'corrective' | 'predictive' | 'emergency'
 }
 
 export interface CreateMessageData {
