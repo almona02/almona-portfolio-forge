@@ -272,7 +272,7 @@ export const SupportPortal = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="font-bold">{part.price} EGP</span>
-                        <Badge variant={part.inStock ? 'default' : 'destructive'} className="ml-2">
+                        <Badge variant={part.inStock ? 'default' : 'secondary'} className="ml-2">
                           {part.inStock ? 'In Stock' : 'Backorder'}
                         </Badge>
                       </div>

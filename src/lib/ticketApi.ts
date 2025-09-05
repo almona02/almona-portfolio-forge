@@ -1,6 +1,7 @@
-import { 
-  CreateTicketData, 
-  CreateMessageData, 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  CreateTicketData,
+  CreateMessageData,
   TicketFilters,
   TicketStatus,
   ServiceTicket,
@@ -8,314 +9,169 @@ import {
   TicketWithDetails,
   MessageWithAuthor
 } from '@/types/tickets'
+import { supabase } from '@/lib/supabase'
+import { Database } from '@/types/database'
 
-// Mock data for development - replace with real Supabase calls when tables are created
-const mockTickets: ServiceTicket[] = [
-  {
-    id: '1',
-    ticket_number: 'TKT-2024-000001',
-    user_id: 'user1',
-    title: 'Machine Installation Issue',
-    description: 'Need help with installing the new aluminum cutting machine',
-    type: 'installation',
-    priority: 'high',
-    status: 'open',
-    related_quote_id: null,
-    related_order_id: null,
-    related_product_id: null,
-    assigned_to: null,
-    assigned_at: null,
-    assigned_by: null,
-    sla_response_due: null,
-    sla_resolution_due: null,
-    first_response_at: null,
-    sla_breached: false,
-    escalated: false,
-    escalated_at: null,
-    contact_phone: '+20123456789',
-    contact_email: 'customer@example.com',
-    preferred_contact_method: 'email',
-    site_location: 'Cairo Workshop',
-    machine_serial_number: 'ALM-2024-001',
-    resolution_summary: null,
-    customer_satisfaction_rating: null,
-    customer_feedback: null,
-    created_at: '2024-01-15T10:00:00Z',
-    updated_at: '2024-01-15T10:00:00Z',
-    resolved_at: null,
-    closed_at: null,
-  },
-  {
-    id: '2',
-    ticket_number: 'TKT-2024-000002',
-    user_id: 'user1',
-    title: 'Spare Parts Request',
-    description: 'Need replacement parts for hydraulic system',
-    type: 'spare_parts',
-    priority: 'medium',
-    status: 'in_progress',
-    related_quote_id: null,
-    related_order_id: null,
-    related_product_id: null,
-    assigned_to: 'tech1',
-    assigned_at: '2024-01-14T09:00:00Z',
-    assigned_by: null,
-    sla_response_due: null,
-    sla_resolution_due: null,
-    first_response_at: '2024-01-14T09:30:00Z',
-    sla_breached: false,
-    escalated: false,
-    escalated_at: null,
-    contact_phone: '+20123456789',
-    contact_email: 'customer@example.com',
-    preferred_contact_method: 'phone',
-    site_location: 'Alexandria Factory',
-    machine_serial_number: 'ALM-2023-045',
-    resolution_summary: null,
-    customer_satisfaction_rating: null,
-    customer_feedback: null,
-    created_at: '2024-01-14T08:00:00Z',
-    updated_at: '2024-01-14T09:00:00Z',
-    resolved_at: null,
-    closed_at: null,
+type DBServiceTicketRow = Database['public']['Tables']['service_tickets']['Row'] & { source?: string | null; maintenance_type?: string | null }
+type DBTicketMessageRow = Database['public']['Tables']['ticket_messages']['Row']
+
+// ---------- Helpers ----------
+function mapTicket(row: DBServiceTicketRow): ServiceTicket {
+  return {
+    id: row.id,
+    ticket_number: row.ticket_number,
+    user_id: row.user_id,
+    title: row.title,
+    description: row.description,
+  type: row.type as ServiceTicket['type'],
+  priority: row.priority as ServiceTicket['priority'],
+  status: row.status as ServiceTicket['status'],
+  source: (row as any).source ?? null,
+  maintenance_type: (row as any).maintenance_type ?? null,
+    related_quote_id: row.related_quote_id,
+    related_order_id: row.related_order_id,
+    related_product_id: row.related_product_id,
+    assigned_to: row.assigned_to,
+    assigned_at: row.assigned_at,
+    assigned_by: row.assigned_by,
+    sla_response_due: row.sla_response_due,
+    sla_resolution_due: row.sla_resolution_due,
+    first_response_at: row.first_response_at,
+    sla_breached: row.sla_breached ?? false,
+    escalated: row.escalated ?? false,
+    escalated_at: row.escalated_at,
+    contact_phone: row.contact_phone,
+    contact_email: row.contact_email,
+    preferred_contact_method: row.preferred_contact_method || 'email',
+    site_location: row.site_location,
+    machine_serial_number: row.machine_serial_number,
+    resolution_summary: row.resolution_summary,
+    customer_satisfaction_rating: row.customer_satisfaction_rating,
+    customer_feedback: row.customer_feedback,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+    resolved_at: row.resolved_at,
+    closed_at: row.closed_at
   }
-]
+}
 
-const mockMessages: TicketMessage[] = [
-  {
-    id: '1',
-    ticket_id: '1',
-    author_id: 'user1',
-    message: 'I need help installing the new machine. The hydraulic connections seem complex.',
-    message_type: 'message',
-    is_internal_note: false,
-    attachments: [],
-    spare_parts_details: null,
-    status_change: null,
-    time_spent_minutes: null,
-    created_at: '2024-01-15T10:00:00Z',
-    edited_at: null,
-  },
-  {
-    id: '2',
-    ticket_id: '2',
-    author_id: 'user1',
-    message: 'The hydraulic pump is making unusual noises and needs replacement.',
-    message_type: 'message',
-    is_internal_note: false,
-    attachments: [],
-    spare_parts_details: {
-      parts: [
-        {
-          sku: 'HYD-PUMP-001',
-          name: 'Hydraulic Pump Assembly',
-          quantity: 1,
-          urgency: 'high'
-        }
-      ]
-    },
-    status_change: null,
-    time_spent_minutes: null,
-    created_at: '2024-01-14T08:00:00Z',
-    edited_at: null,
-  },
-  {
-    id: '3',
-    ticket_id: '2',
-    author_id: 'tech1',
-    message: 'I have reviewed your request. The part is available and will be shipped within 2 days.',
-    message_type: 'message',
-    is_internal_note: false,
-    attachments: [],
-    spare_parts_details: null,
-    status_change: {
-      from: 'open',
-      to: 'in_progress',
-      reason: 'Technician assigned and parts located'
-    },
-    time_spent_minutes: 30,
-    created_at: '2024-01-14T09:30:00Z',
-    edited_at: null,
-  }
-]
-
-// Simulate API delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-
-// Ticket CRUD operations
+// ---------- Ticket CRUD ----------
 export const createTicket = async (ticketData: CreateTicketData, userId: string): Promise<ServiceTicket> => {
-  await delay(500) // Simulate API call
-  
-  const newTicket: ServiceTicket = {
-    id: Date.now().toString(),
-    ticket_number: `TKT-2024-${String(mockTickets.length + 1).padStart(6, '0')}`,
+  const insertPayload = {
     user_id: userId,
     title: ticketData.title,
-    description: ticketData.description || null,
-    type: ticketData.type || 'general',
-    priority: ticketData.priority || 'medium',
+    description: ticketData.description,
+    type: ticketData.type,
+    priority: ticketData.priority,
     status: 'open',
     related_quote_id: ticketData.related_quote_id || null,
     related_order_id: ticketData.related_order_id || null,
     related_product_id: ticketData.related_product_id || null,
-    assigned_to: null,
-    assigned_at: null,
-    assigned_by: null,
-    sla_response_due: null,
-    sla_resolution_due: null,
-    first_response_at: null,
-    sla_breached: false,
-    escalated: false,
-    escalated_at: null,
     contact_phone: ticketData.contact_phone || null,
     contact_email: ticketData.contact_email || null,
     preferred_contact_method: ticketData.preferred_contact_method || 'email',
     site_location: ticketData.site_location || null,
-    machine_serial_number: ticketData.machine_serial_number || null,
-    resolution_summary: null,
-    customer_satisfaction_rating: null,
-    customer_feedback: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    resolved_at: null,
-    closed_at: null,
+    machine_serial_number: ticketData.machine_serial_number || null
   }
-  
-  mockTickets.push(newTicket)
-  return newTicket
+  // Casting supabase to any to bypass strict table inference issues until generated types include custom columns
+  const { data, error } = await (supabase as any)
+    .from('service_tickets')
+    .insert([insertPayload])
+    .select()
+    .single()
+  if (error) throw new Error(error.message)
+  return mapTicket(data)
 }
 
 export const getUserTickets = async (
-  userId: string, 
+  userId: string,
   filters?: TicketFilters
 ): Promise<TicketWithDetails[]> => {
-  await delay(300)
-  
-  let filteredTickets = mockTickets.filter(ticket => ticket.user_id === userId)
-  
-  // Apply filters
-  if (filters?.status && filters.status.length > 0) {
-    filteredTickets = filteredTickets.filter(ticket => filters.status!.includes(ticket.status))
-  }
-  
-  if (filters?.type && filters.type.length > 0) {
-    filteredTickets = filteredTickets.filter(ticket => filters.type!.includes(ticket.type))
-  }
-  
-  if (filters?.priority && filters.priority.length > 0) {
-    filteredTickets = filteredTickets.filter(ticket => filters.priority!.includes(ticket.priority))
-  }
-  
+  let query = (supabase as any).from('service_tickets').select('*').eq('user_id', userId)
+  if (filters?.status?.length) query = query.in('status', filters.status)
+  if (filters?.type?.length) query = query.in('type', filters.type)
+  if (filters?.priority?.length) query = query.in('priority', filters.priority)
   if (filters?.search) {
-    const searchLower = filters.search.toLowerCase()
-    filteredTickets = filteredTickets.filter(ticket => 
-      ticket.title.toLowerCase().includes(searchLower) ||
-      ticket.description?.toLowerCase().includes(searchLower) ||
-      ticket.ticket_number.toLowerCase().includes(searchLower)
-    )
+    const s = `%${filters.search}%`
+    query = query.or(`title.ilike.${s},description.ilike.${s},ticket_number.ilike.${s}`)
   }
-  
-  return filteredTickets.map(ticket => ({
-    ...ticket,
-    user_profile: {
-      full_name: 'John Doe',
-      company_name: 'ABC Manufacturing',
-      phone: '+20123456789'
-    },
-    assigned_user: ticket.assigned_to ? {
-      full_name: 'Ahmed Hassan',
-      role: 'technician'
-    } : undefined,
-    related_product: ticket.related_product_id ? {
-      name_ar: 'ماكينة قطع الألومنيوم',
-      name_en: 'Aluminum Cutting Machine',
-      sku: 'ALM-CUT-001'
-    } : undefined,
-    message_count: mockMessages.filter(msg => msg.ticket_id === ticket.id).length,
-    last_message_at: mockMessages
-      .filter(msg => msg.ticket_id === ticket.id)
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]?.created_at
+  const { data, error } = await query.order('created_at', { ascending: false })
+  if (error) throw new Error(error.message)
+
+  // Fetch message counts
+  const ids = (data || []).map(r => r.id)
+  let counts: Record<string, number> = {}
+  if (ids.length) {
+  const { data: msgAgg, error: msgErr } = await (supabase as any)
+      .from('ticket_messages')
+      .select('ticket_id, count:ticket_id')
+      .in('ticket_id', ids)
+    if (!msgErr && msgAgg) {
+  counts = msgAgg.reduce((acc: Record<string, number>, row: any) => {
+        acc[row.ticket_id] = (acc[row.ticket_id] || 0) + 1
+        return acc
+      }, {})
+    }
+  }
+
+  return (data || []).map(row => ({
+    ...mapTicket(row),
+    message_count: counts[row.id] || 0
   }))
 }
 
 export const getTicketById = async (ticketId: string): Promise<TicketWithDetails | null> => {
-  await delay(200)
-  
-  const ticket = mockTickets.find(t => t.id === ticketId)
-  if (!ticket) return null
-  
-  return {
-    ...ticket,
-    user_profile: {
-      full_name: 'John Doe',
-      company_name: 'ABC Manufacturing',
-      phone: '+20123456789'
-    },
-    assigned_user: ticket.assigned_to ? {
-      full_name: 'Ahmed Hassan',
-      role: 'technician'
-    } : undefined,
-    related_product: ticket.related_product_id ? {
-      name_ar: 'ماكينة قطع الألومنيوم',
-      name_en: 'Aluminum Cutting Machine',
-      sku: 'ALM-CUT-001'
-    } : undefined,
-    message_count: mockMessages.filter(msg => msg.ticket_id === ticket.id).length,
-    last_message_at: mockMessages
-      .filter(msg => msg.ticket_id === ticket.id)
-      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0]?.created_at
-  }
+  const { data, error } = await (supabase as any).from('service_tickets').select('*').eq('id', ticketId).single()
+  if (error) return null
+  return mapTicket(data)
 }
 
 export const updateTicketStatus = async (
-  ticketId: string, 
+  ticketId: string,
   status: TicketStatus,
   resolution_summary?: string
 ): Promise<ServiceTicket> => {
-  await delay(300)
-  
-  const ticketIndex = mockTickets.findIndex(t => t.id === ticketId)
-  if (ticketIndex === -1) throw new Error('Ticket not found')
-  
-  const ticket = mockTickets[ticketIndex]
-  ticket.status = status
-  ticket.updated_at = new Date().toISOString()
-  
-  if (status === 'resolved' || status === 'closed') {
-    ticket.resolved_at = new Date().toISOString()
-    if (resolution_summary) {
-      ticket.resolution_summary = resolution_summary
-    }
-  }
-  
-  if (status === 'closed') {
-    ticket.closed_at = new Date().toISOString()
-  }
-  
-  return ticket
+  const patch: Record<string, unknown> = { status, updated_at: new Date().toISOString() }
+  if (status === 'resolved') patch['resolved_at'] = new Date().toISOString()
+  if (status === 'closed') patch['closed_at'] = new Date().toISOString()
+  if (resolution_summary) patch['resolution_summary'] = resolution_summary
+  const { data, error } = await (supabase as any)
+    .from('service_tickets')
+    .update(patch)
+    .eq('id', ticketId)
+    .select()
+    .single()
+  if (error) throw new Error(error.message)
+  return mapTicket(data)
 }
 
-// Message CRUD operations
+// ---------- Messages ----------
 export const getTicketMessages = async (ticketId: string): Promise<MessageWithAuthor[]> => {
-  await delay(200)
-  
-  const messages = mockMessages.filter(msg => msg.ticket_id === ticketId)
-  
-  return messages.map(msg => ({
-    ...msg,
-    author: {
-      full_name: msg.author_id === 'user1' ? 'John Doe' : 'Ahmed Hassan',
-      role: msg.author_id === 'user1' ? 'customer' : 'technician',
-      avatar_url: null
-    }
+  const { data, error } = await (supabase as any)
+    .from('ticket_messages')
+    .select('*')
+    .eq('ticket_id', ticketId)
+    .order('created_at', { ascending: true })
+  if (error) throw new Error(error.message)
+  return (data || []).map(row => ({
+    id: row.id,
+    ticket_id: row.ticket_id,
+    author_id: row.author_id,
+    message: row.message,
+    message_type: row.message_type,
+    is_internal_note: row.is_internal_note,
+    attachments: row.attachments || [],
+    spare_parts_details: row.spare_parts_details,
+    status_change: row.status_change,
+    time_spent_minutes: row.time_spent_minutes,
+    created_at: row.created_at,
+    edited_at: row.edited_at,
+    author: { full_name: null, role: 'user', avatar_url: null }
   }))
 }
 
 export const createMessage = async (messageData: CreateMessageData & { author_id: string }): Promise<TicketMessage> => {
-  await delay(300)
-  
-  const newMessage: TicketMessage = {
-    id: Date.now().toString(),
+  const insertPayload = {
     ticket_id: messageData.ticket_id,
     author_id: messageData.author_id,
     message: messageData.message,
@@ -323,65 +179,69 @@ export const createMessage = async (messageData: CreateMessageData & { author_id
     is_internal_note: messageData.is_internal_note || false,
     attachments: messageData.attachments || [],
     spare_parts_details: messageData.spare_parts_details || null,
-    status_change: null,
-    time_spent_minutes: messageData.time_spent_minutes || null,
-    created_at: new Date().toISOString(),
-    edited_at: null,
+    time_spent_minutes: messageData.time_spent_minutes || null
   }
-  
-  mockMessages.push(newMessage)
-  return newMessage
-}
-
-// Analytics and reporting
-export const getTicketStats = async (userId: string) => {
-  await delay(200)
-  
-  const userTickets = mockTickets.filter(t => t.user_id === userId)
-  
+  const { data, error } = await (supabase as any)
+    .from('ticket_messages')
+    .insert([insertPayload])
+    .select()
+    .single()
+  if (error) throw new Error(error.message)
+  const row = data as DBTicketMessageRow
   return {
-    total: userTickets.length,
-    open: userTickets.filter(t => ['open', 'assigned', 'in_progress'].includes(t.status)).length,
-    resolved: userTickets.filter(t => t.status === 'resolved').length,
-    closed: userTickets.filter(t => t.status === 'closed').length,
-    byPriority: {
-      low: userTickets.filter(t => t.priority === 'low').length,
-      medium: userTickets.filter(t => t.priority === 'medium').length,
-      high: userTickets.filter(t => t.priority === 'high').length,
-      critical: userTickets.filter(t => t.priority === 'critical').length,
-      urgent: userTickets.filter(t => t.priority === 'urgent').length,
-    },
-    byType: {
-      general: userTickets.filter(t => t.type === 'general').length,
-      technical: userTickets.filter(t => t.type === 'technical').length,
-      billing: userTickets.filter(t => t.type === 'billing').length,
-      sales: userTickets.filter(t => t.type === 'sales').length,
-      spare_parts: userTickets.filter(t => t.type === 'spare_parts').length,
-      warranty: userTickets.filter(t => t.type === 'warranty').length,
-      complaint: userTickets.filter(t => t.type === 'complaint').length,
-      installation: userTickets.filter(t => t.type === 'installation').length,
-      maintenance: userTickets.filter(t => t.type === 'maintenance').length,
-    },
-    avgResolutionTime: 24 // Mock average resolution time in hours
+    id: row.id,
+    ticket_id: row.ticket_id,
+    author_id: row.author_id,
+    message: row.message,
+    message_type: row.message_type,
+    is_internal_note: row.is_internal_note,
+  attachments: (row.attachments as any[]) || [],
+    spare_parts_details: row.spare_parts_details,
+    status_change: row.status_change,
+    time_spent_minutes: row.time_spent_minutes,
+    created_at: row.created_at,
+    edited_at: row.edited_at
   }
 }
 
-// File upload for attachments (mock)
-export const uploadTicketAttachment = async (
-  file: File,
-  ticketId: string
-): Promise<string> => {
-  await delay(1000) // Simulate upload time
-  
-  // In real implementation, this would upload to Supabase storage
-  return `https://example.com/attachments/${ticketId}/${file.name}`
+// ---------- Analytics ----------
+export const getTicketStats = async (userId: string) => {
+  const { data, error } = await (supabase as any)
+    .from('service_tickets')
+    .select('id,status,priority,type,resolved_at')
+    .eq('user_id', userId)
+  if (error) throw new Error(error.message)
+  const tickets = data || []
+  const total = tickets.length
+  const open = tickets.filter(t => ['open','assigned','in_progress'].includes(t.status)).length
+  const resolved = tickets.filter(t => t.status === 'resolved').length
+  const closed = tickets.filter(t => t.status === 'closed').length
+  const byPriority: Record<string, number> = { low:0, medium:0, high:0, critical:0, urgent:0 }
+  tickets.forEach(t => { byPriority[t.priority] = (byPriority[t.priority]||0)+1 })
+  const byTypeKeys = ['general','technical','billing','sales','spare_parts','warranty','complaint','installation','maintenance']
+  const byType: Record<string, number> = {}
+  byTypeKeys.forEach(k => { byType[k]=0 })
+  tickets.forEach(t => { byType[t.type] = (byType[t.type]||0)+1 })
+  return {
+    total, open, resolved, closed,
+  byPriority: byPriority as any,
+  byType: byType as any,
+    avgResolutionTime: 0
+  }
 }
 
-// Search helper
+// ---------- Attachments ----------
+export const uploadTicketAttachment = async (file: File, ticketId: string): Promise<string> => {
+  const path = `${ticketId}/${Date.now()}-${file.name}`
+  const { error } = await supabase.storage.from('ticket-attachments').upload(path, file, { upsert: true })
+  if (error) throw new Error(error.message)
+  const { data: pub } = supabase.storage.from('ticket-attachments').getPublicUrl(path)
+  return pub.publicUrl
+}
+
+// ---------- Search Helper ----------
 export const searchTickets = async (
   userId: string,
   searchTerm: string,
   filters?: Omit<TicketFilters, 'search'>
-) => {
-  return getUserTickets(userId, { ...filters, search: searchTerm })
-}
+) => getUserTickets(userId, { ...filters, search: searchTerm })

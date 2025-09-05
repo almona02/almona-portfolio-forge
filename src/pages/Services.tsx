@@ -17,9 +17,7 @@ const MaintenanceDashboard = lazy(() =>
     default: module.MaintenanceDashboard,
   }))
 );
-const CustomerPortal = lazy(() =>
-  import("@/components/services/CustomerPortal")
-);
+
 import { ScheduleMaintenance } from "@/components/services/ScheduleMaintenance";
 import { OperatorTrainingIncentiveDialog } from "@/components/services/OperatorTrainingIncentiveDialog";
 import {
@@ -30,11 +28,14 @@ import {
 } from "@/shared/ui/ui/tabs";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Link, useNavigate } from "react-router-dom";
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 import { Badge } from "@/components/ui/badge";
+import { buildNavigationState } from '@/lib/ticketing/unifiedTicketing';
 
 const Services = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const navigate = useNavigate();
   const [machineView, setMachineView] = useState<"list" | "map">("list");
   const [emergencyDialogOpen, setEmergencyDialogOpen] = useState(false);
   const [scheduleMaintenanceOpen, setScheduleMaintenanceOpen] = useState(false);
@@ -76,13 +77,17 @@ const Services = () => {
             onOpenChange={setScheduleMaintenanceOpen}
           />
 
+          <div className="text-center mb-8">
+            <Link to="/portal">
+              <Button variant="outline" className="text-white electric-border">Go to Customer Portal</Button>
+            </Link>
+          </div>
           {/* Main Services Content */}
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 max-w-4xl mx-auto mb-12 bg-almona-darker/60 backdrop-blur-sm border border-almona-light/20 p-2 rounded-lg">
+            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 max-w-4xl mx-auto mb-12 bg-almona-darker/60 backdrop-blur-sm border border-almona-light/20 p-2 rounded-lg">
               <TabsTrigger value="overview">Services Overview</TabsTrigger>
               <TabsTrigger value="register">Register Machine</TabsTrigger>
               <TabsTrigger value="dashboard">Maintenance Dashboard</TabsTrigger>
-              <TabsTrigger value="portal">Customer Portal</TabsTrigger>
             </TabsList>
 
             {/* Services Overview */}
@@ -104,7 +109,13 @@ const Services = () => {
                       "Warranty compliance tracking"
                     ]}
                     actionText="Schedule Maintenance"
-                    onActionClick={() => setScheduleMaintenanceOpen(true)}
+                    onActionClick={() => navigate('/create-ticket', {
+                      state: buildNavigationState({
+                        source: 'maintenance',
+                        maintenanceType: 'preventive',
+                        notes: 'Scheduled preventive maintenance generated from Services page.'
+                      })
+                    })}
                   />
                   <ServiceCard
                     icon="bolt"
@@ -205,21 +216,8 @@ const Services = () => {
                 </Suspense>
               </motion.div>
             </TabsContent>
-
-            {/* Customer Portal */}
-            <TabsContent value="portal">
-              <motion.div
-                key="portal"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Suspense fallback={<SkeletonLoader />}>
-                  <CustomerPortal />
-                </Suspense>
-              </motion.div>
-            </TabsContent>
           </Tabs>
+
         </motion.div>
       </main>
       <Footer />
@@ -231,4 +229,5 @@ const Services = () => {
   );
 };
 
-export default withErrorBoundary(Services);
+const ServicesWithBoundary = withErrorBoundary(Services);
+export default ServicesWithBoundary;

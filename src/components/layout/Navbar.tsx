@@ -154,21 +154,23 @@ const Navbar = () => {
           </motion.div>
           
           <motion.span
-            className={`text-2xl sm:text-3xl font-bold transition-all duration-500 ${
+            className={`text-2xl sm:text-3xl font-bold transition-all duration-500 bg-clip-text text-transparent ${
               isScrolled
-                ? "drop-shadow-md"
-                : "drop-shadow-2xl"
-            }`}
+                ? 'drop-shadow-md'
+                : 'drop-shadow-2xl'
+            } ${isScrolled ? 'from-[#ff8c00] to-[#ffa500]' : 'from-[#ff8c00] via-[#ffa500] to-[#e2e8f0]'} bg-gradient-to-br`}
             style={{
-              background: isScrolled 
-                ? 'linear-gradient(135deg, #ff8c00, #ffa500)'
-                : 'linear-gradient(135deg, #ff8c00, #ffa500, #ffffff, #e2e8f0)',
+              // Use non-shorthand props to avoid React warning with backgroundClip
+              backgroundImage: isScrolled
+                ? 'linear-gradient(135deg,#ff8c00,#ffa500)'
+                : 'linear-gradient(135deg,#ff8c00,#ffa500,#ffffff,#e2e8f0)',
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: '100% 100%',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              filter: isScrolled 
-                ? 'drop-shadow(0 2px 4px rgba(255, 140, 0, 0.4))' 
-                : 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2))'
+              filter: isScrolled
+                ? 'drop-shadow(0 2px 4px rgba(255,140,0,0.4))'
+                : 'drop-shadow(0 4px 8px rgba(0,0,0,0.3)) drop-shadow(0 0 15px rgba(255,255,255,0.2))'
             }}
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
@@ -394,13 +396,14 @@ const Navbar = () => {
                       />
                     </div>
                     <span 
-                      className="text-xl font-bold"
+                      className="text-xl font-bold bg-clip-text text-transparent"
                       style={{
-                        background: 'linear-gradient(135deg, #ff8c00 0%, #ffa500 80%, #ffb347 100%)',
+                        backgroundImage: 'linear-gradient(135deg,#ff8c00 0%,#ffa500 80%,#ffb347 100%)',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: '100% 100%',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
-                        filter: 'drop-shadow(0 2px 4px rgba(255, 140, 0, 0.4))'
+                        filter: 'drop-shadow(0 2px 4px rgba(255,140,0,0.4))'
                       }}
                     >
                       ALMONA
