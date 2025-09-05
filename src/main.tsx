@@ -1,5 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+// Initialize i18n BEFORE any component uses useTranslation to avoid
+// "react-i18next:: useTranslation: You will need to pass in an i18next instance" warning
+// This is a side-effect import that sets up i18next globally.
+import "@/lib/i18n";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 import { registerServiceWorker } from "./lib/serviceWorkerRegistration";
@@ -171,14 +175,17 @@ ReactDOM.createRoot(rootElement).render(
   </React.StrictMode>
 );
 
+// Post-hydration: trigger fade-in transition
+requestAnimationFrame(() => {
+  rootElement.classList.add('app-fade-enter-active');
+  // remove the setup class after transition to keep DOM clean
+  setTimeout(() => rootElement.classList.remove('app-fade-enter'), 300);
+});
+
 // Register service worker with error handling
 try {
   if (import.meta.env.PROD) {
     registerServiceWorker();
-  } else if (import.meta.env.DEV) {
-    console.log("🔧 Service worker available for testing in development");
-    // Uncomment to test service worker in development
-    // registerServiceWorker();
   }
 } catch (error) {
   console.error('Failed to register service worker:', error);

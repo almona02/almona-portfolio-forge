@@ -1,8 +1,60 @@
 import { supabase, createQuote, getProducts, getUserQuotes } from './supabase';
+import { buildNavigationState, TicketContext } from '@/lib/ticketing/unifiedTicketing';
+
+// =================================
+// Type Definitions
+// =================================
+
+export interface Machine {
+  id: string;
+  created_at: string;
+  name: string;
+  model: string;
+  serial_number: string;
+  owner_id: string;
+}
+
+// Service ticket shape (lightweight; for full shape use ServiceTicket from types/tickets if needed)
+export interface Ticket {
+  id: string;
+  ticket_number?: string;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+  title: string;
+  description: string | null;
+  type: string;
+  priority: string;
+  status: string;
+  maintenance_type?: string | null;
+  machine_serial_number?: string | null;
+  source?: string | null;
+  context?: Record<string, unknown> | null;
+}
+
+export interface Document {
+  id: string;
+  user_id: string;
+  document_name: string;
+  document_url: string;
+  upload_date: string;
+}
 
 // =================================
 // Auth API
 // =================================
+
+interface TicketInsert {
+  user_id: string;
+  title: string;
+  description: string;
+  type: string;
+  priority: string;
+  machine_id?: string;
+  maintenance_type?: string;
+  scheduled_date?: string;
+  status: string;
+}
 
 export const api = {
   // Auth endpoints
@@ -33,39 +85,145 @@ export const api = {
   },
 
   // Customer data
-  fetchUserMachines: async (userId: string) => {
-    // Assuming 'machines' are products with category 'machine'
-    // The schema does not link products to users directly, so this fetches all machines.
-    // This might need adjustment if there's a specific ownership table.
-    return getProducts({ category: 'machine' });
-  },
-  fetchUserTickets: async (userId: string) => {
-    // Assuming 'tickets' are represented by 'quotes'
-    return getUserQuotes(userId);
-  },
-  createTicket: async (ticketData: {
-    user_id: string;
-    title: string;
-    description: string;
-  }) => {
-    const quoteData = {
-      user_id: ticketData.user_id,
-      title: ticketData.title,
-      description: ticketData.description,
-      status: 'pending', // Default status for a new ticket/quote
-    };
-    return createQuote(quoteData);
+  // Fetch user-specific machines
+   fetchUserMachines: async (userId: string): Promise<Machine[]> => {
+    const { data, error } = await supabase
+      .from('machines')
+      .select('*')
+      .eq('owner_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching machines:', error);
+      throw new Error(error.message || 'Failed to fetch machines');
+    }
+    return data || [];
   },
 
-  // Machine registration
-  registerMachine: async (machineData: any) => {
-    // Assuming machine registration means creating a new product of category 'machine'
-    const productData = {
-      ...machineData,
-      category: 'machine', 
-    };
-    const { data, error } = await supabase.from('products').insert([productData]);
+  // Fetch user-specific tickets
+  fetchUserTickets: async (userId: string): Promise<Ticket[]> => {
+    const { data, error } = await supabase
+      .from('service_tickets')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching tickets:', error);
+      throw new Error(error.message || 'Failed to fetch tickets');
+    }
+    return data || [];
+  },
+
+  // Register a new machine
+  registerMachine: async (machineData: {
+    name: string;
+    model: string;
+    serial_number: string;
+    owner_id: string;
+  }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as unknown as { from: (table: string) => any })
+      .from('machines')
+      .insert([machineData])
+      .select()
+      .single();
+    
     if (error) throw error;
     return data;
   },
+
+  // Create a new support ticket
+  createTicket: async (ticketData: TicketInsert & { attachments?: File[]; source?: string; context?: Record<string, unknown> }): Promise<Ticket> => {
+    const payload = {
+      user_id: ticketData.user_id,
+      title: ticketData.title,
+      description: ticketData.description,
+      type: ticketData.type,
+      priority: ticketData.priority,
+      machine_serial_number: ticketData.machine_id ?? null,
+      maintenance_type: ticketData.maintenance_type ?? null,
+      status: ticketData.status,
+      source: ticketData.source || 'api',
+      context: ticketData.context || null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    } as const;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase as unknown as { from: (table: string) => any })
+      .from('service_tickets')
+      .insert([payload])
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Error creating ticket:', error);
+      throw new Error(error.message || 'Failed to create ticket');
+    }
+    return data;
+  },
+
+  // Post a ticket message
+  createTicketMessage: async (params: { ticket_id: string; author_id: string; message: string; message_type?: string; is_internal_note?: boolean; spare_parts_details?: unknown }) => {
+    const payload = {
+      ticket_id: params.ticket_id,
+      author_id: params.author_id,
+      message: params.message,
+      message_type: params.message_type || 'message',
+      is_internal_note: params.is_internal_note || false,
+      spare_parts_details: params.spare_parts_details || null,
+      created_at: new Date().toISOString()
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase as unknown as { from: (table: string) => any })
+      .from('ticket_messages')
+      .insert([payload])
+      .select()
+      .single();
+    if (error) {
+      console.error('Error creating ticket message:', error);
+      throw new Error(error.message || 'Failed to create ticket message');
+    }
+    return data;
+  },
+
+  // Analytics: count by source and basic SLA (resolved count / total)
+  fetchTicketSourceAnalytics: async () => {
+    const { data, error } = await supabase
+      .from('service_tickets')
+      .select('source,status,created_at,resolved_at');
+    if (error) throw error;
+    const stats: Record<string, { total: number; resolved: number }> = {};
+  type Row = { source?: string | null; status?: string | null };
+  (data as Row[] | null || []).forEach(t => {
+      const src = t.source || 'unknown';
+      if (!stats[src]) stats[src] = { total: 0, resolved: 0 };
+      stats[src].total++;
+      if (t.status === 'resolved' || t.status === 'closed') stats[src].resolved++;
+    });
+    return Object.entries(stats).map(([source, s]) => ({ source, total: s.total, resolved: s.resolved, resolutionRate: s.total ? s.resolved / s.total : 0 }));
+  },
+
+   // Get user documents
+  fetchUserDocuments: async (userId: string): Promise<Document[]> => {
+    const { data, error } = await supabase
+      .from('user_documents')
+      .select('*')
+      .eq('user_id', userId)
+      .order('upload_date', { ascending: false });
+
+    if (error) {
+      // Gracefully degrade if table is not yet provisioned
+      const msg = error.message?.toLowerCase() || '';
+      const missingTable = msg.includes('relation') && msg.includes('user_documents');
+      const undefinedTableCode = (error as unknown as { code?: string }).code === '42P01';
+      if (missingTable || undefinedTableCode) {
+        console.warn('[api.fetchUserDocuments] user_documents table missing; returning empty list.');
+        return [];
+      }
+      console.error('Error fetching documents:', error);
+      throw new Error(error.message || 'Failed to fetch documents');
+    }
+    return data || [];
+  }
 };

@@ -11,6 +11,7 @@ import { Plus, Search, Filter, Ticket, Clock, CheckCircle, XCircle } from 'lucid
 import { CreateTicketDialog } from '@/components/support/CreateTicketDialog'
 import { TicketDetailView } from '@/components/support/TicketDetailView'
 import { TicketStatusBadge } from '@/components/support/TicketStatusBadge'
+import { TicketSourceAnalytics } from '@/components/support/TicketSourceAnalytics'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/ui/table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -107,9 +108,9 @@ const CustomerSupport: React.FC = () => {
         </Button>
       </div>
 
-      {/* Statistics Cards */}
+      {/* Statistics & Analytics */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Tickets</CardTitle>
@@ -149,6 +150,7 @@ const CustomerSupport: React.FC = () => {
               <div className="text-2xl font-bold">{stats.avgResolutionTime}h</div>
             </CardContent>
           </Card>
+          <TicketSourceAnalytics />
         </div>
       )}
 
@@ -171,7 +173,7 @@ const CustomerSupport: React.FC = () => {
               </div>
             </div>
             
-            <Select onValueChange={(value) => handleFilterChange('status', value)}>
+            <Select value={filters.status?.[0] || ''} onValueChange={(value) => handleFilterChange('status', value)}>
               <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -185,7 +187,7 @@ const CustomerSupport: React.FC = () => {
               </SelectContent>
             </Select>
             
-            <Select onValueChange={(value) => handleFilterChange('type', value)}>
+            <Select value={filters.type?.[0] || ''} onValueChange={(value) => handleFilterChange('type', value)}>
               <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
@@ -200,7 +202,7 @@ const CustomerSupport: React.FC = () => {
               </SelectContent>
             </Select>
             
-            <Select onValueChange={(value) => handleFilterChange('priority', value)}>
+            <Select value={filters.priority?.[0] || ''} onValueChange={(value) => handleFilterChange('priority', value)}>
               <SelectTrigger className="w-full md:w-[180px]">
                 <SelectValue placeholder="Priority" />
               </SelectTrigger>
@@ -243,6 +245,8 @@ const CustomerSupport: React.FC = () => {
                     <TableHead>Title</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Priority</TableHead>
+                    <TableHead>Source</TableHead>
+                    <TableHead>Maint.</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Created</TableHead>
                     <TableHead>Messages</TableHead>
@@ -293,6 +297,20 @@ const CustomerSupport: React.FC = () => {
                         >
                           {ticket.priority}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {ticket.source && (
+                          <Badge variant="outline" className="capitalize">
+                            {ticket.source.replace('_',' ')}
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {ticket.maintenance_type && (
+                          <Badge variant="secondary" className="capitalize">
+                            {ticket.maintenance_type}
+                          </Badge>
+                        )}
                       </TableCell>
                       <TableCell>
                         <TicketStatusBadge status={ticket.status} />

@@ -324,6 +324,34 @@ const arTranslations = {
   }
 };
 
+// Extend Arabic translations with training page namespace
+Object.assign(arTranslations, {
+  trainingPage: {
+    enroll: 'التسجيل في البرنامج',
+    subtitle: 'املأ النموذج للانضمام إلى أحد برامجنا التدريبية المتخصصة',
+    material: {
+      aluminium: 'ألمنيوم',
+      upvc: 'يو بي في سي'
+    },
+    form: {
+      name: 'الاسم الكامل',
+      email: 'البريد الإلكتروني',
+      company: 'الشركة',
+      phone: 'رقم الهاتف',
+      program: 'البرنامج',
+      selectProgram: 'اختر برنامجًا',
+      material: 'المادة',
+      startDate: 'تاريخ البدء المفضل',
+      flexible: 'مرن (أول دفعة متاحة)',
+      notes: 'ملاحظات إضافية',
+      cancel: 'إلغاء',
+      submit: 'إرسال الطلب',
+      submitting: 'جارٍ الإرسال...',
+      success: 'تم إرسال طلب التسجيل بنجاح'
+    }
+  }
+});
+
 const enTranslations = {
   common: {
     navigation: {
@@ -629,6 +657,34 @@ const enTranslations = {
       }
     }
   };
+
+  // Extend English translations with training page namespace
+  Object.assign(enTranslations, {
+    trainingPage: {
+      enroll: 'Enroll in Program',
+      subtitle: 'Fill the form to join one of our specialized training programs',
+      material: {
+        aluminium: 'Aluminium',
+        upvc: 'uPVC'
+      },
+      form: {
+        name: 'Full Name',
+        email: 'Email',
+        company: 'Company',
+        phone: 'Phone Number',
+        program: 'Program',
+        selectProgram: 'Select a program',
+        material: 'Material',
+        startDate: 'Preferred Start Date',
+        flexible: 'Flexible (First Available Cohort)',
+        notes: 'Additional Notes',
+        cancel: 'Cancel',
+        submit: 'Submit Application',
+        submitting: 'Submitting...',
+        success: 'Enrollment request submitted successfully'
+      }
+    }
+  });
   
   // i18next initialization
   const resources = {

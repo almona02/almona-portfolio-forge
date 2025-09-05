@@ -127,6 +127,9 @@ export interface Database {
           type: 'general' | 'technical' | 'billing' | 'sales' | 'spare_parts' | 'warranty' | 'complaint' | 'installation' | 'maintenance'
           priority: 'low' | 'medium' | 'high' | 'critical' | 'urgent'
           status: 'open' | 'assigned' | 'in_progress' | 'awaiting_parts' | 'awaiting_customer' | 'pending_approval' | 'resolved' | 'closed' | 'cancelled'
+          source: string | null
+          maintenance_type: string | null
+          context: Record<string, unknown> | null
           related_quote_id: string | null
           related_order_id: string | null
           related_product_id: string | null
@@ -160,6 +163,9 @@ export interface Database {
           type?: 'general' | 'technical' | 'billing' | 'sales' | 'spare_parts' | 'warranty' | 'complaint' | 'installation' | 'maintenance'
           priority?: 'low' | 'medium' | 'high' | 'critical' | 'urgent'
           status?: 'open' | 'assigned' | 'in_progress' | 'awaiting_parts' | 'awaiting_customer' | 'pending_approval' | 'resolved' | 'closed' | 'cancelled'
+          source?: string | null
+          maintenance_type?: string | null
+          context?: Record<string, unknown> | null
           related_quote_id?: string | null
           related_order_id?: string | null
           related_product_id?: string | null
@@ -182,6 +188,9 @@ export interface Database {
           type?: 'general' | 'technical' | 'billing' | 'sales' | 'spare_parts' | 'warranty' | 'complaint' | 'installation' | 'maintenance'
           priority?: 'low' | 'medium' | 'high' | 'critical' | 'urgent'
           status?: 'open' | 'assigned' | 'in_progress' | 'awaiting_parts' | 'awaiting_customer' | 'pending_approval' | 'resolved' | 'closed' | 'cancelled'
+          source?: string | null
+          maintenance_type?: string | null
+          context?: Record<string, unknown> | null
           related_quote_id?: string | null
           related_order_id?: string | null
           related_product_id?: string | null

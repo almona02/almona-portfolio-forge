@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { supabase, getUserProfile } from '@/lib/supabase';
 import { Database } from '@/types/database';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
@@ -29,7 +29,9 @@ interface User {
 interface AuthContextType {
   user: User | null;
   supabaseUser: SupabaseUser | null;
-  loading: boolean;
+  loading: boolean;            // Initial bootstrap only
+  actionLoading: boolean;      // Fast feedback for ongoing auth actions
+  stableDisplayEmail?: string; // Non-flickering email for UI
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (userData: {
     email: string;
@@ -59,21 +61,50 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);          // initial session probe
+  const [actionLoading, setActionLoading] = useState(false); // user-initiated auth actions
+  // Preserve first non-empty email to avoid UI flicker when placeholder profile is swapped with real profile
+  const stableEmailRef = useRef<string | undefined>(undefined);
 
   // Fetch user profile data
-  const fetchUserProfile = async (userId: string) => {
+  const fetchUserProfile = useCallback(async (userId: string) => {
     try {
       const profile = await getUserProfile(userId);
       setUser(profile);
+      if (!stableEmailRef.current && profile && (profile as User).email) {
+        stableEmailRef.current = (profile as User).email;
+      }
     } catch (error) {
       console.error('Error fetching user profile:', error);
-      setUser(null);
+      // Build immediate placeholder instead of null to avoid portal flicker
+      if (supabaseUser) {
+  setUser({
+          id: supabaseUser.id,
+          email: supabaseUser.email || undefined,
+          username: null,
+            full_name: supabaseUser.user_metadata?.full_name || null,
+            avatar_url: supabaseUser.user_metadata?.avatar_url || null,
+            company_name: supabaseUser.user_metadata?.company_name || null,
+            phone: supabaseUser.user_metadata?.phone || null,
+            sector: null as unknown as User['sector'],
+            workshop_location: null,
+            governorate: null,
+            address: null as unknown as User['address'],
+            tax_number: null,
+            commercial_register: null,
+            role: 'customer' as User['role'],
+            is_verified: false,
+            preferences: {} as User['preferences'],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        });
+      } else {
+        setUser(null);
+      }
     }
-  };
+  }, [supabaseUser]);
 
   useEffect(() => {
-    // Get initial session
     const getInitialSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -100,31 +131,59 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.id);
-      
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[Auth] state:', event, session?.user?.id);
       if (session?.user) {
-        setSupabaseUser(session.user);
-        try {
-          await fetchUserProfile(session.user.id);
-        } catch (error) {
-          console.error('Error fetching user profile on auth state change:', error);
-          // Handle the error appropriately, e.g., sign out the user
-          await supabase.auth.signOut();
-        }
+  setSupabaseUser(session.user);
+        // Immediate optimistic placeholder if user object not yet built
+        setUser(prev => prev || {
+          id: session.user!.id,
+          email: session.user!.email || undefined,
+          username: null,
+          full_name: session.user!.user_metadata?.full_name || null,
+          avatar_url: session.user!.user_metadata?.avatar_url || null,
+          company_name: session.user!.user_metadata?.company_name || null,
+          phone: session.user!.user_metadata?.phone || null,
+          sector: null as unknown as User['sector'],
+          workshop_location: null,
+          governorate: null,
+          address: null as unknown as User['address'],
+          tax_number: null,
+          commercial_register: null,
+          role: 'customer' as User['role'],
+          is_verified: false,
+          preferences: {} as User['preferences'],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+  if (!stableEmailRef.current && session.user.email) stableEmailRef.current = session.user.email;
+  fetchUserProfile(session.user.id); // fire & forget
       } else {
         setSupabaseUser(null);
         setUser(null);
       }
-      
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
+  return () => subscription.unsubscribe();
+  }, [fetchUserProfile]);
 
-  const signIn = async (email: string, password: string) => {
-    setLoading(true);
+  // Absolute safety timeout: never let loading stay true indefinitely
+  useEffect(() => {
+    if (!loading) return;
+    const safety = setTimeout(() => {
+      if (loading) {
+        console.warn('[Auth] Forcing loading=false after safety timeout');
+        setLoading(false);
+      }
+    }, 4000);
+    return () => clearTimeout(safety);
+  }, [loading]);
+
+  // Removed delayed fallback; placeholder now applied immediately on profile fetch failure.
+
+  const signIn = async (email: string, password: string): Promise<void> => {
+    setActionLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ 
         email, 
@@ -132,14 +191,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (error) throw error;
-      
-      // The onAuthStateChange listener will handle setting the user and profile
-      return data;
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
     } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   };
 
@@ -150,8 +206,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     company_name?: string;
     phone?: string;
     sector?: Database['public']['Tables']['profiles']['Row']['sector'];
-  }) => {
-    setLoading(true);
+  }): Promise<void> => {
+    setActionLoading(true);
     try {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: userData.email,
@@ -186,12 +242,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Sign up error:', error);
       throw error;
     } finally {
-      setLoading(false);
+  setActionLoading(false);
     }
   };
 
-  const signOut = async () => {
-    setLoading(true);
+  const signOut = async (): Promise<void> => {
+    setActionLoading(true);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -202,11 +258,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Sign out error:', error);
       throw error;
     } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (): Promise<void> => {
+    setActionLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -218,10 +275,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('Google sign in error:', error);
       throw error;
+    } finally {
+      setActionLoading(false);
     }
   };
 
-  const signInWithPhoneNumber = async (phoneNumber: string, countryCode: string, otp: string) => {
+  const signInWithPhoneNumber = async (phoneNumber: string, countryCode: string, otp: string): Promise<void> => {
+    setActionLoading(true);
     try {
       const { data, error } = await supabase.auth.verifyOtp({
         phone: `${countryCode}${phoneNumber}`,
@@ -229,19 +289,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         type: 'sms',
       });
       if (error) throw error;
-      // The onAuthStateChange listener will handle setting the user and profile
-      return data;
     } catch (error) {
       console.error('SMS sign in error:', error);
       throw error;
+    } finally {
+      setActionLoading(false);
     }
   };
 
-  const updateProfile = async (updates: Database['public']['Tables']['profiles']['Update']) => {
+  const updateProfile = async (updates: Database['public']['Tables']['profiles']['Update']): Promise<void> => {
     if (!user) throw new Error('No user logged in');
     
     try {
-      const { data, error } = await supabase
+      // Cast to any to bypass current type inference issue (profile Update narrowing to never)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
         .from('profiles')
         .update(updates)
         .eq('id', user.id)
@@ -257,7 +319,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const refreshUser = async () => {
+  const refreshUser = async (): Promise<void> => {
     if (!supabaseUser) return;
     
     try {
@@ -272,6 +334,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     supabaseUser,
     loading,
+    actionLoading,
+  stableDisplayEmail: stableEmailRef.current || user?.email,
     signIn,
     signUp,
     signOut,

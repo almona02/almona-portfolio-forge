@@ -97,4 +97,31 @@
   .animate-on-scroll.animate-active {
     @apply opacity-100 translate-y-0;
   }
+
+  .electric-border {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.5rem; /* Match button border-radius */
+  }
+
+  .electric-border::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+      transparent,
+      rgba(255, 165, 0, 0.8),
+      transparent 30%
+    );
+    animation: rotate 4s linear infinite;
+  }
+
+  @keyframes rotate {
+    100% {
+      transform: rotate(1turn);
+    }
+  }
 }
