@@ -139,6 +139,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       const previous = queryClient.getQueryData(cacheKey) as unknown[] | undefined;
       queryClient.setQueryData(cacheKey, (old: unknown[] | undefined) => [optimisticMachine, ...(old || [])]);
 
+      const hadExistingQuery = !!previous;
       try {
         const saved = await api.registerMachine({
           name: derivedName,
@@ -155,13 +156,23 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
           if (!list.length) return [saved];
           return list.map(m => (m as { id?: string }).id === optimisticMachine.id ? saved : m);
         });
+        // Force background fetch to ensure canonical state even if portal not open yet
+        try {
+          const fresh = await api.fetchUserMachines(user.id);
+          if (Array.isArray(fresh)) {
+            queryClient.setQueryData(cacheKey, fresh);
+          }
+        } catch (bgErr) {
+          console.warn('[MachineRegistration] background fetch failed', bgErr);
+          // silent fail; optimistic data remains
+        }
       } catch (persistErr) {
         // Rollback optimistic item
         queryClient.setQueryData(cacheKey, previous);
         throw persistErr;
       }
-      // Optionally revalidate in background (keeps UI fast)
-      queryClient.invalidateQueries({ queryKey: cacheKey, exact: true, refetchType: 'inactive' });
+      // Only invalidate if query previously existed (had a queryFn from a mounted component)
+      // (No invalidate needed now; explicit fetch above handles sync.)
       toast.success("Registration Complete", { description: "Machine successfully registered and synced." });
       setStep("scan");
       setMachine({ serialNumber: "", model: "", installationDate: "", warrantyValid: false, photos: [] });
