@@ -32,11 +32,3 @@ export const FreightCalculatorSkeleton = () => (
     </div>
   </div>
 );
-
-export const FreightCalculatorSkeleton = () => (
-  <div className="space-y-4 p-4 border rounded-lg">
-    <Skeleton className="h-10 w-full" />
-    <Skeleton className="h-10 w-full" />
-    <Skeleton className="h-10 w-1/2 mx-auto" />
-  </div>
-);

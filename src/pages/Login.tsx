@@ -1,4 +1,6 @@
 
+/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -20,11 +22,11 @@ import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 const Login = () => {
   const [email, setEmail] = useState('almona02@yahoo.com');
   const [password, setPassword] = useState('momo1234');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // kept for transition; will sync with actionLoading
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showSmsOtpModal, setShowSmsOtpModal] = useState(false);
-  const { signIn: login, signInWithGoogle, user } = useAuth();
+  const { signIn: login, signInWithGoogle, user, actionLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,7 +38,7 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+  setLoading(true);
     setError(null);
     try {
       await login(email, password);
@@ -44,6 +46,7 @@ const Login = () => {
     } catch (error: any) {
       setError(error.message || 'Login failed. Please check your credentials.');
       toast.error(error.message || 'Login failed.');
+    } finally {
       setLoading(false);
     }
   };
@@ -146,8 +149,8 @@ const Login = () => {
                   </a>
                 </div>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }}>
-                  <Button type="submit" className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white font-bold py-3" disabled={loading}>
-                    {loading ? 'Signing In...' : 'Sign In'}
+                  <Button type="submit" className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white font-bold py-3" disabled={loading || actionLoading}>
+                    {loading || actionLoading ? 'Signing In...' : 'Sign In'}
                   </Button>
                 </motion.div>
               </form>

@@ -22,6 +22,7 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       open: false,
       cors: true,
+      historyApiFallback: true,
       hmr: {
         overlay: true,
       },
@@ -70,6 +71,8 @@ export default defineConfig(({ mode }) => {
 
     // Build optimization
     build: {
+      outDir: 'dist',
+      assetsDir: 'assets',
       target: "esnext",
       minify: isProduction ? "esbuild" : false,
       sourcemap: !isProduction,

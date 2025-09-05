@@ -13,6 +13,8 @@ export interface ServiceTicket {
   type: TicketType
   priority: TicketPriority
   status: TicketStatus
+  source?: string | null
+  maintenance_type?: string | null
   related_quote_id: string | null
   related_order_id: string | null
   related_product_id: string | null
