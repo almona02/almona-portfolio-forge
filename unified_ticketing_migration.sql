@@ -193,39 +193,35 @@ END $$;
 DO $$ BEGIN
   DROP POLICY IF EXISTS "Staff view tickets" ON public.service_tickets;
   CREATE POLICY "Staff view tickets" ON public.service_tickets
-    FOR SELECT USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin','technician','sales_rep')));
+    FOR SELECT USING ((auth.jwt() ->> 'role') IN ('admin','technician','sales_rep'));
 END $$;
 DO $$ BEGIN
   DROP POLICY IF EXISTS "Staff manage tickets" ON public.service_tickets;
   CREATE POLICY "Staff manage tickets" ON public.service_tickets
-    FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin','technician')));
+    FOR ALL USING ((auth.jwt() ->> 'role') IN ('admin','technician'));
 END $$;
 
 -- Messages policies
 DO $$ BEGIN
   DROP POLICY IF EXISTS "Users view ticket messages" ON public.ticket_messages;
   CREATE POLICY "Users view ticket messages" ON public.ticket_messages
-    FOR SELECT USING (
-      EXISTS (
-        SELECT 1 FROM public.service_tickets st
-        WHERE st.id = ticket_id AND (st.user_id = auth.uid() OR EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.role IN ('admin','technician','sales_rep')))
-      )
-    );
+    FOR SELECT USING (EXISTS (
+      SELECT 1 FROM public.service_tickets st
+      WHERE st.id = ticket_id AND (st.user_id = auth.uid() OR (auth.jwt() ->> 'role') IN ('admin','technician','sales_rep'))
+    ));
 END $$;
 DO $$ BEGIN
   DROP POLICY IF EXISTS "Users create ticket messages" ON public.ticket_messages;
   CREATE POLICY "Users create ticket messages" ON public.ticket_messages
-    FOR INSERT WITH CHECK (
-      EXISTS (
-        SELECT 1 FROM public.service_tickets st
-        WHERE st.id = ticket_id AND (st.user_id = auth.uid() OR EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = auth.uid() AND p.role IN ('admin','technician','sales_rep')))
-      )
-    );
+    FOR INSERT WITH CHECK (EXISTS (
+      SELECT 1 FROM public.service_tickets st
+      WHERE st.id = ticket_id AND (st.user_id = auth.uid() OR (auth.jwt() ->> 'role') IN ('admin','technician','sales_rep'))
+    ));
 END $$;
 DO $$ BEGIN
   DROP POLICY IF EXISTS "Staff manage messages" ON public.ticket_messages;
   CREATE POLICY "Staff manage messages" ON public.ticket_messages
-    FOR ALL USING (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role IN ('admin','technician')));
+    FOR ALL USING ((auth.jwt() ->> 'role') IN ('admin','technician'));
 END $$;
 
 COMMIT;

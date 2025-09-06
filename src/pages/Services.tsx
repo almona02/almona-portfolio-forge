@@ -20,6 +20,7 @@ const MaintenanceDashboard = lazy(() =>
 
 import { ScheduleMaintenance } from "@/components/services/ScheduleMaintenance";
 import { OperatorTrainingIncentiveDialog } from "@/components/services/OperatorTrainingIncentiveDialog";
+import { PreventiveMaintenanceDialog } from "@/components/services/PreventiveMaintenanceDialog";
 import {
   Tabs,
   TabsContent,
@@ -32,18 +33,25 @@ import { Link, useNavigate } from "react-router-dom";
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 import { Badge } from "@/components/ui/badge";
 import { buildNavigationState } from '@/lib/ticketing/unifiedTicketing';
+import { useAuth } from '@/context/AuthContext';
 
 const Services = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [machineView, setMachineView] = useState<"list" | "map">("list");
   const [emergencyDialogOpen, setEmergencyDialogOpen] = useState(false);
   const [scheduleMaintenanceOpen, setScheduleMaintenanceOpen] = useState(false);
   const [operatorTrainingOpen, setOperatorTrainingOpen] = useState(false);
+  const [preventiveDialogOpen, setPreventiveDialogOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Industrial Services - ALMONA";
   }, []);
+
+  const handleScheduleMaintenance = () => {
+    setPreventiveDialogOpen(true);
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-almona-dark text-white">
@@ -112,13 +120,7 @@ const Services = () => {
                       "Warranty compliance tracking"
                     ]}
                     actionText="Schedule Maintenance"
-                    onActionClick={() => navigate('/create-ticket', {
-                      state: buildNavigationState({
-                        source: 'maintenance',
-                        maintenanceType: 'preventive',
-                        notes: 'Scheduled preventive maintenance generated from Services page.'
-                      })
-                    })}
+                    onActionClick={handleScheduleMaintenance}
                   />
                   <ServiceCard
                     icon="bolt"
@@ -223,6 +225,12 @@ const Services = () => {
 
         </motion.div>
       </main>
+
+      {/* Dialog Mount */}
+      <PreventiveMaintenanceDialog
+        open={preventiveDialogOpen}
+        onOpenChange={setPreventiveDialogOpen}
+      />
       <Footer />
       <OperatorTrainingIncentiveDialog
         open={operatorTrainingOpen}
