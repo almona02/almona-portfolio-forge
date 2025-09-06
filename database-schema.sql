@@ -64,9 +64,9 @@ CREATE POLICY "Users can view their own profile" ON public.profiles FOR SELECT U
 DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
 CREATE POLICY "Users can update their own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
 DROP POLICY IF EXISTS "Admins can view all profiles" ON public.profiles;
-CREATE POLICY "Admins can view all profiles" ON public.profiles FOR SELECT USING (
-  EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
-);
+-- Avoid recursive SELECT on profiles inside its own policy; rely on role claim in JWT
+CREATE POLICY "Admins can view all profiles" ON public.profiles
+  FOR SELECT USING (auth.uid() = id OR (auth.jwt() ->> 'role') = 'admin');
 
 -- 4. Create products table for machines, spare parts, and materials
 CREATE TABLE IF NOT EXISTS public.products (
