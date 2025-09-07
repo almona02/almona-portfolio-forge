@@ -162,6 +162,7 @@ const Services = () => {
                       "Financing available"
                     ]}
                     actionText="Browse Marketplace"
+                    onActionClick={() => navigate('/usedmachines')}
                     highlight={true}
                   />
                 </div>

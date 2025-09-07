@@ -101,7 +101,7 @@ const Navbar = () => {
 
   const servicesSubmenu = [
     { name: "Machine Sales", path: "/services/sales" },
-    { name: "Maintenance & Support", path: "/services/maintenance" },
+  { name: "Maintenance & Support", path: "/services" },
     { name: "Spare Parts", path: "/spare-parts" },
     { name: "Technical Training", path: "/services/training" },
     { name: "Fabrication Services", path: "/fabrication-services" },
@@ -340,7 +340,7 @@ const Navbar = () => {
                   className="border-almona-light/30 text-white rounded-full px-6 hover:bg-almona-light/10"
                   asChild
                 >
-                  <Link to="/support">Support</Link>
+                  <Link to="/services">Support</Link>
                 </Button>
               </motion.div>
             </>
@@ -448,30 +448,41 @@ const Navbar = () => {
                     <div key={link.name}>
                       {link.hasSubmenu ? (
                         <div>
-                          <div
-                            className="flex items-center justify-between py-2 cursor-pointer"
-                            onClick={() => {
-                              if (link.name === "Services") {
-                                setServicesSubmenuOpen(!servicesSubmenuOpen);
-                                setProductsSubmenuOpen(false);
-                              } else if (link.name === "Products") {
-                                setProductsSubmenuOpen(!productsSubmenuOpen);
-                                setServicesSubmenuOpen(false);
-                              }
-                            }}
-                          >
+                          <div className="flex items-center justify-between py-2">
                             <div className="flex items-center gap-4">
                               <span className="text-almona-orange">{link.icon}</span>
-                              <span className="text-lg text-gray-400 hover:text-white">
+                              {/* Make the label navigate to the main page; stop propagation so it doesn't toggle the submenu */}
+                              <Link
+                                to={link.path}
+                                onClick={(e) => {
+                                  // prevent the parent click which toggles submenu
+                                  e.stopPropagation();
+                                  handleCloseMobileMenu();
+                                }}
+                                className="text-lg text-gray-400 hover:text-white"
+                              >
                                 {link.name}
-                              </span>
+                              </Link>
                             </div>
-                            <ChevronDown 
-                              className={`h-4 w-4 text-gray-400 transition-transform ${
-                                (link.name === "Services" && servicesSubmenuOpen) || 
-                                (link.name === "Products" && productsSubmenuOpen) ? 'rotate-180' : ''
-                              }`} 
-                            />
+                            <div
+                              className="py-2 cursor-pointer"
+                              onClick={() => {
+                                if (link.name === "Services") {
+                                  setServicesSubmenuOpen(!servicesSubmenuOpen);
+                                  setProductsSubmenuOpen(false);
+                                } else if (link.name === "Products") {
+                                  setProductsSubmenuOpen(!productsSubmenuOpen);
+                                  setServicesSubmenuOpen(false);
+                                }
+                              }}
+                            >
+                              <ChevronDown 
+                                className={`h-4 w-4 text-gray-400 transition-transform ${
+                                  (link.name === "Services" && servicesSubmenuOpen) || 
+                                  (link.name === "Products" && productsSubmenuOpen) ? 'rotate-180' : ''
+                                }`} 
+                              />
+                            </div>
                           </div>
                           <AnimatePresence>
                             {(servicesSubmenuOpen && link.name === "Services") && (
@@ -551,7 +562,7 @@ const Navbar = () => {
                         className="w-full border-almona-light/30 text-white hover:bg-almona-light/10"
                         asChild
                       >
-                        <Link to="/support" onClick={handleCloseMobileMenu}>
+                        <Link to="/services" onClick={handleCloseMobileMenu}>
                           Support
                         </Link>
                       </Button>
