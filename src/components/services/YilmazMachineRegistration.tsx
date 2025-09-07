@@ -24,6 +24,7 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [validatedData, setValidatedData] = useState<ValidationResult | null>(null);
+  const [region, setRegion] = useState<'egypt' | 'turkey'>('egypt');
 
   const validateSerial = async (serial: string) => {
     setValidationError(null);
@@ -32,7 +33,7 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
     try {
       const resp = await axios.post('/api/v2/yilmaz/validate-serial', {
         serial_number: serial,
-        region: 'egypt',
+        region,
       });
       if (resp.data && resp.data.is_valid) {
         setValidatedData(resp.data as ValidationResult);
@@ -61,7 +62,7 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
     try {
       const resp = await axios.post('/api/v2/yilmaz/register', {
         serial_number: data.serialNumber,
-        region: 'egypt',
+        region,
         model_code: validatedData.model_code,
         production_date: validatedData.production_date,
         warranty_expiry: validatedData.warranty_status,

@@ -15,7 +15,7 @@ class SupabaseClient:
     
     def __init__(self):
         self._client: Optional[Client] = None
-        self._initialize_client()
+        # defer initialization until first use to avoid import-time failures
     
     def _initialize_client(self) -> None:
         """Initialize the Supabase client with configuration validation."""
@@ -44,6 +44,9 @@ class SupabaseClient:
     @property
     def client(self) -> Client:
         """Get the Supabase client instance."""
+        if self._client is None:
+            # try to initialize lazily
+            self._initialize_client()
         if self._client is None:
             raise RuntimeError("Supabase client not initialized")
         return self._client
@@ -118,3 +121,8 @@ class SupabaseClient:
 
 # Global Supabase client instance
 supabase_client = SupabaseClient()
+
+
+def get_supabase_client():
+    """FastAPI dependency provider for the supabase client instance."""
+    return supabase_client.client

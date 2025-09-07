@@ -5,7 +5,7 @@ import os
 from core.config import settings
 from .auth_fastapi import get_current_user
 from typing import Optional
-from core.supabase_client import supabase_client
+from core.supabase_client import get_supabase_client
 from datetime import datetime
 
 router = APIRouter()
@@ -85,7 +85,11 @@ async def validate_serial(payload: ValidateSerialRequest, request: Request, curr
 
 
 @router.post("/yilmaz/register", response_model=RegisterMachineResponse)
-async def register_machine(payload: RegisterMachineRequest, current_user=Depends(get_current_user)):
+async def register_machine(
+    payload: RegisterMachineRequest,
+    current_user=Depends(get_current_user),
+    supabase=Depends(get_supabase_client),
+):
     """Create a machine record and initial yilmaz_service_history entry in Supabase.
 
     This uses the service-role Supabase client (configured with SUPABASE_SERVICE_KEY) to bypass RLS where needed.
@@ -102,12 +106,12 @@ async def register_machine(payload: RegisterMachineRequest, current_user=Depends
             "owner_id": current_user.username
         }
 
-        insert_resp = supabase_client.client.table('machines').insert(machine_payload).execute()
+        insert_resp = supabase.table('machines').insert(machine_payload).execute()
         if insert_resp.status_code not in (200, 201):
-            raise Exception(f"Failed to insert machine: {insert_resp.status_code} {insert_resp.error}")
+            raise Exception(f"Failed to insert machine: {insert_resp.status_code} {getattr(insert_resp, 'error', None)}")
 
         machine_id = None
-        if insert_resp.data and len(insert_resp.data) > 0:
+        if getattr(insert_resp, 'data', None) and len(insert_resp.data) > 0:
             machine_id = insert_resp.data[0].get('id')
 
         # Create initial service history entry
@@ -121,8 +125,8 @@ async def register_machine(payload: RegisterMachineRequest, current_user=Depends
                 "parts_used": None,
                 "service_report": "Registered via YMSES integration",
             }
-            hist_resp = supabase_client.client.table('yilmaz_service_history').insert(history_payload).execute()
-            if hist_resp.status_code not in (200, 201):
+            hist_resp = supabase.table('yilmaz_service_history').insert(history_payload).execute()
+            if getattr(hist_resp, 'status_code', None) not in (200, 201):
                 # log but continue
                 pass
 
