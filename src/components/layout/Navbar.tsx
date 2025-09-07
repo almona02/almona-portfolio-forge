@@ -18,8 +18,6 @@ import {
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-// Enhanced Navbar with improved mobile opacity and visibility
-
 interface NavLinkProps {
   to: string;
   children: React.ReactNode;
