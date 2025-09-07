@@ -1,0 +1,13 @@
+{
+  "title": "Endüstriyel Ekipman Servisleri",
+  "subtitle": "Endüstriyel ekipmanlarınız için kapsamlı bakım, destek ve lojistik çözümleri",
+  "yilmazRegistration": {
+    "title": "Yilmaz Makinesi Kaydı",
+    "serialNumberLabel": "Seri Numarası",
+    "validateButton": "Doğrula"
+  },
+  "yilmazValidation": {
+    "success": "Seri başarıyla doğrulandı",
+    "invalidSerial": "Geçersiz seri numarası veya bulunamadı"
+  }
+}

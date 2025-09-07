@@ -12,6 +12,11 @@ const MachineRegistrationEnhanced = lazy(() =>
     default: module.MachineRegistrationEnhanced,
   }))
 );
+const YilmazMachineRegistration = lazy(() =>
+  import("@/components/services/YilmazMachineRegistration").then((module) => ({
+    default: module.YilmazMachineRegistration,
+  }))
+);
 const MaintenanceDashboard = lazy(() =>
   import("@/components/services/MaintenanceDashboard").then((module) => ({
     default: module.MaintenanceDashboard,
@@ -20,7 +25,6 @@ const MaintenanceDashboard = lazy(() =>
 
 import { ScheduleMaintenance } from "@/components/services/ScheduleMaintenance";
 import { OperatorTrainingIncentiveDialog } from "@/components/services/OperatorTrainingIncentiveDialog";
-import { PreventiveMaintenanceDialog } from "@/components/services/PreventiveMaintenanceDialog";
 import {
   Tabs,
   TabsContent,
@@ -43,14 +47,13 @@ const Services = () => {
   const [emergencyDialogOpen, setEmergencyDialogOpen] = useState(false);
   const [scheduleMaintenanceOpen, setScheduleMaintenanceOpen] = useState(false);
   const [operatorTrainingOpen, setOperatorTrainingOpen] = useState(false);
-  const [preventiveDialogOpen, setPreventiveDialogOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Industrial Services - ALMONA";
   }, []);
 
   const handleScheduleMaintenance = () => {
-    setPreventiveDialogOpen(true);
+    setScheduleMaintenanceOpen(true);
   };
 
   return (
@@ -98,6 +101,7 @@ const Services = () => {
             <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 max-w-4xl mx-auto mb-12 bg-almona-darker/60 backdrop-blur-sm border border-almona-light/20 p-2 rounded-lg">
               <TabsTrigger value="overview">Services Overview</TabsTrigger>
               <TabsTrigger value="register">Register Machine</TabsTrigger>
+              <TabsTrigger value="yilmaz-register">Register Yilmaz Machine</TabsTrigger>
               <TabsTrigger value="dashboard">Maintenance Dashboard</TabsTrigger>
             </TabsList>
 
@@ -208,6 +212,18 @@ const Services = () => {
               </motion.div>
             </TabsContent>
 
+            {/* Yilmaz Registration */}
+            <TabsContent value="yilmaz-register">
+              <motion.div key="yilmaz-register" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+                <Suspense fallback={<FormSkeleton />}>
+                  <YilmazMachineRegistration onSubmit={(data) => {
+                    // For now, navigate to dashboard after successful register or integrate with existing registration flow
+                    console.log('Yilmaz registration data', data);
+                  }} />
+                </Suspense>
+              </motion.div>
+            </TabsContent>
+
             {/* Maintenance Dashboard */}
             <TabsContent value="dashboard">
               <motion.div
@@ -227,9 +243,9 @@ const Services = () => {
       </main>
 
       {/* Dialog Mount */}
-      <PreventiveMaintenanceDialog
-        open={preventiveDialogOpen}
-        onOpenChange={setPreventiveDialogOpen}
+      <ScheduleMaintenance
+        open={scheduleMaintenanceOpen}
+        onOpenChange={setScheduleMaintenanceOpen}
       />
       <Footer />
       <OperatorTrainingIncentiveDialog
