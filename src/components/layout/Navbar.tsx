@@ -144,9 +144,12 @@ const Navbar = () => {
       transition={{ type: "spring", stiffness: 50, damping: 20 }}
       className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-almona-dark/98 backdrop-blur-xl shadow-lg border-b border-almona-light/10"
-          : "bg-almona-dark/20 backdrop-blur-sm"
+          ? "shadow-lg border-b border-almona-light/30"
+          : "shadow-sm"
       } py-3`}
+      style={{
+        backgroundColor: isScrolled ? '#0A0A0A' : '#121212'
+      }}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
@@ -240,7 +243,8 @@ const Navbar = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-full left-0 mt-2 w-56 bg-almona-dark/95 backdrop-blur-lg border border-almona-light/20 rounded-lg shadow-xl z-50"
+                        className="absolute top-full left-0 mt-2 w-56 border border-almona-light/20 rounded-lg shadow-xl z-50"
+                        style={{ backgroundColor: '#0A0A0A' }}
                       >
                         <div className="py-2">
                           {servicesSubmenu.map((submenuItem) => (
@@ -261,7 +265,8 @@ const Navbar = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-full left-0 mt-2 w-56 bg-almona-dark/95 backdrop-blur-lg border border-almona-light/20 rounded-lg shadow-xl z-50"
+                        className="absolute top-full left-0 mt-2 w-56 border border-almona-light/20 rounded-lg shadow-xl z-50"
+                        style={{ backgroundColor: '#0A0A0A' }}
                       >
                         <div className="py-2">
                           {productsSubmenu.map((submenuItem) => (
@@ -391,7 +396,7 @@ const Navbar = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/70 z-40"
+                className="fixed inset-0 bg-black/90 z-40"
                 onClick={handleCloseMobileMenu}
               />
               <motion.div
@@ -399,7 +404,8 @@ const Navbar = () => {
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="lg:hidden fixed top-0 right-0 h-full w-full max-w-xs bg-almona-dark/95 backdrop-blur-xl z-50 flex flex-col"
+                className="lg:hidden fixed top-0 right-0 h-full w-full max-w-xs z-50 flex flex-col border-l border-almona-light/30 shadow-2xl"
+                style={{ backgroundColor: '#0A0A0A' }}
               >
                 <div className="flex items-center justify-between p-4 border-b border-gray-800">
                   <div className="flex items-center gap-3">
