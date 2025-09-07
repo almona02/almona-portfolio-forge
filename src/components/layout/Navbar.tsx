@@ -340,7 +340,7 @@ const Navbar = () => {
                   className="border-almona-light/30 text-white rounded-full px-6 hover:bg-almona-light/10"
                   asChild
                 >
-                  <Link to="/services">Support</Link>
+                  <Link to="/support">Support</Link>
                 </Button>
               </motion.div>
             </>
@@ -562,7 +562,7 @@ const Navbar = () => {
                         className="w-full border-almona-light/30 text-white hover:bg-almona-light/10"
                         asChild
                       >
-                        <Link to="/services" onClick={handleCloseMobileMenu}>
+                        <Link to="/support" onClick={handleCloseMobileMenu}>
                           Support
                         </Link>
                       </Button>
