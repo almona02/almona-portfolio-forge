@@ -1,6 +1,15 @@
 {
   "title": "خدمات المعدات الصناعية",
   "subtitle": "حلول شاملة للصيانة والدعم والخدمات اللوجستية لمعداتك الصناعية",
+  "yilmazRegistration": {
+    "title": "تسجيل ماكينة Yilmaz",
+    "serialNumberLabel": "الرقم التسلسلي",
+    "validateButton": "تحقق"
+  },
+  "yilmazValidation": {
+    "success": "تم التحقق من الرقم التسلسلي بنجاح",
+    "invalidSerial": "الرقم التسلسلي غير صالح أو غير موجود"
+  },
   "egypt_support_cta": "احصل على دعم مصري",
   "tabs": {
     "overview": "نظرة عامة",
