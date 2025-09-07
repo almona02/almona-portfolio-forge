@@ -1,6 +1,15 @@
 {
   "title": "Industrial Equipment Services",
   "subtitle": "Comprehensive maintenance, support and logistics solutions for your industrial equipment",
+  "yilmazRegistration": {
+    "title": "Register Yilmaz Machine",
+    "serialNumberLabel": "Serial Number",
+    "validateButton": "Validate"
+  },
+  "yilmazValidation": {
+    "success": "Serial validated successfully",
+    "invalidSerial": "Invalid serial number or not found"
+  },
   "egypt_support_cta": "Get Egyptian Support",
   "tabs": {
     "overview": "Overview",

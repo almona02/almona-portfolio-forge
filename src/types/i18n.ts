@@ -154,7 +154,7 @@ export interface Translations {
 }
 
 // Language codes supported
-export type LanguageCode = 'en' | 'ar';
+export type LanguageCode = 'en' | 'ar' | 'tr';
 
 // Translation keys for type-safe access
 export type TranslationKey = 
@@ -215,7 +215,12 @@ export type TranslationKey =
   | 'common.forms.message'
   | 'common.forms.company'
   | 'common.forms.submit'
-  | 'common.forms.required';
+  | 'common.forms.required'
+  | 'yilmazRegistration.title'
+  | 'yilmazRegistration.serialNumberLabel'
+  | 'yilmazRegistration.validateButton'
+  | 'yilmazValidation.success'
+  | 'yilmazValidation.invalidSerial';
 
 // Declare module augmentation for react-i18next
 declare module 'react-i18next' {
