@@ -101,7 +101,7 @@ const Navbar = () => {
 
   const servicesSubmenu = [
     { name: "Machine Sales", path: "/services/sales" },
-  { name: "Maintenance & Support", path: "/services" },
+    { name: "Maintenance & Support", path: "/services" },
     { name: "Spare Parts", path: "/spare-parts" },
     { name: "Technical Training", path: "/services/training" },
     { name: "Fabrication Services", path: "/fabrication-services" },
