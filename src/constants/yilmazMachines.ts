@@ -565,7 +565,7 @@ export const yilmazMachines: Machine[] = [
     specPdf: "/documents/specs/CRM-250-S.pdf",
   youtubeUrl: "https://youtu.be/cipBYN8sKG4?si=UlU-2KoUWpvEoeRg",
     category: "processing-centers",
-    featured: false,
+    featured: true,
     releaseDate: "2023-01-01",
     type: "Copy Router",
     powerSpec: {
