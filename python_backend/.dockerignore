@@ -35,6 +35,17 @@ uploads/
 .env.local
 .env.production
 
+# Exclude tests and docs from production build context
+tests/
+docs/
+*.md
+!README.md
+
+# Node / frontend artifacts not needed
+node_modules/
+dist/
+coverage/
+
 # Docker
 Dockerfile*
 docker-compose*.yml

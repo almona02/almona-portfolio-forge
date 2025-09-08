@@ -188,7 +188,7 @@ const ProductGrid = ({
   if (filteredProducts.length === 0) {
     return (
       <div className="text-center py-16">
-        <div className="bg-almona-darker/50 p-8 rounded-lg border border-almona-light/20">
+  <div className="bg-almona-darker p-8 rounded-lg border border-almona-light/20">
           <Search className="h-12 w-12 text-gray-500 mx-auto mb-4" />
           <h3 className="text-xl font-semibold mb-2">No products found</h3>
           <p className="text-gray-400 mb-6">

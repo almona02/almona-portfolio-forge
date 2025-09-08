@@ -22,24 +22,57 @@ import {
 } from "@/shared/ui/ui/select";
 import { Separator } from "@/shared/ui/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
-import type { Machine } from "@/types/machine";
+import type { Machine as DomainMachine } from "@/types/machine";
+import type { Machine as UiMachine } from "@/types/index";
+
+interface SourceMachineLike {
+  id: string; name: string; description?: string; imageUrl?: string; image_url?: string;
+  category?: string; releaseDate?: string; release_date?: string; type?: string; tags?: string[];
+  certifications?: string[]; powerSpec?: { consumption?: string; voltage?: string; frequency?: string; phase?: string }; power?: string;
+  dimensions?: { length?: string; width?: string; height?: string };
+  safetyFeatures?: string[];
+  specPdf?: string; youtubeUrl?: string; featured?: boolean;
+}
 import { Eye } from "lucide-react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { useEffect, useState } from "react";
 
-const Products = () => {
+// UI wrapper union ensures compatibility with comparison + quote components expecting UiMachine shape
+const mapToUiMachine = (m: SourceMachineLike): UiMachine => ({
+  id: m.id,
+  name: m.name,
+  description: m.description || '',
+  imageUrl: m.imageUrl || m.image_url || '',
+  category: m.category || 'general',
+  releaseDate: m.releaseDate || m.release_date || new Date().toISOString(),
+  type: m.type || 'machine',
+  tags: m.tags || [],
+  certifications: m.certifications || [],
+  powerSpec: {
+    consumption: m.powerSpec?.consumption || m.power || '0 kW',
+    voltage: m.powerSpec?.voltage || '380V',
+    frequency: m.powerSpec?.frequency || '50Hz',
+    phase: m.powerSpec?.phase || '3'
+  },
+  dimensions: m.dimensions || { length: '', width: '', height: '' },
+  safetyFeatures: (m.safetyFeatures || []).filter((s): s is 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop' =>
+    ['TwoHandOperation','AutomaticGuards','EmergencyStop'].includes(s as 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop')
+  ),
+});
+
+const Products = function ProductsPage() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortOption, setSortOption] = useState("featured");
   
-  const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
+  const [selectedMachines, setSelectedMachines] = useState<UiMachine[]>([]);
   const [showCompareDialog, setShowCompareDialog] = useState(false);
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Machine | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<UiMachine | null>(null);
   const [show3DModel, setShow3DModel] = useState(false);
   const [selectedMachineFor3D, setSelectedMachineFor3D] =
-    useState<Machine | null>(null);
+    useState<UiMachine | null>(null);
   const [wizardOpen, setWizardOpen] = useState(false);
 
   // Load saved comparisons on mount
@@ -53,7 +86,7 @@ const Products = () => {
       const { machineId } = event.detail;
       const machine = yilmazMachines.find((m) => m.id === machineId);
       if (machine) {
-        setSelectedMachineFor3D(machine);
+        setSelectedMachineFor3D(mapToUiMachine(machine));
         setShow3DModel(true);
       }
     };
@@ -68,7 +101,8 @@ const Products = () => {
     };
   }, []);
 
-  const handleSelectMachine = (machine: Machine, selected: boolean) => {
+  const handleSelectMachine = (machine: SourceMachineLike, selected: boolean) => {
+    const ui = mapToUiMachine(machine);
     if (selected) {
       if (selectedMachines.length >= 5) {
         toast({
@@ -78,9 +112,9 @@ const Products = () => {
         });
         return;
       }
-      setSelectedMachines((prev) => [...prev, machine]);
+      setSelectedMachines((prev) => [...prev, ui]);
     } else {
-      setSelectedMachines((prev) => prev.filter((m) => m.id !== machine.id));
+      setSelectedMachines((prev) => prev.filter((m) => m.id !== ui.id));
     }
   };
 
@@ -252,7 +286,7 @@ const Products = () => {
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                         {sortedMachines.map((machine) => (
-                          <div key={machine.id} className="relative">
+                          <div key={machine.id} className="relative group">
                             <ProductCard
                               isSelected={selectedMachines.some(
                                 (m) => m.id === machine.id
@@ -271,10 +305,12 @@ const Products = () => {
                               tags={machine.tags}
                               ctaText="Request Quote"
                               onCtaClick={() => {
-                                setSelectedProduct(machine);
+                                setSelectedProduct(mapToUiMachine(machine));
                                 setShowQuoteDialog(true);
                               }}
                               badge={machine.featured ? "Featured" : undefined}
+                              specPdf={machine.specPdf}
+                              youtubeUrl={machine.youtubeUrl}
                             />
                             {(machine.id === "ym-028" ||
                               machine.id === "ym-029" ||
@@ -404,14 +440,14 @@ const Products = () => {
       <CompareDialog
         open={showCompareDialog}
         onOpenChange={setShowCompareDialog}
-        machines={selectedMachines}
+        machines={selectedMachines as unknown as UiMachine[]}
       />
 
       <QuoteRequestDialog
         open={showQuoteDialog}
         onOpenChange={setShowQuoteDialog}
         initialData={{
-          products: selectedProduct ? [selectedProduct] : selectedMachines,
+          products: selectedProduct ? [selectedProduct as unknown as UiMachine] : (selectedMachines as unknown as UiMachine[]),
           services: [],
           contactInfo: {},
         }}
@@ -423,7 +459,7 @@ const Products = () => {
           onClose={() => setShow3DModel(false)}
           machineName={selectedMachineFor3D.name}
           modelPath={
-            selectedMachineFor3D.modelPath ||
+            (selectedMachineFor3D as unknown as { modelPath?: string }).modelPath ||
             "/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
           }
         />
@@ -437,4 +473,5 @@ const Products = () => {
   );
 };
 
-export default withErrorBoundary(Products);
+const ProductsPage = withErrorBoundary(Products);
+export default ProductsPage;

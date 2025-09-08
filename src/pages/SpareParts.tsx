@@ -225,7 +225,7 @@ const SpareParts = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-almona-darker/50 p-6 rounded-lg mb-8 backdrop-blur-sm border border-almona-light/20"
+            className="bg-almona-darker p-6 rounded-lg mb-8 border border-almona-light/20"
           >
             <div className="flex flex-col md:flex-row gap-4 items-center">
               <div className="relative flex-grow">
@@ -240,7 +240,7 @@ const SpareParts = () => {
               
               <Button 
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 border-almona-light/30 text-white hover:bg-almona-light/10 bg-transparent border"
+                className="flex items-center gap-2 border-almona-light/30 text-white bg-almona-dark-lighter hover:bg-almona-dark/70 border"
               >
                 <Filter className="h-4 w-4" />
                 Filters
@@ -262,7 +262,7 @@ const SpareParts = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="lg:col-span-1"
             >
-              <div className="bg-almona-darker/50 p-6 rounded-lg sticky top-24 border border-almona-light/20">
+              <div className="bg-almona-darker p-6 rounded-lg sticky top-24 border border-almona-light/20">
                 <h3 className="text-lg font-semibold mb-4">Part Categories</h3>
                 <div className="space-y-2">
                   {partCategories.map(category => (

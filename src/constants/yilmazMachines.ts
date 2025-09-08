@@ -1,9 +1,43 @@
-import { 
-  Machine, 
-  PowerSpecification, 
-  Certification, 
-  SafetyStandard
-} from '../types';
+// Define types locally as the import is failing.
+export type Certification = 'CE' | 'ISO9001';
+
+export type SafetyStandard = 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop';
+
+export interface PowerSpecification {
+  voltage: string;
+  frequency: string;
+  phase: string;
+  consumption: string;
+}
+
+export interface Machine {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  specPdf: string;
+  youtubeUrl?: string;
+  modelPath?: string;
+  category: string;
+  featured: boolean;
+  releaseDate: string;
+  type: string;
+  powerSpec: PowerSpecification;
+  dimensions: {
+    length: string;
+    width: string;
+    height: string;
+  };
+  tags: string[];
+  specifications: string[];
+  certifications: Certification[];
+  safetyFeatures: SafetyStandard[];
+  egyptianCompliance?: {
+    standard: string;
+    certificateNumber: string;
+    issueDate: string;
+  };
+}
 
 // Helper function to parse dimensions
 const parseDimensions = (dimensionStr: string) => {
@@ -36,7 +70,7 @@ export const yilmazMachines: Machine[] = [
     imageUrl: "/images/machines/cutting-machine.jpg",
     specPdf: "/documents/specs/cnc-cutting-machine.pdf",
     youtubeUrl: "https://www.youtube.com/watch?v=CeGDjE9QCqQ",
-    category: "cutting-machines",
+    category: "PROCESSING CENTERS",
     featured: true,
     releaseDate: "2023-05-15",
     type: "CNC Cutting and Processing Center",
@@ -67,10 +101,10 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-002",
-    name: "YILMAZ DC-421-PBS",
+    name: "YILMAZ DC 421 PBS",
     description: "High-precision Double Head cutting machine for aluminum profiles",
     imageUrl: "/images/machines/DC-421-PBS.jpg",
-    specPdf: "/documents/specs/cnc-cutting-machine.pdf",
+    specPdf: "/documents/specs/DC-421-PBS.pdf",
     youtubeUrl: "https://www.youtube.com/watch?v=1B5elf1hDG4",
     category: "cutting-machines",
     featured: true,
@@ -129,12 +163,12 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-004",
-    name: "YILMAZ KM212",
+    name: "YILMAZ KM 212",
     description: "Portable End Milling Machine for aluminum profiles",
     imageUrl: "/images/machines/KM-212.jpg",
     specPdf: "/documents/specs/KM-212.pdf",
-    youtubeUrl: "https://www.youtube.com/watch?v=1B5elf1hDG4",
-    category: "processing-centers",
+    youtubeUrl: "https://youtu.be/1iiAfHwLhsQ?si=UQYOLQVwQq5N9143",
+    category: "milling-machines",
     featured: true,
     releaseDate: "2012-05-10",
     type: "End Milling Machine",
@@ -160,11 +194,11 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-005",
-    name: "YILMAZ KD-402",
-    description: "RELIABLE DOUBLE HEAD CUTTING machine for aluminum profiles",
+    name: "YILMAZ KD 402 S",
+    description: "Double Head Mitre Saw Machine with hydro-pneumatic feed",
     imageUrl: "/images/machines/KD-402-S.jpg",
     specPdf: "/documents/specs/KD-402-S.pdf",
-    youtubeUrl: "https://www.youtube.com/watch?v=CeGDjE9QCqQ",
+    youtubeUrl: "https://youtu.be/3GTWyawzxMw?si=6E8Xa5UsjBEcoUYG",
     category: "cutting-machines",
     featured: true,
     releaseDate: "2023-05-15",
@@ -191,7 +225,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-006",
-    name: "YILMAZ FR-221-S",
+    name: "YILMAZ FR 221 S",
     description: "High-QUALITY COPY ROUTER machine for aluminum profiles",
     imageUrl: "/images/machines/FR-221-S.jpg",
     specPdf: "/documents/specs/FR-221-S.pdf",
@@ -227,8 +261,9 @@ export const yilmazMachines: Machine[] = [
     description: "PVC Profile Machining and Cutting Center with 8-axis CNC control",
     imageUrl: "/images/machines/PIM-6509.jpg",
     specPdf: "/documents/specs/PIM-6509.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
     category: "processing-centers",
-    featured: true,
+    featured: false,
     releaseDate: "2023-01-01",
     type: "CNC Machining Center",
     powerSpec: {
@@ -260,8 +295,9 @@ export const yilmazMachines: Machine[] = [
     description: "PVC Welding and Corner Cleaning Line with automated production",
     imageUrl: "/images/machines/CCL-1660.jpg",
     specPdf: "/documents/specs/CCL-1660.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
     category: "fabrication-equipment",
-    featured: true,
+    featured: false,
     releaseDate: "2023-01-01",
     type: "Welding and Cleaning Line",
     powerSpec: {
@@ -288,32 +324,37 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-009",
-    name: "YILMAZ KD 402 S",
-    description: "Double Head Mitre Saw Machine with hydro-pneumatic feed",
-    imageUrl: "/images/machines/KD-402-S.jpg",
-    specPdf: "/documents/specs/KD-402-S.pdf",
+    name: "YILMAZ CDC 600",
+    description: "FULL AUTOMATIC DOUBLE HEAD COMPOUND CUTTING MACHINE",
+    imageUrl: "/images/machines/CDC-600.jpg",
+    specPdf: "/documents/specs/CDC-600.pdf",
+  youtubeUrl: "https://youtu.be/GywonVe7yMk?si=WBR_PUqDDJB6f8Bb",
     category: "cutting-machines",
-    featured: false,
+    featured: true,
     releaseDate: "2022-01-01",
-    type: "Cutting Machine",
+    type: "DOUBLE HEAD CUTTING MACHINE",
     powerSpec: {
       voltage: '400V',
       frequency: '50Hz',
       phase: '3',
-      consumption: '4.5 kW'
+      consumption: '12.5 kW'
     },
     dimensions: {
       length: '3500mm',
       width: '1500mm',
       height: '1500mm'
     },
-    tags: ["Precision", "Double Head"],
+    tags: ["Precision", "Double Head","Compound cuts"],
     specifications: [
-      "Max cut length: 3455mm",
-      "Min cut length: 530mm",
-      "Hydro-pneumatic saw feed",
+      "Max cut length: 5000mm",
+      "Min cut length: 840mm",
+      "Automatic precise angle adjustment at all angles",
+      "Automatic servo control hardware for all angle and linear movements",
       "Cutting accuracy +/- 0.2mm",
-      "Digital display for cutting length"
+      "Profile lifting system to prevent the profile surface from being scratched",
+      "Compound cuts (45° x 45°) pivoting and tilting on both heads",
+      "Tilting of both saws to 45° inward"  
+      
     ],
     certifications: ['CE'],
     safetyFeatures: ['TwoHandOperation', 'AutomaticGuards']
@@ -324,8 +365,9 @@ export const yilmazMachines: Machine[] = [
     description: "Full Automatic Double Head Mitre Saw Machine with touch screen",
     imageUrl: "/images/machines/DC-421-PSD.jpg",
     specPdf: "/documents/specs/DC-421-PSD.pdf",
+  youtubeUrl: "https://youtu.be/5pluTvKsQs4?si=YwmMnIQDV_g9kLH6",
     category: "cutting-machines",
-    featured: true,
+    featured: false,
     releaseDate: "2022-01-01",
     type: "Cutting Machine",
     powerSpec: {
@@ -356,6 +398,7 @@ export const yilmazMachines: Machine[] = [
     description: "Up-Cutting Saw Machine for specialized operations",
     imageUrl: "/images/machines/ACK-420-S.jpg",
     specPdf: "/documents/specs/ACK-420-S.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
     category: "cutting-machines",
     featured: false,
     releaseDate: "2021-01-01",
@@ -388,8 +431,9 @@ export const yilmazMachines: Machine[] = [
     description: "Automatic Copy Router Machine for precision operations",
     imageUrl: "/images/machines/FR-226-S.jpg",
     specPdf: "/documents/specs/FR-226-S.pdf",
+  youtubeUrl: "https://youtu.be/IAy11Z3XeZY?si=HGpR2n8R1rSZrv5V",
     category: "processing-centers",
-    featured: true,
+    featured: false,
     releaseDate: "2023-01-01",
     type: "Routing Machine",
     powerSpec: {
@@ -420,6 +464,7 @@ export const yilmazMachines: Machine[] = [
     description: "4 Axis Numerical Controlled NC Router Machine",
     imageUrl: "/images/machines/NCR-300.jpg",
     specPdf: "/documents/specs/NCR-300.pdf",
+  youtubeUrl: "https://youtu.be/ThfN9iUPsnU?si=863zRTryzWJhHbgH",
     category: "processing-centers",
     featured: true,
     releaseDate: "2023-01-01",
@@ -452,6 +497,7 @@ export const yilmazMachines: Machine[] = [
     description: "Single Corner PVC Welding Machine",
     imageUrl: "/images/machines/TK-505.jpg",
     specPdf: "/documents/specs/TK-505.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
     category: "welding-machines",
     featured: false,
     releaseDate: "2022-01-01",
@@ -485,8 +531,9 @@ export const yilmazMachines: Machine[] = [
     description: "Semi Automatic End Milling Machine for aluminum profiles",
     imageUrl: "/images/machines/KM-215-S.jpg",
     specPdf: "/documents/specs/KM-215-S.pdf",
+  youtubeUrl: "https://youtu.be/VThz1mkR7o8?si=yv7IHffK1lGY4w7G",
     category: "processing-centers",
-    featured: true,
+    featured: false,
     releaseDate: "2023-01-01",
     type: "End Milling Machine",
     powerSpec: {
@@ -516,8 +563,9 @@ export const yilmazMachines: Machine[] = [
     description: "3 Spindle Copy Router Machine for complex operations",
     imageUrl: "/images/machines/CRM-250-S.jpg",
     specPdf: "/documents/specs/CRM-250-S.pdf",
+  youtubeUrl: "https://youtu.be/cipBYN8sKG4?si=UlU-2KoUWpvEoeRg",
     category: "processing-centers",
-    featured: true,
+    featured: false,
     releaseDate: "2023-01-01",
     type: "Copy Router",
     powerSpec: {
@@ -547,6 +595,7 @@ export const yilmazMachines: Machine[] = [
     description: "Automatic PVC Water Slot Machine",
     imageUrl: "/images/machines/ST-264.jpg",
     specPdf: "/documents/specs/ST-264.pdf",
+  youtubeUrl: "https://youtu.be/yYJ9NYoYKGI?si=P9Kfcl-1LRZVJGF1",
     category: "processing-centers",
     featured: false,
     releaseDate: "2022-01-01",
@@ -578,6 +627,7 @@ export const yilmazMachines: Machine[] = [
     description: "Reinforcement Steel and Square Profile Cutting Saw",
     imageUrl: "/images/machines/SDT-275.jpg",
     specPdf: "/documents/specs/SDT-275.pdf",
+  youtubeUrl: "https://youtu.be/i3A8_92iNjA?si=LjXpb1R_nUuJT9qE",
     category: "cutting-machines",
     featured: false,
     releaseDate: "2021-01-01",
@@ -609,6 +659,7 @@ export const yilmazMachines: Machine[] = [
   description: "Single Head Cutting Machine with versatile angle options",
   imageUrl: "/images/machines/MK-420.jpg",
   specPdf: "/documents/specs/MK-420.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "cutting-machines",
   featured: false,
   releaseDate: "2021-01-01",
@@ -640,6 +691,7 @@ export const yilmazMachines: Machine[] = [
   description: "Radial Saw Machine with ergonomic design",
   imageUrl: "/images/machines/RYK-420-W.jpg",
   specPdf: "/documents/specs/RYK-420-W.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "cutting-machines",
   featured: false,
   releaseDate: "2021-01-01",
@@ -671,8 +723,9 @@ export const yilmazMachines: Machine[] = [
   description: "Servo Controlled Serial Cutting Machine (3.6m stroke)",
   imageUrl: "/images/machines/SCM-420-L4.jpg",
   specPdf: "/documents/specs/SCM-420-L4.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "cutting-machines",
-  featured: true,
+  featured: false,
   releaseDate: "2022-01-01",
   type: "Serial Cutting Machine",
   powerSpec: {
@@ -702,6 +755,7 @@ export const yilmazMachines: Machine[] = [
   description: "PVC Glazing Bead Saw for precise cutting",
   imageUrl: "/images/machines/CK-412.jpg",
   specPdf: "/documents/specs/CK-412.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "cutting-machines",
   featured: false,
   releaseDate: "2021-01-01",
@@ -733,8 +787,9 @@ export const yilmazMachines: Machine[] = [
   description: "Four Head Welding Machine for PVC profiles",
   imageUrl: "/images/machines/DK-540.jpg",
   specPdf: "/documents/specs/DK-540.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "welding-machines",
-  featured: true,
+  featured: false,
   releaseDate: "2022-01-01",
   type: "Welding Machine",
   powerSpec: {
@@ -764,8 +819,9 @@ export const yilmazMachines: Machine[] = [
   description: "Corner Cleaning Machine with CNC control",
   imageUrl: "/images/machines/CNC-608.jpg",
   specPdf: "/documents/specs/CNC-608.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "processing-centers",
-  featured: true,
+  featured: false,
   releaseDate: "2022-01-01",
   type: "CNC Cleaning Machine",
   powerSpec: {
@@ -791,10 +847,11 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-025",
-  name: "YILMAZ KD 350 D",
+  name: "YILMAZ KD 305",
   description: "Mitre Saw Machine with manual operation",
-  imageUrl: "/images/machines/KD-350-D.jpg",
+  imageUrl: "/images/machines/KD-305.jpg",
   specPdf: "/documents/specs/KD-350-D.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "cutting-machines",
   featured: false,
   releaseDate: "2020-01-01",
@@ -806,16 +863,16 @@ export const yilmazMachines: Machine[] = [
     consumption: '2.2 kW'
   },
   dimensions: {
-    length: '720mm',
-    width: '760mm',
-    height: '1570mm'
+    length: '320mm',
+    width: '400mm',
+    height: '7570mm'
   },
   tags: ["Manual", "Precision"],
   specifications: [
     "Location points at 45°, 30°, 22.5°, 15°, 0° both left and right",
     "Pivoting range from 45° left to 45° right",
     "Aluminium construction body",
-    "Ø350 mm saw blade included"
+    "Ø305 mm saw blade not included"
   ],
   certifications: ['CE'],
   safetyFeatures: ['EmergencyStop']
@@ -826,6 +883,7 @@ export const yilmazMachines: Machine[] = [
   description: "Mitre Saw Machine with pneumatic system",
   imageUrl: "/images/machines/KD-350-PS.jpg",
   specPdf: "/documents/specs/KD-350-PS.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "cutting-machines",
   featured: false,
   releaseDate: "2020-01-01",
@@ -857,6 +915,7 @@ export const yilmazMachines: Machine[] = [
   description: "Compact Mitre Saw Machine",
   imageUrl: "/images/machines/KD-350-M.jpg",
   specPdf: "/documents/specs/KD-350-M.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "cutting-machines",
   featured: false,
   releaseDate: "2020-01-01",
@@ -889,6 +948,7 @@ export const yilmazMachines: Machine[] = [
   imageUrl: "/images/machines/FR-223.jpg",
   specPdf: "/documents/specs/FR-223.pdf",
   modelPath: "/models/AR-Code-Object-Capture-app-1752786892 (1).glb",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "processing-centers",
   featured: false,
   releaseDate: "2021-01-01",
@@ -921,6 +981,7 @@ export const yilmazMachines: Machine[] = [
   imageUrl: "/images/machines/FR-223-S.jpg",
   specPdf: "/documents/specs/FR-223-S.pdf",
   modelPath: "/models/AR-Code-Object-Capture-app-1752786892 (1).glb",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "processing-centers",
   featured: false,
   releaseDate: "2021-01-01",
@@ -953,6 +1014,7 @@ export const yilmazMachines: Machine[] = [
   imageUrl: "/images/machines/FR-222.jpg",
   specPdf: "/documents/specs/FR-222.pdf",
   modelPath: "/models/AR-Code-Object-Capture-app-1752786892 (1).glb",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "processing-centers",
   featured: false,
   releaseDate: "2020-01-01",
@@ -984,6 +1046,7 @@ export const yilmazMachines: Machine[] = [
   description: "Manual End Milling Machine with pneumatic clamps",
   imageUrl: "/images/machines/KM-211-S.jpg",
   specPdf: "/documents/specs/KM-211-S.jpg",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "processing-centers",
   featured: false,
   releaseDate: "2020-01-01",
@@ -1015,6 +1078,7 @@ export const yilmazMachines: Machine[] = [
   description: "Cooling Unit for welding systems",
   imageUrl: "/images/machines/SA-250.jpg",
   specPdf: "/documents/specs/SA-250.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "accessories",
   featured: false,
   releaseDate: "2021-01-01",
@@ -1046,8 +1110,9 @@ export const yilmazMachines: Machine[] = [
   description: "Robot Unit for profile transfer",
   imageUrl: "/images/machines/SA-260.jpg",
   specPdf: "/documents/specs/SA-260.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
   category: "accessories",
-  featured: true,
+  featured: false,
   releaseDate: "2021-01-01",
   type: "Robot Unit",
   powerSpec: {
@@ -1072,6 +1137,26 @@ export const yilmazMachines: Machine[] = [
   safetyFeatures: ['EmergencyStop', 'EmergencyStop']
 }
 ];
+
+// Inject placeholder air specifications if missing (future real data to replace)
+interface AirAugmentedMachine extends Machine { airSpec?: { consumption?: string; pressure?: string } }
+; (yilmazMachines as AirAugmentedMachine[]).forEach(m => {
+  if (!m.airSpec) {
+    m.airSpec = { consumption: '0 L/min', pressure: '6 bar' };
+  }
+});
+
+// Utilities to support comparison summaries
+export const getTotalPowerKw = (machines: Machine[]) => machines.reduce((sum, m) => {
+  const match = m.powerSpec?.consumption?.match(/([0-9]+(?:\.[0-9]+)?)/);
+  return sum + (match ? parseFloat(match[1]) : 0);
+}, 0);
+
+export const getTotalAirConsumption = (machines: Machine[]) => (machines as AirAugmentedMachine[]).reduce((sum, m) => {
+  const air = m.airSpec?.consumption;
+  const match = air?.match(/([0-9]+(?:\.[0-9]+)?)/);
+  return sum + (match ? parseFloat(match[1]) : 0);
+}, 0);
 
 // Export legacy format for backward compatibility
 export const yilmazMachinesLegacy = yilmazMachines.map(machine => ({

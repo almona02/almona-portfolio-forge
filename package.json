@@ -14,6 +14,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
+  "i18n:audit": "node scripts/i18n-audit.js",
     "test": "vitest",
     "test:watch": "vitest watch",
     "test:api": "cd python_backend && python -m pytest tests/run_tests.py -v",
