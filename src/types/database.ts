@@ -566,6 +566,423 @@ export interface Database {
           delivered_at?: string | null
         }
       }
+      categories: {
+        Row: {
+          id: string
+          name_ar: string
+          name_en: string
+          description_ar: string | null
+            description_en: string | null
+          slug: string
+          parent_id: string | null
+          image_url: string | null
+          sort_order: number
+          is_active: boolean
+          created_at: string
+        }
+        Insert: {
+          name_ar: string
+          name_en: string
+          description_ar?: string | null
+          description_en?: string | null
+          slug: string
+          parent_id?: string | null
+          image_url?: string | null
+          sort_order?: number
+          is_active?: boolean
+        }
+        Update: {
+          name_ar?: string
+          name_en?: string
+          description_ar?: string | null
+          description_en?: string | null
+          slug?: string
+          parent_id?: string | null
+          image_url?: string | null
+          sort_order?: number
+          is_active?: boolean
+        }
+      }
+      product_variants: {
+        Row: {
+          id: string
+          product_id: string | null
+          variant_name_ar: string
+          variant_name_en: string
+          sku: string
+          price_adjustment: number | null
+          specifications: Record<string, unknown>
+          image_urls: string[] | null
+          stock_quantity: number
+          is_active: boolean
+          created_at: string
+        }
+        Insert: {
+          product_id?: string | null
+          variant_name_ar: string
+          variant_name_en: string
+          sku: string
+          price_adjustment?: number | null
+          specifications?: Record<string, unknown>
+          image_urls?: string[] | null
+          stock_quantity?: number
+          is_active?: boolean
+        }
+        Update: {
+          product_id?: string | null
+          variant_name_ar?: string
+          variant_name_en?: string
+          sku?: string
+          price_adjustment?: number | null
+          specifications?: Record<string, unknown>
+          image_urls?: string[] | null
+          stock_quantity?: number
+          is_active?: boolean
+        }
+      }
+      quote_items: {
+        Row: {
+          id: string
+          quote_id: string | null
+          product_id: string | null
+          variant_id: string | null
+          product_name_ar: string
+          product_name_en: string
+          product_sku: string
+          quantity: number
+          unit_price: number
+          total_price: number
+          configurations: Record<string, unknown>
+          specifications: Record<string, unknown>
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          quote_id?: string | null
+          product_id?: string | null
+          variant_id?: string | null
+          product_name_ar: string
+          product_name_en: string
+          product_sku: string
+          quantity: number
+          unit_price: number
+          total_price: number
+          configurations?: Record<string, unknown>
+          specifications?: Record<string, unknown>
+          notes?: string | null
+        }
+        Update: {
+          quote_id?: string | null
+          product_id?: string | null
+          variant_id?: string | null
+          product_name_ar?: string
+          product_name_en?: string
+          product_sku?: string
+          quantity?: number
+          unit_price?: number
+          total_price?: number
+          configurations?: Record<string, unknown>
+          specifications?: Record<string, unknown>
+          notes?: string | null
+        }
+      }
+      order_items: {
+        Row: {
+          id: string
+          order_id: string | null
+          product_id: string | null
+          variant_id: string | null
+          product_name_ar: string
+          product_name_en: string
+          product_sku: string
+          quantity: number
+          unit_price: number
+          total_price: number
+          configurations: Record<string, unknown>
+          created_at: string
+        }
+        Insert: {
+          order_id?: string | null
+          product_id?: string | null
+          variant_id?: string | null
+          product_name_ar: string
+          product_name_en: string
+          product_sku: string
+          quantity: number
+          unit_price: number
+          total_price: number
+          configurations?: Record<string, unknown>
+        }
+        Update: {
+          order_id?: string | null
+          product_id?: string | null
+          variant_id?: string | null
+          product_name_ar?: string
+          product_name_en?: string
+          product_sku?: string
+          quantity?: number
+          unit_price?: number
+          total_price?: number
+          configurations?: Record<string, unknown>
+        }
+      }
+      pricing_tiers: {
+        Row: {
+          id: string
+          product_id: string | null
+          min_quantity: number
+          max_quantity: number | null
+          discount_percentage: number | null
+          fixed_price: number | null
+          created_at: string
+        }
+        Insert: {
+          product_id?: string | null
+          min_quantity: number
+          max_quantity?: number | null
+          discount_percentage?: number | null
+          fixed_price?: number | null
+        }
+        Update: {
+          product_id?: string | null
+          min_quantity?: number
+          max_quantity?: number | null
+          discount_percentage?: number | null
+          fixed_price?: number | null
+        }
+      }
+      wishlists: {
+        Row: {
+          id: string
+          user_id: string | null
+          product_id: string | null
+          created_at: string
+        }
+        Insert: {
+          user_id?: string | null
+          product_id?: string | null
+        }
+        Update: {
+          user_id?: string | null
+          product_id?: string | null
+        }
+      }
+      recently_viewed: {
+        Row: {
+          id: string
+          user_id: string | null
+          product_id: string | null
+          viewed_at: string
+        }
+        Insert: {
+          user_id?: string | null
+          product_id?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          user_id?: string | null
+          product_id?: string | null
+          viewed_at?: string
+        }
+      }
+      notifications: {
+        Row: {
+          id: string
+          user_id: string | null
+          title_ar: string
+          title_en: string
+          message_ar: string
+          message_en: string
+          type: string
+          reference_id: string | null
+          is_read: boolean
+          created_at: string
+        }
+        Insert: {
+          user_id?: string | null
+          title_ar: string
+          title_en: string
+          message_ar: string
+          message_en: string
+          type: string
+          reference_id?: string | null
+          is_read?: boolean
+        }
+        Update: {
+          user_id?: string | null
+          title_ar?: string
+          title_en?: string
+          message_ar?: string
+          message_en?: string
+          type?: string
+          reference_id?: string | null
+          is_read?: boolean
+        }
+      }
+      audit_logs: {
+        Row: {
+          id: string
+          user_id: string | null
+          action: string
+          table_name: string
+          record_id: string | null
+          old_values: Record<string, unknown> | null
+          new_values: Record<string, unknown> | null
+          ip_address: string | null
+          user_agent: string | null
+          created_at: string
+        }
+        Insert: {
+          user_id?: string | null
+          action: string
+          table_name: string
+          record_id?: string | null
+          old_values?: Record<string, unknown> | null
+          new_values?: Record<string, unknown> | null
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          user_id?: string | null
+          action?: string
+          table_name?: string
+          record_id?: string | null
+          old_values?: Record<string, unknown> | null
+          new_values?: Record<string, unknown> | null
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+      }
+      training_enrollments: {
+        Row: {
+          id: string
+          user_id: string
+          training_id: string
+          status: string | null
+          metadata: Record<string, unknown> | null
+          created_at: string
+        }
+        Insert: {
+          user_id: string
+          training_id: string
+          status?: string | null
+          metadata?: Record<string, unknown> | null
+        }
+        Update: {
+          status?: string | null
+          metadata?: Record<string, unknown> | null
+        }
+      }
+      warranty_plans: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          default_duration_months: number
+          coverage: Record<string, unknown>
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          name: string
+          description?: string | null
+          default_duration_months: number
+          coverage?: Record<string, unknown>
+          is_active?: boolean
+        }
+        Update: {
+          name?: string
+          description?: string | null
+          default_duration_months?: number
+          coverage?: Record<string, unknown>
+          is_active?: boolean
+          updated_at?: string
+        }
+      }
+      warranty_registrations: {
+        Row: {
+          id: string
+          warranty_code: string
+          plan_id: string | null
+          product_id: string | null
+          order_id: string | null
+          machine_serial_number: string
+          customer_id: string
+          sale_confirmed: boolean
+          sale_confirmed_at: string | null
+          sale_confirmed_by: string | null
+          warranty_start_date: string | null
+          warranty_end_date: string | null
+          duration_months: number | null
+          status: 'pending' | 'active' | 'expired' | 'void'
+          meta: Record<string, unknown>
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          plan_id?: string | null
+          product_id?: string | null
+          order_id?: string | null
+          machine_serial_number: string
+          customer_id: string
+          sale_confirmed?: boolean
+          duration_months?: number | null
+          status?: 'pending' | 'active' | 'expired' | 'void'
+          meta?: Record<string, unknown>
+          notes?: string | null
+        }
+        Update: {
+          plan_id?: string | null
+          product_id?: string | null
+          order_id?: string | null
+          machine_serial_number?: string
+          sale_confirmed?: boolean
+          sale_confirmed_at?: string | null
+          sale_confirmed_by?: string | null
+          warranty_start_date?: string | null
+          warranty_end_date?: string | null
+          duration_months?: number | null
+          status?: 'pending' | 'active' | 'expired' | 'void'
+          meta?: Record<string, unknown>
+          notes?: string | null
+          updated_at?: string
+        }
+      }
+      product_reviews: {
+        Row: {
+          id: string
+          product_id: string
+          user_id: string
+          rating: number
+          title: string | null
+          review_text: string | null
+          is_verified_purchase: boolean
+          is_approved: boolean
+          helpful_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          product_id: string
+          user_id: string
+          rating: number
+          title?: string | null
+          review_text?: string | null
+          is_verified_purchase?: boolean
+          is_approved?: boolean
+        }
+        Update: {
+          rating?: number
+          title?: string | null
+          review_text?: string | null
+          is_verified_purchase?: boolean
+          is_approved?: boolean
+          helpful_count?: number
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -610,6 +1027,42 @@ export interface Database {
           image_urls: string[]
           category: ProductCategory
           is_featured: boolean
+        }[]
+      }
+      confirm_warranty_sale: {
+        Args: { _warranty_id: string; _serial: string; _duration_override?: number | null }
+        Returns: {
+          id: string
+          warranty_code: string
+          plan_id: string | null
+          product_id: string | null
+          order_id: string | null
+          machine_serial_number: string
+          customer_id: string
+          sale_confirmed: boolean
+          sale_confirmed_at: string | null
+          sale_confirmed_by: string | null
+          warranty_start_date: string | null
+          warranty_end_date: string | null
+          duration_months: number | null
+          status: 'pending' | 'active' | 'expired' | 'void'
+          meta: Record<string, unknown>
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+      }
+      validate_warranty: {
+        Args: { _serial: string }
+        Returns: {
+          warranty_code: string
+          machine_serial_number: string
+          status: 'pending' | 'active' | 'expired' | 'void'
+          warranty_start_date: string | null
+          warranty_end_date: string | null
+          days_remaining: number
+          plan_name: string | null
+          coverage: Record<string, unknown> | null
         }[]
       }
     }

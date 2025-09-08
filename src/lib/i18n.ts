@@ -2,6 +2,47 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
+// Dynamic JSON loader (auto‑discovers files in /locales) ---------------------------------
+// This allows adding new translation namespaces without touching this file.
+// Vite's import.meta.glob eagerly loads JSON; merge into resources below.
+type TranslationTree = Record<string, unknown>;
+type DiscoveredNamespaces = Record<string, Record<string, TranslationTree>>;
+const discoveredResources: DiscoveredNamespaces = {};
+try {
+  // Pattern: ../../locales/<lang>/<namespace>.json (from src/lib directory)
+  const modules = import.meta.glob('../../locales/*/*.json', { eager: true }) as Record<string, { default: TranslationTree }>;
+  for (const path in modules) {
+    const parts = path.split('/');
+    const lang = parts[parts.length - 2];
+    const file = parts[parts.length - 1];
+    const namespace = file.replace(/\.json$/, '');
+    discoveredResources[lang] = discoveredResources[lang] || {};
+    // merge namespace JSON under its own key (namespaced usage: t('services:title'))
+    discoveredResources[lang][namespace] = modules[path].default;
+  }
+} catch (e) {
+  // Non-fatal; build still succeeds
+  console.warn('[i18n] Dynamic locale discovery failed:', e);
+}
+
+// Helper: Deep merge (simple implementation sufficient for translation trees)
+function deepMerge<T extends TranslationTree, S extends TranslationTree>(target: T, source: S): T & S {
+  const result: TranslationTree = { ...(target as object) };
+  for (const key of Object.keys(source)) {
+    const sVal = (source as TranslationTree)[key];
+    const tVal = (result as TranslationTree)[key];
+    if (sVal && typeof sVal === 'object' && !Array.isArray(sVal)) {
+      (result as TranslationTree)[key] = deepMerge(
+        (tVal && typeof tVal === 'object' && !Array.isArray(tVal) ? tVal : {}) as TranslationTree,
+        sVal as TranslationTree
+      );
+    } else {
+      (result as TranslationTree)[key] = sVal;
+    }
+  }
+  return result as T & S;
+}
+
 // Comprehensive Arabic-first translations
 const arTranslations = {
   common: {
@@ -687,10 +728,27 @@ const enTranslations = {
   });
   
   // i18next initialization
-  const resources = {
+  // Build base inline resources (legacy structure under single "translation" namespace)
+  const baseResources: Record<string, Record<string, TranslationTree>> = {
     ar: { translation: arTranslations },
     en: { translation: enTranslations }
   };
+
+  // Convert discovered (lang -> namespace -> data) to i18next resource shape.
+  // Each discovered namespace (e.g., services) is merged at top level to preserve namespacing.
+  for (const lang of Object.keys(discoveredResources)) {
+    baseResources[lang] = baseResources[lang] || {};
+    for (const namespace of Object.keys(discoveredResources[lang])) {
+      // If namespace == 'translation' merge directly, else attach as its own namespace.
+      if (namespace === 'translation') {
+        baseResources[lang].translation = deepMerge(baseResources[lang].translation || {}, discoveredResources[lang][namespace]);
+      } else {
+        baseResources[lang][namespace] = deepMerge(baseResources[lang][namespace] || {}, discoveredResources[lang][namespace]);
+      }
+    }
+  }
+
+  const resources = baseResources;
   
   i18n
     .use(LanguageDetector)
@@ -706,7 +764,17 @@ const enTranslations = {
         // default options from i18next-browser-languagedetector
         order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
         caches: ['localStorage', 'cookie']
-      }
+      },
+      defaultNS: 'translation',
+      ns: ['translation', ...new Set(Object.values(discoveredResources).flatMap(o => Object.keys(o)))]
     });
+
+  // Direction handling (RTL for Arabic)
+  export const isRTL = (lng: string) => ['ar', 'fa', 'he', 'ur'].includes(lng);
+  i18n.on('languageChanged', (lng) => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.dir = isRTL(lng) ? 'rtl' : 'ltr';
+    }
+  });
   
   export default i18n;
