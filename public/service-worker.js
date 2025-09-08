@@ -126,10 +126,7 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
   if (!request.url.startsWith("http")) return;
 
-  // Skip dev server module requests (e.g., /src/... .ts/.tsx) to avoid breaking Vite HMR / dynamic imports
-  if (/\/src\//.test(request.url) || /\.(ts|tsx)(\?|$)/.test(request.url)) {
-    return; // let browser fetch directly
-  }
+  // NOTE: Debug mode - allowing /src/ module requests again so we can observe failures directly.
 
   // Always network fetch navigation requests to get latest HTML (fallback offline minimal response)
   if (request.mode === "navigate") {
