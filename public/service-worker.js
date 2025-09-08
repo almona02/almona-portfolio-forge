@@ -1,13 +1,13 @@
-const CACHE_VERSION = "v2.0.0";
+const CACHE_VERSION = "v2.0.1"; // bumped to invalidate old cached HTML/asset mappings
 const STATIC_CACHE = `almona-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `almona-dynamic-${CACHE_VERSION}`;
 const MODELS_CACHE = `almona-models-${CACHE_VERSION}`;
 const API_CACHE = `almona-api-${CACHE_VERSION}`;
 
 // Assets to cache immediately on install
+// NOTE: We purposely exclude index.html from the pre-cache to avoid serving stale HTML
+// after a deployment which can reference outdated hashed asset filenames.
 const STATIC_ASSETS = [
-  "/",
-  "/index.html",
   "/favicon.ico",
   "/logo.svg",
   "/placeholder.svg",
@@ -120,28 +120,33 @@ self.addEventListener("activate", (event) => {
 
 // Fetch event - handle requests with appropriate strategies
 self.addEventListener("fetch", (event) => {
-  // Skip non-GET requests
-  if (event.request.method !== "GET") {
+  const { request } = event;
+
+  // Only handle GET
+  if (request.method !== "GET") return;
+  if (!request.url.startsWith("http")) return;
+
+  // Skip dev server module requests (e.g., /src/... .ts/.tsx) to avoid breaking Vite HMR / dynamic imports
+  if (/\/src\//.test(request.url) || /\.(ts|tsx)(\?|$)/.test(request.url)) {
+    return; // let browser fetch directly
+  }
+
+  // Always network fetch navigation requests to get latest HTML (fallback offline minimal response)
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request).catch(async () => {
+        return new Response(
+          `<!doctype html><html><head><title>Offline</title><meta charset='utf-8' /></head><body style="font-family:system-ui;padding:2rem;background:#0d0f12;color:#fff"><h1>Offline</h1><p>The application is offline. Please reconnect and refresh.</p></body></html>`,
+          { headers: { "Content-Type": "text/html" }, status: 503 }
+        );
+      })
+    );
     return;
   }
 
-  // Skip chrome-extension and other non-http requests
-  if (!event.request.url.startsWith("http")) {
-    return;
-  }
-
-  // Find matching strategy
-  const matchedRoute = ROUTE_STRATEGIES.find((route) =>
-    route.pattern.test(event.request.url)
-  );
-
-  if (!matchedRoute) {
-    return;
-  }
-
-  event.respondWith(
-    handleRequest(event.request, matchedRoute.strategy, matchedRoute.cache)
-  );
+  const matchedRoute = ROUTE_STRATEGIES.find((route) => route.pattern.test(request.url));
+  if (!matchedRoute) return;
+  event.respondWith(handleRequest(request, matchedRoute.strategy, matchedRoute.cache));
 });
 
 // Handle requests based on strategy
