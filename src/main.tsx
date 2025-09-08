@@ -6,7 +6,7 @@ import ReactDOM from "react-dom/client";
 import "@/lib/i18n";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
-import { registerServiceWorker } from "./lib/serviceWorkerRegistration";
+import { registerServiceWorker, unregisterServiceWorker } from "./lib/serviceWorkerRegistration";
 import { initializePerformanceMonitoring } from "./lib/performance";
 import { initializePolyfills } from "./lib/polyfills";
 import "./index.css";
@@ -135,6 +135,29 @@ class CriticalErrorBoundary extends React.Component<
   }
 }
 
+// Global recovery for transient chunk load errors (e.g. after deploy with new hashes)
+// Tries one silent reload to fetch the new build, then suppresses further reload loops.
+if (typeof window !== 'undefined') {
+  const recover = (msg) => {
+    if (!msg) return;
+    if (/ChunkLoadError|Loading chunk [\d]+ failed|dynamic import failed/i.test(msg)) {
+      const already = sessionStorage.getItem('chunk-reloaded');
+      if (!already) {
+        sessionStorage.setItem('chunk-reloaded', '1');
+        // Small delay to allow service worker to activate if updating
+        setTimeout(() => window.location.reload(), 50);
+      }
+    }
+  };
+  window.addEventListener('error', (e) => recover(e?.message || (e?.error && e.error.message) || ''));
+  window.addEventListener('unhandledrejection', (e) => {
+    try {
+      const msg = (e?.reason && (e.reason.message || e.reason.toString())) || '';
+      recover(msg);
+    } catch { /* ignore */ }
+  });
+}
+
 // Initialize polyfills and performance monitoring as early as possible
 try {
   initializePolyfills();
@@ -182,11 +205,25 @@ requestAnimationFrame(() => {
   setTimeout(() => rootElement.classList.remove('app-fade-enter'), 300);
 });
 
-// Register service worker with error handling
+// Service worker handling
 try {
   if (import.meta.env.PROD) {
     registerServiceWorker();
+  } else {
+    // Ensure no stale production SW controls the dev server (can break Vite module URLs like /src/pages/Services.tsx)
+    unregisterServiceWorker();
+    // Extra safety: if any active controllers remain, prompt a one-time reload after unregister
+    if (navigator.serviceWorker?.controller) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        if (regs.length === 0) return;
+        const flagged = sessionStorage.getItem('sw-dev-cleaned');
+        if (!flagged) {
+          sessionStorage.setItem('sw-dev-cleaned', '1');
+          setTimeout(() => window.location.reload(), 100);
+        }
+      });
+    }
   }
 } catch (error) {
-  console.error('Failed to register service worker:', error);
+  console.error('Service worker handling error:', error);
 }
