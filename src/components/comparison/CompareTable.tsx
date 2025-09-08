@@ -1,5 +1,9 @@
 import React from "react";
 import { Machine } from "@/types/index";
+
+interface ExtendedMachine extends Machine {
+  airSpec?: { consumption?: string; pressure?: string };
+}
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/ui/table";
 import { Check, X } from "lucide-react";
 
@@ -9,8 +13,8 @@ interface CompareTableProps {
 
 const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
   // Handle both legacy and new machine types with proper data sync
-  const getMachineValue = (machine: Machine | Record<string, unknown>, key: string) => {
-    const m = machine as Record<string, unknown>;
+  const getMachineValue = (machine: ExtendedMachine | Record<string, unknown>, key: string) => {
+    const m = machine as ExtendedMachine & Record<string, unknown>;
     
     switch (key) {
       case 'name':
@@ -35,6 +39,10 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
         return m.certifications as string[] || [];
       case 'egyptianStandard':
         return m.egyptianCompliance ? (m.egyptianCompliance as Record<string, string>).standard : '-';
+      case 'airConsumption':
+        return m.airSpec?.consumption || '-';
+      case 'airPressure':
+        return m.airSpec?.pressure || '-';
       case 'specifications':
         return m.specifications as string[] || [];
       default:
@@ -57,6 +65,13 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
       specs: [
         { name: "Power Consumption", key: "power", type: "text" },
         { name: "Voltage", key: "voltage", type: "text" },
+      ]
+    },
+    {
+      name: "Air Requirements",
+      specs: [
+        { name: "Air Consumption", key: "airConsumption", type: "text" },
+        { name: "Air Pressure", key: "airPressure", type: "text" },
       ]
     },
     {
@@ -102,13 +117,14 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 text-xs sm:text-sm">
       {specCategories.map((category) => (
         <div key={category.name} className="border rounded-lg overflow-hidden">
           <div className="bg-muted px-4 py-2">
             <h3 className="font-semibold">{category.name}</h3>
           </div>
-          <Table className="border-collapse w-full">
+          <div className="overflow-x-auto">
+          <Table className="border-collapse w-full min-w-[640px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[200px]">Specification</TableHead>
@@ -138,6 +154,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
               ))}
             </TableBody>
           </Table>
+          </div>
         </div>
       ))}
     </div>

@@ -1,0 +1,35 @@
+# Production runtime dependencies (exclude test, lint, security-only tooling)
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.19
+pydantic==2.10.3
+
+# Core functionality
+supabase==2.8.0
+sendgrid==6.11.0
+jinja2==3.1.4
+python-dotenv==1.0.1
+
+# Task / async
+celery==5.4.0
+redis==5.2.0
+
+# AI / ML (runtime inference)
+ultralytics==8.3.40
+opencv-python==4.10.0.84
+numpy==1.26.4
+pillow==11.0.0
+mlflow==2.14.1
+pynvml==11.5.0
+
+# Security / auth
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Monitoring (optional, lightweight)
+prometheus-client==0.19.0
+prometheus-fastapi-instrumentator==6.1.0
+
+# File handling
+aiofiles==23.2.1
+python-magic==0.4.27
