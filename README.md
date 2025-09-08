@@ -3,7 +3,7 @@
 A comprehensive, modern industrial machinery portfolio and e-commerce platform built for Almona, featuring advanced 3D/AR visualization, AI-powered services, and a complete customer support system.
 
 ## 🚀 Overview
-
+my app
 Almona Portfolio Forge is a full-stack industrial machinery platform that combines a React frontend with a Python FastAPI backend, offering everything from product showcases to complete service management. The platform serves industrial clients across Egypt and the Middle East with specialized features for aluminum, UPVC, and steel fabrication industries.
 
 ## ✨ Key Features
