@@ -52,20 +52,21 @@ export function Model3DDialog({
             </div>
           )}
           
-          <div className="h-[600px] rounded-lg overflow-hidden">
+          <div className="h-[60vh] min-h-[480px] rounded-lg overflow-hidden relative">
             <EnhancedGLBViewer
               modelPath={modelPath}
-              scale={1}
-              autoRotate={true}
-              autoRotateSpeed={0.5}
-              shadows={true}
-              onLoad={handleLoad}
-              onError={handleError}
+              enableAR
+              onLoaded={handleLoad}
             />
+            {isLoading && !error && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-sm">
+                Loading 3D Model...
+              </div>
+            )}
           </div>
           
           <div className="mt-4 text-sm text-gray-600">
-            <p><strong>Controls:</strong> Click and drag to rotate • Scroll to zoom • Right-click to pan</p>
+            <p><strong>Controls:</strong> Drag to rotate • Scroll to zoom • Right-click to pan • AR button (mobile/WebXR) to view in space</p>
           </div>
         </div>
       </div>
