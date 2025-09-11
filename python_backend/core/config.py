@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     # Security
     VALID_API_KEYS: str = "your-secret-api-key"
     RATE_LIMIT: str = "100/minute"
+    ALLOWED_ORIGINS: str = Field(
+        default_factory=lambda: os.getenv('ALLOWED_ORIGINS', '*')
+    )
 
     # Database
     DATABASE_URL: str = Field(
