@@ -28,6 +28,9 @@ jobs:
       - name: Deploy to Vercel (Production)
         uses: amondnet/vercel-action@v25
         with:
+          # IMPORTANT: Do NOT paste raw tokens or IDs here. Store them in repository Secrets
+          # Settings > Secrets and variables > Actions:
+          #   VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -35,7 +38,9 @@ jobs:
           vercel-args: '--prod'
           github-token: ${{ secrets.GITHUB_TOKEN }}
           github-deployment: true
+          github-comment: true
         env:
+          # Some tools still look for env var VERCEL_TOKEN
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
       - name: Output deployment url
