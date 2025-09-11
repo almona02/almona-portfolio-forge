@@ -1,0 +1,11 @@
+# Generated temporary ignore file for heavy legacy areas (can prune later)
+# Adjust as codebase is hardened.
+
+# Build outputs
+/dist
+
+# Storybook static
+/storybook-static
+
+# Temporary: ignore large verbose pages until refactored
+src/pages/FabricationWorkflowDetail.tsx
