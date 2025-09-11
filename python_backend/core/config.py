@@ -22,24 +22,42 @@ class Settings(BaseSettings):
     RATE_LIMIT: str = "100/minute"
 
     # Database
-    DATABASE_URL: str
+    DATABASE_URL: str = Field(
+        default_factory=lambda: os.getenv('DATABASE_URL', '')
+    )
 
     # Redis
-    REDIS_URL: str
+    REDIS_URL: str = Field(
+        default_factory=lambda: os.getenv('REDIS_URL', '')
+    )
 
     # JWT
-    JWT_SECRET_KEY: str
+    JWT_SECRET_KEY: str = Field(
+        default_factory=lambda: os.getenv('JWT_SECRET_KEY', 'changeme')
+    )
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     # Facebook OAuth
-    FACEBOOK_APP_ID: str
-    FACEBOOK_APP_SECRET: str
-    FACEBOOK_REDIRECT_URI: str
+    FACEBOOK_APP_ID: str = Field(
+        default_factory=lambda: os.getenv('FACEBOOK_APP_ID', '')
+    )
+    FACEBOOK_APP_SECRET: str = Field(
+        default_factory=lambda: os.getenv('FACEBOOK_APP_SECRET', '')
+    )
+    FACEBOOK_REDIRECT_URI: str = Field(
+        default_factory=lambda: os.getenv('FACEBOOK_REDIRECT_URI', '')
+    )
 
     # Twilio SMS
-    TWILIO_ACCOUNT_SID: str
-    TWILIO_AUTH_TOKEN: str
-    TWILIO_PHONE_NUMBER: str
+    TWILIO_ACCOUNT_SID: str = Field(
+        default_factory=lambda: os.getenv('TWILIO_ACCOUNT_SID', '')
+    )
+    TWILIO_AUTH_TOKEN: str = Field(
+        default_factory=lambda: os.getenv('TWILIO_AUTH_TOKEN', '')
+    )
+    TWILIO_PHONE_NUMBER: str = Field(
+        default_factory=lambda: os.getenv('TWILIO_PHONE_NUMBER', '')
+    )
 
     # Supabase Configuration
     SUPABASE_URL: str = Field(
