@@ -17,6 +17,7 @@
     "i18n:audit": "node scripts/i18n-audit.js",
     "ar:optimize": "node scripts/optimize-glb.mjs",
     "test": "vitest",
+  "test:pricing": "vitest run src/lib/pricing.test.ts",
     "test:watch": "vitest watch",
     "test:api": "cd python_backend && python -m pytest tests/run_tests.py -v",
     "test:react": "vitest run src/hooks/__tests__ --coverage",

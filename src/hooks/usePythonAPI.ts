@@ -1,32 +1,10 @@
 import { useState, useCallback } from 'react';
 import { toast } from '@/hooks/use-toast';
-
-interface PartIdentificationResult {
-  success: boolean;
-  data: {
-    detections: Array<{
-      bbox: [number, number, number, number];
-      confidence: number;
-      class_id: number;
-      class_name: string;
-      center: [number, number];
-    }>;
-    image_info: {
-      width: number;
-      height: number;
-      channels: number;
-    };
-    model_info: {
-      framework: string;
-      confidence_threshold: number;
-    };
-  };
-  message: string;
-}
+import { PartIdentificationResult, PreprocessImageResult } from '@/types/api';
 
 interface UsePythonAPIReturn {
   identifyPart: (file: File, confidenceThreshold?: number) => Promise<PartIdentificationResult>;
-  preprocessImage: (file: File, operation?: string) => Promise<any>;
+  preprocessImage: (file: File, operation?: string) => Promise<PreprocessImageResult>;
   isLoading: boolean;
   error: string | null;
 }
@@ -83,7 +61,7 @@ export const usePythonAPI = (): UsePythonAPIReturn => {
     }
   }, []);
 
-  const preprocessImage = useCallback(async (file: File, operation = 'enhance'): Promise<any> => {
+  const preprocessImage = useCallback(async (file: File, operation = 'enhance'): Promise<PreprocessImageResult> => {
     setIsLoading(true);
     setError(null);
 
@@ -102,7 +80,7 @@ export const usePythonAPI = (): UsePythonAPIReturn => {
         throw new Error(errorData || 'Failed to preprocess image');
       }
 
-      const result = await response.json();
+  const result: PreprocessImageResult = await response.json();
       
       if (!result.success) {
         throw new Error(result.message || 'Failed to preprocess image');

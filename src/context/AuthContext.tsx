@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
-import { supabase, getUserProfile } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
+import { getProfileById, updateProfile as updateProfileDomain } from '@/lib/data/profilesClient';
 import { Database } from '@/types/database';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
@@ -69,7 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Fetch user profile data
   const fetchUserProfile = useCallback(async (userId: string) => {
     try {
-      const profile = await getUserProfile(userId);
+  const profile = await getProfileById(userId);
       setUser(profile);
       if (!stableEmailRef.current && profile && (profile as User).email) {
         stableEmailRef.current = (profile as User).email;
@@ -301,18 +302,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user) throw new Error('No user logged in');
     
     try {
-      // Cast to any to bypass current type inference issue (profile Update narrowing to never)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
-        .from('profiles')
-        .update(updates)
-        .eq('id', user.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      setUser(data);
+      const updated = await updateProfileDomain(user.id, updates);
+      setUser(updated as unknown as User); // runtime shape compatible
     } catch (error) {
       console.error('Update profile error:', error);
       throw error;
