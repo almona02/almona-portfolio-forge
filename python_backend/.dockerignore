@@ -29,7 +29,9 @@ htmlcov/
 Thumbs.db
 
 # Project specific
-uploads/
+# Allow uploads directory (required by Dockerfile). Keep excluding large temp artifacts inside it if needed.
+#uploads/
+uploads/tmp*
 *.log
 .env
 .env.local
