@@ -57,6 +57,8 @@ jobs:
           pip install bandit safety
       - name: Backend Tests
         working-directory: python_backend
+        env:
+          PYTHONPATH: ${{ github.workspace }}/python_backend
         run: pytest -q
       - name: Bandit Scan
         working-directory: python_backend
