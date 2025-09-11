@@ -1,7 +1,9 @@
 
 import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { supabase, createQuote, calculateTieredPrice } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
+import { calculateTieredPrice } from '@/lib/pricing';
+import { createQuote as createQuoteDomain, updateQuoteStatus } from '@/lib/data/quotesClient';
 import { Database } from '@/types/database';
 import { useTranslation } from 'react-i18next';
 
@@ -258,7 +260,23 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
         },
       };
 
-      const newQuote = await createQuote(quoteData);
+      const newQuote = await createQuoteDomain({
+        user_id: quoteData.user_id,
+        status: quoteData.status,
+        subtotal: quoteData.subtotal,
+        tax_amount: quoteData.tax_amount,
+        shipping_cost: quoteData.shipping_cost,
+        discount_amount: quoteData.discount_amount,
+        total_amount: quoteData.total_amount,
+        currency: quoteData.currency,
+        title: quoteData.title,
+        description: quoteData.description,
+        notes: quoteData.notes,
+        internal_notes: undefined,
+        delivery_timeline: undefined,
+        payment_terms: undefined,
+        items: [], // items persisted separately below
+      });
       setCurrentQuote(newQuote);
 
       // Save all current quote items to database
@@ -290,7 +308,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
 
     setSaving(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('quotes')
         .update({
           ...quoteData,
@@ -300,7 +318,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
           discount_amount: discountAmount,
           total_amount: totalAmount,
           updated_at: new Date().toISOString(),
-        })
+        } as any)
         .eq('id', currentQuote.id)
         .select()
         .single();
@@ -328,18 +346,8 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
 
     setSaving(true);
     try {
-      const { data, error } = await supabase
-        .from('quotes')
-        .update({
-          status: 'pending',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', currentQuote.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      setCurrentQuote(data);
+      const updated = await updateQuoteStatus(currentQuote.id, 'pending');
+      setCurrentQuote(updated);
 
       // Clear local quote items after successful submission
       clearQuote();
@@ -355,7 +363,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   const loadQuote = useCallback(async (quoteId: string) => {
     setLoading(true);
     try {
-      const { data: quote, error: quoteError } = await supabase
+      const { data: quote, error: quoteError } = await (supabase as any)
         .from('quotes')
         .select(`
           *,
@@ -372,7 +380,8 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
       setCurrentQuote(quote);
 
       // Convert database quote items to local format
-      const items: QuoteItem[] = quote.quote_items?.map((item: any) => ({
+  if (!quote) throw new Error('Quote not found');
+  const items: QuoteItem[] = (quote.quote_items || []).map((item: any) => ({
         id: item.id,
         product_id: item.product_id,
         product_name_ar: item.product_name_ar,
@@ -402,7 +411,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
     if (!items.length) return;
 
     // First, delete existing items
-    await supabase
+    await (supabase as any)
       .from('quote_items')
       .delete()
       .eq('quote_id', quoteId);
@@ -422,9 +431,9 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
       notes: item.notes,
     }));
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('quote_items')
-      .insert(itemsToInsert);
+      .insert(itemsToInsert as any);
 
     if (error) throw error;
   };
@@ -433,7 +442,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   const saveQuoteItemToDatabase = async (item: QuoteItem) => {
     if (!currentQuote) return;
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('quote_items')
       .insert({
         quote_id: currentQuote.id,
@@ -447,7 +456,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
         configurations: item.configurations,
         specifications: item.specifications,
         notes: item.notes,
-      });
+      } as any);
 
     if (error) throw error;
   };

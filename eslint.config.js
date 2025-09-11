@@ -37,4 +37,12 @@ export default tseslint.config({ ignores: ["dist"] }, {
     "prefer-const": ["warn", { destructuring: "all" }],
     // ----------------------------------------------------------------------
   },
+}, {
+  files: ["src/lib/data/**/*.{ts,tsx}"],
+  rules: {
+    // Pilot stricter rules for newly modularized data layer
+    "@typescript-eslint/no-explicit-any": "error",
+    "no-console": ["error", { allow: ["warn", "error"] }],
+    "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
+  }
 }, storybook.configs["flat/recommended"]);
