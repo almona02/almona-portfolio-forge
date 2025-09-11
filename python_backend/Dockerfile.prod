@@ -8,13 +8,17 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # System build deps (kept minimal, removed later)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    gcc \
-    libpq-dev \
-    libjpeg-dev \
-    zlib1g-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN set -eux; \
+    apt-get update || apt-get update -o Acquire::Retries=3 --fix-missing; \
+    apt-get install -y --no-install-recommends \
+        build-essential \
+        gcc \
+        libpq-dev \
+        libjpeg-dev \
+        zlib1g-dev \
+    ; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/*
 
 COPY requirements-runtime.txt ./
 RUN pip install --upgrade pip && \
@@ -26,13 +30,17 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 # Minimal runtime libs
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libgomp1 \
-    && rm -rf /var/lib/apt/lists/*
+RUN set -eux; \
+    apt-get update || apt-get update -o Acquire::Retries=3 --fix-missing; \
+    apt-get install -y --no-install-recommends \
+        libgl1-mesa-glx \
+        libglib2.0-0 \
+        libsm6 \
+        libxext6 \
+        libgomp1 \
+    ; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

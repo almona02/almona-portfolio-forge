@@ -32,6 +32,13 @@ Thumbs.db
 # Allow uploads directory (required by Dockerfile). Keep excluding large temp artifacts inside it if needed.
 #uploads/
 uploads/tmp*
+node_modules
+dist
+*.log
+__pycache__
+.pytest_cache
+.mypy_cache
+*.pyc
 *.log
 .env
 .env.local

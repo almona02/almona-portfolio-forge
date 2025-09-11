@@ -25,6 +25,16 @@ jobs:
       - name: Build (local verification)
         run: npm run build
 
+      - name: Verify Vercel secrets presence
+        run: |
+          for var in VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
+            if [ -n "${!var}" ]; then echo "$var=SET"; else echo "$var=MISSING"; fi
+          done
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
       - name: Deploy to Vercel (Production)
         uses: amondnet/vercel-action@v25
         with:
