@@ -47,8 +47,8 @@ jobs:
           working-directory: ./
           vercel-args: '--prod'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          github-deployment: true
-          github-comment: true
+          github-deployment: false
+          github-comment: false
         env:
           # Some tools still look for env var VERCEL_TOKEN
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
