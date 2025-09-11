@@ -8,7 +8,7 @@ interface Review {
   productId: string;
 }
 
-let mockReviews: Review[] = [
+const mockReviews: Review[] = [
   {
     id: '1',
     productId: 'dc-421-pbs',
@@ -43,7 +43,7 @@ export const addReview = async (review: Omit<Review, 'id' | 'date'>): Promise<Re
         id: String(mockReviews.length + 1),
         date: new Date().toISOString().split('T')[0],
       };
-      mockReviews.push(newReview);
+  mockReviews.push(newReview); // intentional mutation of in-memory mock
       resolve(newReview);
     }, 300);
   });
