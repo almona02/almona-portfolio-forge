@@ -25,9 +25,14 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 # Configure CORS
+allowed_origins = (
+    settings.ALLOWED_ORIGINS.split(',')
+    if settings.ALLOWED_ORIGINS != '*'
+    else ["*"]
+)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
@@ -36,7 +41,12 @@ app.add_middleware(
 # Mount the versioned APIs
 app.include_router(v1_router, prefix="/api/v1")
 app.include_router(v2_router, prefix="/api/v2")
-app.include_router(notifications_router, prefix="/api/v2/notifications", tags=["Email Notifications"])
+app.include_router(
+    notifications_router,
+    prefix="/api/v2/notifications",
+    tags=["Email Notifications"]
+)
+
 
 @app.get("/")
 async def root():

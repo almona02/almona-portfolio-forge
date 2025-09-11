@@ -26,13 +26,15 @@ class EmailService:
         """Initialize SendGrid client and Jinja2 environment."""
         try:
             if not settings.SENDGRID_API_KEY:
-                raise ValueError(
-                    "SENDGRID_API_KEY environment variable required"
+                logger.warning(
+                    "SENDGRID_API_KEY not configured - "
+                    "email service will be disabled"
                 )
-            
-            self.sendgrid_client = SendGridAPIClient(
-                api_key=settings.SENDGRID_API_KEY
-            )
+                self.sendgrid_client = None
+            else:
+                self.sendgrid_client = SendGridAPIClient(
+                    api_key=settings.SENDGRID_API_KEY
+                )
             
             # Initialize Jinja2 environment for email templates
             self.jinja_env = Environment(
@@ -101,6 +103,13 @@ class EmailService:
     ) -> bool:
         """Send email using SendGrid with template rendering."""
         try:
+            if not self.sendgrid_client:
+                logger.warning(
+                    f"Email service disabled - would send email to "
+                    f"{len(to_emails)} recipients: {subject}"
+                )
+                return True  # Return True to not break the flow
+            
             if not to_emails:
                 logger.warning("No recipient emails provided")
                 return False
