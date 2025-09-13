@@ -8,17 +8,35 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import react from "eslint-plugin-react";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config({ ignores: ["dist"] }, {
+export default tseslint.config({ 
+  ignores: [
+    "dist", 
+    "storybook-static",
+    "build",
+    "node_modules",
+    // Temporary: ignore large verbose pages until refactored
+  ] 
+}, {
   extends: [js.configs.recommended, ...tseslint.configs.recommended],
   files: ["**/*.{ts,tsx}"],
   languageOptions: {
     ecmaVersion: 2020,
     globals: globals.browser,
+    parserOptions: {
+      ecmaFeatures: {
+        jsx: true,
+      },
+    },
   },
   plugins: {
     "react": react,
     "react-hooks": reactHooks,
     "react-refresh": reactRefresh,
+  },
+  settings: {
+    react: {
+      version: "detect",
+    },
   },
   rules: {
     ...reactHooks.configs.recommended.rules,
@@ -27,6 +45,7 @@ export default tseslint.config({ ignores: ["dist"] }, {
     // Convert previous hard errors to warnings to get CI green; plan to tighten later.
     // Track re-hardening in ISSUE: lint-hardening-milestone
     "react/no-unknown-property": ["off", { ignore: ["args", "attach", "position"] }],
+    "react/react-in-jsx-scope": "off", // Not needed with React 17+ JSX transform
     "react-refresh/only-export-components": ["off", { allowConstantExport: true }],
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-empty-object-type": "warn",
