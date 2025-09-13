@@ -145,6 +145,86 @@ python_backend/
 - **service_tickets**: Professional ticketing system with SLA
 - **notifications**: Real-time user notifications
 
+### Unified Ticketing Expansion
+The unified ticket model consolidates:
+* Support Ticket (general support)
+* Preventive Maintenance
+* Scheduled Maintenance
+* Emergency Service
+* Product Quote Request
+* Add To Quote (shop incremental)
+
+These map into `service_tickets.category` (enum `ticket_category`) plus supplemental columns:
+`scheduled_for`, `maintenance_metadata`, `digital_twin_code`, `machine_id`, `created_via`.
+
+Digital twin codes auto-generate for maintenance/emergency categories through `trg_set_digital_twin_code` and `generate_digital_twin_code()`.
+
+Migration script: `unify_tickets_migration.sql` (idempotent) performs:
+1. Enum creation
+2. Column additions
+3. Trigger + function creation
+4. Legacy `tickets` backfill
+5. Reporting view `unified_ticket_overview`
+
+Pydantic creation models (backend) in `python_backend/models/api_v2_models.py`:
+`SupportTicketCreate`, `PreventiveMaintenanceTicketCreate`, `ScheduledMaintenanceTicketCreate`, `EmergencyServiceTicketCreate`, `ProductQuoteTicketCreate`, `AddToQuoteTicketCreate`.
+
+Pending integration TODOs:
+* Add FastAPI router for CRUD operations over unified tickets
+* Extend frontend forms to pass `category` & metadata fields
+* Add tests asserting digital twin generation for maintenance/emergency tickets
+* Add analytics dashboards using `unified_ticket_overview`
+
+### Customer Portal Quote Tracking
+To let customers track quotations by either classic quote number or the machine/service digital twin context:
+
+Added schema/migration: `add_quote_twin_linkage.sql` which provides:
+* Columns on `quotes`: `digital_twin_code`, `related_service_ticket_id`, `machine_id`, `portal_reference`
+* Trigger `trg_set_quote_digital_twin_code` to auto-populate `digital_twin_code` from a linked service ticket or machine
+* Partial unique index on `digital_twin_code`
+* Lookup function `portal_quote_lookup(query text)` (SECURITY INVOKER) applying RLS automatically
+
+Portal integration flow:
+1. User enters search text (quote number fragment, twin code, or custom portal reference)
+2. Frontend calls Supabase RPC: `portal_quote_lookup`
+3. Display returned quotes with badges: status, twin code, portal reference
+4. (Optional) Link back to the originating service ticket using `related_service_ticket_id`
+
+Recommended UI elements:
+* Single search bar with helper text: “Search by Quote #, Twin Code, or Reference”
+* Filters: status (draft/sent/accepted), date range
+* Column set: Quote # | Twin Code | Amount | Status | Created | Reference
+
+Security model: RLS on `quotes` ensures only the owner’s records appear; function is `SECURITY INVOKER`.
+
+### Request Quote Flow & Digital Twin Integration
+
+The Request Quote dialog now posts directly to the backend endpoint `POST /api/v2/quotes/create`.
+
+Flow summary:
+1. User completes the 4‑step quote request wizard (contact info, details, services, review).
+2. On submit the frontend assembles a payload with contact fields, urgency, project description and minimal product/service line arrays.
+3. Backend inserts into `public.quotes`; database trigger assigns `digital_twin_code` if linked to a service ticket / machine (or leaves NULL pending later association).
+4. Response returns: `id`, `quote_number`, `digital_twin_code`, `portal_reference`, `status`, `total_amount`.
+5. Dialog swaps to a confirmation panel showing the twin code (or "Pending assignment") and provides a "Track in Portal" CTA which routes to `/portal` where the user can search via the Quote Twin Search panel.
+
+Important notes:
+* Line items are not yet persisted into `quote_items` from this flow; only quote header is stored. Future enhancement: send structured items and batch insert into `quote_items` to enable granular pricing revisions.
+* Digital twin assignment logic lives server‑side (trigger `set_quote_digital_twin_code`) ensuring consistent format and avoiding collisions.
+* Portal search uses the `portal_quote_lookup(_query text)` function (SECURITY INVOKER) which applies RLS so users only see their own quotes.
+
+Future enhancements:
+* Persist full product/service lines into `quote_items` with configuration metadata.
+* Expose `related_service_ticket_id` selection in the dialog when quote originates from a ticket context.
+* Allow regenerating or manually linking a digital twin after machine registration.
+
+### Next Potential Improvements
+* Include `related_service_ticket_id` in `portal_quote_lookup` SELECT to enable direct navigation
+* Add a format constraint: `ALTER TABLE public.quotes ADD CONSTRAINT quotes_dtc_format CHECK (digital_twin_code IS NULL OR digital_twin_code ~ '^DTC-[0-9]{4}-[A-Z0-9]{8}$');`
+* Retrofill script for historical quotes with machine context but no twin code
+* Analytics view summarizing: twin code → count(quotes), first/last quote timestamps, conversion rate
+* Add materialized view for dashboard KPIs (refresh schedule every 15 min)
+
 ### **Advanced Features**
 - **Row Level Security (RLS)**: Database-level access control
 - **Audit Logging**: Complete activity tracking
