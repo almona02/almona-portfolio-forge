@@ -1,6 +1,10 @@
 import { useState } from "react";
 
-const EgyptianIndustrialZones = ({ interactive = false }) => {
+interface EgyptianIndustrialZonesProps {
+  interactive?: boolean;
+}
+
+const EgyptianIndustrialZones = ({ interactive = false }: EgyptianIndustrialZonesProps) => {
   const [selectedZone, setSelectedZone] = useState("");
   
   const industrialZones = [

@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient
-from main import app
+from apis.main import app
 import asyncio
 
 # Assuming a test image exists for upload

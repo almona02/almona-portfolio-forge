@@ -1,6 +1,6 @@
 import pytest
 from httpx import AsyncClient
-from main import app  # Assuming main.py is in the same directory as tests
+from apis.main import app  # Corrected import path
 from models.api_v1_models import PartDetectionResponse, GetModelsResponse
 from models.api_v2_models import PartDetectionResponse as V2PartDetectionResponse, \
     BatchPartDetectionResponse as V2BatchPartDetectionResponse, \

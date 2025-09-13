@@ -3,9 +3,21 @@ import {
   useId,
   useLayoutEffect,
   useRef,
+  ReactNode,
+  CSSProperties,
 } from "react";
 
 import "./ElectricBorder.css";
+
+interface ElectricBorderProps {
+  children: ReactNode;
+  color?: string;
+  speed?: number;
+  chaos?: number;
+  thickness?: number;
+  className?: string;
+  style?: CSSProperties;
+}
 
 const ElectricBorder = ({
   children,
@@ -15,7 +27,7 @@ const ElectricBorder = ({
   thickness = 2,
   className,
   style,
-}) => {
+}: ElectricBorderProps) => {
   const rawId = useId().replace(/[:]/g, "");
   const filterId = `turbulent-displace-${rawId}`;
   const svgRef = useRef(null);
