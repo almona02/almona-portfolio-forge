@@ -28,6 +28,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { QuoteTwinSearchPanel } from '@/components/quotes/QuoteTwinSearchPanel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
@@ -75,7 +76,7 @@ const CustomerPortal = () => {
 
   // ProtectedRoute already guards access; avoid duplicate redirects to reduce flicker
 
-  const { data: machines = [], isLoading: isLoadingMachines, isFetching: isFetchingMachines, error: machinesError } = useQuery({
+  const { data: machines = [], isLoading: isLoadingMachines, isFetching: _isFetchingMachines, error: machinesError } = useQuery({
     queryKey: ['machines', user?.id],
     queryFn: () => api.fetchUserMachines(user!.id) as Promise<Machine[]>,
     enabled: !!user,
@@ -84,7 +85,7 @@ const CustomerPortal = () => {
     retry: 1,
   });
 
-  const { data: tickets = [], isLoading: isLoadingTickets, isFetching: isFetchingTickets, error: ticketsError } = useQuery({
+  const { data: tickets = [], isLoading: isLoadingTickets, isFetching: _isFetchingTickets, error: ticketsError } = useQuery({
     queryKey: ['tickets', user?.id],
     queryFn: () => user ? api.fetchUserTickets(user.id) as Promise<Ticket[]> : Promise.resolve([]),
     enabled: !!user,
@@ -96,7 +97,7 @@ const CustomerPortal = () => {
   const { 
     data: documents = [], 
     isLoading: isLoadingDocuments, 
-    isFetching: isFetchingDocuments,
+  isFetching: _isFetchingDocuments,
     error: documentsError 
   } = useQuery({
     queryKey: ['documents', user?.id],
@@ -387,6 +388,11 @@ const CustomerPortal = () => {
                   >
                     <Plus className="h-4 w-4 mr-2" /> Create New Ticket
                   </Button>
+                </motion.div>
+                <motion.div variants={itemVariants} className="mt-4">
+                  <h3 className="text-lg font-semibold mb-2 text-almona-orange">Find Your Quotes</h3>
+                  <p className="text-sm text-gray-400 mb-3">Search by quote number, digital twin code (e.g. DTC-2025-ABCD1234), or your portal reference.</p>
+                  <QuoteTwinSearchPanel onSelect={(quoteId) => navigate(`/portal/quotes/${quoteId}`)} />
                 </motion.div>
 
                 {tickets && tickets.length > 0 ? (
