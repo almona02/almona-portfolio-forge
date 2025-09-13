@@ -3,7 +3,7 @@ from pydantic import BaseModel
 import httpx
 import os
 from core.config import settings
-from .auth_fastapi import get_current_user
+from apis.v2.auth_fastapi import get_current_user
 from typing import Optional
 from core.supabase_client import get_supabase_client
 from datetime import datetime
