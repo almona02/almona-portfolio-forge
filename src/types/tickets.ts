@@ -34,6 +34,7 @@ export interface ServiceTicket {
   preferred_contact_method: string
   site_location: string | null
   machine_serial_number: string | null
+  machine_model?: string | null
   resolution_summary: string | null
   customer_satisfaction_rating: number | null
   customer_feedback: string | null
@@ -87,6 +88,7 @@ export interface CreateTicketData {
   preferred_contact_method?: string
   site_location?: string
   machine_serial_number?: string
+  machine_model?: string
   related_product_id?: string
   related_quote_id?: string
   related_order_id?: string

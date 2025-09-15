@@ -9,9 +9,10 @@ import { TicketPriority, TicketType, ServiceTicket } from '@/types/tickets';
 import { useAuth } from '@/context/AuthContext';
 import { useMutation } from '@tanstack/react-query';
 import { createTicket } from '@/lib/ticketApi';
+import { api } from '@/lib/api';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
+// Removed Select components after converting machine serial to pill selection
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
@@ -111,9 +112,10 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
   const form = useForm<UnifiedTicketFormData>({
     resolver: zodResolver(createTicketZodSchema),
     defaultValues: {
-      type: 'general',
+      // Default to maintenance preventive for requested behavior
+      type: 'maintenance',
       priority: 'medium',
-      maintenance_type: 'corrective',
+      maintenance_type: 'preventive',
       preferred_contact_method: 'email',
       attachments: [],
       ...initialValues
@@ -123,8 +125,10 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
   const { control, handleSubmit, watch, trigger, setValue, register, formState: { isSubmitting, errors } } = form;
   const selectedType = watch('type');
   const selectedPriority = watch('priority');
+  const selectedMaintenanceType = watch('maintenance_type');
+  const selectedContactMethod = watch('preferred_contact_method');
   // Local UI state to avoid any watch timing issues and guarantee immediate highlight
-  const [uiType, setUiType] = useState<string>(selectedType || 'general');
+  const [uiType, setUiType] = useState<string>(selectedType || 'maintenance');
   const [uiPriority, setUiPriority] = useState<string>(selectedPriority || 'medium');
 
   // Sync local state when external form value changes (draft load/reset) but not after user has interacted
@@ -221,12 +225,13 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         description: data.description,
         type: data.type as TicketType,
         priority: data.priority as TicketPriority,
-        maintenance_type: data.maintenance_type as ('preventive' | 'corrective' | 'predictive' | 'emergency' | undefined),
+  maintenance_type: data.maintenance_type as ('preventive' | 'corrective' | 'predictive' | 'emergency' | undefined),
         contact_phone: data.contact_phone || undefined,
         contact_email: data.contact_email || undefined,
         preferred_contact_method: data.preferred_contact_method,
         site_location: data.site_location || undefined,
-        machine_serial_number: data.machine_serial_number || undefined,
+  machine_serial_number: data.machine_serial_number || undefined,
+  machine_model: (data as UnifiedTicketFormData & { machine_model?: string }).machine_model || undefined,
         related_product_id: undefined,
         related_quote_id: undefined,
         related_order_id: undefined,
@@ -419,15 +424,16 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
           {/* Hidden registered inputs to ensure react-hook-form tracks these programmatic selections */}
           <input type="hidden" {...register('type')} />
           <input type="hidden" {...register('priority')} />
+          <input type="hidden" {...register('maintenance_type')} />
+          <input type="hidden" {...register('preferred_contact_method')} />
+          <input type="hidden" {...register('machine_model')} />
           <AnimatePresence mode="wait">
             {!isSuccess && activeStep.id === 'category' && (
               <motion.div key="category" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
                     <Label className="text-sm font-medium">Ticket Type</Label>
-                    {process.env.NODE_ENV !== 'production' && (
-                      <div className="text-[10px] text-gray-500">debug: form.type={selectedType} uiType={uiType}</div>
-                    )}
+                    {/* Debug line removed for production cleanliness */}
                     <TypePills />
                     {errors.type && <p className="text-xs text-red-500">{errors.type.message}</p>}
                   </div>
@@ -443,18 +449,21 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                 {selectedType === 'maintenance' && (
                   <div className="space-y-2">
                     <Label>Maintenance Type</Label>
-                    <Controller name="maintenance_type" control={control} render={({ field }) => (
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                        <SelectContent>
-                          <div className="bg-almona-darker border border-almona-light/30 rounded-md p-1">
-                            <SelectItem value="preventive">Preventive</SelectItem>
-                            <SelectItem value="corrective">Corrective</SelectItem>
-                            <SelectItem value="emergency">Emergency</SelectItem>
-                          </div>
-                        </SelectContent>
-                      </Select>
-                    )} />
+                    <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Maintenance Type">
+                      {(['preventive','corrective','predictive','emergency'] as const).map(mt => {
+                        const active = selectedMaintenanceType === mt;
+                        return (
+                          <button
+                            key={mt}
+                            type="button"
+                            onMouseDown={() => { userInteractedRef.current = true; }}
+                            onClick={() => { setValue('maintenance_type', mt, { shouldDirty: true }); }}
+                            aria-pressed={active}
+                            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-orange-500/20 border-orange-400 text-orange-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-orange-400/60 hover:text-orange-300'} `}
+                          >{mt.charAt(0).toUpperCase()+mt.slice(1)}</button>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </motion.div>
@@ -570,47 +579,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
 
             {!isSuccess && activeStep.id === 'contact' && (
               <motion.div key="contact" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label>Contact Phone</Label>
-                    <Controller name="contact_phone" control={control} render={({ field }) => (
-                      <Input {...field} placeholder="+20 123 456 789" className="bg-almona-darker border-almona-light/30" />
-                    )} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Contact Email</Label>
-                    <Controller name="contact_email" control={control} render={({ field }) => (
-                      <Input type="email" {...field} placeholder="user@example.com" className="bg-almona-darker border-almona-light/30" />
-                    )} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Preferred Contact</Label>
-                    <Controller name="preferred_contact_method" control={control} render={({ field }) => (
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                        <SelectContent>
-                          <div className="bg-almona-darker border border-almona-light/30 rounded-md p-1">
-                            <SelectItem value="email">Email</SelectItem>
-                            <SelectItem value="phone">Phone</SelectItem>
-                            <SelectItem value="sms">SMS</SelectItem>
-                          </div>
-                        </SelectContent>
-                      </Select>
-                    )} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Site Location</Label>
-                    <Controller name="site_location" control={control} render={({ field }) => (
-                      <Input {...field} placeholder="Cairo Workshop" className="bg-almona-darker border-almona-light/30" />
-                    )} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Machine Serial</Label>
-                    <Controller name="machine_serial_number" control={control} render={({ field }) => (
-                      <Input {...field} placeholder="ALM-2024-001" className="bg-almona-darker border-almona-light/30" />
-                    )} />
-                  </div>
-                </div>
+                <MachineAndContactSection control={control} setValue={setValue} userId={user?.id || null} selectedContactMethod={selectedContactMethod} />
               </motion.div>
             )}
 
@@ -712,3 +681,118 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
 };
 
 export default TicketWizardDialog;
+
+// Helper subcomponent for Contact & Machine section
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const MachineAndContactSection: React.FC<{ control: any; setValue: any; userId: string | null; selectedContactMethod: string | undefined }> = ({ control, setValue, userId, selectedContactMethod }) => {
+  const [machines, setMachines] = React.useState<Array<{ serial_number: string; model?: string | null }> | null>(null);
+  const [loading, setLoading] = React.useState(false);
+  useEffect(() => {
+    if (!userId) return;
+    setLoading(true);
+    api.fetchUserMachines(userId).then(list => {
+      setMachines(list.map(m => ({ serial_number: m.serial_number, model: (m as { model?: string }).model })));
+    }).catch(() => setMachines([])).finally(() => setLoading(false));
+  }, [userId]);
+  const models = Array.from(new Set((machines?.map(m => m.model).filter(Boolean) as string[]) || []));
+  // Watch current model via uncontrolled access (re-render occurs from RHF state updates)
+  const currentModel = (control._formValues?.machine_model || '') as string;
+  const serialsAll = machines?.map(m => m.serial_number).filter(Boolean) || [];
+  const filteredSerials = currentModel ? machines?.filter(m => m.model === currentModel).map(m => m.serial_number).filter(Boolean) || [] : serialsAll;
+  const currentSerial = (control._formValues?.machine_serial_number || '') as string;
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
+      <div className="space-y-2">
+        <Label>Contact Phone</Label>
+        <Controller name="contact_phone" control={control} render={({ field }) => (
+          <Input {...field} placeholder="+20 123 456 789" className="bg-almona-darker border-almona-light/30" />
+        )} />
+      </div>
+      <div className="space-y-2">
+        <Label>Contact Email</Label>
+        <Controller name="contact_email" control={control} render={({ field }) => (
+          <Input type="email" {...field} placeholder="user@example.com" className="bg-almona-darker border-almona-light/30" />
+        )} />
+      </div>
+      <div className="space-y-2 md:col-span-2">
+        <Label>Preferred Contact</Label>
+        <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Preferred Contact Method">
+          {(['email','phone','sms'] as const).map(method => {
+            const active = selectedContactMethod === method;
+            return (
+              <button
+                key={method}
+                type="button"
+                onClick={() => setValue('preferred_contact_method', method, { shouldDirty: true })}
+                aria-pressed={active}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-orange-500/20 border-orange-400 text-orange-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-orange-400/60 hover:text-orange-300'}`}
+              >{method.toUpperCase()}</button>
+            );
+          })}
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label>Site Location</Label>
+        <Controller name="site_location" control={control} render={({ field }) => (
+          <Input {...field} placeholder="Cairo Workshop" className="bg-almona-darker border-almona-light/30" />
+        )} />
+      </div>
+      <div className="space-y-2">
+        <Label>Machine Model</Label>
+        {loading ? (
+          <div className="text-xs text-gray-400 py-2">Loading models...</div>
+        ) : models.length > 0 ? (
+          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Machine Model">
+            {models.map(m => {
+              const active = currentModel === m;
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => { setValue('machine_model', active ? '' : m, { shouldDirty: true }); setValue('machine_serial_number',''); }}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-orange-500/20 border-orange-400 text-orange-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-orange-400/60 hover:text-orange-300'}`}
+                  aria-pressed={active}
+                >{m}</button>
+              );
+            })}
+            {models.length === 0 && <div className="text-xs text-gray-500">No models</div>}
+          </div>
+        ) : (
+          <Controller name="machine_model" control={control} render={({ field }) => (
+            <Input {...field} placeholder="e.g. CNC-500" className="bg-almona-darker border-almona-light/30" />
+          )} />
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label>Machine Serial{currentModel && <span className="text-[10px] ml-1 text-gray-400">(Filtered)</span>}</Label>
+        {loading ? (
+          <div className="text-xs text-gray-400 py-2">Loading machines...</div>
+        ) : filteredSerials.length > 0 ? (
+          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Machine Serial">
+            {filteredSerials.map(sn => {
+              const active = currentSerial === sn;
+              return (
+                <button
+                  key={sn}
+                  type="button"
+                  onClick={() => setValue('machine_serial_number', active ? '' : sn, { shouldDirty: true })}
+                  aria-pressed={active}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-orange-500/25 border-orange-400 text-orange-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-orange-400/60 hover:text-orange-300'}`}
+                >{sn}</button>
+              );
+            })}
+            <button
+              type="button"
+              onClick={() => setValue('machine_serial_number','', { shouldDirty: true })}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${currentSerial === '' ? 'bg-orange-500/10 border-orange-400/70 text-orange-300' : 'border-almona-light/30 text-gray-400 hover:border-orange-400/60 hover:text-orange-300'}`}
+            >(None)</button>
+          </div>
+        ) : (
+          <Controller name="machine_serial_number" control={control} render={({ field }) => (
+            <Input {...field} placeholder={currentModel ? 'No serials for model' : 'ALM-2024-001'} className="bg-almona-darker border-almona-light/30" disabled={!!currentModel} />
+          )} />
+        )}
+      </div>
+    </div>
+  );
+};
