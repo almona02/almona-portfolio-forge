@@ -4,7 +4,6 @@ import Footer from "@/components/layout/Footer";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { EmergencyServiceDialog } from "@/components/services/EmergencyServiceDialog";
 import { FormSkeleton } from "@/components/ui/FormSkeleton";
-import { SkeletonLoader } from "@/components/ui/SkeletonLoader";
 import { lazy, Suspense } from "react";
 
 const MachineRegistrationEnhanced = lazy(() =>
@@ -23,7 +22,6 @@ const MaintenanceDashboard = lazy(() =>
   }))
 );
 
-import { ScheduleMaintenance } from "@/components/services/ScheduleMaintenance";
 import { OperatorTrainingIncentiveDialog } from "@/components/services/OperatorTrainingIncentiveDialog";
 import {
   Tabs,
@@ -37,23 +35,63 @@ import { Link, useNavigate } from "react-router-dom";
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 import { Badge } from "@/components/ui/badge";
 import { buildNavigationState } from '@/lib/ticketing/unifiedTicketing';
+import TicketWizardDialog from '@/components/support/TicketWizardDialog';
+import { UnifiedTicketFormData } from '@/lib/validation/ticket';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/hooks/useToast';
+import { canCreateServiceTicket, trackServiceTicketBlocked } from '@/lib/permissions/tickets';
 
 const Services = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const { user } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [machineView, setMachineView] = useState<"list" | "map">("list");
   const [emergencyDialogOpen, setEmergencyDialogOpen] = useState(false);
-  const [scheduleMaintenanceOpen, setScheduleMaintenanceOpen] = useState(false);
   const [operatorTrainingOpen, setOperatorTrainingOpen] = useState(false);
+  // Ticket wizard launcher state
+  const [ticketWizardOpen, setTicketWizardOpen] = useState(false);
+  const [ticketInitialValues, setTicketInitialValues] = useState<Partial<UnifiedTicketFormData> | undefined>(undefined);
 
   useEffect(() => {
     document.title = "Industrial Services - ALMONA";
   }, []);
 
   const handleScheduleMaintenance = () => {
-    setScheduleMaintenanceOpen(true);
+    // Launch unified ticket wizard prefilled for preventive maintenance (legacy dialog removed)
+    launchMaintenanceTicket('preventive');
+  };
+
+  const launchMaintenanceTicket = (maintenanceType: 'preventive' | 'corrective' | 'emergency') => {
+    // Require authentication
+    if (!user) { navigate('/login'); return; }
+    if (!canCreateServiceTicket(user.role)) {
+      trackServiceTicketBlocked({ role: user.role, reason: 'role_not_whitelisted', maintenanceType });
+      toast({
+        title: 'Access Restricted',
+        description: 'Your role is not permitted to create service tickets.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    try {
+      // Clear any previous wizard draft so the prefill is honored freshly
+      const draftKey = `ticket_wizard_draft_${user.id}`;
+      localStorage.removeItem(draftKey);
+    } catch {/* ignore storage errors */}
+    const ctx = maintenanceType === 'emergency'
+      ? { source: 'emergency' as const }
+      : { source: 'maintenance' as const, maintenanceType };
+    const prefill = buildNavigationState(ctx).prefill;
+    // Map navigation prefill (TicketPrefill) to wizard "initialValues" shape
+    setTicketInitialValues({
+      type: prefill.type as UnifiedTicketFormData['type'],
+      maintenance_type: prefill.maintenance_type as UnifiedTicketFormData['maintenance_type'],
+      priority: prefill.priority as UnifiedTicketFormData['priority'],
+      title: prefill.title,
+      description: prefill.description
+    });
+    setTicketWizardOpen(true);
   };
 
   return (
@@ -82,11 +120,6 @@ const Services = () => {
             onOpenChange={setEmergencyDialogOpen} 
           />
 
-          {/* Schedule Maintenance Dialog */}
-          <ScheduleMaintenance
-            open={scheduleMaintenanceOpen}
-            onOpenChange={setScheduleMaintenanceOpen}
-          />
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
             <Link to="/portal">
@@ -123,7 +156,7 @@ const Services = () => {
                       "AI-driven scheduling",
                       "Warranty compliance tracking"
                     ]}
-                    actionText="Schedule Maintenance"
+                    actionText={user ? "Create Ticket" : "Login to Request"}
                     onActionClick={handleScheduleMaintenance}
                   />
                   <ServiceCard
@@ -135,8 +168,8 @@ const Services = () => {
                       "Original spare parts",
                       "Mobile repair units"
                     ]}
-                    actionText="Request Emergency Service"
-                    onActionClick={() => setEmergencyDialogOpen(true)}
+                    actionText={user ? "Emergency Ticket" : "Login for Emergency"}
+                    onActionClick={() => launchMaintenanceTicket('emergency')}
                   />
                   <ServiceCard
                     icon="graduation-cap"
@@ -244,9 +277,15 @@ const Services = () => {
       </main>
 
       {/* Dialog Mount */}
-      <ScheduleMaintenance
-        open={scheduleMaintenanceOpen}
-        onOpenChange={setScheduleMaintenanceOpen}
+      {/* Removed legacy <ScheduleMaintenance /> dialog in favor of unified TicketWizardDialog */}
+      {/* Unified Ticket Wizard Launcher */}
+      <TicketWizardDialog
+        open={ticketWizardOpen}
+        onOpenChange={setTicketWizardOpen}
+        initialValues={ticketInitialValues}
+        onTicketCreated={() => {
+          setTicketWizardOpen(false);
+        }}
       />
       <Footer />
       <OperatorTrainingIncentiveDialog

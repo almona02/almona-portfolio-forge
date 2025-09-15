@@ -53,7 +53,7 @@ export interface ShippingAddress {
   phone: string
 }
 
-export type UserRole = 'customer' | 'admin' | 'sales_rep' | 'technician'
+export type UserRole = 'customer' | 'admin' | 'sales_rep' | 'technician' | 'support'
 export type OrderStatus = 'draft' | 'pending' | 'confirmed' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
 export type ProductCategory = 'machine' | 'spare_part' | 'raw_material' | 'tool' | 'accessory'
 export type QuoteStatus = 'draft' | 'pending' | 'sent' | 'accepted' | 'rejected' | 'expired'
