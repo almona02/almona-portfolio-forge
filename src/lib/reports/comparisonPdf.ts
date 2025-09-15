@@ -149,7 +149,11 @@ export async function generateComparisonPDF(
   rows.push(condensed ? ['TOTAL', totalPowerDisplay, totalAirDisplay, ''] : ['TOTAL','','', totalPowerDisplay, '', totalAirDisplay]);
 
   // Sanitizer to avoid unsupported glyphs (e.g., ellipsis) in StandardFonts (WinAnsi)
-  const sanitize = (text: string) => text.replace(/…/g, '...');
+  const sanitize = (text: string) => text
+    .replace(/…/g, '...')
+    .replace(/×/g, 'x')
+    .replace(/≥/g, '>=')
+    .replace(/³/g, '^3');
 
   // Simple table rendering with wrapping pages if needed
   const lineHeight = 18;
@@ -166,9 +170,20 @@ export async function generateComparisonPDF(
   // Draw table header
   page.drawRectangle({ x: margin, y: y - headerHeight + 4, width: pageWidth - margin*2, height: headerHeight, color: rgb(0.95,0.95,0.97) });
   let x = margin + 4;
-  const colWidths = condensed
+  // Dynamic column width distribution: first column wider, remaining share space
+  const baseWidths = condensed
     ? [190,140,140,80]
     : [160,100,90,170,90,130];
+  const colCount = columns.length;
+  let colWidths = baseWidths;
+  if (colCount !== baseWidths.length) {
+    // Recompute: allocate first col 0.22 of width, rest evenly
+    const tableInner = pageWidth - margin * 2 - 8; // padding allowance
+    const first = Math.min(220, tableInner * 0.22);
+    const remaining = tableInner - first;
+    const each = remaining / (colCount - 1);
+    colWidths = [first, ...Array.from({ length: colCount - 1 }, () => each)];
+  }
   columns.forEach((col, i) => {
     page.drawText(sanitize(col), { x, y: y - 16, size: 11, font: bold });
     x += colWidths[i];
@@ -194,7 +209,18 @@ export async function generateComparisonPDF(
       page.drawRectangle({ x: margin, y: y - lineHeight + 4, width: pageWidth - margin*2, height: lineHeight, color: rgb(0.93,0.93,0.97) });
     }
     row.forEach((cell, ci) => {
-      page.drawText(sanitize(String(cell)), { x: cx, y: y - 14, size: isTotal ? 11 : 9.5, font: isTotal ? bold : font, color: isTotal ? rgb(0.05,0.05,0.05) : rgb(0,0,0) });
+      const raw = sanitize(String(cell));
+      const maxWidth = colWidths[ci] - 8;
+      let text = raw;
+      // Truncate if width exceeds (simple measure)
+      const width = (isTotal ? bold : font).widthOfTextAtSize(text, isTotal ? 11 : 9.5);
+      if (width > maxWidth) {
+        while (text.length > 3 && (isTotal ? bold : font).widthOfTextAtSize(text + '…', isTotal ? 11 : 9.5) > maxWidth) {
+          text = text.slice(0, -1);
+        }
+        text = text + '…';
+      }
+      page.drawText(text, { x: cx, y: y - 14, size: isTotal ? 11 : 9.5, font: isTotal ? bold : font, color: isTotal ? rgb(0.05,0.05,0.05) : rgb(0,0,0) });
       cx += colWidths[ci];
     });
     y -= lineHeight;
