@@ -131,10 +131,25 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
   useEffect(() => { if (!userInteractedRef.current && selectedType && selectedType !== uiType) setUiType(selectedType); }, [selectedType, uiType]);
   useEffect(() => { if (!userInteractedRef.current && selectedPriority && selectedPriority !== uiPriority) setUiPriority(selectedPriority); }, [selectedPriority, uiPriority]);
 
+  // After user interaction, ensure form values don't drift from UI (last-write-wins = UI)
+  useEffect(() => {
+    if (!userInteractedRef.current) return;
+    if (uiType && uiType !== selectedType) {
+      setValue('type', uiType as TicketType, { shouldDirty: true, shouldTouch: true });
+      if (process.env.NODE_ENV !== 'production') console.debug('[TicketWizard] Force-sync form.type ->', uiType, ' (was ', selectedType, ')');
+    }
+    if (uiPriority && uiPriority !== selectedPriority) {
+      setValue('priority', uiPriority as TicketPriority, { shouldDirty: true, shouldTouch: true });
+      if (process.env.NODE_ENV !== 'production') console.debug('[TicketWizard] Force-sync form.priority ->', uiPriority, ' (was ', selectedPriority, ')');
+    }
+  }, [uiType, uiPriority, selectedType, selectedPriority, setValue]);
+
   // Apply initialValues only when they actually change (prevents flicker resetting user selection)
   const prevInitialRef = useRef<Partial<UnifiedTicketFormData> | null>(null);
   useEffect(() => {
     if (!initialValues) return;
+    // Patch A: If user has already interacted, do not override their selections with initialValues
+    if (userInteractedRef.current) return;
     const prev = prevInitialRef.current;
     const changed = !prev || (Object.keys(initialValues) as (keyof UnifiedTicketFormData)[])
       .some(key => prev[key as keyof UnifiedTicketFormData] !== initialValues[key as keyof UnifiedTicketFormData]);
@@ -182,6 +197,9 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
   useEffect(() => {
     if (!DRAFT_KEY) return;
     const sub = form.watch((values) => {
+      if (process.env.NODE_ENV !== 'production') {
+        try { console.debug('[TicketWizard] watch emission', { type: values.type, priority: values.priority }); } catch {/* ignore */}
+      }
       if (saveTimeoutRef.current) window.clearTimeout(saveTimeoutRef.current);
       saveTimeoutRef.current = window.setTimeout(() => {
         const sanitized = attachments.map(({ tempFile: _tempFile, selected: _sel, ...rest }) => rest);
@@ -325,6 +343,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
             key={value}
             role="radio"
             aria-checked={active}
+            onMouseDown={() => { if (!userInteractedRef.current) userInteractedRef.current = true; }}
             onClick={() => { userInteractedRef.current = true; setUiType(value); setValue('type', value as TicketType, { shouldDirty: true, shouldTouch: true }); }}
             aria-pressed={active}
             className={`relative text-left p-3 rounded-md border transition group focus:outline-none focus-visible:ring-2 focus-visible:ring-almona-orange/60 ${active ? 'border-almona-orange bg-gradient-to-br from-almona-orange/20 to-almona-orange/5 shadow-[0_0_0_1px_rgba(255,95,31,0.4)]' : 'border-almona-light/20 hover:border-almona-orange/40'}`}
@@ -348,6 +367,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
             type="button"
             role="radio"
             aria-checked={active}
+            onMouseDown={() => { if (!userInteractedRef.current) userInteractedRef.current = true; }}
             onClick={() => { userInteractedRef.current = true; setUiPriority(p.value); setValue('priority', p.value, { shouldDirty: true, shouldTouch: true }); }}
             aria-pressed={active}
             className={`relative px-3 py-2 rounded-md border text-left text-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-almona-orange/60 ${active ? 'border-almona-orange bg-gradient-to-br from-almona-orange/25 to-almona-orange/5 shadow-[0_0_0_1px_rgba(255,95,31,0.4)]' : 'border-almona-light/20 hover:border-almona-orange/40'}`}
@@ -405,11 +425,17 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
                     <Label className="text-sm font-medium">Ticket Type</Label>
+                    {process.env.NODE_ENV !== 'production' && (
+                      <div className="text-[10px] text-gray-500">debug: form.type={selectedType} uiType={uiType}</div>
+                    )}
                     <TypePills />
                     {errors.type && <p className="text-xs text-red-500">{errors.type.message}</p>}
                   </div>
                   <div className="space-y-4">
                     <Label className="text-sm font-medium">Priority</Label>
+                    {process.env.NODE_ENV !== 'production' && (
+                      <div className="text-[10px] text-gray-500">debug: form.priority={selectedPriority} uiPriority={uiPriority}</div>
+                    )}
                     <PriorityPills />
                     {errors.priority && <p className="text-xs text-red-500">{errors.priority.message}</p>}
                   </div>
