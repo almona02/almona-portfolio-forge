@@ -48,6 +48,7 @@ function mapTicket(row: DBServiceTicketRow): ServiceTicket {
     preferred_contact_method: row.preferred_contact_method || 'email',
     site_location: row.site_location,
     machine_serial_number: row.machine_serial_number,
+  machine_model: (row as any).machine_model ?? null,
     resolution_summary: row.resolution_summary,
     customer_satisfaction_rating: row.customer_satisfaction_rating,
     customer_feedback: row.customer_feedback,
@@ -116,6 +117,7 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
         preferred_contact_method: ticketData.preferred_contact_method || 'email',
         site_location: ticketData.site_location || null,
         machine_serial_number: ticketData.machine_serial_number || null,
+  machine_model: (ticketData as any).machine_model || null,
         resolution_summary: null,
         customer_satisfaction_rating: null,
         customer_feedback: null,
@@ -143,7 +145,8 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     contact_email: ticketData.contact_email || null,
     preferred_contact_method: ticketData.preferred_contact_method || 'email',
     site_location: ticketData.site_location || null,
-    machine_serial_number: ticketData.machine_serial_number || null
+  machine_serial_number: ticketData.machine_serial_number || null,
+  machine_model: (ticketData as any).machine_model || null
   }
   // Casting supabase to any to bypass strict table inference issues until generated types include custom columns
   const { data, error } = await (supabase as any)
