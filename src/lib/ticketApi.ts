@@ -11,6 +11,7 @@ import {
 } from '@/types/tickets'
 import { supabase } from '@/lib/supabase'
 import { Database } from '@/types/database'
+import { ticketsV2Api } from '@/lib/api/ticketsV2'
 
 type DBServiceTicketRow = Database['public']['Tables']['service_tickets']['Row'] & { source?: string | null; maintenance_type?: string | null }
 type DBTicketMessageRow = Database['public']['Tables']['ticket_messages']['Row']
@@ -57,6 +58,72 @@ function mapTicket(row: DBServiceTicketRow): ServiceTicket {
 
 // ---------- Ticket CRUD ----------
 export const createTicket = async (ticketData: CreateTicketData, userId: string): Promise<ServiceTicket> => {
+  // Attempt V2 path first
+  try {
+    let category: string | null = null
+    if (ticketData.type === 'maintenance') {
+      const mt = (ticketData as any).maintenance_type
+      if (mt === 'emergency') category = 'emergency_service'
+      else if (mt === 'preventive') category = 'preventive_maintenance'
+      else if (mt) category = 'scheduled_maintenance'
+    } else if (ticketData.type === 'sales') category = 'product_quote'
+    else if (['general', 'technical'].includes(ticketData.type)) category = 'support'
+
+    if (category) {
+      const payload: any = {
+        category,
+        payload: {
+          title: ticketData.title,
+          description: ticketData.description,
+          priority: ticketData.priority,
+          machine_id: (ticketData as any).machine_id || undefined,
+          machine_serial_number: ticketData.machine_serial_number || undefined,
+        },
+      }
+      if (category === 'preventive_maintenance') {
+        payload.maintenance_metadata = { maintenance_type: (ticketData as any).maintenance_type }
+      }
+      const v2 = await ticketsV2Api.create(payload)
+      return {
+        id: v2.id,
+        ticket_number: v2.ticket_number,
+        user_id: userId,
+        title: v2.title,
+        description: v2.description || null,
+        type: ticketData.type,
+        priority: v2.priority,
+        status: v2.status as TicketStatus,
+        source: null,
+        maintenance_type: (ticketData as any).maintenance_type || null,
+        related_quote_id: null,
+        related_order_id: null,
+        related_product_id: null,
+        assigned_to: null,
+        assigned_at: null,
+        assigned_by: null,
+        sla_response_due: null,
+        sla_resolution_due: null,
+        first_response_at: null,
+        sla_breached: false,
+        escalated: false,
+        escalated_at: null,
+        contact_phone: ticketData.contact_phone || null,
+        contact_email: ticketData.contact_email || null,
+        preferred_contact_method: ticketData.preferred_contact_method || 'email',
+        site_location: ticketData.site_location || null,
+        machine_serial_number: ticketData.machine_serial_number || null,
+        resolution_summary: null,
+        customer_satisfaction_rating: null,
+        customer_feedback: null,
+        created_at: v2.created_at,
+        updated_at: v2.updated_at,
+        resolved_at: null,
+        closed_at: null,
+      }
+    }
+  } catch (err) {
+    console.warn('V2 create failed, legacy fallback:', err)
+  }
   const insertPayload = {
     user_id: userId,
     title: ticketData.title,
@@ -132,6 +199,22 @@ export const updateTicketStatus = async (
   status: TicketStatus,
   resolution_summary?: string
 ): Promise<ServiceTicket> => {
+  try {
+    const updated = await ticketsV2Api.updateStatus(ticketId, status, resolution_summary)
+    const existing = await getTicketById(ticketId)
+    if (existing) {
+      return {
+        ...existing,
+        status: updated.status as TicketStatus,
+        updated_at: updated.updated_at,
+        resolved_at: status === 'resolved' ? updated.updated_at : existing.resolved_at,
+        closed_at: status === 'closed' ? updated.updated_at : existing.closed_at,
+        resolution_summary: resolution_summary || existing.resolution_summary,
+      }
+    }
+  } catch (err) {
+    console.warn('V2 status update failed, legacy fallback:', err)
+  }
   const patch: Record<string, unknown> = { status, updated_at: new Date().toISOString() }
   if (status === 'resolved') patch['resolved_at'] = new Date().toISOString()
   if (status === 'closed') patch['closed_at'] = new Date().toISOString()
@@ -148,6 +231,28 @@ export const updateTicketStatus = async (
 
 // ---------- Messages ----------
 export const getTicketMessages = async (ticketId: string): Promise<MessageWithAuthor[]> => {
+  // Try V2 first
+  try {
+    const v2 = await ticketsV2Api.listMessages(ticketId)
+    // Assume v2 returns array with at least: id, message, created_at, author_id
+    return v2.map((m: any) => ({
+      id: m.id,
+      ticket_id: ticketId,
+      author_id: m.author_id || m.user_id || 'unknown',
+      message: m.message || m.content || '',
+      message_type: m.message_type || 'message',
+      is_internal_note: m.is_internal_note || false,
+      attachments: m.attachments || [],
+      spare_parts_details: m.spare_parts_details || null,
+      status_change: m.status_change || null,
+      time_spent_minutes: m.time_spent_minutes || null,
+      created_at: m.created_at,
+      edited_at: m.edited_at || null,
+      author: { full_name: m.author_name || null, role: 'user', avatar_url: m.author_avatar || null }
+    }))
+  } catch (err) {
+    console.warn('V2 listMessages failed, legacy fallback:', err)
+  }
   const { data, error } = await (supabase as any)
     .from('ticket_messages')
     .select('*')
@@ -172,6 +277,17 @@ export const getTicketMessages = async (ticketId: string): Promise<MessageWithAu
 }
 
 export const createMessage = async (messageData: CreateMessageData & { author_id: string }): Promise<TicketMessage> => {
+  try {
+    await ticketsV2Api.addMessage(messageData.ticket_id, messageData.message, {
+      message_type: messageData.message_type,
+      is_internal: messageData.is_internal_note,
+    })
+    // Re-fetch via V2 for consistent shape
+    const msgs = await getTicketMessages(messageData.ticket_id)
+    return msgs[msgs.length - 1] as TicketMessage
+  } catch (err) {
+    console.warn('V2 addMessage failed, legacy fallback:', err)
+  }
   const insertPayload = {
     ticket_id: messageData.ticket_id,
     author_id: messageData.author_id,
@@ -188,7 +304,7 @@ export const createMessage = async (messageData: CreateMessageData & { author_id
     .select()
     .single()
   if (error) throw new Error(error.message)
-  const row = data as DBTicketMessageRow
+  const row: DBTicketMessageRow = data as DBTicketMessageRow
   return {
     id: row.id,
     ticket_id: row.ticket_id,
@@ -196,13 +312,33 @@ export const createMessage = async (messageData: CreateMessageData & { author_id
     message: row.message,
     message_type: row.message_type,
     is_internal_note: row.is_internal_note,
-  attachments: (row.attachments as any[]) || [],
+    attachments: (row.attachments as any[]) || [],
     spare_parts_details: row.spare_parts_details,
     status_change: row.status_change,
     time_spent_minutes: row.time_spent_minutes,
     created_at: row.created_at,
     edited_at: row.edited_at
   }
+}
+
+export const assignTicket = async (ticketId: string, assigneeId: string): Promise<ServiceTicket> => {
+  try {
+    const updated = await ticketsV2Api.assign(ticketId, assigneeId)
+    const existing = await getTicketById(ticketId)
+    if (existing) {
+      return { ...existing, assigned_to: assigneeId, updated_at: updated.updated_at }
+    }
+  } catch (err) {
+    console.warn('V2 assign failed, legacy fallback:', err)
+  }
+  const { data, error } = await (supabase as any)
+    .from('service_tickets')
+    .update({ assigned_to: assigneeId, assigned_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq('id', ticketId)
+    .select()
+    .single()
+  if (error) throw new Error(error.message)
+  return mapTicket(data)
 }
 
 // ---------- Analytics ----------

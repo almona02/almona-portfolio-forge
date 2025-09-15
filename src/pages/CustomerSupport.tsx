@@ -2,17 +2,18 @@ import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/context/AuthContext'
 import { getUserTickets, getTicketStats } from '@/lib/ticketApi'
-import { TicketFilters, TicketStatus, TicketType, TicketPriority } from '@/types/tickets'
+import { TicketFilters } from '@/types/tickets'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Search, Filter, Ticket, Clock, CheckCircle, XCircle } from 'lucide-react'
+import { Plus, Search, Filter, Ticket, Clock, CheckCircle } from 'lucide-react'
 import { CreateTicketDialog } from '@/components/support/CreateTicketDialog'
 import { TicketDetailView } from '@/components/support/TicketDetailView'
-import { TicketStatusBadge } from '@/components/support/TicketStatusBadge'
 import { TicketSourceAnalytics } from '@/components/support/TicketSourceAnalytics'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/ui/table'
+// ticketInteractiveClasses & priorityStyles no longer needed directly after refactor
+import { TicketTableRow } from '@/components/support/TicketTableRow'
 // Removed dropdown selects in favor of pill selectors for better visibility
 
 const CustomerSupport: React.FC = () => {
@@ -30,7 +31,7 @@ const CustomerSupport: React.FC = () => {
   })
 
   // Fetch ticket statistics
-  const { data: stats, isLoading: isLoadingStats } = useQuery({
+  const { data: stats } = useQuery({
     queryKey: ['ticket-stats', user?.id],
     queryFn: () => user ? getTicketStats(user.id) : Promise.resolve(null),
     enabled: !!user,
@@ -257,8 +258,34 @@ const CustomerSupport: React.FC = () => {
         </CardHeader>
         <CardContent>
           {isLoadingTickets ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="rounded-md border" aria-busy="true" aria-live="polite">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ticket #</TableHead>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Priority</TableHead>
+                    <TableHead>Source</TableHead>
+                    <TableHead>Maint.</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Created</TableHead>
+                    <TableHead>Messages</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <TableRow key={i} className="animate-pulse">
+                      {Array.from({ length: 10 }).map((__, c) => (
+                        <TableCell key={c}>
+                          <div className="h-4 bg-muted/30 rounded w-full max-w-[140px]" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           ) : tickets && tickets.length > 0 ? (
             <div className="rounded-md border">
@@ -278,89 +305,17 @@ const CustomerSupport: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {tickets.map((ticket) => (
-                    <TableRow 
-                      key={ticket.id}
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => handleViewTicket(ticket.id)}
-                    >
-                      <TableCell className="font-medium">
-                        {ticket.ticket_number}
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{ticket.title}</div>
-                          {ticket.description && (
-                            <div className="text-sm text-muted-foreground truncate max-w-[200px]">
-                              {ticket.description}
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {ticket.type.replace('_', ' ')}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant={
-                            ticket.priority === 'critical' || ticket.priority === 'urgent' 
-                              ? 'default' 
-                              : ticket.priority === 'high' 
-                              ? 'default' 
-                              : 'secondary'
-                          }
-                          className={
-                            ticket.priority === 'critical' || ticket.priority === 'urgent'
-                              ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                              : ticket.priority === 'high'
-                              ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300'
-                              : ''
-                          }
-                        >
-                          {ticket.priority}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {ticket.source && (
-                          <Badge variant="outline" className="capitalize">
-                            {ticket.source.replace('_',' ')}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {ticket.maintenance_type && (
-                          <Badge variant="secondary" className="capitalize">
-                            {ticket.maintenance_type}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <TicketStatusBadge status={ticket.status} />
-                      </TableCell>
-                      <TableCell>
-                        {new Date(ticket.created_at).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {ticket.message_count || 0}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleViewTicket(ticket.id)
-                          }}
-                        >
-                          View
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {tickets.map((t) => {
+                    const ticketWithCount = t as typeof t & { message_count?: number }
+                    return (
+                      <TicketTableRow
+                        key={ticketWithCount.id}
+                        ticket={ticketWithCount}
+                        selected={selectedTicketId === ticketWithCount.id}
+                        onSelect={handleViewTicket}
+                      />
+                    )
+                  })}
                 </TableBody>
               </Table>
             </div>
@@ -369,7 +324,7 @@ const CustomerSupport: React.FC = () => {
               <Ticket className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No tickets found</h3>
               <p className="text-muted-foreground mb-4">
-                You haven't created any support tickets yet.
+                You haven&apos;t created any support tickets yet.
               </p>
               <Button onClick={handleCreateTicket}>
                 Create Your First Ticket

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from . import auth_fastapi, yilmaz_integration
+from . import auth_fastapi, yilmaz_integration, tickets
 # Temporarily disabled - requires mlflow and AI dependencies
 # from . import part_detection_fastapi
 
@@ -19,4 +19,11 @@ router.include_router(
     yilmaz_integration.router,
     prefix="",
     tags=["Yilmaz Integration"],
+)
+
+# Unified Tickets
+router.include_router(
+    tickets.router,
+    prefix="",
+    tags=["Tickets"],
 )

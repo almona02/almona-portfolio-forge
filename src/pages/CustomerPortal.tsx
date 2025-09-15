@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
-import { getUserTickets } from '@/lib/ticketApi'; // retained for potential future advanced ticket view (not used in query now)
+// getUserTickets import removed (no direct usage here) to satisfy linter
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { toast } from 'sonner';
@@ -15,15 +15,12 @@ import {
   FileText, 
   Download, 
   Calendar, 
-  Clock, 
   Search,
   Plus,
-  AlertTriangle,
-  CheckCircle,
-  Clock4,
-  User,
-  LucideIcon
+  User
 } from 'lucide-react';
+import { TicketCard } from '@/components/support/TicketCard';
+import { useReducedMotionPref } from '@/hooks/useReducedMotionPref';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
@@ -137,36 +134,7 @@ const CustomerPortal = () => {
     }
   }, [documentsError]);
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, {icon: LucideIcon, color: string, label: string}> = {
-      open: { icon: Clock4, color: 'blue', label: 'Open' },
-      in_progress: { icon: Clock, color: 'amber', label: 'In Progress' },
-      resolved: { icon: CheckCircle, color: 'green', label: 'Resolved' },
-      closed: { icon: CheckCircle, color: 'gray', label: 'Closed' },
-      urgent: { icon: AlertTriangle, color: 'red', label: 'Urgent' }
-    };
-
-    const config = statusConfig[status] || { icon: Clock4, color: 'gray', label: status };
-    const Icon = config.icon;
-
-    // Use static classes instead of dynamic template strings
-    const colorClasses: Record<string, string> = {
-      blue: 'bg-blue-500/20 text-blue-300 border-blue-500/50',
-      amber: 'bg-amber-500/20 text-amber-300 border-amber-500/50',
-      green: 'bg-green-500/20 text-green-300 border-green-500/50',
-      gray: 'bg-gray-500/20 text-gray-300 border-gray-500/50',
-      red: 'bg-red-500/20 text-red-300 border-red-500/50',
-    };
-
-    return (
-      <Badge 
-        variant="outline" 
-        className={`${colorClasses[config.color]} capitalize`}
-      >
-        <Icon className="h-3 w-3 mr-1" /> {config.label}
-      </Badge>
-    );
-  };
+  // Removed getStatusBadge (now handled inside TicketCard component)
 
   const getMachineStatusBadge = (status: string = 'active') => {
     const statusConfig: Record<string, {color: string, label: string}> = {
@@ -229,6 +197,7 @@ const CustomerPortal = () => {
   );
 
   const initialLoading = !bootstrapped;
+  const reducedMotion = useReducedMotionPref();
   if (initialLoading) return <LoadingSkeleton />;
 
   return (
@@ -398,39 +367,18 @@ const CustomerPortal = () => {
                 {tickets && tickets.length > 0 ? (
                   <div className="space-y-4">
                     {tickets.map((ticket, index) => (
-                      <motion.div 
+                      <motion.div
                         key={ticket.id}
                         variants={itemVariants}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: reducedMotion ? 0 : 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
                       >
-                        <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm hover:border-almona-orange/50 transition-colors group cursor-pointer"
-                          onClick={() => navigate(`/support/tickets/${ticket.id}`)}
-                        >
-                          <CardContent className="p-6">
-                            <div className="flex justify-between items-start mb-4">
-                              <div>
-                                <h3 className="font-semibold text-lg group-hover:text-almona-orange transition-colors">
-                                  {ticket.title}
-                                </h3>
-                                <p className="text-gray-400 text-sm">#{ticket.ticket_number || ticket.id.slice(-8).toUpperCase()}</p>
-                              </div>
-                              {getStatusBadge(ticket.status || 'open')}
-                            </div>
-                            <p className="text-gray-300 mb-4 line-clamp-2">{ticket.description}</p>
-                            <div className="flex justify-between items-center text-sm text-gray-400">
-                              <div className="flex items-center">
-                                <Calendar className="h-4 w-4 mr-1" />
-                                Created: {new Date(ticket.created_at).toLocaleDateString()}
-                              </div>
-                              <div className="flex items-center">
-                                <Clock className="h-4 w-4 mr-1" />
-                                Updated: {new Date(ticket.updated_at).toLocaleDateString()}
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
+                        <TicketCard
+                          ticket={ticket}
+                          onOpen={(id) => navigate(`/support/tickets/${id}`)}
+                          reducedMotion={reducedMotion}
+                        />
                       </motion.div>
                     ))}
                   </div>

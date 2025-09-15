@@ -1,63 +1,30 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
 
-from core.config import settings
 from apis.v1 import router as v1_router
-from apis.v2 import router as v2_router
-from apis.v2.notifications import router as notifications_router
+from apis.v2.tickets import router as v2_tickets_router
 
-# Initialize Limiter
-limiter = Limiter(key_func=get_remote_address, default_limits=[settings.RATE_LIMIT])
+app = FastAPI(title="Almona Industrial API", version="2.0.0")
 
-# Initialize FastAPI app
-app = FastAPI(
-    title="Almona AI Services API",
-    description="AI-powered spare parts identification and processing services",
-    version="1.0.0"
-)
-
-# Add Rate Limiter
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
-
-# Configure CORS
-allowed_origins = (
-    settings.ALLOWED_ORIGINS.split(',')
-    if settings.ALLOWED_ORIGINS != '*'
-    else ["*"]
-)
+# CORS middleware (static list per provided spec)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=["http://localhost:5173", "https://yourdomain.com"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Mount the versioned APIs
+# Routers
 app.include_router(v1_router, prefix="/api/v1")
-app.include_router(v2_router, prefix="/api/v2")
-app.include_router(
-    notifications_router,
-    prefix="/api/v2/notifications",
-    tags=["Email Notifications"]
-)
+app.include_router(v2_tickets_router, prefix="/api/v2")
 
 
 @app.get("/")
 async def root():
-    """Root endpoint with API information"""
-    return {
-        "message": "Almona AI Services API",
-        "version": "1.0.0",
-        "status": "running",
-        "docs": "/docs"
-    }
+    return {"message": "Almona Industrial API", "version": "2.0.0"}
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}

@@ -5,10 +5,11 @@ import { Input } from '@/shared/ui/ui/input';
 import { Textarea } from '@/shared/ui/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Badge } from '@/shared/ui/ui/badge';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { QuoteAIHelper } from './QuoteAIHelper';
 import { QuoteCalculator } from './QuoteCalculator';
 import { QuoteSummary } from './QuoteSummary';
+import { Machine } from '../../types';
 
 const steps = [
   "Contact Information",
@@ -17,23 +18,49 @@ const steps = [
   "Review & Submit"
 ];
 
+interface SelectedProduct { id: string; name: string; price?: number }
+interface SelectedService { id?: string; name: string; price?: number }
+interface StepperInitialData {
+  products?: SelectedProduct[]
+  services?: SelectedService[]
+  contactInfo?: {
+    name?: string
+    email?: string
+    phone?: string
+    company?: string
+  }
+}
+interface StepperFormValues {
+  name: string
+  email: string
+  phone: string
+  company?: string
+  projectDescription: string
+  urgency: string
+  deliveryLocation: string
+  specialRequirements: string
+}
 interface QuoteRequestStepperProps {
-  initialData?: any;
-  onSubmit: (data: any) => void;
+  initialData?: StepperInitialData;
+  onSubmit: (data: StepperFormValues & { products: SelectedProduct[]; services: SelectedService[]; estimatedPrice: number | null; timestamp: string; status: string }) => void;
   onCancel: () => void;
+  submitting?: boolean;
+  relatedServiceTicketId?: string;
 }
 
 export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
   initialData,
   onSubmit,
-  onCancel,
+  // onCancel intentionally unused currently (reserved for future cancel button placement)
+  submitting = false,
+  relatedServiceTicketId,
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [selectedProducts, setSelectedProducts] = useState(initialData?.products || []);
-  const [selectedServices, setSelectedServices] = useState(initialData?.services || []);
+  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(initialData?.products || []);
+  const [selectedServices, setSelectedServices] = useState<SelectedService[]>(initialData?.services || []);
   const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
 
-  const form = useForm({
+  const form = useForm<StepperFormValues>({
     defaultValues: {
       name: initialData?.contactInfo?.name || "",
       email: initialData?.contactInfo?.email || "",
@@ -47,32 +74,40 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
   });
 
   const nextStep = () => {
+    if (submitting) return;
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
 
   const prevStep = () => {
+    if (submitting) return;
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const handleAddProduct = (product: any) => {
+  const handleAddProduct = (product: SelectedProduct) => {
     setSelectedProducts([...selectedProducts, product]);
   };
 
-  const handleAddService = (service: any) => {
-    setSelectedServices([...selectedServices, service]);
+  // For now services suggestions come as simple strings -> map to SelectedService structure
+  const handleAddService = (service: SelectedService | string) => {
+    if (typeof service === 'string') {
+      setSelectedServices([...selectedServices, { name: service }]);
+    } else {
+      setSelectedServices([...selectedServices, service]);
+    }
   };
 
   const calculateEstimate = () => {
-    const base = selectedProducts.reduce((sum: number, p: any) => sum + (p.price || 0), 0);
-    const services = selectedServices.reduce((sum: number, s: any) => sum + (s.price || 0), 0);
+    const base = selectedProducts.reduce((sum: number, p) => sum + (p.price || 0), 0);
+    const services = selectedServices.reduce((sum: number, s) => sum + (s.price || 0), 0);
     setEstimatedPrice(base + services);
   };
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data: StepperFormValues) => {
+    if (submitting) return;
     const fullQuote = {
       ...data,
       products: selectedProducts,
@@ -86,35 +121,50 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-4">
-          {steps.map((step, index) => (
-            <div key={step} className="flex items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  index <= currentStep
-                    ? "bg-orange-600 text-white"
-                    : "bg-almona-dark text-gray-400"
-                }`}
-              >
-                {index + 1}
-              </div>
-              <span
-                className={`ml-2 ${
-                  index === currentStep ? "text-orange-400 font-medium" : "text-gray-400"
-                }`}
-              >
-                {step}
-              </span>
-              {index < steps.length - 1 && (
-                <ChevronRight className="w-4 h-4 mx-2 text-gray-500" />
-              )}
-            </div>
-          ))}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+        <div className="relative">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar pr-4 md:pr-0" role="tablist" aria-label="Quote steps">
+            {steps.map((step, index) => {
+              const active = index === currentStep
+              const complete = index < currentStep
+              return (
+                <button
+                  key={step}
+                  type="button"
+                  onClick={() => !submitting && setCurrentStep(index)}
+                  aria-current={active ? 'step' : undefined}
+                  aria-disabled={submitting}
+                  className={`group flex items-center flex-shrink-0 rounded-full border transition px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/70
+                    ${active ? 'bg-orange-600/20 border-orange-500 text-orange-300 shadow-inner' : complete ? 'bg-almona-dark/70 border-orange-800 text-orange-500' : 'bg-almona-dark/40 border-almona-light/10 text-gray-400'}
+                    ${submitting ? 'opacity-60 cursor-not-allowed' : 'hover:border-orange-500/70 hover:text-orange-300'}
+                  `}
+                >
+                  <span
+                    className={`mr-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition
+                      ${active ? 'bg-orange-600 text-white' : complete ? 'bg-orange-700/70 text-white' : 'bg-almona-darker text-gray-400'}
+                    `}
+                  >
+                    {complete ? '✓' : index + 1}
+                  </span>
+                  <span className="whitespace-nowrap select-none">
+                    {step}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+          <div className="mt-2 h-1 hidden md:flex w-full bg-gradient-to-r from-orange-700/40 via-orange-500/40 to-transparent rounded" />
         </div>
-        <Badge variant="outline" className="border-orange-500 text-orange-500">
-          {estimatedPrice ? `Est. ${estimatedPrice.toLocaleString()} EGP` : "Calculating..."}
-        </Badge>
+        <div className="flex items-center gap-3 self-start md:self-auto">
+          {relatedServiceTicketId && (
+            <Badge variant="outline" className="border-blue-500 text-blue-400" title="Linked Service Ticket">
+              Ticket {relatedServiceTicketId.slice(0,8)}…
+            </Badge>
+          )}
+          <Badge variant="outline" className="border-orange-500 text-orange-500">
+            {estimatedPrice ? `Est. ${estimatedPrice.toLocaleString()} EGP` : "Calculating..."}
+          </Badge>
+        </div>
       </div>
 
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
@@ -147,7 +197,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
                 <p className="text-gray-400">No items selected yet</p>
               ) : (
                 <div className="space-y-2">
-                  {selectedProducts.map((product: any) => (
+                  {selectedProducts.map((product) => (
                     <div key={product.id} className="flex justify-between items-center p-3 bg-almona-dark rounded">
                       <span>{product.name}</span>
                       <Badge variant="outline" className="border-green-500 text-green-500">
@@ -155,7 +205,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
                       </Badge>
                     </div>
                   ))}
-                  {selectedServices.map((service: any) => (
+                  {selectedServices.map((service) => (
                     <div key={service.id} className="flex justify-between items-center p-3 bg-almona-dark rounded">
                       <span>{service.name}</span>
                       <Badge variant="outline" className="border-blue-500 text-blue-500">
@@ -178,8 +228,8 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
 
             <QuoteAIHelper 
               projectDescription={form.watch("projectDescription")} 
-              onProductSuggest={handleAddProduct}
-              onServiceSuggest={handleAddService}
+              onProductSuggest={(p: Machine) => handleAddProduct({ id: p.id, name: p.name, price: (p as unknown as { price?: number }).price })}
+              onServiceSuggest={(s: string) => handleAddService(s)}
             />
           </div>
         )}
@@ -215,8 +265,8 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
             </div>
 
             <QuoteCalculator 
-              products={selectedProducts}
-              services={selectedServices}
+              products={selectedProducts as unknown as Machine[]}
+              services={selectedServices.map(s => ({ id: s.id || s.name, name: s.name, price: s.price }))}
               urgency={form.watch("urgency")}
               onCalculate={calculateEstimate}
             />
@@ -226,8 +276,8 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
         {currentStep === 3 && (
           <QuoteSummary 
             formData={form.getValues()}
-            products={selectedProducts}
-            services={selectedServices}
+            products={selectedProducts.map(p => ({ id: p.id, name: p.name, price: p.price }))}
+            services={selectedServices.map((s, idx) => ({ id: s.id || String(idx), name: s.name, price: s.price }))}
             estimatedPrice={estimatedPrice}
           />
         )}
@@ -237,18 +287,31 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
             type="button"
             variant="outline"
             onClick={prevStep}
-            disabled={currentStep === 0}
+            disabled={currentStep === 0 || submitting}
+            aria-disabled={currentStep === 0 || submitting}
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
           {currentStep < steps.length - 1 ? (
-            <Button type="button" onClick={nextStep}>
-              Next
-              <ChevronRight className="w-4 h-4 ml-2" />
+            <Button type="button" onClick={nextStep} disabled={submitting} aria-disabled={submitting}>
+              {submitting ? (
+                <span className="flex items-center"><Loader2 className="w-4 h-4 mr-2 animate-spin" />Processing...</span>
+              ) : (
+                <>
+                  Next
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </>
+              )}
             </Button>
           ) : (
-            <Button type="submit">Submit Quote Request</Button>
+            <Button type="submit" disabled={submitting} aria-disabled={submitting} className="min-w-[200px]">
+              {submitting ? (
+                <span className="flex items-center justify-center"><Loader2 className="w-4 h-4 mr-2 animate-spin" />Submitting…</span>
+              ) : (
+                'Submit Quote Request'
+              )}
+            </Button>
           )}
         </div>
       </form>
