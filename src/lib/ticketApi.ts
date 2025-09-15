@@ -21,6 +21,8 @@ function mapTicket(row: DBServiceTicketRow): ServiceTicket {
   return {
     id: row.id,
     ticket_number: row.ticket_number,
+    digital_twin_code: (row as any).digital_twin_code ?? null,
+    category: (row as any).category ?? null,
     user_id: row.user_id,
     title: row.title,
     description: row.description,
@@ -87,6 +89,8 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
       return {
         id: v2.id,
         ticket_number: v2.ticket_number,
+        digital_twin_code: (v2 as any).digital_twin_code || null,
+        category: v2.category || null,
         user_id: userId,
         title: v2.title,
         description: v2.description || null,

@@ -7,6 +7,8 @@ export type MessageType = 'message' | 'spare_parts_request' | 'status_update' | 
 export interface ServiceTicket {
   id: string
   ticket_number: string
+  digital_twin_code?: string | null
+  category?: string | null
   user_id: string
   title: string
   description: string | null

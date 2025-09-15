@@ -3,7 +3,7 @@ import { Machine } from "@/constants/productsData";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/ui/dialog";
 import { Button } from "@/shared/ui/ui/button";
 import CompareTable from "./CompareTable";
-import { Download, Share2, Printer } from "lucide-react";
+import { Download, Share2 } from "lucide-react";
 import { generateComparisonPDF, type ComparisonMachine } from "@/lib/reports/comparisonPdf";
 import { QuoteRequestDialog } from "@/components/quotes/QuoteRequestDialog";
 
@@ -19,15 +19,8 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
   machines 
 }) => {
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
-  const [powerUnit, setPowerUnit] = useState<'kW' | 'HP'>('kW');
-  const [airUnit, setAirUnit] = useState<'L/min' | 'm³/h'>('L/min');
-  const [orientation, setOrientation] = useState<'landscape' | 'portrait'>('landscape');
-  const [showBothUnits, setShowBothUnits] = useState(true);
-  const [condensed, setCondensed] = useState(false);
-  
-  const handlePrint = () => {
-    window.print();
-  };
+  // Removed unit/orientation controls for simplified UI: infer orientation by machine count
+  const inferredOrientation: 'landscape' | 'portrait' = machines.length > 3 ? 'landscape' : 'portrait';
 
   const handleExportPDF = async () => {
     try {
@@ -43,13 +36,13 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
             reader.onerror = () => reject(reader.error);
             reader.readAsDataURL(blob);
         });
-      } catch (e) {
+      } catch {
         // logo optional
       }
       const pdfBytes = await generateComparisonPDF(
-        machines as ComparisonMachine[], 
+        machines as unknown as ComparisonMachine[], 
         logoDataUrl,
-        { powerUnit, airUnit, showBothUnits, orientation, condensed }
+        { orientation: inferredOrientation }
       );
   const bytes = new Uint8Array(pdfBytes); // ensure proper ArrayBuffer instance
   const blob = new Blob([bytes], { type: 'application/pdf' });
@@ -83,7 +76,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
     const m = val.match(/([0-9]+(?:\.[0-9]+)?)/);
     return m ? parseFloat(m[1]) : 0;
   };
-  const typedMachines = machines as ComparisonMachine[];
+  const typedMachines = machines as unknown as ComparisonMachine[];
   const totalPowerKw = typedMachines.reduce((s, m) => s + numeric(m.powerSpec?.consumption), 0);
   const totalAir = typedMachines.reduce((s, m) => s + numeric(m.airSpec?.consumption), 0);
 
@@ -116,93 +109,13 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
                   onClick={handleExportPDF}
                 >
                   <Download size={16} className="mr-1" />
-                  PDF (Full)
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={async () => {
-                    try {
-                      if (!machines.length) return;
-                      let logoDataUrl: string | undefined;
-                      try {
-                        const res = await fetch('/logo.png');
-                        const blob = await res.blob();
-                        logoDataUrl = await new Promise<string>((resolve, reject) => {
-                          const reader = new FileReader();
-                          reader.onload = () => resolve(reader.result as string);
-                          reader.onerror = () => reject(reader.error);
-                          reader.readAsDataURL(blob);
-                        });
-                      } catch { /* logo optional */ }
-                      const pdfBytes = await generateComparisonPDF(
-                        machines as ComparisonMachine[],
-                        logoDataUrl,
-                        { powerUnit, airUnit, showBothUnits, orientation: 'portrait', condensed: true }
-                      );
-                      const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      const ts = new Date().toISOString().replace(/[:T]/g,'-').split('.')[0];
-                      a.href = url;
-                      a.download = `almona-comparison-condensed-${ts}.pdf`;
-                      document.body.appendChild(a);
-                      a.click();
-                      document.body.removeChild(a);
-                      URL.revokeObjectURL(url);
-                    } catch (e) {
-                      console.error(e);
-                      alert('Condensed PDF export failed');
-                    }
-                  }}
-                >
-                  <Download size={16} className="mr-1" />
-                  PDF (Mobile)
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handlePrint}
-                >
-                  <Printer size={16} className="mr-1" />
-                  Print
+                  PDF
                 </Button>
               </div>
             </div>
           </DialogHeader>
           
           <div className="py-4 space-y-6">
-            <div className="flex flex-wrap gap-3 items-center border rounded-md p-3 bg-muted/40 text-xs sm:text-sm">
-              <div className="flex items-center gap-1">
-                <label className="font-medium">Power Unit:</label>
-                <select value={powerUnit} onChange={e => setPowerUnit(e.target.value as 'kW' | 'HP')} className="bg-background border rounded px-2 py-1">
-                  <option value="kW">kW</option>
-                  <option value="HP">HP</option>
-                </select>
-              </div>
-              <div className="flex items-center gap-1">
-                <label className="font-medium">Air Unit:</label>
-                <select value={airUnit} onChange={e => setAirUnit(e.target.value as 'L/min' | 'm³/h')} className="bg-background border rounded px-2 py-1">
-                  <option value="L/min">L/min</option>
-                  <option value="m³/h">m³/h</option>
-                </select>
-              </div>
-              <div className="flex items-center gap-1">
-                <label className="font-medium">Orientation:</label>
-                <select value={orientation} onChange={e => setOrientation(e.target.value as 'landscape' | 'portrait')} className="bg-background border rounded px-2 py-1">
-                  <option value="landscape">Landscape</option>
-                  <option value="portrait">Portrait</option>
-                </select>
-              </div>
-              <label className="flex items-center gap-1 cursor-pointer">
-                <input type="checkbox" checked={showBothUnits} onChange={e => setShowBothUnits(e.target.checked)} />
-                <span>Show both units</span>
-              </label>
-              <label className="flex items-center gap-1 cursor-pointer">
-                <input type="checkbox" checked={condensed} onChange={e => setCondensed(e.target.checked)} />
-                <span>Condensed</span>
-              </label>
-            </div>
             <div className="-mx-4 sm:mx-0">
               <CompareTable machines={machines} />
             </div>

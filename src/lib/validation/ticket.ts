@@ -38,6 +38,8 @@ export const createTicketZodSchema = z.object({
   preferred_contact_method: z.enum(['email','phone','sms']).optional(),
   site_location: z.string().optional().or(z.literal('')),
   machine_serial_number: z.string().optional().or(z.literal('')),
+  // Attachments (array of URLs or identifiers) - optional
+  attachments: z.array(z.string().url()).optional().default([]),
 });
 
 export type UnifiedTicketFormData = z.infer<typeof createTicketZodSchema>;

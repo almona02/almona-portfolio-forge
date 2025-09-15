@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Plus, Search, Filter, Ticket, Clock, CheckCircle } from 'lucide-react'
-import { CreateTicketDialog } from '@/components/support/CreateTicketDialog'
+// Replaced basic create dialog with enhanced wizard
+import TicketWizardDialog from '@/components/support/TicketWizardDialog'
 import { TicketDetailView } from '@/components/support/TicketDetailView'
 import { TicketSourceAnalytics } from '@/components/support/TicketSourceAnalytics'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/ui/table'
@@ -334,11 +335,11 @@ const CustomerSupport: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Create Ticket Dialog */}
-      <CreateTicketDialog
+      {/* Ticket Wizard Dialog */}
+      <TicketWizardDialog
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
-        onTicketCreated={handleTicketCreated}
+        onTicketCreated={() => handleTicketCreated()}
       />
     </div>
   )
