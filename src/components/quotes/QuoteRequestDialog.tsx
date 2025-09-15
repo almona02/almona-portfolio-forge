@@ -38,7 +38,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
   relatedServiceTicketId,
 }) => {
   const { toast } = useToast();
-  // submission state currently not used for disabling UI, so omit to satisfy lint
+  const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<null | {
     quote_number: string;
     digital_twin_code?: string | null;
@@ -53,12 +53,13 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
   interface SubmitQuoteData {
     products: SubmitPayloadProduct[];
     services: SubmitPayloadService[];
-    contactInfo: { name?: string; email?: string; phone?: string; company?: string };
+    contactInfo?: { name?: string; email?: string; phone?: string; company?: string };
     projectDescription: string;
     urgency: string;
   }
 
   const handleSubmit = async (quoteData: SubmitQuoteData) => {
+    setSubmitting(true);
     try {
       const payload = {
         contact_name: quoteData.contactInfo?.name || quoteData.contactInfo?.email || 'Customer',
@@ -99,6 +100,8 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
         description: "Failed to submit quote request",
         variant: "destructive",
       });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -115,6 +118,8 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
             initialData={initialData}
             onSubmit={handleSubmit}
             onCancel={() => onOpenChange(false)}
+            submitting={submitting}
+            relatedServiceTicketId={relatedServiceTicketId}
           />
         )}
         {result && (
