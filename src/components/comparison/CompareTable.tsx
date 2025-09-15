@@ -5,7 +5,6 @@ interface ExtendedMachine extends Machine {
   airSpec?: { consumption?: string; pressure?: string };
 }
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/ui/table";
-import { Check, X } from "lucide-react";
 
 interface CompareTableProps {
   machines: Machine[];
@@ -24,9 +23,9 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
       case 'releaseDate':
         return m.releaseDate as string;
       case 'power':
-        return m.powerSpec ? (m.powerSpec as Record<string, string>).consumption : '-';
+        return m.powerSpec?.consumption ?? '-';
       case 'voltage':
-        return m.powerSpec ? (m.powerSpec as Record<string, string>).voltage : '-';
+        return m.powerSpec?.voltage ?? '-';
       case 'dimensions':
         if (m.dimensions) {
           const dims = m.dimensions as Record<string, string>;
@@ -116,44 +115,63 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
     }
   };
 
+  // Determine differences per spec row to emphasize variances
+  const rowDiffers = (specKey: string) => {
+    const values = machines.map(m => getMachineValue(m, specKey));
+    const first = JSON.stringify(values[0]);
+    return values.some(v => JSON.stringify(v) !== first);
+  };
+
   return (
     <div className="space-y-8 text-xs sm:text-sm">
       {specCategories.map((category) => (
-        <div key={category.name} className="border rounded-lg overflow-hidden">
-          <div className="bg-muted px-4 py-2">
-            <h3 className="font-semibold">{category.name}</h3>
+        <div key={category.name} className="border rounded-lg overflow-hidden shadow-sm bg-background/50">
+          <div className="bg-muted/60 backdrop-blur-sm px-4 py-2 flex items-center justify-between">
+            <h3 className="font-semibold tracking-wide text-sm uppercase text-muted-foreground/90">{category.name}</h3>
           </div>
-          <div className="overflow-x-auto">
-          <Table className="border-collapse w-full min-w-[640px]">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[200px]">Specification</TableHead>
-                {machines.map((machine) => (
-                  <TableHead key={machine.id} className="text-center">
-                    {machine.name}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {category.specs.map((spec) => (
-                <TableRow key={spec.key}>
-                  <TableCell className="font-medium">{spec.name}</TableCell>
-                  {machines.map((machine) => {
-                    const value = getMachineValue(machine, spec.key);
-                    return (
-                      <TableCell 
-                        key={`${machine.id}-${spec.key}`}
-                        className="text-center align-top"
-                      >
-                        {formatValue(value, spec.type)}
-                      </TableCell>
-                    );
-                  })}
+          <div className="overflow-x-auto supports-[backdrop-filter]:backdrop-blur-xs">
+            <Table className="border-collapse w-full min-w-[640px]">
+              <TableHeader>
+                <TableRow className="bg-gradient-to-r from-muted/70 to-muted/40">
+                  <TableHead className="w-[200px] sticky left-0 z-20 bg-muted/70 backdrop-blur-sm shadow-[2px_0_4px_-2px_rgba(0,0,0,0.15)]">Specification</TableHead>
+                  {machines.map((machine) => (
+                    <TableHead key={machine.id} className="text-center whitespace-nowrap">
+                      {machine.name}
+                    </TableHead>
+                  ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {category.specs.map((spec, rowIdx) => {
+                  const differs = rowDiffers(spec.key);
+                  return (
+                    <TableRow key={spec.key} className={differs ? 'bg-amber-50/40 dark:bg-amber-950/10' : rowIdx % 2 === 0 ? 'bg-background/40' : 'bg-background/20'}>
+                      <TableCell className="font-medium sticky left-0 z-10 bg-background/80 backdrop-blur-sm border-r border-border/40">
+                        <span className="inline-flex items-center gap-1">
+                          {spec.name}
+                          {differs && <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" aria-label="Values differ across machines" />}
+                        </span>
+                      </TableCell>
+                      {machines.map((machine) => {
+                        const raw = getMachineValue(machine, spec.key);
+                        const valueNode = formatValue(raw, spec.type);
+                        return (
+                          <TableCell
+                            key={`${machine.id}-${spec.key}`}
+                            className={
+                              'text-center align-top transition-colors px-3 py-2 ' +
+                              (differs ? 'font-medium text-foreground' : 'text-muted-foreground')
+                            }
+                          >
+                            {valueNode}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </div>
         </div>
       ))}

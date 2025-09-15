@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 // getUserTickets import removed (no direct usage here) to satisfy linter
@@ -14,7 +14,6 @@ import {
   Wrench, 
   FileText, 
   Download, 
-  Calendar, 
   Search,
   Plus,
   User
@@ -25,6 +24,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import TicketWizardDialog from '@/components/support/TicketWizardDialog';
 import { QuoteTwinSearchPanel } from '@/components/quotes/QuoteTwinSearchPanel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
@@ -67,6 +67,8 @@ interface Document {
 
 const CustomerPortal = () => {
   const { user, loading: authLoading, stableDisplayEmail } = useAuth();
+  const queryClient = useQueryClient();
+  const [isTicketWizardOpen, setIsTicketWizardOpen] = useState(false);
   // Tracks only the very first full data bootstrap; once true we never show the big skeleton again
   const [bootstrapped, setBootstrapped] = useState(false);
   const navigate = useNavigate();
@@ -353,7 +355,7 @@ const CustomerPortal = () => {
                   </div>
                   <Button 
                     className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
-                    onClick={() => navigate('/support/tickets/new')}
+                    onClick={() => setIsTicketWizardOpen(true)}
                   >
                     <Plus className="h-4 w-4 mr-2" /> Create New Ticket
                   </Button>
@@ -392,7 +394,7 @@ const CustomerPortal = () => {
                     <p className="text-gray-500 mb-6">Create your first support ticket to get help with your machines</p>
                     <Button 
                       className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
-                      onClick={() => navigate('/support/tickets/new')}
+                      onClick={() => setIsTicketWizardOpen(true)}
                     >
                       <Plus className="h-4 w-4 mr-2" /> Create Ticket
                     </Button>
@@ -508,6 +510,16 @@ const CustomerPortal = () => {
           </motion.div>
         </motion.div>
       </main>
+      <TicketWizardDialog
+        open={isTicketWizardOpen}
+        onOpenChange={setIsTicketWizardOpen}
+        onTicketCreated={() => {
+          setIsTicketWizardOpen(false);
+          if (user) {
+            queryClient.invalidateQueries({ queryKey: ['tickets', user.id] });
+          }
+        }}
+      />
       <Footer />
     </div>
   );
