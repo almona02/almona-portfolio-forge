@@ -137,7 +137,7 @@ export const SalesChart: React.FC = () => {
   } as const
 
   return (
-    <Card>
+    <Card className="bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-white/20 shadow-lg transition-shadow hover:shadow-xl">
       <CardHeader>
         <CardTitle>Sales (Last 30 Days)</CardTitle>
       </CardHeader>
