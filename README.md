@@ -5,6 +5,8 @@ A comprehensive, modern industrial machinery portfolio and e-commerce platform b
 ## 🚀 Overview
 Almona Portfolio Forge is a full-stack industrial machinery platform that combines a React frontend with a Python FastAPI backend, offering everything from product showcases to complete service management. The platform serves industrial clients across Egypt and the Middle East with specialized features for aluminum, UPVC, and steel fabrication industries.
 
+The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, realtime sales charts, top products, and customer activity, powered by Supabase live queries and channels.
+
 ## ✨ Key Features
 
 ### 🛒 **E-Commerce & Shop**
@@ -293,9 +295,18 @@ Future enhancements:
    ```
 
 3. **Access the application**
-   - Frontend: http://localhost:5173
+   - Frontend: http://localhost:3000
    - Backend API: http://localhost:8000
    - API Documentation: http://localhost:8000/docs
+
+4. **Admin Dashboard**
+   - Route: `/admin/dashboard`
+   - Protected by `ProtectedRoute` and loads lazily; requires a logged-in user.
+   - Live widgets:
+     - KPI cards (orders, revenue, customers, products, pending, low stock)
+     - Sales chart (last 30 days, realtime via Supabase channel)
+     - Top products (last 30 days, from `order_items`)
+     - Recent orders and customer activity (from `orders` and `profiles`)
 
 ## 📋 Available Scripts
 
