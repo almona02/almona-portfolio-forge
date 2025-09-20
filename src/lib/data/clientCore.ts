@@ -13,5 +13,6 @@ export function rpc<Name extends keyof Database['public']['Functions']>(
   fn: Name,
   args: Database['public']['Functions'][Name]['Args']
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (supabase as any).rpc(fn as string, args);
 }

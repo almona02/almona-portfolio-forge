@@ -1,6 +1,6 @@
 import React, { Suspense, useRef, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { useGLTF, Environment, OrbitControls, Bounds, useBounds } from '@react-three/drei';
+import { useGLTF, Environment, OrbitControls, Bounds, useBounds, useAnimations } from '@react-three/drei';
 
 interface EnhancedGLBViewerProps {
   modelPath: string;           // .glb path (public served)
@@ -11,6 +11,8 @@ interface EnhancedGLBViewerProps {
   title?: string;              // AR title (for Android Scene Viewer)
   enableWebXR?: boolean;       // enable in-browser WebXR immersive-ar (desktop or supported mobile)
   webXRHitTest?: boolean;      // request hit-test feature when entering WebXR
+  autoPlayAnimations?: boolean;// if true, play all GLTF animations on load
+  webXRScaleFactor?: number;   // scale factor to apply in AR session (e.g., 0.5)
 }
 
 interface CanvasErrorState { hasError: boolean; error: Error | null }
@@ -21,10 +23,12 @@ class CanvasErrorBoundary extends React.Component<React.PropsWithChildren, Canva
   render() { if (this.state.hasError && this.state.error) { return <div className="p-4 text-sm bg-red-600 text-white">3D Viewer crashed: {this.state.error.message}</div>; } return this.props.children; }
 }
 
-function FittedModel({ modelPath, onLoaded }: { modelPath: string; onLoaded?: () => void }) {
+function FittedModel({ modelPath, onLoaded, autoPlayAnimations = true }: { modelPath: string; onLoaded?: () => void; autoPlayAnimations?: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
-  const gltf = useGLTF(modelPath) as unknown as { scene?: THREE.Object3D };
+  const gltf = useGLTF(modelPath) as unknown as { scene?: THREE.Object3D; animations?: THREE.AnimationClip[] };
   const scene = gltf.scene;
+  // wire animations
+  const { actions } = useAnimations(gltf.animations ?? [], scene as unknown as THREE.Object3D);
   const bounds = useBounds();
   const fired = useRef(false);
   useEffect(() => {
@@ -33,6 +37,14 @@ function FittedModel({ modelPath, onLoaded }: { modelPath: string; onLoaded?: ()
       if (!fired.current) { fired.current = true; onLoaded?.(); }
     }
   }, [scene, bounds, onLoaded]);
+  useEffect(() => {
+    if (autoPlayAnimations && actions) {
+      Object.values(actions).forEach(a => a?.play?.());
+    }
+    return () => {
+      if (actions) Object.values(actions).forEach(a => a?.stop?.());
+    };
+  }, [actions, autoPlayAnimations]);
   if (!scene) return null;
   return <group ref={groupRef}><primitive object={scene} /></group>;
 }
@@ -45,7 +57,9 @@ export function EnhancedGLBViewer({
   onLoaded,
   title = 'Model',
   enableWebXR = true,
-  webXRHitTest = true
+  webXRHitTest = true,
+  autoPlayAnimations = true,
+  webXRScaleFactor = 0.6
 }: EnhancedGLBViewerProps) {
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   const isIOS = /iPad|iPhone|iPod/i.test(ua);
@@ -55,6 +69,7 @@ export function EnhancedGLBViewer({
   const [xrSupported, setXrSupported] = useState(false);
   const [isXRSession, setIsXRSession] = useState(false);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const modelGroupRef = useRef<THREE.Group | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -97,6 +112,10 @@ export function EnhancedGLBViewer({
       await rendererRef.current.xr.setSession(session);
       setIsXRSession(true);
       session.addEventListener('end', () => setIsXRSession(false));
+      // scale down model in AR for usability
+      if (modelGroupRef.current) {
+        modelGroupRef.current.scale.setScalar(webXRScaleFactor);
+      }
     } catch (err) {
       console.error('[EnhancedGLBViewer] Failed to start WebXR AR session', err);
       alert('Unable to start AR session in this browser.');
@@ -111,6 +130,10 @@ export function EnhancedGLBViewer({
       console.warn('[EnhancedGLBViewer] Error ending XR session', err);
     } finally {
       setIsXRSession(false);
+      // restore scale when leaving AR
+      if (modelGroupRef.current) {
+        modelGroupRef.current.scale.setScalar(1);
+      }
     }
   };
 
@@ -175,7 +198,9 @@ export function EnhancedGLBViewer({
           <directionalLight position={[-5, -3, -5]} intensity={0.45} />
           <Suspense fallback={null}>
             <Bounds fit clip observe margin={1.15}>
-              <FittedModel modelPath={modelPath} onLoaded={onLoaded} />
+              <group ref={modelGroupRef as unknown as React.Ref<THREE.Group>}>
+                <FittedModel modelPath={modelPath} onLoaded={onLoaded} autoPlayAnimations={autoPlayAnimations} />
+              </group>
             </Bounds>
             <Environment preset="warehouse" />
           </Suspense>
