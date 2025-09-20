@@ -1,11 +1,10 @@
 // NOTE: This file has been slimmed; domain-specific helpers live under src/lib/data/* and
 // pricing helpers under src/lib/pricing.ts. Remaining helpers here are legacy/general.
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js'
 import { Database } from '@/types/database'
-import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY as string
+const supabaseKey = (import.meta.env.VITE_SUPABASE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY) as string
 
 if (!supabaseUrl || !supabaseKey) {
   throw new Error('Missing Supabase environment variables. Please check your .env file.')
@@ -86,6 +85,10 @@ export const uploadFileWithProgress = async (
     });
 
   if (error) throw error;
+  // No granular progress available; report completion
+  if (onProgress) {
+    try { onProgress(100); } catch { /* no-op */ }
+  }
   return data;
 };
 
