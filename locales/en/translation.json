@@ -1,0 +1,27 @@
+{
+  "common": {
+    "welcome": "Welcome to Almona",
+    "products": "Products",
+    "services": "Services",
+    "contact": "Contact Us",
+    "login": "Login",
+    "register": "Register",
+    "add_to_cart": "Add to Cart",
+    "price": "Price",
+    "quantity": "Quantity",
+    "total": "Total"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "forgot_password": "Forgot password?",
+    "sign_in": "Sign in",
+    "sign_up": "Create account",
+    "name": "Name",
+    "phone": "Phone",
+    "company": "Company",
+    "sector": "Sector",
+    "workshop_location": "Workshop Location"
+  }
+}

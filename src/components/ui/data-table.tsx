@@ -31,6 +31,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Checkbox } from "@/components/ui/checkbox"
+import type { CheckedState } from "@radix-ui/react-checkbox"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -38,6 +40,10 @@ interface DataTableProps<TData, TValue> {
   searchKey?: string
   searchPlaceholder?: string
   onRowClick?: (row: TData) => void
+  showPagination?: boolean
+  showSelection?: boolean
+  onSelectionChange?: (rows: TData[]) => void
+  clearSelectionKey?: number | string
 }
 
 export function DataTable<TData, TValue>({
@@ -46,15 +52,51 @@ export function DataTable<TData, TValue>({
   searchKey,
   searchPlaceholder = "Search...",
   onRowClick,
+  showPagination = true,
+  showSelection = false,
+  onSelectionChange,
+  clearSelectionKey,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
+  const selectionColumn = React.useMemo<ColumnDef<TData, unknown> | null>(() => {
+    if (!showSelection) return null
+    return {
+      id: "select",
+      header: ({ table }) => {
+        const some = table.getIsSomePageRowsSelected()
+        const all = table.getIsAllPageRowsSelected()
+        const checked: CheckedState = all ? true : some ? 'indeterminate' : false
+        return (
+          <Checkbox
+            checked={checked}
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+          />
+        )
+      },
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          onClick={(e) => e.stopPropagation()}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      size: 36,
+    }
+  }, [showSelection])
+
+  const tableColumns = React.useMemo(() => (selectionColumn ? [selectionColumn, ...columns] : columns), [selectionColumn, columns])
+
   const table = useReactTable({
     data,
-    columns,
+    columns: tableColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -70,6 +112,18 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   })
+
+  React.useEffect(() => {
+    if (!onSelectionChange) return
+    const rows = table.getSelectedRowModel().rows.map((r) => r.original as TData)
+    onSelectionChange(rows)
+  }, [rowSelection, onSelectionChange, table])
+
+  React.useEffect(() => {
+    if (clearSelectionKey !== undefined) {
+      setRowSelection({})
+    }
+  }, [clearSelectionKey])
 
   return (
     <div className="w-full">
@@ -166,30 +220,32 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+      {showPagination && (
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <div className="flex-1 text-sm text-muted-foreground">
+            {table.getFilteredSelectedRowModel().rows.length} of{" "}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+          <div className="space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
         </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      )}
     </div>
   )
 }

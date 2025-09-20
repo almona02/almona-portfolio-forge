@@ -88,24 +88,41 @@ export default defineConfig(({ mode }) => {
 
         output: {
           // Improved chunking strategy to reduce bundle sizes
-          manualChunks: {
-            "react-vendor": ["react", "react-dom"],
-            "router-vendor": ["react-router-dom"],
-            "query-vendor": ["@tanstack/react-query"],
-            "three-vendor": ["three"],
-            "three-react": ["@react-three/drei", "@react-three/fiber"],
-            "ui-vendor": [
-              "@radix-ui/react-accordion",
-              "@radix-ui/react-dialog", 
-              "@radix-ui/react-dropdown-menu",
-              "@radix-ui/react-select",
-              "@radix-ui/react-tabs"
-            ],
-            "form-vendor": ["react-hook-form", "@hookform/resolvers", "zod"],
-            "chart-vendor": ["chart.js", "react-chartjs-2", "recharts"],
-            "motion-vendor": ["framer-motion"],
-            "icons-vendor": ["lucide-react"],
-            "supabase-vendor": ["@supabase/supabase-js"],
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return undefined
+            const parts = id.split('node_modules/')[1].split('/')
+            const pkg = parts[0].startsWith('@') ? `${parts[0]}/${parts[1]}` : parts[0]
+
+            // Known groupings for better caching
+            const groups: Record<string, string> = {
+              react: 'react-vendor',
+              'react-dom': 'react-vendor',
+              'react-router-dom': 'router-vendor',
+              '@tanstack/react-query': 'query-vendor',
+              '@tanstack/react-table': 'table-vendor',
+              three: 'three-vendor',
+              '@react-three/drei': 'three-react',
+              '@react-three/fiber': 'three-react',
+              '@radix-ui/react-accordion': 'ui-vendor',
+              '@radix-ui/react-dialog': 'ui-vendor',
+              '@radix-ui/react-dropdown-menu': 'ui-vendor',
+              '@radix-ui/react-select': 'ui-vendor',
+              '@radix-ui/react-tabs': 'ui-vendor',
+              'react-hook-form': 'form-vendor',
+              '@hookform/resolvers': 'form-vendor',
+              zod: 'form-vendor',
+              'react-chartjs-2': 'chart-vendor',
+              'chart.js': 'chart-vendor',
+              recharts: 'chart-vendor',
+              'framer-motion': 'motion-vendor',
+              'lucide-react': 'icons-vendor',
+              '@supabase/supabase-js': 'supabase-vendor',
+              'date-fns': 'date-vendor',
+            }
+
+            if (groups[pkg]) return groups[pkg]
+            // Fallback: separate vendor chunk per package for long-tail libs
+            return `vendor-${pkg.replace('@', '').replace('/', '-')}`
           },
 
           // Optimize chunk names for caching

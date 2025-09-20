@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import SEO from "./components/SEO";
-import ErrorBoundary from "./components/ErrorBoundary";
 import UsedMachineDetailPage from "./pages/UsedMachineDetail.tsx";
 
 // Resilient lazy loader with retry to mitigate transient network/service worker hiccups
@@ -101,7 +100,7 @@ const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
 const CreateTicketPage = lazy(() => import("./pages/CreateTicketPage.tsx"));
 const RegisterMachinePage = lazy(() => import("./pages/RegisterMachinePage.tsx"));
 const CustomerSupport = lazy(() => import("./pages/CustomerSupport.tsx"));
-const SupportNewTicketMenu = lazy(() => import('./pages/SupportNewTicketMenu.tsx'));
+// const SupportNewTicketMenu = lazy(() => import('./pages/SupportNewTicketMenu.tsx'));
 
 // Apply dark mode by default
 import { ThemeProvider } from "next-themes";
@@ -470,7 +469,9 @@ const App = () => (
                     path="/admin/demo"
                     element={
                       <Suspense fallback={<LoadingSpinner />}>
-                        <AdminDashboard />
+                        <ProtectedRoute>
+                          <AdminDashboard />
+                        </ProtectedRoute>
                       </Suspense>
                     }
                   />

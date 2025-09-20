@@ -186,7 +186,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string): Promise<void> => {
     setActionLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ 
+      const { error } = await supabase.auth.signInWithPassword({ 
         email, 
         password 
       });
@@ -284,7 +284,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signInWithPhoneNumber = async (phoneNumber: string, countryCode: string, otp: string): Promise<void> => {
     setActionLoading(true);
     try {
-      const { data, error } = await supabase.auth.verifyOtp({
+      const { error } = await supabase.auth.verifyOtp({
         phone: `${countryCode}${phoneNumber}`,
         token: otp,
         type: 'sms',

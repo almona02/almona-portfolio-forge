@@ -1,0 +1,27 @@
+{
+  "common": {
+    "welcome": "مرحباً بك في المونة",
+    "products": "المنتجات",
+    "services": "الخدمات",
+    "contact": "اتصل بنا",
+    "login": "تسجيل الدخول",
+    "register": "تسجيل حساب جديد",
+    "add_to_cart": "أضف إلى السلة",
+    "price": "السعر",
+    "quantity": "الكمية",
+    "total": "المجموع"
+  },
+  "auth": {
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirm_password": "تأكيد كلمة المرور",
+    "forgot_password": "نسيت كلمة المرور؟",
+    "sign_in": "تسجيل الدخول",
+    "sign_up": "إنشاء حساب",
+    "name": "الاسم",
+    "phone": "رقم الهاتف",
+    "company": "الشركة",
+    "sector": "القطاع",
+    "workshop_location": "موقع الورشة"
+  }
+}

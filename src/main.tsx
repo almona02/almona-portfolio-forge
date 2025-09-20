@@ -11,6 +11,17 @@ import { initializePerformanceMonitoring } from "./lib/performance";
 import { initializePolyfills } from "./lib/polyfills";
 import "./index.css";
 
+// Set initial dir/lang attributes early based on i18n detection
+try {
+  const lng = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
+  const isRTL = ['ar', 'he', 'fa', 'ur'].some(code => lng.toLowerCase().startsWith(code));
+  document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
+  document.documentElement.lang = lng.split('-')[0];
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+} catch (_err) {
+  // no-op: safe best-effort dir/lang setup
+}
+
 // Critical error boundary for early errors - optimized for performance
 class CriticalErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -83,7 +94,8 @@ class CriticalErrorBoundary extends React.Component<
           batchSize: this.errorReportingQueue.length,
         }),
       });
-    } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_e) {
       // Silent fail - don't let error reporting break the app
     } finally {
       this.errorReportingQueue = [];
