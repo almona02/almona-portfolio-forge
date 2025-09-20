@@ -308,6 +308,31 @@ Future enhancements:
      - Top products (last 30 days, from `order_items`)
      - Recent orders and customer activity (from `orders` and `profiles`)
 
+## ⚡ Quick Start: Admin
+
+1. Set your Supabase environment variables in `.env` (root):
+   ```bash
+   VITE_SUPABASE_URL=YOUR_SUPABASE_URL
+   VITE_SUPABASE_KEY=YOUR_SUPABASE_ANON_OR_SERVICE_ROLE_KEY
+   ```
+
+2. Create a demo admin user (pick one of the options):
+   - Supabase Auth UI: Sign up a user, then in Supabase table editor add a matching row to `profiles` and mark them as admin (if your schema uses a role flag/enum).
+   - SQL (example schema-agnostic pattern):
+     ```sql
+     -- Create or confirm the auth user via Supabase Auth Dashboard
+     -- Then ensure a profile row exists
+     insert into public.profiles (id, email, full_name)
+     values ('<auth_user_uuid>', 'admin@example.com', 'Demo Admin')
+     on conflict (id) do update set email = excluded.email;
+     ```
+
+3. Log in via the app (Login page) and visit `/admin/dashboard`.
+
+Notes
+- The dashboard pulls live data from `orders`, `order_items`, `profiles`, and `products` tables.
+- Realtime widgets use Supabase channels; ensure Database Realtime is enabled for these tables in your Supabase project.
+
 ## 📋 Available Scripts
 
 ### **Frontend Scripts**
