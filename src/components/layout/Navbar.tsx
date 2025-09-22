@@ -14,6 +14,7 @@ import {
   Wrench,
   X,
   ChevronDown,
+  Shield,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -311,6 +312,27 @@ const Navbar = () => {
           </motion.div>
           {user ? (
             <>
+              {/* Admin Dashboard (role-gated) */}
+              {user.role === 'admin' && (
+                <motion.div
+                  initial={{ y: -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.75, duration: 0.3 }}
+                >
+                  <Button
+                    className="bg-almona-orange hover:bg-almona-orange-dark text-white rounded-full px-5"
+                    asChild
+                    title="Admin Dashboard"
+                  >
+                    <Link to="/admin/dashboard">
+                      <span className="inline-flex items-center gap-2">
+                        <Shield className="h-4 w-4" />
+                        <span>Admin</span>
+                      </span>
+                    </Link>
+                  </Button>
+                </motion.div>
+              )}
               <motion.div
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -550,6 +572,20 @@ const Navbar = () => {
                 <div className="mt-auto p-6 border-t border-gray-800 space-y-4">
                   {user ? (
                     <>
+                      {/* Admin (mobile) */}
+                      {user.role === 'admin' && (
+                        <Button
+                          className="w-full bg-almona-orange hover:bg-almona-orange-dark text-white"
+                          asChild
+                        >
+                          <Link to="/admin/dashboard" onClick={handleCloseMobileMenu}>
+                            <span className="inline-flex items-center gap-2">
+                              <Shield className="h-4 w-4" />
+                              <span>Admin</span>
+                            </span>
+                          </Link>
+                        </Button>
+                      )}
                       <Button
                         className="w-full border-almona-light/30 text-white hover:bg-almona-light/10"
                         onClick={handleLogout}

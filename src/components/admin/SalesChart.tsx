@@ -1,35 +1,23 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Line } from 'react-chartjs-2'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Filler,
-  Legend,
-  TimeScale,
-} from 'chart.js'
 import { supabase } from '@/lib/supabase'
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Filler,
-  Legend,
-  TimeScale,
-)
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from 'recharts'
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/shared/ui/ui/chart'
 
 type OrderRow = { total_amount: number | null; created_at: string; status: string }
 
 export const SalesChart: React.FC = () => {
-  const [labels, setLabels] = React.useState<string[]>([])
-  const [series, setSeries] = React.useState<number[]>([])
+  const [points, setPoints] = React.useState<Array<{ date: string; label: string; revenue: number }>>([])
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
 
@@ -52,29 +40,28 @@ export const SalesChart: React.FC = () => {
       if (!mounted) return
       if (error) {
         setError('Failed to load sales data')
-        setLabels([])
-        setSeries([])
+        setPoints([])
         setLoading(false)
         return
       }
 
-      const points: Record<string, number> = {}
-      const days: string[] = []
+      const map: Record<string, number> = {}
+      const rows = (data as OrderRow[]) || []
+      // Initialize 30-day window with zeros
+      const days: Array<{ date: string; label: string }> = []
       for (let i = 0; i < 30; i++) {
         const d = new Date(since)
         d.setDate(since.getDate() + i)
-        const key = d.toISOString().slice(0, 10)
-        days.push(key)
-        points[key] = 0
+        const iso = d.toISOString().slice(0, 10)
+        const label = iso.slice(5) // MM-DD
+        days.push({ date: iso, label })
+        map[iso] = 0
       }
-
-      ;(data as OrderRow[] | null)?.forEach((row) => {
-        const key = new Date(row.created_at).toISOString().slice(0, 10)
-        if (key in points) points[key] += row.total_amount ?? 0
+      rows.forEach((r) => {
+        const key = new Date(r.created_at).toISOString().slice(0, 10)
+        if (key in map) map[key] += r.total_amount ?? 0
       })
-
-      setLabels(days)
-      setSeries(days.map((d) => points[d]))
+      setPoints(days.map((d) => ({ ...d, revenue: map[d.date] })))
       setLoading(false)
     }
     fetchData()
@@ -89,52 +76,8 @@ export const SalesChart: React.FC = () => {
     }
   }, [])
 
-  const data = {
-    labels,
-    datasets: [
-      {
-        label: 'Revenue (EGP)',
-        data: series,
-        fill: true,
-        backgroundColor: 'rgba(255, 119, 0, 0.12)',
-        borderColor: 'rgba(255, 119, 0, 1)',
-        tension: 0.35,
-        pointRadius: 0,
-      },
-    ],
-  }
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: {
-          maxTicksLimit: 6,
-          callback: (_value: unknown, idx: number) => labels[idx]?.slice(5), // show MM-DD
-        },
-      },
-      y: {
-        grid: { color: 'rgba(0,0,0,0.05)' },
-        ticks: {
-          callback: (value: number | string) =>
-            new Intl.NumberFormat('en-EG', { style: 'currency', currency: 'EGP', maximumFractionDigits: 0 }).format(
-              Number(value as number)
-            ),
-        },
-      },
-    },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: (ctx: { parsed: { y: number } }) =>
-            new Intl.NumberFormat('en-EG', { style: 'currency', currency: 'EGP' }).format(Number(ctx.parsed.y)),
-        },
-      },
-    },
-  } as const
+  const fmtEGP = (n: number) =>
+    new Intl.NumberFormat('en-EG', { style: 'currency', currency: 'EGP', maximumFractionDigits: 0 }).format(n)
 
   return (
     <Card className="bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-white/20 shadow-lg transition-shadow hover:shadow-xl">
@@ -148,7 +91,24 @@ export const SalesChart: React.FC = () => {
           <div className="h-56 flex items-center justify-center text-sm text-red-600">{error}</div>
         ) : (
           <div className="h-56">
-            <Line data={data} options={options} height={224} />
+            <ChartContainer
+              config={{ revenue: { label: 'Revenue (EGP)', color: 'var(--almona-orange, #FF5F1F)' } }}
+              className="h-56"
+            >
+              <AreaChart data={points} margin={{ left: 8, right: 8, top: 8, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#FF5F1F" stopOpacity={0.3} />
+                    <stop offset="100%" stopColor="#FF5F1F" stopOpacity={0.05} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                <XAxis dataKey="label" tickMargin={6} minTickGap={16} tickLine={false} axisLine={false} />
+                <YAxis tickFormatter={(v) => fmtEGP(Number(v))} width={72} axisLine={false} tickLine={false} />
+                <ChartTooltip cursor={{ stroke: 'rgba(0,0,0,0.1)' }} content={<ChartTooltipContent />} />
+                <Area type="monotone" dataKey="revenue" stroke="#FF5F1F" strokeWidth={2} fill="url(#revFill)" />
+              </AreaChart>
+            </ChartContainer>
           </div>
         )}
       </CardContent>
