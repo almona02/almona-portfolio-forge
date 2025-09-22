@@ -6,7 +6,7 @@ import ReactDOM from "react-dom/client";
 import "@/lib/i18n";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
-import { registerServiceWorker } from "./lib/serviceWorkerRegistration";
+import { registerServiceWorker, unregisterServiceWorker } from "./lib/serviceWorkerRegistration";
 import { initializePerformanceMonitoring } from "./lib/performance";
 import { initializePolyfills } from "./lib/polyfills";
 import "./index.css";
@@ -201,6 +201,10 @@ try {
   const ENABLE_SW = import.meta.env.VITE_ENABLE_SW === 'true';
   if (import.meta.env.PROD && ENABLE_SW) {
     registerServiceWorker();
+  } else if (import.meta.env.PROD && !ENABLE_SW) {
+    // Proactively unregister any existing SW to avoid stale caches/errors on Vercel
+    unregisterServiceWorker();
+    console.info('[SW] Disabled by config (VITE_ENABLE_SW != true). Unregistered and cleared caches.');
   } else if (!ENABLE_SW) {
     console.info('[SW] Registration skipped (VITE_ENABLE_SW not set to true).');
   }
