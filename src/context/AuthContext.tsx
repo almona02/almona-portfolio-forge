@@ -76,7 +76,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         stableEmailRef.current = (profile as User).email;
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      // Only log error once per session to avoid console spam
+      if (!sessionStorage.getItem('profile-fetch-error-logged')) {
+        console.error('Error fetching user profile:', error);
+        sessionStorage.setItem('profile-fetch-error-logged', 'true');
+      }
+      
       // Build immediate placeholder instead of null to avoid portal flicker
       if (supabaseUser) {
   setUser({
@@ -108,7 +113,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const getInitialSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        // Add timeout to prevent hanging on network issues
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Session timeout')), 10000)
+        );
+        
+        const result = await Promise.race([
+          sessionPromise,
+          timeoutPromise
+        ]);
+        
+        const { data: { session }, error } = result;
         
         if (error) {
           console.error('Error getting session:', error);
@@ -122,6 +138,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } catch (error) {
         console.error('Error in getInitialSession:', error);
+        // If we can't get session, proceed without authentication
+        setUser(null);
+        setSupabaseUser(null);
       } finally {
         setLoading(false);
       }
