@@ -93,27 +93,54 @@ export default defineConfig(({ mode }) => {
             const parts = id.split('node_modules/')[1].split('/')
             const pkg = parts[0].startsWith('@') ? `${parts[0]}/${parts[1]}` : parts[0]
 
+            // Group React core and all Recharts/react-smooth/d3 deps together to avoid cross-chunk cycles
+            const reactGraphVendors = new Set([
+              'react',
+              'react-dom',
+              'scheduler',
+              'react-is',
+              'react-transition-group',
+              // Recharts and its transitive deps
+              'recharts',
+              'react-smooth',
+              'd3-array',
+              'd3-color',
+              'd3-format',
+              'd3-interpolate',
+              'd3-path',
+              'd3-scale',
+              'd3-shape',
+              'd3-time',
+              'd3-time-format',
+            ])
+
             // Known groupings for better caching
             const groups: Record<string, string> = {
-              react: 'react-vendor',
-              'react-dom': 'react-vendor',
+              // React ecosystem + recharts/d3
+              ...(reactGraphVendors.has(pkg) ? { [pkg]: 'react-vendor' } : {}),
+              // Router
               'react-router-dom': 'router-vendor',
+              // TanStack
               '@tanstack/react-query': 'query-vendor',
               '@tanstack/react-table': 'table-vendor',
+              // Three.js
               three: 'three-vendor',
               '@react-three/drei': 'three-react',
               '@react-three/fiber': 'three-react',
+              // Radix UI
               '@radix-ui/react-accordion': 'ui-vendor',
               '@radix-ui/react-dialog': 'ui-vendor',
               '@radix-ui/react-dropdown-menu': 'ui-vendor',
               '@radix-ui/react-select': 'ui-vendor',
               '@radix-ui/react-tabs': 'ui-vendor',
+              // Forms
               'react-hook-form': 'form-vendor',
               '@hookform/resolvers': 'form-vendor',
               zod: 'form-vendor',
-              'react-chartjs-2': 'chart-vendor',
-              'chart.js': 'chart-vendor',
-              recharts: 'chart-vendor',
+              // Chart.js kept separate from Recharts
+              'react-chartjs-2': 'chartjs-vendor',
+              'chart.js': 'chartjs-vendor',
+              // Other
               'framer-motion': 'motion-vendor',
               'lucide-react': 'icons-vendor',
               '@supabase/supabase-js': 'supabase-vendor',
@@ -121,6 +148,7 @@ export default defineConfig(({ mode }) => {
             }
 
             if (groups[pkg]) return groups[pkg]
+            if (reactGraphVendors.has(pkg)) return 'react-vendor'
             // Fallback: separate vendor chunk per package for long-tail libs
             return `vendor-${pkg.replace('@', '').replace('/', '-')}`
           },
