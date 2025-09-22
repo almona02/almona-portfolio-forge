@@ -32,7 +32,7 @@ CREATE POLICY allow_service_ticket_insert_roles
   WITH CHECK (
     EXISTS (
       SELECT 1 FROM public.profiles p
-        WHERE p.id = auth.uid()
+        WHERE p.id = (SELECT auth.uid())
           AND p.role IN ('customer','support','admin','technician','sales_rep')
     )
   );
@@ -43,17 +43,17 @@ CREATE POLICY service_ticket_update_roles
   FOR UPDATE
   TO authenticated
   USING (
-    user_id = auth.uid() OR EXISTS (
+    user_id = (SELECT auth.uid()) OR EXISTS (
       SELECT 1 FROM public.profiles p
-        WHERE p.id = auth.uid()
+        WHERE p.id = (SELECT auth.uid())
           AND p.role IN ('support','admin','technician')
     )
   )
   WITH CHECK (
     -- Ensure same constraint on new row
-    user_id = auth.uid() OR EXISTS (
+    user_id = (SELECT auth.uid()) OR EXISTS (
       SELECT 1 FROM public.profiles p
-        WHERE p.id = auth.uid()
+        WHERE p.id = (SELECT auth.uid())
           AND p.role IN ('support','admin','technician')
     )
   );
@@ -66,7 +66,7 @@ CREATE POLICY service_ticket_delete_roles
   USING (
     EXISTS (
       SELECT 1 FROM public.profiles p
-        WHERE p.id = auth.uid()
+        WHERE p.id = (SELECT auth.uid())
           AND p.role IN ('support','admin')
     )
   );
@@ -87,7 +87,7 @@ BEGIN
     SELECT 1 FROM pg_policies
       WHERE schemaname='public'
         AND tablename='service_tickets'
-        AND command='SELECT'
+        AND cmd='SELECT'
   ) THEN
     EXECUTE 'CREATE POLICY service_ticket_select ON public.service_tickets FOR SELECT TO authenticated USING (true)';
   END IF;
