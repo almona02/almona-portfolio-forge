@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
 import {
@@ -42,6 +43,7 @@ import { SparePartsImportPanel } from '@/components/admin/SparePartsImportPanel'
 import { DashboardStats } from '../components/admin/DashboardStats'
 import { RecentOrders } from '../components/admin/RecentOrders'
 import { TopProducts } from '../components/admin/TopProducts'
+import { LowStockAlerts } from '../components/admin/LowStockAlerts'
 import { CustomerActivity } from '../components/admin/CustomerActivity'
 import { SalesChart } from '../components/admin/SalesChart'
 const ProductsPanel = React.lazy(() => import('@/components/admin/panels/ProductsPanel'))
@@ -181,6 +183,10 @@ const AdminDashboard: React.FC = () => {
               <TopProducts />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <LowStockAlerts />
+              <div className="hidden lg:block" />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <RecentOrders />
               <CustomerActivity />
             </div>
@@ -245,6 +251,11 @@ const AdminDashboard: React.FC = () => {
           </Card>
         )
     }
+  }
+
+  // Role guard: only allow admin users
+  if (user && user.role !== 'admin') {
+    return <Navigate to="/" replace />
   }
 
   return (

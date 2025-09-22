@@ -27,3 +27,16 @@ dist-ssr
 storybook-static
 
 .vercel
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.python-version
+venv/
+.venv/
+
+# Generated reports
+duplicates-report.json
+duplicates-report.md

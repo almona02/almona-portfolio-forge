@@ -1,0 +1,15 @@
+{
+  "dryRun": false,
+  "when": "2025-09-20T20:00:56.033Z",
+  "files": [
+    "public\\images\\machines\\machine-accessories.jpg",
+    "public\\images\\machines\\processing-center.jpg",
+    "public\\images\\machines\\welding-machine.jpg",
+    "public\\images\\profiles\\door-system.jpg",
+    "public\\images\\profiles\\sliding-system.jpg",
+    "public\\images\\profiles\\window-system.jpg",
+    "scripts\\optimize-gltf.ts",
+    "src\\assets\\almona-logo-optimized.svg",
+    "src\\i18n.ts"
+  ]
+}

@@ -34,7 +34,10 @@
     "docs:generate": "npm run gen:structure",
     "type-check": "tsc --noEmit",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "scan:dup": "node scripts/find-duplicates.mjs",
+    "clean:zero": "node scripts/remove-zero-byte-files.mjs",
+    "clean:zero:dry": "node scripts/remove-zero-byte-files.mjs --dry-run=true"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
