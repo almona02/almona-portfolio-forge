@@ -33,7 +33,7 @@ const QuoteConfirmationPage: React.FC = () => {
                 </li>
                 <li className="flex items-start">
                   <span className="text-orange-500 mr-2">✓</span>
-                  <span>You'll receive a confirmation email with your quote details</span>
+                  <span>You&apos;ll receive a confirmation email with your quote details</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-orange-500 mr-2">✓</span>

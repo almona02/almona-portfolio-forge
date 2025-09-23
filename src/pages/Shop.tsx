@@ -1,19 +1,12 @@
 // Enhanced Shop Component for Almona Portfolio
 
 import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { 
   Search, 
-  Filter, 
-  ShoppingCart, 
-  Heart, 
-  Star, 
   Truck, 
   Shield, 
   RotateCcw,
-  Eye,
-  GitCompare,
-  ChevronDown,
   Sparkles,
   Grid,
   List,
@@ -24,14 +17,14 @@ import i18n from "@/lib/i18n";
 import { inventory } from "@/data/inventory";
 import { useQuote } from "@/context/QuoteContext";
 import { useToast } from "@/hooks/useToast";
-import { useAuth } from "@/context/AuthContext";
+// import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import ErrorBoundary from "@/components/ErrorBoundary";
+// import ErrorBoundary from "@/components/ErrorBoundary";
 import { IndustrialProductCard } from "@/components/shop/IndustrialProductCard";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
 import { RecentlyViewedProducts } from "@/components/shop/RecentlyViewedProducts";
-import { EquipmentComparisonTool } from "@/components/shop/EquipmentComparisonTool";
+// import { EquipmentComparisonTool } from "@/components/shop/EquipmentComparisonTool";
 import AiEquipmentAdvisor from "@/components/shop/ai-advisor/AiEquipmentAdvisor";
 import FreightCalculator from "@/components/shop/FreightCalculator";
 import EgyptianStandardsGuide from "@/components/shop/EgyptianStandardsGuide";
@@ -42,7 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import { Input } from "@/shared/ui/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/select";
 import { Button } from "@/shared/ui/ui/button";
-import { Badge } from "@/shared/ui/ui/badge";
+// import { Badge } from "@/shared/ui/ui/badge";
 import { Card, CardContent } from "@/shared/ui/ui/card";
 import { Skeleton } from "@/shared/ui/ui/skeleton";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
@@ -54,6 +47,8 @@ import { Slider } from "@/shared/ui/ui/slider";
 import { yilmazMachines, yilmazParts } from "@/constants/productsData";
 import { yilmazMachines as yilmazMachinesSpecs } from "@/constants/yilmazMachines";
 import { uniqueProducts } from "@/constants/uniqueProductsData";
+import type { Database, ProductCategory } from "@/types/database";
+import type { Machine as TypesMachine } from "@/types";
 
 // Types
 interface Machine {
@@ -126,13 +121,7 @@ function isMachine(product: ShopProduct): product is Machine {
   return 'specifications' in product && 'certifications' in product;
 }
 
-function isProduct(product: ShopProduct): product is Product {
-  return 'price' in product;
-}
-
-function isPart(product: ShopProduct): product is Part {
-  return !isMachine(product) && !isProduct(product);
-}
+// Removed unused isProduct type guard to satisfy lint rules
 
 function isRatedProduct(product: ShopProduct): product is ShopProduct & RatedProduct {
   return 'rating' in product;
@@ -140,14 +129,87 @@ function isRatedProduct(product: ShopProduct): product is ShopProduct & RatedPro
 
 type ViewMode = 'grid' | 'list' | 'detailed';
 
+// Adapter: convert Shop Machine to the global TypesMachine expected by ProductQuickView
+function toTypesMachine(m: Machine): TypesMachine {
+  return {
+    id: m.id,
+    name: m.name,
+    description: m.description || "",
+    imageUrl: m.imageUrl,
+    category: m.category,
+    featured: !!m.isFeatured,
+    releaseDate: new Date().toISOString(),
+    type: m.category || "Machine",
+    powerSpec: { voltage: "", frequency: "", phase: "3", consumption: "" },
+    tags: m.tags,
+    specifications: (m.specifications || []).map(s => `${s.key}: ${s.value}`),
+    certifications: (m.certifications || []).map(c => c.standard),
+  };
+}
+
+// Adapter: map ShopProduct to Database products Row shape used by QuoteContext
+function shopProductToDbProduct(product: ShopProduct): Database['public']['Tables']['products']['Row'] {
+  const now = new Date().toISOString();
+  const price = (isMachine(product) ? product.pricing?.basePrice : ('price' in product ? product.price : null)) ?? null;
+  const category: ProductCategory = ((): ProductCategory => {
+    const c = product.category as string | undefined;
+    const allowed: ProductCategory[] = ['machine', 'spare_part', 'raw_material', 'tool', 'accessory'];
+    if (c && (allowed as string[]).includes(c)) return c as ProductCategory;
+    // Heuristic: machines tab -> 'machine', parts -> 'spare_part'
+    return isMachine(product) ? 'machine' : 'spare_part';
+  })();
+  const specs: Record<string, string | number | boolean> = {};
+  if (isMachine(product)) {
+    (product.specifications || []).forEach(s => { specs[s.key] = s.value; });
+  }
+  return {
+    id: product.id,
+    sku: product.id,
+    name_ar: product.name,
+    name_en: product.name,
+    description_ar: product.description ?? null,
+    description_en: product.description ?? null,
+    short_description_ar: null,
+    short_description_en: null,
+    category,
+    subcategory: null,
+    brand: null,
+    model: null,
+    price,
+    cost_price: null,
+    currency: 'EGP',
+    stock_quantity: 'stock' in product ? product.stock : 0,
+    min_stock_level: 0,
+    max_stock_level: 0,
+    weight_kg: null,
+    dimensions: null,
+    specifications: specs,
+    features: {},
+    compatible_machines: null,
+    image_urls: 'imageUrl' in product && product.imageUrl ? [product.imageUrl] : null,
+    video_urls: null,
+    document_urls: null,
+    model_3d_url: null,
+    meta_title_ar: null,
+    meta_title_en: null,
+    meta_description_ar: null,
+    meta_description_en: null,
+    keywords: 'tags' in product ? product.tags : null,
+    is_active: true,
+  is_featured: isMachine(product) ? !!product.isFeatured : false,
+  is_new: isMachine(product) ? !!product.isNew : false,
+  is_on_sale: isMachine(product) ? !!product.discount : false,
+    created_at: now,
+    updated_at: now,
+  };
+}
+
 interface ProductGridProps {
   isLoading: boolean;
   filteredProducts: ShopProduct[];
   displayedProductCount: number;
   setDisplayedProductCount: (value: number | ((prev: number) => number)) => void;
   viewMode: ViewMode;
-  wishlist: string[];
-  handleToggleWishlist: (productId: string) => void;
   setQuickViewProduct: (product: Machine | null) => void;
   addToQuote: (product: ShopProduct) => void;
   toast: (options: { title: string; description: string; variant?: "default" | "destructive" }) => void;
@@ -163,8 +225,6 @@ const ProductGrid = ({
   displayedProductCount, 
   setDisplayedProductCount, 
   viewMode,
-  wishlist,
-  handleToggleWishlist,
   setQuickViewProduct,
   addToQuote,
   toast,
@@ -292,7 +352,6 @@ const ProductGrid = ({
 const Shop = () => {
   const { addToQuote } = useQuote();
   const { toast } = useToast();
-  const { user } = useAuth();
   
   const [activeTab, setActiveTab] = useState<ProductTab>('industrial-machines');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -300,8 +359,6 @@ const Shop = () => {
   const [quickViewProduct, setQuickViewProduct] = useState<Machine | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [comparisonList, setComparisonList] = useState<Machine[]>([]);
-  const [wishlist, setWishlist] = useState<string[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<ShopFilters>({
     searchTerm: "",
     category: "all",
@@ -348,7 +405,7 @@ const Shop = () => {
         discount: Math.random() > 0.9 ? Math.floor(Math.random() * 30) + 5 : undefined
       };
     });
-  }, [inventory, yilmazMachines, yilmazMachinesSpecs]);
+  }, []);
 
   const uniqueProductsArray = useMemo(() => uniqueProducts, []);
   const allParts = useMemo(() => yilmazParts, []);
@@ -397,34 +454,19 @@ const Shop = () => {
     });
   }, [toast]);
 
-  // Toggle wishlist
-  const handleToggleWishlist = useCallback((productId: string) => {
-    if (!user) {
-      toast({
-        title: "Login required",
-        description: "Please login to add items to your wishlist",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    setWishlist(prev => {
-      const exists = prev.includes(productId);
-      if (exists) {
-        toast({
-          title: "Removed from wishlist",
-          description: "Item removed from your wishlist",
-        });
-        return prev.filter(id => id !== productId);
-      } else {
-        toast({
-          title: "Added to wishlist",
-          description: "Item added to your wishlist",
-        });
-        return [...prev, productId];
-      }
-    });
-  }, [user, toast]);
+  // Wishlist feature removed for now to resolve type/usage issues
+  //   return (
+  //     <div className="flex items-center gap-1">
+  //       {[...Array(5)].map((_, i) => (
+  //         <Star 
+  //           key={i} 
+  //           className={`h-3 w-3 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-500'}`} 
+  //         />
+  //       ))}
+  //       <span className="text-xs text-gray-400 ml-1">({rating.toFixed(1)})</span>
+  //     </div>
+  //   );
+  // };
 
   // Memoized filtering logic
   const filteredProducts = useMemo(() => {
@@ -513,20 +555,7 @@ const Shop = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Render star rating
-  const renderRating = (rating: number) => {
-    return (
-      <div className="flex items-center gap-1">
-        {[...Array(5)].map((_, i) => (
-          <Star 
-            key={i} 
-            className={`h-3 w-3 ${i < Math.floor(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-500'}`} 
-          />
-        ))}
-        <span className="text-xs text-gray-400 ml-1">({rating.toFixed(1)})</span>
-      </div>
-    );
-  };
+  // Rating renderer removed (unused)
 
   const menuData = [
     { label: "Industrial Machines", key: "industrial-machines", icon: <SlidersHorizontal className="h-4 w-4" /> },
@@ -567,7 +596,7 @@ const Shop = () => {
                 <span className="text-gradient-orange">Industrial Equipment Hub</span>
               </h1>
               <p className="text-xl text-gray-300 mb-8">
-                Premium machinery, genuine parts, and expert support for Egypt's manufacturing industry
+                Premium machinery, genuine parts, and expert support for Egypt&#39;s manufacturing industry
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -816,10 +845,8 @@ const Shop = () => {
                     displayedProductCount={displayedProductCount}
                     setDisplayedProductCount={setDisplayedProductCount}
                     viewMode={viewMode}
-                    wishlist={wishlist}
-                    handleToggleWishlist={handleToggleWishlist}
                     setQuickViewProduct={setQuickViewProduct}
-                    addToQuote={addToQuote}
+                    addToQuote={(product) => { void addToQuote(shopProductToDbProduct(product)); }}
                     toast={toast}
                     comparisonList={comparisonList}
                     handleToggleCompare={handleToggleCompare}
@@ -853,7 +880,7 @@ const Shop = () => {
         {/* Quick View Modal */}
         {quickViewProduct && (
           <ProductQuickView 
-            product={quickViewProduct}
+            product={toTypesMachine(quickViewProduct)}
             isOpen={!!quickViewProduct}
             onClose={() => setQuickViewProduct(null)}
           />

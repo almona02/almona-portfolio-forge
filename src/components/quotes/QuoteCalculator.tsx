@@ -20,7 +20,7 @@ export const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({
   products,
   services,
   urgency,
-  onCalculate,
+  onCalculate: _onCalculate,
 }) => {
   const calculateEstimate = () => {
     const basePrice = products.reduce((sum, p) => sum + (p.price || 0), 0);

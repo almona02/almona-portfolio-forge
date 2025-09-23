@@ -72,7 +72,7 @@ const SupportNewTicketMenu = () => {
         <div className="container mx-auto px-4">
           <motion.div initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5 }}>
             <h1 className="text-3xl font-bold mb-2 text-gradient-orange">Create Support Ticket</h1>
-            <p className="text-gray-400 mb-8 max-w-2xl">Choose the option that best matches your issue. We'll pre-fill ticket details to speed up submission.</p>
+            <p className="text-gray-400 mb-8 max-w-2xl">Choose the option that best matches your issue. We&apos;ll pre-fill ticket details to speed up submission.</p>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {cards.map((c, i) => (
                 <motion.div key={c.title} initial={{ opacity:0, y:15 }} animate={{ opacity:1, y:0 }} transition={{ delay: 0.05 * i }}>

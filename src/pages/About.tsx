@@ -8,7 +8,9 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import { Factory, Users, Globe, Award, Target, Shield } from 'lucide-react';
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import { Factory, Globe, Award, Target } from 'lucide-react';
 
 const About = () => {
   const containerVariants = {
@@ -29,7 +31,10 @@ const About = () => {
   };
 
   return (
-    <div className="container py-8 px-4 sm:py-12 sm:px-6">
+    <>
+      <Navbar />
+      <main className="pt-24">
+        <div className="container py-8 px-4 sm:py-12 sm:px-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -205,7 +210,10 @@ const About = () => {
           </motion.div>
         </div>
       </motion.div>
-    </div>
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 };
 

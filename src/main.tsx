@@ -170,6 +170,9 @@ if (import.meta.env.DEV) {
     console.warn('⚠️ Missing environment variables:', missingEnvVars);
     console.warn('Some features may not work correctly. Check your .env file.');
   }
+} else {
+  // Production mode - just log that we're ready
+  console.log("🚀 Production mode active");
 }
 
 // Get root element with error handling
@@ -197,17 +200,21 @@ requestAnimationFrame(() => {
 });
 
 // Alternative approach: fully disable SW unless explicitly enabled with VITE_ENABLE_SW=true
-try {
-  const ENABLE_SW = import.meta.env.VITE_ENABLE_SW === 'true';
-  if (import.meta.env.PROD && ENABLE_SW) {
-    registerServiceWorker();
-  } else if (import.meta.env.PROD && !ENABLE_SW) {
-    // Proactively unregister any existing SW to avoid stale caches/errors on Vercel
-    unregisterServiceWorker();
-    console.info('[SW] Disabled by config (VITE_ENABLE_SW != true). Unregistered and cleared caches.');
-  } else if (!ENABLE_SW) {
-    console.info('[SW] Registration skipped (VITE_ENABLE_SW not set to true).');
+// Run this async to not block app initialization
+setTimeout(() => {
+  try {
+    const ENABLE_SW = import.meta.env.VITE_ENABLE_SW === 'true';
+    if (import.meta.env.PROD && ENABLE_SW) {
+      registerServiceWorker();
+    } else if (import.meta.env.PROD && !ENABLE_SW) {
+      // Proactively unregister any existing SW to avoid stale caches/errors on Vercel
+      unregisterServiceWorker();
+      console.info('[SW] Disabled by config (VITE_ENABLE_SW != true). Unregistered and cleared caches.');
+    } else if (!ENABLE_SW) {
+      console.info('[SW] Registration skipped (VITE_ENABLE_SW not set to true).');
+    }
+  } catch (error) {
+    console.error('Service worker init error:', error);
+    // Don't let SW errors break the app
   }
-} catch (error) {
-  console.error('Service worker init error:', error);
-}
+}, 100);
