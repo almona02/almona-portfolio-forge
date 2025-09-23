@@ -4,7 +4,8 @@ import { useAuth } from './AuthContext';
 import { supabase } from '@/lib/supabase';
 import { calculateTieredPrice } from '@/lib/pricing';
 import { createQuote as createQuoteDomain, updateQuoteStatus } from '@/lib/data/quotesClient';
-import { Database } from '@/types/database';
+import { Database, ProductCategory } from '@/types/database';
+import type { ShopProductInput, ShopMachine } from '@/types/shopProduct';
 import { useTranslation } from 'react-i18next';
 
 // Enhanced QuoteItem interface
@@ -17,8 +18,8 @@ interface QuoteItem {
   quantity: number;
   unit_price: number;
   total_price: number;
-  configurations?: Record<string, any>;
-  specifications?: Record<string, any>;
+  configurations?: Record<string, unknown>;
+  specifications?: Record<string, unknown>;
   notes?: string;
   product?: Database['public']['Tables']['products']['Row']; // Full product data for display
 }
@@ -26,10 +27,14 @@ interface QuoteItem {
 interface QuoteContextType {
   // Quote items management
   quoteItems: QuoteItem[];
-  addToQuote: (product: Database['public']['Tables']['products']['Row'], quantity?: number, configurations?: Record<string, any>) => Promise<void>;
+  addToQuote: (
+    product: Database['public']['Tables']['products']['Row'] | ShopProductInput,
+    quantity?: number,
+    configurations?: Record<string, unknown>
+  ) => Promise<void>;
   removeFromQuote: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
-  updateItemConfigurations: (itemId: string, configurations: Record<string, any>) => void;
+  updateItemConfigurations: (itemId: string, configurations: Record<string, unknown>) => void;
   clearQuote: () => void;
   
   // Quote management
@@ -90,7 +95,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   const [userInfo, setUserInfo] = useState({});
   
   const { user, supabaseUser } = useAuth();
-  const { i18n } = useTranslation();
+  useTranslation();
 
   // Tax rate (14% VAT in Egypt)
   const TAX_RATE = 0.14;
@@ -132,18 +137,87 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
     localStorage.setItem('almona_quote_items', JSON.stringify(quoteItems));
   }, [quoteItems]);
 
+  // ShopProductInput is imported from '@/types/shopProduct'
+
+  const isDbProduct = (p: unknown): p is Database['public']['Tables']['products']['Row'] => {
+    if (typeof p !== 'object' || p === null) return false;
+    const obj = p as Record<string, unknown>;
+    return 'sku' in obj && 'name_en' in obj;
+  };
+
+  const isShopMachine = (p: ShopProductInput): p is ShopMachine => {
+    return 'pricing' in p || 'specifications' in p;
+  };
+
+  // toDbProduct mapping will be defined inline in addToQuote to avoid hook-deps issues
+
   const addToQuote = useCallback(async (
-    product: Database['public']['Tables']['products']['Row'], 
+    productInput: Database['public']['Tables']['products']['Row'] | ShopProductInput, 
     quantity: number = 1,
-    configurations?: Record<string, any>
+    configurations?: Record<string, unknown>
   ) => {
     try {
+      const product = isDbProduct(productInput)
+        ? productInput
+        : (() => {
+            const p = productInput as ShopProductInput;
+            const now = new Date().toISOString();
+            const allowed: ProductCategory[] = ['machine', 'spare_part', 'raw_material', 'tool', 'accessory'];
+            const category = (allowed as string[]).includes(p.category) ? (p.category as ProductCategory) : 'machine';
+            const price = ('pricing' in p && p.pricing?.basePrice !== undefined)
+              ? p.pricing!.basePrice!
+              : ('price' in p ? p.price ?? null : null);
+            const specifications: Record<string, string | number | boolean> = {};
+            if ('specifications' in p && Array.isArray(p.specifications)) {
+              p.specifications.forEach(s => { specifications[s.key] = s.value; });
+            }
+            return {
+              id: p.id,
+              sku: p.id,
+              name_ar: p.name,
+              name_en: p.name,
+              description_ar: p.description ?? null,
+              description_en: p.description ?? null,
+              short_description_ar: null,
+              short_description_en: null,
+              category,
+              subcategory: null,
+              brand: null,
+              model: null,
+              price,
+              cost_price: null,
+              currency: 'EGP',
+              stock_quantity: ('stock' in p && typeof p.stock === 'number') ? p.stock : 0,
+              min_stock_level: 0,
+              max_stock_level: 0,
+              weight_kg: null,
+              dimensions: null,
+              specifications,
+              features: {},
+              compatible_machines: null,
+              image_urls: p.imageUrl ? [p.imageUrl] : null,
+              video_urls: null,
+              document_urls: null,
+              model_3d_url: null,
+              meta_title_ar: null,
+              meta_title_en: null,
+              meta_description_ar: null,
+              meta_description_en: null,
+              keywords: p.tags ?? null,
+              is_active: true,
+              is_featured: isShopMachine(p) ? !!p.isFeatured : false,
+              is_new: isShopMachine(p) ? !!p.isNew : false,
+              is_on_sale: isShopMachine(p) ? !!p.discount : false,
+              created_at: now,
+              updated_at: now,
+            } as Database['public']['Tables']['products']['Row'];
+          })();
       // Calculate tiered pricing
       const unitPrice = calculateTieredPrice(product.price || 0, quantity);
       const totalPrice = unitPrice * quantity;
 
       const newItem: QuoteItem = {
-        id: `${product.id}-${Date.now()}`, // Temporary ID for local state
+  id: `${product.id}-${Date.now()}`, // Temporary ID for local state
         product_id: product.id,
         product_name_ar: product.name_ar,
         product_name_en: product.name_en,
@@ -222,7 +296,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
     );
   }, []);
 
-  const updateItemConfigurations = useCallback((itemId: string, configurations: Record<string, any>) => {
+  const updateItemConfigurations = useCallback((itemId: string, configurations: Record<string, unknown>) => {
     setQuoteItems(prevItems =>
       prevItems.map(item =>
         item.id === itemId ? { ...item, configurations } : item
@@ -308,8 +382,8 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
 
     setSaving(true);
     try {
-      const { data, error } = await (supabase as any)
-        .from('quotes')
+      const { data, error } = await supabase
+        .from<Database['public']['Tables']['quotes']['Row']>('quotes')
         .update({
           ...quoteData,
           subtotal,
@@ -318,7 +392,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
           discount_amount: discountAmount,
           total_amount: totalAmount,
           updated_at: new Date().toISOString(),
-        } as any)
+        })
         .eq('id', currentQuote.id)
         .select()
         .single();
@@ -363,8 +437,9 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   const loadQuote = useCallback(async (quoteId: string) => {
     setLoading(true);
     try {
-      const { data: quote, error: quoteError } = await (supabase as any)
-        .from('quotes')
+      type QuoteWithItems = Database['public']['Tables']['quotes']['Row'] & { quote_items: Array<Database['public']['Tables']['quote_items']['Row'] & { products: Database['public']['Tables']['products']['Row'] }> };
+      const { data: quote, error: quoteError } = await supabase
+        .from<QuoteWithItems>('quotes')
         .select(`
           *,
           quote_items (
@@ -381,9 +456,9 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
 
       // Convert database quote items to local format
   if (!quote) throw new Error('Quote not found');
-  const items: QuoteItem[] = (quote.quote_items || []).map((item: any) => ({
+  const items: QuoteItem[] = (quote.quote_items || []).map((item) => ({
         id: item.id,
-        product_id: item.product_id,
+    product_id: item.product_id!,
         product_name_ar: item.product_name_ar,
         product_name_en: item.product_name_en,
         product_sku: item.product_sku,
@@ -392,8 +467,8 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
         total_price: item.total_price,
         configurations: item.configurations,
         specifications: item.specifications,
-        notes: item.notes,
-        product: item.products,
+    notes: item.notes || undefined,
+    product: item.products,
       })) || [];
 
       setQuoteItems(items);
@@ -411,8 +486,8 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
     if (!items.length) return;
 
     // First, delete existing items
-    await (supabase as any)
-      .from('quote_items')
+    await supabase
+      .from<Database['public']['Tables']['quote_items']['Row']>('quote_items')
       .delete()
       .eq('quote_id', quoteId);
 
@@ -431,9 +506,9 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
       notes: item.notes,
     }));
 
-    const { error } = await (supabase as any)
-      .from('quote_items')
-      .insert(itemsToInsert as any);
+    const { error } = await supabase
+      .from<Database['public']['Tables']['quote_items']['Insert']>('quote_items')
+      .insert(itemsToInsert as Database['public']['Tables']['quote_items']['Insert'][]);
 
     if (error) throw error;
   };
@@ -442,8 +517,8 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   const saveQuoteItemToDatabase = async (item: QuoteItem) => {
     if (!currentQuote) return;
 
-    const { error } = await (supabase as any)
-      .from('quote_items')
+    const { error } = await supabase
+      .from<Database['public']['Tables']['quote_items']['Insert']>('quote_items')
       .insert({
         quote_id: currentQuote.id,
         product_id: item.product_id,
@@ -455,8 +530,8 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
         total_price: item.total_price,
         configurations: item.configurations,
         specifications: item.specifications,
-        notes: item.notes,
-      } as any);
+        notes: item.notes ?? null,
+      });
 
     if (error) throw error;
   };

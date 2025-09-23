@@ -68,7 +68,7 @@ const QuoteRequestPage: React.FC = () => {
       });
       
       navigate("/quotes/confirmation", { state: { quoteId: "QR-XXXXXX" } });
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to submit quote request",

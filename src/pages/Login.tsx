@@ -1,5 +1,4 @@
 
-/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -174,7 +173,7 @@ const Login = () => {
               </motion.div>
 
               <div className="mt-8 text-center text-sm text-gray-400">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <a href="/register" className="font-medium text-almona-light hover:underline">
                   Sign up
                 </a>
