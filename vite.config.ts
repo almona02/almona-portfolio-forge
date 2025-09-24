@@ -2,6 +2,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig, loadEnv } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -14,7 +15,6 @@ export default defineConfig(({ mode }) => {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
       __VERSION__: JSON.stringify(process.env.npm_package_version || "1.0.0"),
-      // Add global polyfills for Node.js modules
       global: "globalThis",
     },
     server: {
@@ -33,6 +33,64 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react(),
+      VitePWA({
+        registerType: "autoUpdate",
+        injectRegister: "auto",
+        workbox: {
+          globPatterns: ["**/*.{js,css,html,ico,png,svg,json,woff,woff2}"],
+          // Exclude the large stats file from the service worker
+          globIgnores: ['**/stats.json'],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+              handler: "CacheFirst",
+              options: {
+                cacheName: "google-fonts-cache",
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+              handler: "CacheFirst",
+              options: {
+                cacheName: "gstatic-fonts-cache",
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+          ],
+        },
+        includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg"],
+        manifest: {
+          name: "Almona Portfolio Forge",
+          short_name: "Almona",
+          description: "Almona Portfolio Forge Application",
+          theme_color: "#ffffff",
+          icons: [
+            {
+              src: "pwa-192x192.png",
+              sizes: "192x192",
+              type: "image/png",
+            },
+            {
+              src: "pwa-512x512.png",
+              sizes: "512x512",
+              type: "image/png",
+            },
+          ],
+        },
+      }),
       ...(isProduction
         ? [
             visualizer({
@@ -41,7 +99,8 @@ export default defineConfig(({ mode }) => {
               gzipSize: true,
               brotliSize: true,
               template: "raw-data",
-              sourcemap: true,
+              // Disabled sourcemap to fix build warnings
+              sourcemap: false,
             }),
           ]
         : []),
@@ -50,7 +109,6 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
-        // Add Node.js module polyfills
         "stream": path.resolve(__dirname, "./src/lib/polyfills/stream.ts"),
         "http": path.resolve(__dirname, "./src/lib/polyfills/http.ts"),
         "https": path.resolve(__dirname, "./src/lib/polyfills/https.ts"),
@@ -59,48 +117,39 @@ export default defineConfig(({ mode }) => {
       },
     },
 
-    // CSS optimization
     css: {
       devSourcemap: !isProduction,
       preprocessorOptions: {
         scss: {
-          additionalData: `@import "@/styles/variables.scss";`,
+          additionalData: `@import \"@/styles/variables.scss\";`,
         },
       },
     },
 
-    // Build optimization
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
       target: "esnext",
       minify: isProduction ? "esbuild" : false,
       sourcemap: !isProduction,
-      chunkSizeWarningLimit: 500, // Reduced from 1000 to 500kb
-      assetsInlineLimit: 4096, // 4kb
+      chunkSizeWarningLimit: 500,
+      assetsInlineLimit: 4096,
 
-      // Rollup options for advanced bundling
       rollupOptions: {
         input: "index.html",
-
-        // External dependencies (if any)
         external: [],
-
         output: {
-          // Improved chunking strategy to reduce bundle sizes
           manualChunks(id) {
             if (!id.includes('node_modules')) return undefined
             const parts = id.split('node_modules/')[1].split('/')
             const pkg = parts[0].startsWith('@') ? `${parts[0]}/${parts[1]}` : parts[0]
 
-            // Group React core and all Recharts/react-smooth/d3 deps together to avoid cross-chunk cycles
             const reactGraphVendors = new Set([
               'react',
               'react-dom',
               'scheduler',
               'react-is',
               'react-transition-group',
-              // Recharts and its transitive deps
               'recharts',
               'react-smooth',
               'd3-array',
@@ -112,35 +161,28 @@ export default defineConfig(({ mode }) => {
               'd3-shape',
               'd3-time',
               'd3-time-format',
+              'victory',
+              'victory-vendor'
             ])
 
-            // Known groupings for better caching
             const groups: Record<string, string> = {
-              // React ecosystem + recharts/d3
               ...(reactGraphVendors.has(pkg) ? { [pkg]: 'react-vendor' } : {}),
-              // Router
               'react-router-dom': 'router-vendor',
-              // TanStack
               '@tanstack/react-query': 'query-vendor',
               '@tanstack/react-table': 'table-vendor',
-              // Three.js
               three: 'three-vendor',
               '@react-three/drei': 'three-react',
               '@react-three/fiber': 'three-react',
-              // Radix UI
               '@radix-ui/react-accordion': 'ui-vendor',
               '@radix-ui/react-dialog': 'ui-vendor',
               '@radix-ui/react-dropdown-menu': 'ui-vendor',
               '@radix-ui/react-select': 'ui-vendor',
               '@radix-ui/react-tabs': 'ui-vendor',
-              // Forms
               'react-hook-form': 'form-vendor',
               '@hookform/resolvers': 'form-vendor',
               zod: 'form-vendor',
-              // Chart.js kept separate from Recharts
               'react-chartjs-2': 'chartjs-vendor',
               'chart.js': 'chartjs-vendor',
-              // Other
               'framer-motion': 'motion-vendor',
               'lucide-react': 'icons-vendor',
               '@supabase/supabase-js': 'supabase-vendor',
@@ -149,11 +191,9 @@ export default defineConfig(({ mode }) => {
 
             if (groups[pkg]) return groups[pkg]
             if (reactGraphVendors.has(pkg)) return 'react-vendor'
-            // Fallback: separate vendor chunk per package for long-tail libs
             return `vendor-${pkg.replace('@', '').replace('/', '-')}`
           },
 
-          // Optimize chunk names for caching
           chunkFileNames: 'js/[name]-[hash].js',
 
           assetFileNames: (assetInfo) => {
@@ -161,16 +201,18 @@ export default defineConfig(({ mode }) => {
             const ext = info[info.length - 1];
 
             if (
-              /\.(png|jpe?g|svg|gif|tiff|bmp|ico)$/i.test(assetInfo.name || "")
+              /\\.(png|jpe?g|svg|gif|tiff|bmp|ico)$/i.test(assetInfo.name || "")
             ) {
               return `images/[name]-[hash].${ext}`;
             }
 
-            if (/\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name || "")) {
+            if (/\\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name || ""))
+            {
               return `fonts/[name]-[hash].${ext}`;
             }
 
-            if (/\.css$/i.test(assetInfo.name || "")) {
+            if (/\\.css$/i.test(assetInfo.name || ""))
+            {
               return `css/[name]-[hash].${ext}`;
             }
 
@@ -180,7 +222,6 @@ export default defineConfig(({ mode }) => {
       },
     },
 
-    // Optimize dependencies
     optimizeDeps: {
       include: [
         "react",
@@ -192,11 +233,9 @@ export default defineConfig(({ mode }) => {
         "@supabase/supabase-js",
       ],
       exclude: [
-        // Exclude large libraries that should be loaded on demand
         "@tensorflow/tfjs",
         "three",
       ],
-      // Add Node.js polyfills for dependencies
       esbuildOptions: {
         define: {
           global: "globalThis",
@@ -204,15 +243,11 @@ export default defineConfig(({ mode }) => {
       },
     },
 
-    // Performance optimizations
     esbuild: {
-      // Remove console logs in production
       drop: isProduction ? ["console", "debugger"] : [],
-      // Enable tree shaking
       treeShaking: true,
     },
 
-    // Experimental features
     experimental: {
       renderBuiltUrl(filename, { hostType }) {
         if (hostType === "js") {
