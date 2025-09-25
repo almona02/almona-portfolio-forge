@@ -16,6 +16,7 @@
     "preview": "vite preview",
     "i18n:audit": "node scripts/i18n-audit.js",
     "ar:optimize": "node scripts/optimize-glb.mjs",
+    "pwa:icons": "node scripts/generate-pwa-icons.js",
     "test": "vitest",
     "test:pricing": "vitest run src/lib/pricing.test.ts",
     "test:watch": "vitest watch",
