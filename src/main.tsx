@@ -157,6 +157,18 @@ try {
   console.error('Failed to initialize polyfills or performance monitoring:', error);
 }
 
+// Global error handler for unhandled Supabase auth errors
+window.addEventListener('unhandledrejection', (event) => {
+  const error = event.reason;
+  if (error?.message?.includes('refresh_token') || 
+      error?.message?.includes('Invalid Refresh Token') ||
+      error?.message?.includes('Refresh Token Not Found')) {
+    console.warn('[Global] Supabase auth error detected:', error.message);
+    // Prevent the error from being logged as unhandled
+    event.preventDefault();
+  }
+});
+
 // Validate environment and show warnings
 if (import.meta.env.DEV) {
   console.log("🔧 Development mode active");
@@ -181,8 +193,19 @@ if (!rootElement) {
   throw new Error("Root element not found. Check your index.html file.");
 }
 
+// Check if root already exists to prevent multiple createRoot calls
+let root = (rootElement as any)._reactRootContainer;
+if (!root) {
+  root = ReactDOM.createRoot(rootElement);
+  // Store reference to prevent duplicate calls
+  (rootElement as any)._reactRootContainer = root;
+} else {
+  // If root exists, use the existing one (for hot module replacement)
+  console.log('[React] Using existing root container');
+}
+
 // Render application with critical error boundary
-ReactDOM.createRoot(rootElement).render(
+root.render(
   <React.StrictMode>
     <CriticalErrorBoundary>
       <HelmetProvider>

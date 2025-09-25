@@ -62,9 +62,9 @@ export const IndustrialProductCard = ({
         </div>
         {(badges.length > 0 || egyptCertifications.length > 0 || stock !== undefined) && (
           <div className="absolute top-4 left-4 flex gap-2 flex-wrap max-w-[90%]">
-            {badges.map((badge) => (
+            {badges.map((badge, index) => (
               <Badge
-                key={badge}
+                key={`badge-${index}-${badge}-${title.slice(0, 10)}`}
                 variant="secondary"
                 className="bg-orange-600/90 hover:bg-orange-600"
               >
@@ -72,7 +72,7 @@ export const IndustrialProductCard = ({
               </Badge>
             ))}
             {egyptCertifications.map((cert, i) => (
-              <EgyptCertificationBadge key={i} standard={cert} />
+              <EgyptCertificationBadge key={`egypt-cert-${i}-${cert}-${title.slice(0, 10)}`} standard={cert} />
             ))}
             {stock !== undefined && (
               <Badge
@@ -96,7 +96,7 @@ export const IndustrialProductCard = ({
         <p className="text-gray-400 mb-4">{description}</p>
         <div className="space-y-2 mb-6">
           {features.map((feature, i) => (
-            <div key={i} className="flex items-start">
+            <div key={`feature-${i}-${feature.slice(0, 20)}-${title.slice(0, 10)}`} className="flex items-start">
               <svg
                 className="w-4 h-4 mt-1 mr-2 text-orange-500 flex-shrink-0"
                 fill="none"
@@ -138,7 +138,7 @@ export const IndustrialProductCard = ({
         <div className="flex flex-col gap-2 w-full">
           {actions.map((action, i) => (
             <Button
-              key={i}
+              key={`action-${i}-${action.label}-${title.slice(0, 10)}`}
               variant={i === 0 ? "default" : "outline"}
               onClick={action.action}
               className={i === 0 ? "bg-orange-600 hover:bg-orange-700" : ""}

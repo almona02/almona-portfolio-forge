@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Machine } from "@/constants/productsData";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/shared/ui/ui/dialog";
 import { Button } from "@/shared/ui/ui/button";
 import CompareTable from "./CompareTable";
 import { Download, Share2 } from "lucide-react";
-import { generateComparisonPDF, type ComparisonMachine } from "@/lib/reports/comparisonPdf";
+import type { ComparisonMachine } from "@/lib/reports/comparisonPdf";
 import { QuoteRequestDialog } from "@/components/quotes/QuoteRequestDialog";
 
 interface CompareDialogProps {
@@ -25,6 +25,17 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
   const handleExportPDF = async () => {
     try {
       if (!machines.length) return;
+      
+      // Show loading state
+      const button = document.querySelector('[data-pdf-export]') as HTMLButtonElement;
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Generating PDF...';
+      }
+      
+      // Dynamically import PDF generation to reduce initial bundle size
+      const { generateComparisonPDF } = await import("@/lib/reports/comparisonPdf");
+      
       // Attempt to load logo from public path
       let logoDataUrl: string | undefined;
       try {
@@ -39,13 +50,15 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
       } catch {
         // logo optional
       }
+      
       const pdfBytes = await generateComparisonPDF(
         machines as unknown as ComparisonMachine[], 
         logoDataUrl,
         { orientation: inferredOrientation }
       );
-  const bytes = new Uint8Array(pdfBytes); // ensure proper ArrayBuffer instance
-  const blob = new Blob([bytes], { type: 'application/pdf' });
+      
+      const bytes = new Uint8Array(pdfBytes); // ensure proper ArrayBuffer instance
+      const blob = new Blob([bytes], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -58,6 +71,13 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
     } catch (err) {
       console.error('PDF export failed', err);
       alert('Failed to export PDF');
+    } finally {
+      // Reset button state
+      const button = document.querySelector('[data-pdf-export]') as HTMLButtonElement;
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = '<Download size={16} className="mr-1" />PDF';
+      }
     }
   };
 
@@ -90,9 +110,9 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
                 <DialogTitle className="text-2xl">
                   Machine Comparison ({machines.length})
                 </DialogTitle>
-                <p className="text-sm text-muted-foreground">
-                  Side-by-side comparison of selected machines
-                </p>
+                <DialogDescription className="text-sm text-muted-foreground">
+                  Side-by-side comparison of selected machines with detailed specifications and performance metrics
+                </DialogDescription>
               </div>
               <div className="flex gap-2">
                 <Button 
@@ -107,6 +127,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
                   variant="outline" 
                   size="sm"
                   onClick={handleExportPDF}
+                  data-pdf-export
                 >
                   <Download size={16} className="mr-1" />
                   PDF

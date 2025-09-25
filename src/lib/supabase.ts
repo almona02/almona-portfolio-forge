@@ -18,6 +18,9 @@ const supabaseOptions = {
     detectSessionInUrl: true,
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     flowType: 'pkce' as const,
+    debug: false, // Disable debug logging to reduce console noise
+    // Reduce refresh frequency to improve performance
+    refreshTokenRetryInterval: 2000, // 2 seconds instead of default 1 second
   },
   realtime: {
     params: {
@@ -29,10 +32,43 @@ const supabaseOptions = {
       'X-Client-Info': 'almona-industrial@2.0.0',
     },
   },
+  db: {
+    schema: 'public',
+  },
+  // Add connection pooling and timeout settings
+  fetch: (url: string, options: RequestInit = {}) => {
+    return fetch(url, {
+      ...options,
+      // Add timeout to prevent hanging requests
+      signal: AbortSignal.timeout(10000), // 10 second timeout
+    });
+  },
 }
 
 // Create Supabase client with proper typing
 export const supabase = createClient<Database>(supabaseUrl, supabaseKey, supabaseOptions)
+
+// Utility function to handle auth errors and clear invalid sessions
+export const handleAuthError = async (error: any) => {
+  if (error?.message?.includes('refresh_token') || 
+      error?.message?.includes('Invalid Refresh Token') ||
+      error?.message?.includes('Refresh Token Not Found')) {
+    console.warn('[Supabase] Invalid refresh token detected, clearing session');
+    try {
+      await supabase.auth.signOut();
+    } catch (signOutError) {
+      console.error('[Supabase] Error during sign out:', signOutError);
+    }
+  }
+}
+
+// Performance monitoring for Supabase calls
+export const monitorSupabasePerformance = (operation: string, startTime: number) => {
+  const duration = Date.now() - startTime;
+  if (duration > 3000) { // Log slow operations (>3 seconds)
+    console.warn(`[Supabase] Slow operation detected: ${operation} took ${duration}ms`);
+  }
+}
 
 // Export types for better TypeScript support
 export type { SupabaseClient } from '@supabase/supabase-js'

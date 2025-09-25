@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/shared/ui/ui/dialog';
 import { QuoteRequestStepper } from './QuoteRequestStepper';
 import { useToast } from '@/hooks/useToast';
@@ -46,7 +47,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
     id: string;
   }>(null);
 
-  const apiBase = (import.meta as unknown as { env?: Record<string, string> })?.env?.VITE_PYTHON_API_URL || '';
+  const apiBase = ''; // Use Vite proxy for API calls
 
   interface SubmitPayloadProduct { id: string; price?: number }
   interface SubmitPayloadService { id?: string; price?: number }
@@ -112,6 +113,9 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
             <DialogTitle className="text-2xl text-gradient-orange">
               Request a Quote
             </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
+              Get a personalized quote for your selected products and services. Fill out the form below and we'll get back to you with pricing and availability.
+            </DialogDescription>
           </DialogHeader>
           {!result && (
             <QuoteRequestStepper

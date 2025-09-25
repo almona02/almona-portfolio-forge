@@ -22,7 +22,7 @@ export const usePythonAPI = (): UsePythonAPIReturn => {
       formData.append('image', file);
       formData.append('confidence_threshold', confidenceThreshold.toString());
 
-      const response = await fetch(`${import.meta.env.VITE_PYTHON_API_URL}/api/v1/identify-part`, {
+      const response = await fetch(`/api/v1/identify-part`, {
         method: 'POST',
         body: formData,
       });
@@ -70,7 +70,7 @@ export const usePythonAPI = (): UsePythonAPIReturn => {
       formData.append('image', file);
       formData.append('operation', operation);
 
-      const response = await fetch(`${import.meta.env.VITE_PYTHON_API_URL}/api/v1/preprocess-image`, {
+      const response = await fetch(`/api/v1/preprocess-image`, {
         method: 'POST',
         body: formData,
       });
