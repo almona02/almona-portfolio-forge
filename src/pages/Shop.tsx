@@ -295,7 +295,7 @@ const ProductGrid = ({
                 ...('tags' in product ? product.tags : []),
                 ...('isNew' in product && (product as Machine).isNew ? ['New'] : []),
                 ...('discount' in product && (product as Machine).discount ? [`${(product as Machine).discount}% Off`] : [])
-              ]}
+              ].filter((badge, index, array) => array.indexOf(badge) === index)}
               egyptCertifications={isMachine(product) ? product.certifications.map(c => c.standard) : []}
               stock={'stock' in product ? product.stock : 0}
               actions={[

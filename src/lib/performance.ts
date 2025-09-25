@@ -137,23 +137,23 @@ export function monitorResourceLoading() {
         if (entry.entryType === "resource") {
           const resourceEntry = entry as PerformanceResourceTiming;
 
-          // Monitor slow resources
-          if (resourceEntry.duration > 1000) {
+          // Monitor slow resources (only in development and not Supabase calls)
+          if (resourceEntry.duration > 1000 && import.meta.env.DEV && !resourceEntry.name.includes('supabase.co')) {
             console.warn("Slow resource detected:", {
               name: resourceEntry.name,
-              duration: resourceEntry.duration,
+              duration: Math.round(resourceEntry.duration),
               size: resourceEntry.transferSize,
               type: resourceEntry.initiatorType,
             });
           }
 
-          // Monitor large resources
-          if (resourceEntry.transferSize > 500000) {
+          // Monitor large resources (only in development)
+          if (resourceEntry.transferSize > 500000 && import.meta.env.DEV) {
             // 500KB
             console.warn("Large resource detected:", {
               name: resourceEntry.name,
               size: resourceEntry.transferSize,
-              duration: resourceEntry.duration,
+              duration: Math.round(resourceEntry.duration),
             });
           }
         }
@@ -240,15 +240,20 @@ export function initializePerformanceMonitoring() {
   // Log bundle info
   logBundleInfo();
 
-  // Monitor long tasks
-  if ("PerformanceObserver" in window) {
+  // Monitor long tasks (only in development and with reduced frequency)
+  if ("PerformanceObserver" in window && import.meta.env.DEV) {
+    let longTaskCount = 0;
     const longTaskObserver = new PerformanceObserver((list) => {
       list.getEntries().forEach((entry) => {
-        console.warn("Long task detected:", {
-          duration: entry.duration,
-          startTime: entry.startTime,
-          name: entry.name,
-        });
+        longTaskCount++;
+        // Only log every 5th long task to reduce console noise
+        if (longTaskCount % 5 === 0) {
+          console.warn(`Long task detected (${longTaskCount} total):`, {
+            duration: Math.round(entry.duration),
+            startTime: Math.round(entry.startTime),
+            name: entry.name,
+          });
+        }
       });
     });
 

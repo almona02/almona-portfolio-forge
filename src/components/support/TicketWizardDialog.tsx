@@ -140,11 +140,11 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
     if (!userInteractedRef.current) return;
     if (uiType && uiType !== selectedType) {
       setValue('type', uiType as TicketType, { shouldDirty: true, shouldTouch: true });
-      if (process.env.NODE_ENV !== 'production') console.debug('[TicketWizard] Force-sync form.type ->', uiType, ' (was ', selectedType, ')');
+      if (import.meta.env.DEV) console.debug('[TicketWizard] Force-sync form.type ->', uiType, ' (was ', selectedType, ')');
     }
     if (uiPriority && uiPriority !== selectedPriority) {
       setValue('priority', uiPriority as TicketPriority, { shouldDirty: true, shouldTouch: true });
-      if (process.env.NODE_ENV !== 'production') console.debug('[TicketWizard] Force-sync form.priority ->', uiPriority, ' (was ', selectedPriority, ')');
+      if (import.meta.env.DEV) console.debug('[TicketWizard] Force-sync form.priority ->', uiPriority, ' (was ', selectedPriority, ')');
     }
   }, [uiType, uiPriority, selectedType, selectedPriority, setValue]);
 
@@ -201,7 +201,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
   useEffect(() => {
     if (!DRAFT_KEY) return;
     const sub = form.watch((values) => {
-      if (process.env.NODE_ENV !== 'production') {
+      if (import.meta.env.DEV) {
         try { console.debug('[TicketWizard] watch emission', { type: values.type, priority: values.priority }); } catch {/* ignore */}
       }
       if (saveTimeoutRef.current) window.clearTimeout(saveTimeoutRef.current);
@@ -439,7 +439,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                   </div>
                   <div className="space-y-4">
                     <Label className="text-sm font-medium">Priority</Label>
-                    {process.env.NODE_ENV !== 'production' && (
+                    {import.meta.env.DEV && (
                       <div className="text-[10px] text-gray-500">debug: form.priority={selectedPriority} uiPriority={uiPriority}</div>
                     )}
                     <PriorityPills />

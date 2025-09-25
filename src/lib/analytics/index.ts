@@ -18,7 +18,7 @@ export const initAnalytics = (options?: { posthog?: { capture: (event: string, p
       try { options.posthog!.capture(event, properties); } catch {/* ignore */}
     });
   }
-  if (process.env.NODE_ENV !== 'production') {
+  if (import.meta.env.DEV) {
     sinks.push(payload => { try { console.debug('[analytics-dev]', payload); } catch {/* ignore */} });
   }
   initialized = true;

@@ -235,15 +235,15 @@ export async function generateComparisonPDF(
   page.drawText('Summary', { x: margin, y: y - 10, size: 14, font: bold });
   y -= 30;
   if (condensed) {
-    page.drawText(`Totals: Power ${totalPowerDisplay} | Air ${totalAirDisplay}`, { x: margin, y: y, size: 11, font });
+    page.drawText(sanitize(`Totals: Power ${totalPowerDisplay} | Air ${totalAirDisplay}`), { x: margin, y: y, size: 11, font });
     y -= 16;
   } else {
-    page.drawText(`Total Power Required: ${totalPowerDisplay}` , { x: margin, y: y, size: 11, font });
+    page.drawText(sanitize(`Total Power Required: ${totalPowerDisplay}`), { x: margin, y: y, size: 11, font });
     y -= 16;
-    page.drawText(`Total Air Consumption: ${totalAirDisplay}`, { x: margin, y: y, size: 11, font });
+    page.drawText(sanitize(`Total Air Consumption: ${totalAirDisplay}`), { x: margin, y: y, size: 11, font });
     y -= 16;
   }
-  page.drawText('Notes: Verify capacity & keep ≥20% margin. For mobile view use condensed mode; figures are nominal (not peak).', { x: margin, y: y, size: 9, font, maxWidth: pageWidth - margin*2 });
+  page.drawText(sanitize('Notes: Verify capacity & keep >=20% margin. For mobile view use condensed mode; figures are nominal (not peak).'), { x: margin, y: y, size: 9, font, maxWidth: pageWidth - margin*2 });
 
   // Add footers with page numbers & branding
   if (includeFooter) {

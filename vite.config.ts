@@ -26,6 +26,13 @@ export default defineConfig(({ mode }) => {
       hmr: {
         overlay: true,
       },
+      proxy: {
+        '/api': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+          secure: false,
+        },
+      },
     },
     preview: {
       port: 4173,
@@ -264,6 +271,8 @@ export default defineConfig(({ mode }) => {
       include: [
         "react",
         "react-dom",
+        "react-dom/client",
+        "react-reconciler",
         "react-router-dom",
         "@tanstack/react-query",
         "framer-motion",

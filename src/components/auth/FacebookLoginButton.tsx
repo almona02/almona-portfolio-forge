@@ -29,7 +29,7 @@ export const FacebookLoginButton: React.FC<FacebookLoginButtonProps> = ({
       
       script.onload = () => {
         (window as any).FB.init({
-          appId: process.env.VITE_FACEBOOK_APP_ID || '1234567890', // Replace with your Facebook App ID
+          appId: import.meta.env.VITE_FACEBOOK_APP_ID || '1234567890', // Replace with your Facebook App ID
           cookie: true,
           xfbml: true,
           version: 'v18.0'
