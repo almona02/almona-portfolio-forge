@@ -1,45 +1,158 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query, Request
 from typing import List
-import os
 
-from supabase import create_client, Client  # type: ignore
+from supabase import Client  # type: ignore
 from models.api_v2_models import (
     QuoteLookupResponse,
     QuoteSummary,
 )
 from fastapi import Body
 from pydantic import BaseModel, Field
-from typing import Optional, Any, Dict, List as _List
+from typing import Optional, List as _List
+from apis.v2.deps import get_supabase
+from apis.v2.services.quote_service import QuoteService
+from apis.v2.core.errors import (
+    QuoteValidationError,
+    QuoteNotFoundError,
+    QuoteAlreadyExistsError,
+    handle_supabase_error,
+    create_error_context,
+    COMMON_ERROR_RESPONSES
+)
 
 
 class QuoteItem(BaseModel):
-    product_id: Optional[str] = None
-    service_id: Optional[str] = None
-    quantity: int = 1
-    unit_price: Optional[float] = None
+    product_id: Optional[str] = Field(
+        None,
+        description="ID of the product to quote",
+        example="prod-cnc-xyz2000"
+    )
+    service_id: Optional[str] = Field(
+        None,
+        description="ID of the service to quote",
+        example="svc-maintenance-monthly"
+    )
+    quantity: int = Field(
+        1,
+        description="Quantity of the item",
+        example=2,
+        ge=1
+    )
+    unit_price: Optional[float] = Field(
+        None,
+        description="Unit price of the item",
+        example=1500.00,
+        ge=0
+    )
 
     @property
     def total(self) -> Optional[float]:  # convenience
         if self.unit_price is None:
             return None
         return self.unit_price * self.quantity
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "product_id": "prod-cnc-xyz2000",
+                "service_id": None,
+                "quantity": 2,
+                "unit_price": 1500.00
+            }
+        }
 
 
 class QuoteCreateRequest(BaseModel):
-    products: _List[QuoteItem] = Field(default_factory=list)
-    services: _List[QuoteItem] = Field(default_factory=list)
-    contact_name: str
-    contact_email: str
-    contact_phone: Optional[str] = None
-    company: Optional[str] = None
-    project_description: Optional[str] = None
-    urgency: Optional[str] = Field(default="standard")
-    delivery_location: Optional[str] = None
-    special_requirements: Optional[str] = None
-    related_service_ticket_id: Optional[str] = Field(
-        default=None, description="Link to an existing service_ticket if any"
+    products: _List[QuoteItem] = Field(
+        default_factory=list,
+        description="List of products to include in the quote"
     )
-    machine_id: Optional[str] = None
+    services: _List[QuoteItem] = Field(
+        default_factory=list,
+        description="List of services to include in the quote"
+    )
+    contact_name: str = Field(
+        ...,
+        description="Name of the contact person",
+        example="Ahmed Hassan"
+    )
+    contact_email: str = Field(
+        ...,
+        description="Email address of the contact person",
+        example="ahmed.hassan@company.com"
+    )
+    contact_phone: Optional[str] = Field(
+        None,
+        description="Phone number of the contact person",
+        example="+20 123 456 7890"
+    )
+    company: Optional[str] = Field(
+        None,
+        description="Company name",
+        example="Egyptian Manufacturing Co."
+    )
+    project_description: Optional[str] = Field(
+        None,
+        description="Description of the project or requirements",
+        example="We need to upgrade our production line with new CNC machines for automotive parts manufacturing."
+    )
+    urgency: Optional[str] = Field(
+        default="standard",
+        description="Urgency level of the quote request",
+        example="urgent"
+    )
+    delivery_location: Optional[str] = Field(
+        None,
+        description="Delivery location address",
+        example="Cairo Industrial Zone, Building 15, Floor 3"
+    )
+    special_requirements: Optional[str] = Field(
+        None,
+        description="Any special requirements or notes",
+        example="Installation must be completed during weekend hours due to production schedule."
+    )
+    related_service_ticket_id: Optional[str] = Field(
+        default=None,
+        description="Link to an existing service_ticket if any",
+        example="550e8400-e29b-41d4-a716-446655440001"
+    )
+    machine_id: Optional[str] = Field(
+        None,
+        description="ID of the machine this quote is related to",
+        example="550e8400-e29b-41d4-a716-446655440000"
+    )
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "products": [
+                    {
+                        "product_id": "prod-cnc-xyz2000",
+                        "service_id": None,
+                        "quantity": 2,
+                        "unit_price": 1500.00
+                    }
+                ],
+                "services": [
+                    {
+                        "product_id": None,
+                        "service_id": "svc-maintenance-monthly",
+                        "quantity": 1,
+                        "unit_price": 500.00
+                    }
+                ],
+                "contact_name": "Ahmed Hassan",
+                "contact_email": "ahmed.hassan@company.com",
+                "contact_phone": "+20 123 456 7890",
+                "company": "Egyptian Manufacturing Co.",
+                "project_description": "We need to upgrade our production line with new CNC machines for automotive parts manufacturing.",
+                "urgency": "urgent",
+                "delivery_location": "Cairo Industrial Zone, Building 15, Floor 3",
+                "special_requirements": "Installation must be completed during weekend hours due to production schedule.",
+                "related_service_ticket_id": "550e8400-e29b-41d4-a716-446655440001",
+                "machine_id": "550e8400-e29b-41d4-a716-446655440000"
+            }
+        }
 
 
 class QuoteCreateResponse(BaseModel):
@@ -55,25 +168,14 @@ class QuoteCreateResponse(BaseModel):
 
 router = APIRouter(prefix="/quotes", tags=["Quotes"])
 
-SUPABASE_URL = os.getenv("SUPABASE_URL") or ""
-SUPABASE_KEY = (
-    os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-    or os.getenv("SUPABASE_ANON_KEY")
-    or ""
+
+@router.get(
+    "/lookup",
+    response_model=QuoteLookupResponse,
+    responses=COMMON_ERROR_RESPONSES
 )
-
-
-def get_supabase() -> Client:
-    if not SUPABASE_URL or not SUPABASE_KEY:
-        raise HTTPException(
-            status_code=500,
-            detail="Supabase environment variables not configured",
-        )
-    return create_client(SUPABASE_URL, SUPABASE_KEY)
-
-
-@router.get("/lookup", response_model=QuoteLookupResponse)
 def lookup_quotes(
+    request: Request,
     q: str = Query(
         ...,
         min_length=2,
@@ -87,10 +189,13 @@ def lookup_quotes(
         rpc_response = supabase.rpc(
             "portal_quote_lookup", {"_query": q}
         ).execute()
-    except Exception as exc:  # pragma: no cover
-        raise HTTPException(
-            status_code=500, detail=f"RPC failed: {exc}"
-        ) from exc
+    except Exception as exc:
+        context = create_error_context(
+            request=request,
+            operation="quote_lookup",
+            additional_data={"query": q}
+        )
+        raise handle_supabase_error(exc, "portal_quote_lookup", context)
 
     rows = getattr(rpc_response, "data", []) or []
     summaries: List[QuoteSummary] = [
@@ -108,123 +213,83 @@ def lookup_quotes(
     return QuoteLookupResponse(results=summaries, count=len(summaries))
 
 
-@router.post("/create", response_model=QuoteCreateResponse, status_code=201)
+@router.post(
+    "/create",
+    response_model=QuoteCreateResponse,
+    status_code=201,
+    responses=COMMON_ERROR_RESPONSES,
+    summary="Create Quote",
+    description="""
+    Create a new quote with products and/or services.
+    
+    **Use Cases:**
+    - Request pricing for new equipment
+    - Get quotes for maintenance services
+    - Request custom solutions pricing
+    - Generate quotes for existing service tickets
+    
+    **Required Fields:**
+    - `contact_name`: Name of the person requesting the quote
+    - `contact_email`: Email address for quote delivery
+    - At least one product or service item
+    
+    **Features:**
+    - Digital twin integration for machine-specific quotes
+    - Link to existing service tickets
+    - Support for both products and services
+    - Urgency levels and special requirements
+    """
+)
 def create_quote(
+    request: Request,
     payload: QuoteCreateRequest = Body(...),
     supabase: Client = Depends(get_supabase),
 ):
-    """Create a quote with optional line items.
+    """Create a new quote with items."""
+    service = QuoteService(supabase)
 
-    Steps:
-    1. Insert quote header (trigger assigns twin code / reference).
-    2. Batch insert quote_items for products & services if provided.
-    3. Recalculate total based on inserted items when any unit_price present.
-    """
+    # Validate payload
+    if not payload.products and not payload.services:
+        context = create_error_context(
+            request=request,
+            operation="create_quote"
+        )
+        raise QuoteValidationError(
+            message="At least one product or service must be specified",
+            field="products,services",
+            context=context
+        )
 
-    # Initial client-calculated total (fallback if items missing prices)
-    header_estimated_total = 0.0
-    for group in (payload.products, payload.services):
-        for item in group:
-            if item.unit_price is not None:
-                header_estimated_total += (
-                    item.unit_price * max(item.quantity, 1)
-                )
-
-    insert_data: Dict[str, Any] = {
-        "contact_name": payload.contact_name,
-        "contact_email": payload.contact_email,
-        "contact_phone": payload.contact_phone,
-        "company": payload.company,
-        "project_description": payload.project_description,
-        "urgency": payload.urgency,
-        "delivery_location": payload.delivery_location,
-        "special_requirements": payload.special_requirements,
-        "related_service_ticket_id": payload.related_service_ticket_id,
-        "machine_id": payload.machine_id,
-        "total_amount": header_estimated_total or None,
-    }
-
-    # 1. Insert quote header
     try:
-        result = supabase.table("quotes").insert(insert_data).execute()
-    except Exception as exc:  # pragma: no cover
-        raise HTTPException(
-            status_code=500, detail=f"Insert failed: {exc}"
-        ) from exc
-
-    rows = getattr(result, "data", []) or []
-    if not rows:
-        raise HTTPException(
-            status_code=500, detail="Quote insert returned no data"
-        )
-    row = rows[0]
-    quote_id = row.get("id")
-    if not quote_id:
-        raise HTTPException(status_code=500, detail="Quote id missing")
-
-    # 2. Prepare items for batch insert (skip entries lacking id refs)
-    items_payload = []
-    for item in payload.products:
-        if not item.product_id:
-            continue
-        items_payload.append(
+        result = service.create_quote_with_items(
             {
-                "quote_id": quote_id,
-                "product_id": item.product_id,
-                "quantity": item.quantity,
-                "unit_price": item.unit_price,
-                "total_price": (item.unit_price or 0) * item.quantity
-                if item.unit_price is not None
-                else None,
+                "products": [i.dict() for i in payload.products],
+                "services": [i.dict() for i in payload.services],
+                "contact_name": payload.contact_name,
+                "contact_email": payload.contact_email,
+                "contact_phone": payload.contact_phone,
+                "company": payload.company,
+                "project_description": payload.project_description,
+                "urgency": payload.urgency,
+                "delivery_location": payload.delivery_location,
+                "special_requirements": payload.special_requirements,
+                "related_service_ticket_id": payload.related_service_ticket_id,
+                "machine_id": payload.machine_id,
             }
         )
-    for item in payload.services:
-        # Represent services similarly (service_id column assumed)
-        if not item.service_id:
-            continue
-        items_payload.append(
-            {
-                "quote_id": quote_id,
-                "service_id": item.service_id,
-                "quantity": item.quantity,
-                "unit_price": item.unit_price,
-                "total_price": (item.unit_price or 0) * item.quantity
-                if item.unit_price is not None
-                else None,
+    except (QuoteValidationError, QuoteAlreadyExistsError):
+        # Re-raise our custom errors directly
+        raise
+    except Exception as exc:
+        context = create_error_context(
+            request=request,
+            operation="create_quote",
+            additional_data={
+                "contact_email": payload.contact_email,
+                "products_count": len(payload.products),
+                "services_count": len(payload.services)
             }
         )
+        raise handle_supabase_error(exc, "create_quote_with_items", context)
 
-    if items_payload:
-        try:
-            supabase.table("quote_items").insert(items_payload).execute()
-        except Exception as exc:  # pragma: no cover
-            raise HTTPException(
-                status_code=500, detail=f"Quote items insert failed: {exc}"
-            ) from exc
-
-    # 3. Recalculate total if we have item rows with prices
-    recalculated_total = None
-    if items_payload:
-        # Sum only non-null total_price values we computed
-        recalculated_total = sum(
-            [i["total_price"] for i in items_payload if i.get("total_price")]
-        )
-        try:
-            supabase.table("quotes").update(
-                {"total_amount": recalculated_total}
-            ).eq("id", quote_id).execute()
-        except Exception:  # silent fallback
-            pass
-
-    return QuoteCreateResponse(
-        id=row.get("id"),
-        quote_number=row.get("quote_number"),
-        digital_twin_code=row.get("digital_twin_code"),
-        portal_reference=row.get("portal_reference"),
-        status=row.get("status", "pending"),
-        total_amount=recalculated_total
-        if recalculated_total is not None
-        else row.get("total_amount"),
-        related_service_ticket_id=row.get("related_service_ticket_id"),
-        created_at=row.get("created_at"),
-    )
+    return QuoteCreateResponse(**result)

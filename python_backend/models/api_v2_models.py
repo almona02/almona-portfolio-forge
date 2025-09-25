@@ -106,27 +106,73 @@ class MaintenanceType(str, Enum):
 
 
 class UnifiedTicketBase(BaseModel):
-    title: str
-    description: Optional[str] = None
-    priority: TicketPriority = Field(default=TicketPriority.medium)
-    machine_id: Optional[str] = Field(
-        default=None, description="UUID of machine if applicable"
+    title: str = Field(
+        ...,
+        description="Brief title describing the ticket",
+        example="Hydraulic pump failure on CNC machine"
     )
-    machine_serial_number: Optional[str] = None
+    description: Optional[str] = Field(
+        None,
+        description="Detailed description of the issue or request",
+        example="The hydraulic pump on our CNC machine (Model XYZ-2000) has started making unusual noises and the pressure readings are inconsistent. This is affecting production quality."
+    )
+    priority: TicketPriority = Field(
+        default=TicketPriority.medium,
+        description="Priority level of the ticket",
+        example=TicketPriority.high
+    )
+    machine_id: Optional[str] = Field(
+        default=None,
+        description="UUID of machine if applicable",
+        example="550e8400-e29b-41d4-a716-446655440000"
+    )
+    machine_serial_number: Optional[str] = Field(
+        None,
+        description="Serial number of the machine",
+        example="CNC-2023-001234"
+    )
 
 
 class SupportTicketCreate(BaseModel):
     category: Literal[TicketCategory.support] = TicketCategory.support
     payload: UnifiedTicketBase
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "category": "support",
+                "payload": {
+                    "title": "Hydraulic pump failure on CNC machine",
+                    "description": "The hydraulic pump on our CNC machine (Model XYZ-2000) has started making unusual noises and the pressure readings are inconsistent. This is affecting production quality.",
+                    "priority": "high",
+                    "machine_id": "550e8400-e29b-41d4-a716-446655440000",
+                    "machine_serial_number": "CNC-2023-001234"
+                }
+            }
+        }
 
 
 class PreventiveMaintenanceMetadata(BaseModel):
-    checklist_id: Optional[str] = None
-    frequency_days: Optional[int] = Field(
-        default=None, description="Planned frequency in days"
+    checklist_id: Optional[str] = Field(
+        None,
+        description="ID of the maintenance checklist to follow",
+        example="checklist-001"
     )
-    plan_id: Optional[str] = None
-    maintenance_type: Optional[MaintenanceType] = None
+    frequency_days: Optional[int] = Field(
+        default=None,
+        description="Planned frequency in days",
+        example=30
+    )
+    plan_id: Optional[str] = Field(
+        None,
+        description="ID of the maintenance plan",
+        example="plan-monthly-001"
+    )
+    maintenance_type: Optional[MaintenanceType] = Field(
+        None,
+        description="Type of maintenance to be performed",
+        example=MaintenanceType.routine
+    )
 
 
 class PreventiveMaintenanceTicketCreate(BaseModel):
@@ -137,6 +183,26 @@ class PreventiveMaintenanceTicketCreate(BaseModel):
     maintenance_metadata: PreventiveMaintenanceMetadata = Field(
         default_factory=PreventiveMaintenanceMetadata
     )
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "category": "preventive_maintenance",
+                "payload": {
+                    "title": "Monthly maintenance for CNC machine",
+                    "description": "Scheduled monthly maintenance including lubrication, calibration, and safety checks",
+                    "priority": "medium",
+                    "machine_id": "550e8400-e29b-41d4-a716-446655440000",
+                    "machine_serial_number": "CNC-2023-001234"
+                },
+                "maintenance_metadata": {
+                    "checklist_id": "checklist-001",
+                    "frequency_days": 30,
+                    "plan_id": "plan-monthly-001",
+                    "maintenance_type": "routine"
+                }
+            }
+        }
 
 
 class ScheduledMaintenanceTicketCreate(BaseModel):
@@ -188,19 +254,38 @@ UnifiedTicketCreate = Union[
 
 
 class TicketResponse(BaseModel):
-    id: str
-    ticket_number: str
-    category: TicketCategory
-    status: TicketStatus
-    priority: TicketPriority
-    title: str
-    description: Optional[str] = None
-    digital_twin_code: Optional[str] = None
-    scheduled_for: Optional[datetime] = None
-    machine_id: Optional[str] = None
-    machine_serial_number: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
+    id: str = Field(..., description="Unique ticket identifier", example="550e8400-e29b-41d4-a716-446655440001")
+    ticket_number: str = Field(..., description="Human-readable ticket number", example="TKT-2024-001234")
+    category: TicketCategory = Field(..., description="Ticket category", example=TicketCategory.support)
+    status: TicketStatus = Field(..., description="Current ticket status", example=TicketStatus.open)
+    priority: TicketPriority = Field(..., description="Ticket priority level", example=TicketPriority.high)
+    title: str = Field(..., description="Ticket title", example="Hydraulic pump failure on CNC machine")
+    description: Optional[str] = Field(None, description="Detailed description", example="The hydraulic pump on our CNC machine has started making unusual noises...")
+    digital_twin_code: Optional[str] = Field(None, description="Digital twin reference code", example="DT-2024-001")
+    scheduled_for: Optional[datetime] = Field(None, description="Scheduled maintenance date", example="2024-02-15T10:00:00Z")
+    machine_id: Optional[str] = Field(None, description="Associated machine ID", example="550e8400-e29b-41d4-a716-446655440000")
+    machine_serial_number: Optional[str] = Field(None, description="Machine serial number", example="CNC-2023-001234")
+    created_at: datetime = Field(..., description="Creation timestamp", example="2024-01-15T10:30:00Z")
+    updated_at: datetime = Field(..., description="Last update timestamp", example="2024-01-15T14:45:00Z")
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "id": "550e8400-e29b-41d4-a716-446655440001",
+                "ticket_number": "TKT-2024-001234",
+                "category": "support",
+                "status": "open",
+                "priority": "high",
+                "title": "Hydraulic pump failure on CNC machine",
+                "description": "The hydraulic pump on our CNC machine (Model XYZ-2000) has started making unusual noises and the pressure readings are inconsistent.",
+                "digital_twin_code": "DT-2024-001",
+                "scheduled_for": None,
+                "machine_id": "550e8400-e29b-41d4-a716-446655440000",
+                "machine_serial_number": "CNC-2023-001234",
+                "created_at": "2024-01-15T10:30:00Z",
+                "updated_at": "2024-01-15T14:45:00Z"
+            }
+        }
 
 
 class QuoteLookupRequest(BaseModel):

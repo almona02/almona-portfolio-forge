@@ -4,6 +4,7 @@ import { Button } from '../../shared/ui/ui/button';
 import { Badge } from '../../shared/ui/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../shared/ui/ui/card';
 import { ChevronRight, MapPin, Factory, Calendar, Gauge } from 'lucide-react';
+import { EnhancedImage } from '../../components/ui/EnhancedImage';
 
 interface Seller {
   name: string;
@@ -34,10 +35,13 @@ const UsedMachineCard: React.FC<UsedMachineCardProps> = ({ machine }) => {
     <Card className="bg-almona-darker border-almona-light overflow-hidden">
       <div className="relative">
         <div className="h-48 overflow-hidden">
-          <img 
+          <EnhancedImage 
             src={machine.images[0]} 
             alt={machine.title}
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+            aspectRatio="landscape"
+            loading="lazy"
+            loadingMessage="Loading machine image..."
           />
         </div>
         <Badge className="absolute top-2 left-2 bg-green-600">

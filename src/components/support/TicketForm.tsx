@@ -13,6 +13,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@
 import { useToast } from '@/hooks/useToast';
 import { TicketPriority, TicketType } from '@/types/tickets';
 import { motion, AnimatePresence } from 'framer-motion';
+import clsx from 'clsx';
 
 export interface TicketFormProps {
   mode: 'dialog' | 'page';
@@ -189,7 +190,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
             <div className="space-y-2">
               <Label htmlFor="title">Title</Label>
               <Controller name="title" control={control} render={({ field }) => (
-                <Input id="title" {...field} placeholder="Brief description" className="bg-almona-darker border-almona-light/30 focus:border-almona-orange/50" />
+                <Input id="title" {...field} placeholder="Brief description" className={clsx("bg-almona-darker border-almona-light/30 focus:border-almona-orange/50", { "border-red-500 focus:border-red-500": errors.title })} />
               )} />
               {errors.title && <p className="text-xs text-red-500">{errors.title.message}</p>}
             </div>
@@ -197,7 +198,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
               <Controller name="description" control={control} render={({ field }) => (
-                <Textarea id="description" rows={6} {...field} placeholder="Details, steps to reproduce, error messages..." className="bg-almona-darker border-almona-light/30 focus:border-almona-orange/50" />
+                <Textarea id="description" rows={6} {...field} placeholder="Details, steps to reproduce, error messages..." className={clsx("bg-almona-darker border-almona-light/30 focus:border-almona-orange/50", { "border-red-500 focus:border-red-500": errors.description })} />
               )} />
               {errors.description && <p className="text-xs text-red-500">{errors.description.message}</p>}
             </div>

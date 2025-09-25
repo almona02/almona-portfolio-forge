@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { EnhancedGLBViewer } from '../components/3d-model/EnhancedGLBViewer';
+import { LazyEnhancedGLBViewer } from '../components/3d-model/LazyGLBViewer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -65,7 +65,7 @@ export function ModelViewerDemo() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="h-[500px] p-0">
-                <EnhancedGLBViewer
+                <LazyEnhancedGLBViewer
                   modelPath={modelPath}
                 />
               </CardContent>

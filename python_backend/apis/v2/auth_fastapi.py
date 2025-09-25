@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 from core.config import settings
@@ -13,9 +13,18 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v2/auth/token")
 
 class Token(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str
+    access_token: str = Field(..., description="JWT access token for API authentication")
+    refresh_token: str = Field(..., description="JWT refresh token for obtaining new access tokens")
+    token_type: str = Field(..., description="Token type, always 'bearer'")
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                "token_type": "bearer"
+            }
+        }
 
 class TokenData(BaseModel):
     username: Optional[str] = None

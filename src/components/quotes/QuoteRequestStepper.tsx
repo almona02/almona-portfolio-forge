@@ -121,9 +121,9 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+      <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mb-6">
         <div className="relative">
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pr-4 md:pr-0" role="tablist" aria-label="Quote steps">
+          <div className="flex gap-2 flex-wrap overflow-x-auto sm:overflow-visible" role="tablist" aria-label="Quote steps">
             {steps.map((step, index) => {
               const active = index === currentStep
               const complete = index < currentStep
@@ -282,7 +282,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
           />
         )}
 
-        <div className="flex justify-between pt-6">
+        <div className="flex flex-col-reverse sm:flex-row justify-between pt-6 gap-3">
           <Button
             type="button"
             variant="outline"
