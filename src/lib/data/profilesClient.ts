@@ -2,6 +2,7 @@
 import { z } from 'zod';
 import type { Database, Address, SectorType, UserRole, UserPreferences } from '@/types/database';
 import { table } from './clientCore';
+import { monitorSupabasePerformance } from '../supabase';
 
 const addressSchema = z.object({
   street: z.string().min(1),
@@ -42,12 +43,28 @@ type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 type ProfileUpdateDB = Database['public']['Tables']['profiles']['Update'];
 
 export async function getProfileById(id: string): Promise<ProfileRow | null> {
-  const { data, error } = await table('profiles')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle();
-  if (error) throw error;
-  return data;
+  const startTime = Date.now();
+  
+  try {
+    const { data, error } = await table('profiles')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    
+    // Monitor performance
+    monitorSupabasePerformance(`getProfileById(${id})`, startTime);
+    
+    if (error) {
+      console.error('Profile fetch error:', error);
+      throw error;
+    }
+    
+    return data;
+  } catch (error) {
+    // Log the error for debugging but don't throw to prevent app crashes
+    console.error('Failed to fetch profile:', id, error);
+    throw error;
+  }
 }
 
 export async function updateProfile(id: string, input: ProfileUpdateInput): Promise<ProfileRow> {

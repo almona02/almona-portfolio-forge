@@ -27,7 +27,7 @@ interface UseQuoteLookupReturn {
 
 const DEBOUNCE_MS = 400;
 
-export function useQuoteLookup(apiBase = import.meta.env.VITE_PYTHON_API_URL): UseQuoteLookupReturn {
+export function useQuoteLookup(apiBase = ''): UseQuoteLookupReturn {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<QuoteSummary[]>([]);
   const [isLoading, setIsLoading] = useState(false);

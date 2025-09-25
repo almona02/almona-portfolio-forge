@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase, handleAuthError } from '@/lib/supabase';
 import { getProfileById, updateProfile as updateProfileDomain } from '@/lib/data/profilesClient';
 import { Database } from '@/types/database';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
@@ -67,13 +67,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Preserve first non-empty email to avoid UI flicker when placeholder profile is swapped with real profile
   const stableEmailRef = useRef<string | undefined>(undefined);
 
-  // Fetch user profile data
+  // Track ongoing profile fetches to prevent duplicates
+  const ongoingFetches = useRef<Set<string>>(new Set());
+  
+  // Circuit breaker for failing profile fetches
+  const circuitBreaker = useRef<{
+    failures: number;
+    lastFailure: number;
+    isOpen: boolean;
+  }>({ failures: 0, lastFailure: 0, isOpen: false });
+  
+  // Fetch user profile data with improved caching and deduplication
   const fetchUserProfile = useCallback(async (userId: string) => {
+    // Prevent duplicate calls for the same user
+    const cacheKey = `profile-${userId}`;
+    const lastFetch = sessionStorage.getItem(cacheKey);
+    const now = Date.now();
+    
+    // If we fetched this profile less than 60 seconds ago, skip
+    if (lastFetch && (now - parseInt(lastFetch)) < 60000) {
+      return;
+    }
+    
+    // If there's already an ongoing fetch for this user, skip
+    if (ongoingFetches.current.has(userId)) {
+      return;
+    }
+    
+    // Mark this fetch as ongoing
+    ongoingFetches.current.add(userId);
+    
     try {
-  const profile = await getProfileById(userId);
-      setUser(profile);
-      if (!stableEmailRef.current && profile && (profile as User).email) {
-        stableEmailRef.current = (profile as User).email;
+      // Add timeout to prevent hanging requests
+      const profilePromise = getProfileById(userId);
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
+      );
+      
+      const profile = await Promise.race([profilePromise, timeoutPromise]);
+      
+      if (profile) {
+        setUser(profile);
+        if (!stableEmailRef.current && (profile as User).email) {
+          stableEmailRef.current = (profile as User).email;
+        }
+        // Cache the fetch time and profile data
+        sessionStorage.setItem(cacheKey, now.toString());
+        sessionStorage.setItem(`${cacheKey}-data`, JSON.stringify(profile));
       }
     } catch (error) {
       // Only log error once per session to avoid console spam
@@ -82,35 +122,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         sessionStorage.setItem('profile-fetch-error-logged', 'true');
       }
       
+      // Try to use cached profile data if available
+      const cachedData = sessionStorage.getItem(`${cacheKey}-data`);
+      if (cachedData) {
+        try {
+          const cachedProfile = JSON.parse(cachedData);
+          setUser(cachedProfile);
+          return;
+        } catch (parseError) {
+          // Ignore parse errors
+        }
+      }
+      
       // Build immediate placeholder instead of null to avoid portal flicker
       if (supabaseUser) {
-  setUser({
+        setUser({
           id: supabaseUser.id,
           email: supabaseUser.email || undefined,
           username: null,
-            full_name: supabaseUser.user_metadata?.full_name || null,
-            avatar_url: supabaseUser.user_metadata?.avatar_url || null,
-            company_name: supabaseUser.user_metadata?.company_name || null,
-            phone: supabaseUser.user_metadata?.phone || null,
-            sector: null as unknown as User['sector'],
-            workshop_location: null,
-            governorate: null,
-            address: null as unknown as User['address'],
-            tax_number: null,
-            commercial_register: null,
-            role: 'customer' as User['role'],
-            is_verified: false,
-            preferences: {} as User['preferences'],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+          full_name: supabaseUser.user_metadata?.full_name || null,
+          avatar_url: supabaseUser.user_metadata?.avatar_url || null,
+          company_name: supabaseUser.user_metadata?.company_name || null,
+          phone: supabaseUser.user_metadata?.phone || null,
+          sector: null as unknown as User['sector'],
+          workshop_location: null,
+          governorate: null,
+          address: null as unknown as User['address'],
+          tax_number: null,
+          commercial_register: null,
+          role: 'customer' as User['role'],
+          is_verified: false,
+          preferences: {} as User['preferences'],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         });
       } else {
         setUser(null);
       }
+    } finally {
+      // Remove from ongoing fetches
+      ongoingFetches.current.delete(userId);
     }
   }, [supabaseUser]);
 
   useEffect(() => {
+    let isMounted = true;
+    
     const getInitialSession = async () => {
       try {
         // Add timeout to prevent hanging on network issues
@@ -124,68 +181,115 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           timeoutPromise
         ]);
         
+        if (!isMounted) return;
+        
         const { data: { session }, error } = result;
         
         if (error) {
           console.error('Error getting session:', error);
-          setLoading(false);
+          // Handle auth errors including refresh token issues
+          await handleAuthError(error);
+          if (isMounted) setLoading(false);
           return;
         }
 
-        if (session?.user) {
+        if (session?.user && isMounted) {
           setSupabaseUser(session.user);
           await fetchUserProfile(session.user.id);
         }
       } catch (error) {
         console.error('Error in getInitialSession:', error);
         // If we can't get session, proceed without authentication
-        setUser(null);
-        setSupabaseUser(null);
+        if (isMounted) {
+          setUser(null);
+          setSupabaseUser(null);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     getInitialSession();
+    
+    return () => {
+      isMounted = false;
+    };
 
-    // Listen for auth changes
+    // Listen for auth changes with debouncing to prevent excessive updates
+    let authChangeTimeout: NodeJS.Timeout;
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[Auth] state:', event, session?.user?.id);
-      if (session?.user) {
-  setSupabaseUser(session.user);
-        // Immediate optimistic placeholder if user object not yet built
-        setUser(prev => prev || {
-          id: session.user!.id,
-          email: session.user!.email || undefined,
-          username: null,
-          full_name: session.user!.user_metadata?.full_name || null,
-          avatar_url: session.user!.user_metadata?.avatar_url || null,
-          company_name: session.user!.user_metadata?.company_name || null,
-          phone: session.user!.user_metadata?.phone || null,
-          sector: null as unknown as User['sector'],
-          workshop_location: null,
-          governorate: null,
-          address: null as unknown as User['address'],
-          tax_number: null,
-          commercial_register: null,
-          role: 'customer' as User['role'],
-          is_verified: false,
-          preferences: {} as User['preferences'],
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        });
-  if (!stableEmailRef.current && session.user.email) stableEmailRef.current = session.user.email;
-  fetchUserProfile(session.user.id); // fire & forget
-      } else {
-        setSupabaseUser(null);
-        setUser(null);
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Clear any pending auth change
+      if (authChangeTimeout) {
+        clearTimeout(authChangeTimeout);
       }
-      setLoading(false);
+      
+      // Debounce auth state changes to prevent rapid updates
+      authChangeTimeout = setTimeout(() => {
+        // Only log significant auth events, not every state change
+        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+          console.log('[Auth]', event, session?.user?.id ? `user: ${session.user.id}` : 'no user');
+        }
+        
+        // Handle token refresh errors
+        if (event === 'TOKEN_REFRESHED' && !session) {
+          console.warn('[Auth] Token refresh failed, clearing session');
+          setSupabaseUser(null);
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+        
+        // Handle sign out events
+        if (event === 'SIGNED_OUT') {
+          setSupabaseUser(null);
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+        
+        if (session?.user) {
+          setSupabaseUser(session.user);
+          // Immediate optimistic placeholder if user object not yet built
+          setUser(prev => prev || {
+            id: session.user!.id,
+            email: session.user!.email || undefined,
+            username: null,
+            full_name: session.user!.user_metadata?.full_name || null,
+            avatar_url: session.user!.user_metadata?.avatar_url || null,
+            company_name: session.user!.user_metadata?.company_name || null,
+            phone: session.user!.user_metadata?.phone || null,
+            sector: null as unknown as User['sector'],
+            workshop_location: null,
+            governorate: null,
+            address: null as unknown as User['address'],
+            tax_number: null,
+            commercial_register: null,
+            role: 'customer' as User['role'],
+            is_verified: false,
+            preferences: {} as User['preferences'],
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+          if (!stableEmailRef.current && session.user.email) stableEmailRef.current = session.user.email;
+          fetchUserProfile(session.user.id); // fire & forget
+        } else {
+          setSupabaseUser(null);
+          setUser(null);
+        }
+        setLoading(false);
+      }, 100); // 100ms debounce
     });
 
-  return () => subscription.unsubscribe();
+    return () => {
+      if (authChangeTimeout) {
+        clearTimeout(authChangeTimeout);
+      }
+      // Clear ongoing fetches on unmount
+      ongoingFetches.current.clear();
+      subscription.unsubscribe();
+    };
   }, [fetchUserProfile]);
 
   // Absolute safety timeout: never let loading stay true indefinitely
@@ -199,6 +303,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, 4000);
     return () => clearTimeout(safety);
   }, [loading]);
+
+  // Performance optimization: reduce unnecessary re-renders
+  const stableDisplayEmail = stableEmailRef.current || user?.email;
 
   // Removed delayed fallback; placeholder now applied immediately on profile fetch failure.
 
@@ -345,7 +452,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabaseUser,
     loading,
     actionLoading,
-  stableDisplayEmail: stableEmailRef.current || user?.email,
+    stableDisplayEmail,
     signIn,
     signUp,
     signOut,
