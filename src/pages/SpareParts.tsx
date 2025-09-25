@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { EnhancedImage } from "@/components/ui/EnhancedImage";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Input } from "@/shared/ui/ui/input";
@@ -325,10 +326,13 @@ const SpareParts = () => {
                       <Card className="bg-almona-darker/50 border-almona-light/20 hover:border-almona-orange/30 transition-all duration-300 overflow-hidden group">
                         <CardContent className="p-0">
                           <div className="relative">
-                            <img
+                            <EnhancedImage
                               src={part.imageUrl}
                               alt={part.name}
                               className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                              aspectRatio="landscape"
+                              loading="lazy"
+                              loadingMessage="Loading spare part image..."
                             />
                             {part.isCritical && (
                               <Badge className="absolute top-2 left-2 bg-red-600 hover:bg-red-700">

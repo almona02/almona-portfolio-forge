@@ -32,6 +32,7 @@
     "load-test": "locust -f python_backend/tests/load_test.py --host=http://localhost:8000",
     "gen:structure": "node docs/generate-structure.js",
     "docs:generate": "npm run gen:structure",
+    "gen:structure:readmes": "node docs/generate-structure-with-readmes.js",
     "type-check": "tsc --noEmit",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",

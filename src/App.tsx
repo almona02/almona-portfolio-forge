@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
 import SEO from "./components/SEO";
 import UsedMachineDetailPage from "./pages/UsedMachineDetail.tsx";
+import { PageLoadingWrapper } from "./components/ui/PageLoadingWrapper";
 // (Removed complex retry/prefetch helpers to simplify lazy loading.)
 
 // Lazy load all page components for better performance
@@ -52,9 +53,12 @@ const queryClient = new QueryClient();
 
 // Loading component for lazy-loaded routes
 const LoadingSpinner = () => (
-  <div className="min-h-screen flex items-center justify-center bg-almona-dark text-white transition-colors">
-    <div className="animate-spin rounded-full h-12 w-12 border-4 border-almona-light/20 border-t-almona-orange"></div>
-  </div>
+  <PageLoadingWrapper 
+    message="Loading page..." 
+    variant="fullscreen"
+  >
+    <div />
+  </PageLoadingWrapper>
 );
 
 import { QuoteProvider } from "./context/QuoteContext.tsx";
@@ -193,13 +197,22 @@ const App = () => (
                   ];
 
                   return (
-                    <Suspense fallback={<LoadingSpinner />}>
-                      <Routes>
-                        {routes.map(r => (
-                          <Route key={r.path} path={r.path} element={r.element} />
-                        ))}
-                      </Routes>
-                    </Suspense>
+                    <Routes>
+                      {routes.map(r => (
+                        <Route 
+                          key={r.path} 
+                          path={r.path} 
+                          element={
+                            <PageLoadingWrapper 
+                              message={`Loading ${r.path === '/' ? 'home' : r.path.replace('/', '').replace('-', ' ')} page...`}
+                              variant="default"
+                            >
+                              {r.element}
+                            </PageLoadingWrapper>
+                          } 
+                        />
+                      ))}
+                    </Routes>
                   );
                 })()}
               </BrowserRouter>

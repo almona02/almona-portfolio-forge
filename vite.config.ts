@@ -132,10 +132,13 @@ export default defineConfig(({ mode }) => {
       target: "esnext",
       minify: isProduction ? "esbuild" : false,
       sourcemap: !isProduction,
-      chunkSizeWarningLimit: 500,
+      chunkSizeWarningLimit: 1000,
       assetsInlineLimit: 4096,
-
+      reportCompressedSize: false, // Disable compressed size reporting for faster builds
       rollupOptions: {
+        treeshake: {
+          moduleSideEffects: false,
+        },
         input: "index.html",
         external: [],
         output: {
@@ -144,54 +147,82 @@ export default defineConfig(({ mode }) => {
             const parts = id.split('node_modules/')[1].split('/')
             const pkg = parts[0].startsWith('@') ? `${parts[0]}/${parts[1]}` : parts[0]
 
-            const reactGraphVendors = new Set([
-              'react',
-              'react-dom',
-              'scheduler',
-              'react-is',
-              'react-transition-group',
-              'recharts',
-              'react-smooth',
-              'd3-array',
-              'd3-color',
-              'd3-format',
-              'd3-interpolate',
-              'd3-path',
-              'd3-scale',
-              'd3-shape',
-              'd3-time',
-              'd3-time-format',
-              'victory',
-              'victory-vendor'
-            ])
-
-            const groups: Record<string, string> = {
-              ...(reactGraphVendors.has(pkg) ? { [pkg]: 'react-vendor' } : {}),
-              'react-router-dom': 'router-vendor',
-              '@tanstack/react-query': 'query-vendor',
-              '@tanstack/react-table': 'table-vendor',
-              three: 'three-vendor',
-              '@react-three/drei': 'three-react',
-              '@react-three/fiber': 'three-react',
-              '@radix-ui/react-accordion': 'ui-vendor',
-              '@radix-ui/react-dialog': 'ui-vendor',
-              '@radix-ui/react-dropdown-menu': 'ui-vendor',
-              '@radix-ui/react-select': 'ui-vendor',
-              '@radix-ui/react-tabs': 'ui-vendor',
-              'react-hook-form': 'form-vendor',
-              '@hookform/resolvers': 'form-vendor',
-              zod: 'form-vendor',
-              'react-chartjs-2': 'chartjs-vendor',
-              'chart.js': 'chartjs-vendor',
-              'framer-motion': 'motion-vendor',
-              'lucide-react': 'icons-vendor',
-              '@supabase/supabase-js': 'supabase-vendor',
-              'date-fns': 'date-vendor',
+            // Core React ecosystem - keep together for better caching
+            if (['react', 'react-dom', 'scheduler', 'react-is'].includes(pkg)) {
+              return 'react-core'
             }
 
-            if (groups[pkg]) return groups[pkg]
-            if (reactGraphVendors.has(pkg)) return 'react-vendor'
-            return `vendor-${pkg.replace('@', '').replace('/', '-')}`
+            // Three.js ecosystem - separate chunk for 3D libraries
+            if (['three', '@react-three/drei', '@react-three/fiber', '@react-three/xr'].includes(pkg)) {
+              return 'three-ecosystem'
+            }
+
+            // Large UI libraries - group Radix UI components
+            if (pkg.startsWith('@radix-ui/')) {
+              return 'ui-components'
+            }
+
+            // Chart libraries
+            if (['recharts', 'react-chartjs-2', 'chart.js', 'd3-array', 'd3-color', 'd3-format', 'd3-interpolate', 'd3-path', 'd3-scale', 'd3-shape', 'd3-time', 'd3-time-format'].includes(pkg)) {
+              return 'charts'
+            }
+
+            // Form libraries
+            if (['react-hook-form', '@hookform/resolvers', 'zod'].includes(pkg)) {
+              return 'forms'
+            }
+
+            // Specific large libraries that need their own chunks
+            const specificChunks: Record<string, string> = {
+              'react-router-dom': 'router',
+              '@tanstack/react-query': 'query',
+              '@tanstack/react-table': 'table',
+              'framer-motion': 'animations',
+              'lucide-react': 'icons',
+              '@supabase/supabase-js': 'supabase',
+              'axios': 'http-client',
+              'i18next': 'i18n',
+              'i18next-browser-languagedetector': 'i18n',
+              'react-i18next': 'i18n',
+              'react-helmet-async': 'seo',
+              'react-day-picker': 'date-picker',
+              'react-resizable-panels': 'panels',
+              'react-media-recorder': 'media',
+              'react-content-loader': 'loading',
+              'embla-carousel-react': 'carousel',
+              'pg': 'database',
+              '@vercel/analytics': 'analytics'
+            }
+
+            if (specificChunks[pkg]) return specificChunks[pkg]
+
+            // Handle refractor and syntax highlighting separately
+            if (pkg.includes('refractor') || pkg.includes('prism')) {
+              return 'syntax-highlighting'
+            }
+
+            // Group smaller utilities together
+            if (['date-fns', 'class-variance-authority', 'clsx', 'tailwind-merge', 'tailwindcss-animate', 'tailwindcss-rtl', 'next-themes', 'cmdk', 'input-otp', 'jwt-decode', 'sonner', 'vaul', 'web-vitals', 'zustand', 'zxcvbn'].includes(pkg)) {
+              return 'utilities'
+            }
+
+            // Group text processing libraries
+            if (['markdown-it', 'markdown-to-jsx', '@uiw/react-markdown-preview', '@uiw/react-md-editor', 'dompurify'].includes(pkg)) {
+              return 'text-processing'
+            }
+
+            // Group file processing libraries
+            if (['file-saver', 'pdf-lib', 'xlsx'].includes(pkg)) {
+              return 'file-processing'
+            }
+
+            // Group AI/ML libraries
+            if (['@google/generative-ai', '@huggingface/inference', '@tensorflow/tfjs'].includes(pkg)) {
+              return 'ai-ml'
+            }
+
+            // Default vendor chunk for remaining packages
+            return 'vendor-misc'
           },
 
           chunkFileNames: 'js/[name]-[hash].js',
@@ -235,6 +266,9 @@ export default defineConfig(({ mode }) => {
       exclude: [
         "@tensorflow/tfjs",
         "three",
+        "@react-three/fiber",
+        "@react-three/drei",
+        "@react-three/xr",
       ],
       esbuildOptions: {
         define: {

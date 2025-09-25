@@ -1,0 +1,10 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: almona-api-pdb
+  namespace: almona-industrial
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: almona-api
