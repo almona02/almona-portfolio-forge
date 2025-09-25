@@ -1,43 +1,49 @@
-# Core dependencies
-fastapi==0.115.6
-uvicorn[standard]==0.34.0
-python-multipart==0.0.19
-pydantic==2.10.3
-pydantic-settings==2.6.0
+# Core FastAPI dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
 
-# AI/ML
-ultralytics==8.3.40
-opencv-python==4.10.0.84
-numpy==1.26.4
-pillow==11.0.0
-pyarrow>=7.0.0,<16.1.0
-mlflow==2.14.1
-pynvml==11.5.0
-albumentations==1.4.0
+# Database
+supabase==2.3.0
+psycopg2-binary==2.9.9
 
-# Database & External Services
-supabase==2.8.0
-sendgrid==6.11.0
-
-# Template Engine
-jinja2==3.1.4
-
-# Async processing
-celery==5.4.0
-redis==5.2.0
-
-# Development
-pytest==8.3.4
-pytest-asyncio==0.24.0
-python-dotenv==1.0.1
-httpx==0.27.0
-respx==0.21.1
-locust==2.32.2
-flask-limiter==3.8.0
-tensorflow==2.18.0
-
-# Security
+# Authentication & Security
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-slowapi==0.1.9
-email-validator==2.2.0
+python-multipart==0.0.6
+
+# Background Tasks
+celery==5.3.4
+redis==5.0.1
+
+# Monitoring & Logging
+structlog==23.2.0
+prometheus-client==0.19.0
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+opentelemetry-instrumentation-fastapi==0.42b0
+opentelemetry-instrumentation-requests==0.42b0
+opentelemetry-instrumentation-psycopg2==0.42b0
+opentelemetry-exporter-jaeger==1.21.0
+opentelemetry-exporter-prometheus==1.12.0rc1
+opentelemetry-instrumentation-logging==0.42b0
+opentelemetry-semantic-conventions==0.42b0
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.2
+pytest-mock==3.12.0
+
+# Performance Testing
+psutil==5.9.6
+
+# Development
+black==23.11.0
+isort==5.12.0
+flake8==6.1.0
+mypy==1.7.1
+
+# Production
+gunicorn==21.2.0

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { EnhancedGLBViewer } from './EnhancedGLBViewer';
+import { LazyEnhancedGLBViewer } from './LazyGLBViewer';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 
@@ -53,7 +53,7 @@ export function Model3DDialog({
           )}
           
           <div className="h-[60vh] min-h-[480px] rounded-lg overflow-hidden relative">
-            <EnhancedGLBViewer
+            <LazyEnhancedGLBViewer
               modelPath={modelPath}
               enableAR
               onLoaded={handleLoad}
