@@ -1,0 +1,35 @@
+{
+  "files": [
+    {
+      "path": "./dist/assets/app-*.js",
+      "maxSize": "700 kB",
+      "compression": "gzip"
+    },
+    {
+      "path": "./dist/assets/vendor-react-*.js",
+      "maxSize": "550 kB",
+      "compression": "gzip"
+    },
+    {
+      "path": "./dist/assets/vendor-threejs-*.js",
+      "maxSize": "900 kB",
+      "compression": "gzip"
+    },
+    {
+      "path": "./dist/assets/vendor-*.js",
+      "maxSize": "800 kB",
+      "compression": "gzip"
+    },
+    {
+      "path": "./dist/assets/lucide-icons-*.js",
+      "maxSize": "25 kB",
+      "compression": "gzip"
+    },
+    {
+      "path": "./dist/assets/*.css",
+      "maxSize": "150 kB",
+      "compression": "gzip"
+    }
+  ],
+  "defaultCompression": "gzip"
+}

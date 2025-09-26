@@ -11,7 +11,7 @@
   },
   "name": "vite_react_shadcn_ts",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "engines": {
     "node": ">=18.0.0 <23.0.0"
@@ -35,6 +35,9 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "analyze": "vite build --mode analyze",
+    "performance": "node scripts/performance-optimize.js",
+    "performance:audit": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
+    "performance:budget": "bundlesize",
     "deploy:staging": "ENV=staging docker-compose -f docker-compose.staging.yml up --build -d",
     "deploy:production": "ENV=prod docker-compose -f docker-compose.prod.yml up --build -d",
     "load-test": "locust -f python_backend/tests/load_test.py --host=http://localhost:8000",
