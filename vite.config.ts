@@ -122,21 +122,33 @@ export default defineConfig(({ mode }) => {
       target: "esnext",
       minify: isProduction ? "terser" : false,
       sourcemap: !isProduction,
-      chunkSizeWarningLimit: 150, // Balanced warning threshold
-      assetsInlineLimit: 2048, // Smaller inline limit
-      reportCompressedSize: false, // Disable compressed size reporting for faster builds
-      cssCodeSplit: true, // Enable CSS code splitting
+      chunkSizeWarningLimit: 1000, // Increased to prevent warnings
+      assetsInlineLimit: 2048,
+      reportCompressedSize: false,
+      cssCodeSplit: true,
       rollupOptions: {
-        maxParallelFileOps: 5, // Limit parallel operations to prevent memory issues
+        maxParallelFileOps: 5,
+        treeshake: {
+          moduleSideEffects: true,
+        },
+        input: "index.html",
+        external: [],
         output: {
-          // Ensure main chunk is created and loads properly
+          entryFileNames: 'assets/[name]-[hash].js',
+          chunkFileNames: 'assets/[name]-[hash].js',
+          // EMERGENCY FIX: Simplified chunking to prevent infinite loops
           manualChunks: (id) => {
-            // Keep main app code in a single chunk for reliability
+            // Force all lucide-react icons into a single chunk to prevent infinite chunking
+            if (id.includes('lucide-react')) {
+              return 'lucide-icons';
+            }
+            
+            // Keep main app code together
             if (id.includes('/src/') && !id.includes('node_modules')) {
               return 'app';
             }
             
-            // Simple vendor chunking
+            // Simple vendor chunking - no complex splitting
             if (id.includes('node_modules')) {
               if (id.includes('react') || id.includes('react-dom')) {
                 return 'vendor-react';
@@ -147,182 +159,14 @@ export default defineConfig(({ mode }) => {
               if (id.includes('@tanstack') || id.includes('react-router')) {
                 return 'vendor-routing';
               }
-              if (id.includes('framer-motion') || id.includes('lucide-react')) {
+              if (id.includes('framer-motion') || id.includes('@radix-ui')) {
                 return 'vendor-ui';
               }
               if (id.includes('@supabase')) {
                 return 'vendor-supabase';
               }
+              // All other vendors in one chunk
               return 'vendor-misc';
-            }
-          }
-        }
-      },
-      // Add better compression and optimization
-      terserOptions: isProduction ? {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-          pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn']
-        },
-        mangle: {
-          safari10: true
-        }
-      } : undefined,
-      rollupOptions: {
-        treeshake: {
-          moduleSideEffects: true,
-        },
-        input: "index.html",
-        external: [],
-        output: {
-          // Manual chunking for better code splitting
-          entryFileNames: 'assets/[name]-[hash].js',
-          chunkFileNames: 'assets/[name]-[hash].js',
-          manualChunks: (id) => {
-            // More aggressive vendor splitting
-            if (id.includes('node_modules')) {
-              // Debug large chunks
-              if (isProduction && id.includes('node_modules')) {
-                console.log('Chunking:', id);
-              }
-              
-              // Special handling for very large packages
-              if (id.includes('react-dom') || id.includes('react-dom/client')) {
-                return 'vendor-react-dom';
-              }
-              if (id.includes('react') && !id.includes('react-dom')) {
-                return 'vendor-react-core';
-              }
-              
-              // React ecosystem
-              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-                // Split React into smaller chunks
-                const hash = id.split('').reduce((a, b) => {
-                  a = ((a << 5) - a) + b.charCodeAt(0);
-                  return a & a;
-                }, 0);
-                return `vendor-react-${Math.abs(hash) % 8}`;
-              }
-              // Three.js ecosystem - separate from other vendors
-              if (id.includes('three') || id.includes('@react-three')) {
-                // Split Three.js into smaller chunks
-                const hash = id.split('').reduce((a, b) => {
-                  a = ((a << 5) - a) + b.charCodeAt(0);
-                  return a & a;
-                }, 0);
-                return `vendor-threejs-${Math.abs(hash) % 10}`;
-              }
-              // UI libraries
-              if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('@radix-ui')) {
-                return 'vendor-ui';
-              }
-              // Query and state management
-              if (id.includes('@tanstack') || id.includes('zustand') || id.includes('jotai')) {
-                return 'vendor-state';
-              }
-              // Supabase
-              if (id.includes('@supabase')) {
-                return 'vendor-supabase';
-              }
-              // Form libraries
-              if (id.includes('react-hook-form') || id.includes('@hookform') || id.includes('zod')) {
-                return 'vendor-forms';
-              }
-              // Date and utility libraries
-              if (id.includes('date-fns') || id.includes('lodash') || id.includes('clsx') || id.includes('tailwind-merge')) {
-                return 'vendor-utils';
-              }
-              // Animation libraries
-              if (id.includes('gsap') || id.includes('lottie') || id.includes('framer-motion')) {
-                return 'vendor-animations';
-              }
-              // Split remaining vendors into smaller chunks
-              if (id.includes('lodash') || id.includes('ramda') || id.includes('moment') || id.includes('dayjs')) {
-                return 'vendor-date-utils';
-              }
-              if (id.includes('axios') || id.includes('fetch') || id.includes('http')) {
-                return 'vendor-http';
-              }
-              if (id.includes('chart') || id.includes('d3') || id.includes('recharts')) {
-                // Split charts into smaller chunks
-                const hash = id.split('').reduce((a, b) => {
-                  a = ((a << 5) - a) + b.charCodeAt(0);
-                  return a & a;
-                }, 0);
-                return `vendor-charts-${Math.abs(hash) % 6}`;
-              }
-              if (id.includes('pdf') || id.includes('excel') || id.includes('csv')) {
-                // Split documents into smaller chunks
-                const hash = id.split('').reduce((a, b) => {
-                  a = ((a << 5) - a) + b.charCodeAt(0);
-                  return a & a;
-                }, 0);
-                return `vendor-documents-${Math.abs(hash) % 6}`;
-              }
-              if (id.includes('crypto') || id.includes('hash') || id.includes('jwt')) {
-                return 'vendor-crypto';
-              }
-              if (id.includes('i18n') || id.includes('locale') || id.includes('translation')) {
-                return 'vendor-i18n';
-              }
-              // Large libraries that should be separate
-              if (id.includes('monaco-editor') || id.includes('codemirror')) {
-                return 'vendor-editor';
-              }
-              if (id.includes('tensorflow') || id.includes('ml5') || id.includes('brain.js')) {
-                return 'vendor-ml';
-              }
-              if (id.includes('socket.io') || id.includes('ws') || id.includes('websocket')) {
-                return 'vendor-websocket';
-              }
-              if (id.includes('prism') || id.includes('highlight') || id.includes('syntax')) {
-                return 'vendor-syntax';
-              }
-              
-              // Use a simple hash-based approach to split remaining vendors
-              const hash = id.split('').reduce((a, b) => {
-                a = ((a << 5) - a) + b.charCodeAt(0);
-                return a & a;
-              }, 0);
-              const chunkIndex = Math.abs(hash) % 100; // Split into 100 chunks for better balance
-              return `vendor-misc-${chunkIndex}`;
-            }
-            
-            // Application chunks
-            if (id.includes('/admin/') || id.includes('/pages/AdminDashboard')) {
-              // Split admin into smaller chunks
-              const hash = id.split('').reduce((a, b) => {
-                a = ((a << 5) - a) + b.charCodeAt(0);
-                return a & a;
-              }, 0);
-              return `admin-${Math.abs(hash) % 3}`;
-            }
-            
-            if (id.includes('/3d-model/') || id.includes('/configurator/') || id.includes('/ar/')) {
-              return '3d-models';
-            }
-            
-            if (id.includes('/shop/') || id.includes('/pages/Products') || id.includes('/pages/Shop')) {
-              // Split shop into smaller chunks
-              const hash = id.split('').reduce((a, b) => {
-                a = ((a << 5) - a) + b.charCodeAt(0);
-                return a & a;
-              }, 0);
-              return `shop-${Math.abs(hash) % 3}`;
-            }
-            
-            if (id.includes('/components/ui/') || id.includes('/shared/ui/')) {
-              return 'ui';
-            }
-            
-            if (id.includes('/lib/') || id.includes('/hooks/') || id.includes('/context/')) {
-              // Split utils into smaller chunks
-              const hash = id.split('').reduce((a, b) => {
-                a = ((a << 5) - a) + b.charCodeAt(0);
-                return a & a;
-              }, 0);
-              return `utils-${Math.abs(hash) % 3}`;
             }
           },
           assetFileNames: (assetInfo) => {
@@ -349,6 +193,17 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
+      // Add better compression and optimization
+      terserOptions: isProduction ? {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn']
+        },
+        mangle: {
+          safari10: true
+        }
+      } : undefined,
     },
 
     optimizeDeps: {
@@ -357,7 +212,8 @@ export default defineConfig(({ mode }) => {
         "react-dom",
         "react-dom/client",
         "react-reconciler",
-        "react-router-dom"
+        "react-router-dom",
+        "lucide-react" // EMERGENCY FIX: Include lucide-react in pre-bundling
       ],
       exclude: [
         "@tensorflow/tfjs",
@@ -375,7 +231,7 @@ export default defineConfig(({ mode }) => {
         // Exclude more libraries to reduce initial bundle
         "@tanstack/react-query",
         "framer-motion",
-        "lucide-react",
+        // "lucide-react", // REMOVED: Now included in pre-bundling
         "@supabase/supabase-js",
         "sonner",
         "next-themes",
