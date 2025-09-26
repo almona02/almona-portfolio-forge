@@ -107,8 +107,7 @@ export const Register = () => {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-almona-dark">
-      <Navbar />
+    <>
       <main 
         className="flex-grow flex items-center justify-center p-4 bg-cover bg-center relative py-12" 
         style={{ backgroundImage: "url('/images/machines/processing-center.jpg')" }}
@@ -508,8 +507,7 @@ export const Register = () => {
           </Card>
         </motion.div>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 };
 
