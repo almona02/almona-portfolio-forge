@@ -1,4 +1,4 @@
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+let PDFDocument: any, rgb: any, StandardFonts: any;
 import { FabricationCosts } from './costCalculator';
 import { MACHINE_SPECS } from './pricing';
 
@@ -8,6 +8,10 @@ export async function generatePDFReport(
   material: 'aluminum' | 'upvc',
   isArabic: boolean = false
 ): Promise<Uint8Array> {
+  if (!PDFDocument) {
+    const mod = await import('pdf-lib');
+    PDFDocument = mod.PDFDocument; rgb = mod.rgb; StandardFonts = mod.StandardFonts;
+  }
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([600, 800]);
   const { width, height } = page.getSize();

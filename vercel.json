@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "installCommand": "npm ci",
+  "installCommand": "pnpm install --frozen-lockfile",
   "ignoreCommand": "node scripts/should-build.mjs",
   "framework": "vite",
   "rewrites": [

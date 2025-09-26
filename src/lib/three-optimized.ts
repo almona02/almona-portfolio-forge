@@ -20,6 +20,7 @@ export {
   Fog,
   FogExp2
 } from 'three';
+// NOTE: For routes/components, prefer dynamic import('three') when possible to avoid upfront cost.
 
 // React Three Fiber - core components only
 export { 

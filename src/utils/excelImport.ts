@@ -1,6 +1,7 @@
 // Excel import utility for Spare Parts (maps to products table with category 'spare_part')
 // If you maintain a dedicated `spare_parts` table, adjust the upsert section accordingly.
-import * as ExcelJS from 'exceljs';
+// Lazy-load exceljs to avoid inflating initial bundle
+let ExcelJS: any;
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 import { table } from '@/lib/data/clientCore';
@@ -60,6 +61,9 @@ export interface ImportOptions {
 }
 
 export const importSpareParts = async (file: File, options: ImportOptions = {}) => {
+  if (!ExcelJS) {
+    ExcelJS = await import('exceljs');
+  }
   const { useDedicatedTable = false } = options;
   const arrayBuffer = await file.arrayBuffer();
   const workbook = new ExcelJS.Workbook();

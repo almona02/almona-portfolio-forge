@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { generateFabricationReport, compareMachines } from '@/lib/reports/generateReport';
-import { saveAs } from 'file-saver';
+// Lazy import file-saver to avoid adding to initial bundle
+let saveAsFn: ((data: Blob | File, filename?: string, opts?: unknown) => void) | null = null;
 
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -57,7 +58,11 @@ export default function FabricationReportGenerator() {
 
     // Save PDF
     const blob = new Blob([report.pdfBytes], { type: 'application/pdf' });
-    saveAs(blob, `fabrication-report-${new Date().toISOString().slice(0,10)}.pdf`);
+    if (!saveAsFn) {
+      const mod = await import('file-saver');
+      saveAsFn = mod.saveAs;
+    }
+    saveAsFn!(blob, `fabrication-report-${new Date().toISOString().slice(0,10)}.pdf`);
 
     // Set comparison data
     setComparisonData(compareMachines(report.comparisons));
