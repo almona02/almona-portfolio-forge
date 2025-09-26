@@ -4,6 +4,15 @@
   "outputDirectory": "dist",
   "installCommand": "npm ci",
   "framework": "vite",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
   "rewrites": [
     {
       "source": "/((?!assets|js|css|fonts|images|favicon\\.ico|robots\\.txt|manifest\\.webmanifest|service-worker\\.js|.*\\..*).*)",
