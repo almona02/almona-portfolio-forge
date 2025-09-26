@@ -7,11 +7,11 @@ import { Suspense, lazy, useEffect } from "react";
 import SEO from "./components/SEO";
 import UsedMachineDetailPage from "./pages/UsedMachineDetail.tsx";
 import { PageLoadingWrapper } from "./components/ui/PageLoadingWrapper";
-import { AppPreloader } from "./components/ui/AppPreloader";
+import { CriticalPathLoader } from "./components/ui/CriticalPathLoader";
 // (Removed complex retry/prefetch helpers to simplify lazy loading.)
 
-// Lazy load all page components with optimized chunking
-// Core pages (loaded immediately)
+// Lazy load ALL components for maximum code splitting
+// Only load the absolute minimum initially
 const Index = lazy(() => import("./pages/Index"));
 const Products = lazy(() => import("./pages/Products.tsx"));
 const Services = lazy(() => import("./pages/Services.tsx"));
@@ -90,10 +90,11 @@ const AuthLoadingSpinner = () => (
   <LoadingSpinner message="Loading authentication..." />
 );
 
-import { QuoteProvider } from "./context/QuoteContext.tsx";
-import { AuthProvider } from "./context/AuthContext.tsx";
-import { LoadingProvider } from "./context/LoadingContext.tsx";
-import { Analytics } from "@vercel/analytics/react";
+// Lazy load context providers to reduce initial bundle
+const QuoteProvider = lazy(() => import("./context/QuoteContext.tsx").then(m => ({ default: m.QuoteProvider })));
+const AuthProvider = lazy(() => import("./context/AuthContext.tsx").then(m => ({ default: m.AuthProvider })));
+const LoadingProvider = lazy(() => import("./context/LoadingContext.tsx").then(m => ({ default: m.LoadingProvider })));
+const Analytics = lazy(() => import("@vercel/analytics/react").then(m => ({ default: m.Analytics })));
 
 // Install global guard for dynamic import failures (helps with rare transient 404 in dev)
 const GlobalDynamicImportGuard = () => {
@@ -127,24 +128,29 @@ const GlobalDynamicImportGuard = () => {
 };
 
 const App = () => (
-  <AppPreloader>
+  <CriticalPathLoader>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
         <TooltipProvider>
           <SEO />
           <Toaster />
           <Sonner />
-          <AuthProvider>
-            <LoadingProvider>
-              <QuoteProvider>
-                <BrowserRouter
-                  future={{
-                    v7_startTransition: true,
-                    v7_relativeSplatPath: true,
-                  }}
-                >
-                  <GlobalDynamicImportGuard />
-                  <Analytics />
+          <Suspense fallback={<LoadingSpinner message="Loading authentication..." />}>
+            <AuthProvider>
+              <Suspense fallback={<LoadingSpinner message="Loading application..." />}>
+                <LoadingProvider>
+                  <Suspense fallback={<LoadingSpinner message="Loading features..." />}>
+                    <QuoteProvider>
+                      <BrowserRouter
+                        future={{
+                          v7_startTransition: true,
+                          v7_relativeSplatPath: true,
+                        }}
+                      >
+                        <GlobalDynamicImportGuard />
+                        <Suspense fallback={<div />}>
+                          <Analytics />
+                        </Suspense>
                 {/* Centralized route configuration for maintainability */}
                 {(() => {
                   const routes = [
@@ -254,13 +260,16 @@ const App = () => (
                   );
                 })()}
               </BrowserRouter>
-            </QuoteProvider>
-          </LoadingProvider>
-        </AuthProvider>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-  </AppPreloader>
+                    </QuoteProvider>
+                  </Suspense>
+                </LoadingProvider>
+              </Suspense>
+            </AuthProvider>
+          </Suspense>
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  </CriticalPathLoader>
 );
 
 export default App;
