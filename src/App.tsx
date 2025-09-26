@@ -9,56 +9,84 @@ import UsedMachineDetailPage from "./pages/UsedMachineDetail.tsx";
 import { PageLoadingWrapper } from "./components/ui/PageLoadingWrapper";
 // (Removed complex retry/prefetch helpers to simplify lazy loading.)
 
-// Lazy load all page components for better performance
+// Lazy load all page components with optimized chunking
+// Core pages (loaded immediately)
 const Index = lazy(() => import("./pages/Index"));
 const Products = lazy(() => import("./pages/Products.tsx"));
 const Services = lazy(() => import("./pages/Services.tsx"));
 const Contact = lazy(() => import("./pages/Contact.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
-const Portfolio = lazy(() => import("./pages/Portfolio.tsx"));
+const About = lazy(() => import("./pages/About.tsx"));
+
+// Shop and product pages (heavy components)
 const Shop = lazy(() => import("./pages/Shop"));
 const MachineDetail = lazy(() => import("./pages/machines/MachineDetail.tsx"));
 const ProfileDetail = lazy(() => import("./pages/profiles/ProfileDetail.tsx"));
-const About = lazy(() => import("./pages/About.tsx"));
-
-const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail"));
 const UsedMachines = lazy(() => import("./pages/UsedMachines"));
+const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine.tsx"));
+const SpareParts = lazy(() => import("@/pages/SpareParts.tsx"));
+
+// Workflow and fabrication pages
+const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail"));
 const FabricationWorkflowDetail = lazy(
   () => import("./pages/FabricationWorkflowDetail.tsx")
 );
+const FabricationServices = lazy(() => import("./pages/FabricationServices.tsx"));
+const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
+
+// Quote and model viewer pages (3D heavy)
 const QuotePage = lazy(() => import("./pages/QuotePage.tsx"));
 const QuoteConfirmationPage = lazy(
   () => import("./pages/QuoteConfirmationPage.tsx")
 );
 const ModelViewerDemo = lazy(() => import("./pages/ModelViewerDemo.tsx"));
 const ModelViewerTest = lazy(() => import("./pages/ModelViewerTest.tsx"));
+
+// Auth and user pages
 const Login = lazy(() => import("./pages/Login.tsx"));
 const Register = lazy(() => import("./pages/Register.tsx"));
 const CustomerPortal = lazy(() => import("./pages/CustomerPortal.tsx"));
 const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute.tsx"));
-const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine.tsx"));
-const FabricationServices = lazy(() => import("./pages/FabricationServices.tsx"));
-const SpareParts = lazy(() => import("@/pages/SpareParts.tsx"));
-const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
+
+// Admin and support pages (admin chunk)
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
 const CreateTicketPage = lazy(() => import("./pages/CreateTicketPage.tsx"));
 const RegisterMachinePage = lazy(() => import("./pages/RegisterMachinePage.tsx"));
 const CustomerSupport = lazy(() => import("./pages/CustomerSupport.tsx"));
-// const SupportNewTicketMenu = lazy(() => import('./pages/SupportNewTicketMenu.tsx'));
+
+// Legacy pages
+const Portfolio = lazy(() => import("./pages/Portfolio.tsx"));
 
 // Apply dark mode by default
 import { ThemeProvider } from "next-themes";
 
 const queryClient = new QueryClient();
 
-// Loading component for lazy-loaded routes
-const LoadingSpinner = () => (
+// Enhanced loading components for different types of pages
+const LoadingSpinner = ({ message = "Loading page..." }: { message?: string }) => (
   <PageLoadingWrapper 
-    message="Loading page..." 
+    message={message} 
     variant="fullscreen"
   >
     <div />
   </PageLoadingWrapper>
+);
+
+// Specialized loading components for different page types
+const AdminLoadingSpinner = () => (
+  <LoadingSpinner message="Loading admin dashboard..." />
+);
+
+const ShopLoadingSpinner = () => (
+  <LoadingSpinner message="Loading shop components..." />
+);
+
+const ModelLoadingSpinner = () => (
+  <LoadingSpinner message="Loading 3D models..." />
+);
+
+const AuthLoadingSpinner = () => (
+  <LoadingSpinner message="Loading authentication..." />
 );
 
 import { QuoteProvider } from "./context/QuoteContext.tsx";
@@ -198,20 +226,28 @@ const App = () => (
 
                   return (
                     <Routes>
-                      {routes.map(r => (
-                        <Route 
-                          key={r.path} 
-                          path={r.path} 
-                          element={
-                            <PageLoadingWrapper 
-                              message={`Loading ${r.path === '/' ? 'home' : r.path.replace('/', '').replace('-', ' ')} page...`}
-                              variant="default"
-                            >
-                              {r.element}
-                            </PageLoadingWrapper>
-                          } 
-                        />
-                      ))}
+                      {routes.map(r => {
+                        // Determine appropriate loading component based on route
+                        const getLoadingComponent = (path: string) => {
+                          if (path.includes('/admin')) return <AdminLoadingSpinner />;
+                          if (path.includes('/shop') || path.includes('/products') || path.includes('/usedmachines')) return <ShopLoadingSpinner />;
+                          if (path.includes('/3d') || path.includes('/quote') || path.includes('/model')) return <ModelLoadingSpinner />;
+                          if (path.includes('/login') || path.includes('/register') || path.includes('/portal')) return <AuthLoadingSpinner />;
+                          return <LoadingSpinner message={`Loading ${path === '/' ? 'home' : path.replace('/', '').replace('-', ' ')} page...`} />;
+                        };
+
+                        return (
+                          <Route 
+                            key={r.path} 
+                            path={r.path} 
+                            element={
+                              <Suspense fallback={getLoadingComponent(r.path)}>
+                                {r.element}
+                              </Suspense>
+                            } 
+                          />
+                        );
+                      })}
                     </Routes>
                   );
                 })()}
