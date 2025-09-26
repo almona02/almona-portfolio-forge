@@ -63,6 +63,8 @@ const Hero = () => {
             className="w-full h-full object-cover"
             sizes="100vw"
             loading={index === activeSlide ? "eager" : "lazy"}
+            decoding="async"
+            fetchPriority={index === activeSlide ? "high" : "low"}
           />
         </div>
       ))}
@@ -102,7 +104,7 @@ const Hero = () => {
                     size="lg"
                     className="px-6 py-6"
                   >
-                    <Link to={slide.link} className="flex items-center gap-2">
+                    <Link to={slide.link} data-prefetch="true" className="flex items-center gap-2">
                       Explore {slide.title}
                       <ArrowRight className="h-5 w-5" />
                     </Link>
@@ -113,7 +115,7 @@ const Hero = () => {
                     size="lg"
                     className="border-white/20 text-white"
                   >
-                    <Link to="/contact" className="flex items-center gap-2">
+                    <Link to="/contact" data-prefetch="true" className="flex items-center gap-2">
                       <Phone className="h-5 w-5" />
                       Contact Us
                     </Link>

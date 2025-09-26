@@ -9,5 +9,111 @@
   "yilmazValidation": {
     "success": "Seri başarıyla doğrulandı",
     "invalidSerial": "Geçersiz seri numarası veya bulunamadı"
+  },
+  "egypt_support_cta": "Mısır Desteği Al",
+  "tabs": {
+    "overview": "Genel Bakış",
+    "register": "Makine Kaydı",
+    "dashboard": "Bakım Panosu",
+    "portal": "Müşteri Portalı",
+    "nile_logistics": "Nil Lojistiği",
+    "egypt_support": "Mısır Desteği",
+    "ai": "AI Özellikleri"
+  },
+  "cards": {
+    "maintenance": {
+      "title": "Önleyici Bakım",
+      "description": "Ekipmanınızın en iyi performansta çalışması için programlanmış bakım",
+      "features": [
+        "Özel bakım programları",
+        "Uzaktan tanılama",
+        "Otomatik servis hatırlatıcıları"
+      ],
+      "action": "Bakım Planla"
+    },
+    "emergency": {
+      "title": "7/24 Acil Destek",
+      "description": "Kritik ekipman arızaları için anında yardım",
+      "features": [
+        "2 saatlik yanıt garantisi",
+        "Mısırlı teknik uzmanlar",
+        "Mobil onarım birimleri"
+      ],
+      "action": "Acil Destek İste"
+    },
+    "training": {
+      "title": "Operatör Eğitimi",
+      "description": "Ekipman operatörleri için kapsamlı eğitim programları",
+      "features": [
+        "Sertifikalı eğitmenler",
+        "Sahada veya sanal oturumlar",
+        "Özelleştirilmiş eğitim materyalleri"
+      ],
+      "action": "Eğitim Programlarını Görüntüle"
+    },
+    "nile_logistics": {
+      "title": "Nil Nehri Lojistiği",
+      "description": "Nil Nehri boyunca özel taşıma çözümleri",
+      "features": [
+        "Ağır ekipman taşımacılığı",
+        "Gümrük işlemleri yardımı",
+        "Gerçek zamanlı kargo takibi"
+      ],
+      "action": "Taşıma Maliyetini Hesapla"
+    }
+  },
+  "connected_network": {
+    "title": "Bağlı Ekipman Ağı",
+    "serial": "Seri",
+    "installed": "Kurulu",
+    "show_map": "Harita Görünümünü Göster",
+    "show_list": "Liste Görünümünü Göster",
+    "active_warranty": "Aktif Garanti"
+  },
+  "tech_highlights": {
+    "badge": "Teknoloji",
+    "title": "Gelişmiş Servis Teknolojisi",
+    "description": "Mısır operasyonlarımız üstün hizmet sunmak için son teknolojiyi kullanır",
+    "features": [
+      "IoT destekli ekipman izleme",
+      "AI destekli öngörülü bakım",
+      "Artırılmış gerçeklik onarım kılavuzları",
+      "Blockchain tabanlı servis kayıtları"
+    ]
+  },
+  "service_network": {
+    "title": "Mısır Servis Ağı",
+    "description": "Teknik uzmanlarımızın ülke çapındaki ağı tüm büyük endüstriyel bölgeleri kapsar"
+  },
+  "standards": {
+    "title": "Mısır Endüstriyel Standartları",
+    "description": "Tüm hizmetler ekipman bakımı için Mısır Endüstriyel Standardı ES 1109'a uygundur",
+    "cta": "Uygunluk Sertifikasını Görüntüle"
+  },
+  "old_page_title": "Servis Sayfası Bakımda",
+  "old_page_message": "Mısır pazarına daha iyi hizmet vermek için servis sayfamızı güncelliyoruz",
+  "old_page_instruction": "Bu geçiş sırasında lütfen yeni servis sayfamızı ziyaret edin",
+  "old_page_link": "Yeni Servis Sayfasına Git",
+  "direct_url": "Doğrudan URL",
+  "shop": {
+    "buttons": {
+      "quick_view": "Hızlı Görünüm",
+      "load_more": "Daha Fazla Yükle"
+    }
+  },
+  "reviews": {
+    "section_title": "Müşteri Yorumları",
+    "write_review": "Yorum Yaz",
+    "your_name": "Adınız",
+    "your_rating": "Değerlendirmeniz",
+    "your_comment": "Yorumunuz",
+    "comment_placeholder": "Bu ürünle ilgili deneyiminizi paylaşın...",
+    "submit_review": "Yorumu Gönder",
+    "customer_reviews": "Müşteri Yorumları",
+    "no_reviews": "Henüz yorum yok. Bu ürün için ilk yorumu siz yazın!",
+    "review_submitted_success": "Yorum başarıyla gönderildi!"
+  },
+  "recently_viewed": {
+    "title": "Son Görüntülenen Ürünler"
   }
 }

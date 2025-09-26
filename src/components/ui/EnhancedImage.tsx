@@ -117,7 +117,7 @@ export const EnhancedImage: React.FC<EnhancedImageProps> = ({
 
       {isInView && (
         <img
-          src={src}
+          src={hasError ? '/placeholder.svg' : src}
           alt={alt}
           className={cn(
             'w-full h-full object-cover transition-opacity duration-300',

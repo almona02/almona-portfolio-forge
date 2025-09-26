@@ -1,0 +1,38 @@
+{
+  "shop": {
+    "tabs": {
+      "industrial-machines": "Endüstriyel Makineler",
+      "industrial-parts": "Endüstriyel Parçalar",
+      "unique-prototypes": "Benzersiz Prototipler",
+      "unique-custom-fabrications": "Özel İmalatlar",
+      "profiles": "Profiller",
+      "reports": "Raporlar"
+    },
+    "products": {
+      "KM-212": {
+        "title": "YILMAZ KM-212",
+        "description": "Yüksek hassasiyetli CNC kesim makinesi."
+      },
+      "DC-421-PBS": {
+        "title": "YILMAZ DC-421-PBS",
+        "description": "Ağır işler için çift kolonlu işlemci."
+      }
+    },
+    "buttons": {
+      "configure": "Yapılandır",
+      "requestQuote": "Teklif İste",
+      "compare": "Karşılaştır",
+      "viewInAR": "Alanınızda Görüntüle"
+    },
+    "labels": {
+      "price": "Fiyat",
+      "contactWhatsApp": "WhatsApp ile İletişim"
+    },
+    "messages": {
+      "localShipping": "Yerel Kargo Hesaplayıcısı",
+      "cashOnDelivery": "Kapıda Ödeme",
+      "ramadanMode": "Ramazan Modu",
+      "eidMode": "Bayram Modu"
+    }
+  }
+}
