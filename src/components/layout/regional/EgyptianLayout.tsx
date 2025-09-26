@@ -6,6 +6,7 @@
 import React from 'react';
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
 import Navbar from '../Navbar';
+import Footer from '../Footer';
 
 interface EgyptianLayoutProps {
   children: React.ReactNode;
@@ -29,6 +30,9 @@ export const EgyptianLayout: React.FC<EgyptianLayoutProps> = ({
       <div className="relative">
         {children}
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
