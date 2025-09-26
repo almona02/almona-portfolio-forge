@@ -26,19 +26,31 @@ export const EgyptianLayout: React.FC<EgyptianLayoutProps> = ({
       <Navbar />
       
       {/* Egyptian-specific header banner */}
-      <div className="bg-gradient-to-r from-red-600 to-red-800 text-white py-2 px-4 text-center text-sm mt-16">
-        <div className="flex items-center justify-center space-x-4">
-          <span>🇪🇬</span>
-          <span>محسن لسوق المصري</span>
-          <span>•</span>
-          <span>الأسعار تشمل ضريبة القيمة المضافة 14%</span>
-          <span>•</span>
-          <span>شحن مجاني</span>
+      <div className="bg-gradient-to-r from-green-600 to-green-800 text-white py-3 px-4 text-center text-sm mt-16 relative overflow-hidden">
+        {/* Animated background pattern */}
+        <div className="absolute inset-0 bg-gradient-to-r from-green-600/80 via-green-700/60 to-green-800/80 animate-pulse" />
+        
+        <div className="relative flex items-center justify-center space-x-2 sm:space-x-4 flex-wrap gap-2">
+          {/* Enhanced Egypt flag icon with better resolution */}
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl sm:text-3xl filter drop-shadow-lg" style={{ 
+              textShadow: '0 0 8px rgba(255,255,255,0.3)',
+              filter: 'brightness(1.1) contrast(1.1)'
+            }}>🇪🇬</span>
+            <span className="font-medium text-white/95">مصر</span>
+          </div>
+          
+          <span className="hidden sm:inline text-white/80">•</span>
+          <span className="text-white/90 font-medium">الأسعار تشمل ضريبة القيمة المضافة 14%</span>
+          <span className="hidden sm:inline text-white/80">•</span>
+          <span className="text-white/90 font-medium">شحن مجاني</span>
+          
           {enableRegionSwitching && (
             <button
               onClick={() => onRegionChange('TR')}
-              className="ml-4 px-2 py-1 bg-white/20 rounded text-xs hover:bg-white/30"
+              className="ml-2 sm:ml-4 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-md text-xs font-medium transition-all duration-200 border border-white/20 hover:border-white/30"
             >
+              <span className="text-lg mr-1">🇹🇷</span>
               Türkiye / Turkey
             </button>
           )}

@@ -14,7 +14,7 @@ export const EgyptianChatSupport: React.FC = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: 'مرحباً! كيف يمكنني مساعدتك اليوم؟',
+      text: 'مرحباً! أنا هنا لمساعدتك في آلات YILMAZ للألمنيوم و UPVC. كيف يمكنني مساعدتك اليوم؟',
       sender: 'support',
       timestamp: new Date()
     }
@@ -31,11 +31,20 @@ export const EgyptianChatSupport: React.FC = () => {
       setMessages([...messages, newMessage]);
       setMessage('');
       
-      // Simulate response
+      // Enhanced response simulation for aluminum/UPVC machinery
       setTimeout(() => {
+        const responses = [
+          'شكراً لرسالتك. سأقوم بالرد عليك في أقرب وقت ممكن.',
+          'أفهم استفسارك. هل تبحث عن آلة YILMAZ للألمنيوم أم UPVC؟',
+          'سأقوم بتوجيهك للخبير المناسب. ما نوع الإنتاج الذي تخطط له؟',
+          'ممتاز! سأقوم بإرسال معلومات مفصلة عن آلات YILMAZ المناسبة لاحتياجاتك.',
+          'هل تحتاج إلى معلومات عن الأسعار أم المواصفات التقنية؟'
+        ];
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        
         const response = {
           id: messages.length + 2,
-          text: 'شكراً لرسالتك. سأقوم بالرد عليك في أقرب وقت ممكن.',
+          text: randomResponse,
           sender: 'support',
           timestamp: new Date()
         };
@@ -122,22 +131,60 @@ export const EgyptianChatSupport: React.FC = () => {
           </div>
 
           {/* Message Input */}
-          <div className="flex gap-2">
-            <Input
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="اكتب رسالتك..."
-              className="text-xs h-8"
-              dir="rtl"
-            />
-            <Button
-              onClick={handleSendMessage}
-              size="sm"
-              className="h-8 px-3 bg-green-500 hover:bg-green-600"
-            >
-              <Send className="w-3 h-3" />
-            </Button>
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <Input
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="اكتب رسالتك..."
+                className="text-xs h-8"
+                dir="rtl"
+              />
+              <Button
+                onClick={handleSendMessage}
+                size="sm"
+                className="h-8 px-3 bg-green-500 hover:bg-green-600"
+              >
+                <Send className="w-3 h-3" />
+              </Button>
+            </div>
+            
+            {/* Quick Actions for Aluminum/UPVC Machinery */}
+            <div className="flex flex-wrap gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setMessage('أريد معلومات عن أسعار آلات YILMAZ')}
+                className="text-xs h-6 px-2"
+              >
+                أسعار
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setMessage('أريد معلومات عن آلات الألمنيوم')}
+                className="text-xs h-6 px-2"
+              >
+                ألمنيوم
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setMessage('أريد معلومات عن آلات UPVC')}
+                className="text-xs h-6 px-2"
+              >
+                UPVC
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setMessage('أريد دعم فني وتركيب')}
+                className="text-xs h-6 px-2"
+              >
+                دعم فني
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
