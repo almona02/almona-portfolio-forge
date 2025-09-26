@@ -8,6 +8,9 @@ import SEO from "./components/SEO";
 import UsedMachineDetailPage from "./pages/UsedMachineDetail.tsx";
 import { PageLoadingWrapper } from "./components/ui/PageLoadingWrapper";
 import { CriticalPathLoader } from "./components/ui/CriticalPathLoader";
+import { ErrorBoundary } from "./components/ui/ErrorBoundary";
+import { ChunkLoadingErrorBoundary } from "./components/ui/ChunkLoadingErrorBoundary";
+import { MainChunkTest } from "./components/ui/MainChunkTest";
 // (Removed complex retry/prefetch helpers to simplify lazy loading.)
 
 // Lazy load ALL components for maximum code splitting
@@ -90,11 +93,11 @@ const AuthLoadingSpinner = () => (
   <LoadingSpinner message="Loading authentication..." />
 );
 
-// Lazy load context providers to reduce initial bundle
-const QuoteProvider = lazy(() => import("./context/QuoteContext.tsx").then(m => ({ default: m.QuoteProvider })));
-const AuthProvider = lazy(() => import("./context/AuthContext.tsx").then(m => ({ default: m.AuthProvider })));
-const LoadingProvider = lazy(() => import("./context/LoadingContext.tsx").then(m => ({ default: m.LoadingProvider })));
-const Analytics = lazy(() => import("@vercel/analytics/react").then(m => ({ default: m.Analytics })));
+// Import context providers directly to ensure they load with main chunk
+import { QuoteProvider } from "./context/QuoteContext.tsx";
+import { AuthProvider } from "./context/AuthContext.tsx";
+import { LoadingProvider } from "./context/LoadingContext.tsx";
+import { Analytics } from "@vercel/analytics/react";
 
 // Install global guard for dynamic import failures (helps with rare transient 404 in dev)
 const GlobalDynamicImportGuard = () => {
@@ -128,29 +131,27 @@ const GlobalDynamicImportGuard = () => {
 };
 
 const App = () => (
-  <CriticalPathLoader>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-        <TooltipProvider>
-          <SEO />
-          <Toaster />
-          <Sonner />
-          <Suspense fallback={<LoadingSpinner message="Loading authentication..." />}>
-            <AuthProvider>
-              <Suspense fallback={<LoadingSpinner message="Loading application..." />}>
+  <ChunkLoadingErrorBoundary>
+    <ErrorBoundary>
+      <CriticalPathLoader>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+            <TooltipProvider>
+              <SEO />
+              <Toaster />
+              <Sonner />
+              <AuthProvider>
                 <LoadingProvider>
-                  <Suspense fallback={<LoadingSpinner message="Loading features..." />}>
-                    <QuoteProvider>
-                      <BrowserRouter
-                        future={{
-                          v7_startTransition: true,
-                          v7_relativeSplatPath: true,
-                        }}
-                      >
-                        <GlobalDynamicImportGuard />
-                        <Suspense fallback={<div />}>
-                          <Analytics />
-                        </Suspense>
+                  <QuoteProvider>
+                    <BrowserRouter
+                      future={{
+                        v7_startTransition: true,
+                        v7_relativeSplatPath: true,
+                      }}
+                    >
+                      <GlobalDynamicImportGuard />
+                      <Analytics />
+                      <MainChunkTest />
                 {/* Centralized route configuration for maintainability */}
                 {(() => {
                   const routes = [
@@ -260,16 +261,15 @@ const App = () => (
                   );
                 })()}
               </BrowserRouter>
-                    </QuoteProvider>
-                  </Suspense>
+                  </QuoteProvider>
                 </LoadingProvider>
-              </Suspense>
-            </AuthProvider>
-          </Suspense>
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  </CriticalPathLoader>
+              </AuthProvider>
+            </TooltipProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </CriticalPathLoader>
+    </ErrorBoundary>
+  </ChunkLoadingErrorBoundary>
 );
 
 export default App;
