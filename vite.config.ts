@@ -180,21 +180,12 @@ export default defineConfig(({ mode }) => {
           {
             name: 'remove-md-editor-css',
             generateBundle(options, bundle) {
-              // Remove CSS files that contain markdown editor styles
+              // Drop emitted vendor-uiw CSS assets entirely to avoid extra CSS chunk
               Object.keys(bundle).forEach(fileName => {
                 const asset = bundle[fileName];
-                if (asset.type === 'asset' && fileName.endsWith('.css') && asset.source) {
-                  const cssContent = asset.source.toString();
-                  if (cssContent.includes('.wmde-markdown') || cssContent.includes('@uiw/react-md-editor')) {
-                    // Remove markdown editor CSS from the file
-                    const cleanedCSS = cssContent.replace(
-                      /\.wmde-markdown[^{]*\{[^}]*\}/g,
-                      ''
-                    ).replace(
-                      /@media[^{]*\{[^}]*\.wmde-markdown[^{]*\{[^}]*\}[^}]*\}/g,
-                      ''
-                    );
-                    asset.source = cleanedCSS;
+                if ((asset as any).type === 'asset' && fileName.endsWith('.css')) {
+                  if (fileName.includes('vendor-uiw') || fileName.includes('@uiw')) {
+                    delete (bundle as any)[fileName];
                   }
                 }
               });
