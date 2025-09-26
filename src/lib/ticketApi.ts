@@ -146,10 +146,12 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     machine_serial_number: ticketData.machine_serial_number || null,
   }
   // Casting supabase to any to bypass strict table inference issues until generated types include custom columns
+  // Select only stable columns known to exist in production
+  const selectColumns = 'id,user_id,title,description,type,priority,status,contact_phone,contact_email,preferred_contact_method,site_location,machine_serial_number,created_at,updated_at,resolved_at,closed_at'
   let { data, error } = await (supabase as any)
     .from('service_tickets')
     .insert([insertPayload])
-    .select()
+    .select(selectColumns)
     .single()
   // No retry needed; first attempt already minimal
   if (error) {
