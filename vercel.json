@@ -8,6 +8,10 @@
     {
       "source": "/((?!assets|js|css|fonts|images|favicon\\.ico|robots\\.txt|manifest\\.webmanifest|service-worker\\.js|.*\\..*).*)",
       "destination": "/index.html"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "https://staging-api.almona.com/api/$1"
     }
   ],
   "headers": [

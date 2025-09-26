@@ -1,0 +1,241 @@
+{
+  "common": {
+    "welcome": "Almona'ya Hoş Geldiniz",
+    "products": "Ürünler",
+    "services": "Hizmetler",
+    "contact": "İletişim",
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "add_to_cart": "Sepete Ekle",
+    "price": "Fiyat",
+    "quantity": "Miktar",
+    "total": "Toplam"
+  },
+  "auth": {
+    "email": "E-posta",
+    "password": "Şifre",
+    "confirm_password": "Şifreyi Onayla",
+    "forgot_password": "Şifremi unuttum?",
+    "sign_in": "Giriş Yap",
+    "sign_up": "Hesap Oluştur",
+    "name": "Ad",
+    "phone": "Telefon",
+    "company": "Şirket",
+    "sector": "Sektör",
+    "workshop_location": "Atölye Konumu"
+  },
+  "navigation": {
+    "home": "Ana Sayfa",
+    "about": "Hakkımızda",
+    "services": "Hizmetler",
+    "products": "Ürünler",
+    "shop": "Mağaza",
+    "contact": "İletişim",
+    "portfolio": "Portföy"
+  },
+  "actions": {
+    "viewMore": "Daha Fazla Gör",
+    "contactUs": "Bizimle İletişime Geç",
+    "requestQuote": "Teklif İste",
+    "downloadSpec": "Özellikleri İndir",
+    "watchVideo": "Videoyu İzle",
+    "learnMore": "Daha Fazla Öğren"
+  },
+  "status": {
+    "loading": "Yükleniyor",
+    "error": "Hata",
+    "success": "Başarılı",
+    "pending": "Beklemede"
+  },
+  "forms": {
+    "name": "Ad",
+    "email": "E-posta",
+    "phone": "Telefon",
+    "message": "Mesaj",
+    "company": "Şirket",
+    "submit": "Gönder",
+    "required": "Gerekli"
+  },
+  "3d": {
+    "interactive": {
+      "title": "Etkileşimli 3D Model",
+      "loading": "Model yükleniyor...",
+      "error": "Model yüklenirken hata oluştu",
+      "noModel": "Model bulunamadı"
+    },
+    "annotations": {
+      "clickToSelect": "Seçmek için tıklayın",
+      "selected": "Seçildi",
+      "hoverToHighlight": "Vurgulamak için üzerine gelin"
+    },
+    "parts": {
+      "frame": "Çerçeve",
+      "glass": "Cam",
+      "handle": "Kol",
+      "seal": "Conta",
+      "hinge": "Menteşe",
+      "lock": "Kilit",
+      "sill": "Eşik",
+      "jamb": "Yanlık"
+    },
+    "materials": {
+      "aluminum": "Alüminyum",
+      "glass": "Cam",
+      "steel": "Çelik",
+      "rubber": "Kauçuk",
+      "plastic": "Plastik",
+      "wood": "Ahşap"
+    },
+    "instructions": {
+      "click": "Parçaları seçmek/seçimi kaldırmak için tıklayın",
+      "hover": "Parçaları vurgulamak için üzerine gelin",
+      "pricing": "Gerçek zamanlı fiyat güncellemeleri",
+      "rotate": "Döndürmek için sürükleyin",
+      "zoom": "Yakınlaştırmak için kaydırın"
+    },
+    "selectedParts": "Seçilen Parçalar",
+    "clearSelection": "Seçimi Temizle",
+    "showPricing": "Fiyatlandırmayı Göster",
+    "hidePricing": "Fiyatlandırmayı Gizle",
+    "ar": {
+      "android": "AR (Android)",
+      "ios": "AR (iOS)",
+      "webxr": "WebXR AR",
+      "notSupported": "AR desteklenmiyor"
+    }
+  },
+  "pricing": {
+    "calculator": {
+      "title": "Fiyat Hesaplayıcısı",
+      "noParts": "Fiyatlandırmayı görmek için 3D modelden parça seçin",
+      "selectedParts": "Seçilen Parçalar",
+      "quantity": "Miktar",
+      "subtotal": "Ara Toplam",
+      "tax": "Vergi",
+      "total": "Toplam",
+      "requestQuote": "Teklif İste",
+      "addToCart": "Sepete Ekle",
+      "kdvInfo": "KDV %20 dahil fiyatlar. Tüm fiyatlar Türk Lirası cinsindendir."
+    },
+    "tax": {
+      "kdv": "KDV",
+      "included": "Dahil",
+      "excluded": "Hariç",
+      "rate": "Oran"
+    }
+  },
+  "turkish": {
+    "taxCalculator": {
+      "title": "KDV Hesaplayıcısı",
+      "amount": "Tutar",
+      "kdvRate": "KDV Oranı",
+      "standardRate": "Standart Oran",
+      "reducedRate": "İndirimli Oran",
+      "lowerRate": "Düşük Oran",
+      "zeroRate": "Sıfır Oran",
+      "category": "Kategori",
+      "optional": "İsteğe bağlı",
+      "selectCategory": "Kategori seçin",
+      "food": "Gıda",
+      "medicine": "İlaç",
+      "books": "Kitap",
+      "hotel": "Otel",
+      "restaurant": "Restoran",
+      "export": "İhracat",
+      "kdvInclusive": "KDV dahil fiyat",
+      "taxNumber": "Vergi Numarası",
+      "calculate": "Hesapla",
+      "clear": "Temizle",
+      "results": "Hesaplama Sonuçları",
+      "baseAmount": "Ana Tutar",
+      "kdv": "KDV",
+      "total": "Toplam",
+      "kdvIncludedInfo": "KDV dahil fiyat hesaplandı",
+      "kdvExcludedInfo": "KDV hariç fiyat hesaplandı",
+      "quickReference": "Hızlı Referans",
+      "standardGoods": "Standart mallar",
+      "services": "Hizmetler",
+      "basicNeeds": "Temel ihtiyaçlar",
+      "exports": "İhracat"
+    },
+    "compliance": {
+      "title": "Türk Uyumluluk Belgeleri",
+      "documentType": "Belge Türü",
+      "invoice": "Fatura",
+      "deliveryNote": "İrsaliye",
+      "vatDeclaration": "KDV Beyannamesi",
+      "companyInfo": "Firma Bilgileri",
+      "companyName": "Firma Adı",
+      "taxNumber": "Vergi Numarası",
+      "address": "Adres",
+      "customerInfo": "Müşteri Bilgileri",
+      "customerName": "Müşteri Adı",
+      "products": "Ürünler",
+      "addProduct": "Ürün Ekle",
+      "productName": "Ürün Adı",
+      "quantity": "Miktar",
+      "unitPrice": "Birim Fiyat",
+      "total": "Toplam",
+      "remove": "Kaldır",
+      "generate": "Belge Oluştur",
+      "download": "İndir",
+      "generatedDocument": "Oluşturulan Belge",
+      "documentNumber": "Belge No",
+      "date": "Tarih"
+    },
+    "chat": {
+      "title": "Türkçe Destek",
+      "startChat": "Türkçe Destek",
+      "online": "Çevrimiçi",
+      "placeholder": "Mesajınızı yazın...",
+      "send": "Gönder",
+      "quickPricing": "Fiyat",
+      "quickSupport": "Destek",
+      "quickShipping": "Kargo"
+    },
+    "documents": {
+      "title": "Türk Uyumluluk Belgeleri",
+      "description": "Türk pazarı için gerekli tüm belgeleri otomatik olarak oluşturun",
+      "fatura": "Fatura",
+      "irsaliye": "İrsaliye",
+      "ce_belgesi": "CE Belgesi",
+      "test_raporu": "Test Raporu",
+      "kullanım_kılavuzu": "Kullanım Kılavuzu",
+      "required": "Gerekli",
+      "generate": "Oluştur"
+    }
+  },
+  "currency": {
+    "converter": {
+      "title": "Döviz Çevirici",
+      "amount": "Miktar",
+      "from": "Kaynak",
+      "to": "Hedef",
+      "exchangeRate": "Döviz Kuru",
+      "lastUpdated": "Son Güncelleme",
+      "source": "Kaynak",
+      "updating": "Güncelleniyor",
+      "refresh": "Yenile",
+      "regionDetected": "Bölge algılandı",
+      "autoSelected": "Otomatik seçildi"
+    },
+    "source": {
+      "live": "Canlı",
+      "cached": "Önbellek",
+      "fallback": "Yedek"
+    }
+  },
+  "recommendations": {
+    "title": "Ekipman Önerileri",
+    "loading": "Öneriler yükleniyor...",
+    "best_match": "En İyi Eşleşme",
+    "match_score": "Eşleşme Skoru",
+    "technical": "Teknik",
+    "business": "İş",
+    "market": "Pazar",
+    "view_details": "Detayları Görüntüle",
+    "highly_recommended": "Çok Önerilen",
+    "recommended": "Önerilen",
+    "consider": "Değerlendir"
+  }
+}

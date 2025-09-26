@@ -47,7 +47,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
     id: string;
   }>(null);
 
-  const apiBase = ''; // Use Vite proxy for API calls
+  const apiBase = (import.meta as any).env?.VITE_API_BASE || '';
 
   interface SubmitPayloadProduct { id: string; price?: number }
   interface SubmitPayloadService { id?: string; price?: number }

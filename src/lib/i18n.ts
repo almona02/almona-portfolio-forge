@@ -726,12 +726,159 @@ const enTranslations = {
       }
     }
   });
+
+// Turkish translations
+const trTranslations = {
+  common: {
+    navigation: {
+      home: 'Ana Sayfa',
+      about: 'Hakkımızda',
+      services: 'Hizmetler',
+      products: 'Ürünler',
+      shop: 'Mağaza',
+      contact: 'İletişim',
+      portfolio: 'Portföy',
+      login: 'Giriş Yap',
+      register: 'Kayıt Ol',
+      profile: 'Profil',
+      dashboard: 'Pano',
+      orders: 'Siparişler',
+      quotes: 'Teklifler',
+      wishlist: 'İstek Listesi',
+      cart: 'Sepet'
+    },
+    actions: {
+      viewMore: 'Daha Fazla Gör',
+      viewDetails: 'Detayları Gör',
+      contactUs: 'Bizimle İletişime Geç',
+      requestQuote: 'Teklif İste',
+      addToQuote: 'Teklife Ekle',
+      addToCart: 'Sepete Ekle',
+      addToWishlist: 'İstek Listesine Ekle',
+      removeFromWishlist: 'İstek Listesinden Çıkar',
+      downloadSpec: 'Özellikleri İndir',
+      downloadCatalog: 'Katalogu İndir',
+      watchVideo: 'Videoyu İzle',
+      learnMore: 'Daha Fazla Öğren',
+      readMore: 'Devamını Oku',
+      showLess: 'Daha Az Göster',
+      edit: 'Düzenle',
+      delete: 'Sil',
+      save: 'Kaydet',
+      cancel: 'İptal',
+      confirm: 'Onayla',
+      submit: 'Gönder',
+      search: 'Ara',
+      filter: 'Filtrele',
+      sort: 'Sırala',
+      share: 'Paylaş',
+      print: 'Yazdır',
+      export: 'Dışa Aktar',
+      import: 'İçe Aktar',
+      upload: 'Yükle',
+      download: 'İndir',
+      back: 'Geri',
+      next: 'İleri',
+      previous: 'Önceki',
+      close: 'Kapat',
+      open: 'Aç'
+    },
+    status: {
+      loading: 'Yükleniyor...',
+      error: 'Hata oluştu',
+      success: 'Başarılı',
+      warning: 'Uyarı',
+      info: 'Bilgi',
+      pending: 'Beklemede',
+      processing: 'İşleniyor',
+      completed: 'Tamamlandı',
+      failed: 'Başarısız',
+      cancelled: 'İptal edildi'
+    },
+    forms: {
+      name: 'Ad',
+      email: 'E-posta',
+      phone: 'Telefon',
+      message: 'Mesaj',
+      company: 'Şirket',
+      address: 'Adres',
+      city: 'Şehir',
+      country: 'Ülke',
+      postalCode: 'Posta Kodu',
+      required: 'Gerekli',
+      optional: 'İsteğe bağlı',
+      submit: 'Gönder',
+      reset: 'Sıfırla',
+      clear: 'Temizle'
+    },
+    auth: {
+      login: 'Giriş Yap',
+      logout: 'Çıkış Yap',
+      register: 'Kayıt Ol',
+      email: 'E-posta',
+      password: 'Şifre',
+      confirmPassword: 'Şifreyi Onayla',
+      forgotPassword: 'Şifremi Unuttum',
+      resetPassword: 'Şifreyi Sıfırla',
+      rememberMe: 'Beni Hatırla',
+      createAccount: 'Hesap Oluştur',
+      alreadyHaveAccount: 'Zaten hesabınız var mı?',
+      dontHaveAccount: 'Hesabınız yok mu?'
+    },
+    contact: {
+      title: 'İletişim',
+      subtitle: 'Bizimle iletişime geçin',
+      name: 'Adınız',
+      email: 'E-posta Adresiniz',
+      phone: 'Telefon Numaranız',
+      company: 'Şirketiniz',
+      message: 'Mesajınız',
+      address: 'Adres',
+      phone: 'Telefon',
+      email: 'E-posta',
+      workingHours: 'Çalışma Saatleri',
+      getInTouch: 'Bizimle İletişime Geçin',
+      sendMessage: 'Mesaj Gönder',
+      messageSent: 'Mesaj başarıyla gönderildi',
+      messageError: 'Mesaj gönderilirken hata oluştu'
+    }
+  }
+};
+
+// Extend Turkish translations with training page namespace
+Object.assign(trTranslations, {
+  trainingPage: {
+    enroll: 'Programa Kayıt Ol',
+    subtitle: 'Özel eğitim programlarımızdan birine katılmak için formu doldurun',
+    material: {
+      aluminium: 'Alüminyum',
+      upvc: 'UPVC'
+    },
+    form: {
+      name: 'Tam Ad',
+      email: 'E-posta',
+      company: 'Şirket',
+      phone: 'Telefon Numarası',
+      program: 'Program',
+      selectProgram: 'Program Seçin',
+      material: 'Malzeme',
+      startDate: 'Tercih Edilen Başlangıç Tarihi',
+      flexible: 'Esnek (İlk Mevcut Grup)',
+      notes: 'Ek Notlar',
+      cancel: 'İptal',
+      submit: 'Başvuruyu Gönder',
+      submitting: 'Gönderiliyor...',
+      success: 'Kayıt talebi başarıyla gönderildi'
+    }
+  }
+});
   
   // i18next initialization
   // Build base inline resources (legacy structure under single "translation" namespace)
   const baseResources: Record<string, Record<string, TranslationTree>> = {
     ar: { translation: arTranslations },
-    en: { translation: enTranslations }
+    en: { translation: enTranslations },
+    tr: { translation: trTranslations }
   };
 
   // Convert discovered (lang -> namespace -> data) to i18next resource shape.
@@ -769,7 +916,7 @@ const enTranslations = {
       ns: ['translation', ...new Set(Object.values(discoveredResources).flatMap(o => Object.keys(o)))]
     });
 
-  // Direction handling (RTL for Arabic)
+  // Direction handling (RTL for Arabic, LTR for Turkish and English)
   export const isRTL = (lng: string) => ['ar', 'fa', 'he', 'ur'].includes(lng);
   i18n.on('languageChanged', (lng) => {
     if (typeof document !== 'undefined') {
