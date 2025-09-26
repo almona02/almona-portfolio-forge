@@ -253,12 +253,15 @@ export const api = {
       .order('upload_date', { ascending: false });
 
     if (error) {
-      // Gracefully degrade if table is not yet provisioned
-      const msg = error.message?.toLowerCase() || '';
+      // Gracefully degrade if table is not yet provisioned or PostgREST returns 404
+      const msg = (error.message || '').toLowerCase();
+      const code = (error as unknown as { code?: string; status?: number }).code;
+      const status = (error as unknown as { status?: number }).status;
       const missingTable = msg.includes('relation') && msg.includes('user_documents');
-      const undefinedTableCode = (error as unknown as { code?: string }).code === '42P01';
-      if (missingTable || undefinedTableCode) {
-        console.warn('[api.fetchUserDocuments] user_documents table missing; returning empty list.');
+      const undefinedTableCode = code === '42P01';
+      const httpNotFound = status === 404 || msg.includes('404') || msg.includes('not found');
+      if (missingTable || undefinedTableCode || httpNotFound) {
+        console.warn('[api.fetchUserDocuments] user_documents not available; returning empty list.');
         return [];
       }
       console.error('Error fetching documents:', error);
