@@ -1,8 +1,6 @@
 import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
 import CompareBar from "@/components/comparison/CompareBar";
 import CompareDialog from "@/components/comparison/CompareDialog";
-import Footer from "@/components/layout/Footer";
-import Navbar from "@/components/layout/Navbar";
 
 import { QuoteRequestDialog } from "@/components/quotes/QuoteRequestDialog";
 import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
@@ -169,9 +167,7 @@ const Products = function ProductsPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-screen bg-almona-dark text-white">
-        <Navbar />
-        <main className="flex-grow pt-24">
+      <main className="flex-grow pt-24">
           <div className="container mx-auto px-4 py-12">
             {/* Existing Products page content */}
             <div className="mb-12 text-center">
@@ -392,8 +388,6 @@ const Products = function ProductsPage() {
             </div>
           </div>
         </main>
-        <Footer />
-      </div>
 
       <CompareBar
         machines={selectedMachines}

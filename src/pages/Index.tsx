@@ -3,8 +3,6 @@ import Hero from "@/components/home/Hero";
 import AboutSection from "@/components/home/AboutSection";
 import ServicesSection from "@/components/home/ServicesSection";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { useEffect } from "react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 
@@ -14,16 +12,12 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-almona-dark text-white">
-      <Navbar />
-      <main className="flex-grow">
-        <Hero />
-        <AboutSection />
-        <ServicesSection />
-        <FeaturedProducts />
-      </main>
-      <Footer />
-    </div>
+    <main className="flex-grow pt-20">
+      <Hero />
+      <AboutSection />
+      <ServicesSection />
+      <FeaturedProducts />
+    </main>
   );
 };
 
