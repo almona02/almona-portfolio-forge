@@ -6,8 +6,13 @@ import { Database } from '@/types/database'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
 const supabaseKey = (import.meta.env.VITE_SUPABASE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY) as string
 
+// Provide fallback values for development/production to prevent black screen
+const fallbackUrl = 'https://placeholder.supabase.co'
+const fallbackKey = 'placeholder-key'
+
 if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase environment variables. Please check your .env file.')
+  console.warn('⚠️ Missing Supabase environment variables. Using fallback configuration.')
+  console.warn('Some features may not work correctly. Please check your .env file.')
 }
 
 // Enhanced Supabase client configuration for e-commerce
@@ -45,8 +50,12 @@ const supabaseOptions = {
   },
 }
 
-// Create Supabase client with proper typing
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey, supabaseOptions)
+// Create Supabase client with proper typing and fallback values
+export const supabase = createClient<Database>(
+  supabaseUrl || fallbackUrl, 
+  supabaseKey || fallbackKey, 
+  supabaseOptions
+)
 
 // Utility function to handle auth errors and clear invalid sessions
 export const handleAuthError = async (error: any) => {

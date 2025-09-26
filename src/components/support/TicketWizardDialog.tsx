@@ -98,10 +98,35 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
   // Lazy load rich editor when toggled on
   useEffect(() => {
     if (richMode && !RichEditor) {
-      import('@uiw/react-md-editor').then(mod => {
-        setRichEditor(() => (mod.default as unknown as RichEditorComponent));
-      }).catch(() => setRichMode(false));
+      // Load CSS dynamically to avoid bundling it in main CSS
+      const loadCSS = () => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://unpkg.com/@uiw/react-md-editor@4.0.8/esm/index.css';
+        link.onload = () => {
+          import('@uiw/react-md-editor').then(mod => {
+            setRichEditor(() => (mod.default as unknown as RichEditorComponent));
+          }).catch(() => setRichMode(false));
+        };
+        link.onerror = () => {
+          // Fallback: load without external CSS
+          import('@uiw/react-md-editor').then(mod => {
+            setRichEditor(() => (mod.default as unknown as RichEditorComponent));
+          }).catch(() => setRichMode(false));
+        };
+        document.head.appendChild(link);
+      };
+      
+      loadCSS();
     }
+    
+    // Cleanup function to remove CSS when component unmounts
+    return () => {
+      const existingLink = document.querySelector('link[href*="@uiw/react-md-editor"]');
+      if (existingLink) {
+        existingLink.remove();
+      }
+    };
   }, [richMode, RichEditor]);
   const formRef = useRef<HTMLFormElement | null>(null);
   const draftLoadedRef = useRef(false);

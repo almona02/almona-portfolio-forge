@@ -1,6 +1,6 @@
 // Excel import utility for Spare Parts (maps to products table with category 'spare_part')
 // If you maintain a dedicated `spare_parts` table, adjust the upsert section accordingly.
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 import { table } from '@/lib/data/clientCore';
@@ -62,9 +62,84 @@ export interface ImportOptions {
 export const importSpareParts = async (file: File, options: ImportOptions = {}) => {
   const { useDedicatedTable = false } = options;
   const arrayBuffer = await file.arrayBuffer();
-  const workbook = XLSX.read(arrayBuffer);
-  const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-  const data = XLSX.utils.sheet_to_json<SparePartExcelRow>(worksheet);
+  const workbook = new ExcelJS.Workbook();
+  await workbook.xlsx.load(arrayBuffer);
+  const worksheet = workbook.worksheets[0];
+  
+  // Convert worksheet to JSON format similar to xlsx
+  const data: SparePartExcelRow[] = [];
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return; // Skip header row
+    
+    const rowData: SparePartExcelRow = {};
+    row.eachCell((cell, colNumber) => {
+      const header = worksheet.getRow(1).getCell(colNumber).value?.toString() || '';
+      const value = cell.value;
+      
+      // Map common header variations
+      const normalizedHeader = header.toLowerCase().replace(/[_\s]/g, '');
+      switch (normalizedHeader) {
+        case 'partnumber':
+        case 'part_number':
+          rowData.part_number = value?.toString();
+          break;
+        case 'name':
+          rowData.name = value?.toString();
+          break;
+        case 'description':
+          rowData.description = value?.toString();
+          break;
+        case 'category':
+          rowData.category = value?.toString();
+          break;
+        case 'subcategory':
+          rowData.subcategory = value?.toString();
+          break;
+        case 'compatiblemachines':
+        case 'compatible_machines':
+          rowData.compatible_machines = value?.toString();
+          break;
+        case 'price':
+          rowData.price = typeof value === 'number' ? value : parseFloat(value?.toString() || '0');
+          break;
+        case 'originalprice':
+        case 'original_price':
+          rowData.original_price = typeof value === 'number' ? value : parseFloat(value?.toString() || '0');
+          break;
+        case 'stockquantity':
+        case 'stock_quantity':
+          rowData.stock_quantity = typeof value === 'number' ? value : parseInt(value?.toString() || '0', 10);
+          break;
+        case 'minorderquantity':
+        case 'min_order_quantity':
+          rowData.min_order_quantity = typeof value === 'number' ? value : parseInt(value?.toString() || '1', 10);
+          break;
+        case 'weightkg':
+        case 'weight_kg':
+          rowData.weight_kg = typeof value === 'number' ? value : parseFloat(value?.toString() || '0');
+          break;
+        case 'specifications':
+          rowData.specifications = value?.toString();
+          break;
+        case 'imageurl':
+        case 'image_url':
+          rowData.image_url = value?.toString();
+          break;
+        case 'iscritical':
+        case 'is_critical':
+          rowData.is_critical = value?.toString() === 'true' || value === true;
+          break;
+        case 'isactive':
+        case 'is_active':
+          rowData.is_active = value?.toString() === 'true' || value === true;
+          break;
+      }
+    });
+    
+    if (Object.keys(rowData).length > 0) {
+      data.push(rowData);
+    }
+  });
 
   const errors: Array<{ part_number?: string; message: string } > = [];
 
