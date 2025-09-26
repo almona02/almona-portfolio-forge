@@ -1,4 +1,5 @@
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+// Lazy import pdf-lib to reduce initial bundle size
+let PDFDocument: any, StandardFonts: any, rgb: any;
 import type { Machine as BaseMachine } from '@/types/machine';
 
 interface ComparisonTotals {
@@ -64,6 +65,10 @@ export async function generateComparisonPDF(
   logoDataUrl?: string,
   options: ComparisonPdfOptions = {}
 ) {
+  if (!PDFDocument) {
+    const mod = await import('pdf-lib');
+    PDFDocument = mod.PDFDocument; StandardFonts = mod.StandardFonts; rgb = mod.rgb;
+  }
   const { powerUnit = 'kW', airUnit = 'L/min', showBothUnits = true, orientation = 'landscape', condensed = false, includeFooter = true } = options;
   const pdf = await PDFDocument.create();
   const font = await pdf.embedFont(StandardFonts.Helvetica);
