@@ -1,207 +1,175 @@
-import React, { Suspense, useRef, useEffect, useState, useMemo, useCallback } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { useGLTF, Environment, OrbitControls, Bounds, useBounds } from '@react-three/drei';
-import * as THREE from 'three';
+import React, { useEffect, useRef, useState, Suspense } from 'react'
+import { 
+  useFrame, 
+  useThree,
+  OptimizedCanvas,
+  OptimizedLighting,
+  OptimizedControls,
+  useOptimizedGLTF,
+  useOptimizedAnimations,
+  type Group
+} from '@/lib/three-optimized'
 
-interface OptimizedGLBViewerProps {
-  modelPath: string;
-  backgroundColor?: string;
-  onLoaded?: () => void;
-  enableAR?: boolean;
-  autoPlay?: boolean;
-  quality?: 'low' | 'medium' | 'high';
+// Props extended to support AR, scaling, positioning, and animation auto‑play
+export interface OptimizedGLBViewerProps {
+  modelPath: string
+  scale?: number
+  position?: [number, number, number]
+  enableAR?: boolean
+  /** Optional callback once model (and any animations) are ready */
+  onReady?: () => void
+  /** Scale factor applied only while in AR (defaults to 0.5 * scale) */
+  arScaleMultiplier?: number
+  /** Enable/disable shadows for better performance */
+  enableShadows?: boolean
+  /** Enable/disable animations for better performance */
+  enableAnimations?: boolean
 }
 
-// Memoized model component with performance optimizations
-const OptimizedModel = React.memo(({ 
+// Optimized model component
+const OptimizedModel = ({ 
   modelPath, 
-  onLoaded, 
-  autoPlay = false,
-  quality = 'medium' 
-}: { 
-  modelPath: string; 
-  onLoaded?: () => void; 
-  autoPlay?: boolean;
-  quality?: 'low' | 'medium' | 'high';
-}) => {
-  const groupRef = useRef<THREE.Group>(null);
-  const gltf = useGLTF(modelPath);
-  const bounds = useBounds();
-  const [isLoaded, setIsLoaded] = useState(false);
+  scale = 1, 
+  position = [0, 0, 0], 
+  enableAR = true,
+  onReady,
+  arScaleMultiplier = 0.5,
+  enableShadows = false,
+  enableAnimations = true
+}: OptimizedGLBViewerProps) => {
+  const groupRef = useRef<Group>(null)
+  const { gl, camera } = useThree()
+  const { scene, animations } = useOptimizedGLTF(modelPath)
+  const { actions } = useOptimizedAnimations(animations, scene)
 
-  // Optimize materials based on quality setting
-  const optimizedScene = useMemo(() => {
-    if (!gltf.scene) return null;
-    
-    const scene = gltf.scene.clone();
-    
-    // Apply quality-based optimizations
-    scene.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        // Optimize geometry
-        if (child.geometry) {
-          if (quality === 'low') {
-            // Reduce geometry complexity for low quality
-            child.geometry.deleteAttribute('normal');
-            child.geometry.deleteAttribute('uv2');
-          }
-        }
-        
-        // Optimize materials
-        if (child.material instanceof THREE.Material) {
-          const material = child.material.clone();
-          
-          if (quality === 'low') {
-            // Disable expensive material features for low quality
-            if ('normalMap' in material) material.normalMap = null;
-            if ('roughnessMap' in material) material.roughnessMap = null;
-            if ('metalnessMap' in material) material.metalnessMap = null;
-          }
-          
-          child.material = material;
+  const [arSupported, setArSupported] = useState(false)
+  const [isARSession, setIsARSession] = useState(false)
+  const checkingRef = useRef(false)
+
+  // Detect AR support (once)
+  useEffect(() => {
+    if (checkingRef.current) return
+    checkingRef.current = true
+    ;(async () => {
+      if ('xr' in navigator) {
+        try {
+          const navXR = (navigator as Navigator & { xr?: { isSessionSupported?: (mode: XRSessionMode) => Promise<boolean> } }).xr
+          const supported = await navXR?.isSessionSupported?.('immersive-ar')
+          setArSupported(!!supported)
+        } catch (e) {
+          console.warn('AR support check failed:', e)
         }
       }
-    });
-    
-    return scene;
-  }, [gltf.scene, quality]);
+    })()
+  }, [])
 
+  // Auto-play animations
   useEffect(() => {
-    if (groupRef.current && optimizedScene && !isLoaded) {
-      bounds.refresh(groupRef.current).fit();
-      setIsLoaded(true);
-      onLoaded?.();
+    if (enableAnimations && actions) {
+      Object.values(actions).forEach((action) => {
+        if (action) {
+          action.play()
+        }
+      })
     }
-  }, [optimizedScene, bounds, onLoaded, isLoaded]);
+  }, [actions, enableAnimations])
 
-  if (!optimizedScene) return null;
+  // Handle AR session
+  const handleAR = async () => {
+    if (!arSupported || !gl.xr) return
 
-  return (
-    <group ref={groupRef}>
-      <primitive object={optimizedScene} />
-    </group>
-  );
-});
-
-OptimizedModel.displayName = 'OptimizedModel';
-
-// Lightweight loading component
-const ModelLoader = React.memo(() => (
-  <mesh>
-    <boxGeometry args={[1, 1, 1]} />
-    <meshStandardMaterial color="#333" wireframe />
-  </mesh>
-));
-
-ModelLoader.displayName = 'ModelLoader';
-
-export const OptimizedGLBViewer: React.FC<OptimizedGLBViewerProps> = ({
-  modelPath,
-  backgroundColor = '#111',
-  onLoaded,
-  enableAR = false,
-  autoPlay = false,
-  quality = 'medium'
-}) => {
-  const [error, setError] = useState<string | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Memoized canvas settings based on quality
-  const canvasSettings = useMemo(() => {
-    const settings = {
-      low: { dpr: [0.5, 1], shadows: false, antialias: false },
-      medium: { dpr: [1, 1.5], shadows: true, antialias: true },
-      high: { dpr: [1, 2], shadows: true, antialias: true }
-    };
-    return settings[quality];
-  }, [quality]);
-
-  const handleError = useCallback((error: Error) => {
-    console.error('3D Viewer Error:', error);
-    setError(error.message);
-  }, []);
-
-  const handleCanvasCreated = useCallback(({ gl }: { gl: THREE.WebGLRenderer }) => {
-    // Optimize renderer settings
-    gl.outputColorSpace = THREE.SRGBColorSpace;
-    gl.toneMapping = THREE.ACESFilmicToneMapping;
-    gl.toneMappingExposure = 1;
-    
-    // Quality-based optimizations
-    if (quality === 'low') {
-      gl.setPixelRatio(Math.min(window.devicePixelRatio, 1));
-      gl.shadowMap.enabled = false;
-    } else {
-      gl.shadowMap.enabled = canvasSettings.shadows;
-      gl.shadowMap.type = THREE.PCFSoftShadowMap;
+    try {
+      if (isARSession) {
+        await gl.xr.getSession()?.end()
+        setIsARSession(false)
+      } else {
+        const session = await gl.xr.requestSession('immersive-ar', {
+          requiredFeatures: ['local'],
+        })
+        await gl.xr.setSession(session)
+        setIsARSession(true)
+      }
+    } catch (e) {
+      console.warn('AR session failed:', e)
     }
-  }, [quality, canvasSettings.shadows]);
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-full bg-gray-900 text-white">
-        <div className="text-center">
-          <p className="text-sm text-red-400">Failed to load 3D model</p>
-          <p className="text-xs text-gray-500 mt-1">{error}</p>
-        </div>
-      </div>
-    );
   }
 
+  // Call onReady when model is loaded
+  useEffect(() => {
+    if (scene && onReady) {
+      onReady()
+    }
+  }, [scene, onReady])
+
+  // Apply shadows if enabled
+  useEffect(() => {
+    if (enableShadows && scene) {
+      scene.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true
+          child.receiveShadow = true
+        }
+      })
+    }
+  }, [scene, enableShadows])
+
+  const currentScale = isARSession ? scale * arScaleMultiplier : scale
+
   return (
-    <div className="relative w-full h-full">
-      {enableAR && (
-        <div className="absolute top-2 left-2 z-10">
-          <button className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-500 transition">
-            AR View
+    <group ref={groupRef} scale={currentScale} position={position}>
+      <primitive object={scene} />
+      {enableAR && arSupported && (
+        <mesh position={[0, -2, 0]}>
+          <button
+            onClick={handleAR}
+            style={{
+              position: 'absolute',
+              bottom: '20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              padding: '10px 20px',
+              backgroundColor: isARSession ? '#ff4444' : '#4CAF50',
+              color: 'white',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              zIndex: 1000
+            }}
+          >
+            {isARSession ? 'Exit AR' : 'View in AR'}
           </button>
-        </div>
+        </mesh>
       )}
-      
-      <Canvas
-        ref={canvasRef}
-        style={{ background: backgroundColor }}
-        camera={{ position: [2, 2, 2], fov: 45 }}
-        dpr={canvasSettings.dpr}
-        onCreated={handleCanvasCreated}
-        onError={handleError}
-      >
-        <ambientLight intensity={0.6} />
-        <directionalLight 
-          position={[5, 5, 5]} 
-          intensity={1} 
-          castShadow={canvasSettings.shadows}
-          shadow-mapSize-width={quality === 'high' ? 2048 : 1024}
-          shadow-mapSize-height={quality === 'high' ? 2048 : 1024}
-        />
-        
-        <Suspense fallback={<ModelLoader />}>
-          <Bounds fit clip observe margin={1.2}>
-            <OptimizedModel 
-              modelPath={modelPath} 
-              onLoaded={onLoaded}
-              autoPlay={autoPlay}
-              quality={quality}
-            />
-          </Bounds>
-          <Environment preset="warehouse" />
-        </Suspense>
-        
-        <OrbitControls 
-          makeDefault 
-          enableDamping 
-          dampingFactor={0.05}
-          rotateSpeed={0.5}
-          maxPolarAngle={Math.PI * 0.75}
-        />
-      </Canvas>
-    </div>
-  );
-};
+    </group>
+  )
+}
 
-// Preload models for better performance
-export const preloadModel = (modelPath: string) => {
-  useGLTF.preload(modelPath);
-};
+// Loading fallback component
+const ModelLoadingFallback = () => (
+  <mesh>
+    <boxGeometry args={[1, 1, 1]} />
+    <meshStandardMaterial color="#666666" />
+  </mesh>
+)
 
-export default OptimizedGLBViewer;
+/**
+ * OptimizedGLBViewer
+ * - Loads a GLB/GLTF model with optimized performance
+ * - Plays included animations automatically (if enabled)
+ * - Provides an optional WebXR (AR) session toggle button if device supports immersive-ar
+ * - Includes performance optimizations for better loading times
+ */
+export function OptimizedGLBViewer(props: OptimizedGLBViewerProps) {
+  return (
+    <OptimizedCanvas>
+      <OptimizedLighting />
+      <Suspense fallback={<ModelLoadingFallback />}>
+        <OptimizedModel {...props} />
+      </Suspense>
+      <OptimizedControls />
+    </OptimizedCanvas>
+  )
+}
+
+export default OptimizedGLBViewer

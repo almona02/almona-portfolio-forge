@@ -132,9 +132,136 @@ export default defineConfig(({ mode }) => {
         input: "index.html",
         external: [],
         output: {
-          // Let Vite handle chunking automatically for better optimization
+          // Manual chunking for better code splitting
           entryFileNames: 'assets/[name]-[hash].js',
           chunkFileNames: 'assets/[name]-[hash].js',
+          manualChunks: {
+            // Vendor chunk for core libraries
+            vendor: [
+              'react',
+              'react-dom',
+              'react-dom/client',
+              'react-router-dom',
+              '@tanstack/react-query',
+              'framer-motion',
+              'lucide-react',
+              '@supabase/supabase-js'
+            ],
+            // Three.js chunk for 3D components
+            threejs: [
+              'three',
+              '@react-three/fiber',
+              '@react-three/drei',
+              '@react-three/xr',
+              'three-stdlib'
+            ],
+            // UI components chunk
+            ui: [
+              '@/components/ui/button',
+              '@/components/ui/card',
+              '@/components/ui/input',
+              '@/components/ui/badge',
+              '@/components/ui/avatar',
+              '@/components/ui/dropdown-menu',
+              '@/components/ui/tabs',
+              '@/components/ui/select',
+              '@/components/ui/separator',
+              '@/components/ui/skeleton',
+              '@/components/ui/toast',
+              '@/components/ui/dialog',
+              '@/components/ui/form',
+              '@/components/ui/label',
+              '@/components/ui/textarea',
+              '@/components/ui/checkbox',
+              '@/components/ui/radio-group',
+              '@/components/ui/switch',
+              '@/components/ui/slider',
+              '@/components/ui/progress',
+              '@/components/ui/alert',
+              '@/components/ui/accordion',
+              '@/components/ui/alert-dialog',
+              '@/components/ui/aspect-ratio',
+              '@/components/ui/calendar',
+              '@/components/ui/carousel',
+              '@/components/ui/command',
+              '@/components/ui/context-menu',
+              '@/components/ui/data-table',
+              '@/components/ui/date-picker',
+              '@/components/ui/hover-card',
+              '@/components/ui/menubar',
+              '@/components/ui/navigation-menu',
+              '@/components/ui/pagination',
+              '@/components/ui/popover',
+              '@/components/ui/resizable',
+              '@/components/ui/scroll-area',
+              '@/components/ui/sheet',
+              '@/components/ui/table',
+              '@/components/ui/toggle',
+              '@/components/ui/toggle-group',
+              '@/components/ui/tooltip'
+            ],
+            // Utils and libs chunk
+            utils: [
+              '@/lib/utils',
+              '@/lib/supabase',
+              '@/lib/validation',
+              '@/lib/permissions',
+              '@/lib/comparisonStorage',
+              '@/lib/ticketing',
+              '@/lib/i18n',
+              '@/hooks/use-toast',
+              '@/hooks/useToast',
+              '@/hooks/useScrollThreshold',
+              '@/context/AuthContext',
+              '@/context/QuoteContext',
+              '@/context/LoadingContext'
+            ],
+            // Admin components chunk
+            admin: [
+              '@/pages/AdminDashboard',
+              '@/components/admin/DashboardStats',
+              '@/components/admin/RecentOrders',
+              '@/components/admin/TopProducts',
+              '@/components/admin/LowStockAlerts',
+              '@/components/admin/CustomerActivity',
+              '@/components/admin/SalesChart',
+              '@/components/admin/panels/ProductsPanel',
+              '@/components/admin/panels/OrdersPanel',
+              '@/components/admin/panels/CustomersPanel',
+              '@/components/admin/panels/InventoryPanel',
+              '@/components/admin/panels/FinancePanel',
+              '@/components/support/AdminTicketDashboard',
+              '@/components/admin/SparePartsImportPanel'
+            ],
+            // 3D model components chunk
+            '3d-models': [
+              '@/components/3d-model/GLBViewer',
+              '@/components/3d-model/EnhancedGLBViewer',
+              '@/components/3d-model/OptimizedGLBViewer',
+              '@/components/3d-model/Model3DDialog',
+              '@/components/3d-model/ModelTest',
+              '@/features/shop/configurator/components/ProductConfigurator',
+              '@/features/shop/configurator/components/ModelLoader',
+              '@/components/shop/3d-configurator/ModelLoader',
+              '@/components/shop/ar/WorkspaceChecker'
+            ],
+            // Shop and product components chunk
+            shop: [
+              '@/pages/Products',
+              '@/pages/Shop',
+              '@/pages/Shop-enhanced',
+              '@/components/shop/IndustrialProductCard',
+              '@/components/shop/EquipmentComparisonTool',
+              '@/components/shop/FreightCalculator',
+              '@/components/shop/EgyptianStandardsGuide',
+              '@/components/shop/EgyptianTechnicalSupportHub',
+              '@/components/shop/ProductQuickView',
+              '@/components/shop/RecentlyViewedProducts',
+              '@/components/shop/DurabilityDetailsModal',
+              '@/components/shop/ai-advisor/AiEquipmentAdvisor',
+              '@/components/shop/machine-recommendation/MachineRecommendationWizard'
+            ]
+          },
           assetFileNames: (assetInfo) => {
             const info = assetInfo.name?.split(".") || [];
             const ext = info[info.length - 1];
@@ -172,24 +299,46 @@ export default defineConfig(({ mode }) => {
         "framer-motion",
         "lucide-react",
         "@supabase/supabase-js",
+        "sonner",
+        "next-themes",
+        "react-i18next",
+        "i18next",
+        "react-hook-form",
+        "@hookform/resolvers",
+        "zod",
+        "date-fns",
+        "clsx",
+        "tailwind-merge",
+        "class-variance-authority"
       ],
       exclude: [
         "@tensorflow/tfjs",
+        // Three.js will be handled by manual chunks
         "three",
-        "@react-three/fiber",
+        "@react-three/fiber", 
         "@react-three/drei",
         "@react-three/xr",
+        "three-stdlib"
       ],
       esbuildOptions: {
         define: {
           global: "globalThis",
         },
+        // Optimize for better tree shaking
+        treeShaking: true,
+        // Target modern browsers for better optimization
+        target: "es2020"
       },
     },
 
     esbuild: {
       drop: isProduction ? ["console", "debugger"] : [],
-      treeShaking: false,
+      treeShaking: true,
+      target: "es2020",
+      // Enable minification for better compression
+      minifyIdentifiers: isProduction,
+      minifySyntax: isProduction,
+      minifyWhitespace: isProduction,
     },
 
     experimental: {
