@@ -163,7 +163,7 @@ const Navbar = () => {
       icon: <Users className="h-5 w-5" />,
       hasSubmenu: true,
     },
-    { name: "Shop", path: "/Shop", icon: <ShoppingCart className="h-5 w-5" /> },
+    { name: "Shop", path: "/shop", icon: <ShoppingCart className="h-5 w-5" /> },
     { name: "About Us", path: "/about", icon: <Info className="h-5 w-5" /> },
     { name: "Contact", path: "/contact", icon: <Mail className="h-5 w-5" /> },
   ];
