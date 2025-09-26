@@ -834,8 +834,6 @@ const trTranslations = {
       company: 'Şirketiniz',
       message: 'Mesajınız',
       address: 'Adres',
-      phone: 'Telefon',
-      email: 'E-posta',
       workingHours: 'Çalışma Saatleri',
       getInTouch: 'Bizimle İletişime Geçin',
       sendMessage: 'Mesaj Gönder',
