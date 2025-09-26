@@ -9,12 +9,16 @@ export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), "");
   const isProduction = mode === "production";
+  
+  // EMERGENCY FIX: Add timestamp to force cache invalidation
+  const buildTimestamp = Date.now();
 
   return {
     base: '/',
     define: {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+      __BUILD_TIMESTAMP__: JSON.stringify(buildTimestamp),
       __VERSION__: JSON.stringify(process.env.npm_package_version || "1.0.0"),
       global: "globalThis",
     },
@@ -135,8 +139,9 @@ export default defineConfig(({ mode }) => {
         input: "index.html",
         external: [],
         output: {
-          entryFileNames: 'assets/[name]-[hash].js',
-          chunkFileNames: 'assets/[name]-[hash].js',
+          // EMERGENCY FIX: Add timestamp to filenames to force cache invalidation
+          entryFileNames: `assets/[name]-${buildTimestamp}-[hash].js`,
+          chunkFileNames: `assets/[name]-${buildTimestamp}-[hash].js`,
           // EMERGENCY FIX: Ultra-simplified chunking to ensure compatibility
           manualChunks: (id) => {
             // Force all lucide-react icons into a single chunk to prevent infinite chunking
@@ -168,20 +173,20 @@ export default defineConfig(({ mode }) => {
             if (
               /\\.(png|jpe?g|svg|gif|tiff|bmp|ico)$/i.test(assetInfo.name || "")
             ) {
-              return `assets/[name]-[hash].${ext}`;
+              return `assets/[name]-${buildTimestamp}-[hash].${ext}`;
             }
 
             if (/\\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name || ""))
             {
-              return `assets/[name]-[hash].${ext}`;
+              return `assets/[name]-${buildTimestamp}-[hash].${ext}`;
             }
 
             if (/\\.css$/i.test(assetInfo.name || ""))
             {
-              return `assets/[name]-[hash].${ext}`;
+              return `assets/[name]-${buildTimestamp}-[hash].${ext}`;
             }
 
-            return `assets/[name]-[hash].${ext}`;
+            return `assets/[name]-${buildTimestamp}-[hash].${ext}`;
           },
         },
       },
