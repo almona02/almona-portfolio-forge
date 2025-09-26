@@ -168,6 +168,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     let isMounted = true;
     
+    // Listen for auth changes with debouncing to prevent excessive updates
+    let authChangeTimeout: NodeJS.Timeout;
+    
+    // Only set up auth listener if Supabase is properly configured
+    let subscription: any = null;
+
     const getInitialSession = async () => {
       try {
         // Check if Supabase is properly configured
@@ -221,85 +227,77 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     getInitialSession();
-    
-    return () => {
-      isMounted = false;
-    };
 
-    // Listen for auth changes with debouncing to prevent excessive updates
-    let authChangeTimeout: NodeJS.Timeout;
-    
-    // Only set up auth listener if Supabase is properly configured
-    let subscription: any = null;
     if (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_KEY) {
       const {
         data: { subscription: authSubscription },
       } = supabase.auth.onAuthStateChange(async (event, session) => {
+        // Clear any pending auth change
+        if (authChangeTimeout) {
+          clearTimeout(authChangeTimeout);
+        }
+        
+        // Debounce auth state changes to prevent rapid updates
+        authChangeTimeout = setTimeout(() => {
+          // Only log significant auth events, not every state change
+          if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
+            console.log('[Auth]', event, session?.user?.id ? `user: ${session.user.id}` : 'no user');
+          }
+          
+          // Handle token refresh errors
+          if (event === 'TOKEN_REFRESHED' && !session) {
+            console.warn('[Auth] Token refresh failed, clearing session');
+            setSupabaseUser(null);
+            setUser(null);
+            setLoading(false);
+            return;
+          }
+          
+          // Handle sign out events
+          if (event === 'SIGNED_OUT') {
+            setSupabaseUser(null);
+            setUser(null);
+            setLoading(false);
+            return;
+          }
+          
+          if (session?.user) {
+            setSupabaseUser(session.user);
+            // Immediate optimistic placeholder if user object not yet built
+            setUser(prev => prev || {
+              id: session.user!.id,
+              email: session.user!.email || undefined,
+              username: null,
+              full_name: session.user!.user_metadata?.full_name || null,
+              avatar_url: session.user!.user_metadata?.avatar_url || null,
+              company_name: session.user!.user_metadata?.company_name || null,
+              phone: session.user!.user_metadata?.phone || null,
+              sector: null as unknown as User['sector'],
+              workshop_location: null,
+              governorate: null,
+              address: null as unknown as User['address'],
+              tax_number: null,
+              commercial_register: null,
+              role: 'customer' as User['role'],
+              is_verified: false,
+              preferences: {} as User['preferences'],
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+            if (!stableEmailRef.current && session.user.email) stableEmailRef.current = session.user.email;
+            fetchUserProfile(session.user.id); // fire & forget
+          } else {
+            setSupabaseUser(null);
+            setUser(null);
+          }
+          setLoading(false);
+        }, 100); // 100ms debounce
+      });
       subscription = authSubscription;
-      // Clear any pending auth change
-      if (authChangeTimeout) {
-        clearTimeout(authChangeTimeout);
-      }
-      
-      // Debounce auth state changes to prevent rapid updates
-      authChangeTimeout = setTimeout(() => {
-        // Only log significant auth events, not every state change
-        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
-          console.log('[Auth]', event, session?.user?.id ? `user: ${session.user.id}` : 'no user');
-        }
-        
-        // Handle token refresh errors
-        if (event === 'TOKEN_REFRESHED' && !session) {
-          console.warn('[Auth] Token refresh failed, clearing session');
-          setSupabaseUser(null);
-          setUser(null);
-          setLoading(false);
-          return;
-        }
-        
-        // Handle sign out events
-        if (event === 'SIGNED_OUT') {
-          setSupabaseUser(null);
-          setUser(null);
-          setLoading(false);
-          return;
-        }
-        
-        if (session?.user) {
-          setSupabaseUser(session.user);
-          // Immediate optimistic placeholder if user object not yet built
-          setUser(prev => prev || {
-            id: session.user!.id,
-            email: session.user!.email || undefined,
-            username: null,
-            full_name: session.user!.user_metadata?.full_name || null,
-            avatar_url: session.user!.user_metadata?.avatar_url || null,
-            company_name: session.user!.user_metadata?.company_name || null,
-            phone: session.user!.user_metadata?.phone || null,
-            sector: null as unknown as User['sector'],
-            workshop_location: null,
-            governorate: null,
-            address: null as unknown as User['address'],
-            tax_number: null,
-            commercial_register: null,
-            role: 'customer' as User['role'],
-            is_verified: false,
-            preferences: {} as User['preferences'],
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-          if (!stableEmailRef.current && session.user.email) stableEmailRef.current = session.user.email;
-          fetchUserProfile(session.user.id); // fire & forget
-        } else {
-          setSupabaseUser(null);
-          setUser(null);
-        }
-        setLoading(false);
-      }, 100); // 100ms debounce
-    });
     }
 
     return () => {
+      isMounted = false;
       if (authChangeTimeout) {
         clearTimeout(authChangeTimeout);
       }
