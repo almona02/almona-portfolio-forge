@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { EnhancedGLBViewer } from '../components/3d-model/EnhancedGLBViewer';
+import { LazyEnhancedGLBViewer } from '../components/3d-model/LazyGLBViewer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { Button } from '@/components/ui/button';
@@ -51,7 +51,7 @@ export function ModelViewerTest() {
                 </div>
               </CardHeader>
               <CardContent className="h-[500px] p-0">
-                <EnhancedGLBViewer
+                <LazyEnhancedGLBViewer
                   modelPath="/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
                   scale={scale}
                   autoRotate={autoRotate}
