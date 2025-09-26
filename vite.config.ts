@@ -119,9 +119,9 @@ export default defineConfig(({ mode }) => {
       outDir: 'dist',
       assetsDir: 'assets',
       target: "esnext",
-      minify: isProduction ? "esbuild" : false,
+      minify: isProduction ? "terser" : false,
       sourcemap: !isProduction,
-      chunkSizeWarningLimit: 500, // Lower warning threshold
+      chunkSizeWarningLimit: 150, // Ultra-low warning threshold to force even smaller chunks
       assetsInlineLimit: 2048, // Smaller inline limit
       reportCompressedSize: false, // Disable compressed size reporting for faster builds
       cssCodeSplit: true, // Enable CSS code splitting
@@ -149,13 +149,36 @@ export default defineConfig(({ mode }) => {
           manualChunks: (id) => {
             // More aggressive vendor splitting
             if (id.includes('node_modules')) {
+              // Debug large chunks
+              if (isProduction && id.includes('node_modules')) {
+                console.log('Chunking:', id);
+              }
+              
+              // Special handling for very large packages
+              if (id.includes('react-dom') || id.includes('react-dom/client')) {
+                return 'vendor-react-dom';
+              }
+              if (id.includes('react') && !id.includes('react-dom')) {
+                return 'vendor-react-core';
+              }
+              
               // React ecosystem
               if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-                return 'vendor-react';
+                // Split React into smaller chunks
+                const hash = id.split('').reduce((a, b) => {
+                  a = ((a << 5) - a) + b.charCodeAt(0);
+                  return a & a;
+                }, 0);
+                return `vendor-react-${Math.abs(hash) % 6}`;
               }
               // Three.js ecosystem - separate from other vendors
               if (id.includes('three') || id.includes('@react-three')) {
-                return 'vendor-threejs';
+                // Split Three.js into smaller chunks
+                const hash = id.split('').reduce((a, b) => {
+                  a = ((a << 5) - a) + b.charCodeAt(0);
+                  return a & a;
+                }, 0);
+                return `vendor-threejs-${Math.abs(hash) % 8}`;
               }
               // UI libraries
               if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('@radix-ui')) {
@@ -181,13 +204,66 @@ export default defineConfig(({ mode }) => {
               if (id.includes('gsap') || id.includes('lottie') || id.includes('framer-motion')) {
                 return 'vendor-animations';
               }
-              // Everything else goes to a smaller vendor chunk
-              return 'vendor-misc';
+              // Split remaining vendors into smaller chunks
+              if (id.includes('lodash') || id.includes('ramda') || id.includes('moment') || id.includes('dayjs')) {
+                return 'vendor-date-utils';
+              }
+              if (id.includes('axios') || id.includes('fetch') || id.includes('http')) {
+                return 'vendor-http';
+              }
+              if (id.includes('chart') || id.includes('d3') || id.includes('recharts')) {
+                // Split charts into smaller chunks
+                const hash = id.split('').reduce((a, b) => {
+                  a = ((a << 5) - a) + b.charCodeAt(0);
+                  return a & a;
+                }, 0);
+                return `vendor-charts-${Math.abs(hash) % 6}`;
+              }
+              if (id.includes('pdf') || id.includes('excel') || id.includes('csv')) {
+                // Split documents into smaller chunks
+                const hash = id.split('').reduce((a, b) => {
+                  a = ((a << 5) - a) + b.charCodeAt(0);
+                  return a & a;
+                }, 0);
+                return `vendor-documents-${Math.abs(hash) % 6}`;
+              }
+              if (id.includes('crypto') || id.includes('hash') || id.includes('jwt')) {
+                return 'vendor-crypto';
+              }
+              if (id.includes('i18n') || id.includes('locale') || id.includes('translation')) {
+                return 'vendor-i18n';
+              }
+              // Large libraries that should be separate
+              if (id.includes('monaco-editor') || id.includes('codemirror')) {
+                return 'vendor-editor';
+              }
+              if (id.includes('tensorflow') || id.includes('ml5') || id.includes('brain.js')) {
+                return 'vendor-ml';
+              }
+              if (id.includes('socket.io') || id.includes('ws') || id.includes('websocket')) {
+                return 'vendor-websocket';
+              }
+              if (id.includes('prism') || id.includes('highlight') || id.includes('syntax')) {
+                return 'vendor-syntax';
+              }
+              
+              // Use a simple hash-based approach to split remaining vendors
+              const hash = id.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+              }, 0);
+              const chunkIndex = Math.abs(hash) % 200; // Split into 200 chunks for maximum distribution
+              return `vendor-misc-${chunkIndex}`;
             }
             
             // Application chunks
             if (id.includes('/admin/') || id.includes('/pages/AdminDashboard')) {
-              return 'admin';
+              // Split admin into smaller chunks
+              const hash = id.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+              }, 0);
+              return `admin-${Math.abs(hash) % 3}`;
             }
             
             if (id.includes('/3d-model/') || id.includes('/configurator/') || id.includes('/ar/')) {
@@ -195,7 +271,12 @@ export default defineConfig(({ mode }) => {
             }
             
             if (id.includes('/shop/') || id.includes('/pages/Products') || id.includes('/pages/Shop')) {
-              return 'shop';
+              // Split shop into smaller chunks
+              const hash = id.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+              }, 0);
+              return `shop-${Math.abs(hash) % 3}`;
             }
             
             if (id.includes('/components/ui/') || id.includes('/shared/ui/')) {
@@ -203,7 +284,12 @@ export default defineConfig(({ mode }) => {
             }
             
             if (id.includes('/lib/') || id.includes('/hooks/') || id.includes('/context/')) {
-              return 'utils';
+              // Split utils into smaller chunks
+              const hash = id.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+              }, 0);
+              return `utils-${Math.abs(hash) % 3}`;
             }
           },
           assetFileNames: (assetInfo) => {
