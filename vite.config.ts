@@ -157,21 +157,21 @@ export default defineConfig(({ mode }) => {
           {
             name: 'exclude-md-editor-css',
             generateBundle(options, bundle) {
-              // Remove markdown editor CSS from all chunks
+              // Remove markdown editor CSS imports and emitted files from @uiw/react-md-editor only
               Object.keys(bundle).forEach(fileName => {
                 const asset = bundle[fileName];
                 if (asset.type === 'chunk' && asset.code) {
-                  // Remove markdown editor CSS imports from chunk code
                   asset.code = asset.code.replace(
-                    /import\s+['"][^'"]*@uiw\/react-md-editor[^'"]*\.css['"];?\s*/g,
+                    /import\s+['"][^'"\n]*@uiw\/react-md-editor[^'"\n]*\.css['"];?\s*/g,
                     ''
                   );
                 }
-                // Delete both JS and CSS files related to markdown (including vendor-markdown)
-                if (fileName.includes('md-editor') || 
-                    fileName.includes('markdown') || 
-                    fileName.includes('@uiw') ||
-                    fileName.includes('vendor-markdown')) {
+                // Only strip assets clearly tied to the UIW markdown editor
+                if (
+                  fileName.includes('@uiw') ||
+                  fileName.includes('md-editor') ||
+                  fileName.includes('vendor-markdown')
+                ) {
                   delete bundle[fileName];
                 }
               });
@@ -269,14 +269,9 @@ export default defineConfig(({ mode }) => {
                 return 'vendor-network';
               }
               
-              // Text processing (exclude markdown editor)
-              if ((id.includes('markdown') || id.includes('dompurify')) && !id.includes('@uiw/react-md-editor')) {
-                return 'vendor-text';
-              }
-              
-              // Explicitly exclude markdown editor from chunking
+              // Avoid forcing a dedicated text bundle; let Rollup decide
               if (id.includes('@uiw/react-md-editor')) {
-                return undefined; // Don't chunk this
+                return 'vendor-uiw';
               }
               
               // Animation and motion libraries
