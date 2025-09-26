@@ -124,6 +124,7 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 1000,
       assetsInlineLimit: 4096,
       reportCompressedSize: false, // Disable compressed size reporting for faster builds
+      cssCodeSplit: true, // Enable CSS code splitting
       rollupOptions: {
         treeshake: {
           moduleSideEffects: false,

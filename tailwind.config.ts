@@ -10,6 +10,33 @@ export default {
 		"./app/**/*.{ts,tsx}",
 		"./src/**/*.{ts,tsx}",
 	],
+	safelist: [
+		// Keep essential classes that might be dynamically generated
+		'bg-almona-orange',
+		'text-almona-orange',
+		'border-almona-orange',
+		'bg-almona-dark',
+		'text-almona-dark',
+		'border-almona-dark',
+	],
+	corePlugins: {
+		// Keep all core plugins as they are being used
+		// Disable only truly unused features
+		backdropBrightness: false,
+		backdropContrast: false,
+		backdropGrayscale: false,
+		backdropHueRotate: false,
+		backdropInvert: false,
+		backdropSaturate: false,
+		backdropSepia: false,
+		brightness: false,
+		contrast: false,
+		grayscale: false,
+		hueRotate: false,
+		invert: false,
+		saturate: false,
+		sepia: false,
+	},
 	prefix: "",
 	theme: {
 		container: {
