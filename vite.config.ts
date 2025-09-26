@@ -135,132 +135,48 @@ export default defineConfig(({ mode }) => {
           // Manual chunking for better code splitting
           entryFileNames: 'assets/[name]-[hash].js',
           chunkFileNames: 'assets/[name]-[hash].js',
-          manualChunks: {
+          manualChunks: (id) => {
             // Vendor chunk for core libraries
-            vendor: [
-              'react',
-              'react-dom',
-              'react-dom/client',
-              'react-router-dom',
-              '@tanstack/react-query',
-              'framer-motion',
-              'lucide-react',
-              '@supabase/supabase-js'
-            ],
-            // Three.js chunk for 3D components
-            threejs: [
-              'three',
-              '@react-three/fiber',
-              '@react-three/drei',
-              '@react-three/xr',
-              'three-stdlib'
-            ],
-            // UI components chunk
-            ui: [
-              '@/components/ui/button',
-              '@/components/ui/card',
-              '@/components/ui/input',
-              '@/components/ui/badge',
-              '@/components/ui/avatar',
-              '@/components/ui/dropdown-menu',
-              '@/components/ui/tabs',
-              '@/components/ui/select',
-              '@/components/ui/separator',
-              '@/components/ui/skeleton',
-              '@/components/ui/toast',
-              '@/components/ui/dialog',
-              '@/components/ui/form',
-              '@/components/ui/label',
-              '@/components/ui/textarea',
-              '@/components/ui/checkbox',
-              '@/components/ui/radio-group',
-              '@/components/ui/switch',
-              '@/components/ui/slider',
-              '@/components/ui/progress',
-              '@/components/ui/alert',
-              '@/components/ui/accordion',
-              '@/components/ui/alert-dialog',
-              '@/components/ui/aspect-ratio',
-              '@/components/ui/calendar',
-              '@/components/ui/carousel',
-              '@/components/ui/command',
-              '@/components/ui/context-menu',
-              '@/components/ui/data-table',
-              '@/components/ui/date-picker',
-              '@/components/ui/hover-card',
-              '@/components/ui/menubar',
-              '@/components/ui/navigation-menu',
-              '@/components/ui/pagination',
-              '@/components/ui/popover',
-              '@/components/ui/resizable',
-              '@/components/ui/scroll-area',
-              '@/components/ui/sheet',
-              '@/components/ui/table',
-              '@/components/ui/toggle',
-              '@/components/ui/toggle-group',
-              '@/components/ui/tooltip'
-            ],
-            // Utils and libs chunk
-            utils: [
-              '@/lib/utils',
-              '@/lib/supabase',
-              '@/lib/validation',
-              '@/lib/permissions',
-              '@/lib/comparisonStorage',
-              '@/lib/ticketing',
-              '@/lib/i18n',
-              '@/hooks/use-toast',
-              '@/hooks/useToast',
-              '@/hooks/useScrollThreshold',
-              '@/context/AuthContext',
-              '@/context/QuoteContext',
-              '@/context/LoadingContext'
-            ],
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom')) {
+                return 'vendor-react';
+              }
+              if (id.includes('three') || id.includes('@react-three')) {
+                return 'vendor-threejs';
+              }
+              if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('@tanstack')) {
+                return 'vendor-ui';
+              }
+              if (id.includes('@supabase')) {
+                return 'vendor-supabase';
+              }
+              return 'vendor';
+            }
+            
             // Admin components chunk
-            admin: [
-              '@/pages/AdminDashboard',
-              '@/components/admin/DashboardStats',
-              '@/components/admin/RecentOrders',
-              '@/components/admin/TopProducts',
-              '@/components/admin/LowStockAlerts',
-              '@/components/admin/CustomerActivity',
-              '@/components/admin/SalesChart',
-              '@/components/admin/panels/ProductsPanel',
-              '@/components/admin/panels/OrdersPanel',
-              '@/components/admin/panels/CustomersPanel',
-              '@/components/admin/panels/InventoryPanel',
-              '@/components/admin/panels/FinancePanel',
-              '@/components/support/AdminTicketDashboard',
-              '@/components/admin/SparePartsImportPanel'
-            ],
+            if (id.includes('/admin/') || id.includes('/pages/AdminDashboard')) {
+              return 'admin';
+            }
+            
             // 3D model components chunk
-            '3d-models': [
-              '@/components/3d-model/GLBViewer',
-              '@/components/3d-model/EnhancedGLBViewer',
-              '@/components/3d-model/OptimizedGLBViewer',
-              '@/components/3d-model/Model3DDialog',
-              '@/components/3d-model/ModelTest',
-              '@/features/shop/configurator/components/ProductConfigurator',
-              '@/features/shop/configurator/components/ModelLoader',
-              '@/components/shop/3d-configurator/ModelLoader',
-              '@/components/shop/ar/WorkspaceChecker'
-            ],
+            if (id.includes('/3d-model/') || id.includes('/configurator/') || id.includes('/ar/')) {
+              return '3d-models';
+            }
+            
             // Shop and product components chunk
-            shop: [
-              '@/pages/Products',
-              '@/pages/Shop',
-              '@/pages/Shop-enhanced',
-              '@/components/shop/IndustrialProductCard',
-              '@/components/shop/EquipmentComparisonTool',
-              '@/components/shop/FreightCalculator',
-              '@/components/shop/EgyptianStandardsGuide',
-              '@/components/shop/EgyptianTechnicalSupportHub',
-              '@/components/shop/ProductQuickView',
-              '@/components/shop/RecentlyViewedProducts',
-              '@/components/shop/DurabilityDetailsModal',
-              '@/components/shop/ai-advisor/AiEquipmentAdvisor',
-              '@/components/shop/machine-recommendation/MachineRecommendationWizard'
-            ]
+            if (id.includes('/shop/') || id.includes('/pages/Products') || id.includes('/pages/Shop')) {
+              return 'shop';
+            }
+            
+            // UI components chunk
+            if (id.includes('/components/ui/') || id.includes('/shared/ui/')) {
+              return 'ui';
+            }
+            
+            // Utils and libs chunk
+            if (id.includes('/lib/') || id.includes('/hooks/') || id.includes('/context/')) {
+              return 'utils';
+            }
           },
           assetFileNames: (assetInfo) => {
             const info = assetInfo.name?.split(".") || [];
