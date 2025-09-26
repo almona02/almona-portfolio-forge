@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRegion } from '@/hooks/useRegionDetection';
+import { useRegionDetection } from '@/hooks/useRegionDetection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Progress } from '@/shared/ui/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Machine } from '@/types';
 
@@ -33,7 +33,7 @@ export const EquipmentRecommender: React.FC<EquipmentRecommenderProps> = ({
   machines
 }) => {
   const { t } = useTranslation();
-  const { currentRegion } = useRegion();
+  const { regionState } = useRegionDetection();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -49,7 +49,7 @@ export const EquipmentRecommender: React.FC<EquipmentRecommenderProps> = ({
           body: JSON.stringify({
             customer_profile: customerProfile,
             machines: machines,
-            market: currentRegion.code
+            market: regionState.region
           })
         });
 
@@ -69,7 +69,7 @@ export const EquipmentRecommender: React.FC<EquipmentRecommenderProps> = ({
     if (customerProfile && machines.length > 0) {
       fetchRecommendations();
     }
-  }, [customerProfile, machines, currentRegion.code]);
+  }, [customerProfile, machines, regionState.region]);
 
   if (loading) {
     return <div>{t('recommendations.loading')}</div>;
