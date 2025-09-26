@@ -11,7 +11,7 @@ import {
 } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
-import { Label } from "@/components/ui/label"
+import { Label } from "@/shared/ui/ui/label"
 
 const Form = FormProvider
 
@@ -22,7 +22,7 @@ type FormFieldContextValue<
   name: TName
 }
 
-import { FormFieldContext, FormItemContext } from "./formContext";
+import { FormFieldContext, FormItemContext, useFormField } from "./formContext";
 
 const FormItem = React.forwardRef<
   HTMLDivElement,
@@ -117,6 +117,19 @@ const FormMessage = React.forwardRef<
   )
 })
 FormMessage.displayName = "FormMessage"
+
+const FormField = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>({
+  ...props
+}: ControllerProps<TFieldValues, TName>) => {
+  return (
+    <FormFieldContext.Provider value={{ name: props.name }}>
+      <Controller {...props} />
+    </FormFieldContext.Provider>
+  )
+}
 
 export {
   useFormField,
