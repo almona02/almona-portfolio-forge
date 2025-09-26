@@ -129,7 +129,33 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         maxParallelFileOps: 5, // Limit parallel operations to prevent memory issues
         output: {
-          manualChunks: undefined, // Let Vite handle chunking automatically for now
+          // Ensure main chunk is created and loads properly
+          manualChunks: (id) => {
+            // Keep main app code in a single chunk for reliability
+            if (id.includes('/src/') && !id.includes('node_modules')) {
+              return 'app';
+            }
+            
+            // Simple vendor chunking
+            if (id.includes('node_modules')) {
+              if (id.includes('react') || id.includes('react-dom')) {
+                return 'vendor-react';
+              }
+              if (id.includes('three') || id.includes('@react-three')) {
+                return 'vendor-threejs';
+              }
+              if (id.includes('@tanstack') || id.includes('react-router')) {
+                return 'vendor-routing';
+              }
+              if (id.includes('framer-motion') || id.includes('lucide-react')) {
+                return 'vendor-ui';
+              }
+              if (id.includes('@supabase')) {
+                return 'vendor-supabase';
+              }
+              return 'vendor-misc';
+            }
+          }
         }
       },
       // Add better compression and optimization
