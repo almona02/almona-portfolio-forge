@@ -1710,7 +1710,7 @@ Complete demo page with interactive controls.
 
 ## File Structure
 
-```new
+```
 src/components/3d-model/
 ├── EnhancedGLBViewer.tsx    # Main 3D viewer component
 ├── ModelTest.tsx           # Test component
