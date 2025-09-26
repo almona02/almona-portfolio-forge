@@ -31,7 +31,8 @@ export const quoteCreateSchema = z.object({
   currency: z.string().default('EGP'),
   delivery_timeline: z.string().optional().nullable(),
   payment_terms: z.string().optional().nullable(),
-  items: z.array(quoteItemSchema).min(1),
+  // Allow zero items for initial draft quotes; UI can add later
+  items: z.array(quoteItemSchema).default([]),
 });
 
 export type QuoteCreateInput = z.infer<typeof quoteCreateSchema>;

@@ -132,7 +132,7 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     // Silent fallback to legacy without noisy logs when disabled/missing backend
   }
   // Minimal, schema-safe payload to avoid 400 due to column diffs
-  // Omit user_id so DB default/auth trigger can set it to auth.uid()
+  // Explicitly include user_id when available for RLS policies expecting it
   const insertPayload = {
     title: ticketData.title?.toString().slice(0, 200) || 'Support Ticket',
     // Provide safe defaults for likely NOT NULL columns
@@ -140,10 +140,11 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     priority: (ticketData.priority as any) || 'medium',
     status: 'open' as const,
     preferred_contact_method: ticketData.preferred_contact_method || 'email',
+    user_id: (await supabase.auth.getUser()).data.user?.id || undefined,
   }
   // Casting supabase to any to bypass strict table inference issues until generated types include custom columns
   // Select only stable columns known to exist in production
-  const selectColumns = 'id'
+  const selectColumns = '*'
   let { data, error } = await (supabase as any)
     .from('service_tickets')
     .insert([insertPayload])
@@ -154,15 +155,6 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     console.error('[tickets.createTicket] insert error (after retry)', { message: error.message, details: (error as any).details, hint: (error as any).hint })
     throw new Error(error.message)
   }
-  // Fetch full row (including generated ticket_number/digital_twin_code) after insert
-  try {
-    const { data: full } = await (supabase as any)
-      .from('service_tickets')
-      .select('*')
-      .eq('id', (data as any).id)
-      .single()
-    if (full) data = full
-  } catch { /* ignore */ }
   return mapTicket(data)
 }
 
