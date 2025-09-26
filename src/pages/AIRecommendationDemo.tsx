@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRegion } from '@/hooks/useRegionDetection';
+import { useRegionDetection } from '@/hooks/useRegionDetection';
 import { EquipmentRecommender } from '@/components/recommendation/EquipmentRecommender';
 import { InteractiveGLBViewer } from '@/components/3d-model/InteractiveGLBViewer';
 import { ComplianceDocumentGenerator } from '@/components/regional/turkish/ComplianceDocumentGenerator';
@@ -117,7 +117,7 @@ const mockAnnotations = [
 
 export const AIRecommendationDemo: React.FC = () => {
   const { t } = useTranslation();
-  const { currentRegion } = useRegion();
+  const { regionState } = useRegionDetection();
   const [selectedPart, setSelectedPart] = useState<any>(null);
   const [selectedConfiguration, setSelectedConfiguration] = useState<string[]>([]);
 
@@ -130,8 +130,8 @@ export const AIRecommendationDemo: React.FC = () => {
     budget: 200000,
     expected_roi: 25,
     location: {
-      country: currentRegion.code,
-      region: currentRegion.code === 'TR' ? 'Istanbul' : 'Cairo'
+      country: regionState.region,
+      region: regionState.region === 'TR' ? 'Istanbul' : 'Cairo'
     }
   };
 
@@ -155,7 +155,7 @@ export const AIRecommendationDemo: React.FC = () => {
           Experience advanced AI recommendations and interactive 3D configuration
         </p>
         <Badge variant="outline" className="text-lg px-4 py-2">
-          Current Region: {currentRegion.name} ({currentRegion.currency})
+          Current Region: {regionState.region}
         </Badge>
       </div>
 
@@ -215,7 +215,7 @@ export const AIRecommendationDemo: React.FC = () => {
       </Card>
 
       {/* Turkish Compliance Documents Section */}
-      {currentRegion.code === 'TR' && (
+      {regionState.region === 'TR' && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
