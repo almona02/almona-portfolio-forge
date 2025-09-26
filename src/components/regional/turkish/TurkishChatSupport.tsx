@@ -46,32 +46,42 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
     phone: ''
   });
 
-  // Turkish support responses
+  // Enhanced Turkish support responses for aluminum/UPVC machinery
   const turkishResponses = {
     greeting: [
-      "Merhaba! Almona müşteri hizmetlerine hoş geldiniz. Size nasıl yardımcı olabilirim?",
-      "İyi günler! Almona teknik destek ekibindeyim. Hangi konuda yardıma ihtiyacınız var?",
-      "Merhaba! YILMAZ makineleri ve ALFAPEN profilleri hakkında sorularınızı yanıtlamaktan mutluluk duyarım."
+      "Merhaba! Almona müşteri hizmetlerine hoş geldiniz. YILMAZ alüminyum ve UPVC işleme makineleri konusunda size nasıl yardımcı olabilirim?",
+      "İyi günler! Almona teknik destek ekibindeyim. Alüminyum pencere, kapı veya UPVC profil üretimi için hangi makineye ihtiyacınız var?",
+      "Merhaba! YILMAZ makineleri ve ALFAPEN profilleri uzmanıyım. Projeniz için en uygun çözümü bulmanıza yardımcı olayım."
     ],
     pricing: [
-      "Fiyat bilgileri için size özel teklif hazırlayabilirim. Hangi ürünle ilgileniyorsunuz?",
-      "KDV %20 dahil fiyatlarımızı görmek için ürün kategorisini belirtir misiniz?",
-      "Türkiye'de ücretsiz kargo imkanımız bulunmaktadır. Detaylı fiyat için iletişime geçelim."
+      "Fiyat bilgileri için size özel teklif hazırlayabilirim. Hangi YILMAZ makine modeli ile ilgileniyorsunuz? (örn: CNC, Köşe Kaynak, Kesim)",
+      "KDV %20 dahil fiyatlarımızı görmek için üretim kapasitenizi ve makine özelliklerini belirtir misiniz?",
+      "Türkiye'de ücretsiz kargo ve kurulum hizmetimiz bulunmaktadır. Detaylı fiyat için teknik özelliklerinizi paylaşabilir misiniz?"
     ],
     technical: [
-      "Teknik destek için YILMAZ makine seri numaranızı paylaşabilir misiniz?",
-      "Makine kurulumu ve bakım konularında size yardımcı olabilirim.",
-      "Teknik dokümantasyon ve kullanım kılavuzları için hangi modeli arıyorsunuz?"
+      "Teknik destek için YILMAZ makine seri numaranızı paylaşabilir misiniz? Hangi alüminyum/UPVC işleme sorunu yaşıyorsunuz?",
+      "Makine kurulumu, kalibrasyon ve bakım konularında size yardımcı olabilirim. Hangi model YILMAZ makineniz var?",
+      "Teknik dokümantasyon ve kullanım kılavuzları için hangi YILMAZ modeli arıyorsunuz? (CNC, Köşe Kaynak, Kesim, Delme vb.)"
     ],
     shipping: [
-      "Türkiye genelinde ücretsiz kargo hizmetimiz bulunmaktadır.",
-      "Kargo süresi genellikle 2-3 iş günüdür.",
-      "Kargo takibi için takip numaranızı size ileteceğiz."
+      "Türkiye genelinde ücretsiz kargo ve kurulum hizmetimiz bulunmaktadır.",
+      "Kargo süresi genellikle 2-3 iş günüdür. Kurulum için teknik ekibimiz sizinle iletişime geçecek.",
+      "Kargo takibi için takip numaranızı size ileteceğiz. Kurulum sonrası eğitim de dahildir."
+    ],
+    aluminum: [
+      "Alüminyum işleme için YILMAZ CNC makinelerimiz var. Hangi kalınlıkta alüminyum profiller işleyeceksiniz?",
+      "Alüminyum pencere ve kapı üretimi için köşe kaynak makinelerimiz mevcut. Günlük üretim kapasiteniz nedir?",
+      "Alüminyum kesim, delme ve işleme için tam otomatik YILMAZ makinelerimiz bulunmaktadır."
+    ],
+    upvc: [
+      "UPVC profil işleme için özel YILMAZ makinelerimiz var. Hangi UPVC profil türlerini işleyeceksiniz?",
+      "UPVC pencere ve kapı üretimi için köşe kaynak ve kesim makinelerimiz mevcut. Profil kalınlığınız nedir?",
+      "UPVC işleme için tam otomatik YILMAZ makinelerimiz bulunmaktadır. Üretim hattınızın kapasitesi nedir?"
     ],
     default: [
-      "Anladım. Bu konuda size daha detaylı bilgi verebilmek için hangi alanla ilgili sorunuz var?",
-      "Size yardımcı olabilmek için biraz daha detay verebilir misiniz?",
-      "Bu konuda uzman ekibimizden biriyle sizi görüştürebilirim."
+      "Anladım. Alüminyum veya UPVC işleme konusunda size daha detaylı bilgi verebilmek için hangi alanla ilgili sorunuz var?",
+      "Size yardımcı olabilmem için üretim türünüzü (alüminyum/UPVC) ve makine ihtiyacınızı belirtebilir misiniz?",
+      "Bu konuda teknik ekibimizden destek almanızı öneririm. YILMAZ makine uzmanımızla görüşmek ister misiniz?"
     ]
   };
 
@@ -86,6 +96,12 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
     }
     if (lowerMessage.includes('kargo') || lowerMessage.includes('teslimat') || lowerMessage.includes('gönderim')) {
       return 'shipping';
+    }
+    if (lowerMessage.includes('alüminyum') || lowerMessage.includes('aluminum') || lowerMessage.includes('alüminyum pencere') || lowerMessage.includes('alüminyum kapı')) {
+      return 'aluminum';
+    }
+    if (lowerMessage.includes('upvc') || lowerMessage.includes('pvc') || lowerMessage.includes('upvc profil') || lowerMessage.includes('upvc pencere') || lowerMessage.includes('upvc kapı')) {
+      return 'upvc';
     }
     
     return 'default';
@@ -266,12 +282,12 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
               </Button>
             </div>
             
-            {/* Quick Actions */}
+            {/* Enhanced Quick Actions for Aluminum/UPVC Machinery */}
             <div className="mt-2 flex flex-wrap gap-1">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setInputMessage('Fiyat bilgisi almak istiyorum')}
+                onClick={() => setInputMessage('YILMAZ makine fiyat bilgisi almak istiyorum')}
                 className="text-xs h-6"
               >
                 {t('turkish.chat.quickPricing', 'Fiyat')}
@@ -279,7 +295,23 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setInputMessage('Teknik destek istiyorum')}
+                onClick={() => setInputMessage('Alüminyum işleme makinesi hakkında bilgi istiyorum')}
+                className="text-xs h-6"
+              >
+                Alüminyum
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setInputMessage('UPVC profil işleme makinesi hakkında bilgi istiyorum')}
+                className="text-xs h-6"
+              >
+                UPVC
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setInputMessage('Teknik destek ve kurulum hizmeti istiyorum')}
                 className="text-xs h-6"
               >
                 {t('turkish.chat.quickSupport', 'Destek')}
@@ -287,7 +319,7 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setInputMessage('Kargo bilgisi almak istiyorum')}
+                onClick={() => setInputMessage('Kargo ve kurulum bilgisi almak istiyorum')}
                 className="text-xs h-6"
               >
                 {t('turkish.chat.quickShipping', 'Kargo')}
