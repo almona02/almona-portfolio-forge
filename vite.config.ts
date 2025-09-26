@@ -47,6 +47,7 @@ export default defineConfig(({ mode }) => {
           globPatterns: ["**/*.{js,css,html,ico,png,svg,json,woff,woff2}"],
           // Exclude the large stats file from the service worker
           globIgnores: ['**/stats.json'],
+          cleanupOutdatedCaches: true,
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -156,88 +157,7 @@ export default defineConfig(({ mode }) => {
         input: "index.html",
         external: [],
         output: {
-          manualChunks(id) {
-            if (!id.includes('node_modules')) return undefined
-            const parts = id.split('node_modules/')[1].split('/')
-            const pkg = parts[0].startsWith('@') ? `${parts[0]}/${parts[1]}` : parts[0]
-
-            // Core React ecosystem - keep together for better caching
-            if (['react', 'react-dom', 'scheduler', 'react-is'].includes(pkg)) {
-              return 'react-core'
-            }
-
-            // Three.js ecosystem - separate chunk for 3D libraries
-            if (['three', '@react-three/drei', '@react-three/fiber', '@react-three/xr'].includes(pkg)) {
-              return 'three-ecosystem'
-            }
-
-            // Large UI libraries - group Radix UI components
-            if (pkg.startsWith('@radix-ui/')) {
-              return 'ui-components'
-            }
-
-            // Chart libraries
-            if (['recharts', 'react-chartjs-2', 'chart.js', 'd3-array', 'd3-color', 'd3-format', 'd3-interpolate', 'd3-path', 'd3-scale', 'd3-shape', 'd3-time', 'd3-time-format'].includes(pkg)) {
-              return 'charts'
-            }
-
-            // Form libraries
-            if (['react-hook-form', '@hookform/resolvers', 'zod'].includes(pkg)) {
-              return 'forms'
-            }
-
-            // Specific large libraries that need their own chunks
-            const specificChunks: Record<string, string> = {
-              'react-router-dom': 'router',
-              '@tanstack/react-query': 'query',
-              '@tanstack/react-table': 'table',
-              'framer-motion': 'animations',
-              'lucide-react': 'icons',
-              '@supabase/supabase-js': 'supabase',
-              'axios': 'http-client',
-              'i18next': 'i18n',
-              'i18next-browser-languagedetector': 'i18n',
-              'react-i18next': 'i18n',
-              'react-helmet-async': 'seo',
-              'react-day-picker': 'date-picker',
-              'react-resizable-panels': 'panels',
-              'react-media-recorder': 'media',
-              'react-content-loader': 'loading',
-              'embla-carousel-react': 'carousel',
-              'pg': 'database',
-              '@vercel/analytics': 'analytics'
-            }
-
-            if (specificChunks[pkg]) return specificChunks[pkg]
-
-            // Handle refractor and syntax highlighting separately
-            if (pkg.includes('refractor') || pkg.includes('prism')) {
-              return 'syntax-highlighting'
-            }
-
-            // Group smaller utilities together
-            if (['date-fns', 'class-variance-authority', 'clsx', 'tailwind-merge', 'tailwindcss-animate', 'tailwindcss-rtl', 'next-themes', 'cmdk', 'input-otp', 'jwt-decode', 'sonner', 'vaul', 'web-vitals', 'zustand', 'zxcvbn'].includes(pkg)) {
-              return 'utilities'
-            }
-
-            // Group text processing libraries
-            if (['markdown-it', 'markdown-to-jsx', '@uiw/react-markdown-preview', '@uiw/react-md-editor', 'dompurify'].includes(pkg)) {
-              return 'text-processing'
-            }
-
-            // Group file processing libraries
-            if (['file-saver', 'pdf-lib', 'xlsx'].includes(pkg)) {
-              return 'file-processing'
-            }
-
-            // Group AI/ML libraries
-            if (['@google/generative-ai', '@huggingface/inference', '@tensorflow/tfjs'].includes(pkg)) {
-              return 'ai-ml'
-            }
-
-            // Default vendor chunk for remaining packages
-            return 'vendor-misc'
-          },
+          // Let Vite handle chunking automatically for better optimization
 
           chunkFileNames: 'js/[name]-[hash].js',
 
