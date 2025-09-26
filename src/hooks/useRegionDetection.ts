@@ -91,13 +91,19 @@ function getRegionFromLanguageCode(languageCode: string): RegionCode {
  */
 async function detectRegionByIP(): Promise<RegionCode> {
   try {
-    // Using a free IP geolocation service
+    // Using a free IP geolocation service with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout
+    
     const response = await fetch('https://ipapi.co/json/', {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
       },
+      signal: controller.signal,
     });
+    
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -191,7 +197,7 @@ export function useRegionDetection(options: RegionDetectionOptions = {}): {
   
   const [regionState, setRegionState] = useState<RegionDetectionState>({
     region: opts.fallbackRegion,
-    isLoading: true,
+    isLoading: false, // Start with false to avoid loading state
     error: null,
     detectedBy: 'fallback',
     lastUpdated: null
@@ -268,10 +274,15 @@ export function useRegionDetection(options: RegionDetectionOptions = {}): {
         return;
       }
 
-      // 3. Try IP geolocation
+      // 3. Try IP geolocation with timeout
       if (opts.enableIPDetection) {
         try {
-          const detectedRegion = await detectRegionByIP();
+          const detectedRegion = await Promise.race([
+            detectRegionByIP(),
+            new Promise<RegionCode>((_, reject) => 
+              setTimeout(() => reject(new Error('IP detection timeout')), 2000)
+            )
+          ]);
           setCachedRegion({
             region: detectedRegion,
             detectedBy: 'ip',
