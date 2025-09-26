@@ -5,20 +5,19 @@ import { defineConfig, loadEnv } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
+// Updated: 2024-09-26 - Simplified build config to fix chunk rendering issues
 export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), "");
   const isProduction = mode === "production";
   
-  // EMERGENCY FIX: Add timestamp to force cache invalidation
-  const buildTimestamp = Date.now();
+  // Simplified build configuration
 
   return {
     base: '/',
     define: {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-      __BUILD_TIMESTAMP__: JSON.stringify(buildTimestamp),
       __VERSION__: JSON.stringify(process.env.npm_package_version || "1.0.0"),
       global: "globalThis",
     },
@@ -44,8 +43,14 @@ export default defineConfig(({ mode }) => {
       host: "::",
     },
     plugins: [
-      react(),
-      // Temporarily disabled PWA plugin due to globbing error
+      react({
+        // Enable React Fast Refresh for better development experience
+        fastRefresh: true,
+        // Optimize JSX runtime
+        jsxRuntime: 'automatic'
+      }),
+      // Temporarily disabled PWA plugin due to configuration issues
+      // TODO: Re-enable with proper configuration
       // VitePWA({
       //   registerType: "autoUpdate",
       //   injectRegister: "auto",
@@ -81,9 +86,9 @@ export default defineConfig(({ mode }) => {
       //         sizes: "512x512",
       //         type: "image/png",
       //         purpose: "any maskable"
-      //       },
-      //     ],
-      //   },
+      //       }
+      //     ]
+      //   }
       // }),
       ...(isProduction
         ? [
@@ -118,75 +123,64 @@ export default defineConfig(({ mode }) => {
           additionalData: `@import \"@/styles/variables.scss\";`,
         },
       },
+      // Optimize CSS processing
+      postcss: {
+        plugins: [
+          // PostCSS plugins will be configured in postcss.config.cjs
+        ]
+      }
     },
 
     build: {
       outDir: 'dist',
       assetsDir: 'assets',
       target: "esnext",
-      minify: isProduction ? "terser" : false,
-      sourcemap: !isProduction,
-      chunkSizeWarningLimit: 1000, // Increased to prevent warnings
-      assetsInlineLimit: 2048,
+      minify: isProduction ? "esbuild" : false, // Use esbuild instead of terser for faster builds
+      sourcemap: false, // Disable sourcemaps to speed up build
+      chunkSizeWarningLimit: 2000, // Increased to prevent warnings
+      assetsInlineLimit: 4096, // Increased to inline more assets
       reportCompressedSize: false,
-      cssCodeSplit: true,
-      // EMERGENCY FIX: Add build timestamp to force cache invalidation
+      cssCodeSplit: false, // Disable CSS code splitting to simplify build
+      // PERFORMANCE OPTIMIZATIONS
       rollupOptions: {
         maxParallelFileOps: 5,
         treeshake: {
           moduleSideEffects: true,
+          propertyReadSideEffects: false,
+          tryCatchDeoptimization: false
         },
         input: "index.html",
         external: [],
         output: {
-          // EMERGENCY FIX: Add timestamp to filenames to force cache invalidation
-          entryFileNames: `assets/[name]-${buildTimestamp}-[hash].js`,
-          chunkFileNames: `assets/[name]-${buildTimestamp}-[hash].js`,
-          // EMERGENCY FIX: Ultra-simplified chunking to ensure compatibility
+          // Simplified chunking strategy to prevent build hanging
+          entryFileNames: `assets/[name]-[hash].js`,
+          chunkFileNames: `assets/[name]-[hash].js`,
+          // Simplified manual chunks to prevent circular dependencies
           manualChunks: (id) => {
-            // Force all lucide-react icons into a single chunk to prevent infinite chunking
-            if (id.includes('lucide-react')) {
-              return 'lucide-icons';
-            }
-            
             // Keep main app code together
             if (id.includes('/src/') && !id.includes('node_modules')) {
               return 'app';
             }
             
-            // Optimized vendor chunking to prevent large chunks
+            // Simple vendor chunking to prevent build issues
             if (id.includes('node_modules')) {
+              // Core React ecosystem
               if (id.includes('react') || id.includes('react-dom')) {
                 return 'vendor-react';
               }
+              
+              // Three.js ecosystem
               if (id.includes('three') || id.includes('@react-three')) {
                 return 'vendor-threejs';
               }
+              
+              // Supabase
               if (id.includes('@supabase')) {
                 return 'vendor-supabase';
               }
-              if (id.includes('@tanstack') || id.includes('react-router')) {
-                return 'vendor-routing';
-              }
-              if (id.includes('framer-motion') || id.includes('@radix-ui')) {
-                return 'vendor-ui';
-              }
-              if (id.includes('react-hook-form') || id.includes('@hookform') || id.includes('zod')) {
-                return 'vendor-forms';
-              }
-              if (id.includes('date-fns') || id.includes('lodash') || id.includes('clsx') || id.includes('tailwind-merge')) {
-                return 'vendor-utils';
-              }
-              if (id.includes('i18next') || id.includes('react-i18next')) {
-                return 'vendor-i18n';
-              }
-              // Split remaining vendors into smaller chunks
-              const hash = id.split('').reduce((a, b) => {
-                a = ((a << 5) - a) + b.charCodeAt(0);
-                return a & a;
-              }, 0);
-              const chunkIndex = Math.abs(hash) % 5; // Split into 5 smaller chunks
-              return `vendor-misc-${chunkIndex}`;
+              
+              // Everything else goes into vendor chunk
+              return 'vendor';
             }
           },
           assetFileNames: (assetInfo) => {
@@ -196,99 +190,43 @@ export default defineConfig(({ mode }) => {
             if (
               /\\.(png|jpe?g|svg|gif|tiff|bmp|ico)$/i.test(assetInfo.name || "")
             ) {
-              return `assets/[name]-${buildTimestamp}-[hash].${ext}`;
+              return `assets/images/[name]-[hash].${ext}`;
             }
 
             if (/\\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name || ""))
             {
-              return `assets/[name]-${buildTimestamp}-[hash].${ext}`;
+              return `assets/fonts/[name]-[hash].${ext}`;
             }
 
             if (/\\.css$/i.test(assetInfo.name || ""))
             {
-              return `assets/[name]-${buildTimestamp}-[hash].${ext}`;
+              return `assets/[name]-[hash].${ext}`;
             }
 
-            return `assets/[name]-${buildTimestamp}-[hash].${ext}`;
+            return `assets/[name]-[hash].${ext}`;
           },
         },
       },
-      // Add better compression and optimization
-      terserOptions: isProduction ? {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-          pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn']
-        },
-        mangle: {
-          safari10: true
-        }
-      } : undefined,
     },
 
     optimizeDeps: {
-      force: true, // EMERGENCY FIX: Force re-optimization
       include: [
         "react",
         "react-dom",
         "react-dom/client",
-        "react-reconciler",
-        "react-router-dom",
-        "lucide-react" // EMERGENCY FIX: Include lucide-react in pre-bundling
-      ],
-      exclude: [
-        "@tensorflow/tfjs",
-        // Three.js will be handled by manual chunks and loaded on demand
-        "three",
-        "@react-three/fiber", 
-        "@react-three/drei",
-        "@react-three/xr",
-        "three-stdlib",
-        // Exclude heavy libraries that should be loaded on demand
-        "gsap",
-        "lottie-react",
-        "react-spring",
-        "react-use-gesture",
-        // Exclude more libraries to reduce initial bundle
-        "@tanstack/react-query",
-        "framer-motion",
-        // "lucide-react", // REMOVED: Now included in pre-bundling
-        "@supabase/supabase-js",
-        "sonner",
-        "next-themes",
-        "react-i18next",
-        "i18next",
-        "react-hook-form",
-        "@hookform/resolvers",
-        "zod",
-        "date-fns",
-        "clsx",
-        "tailwind-merge",
-        "class-variance-authority"
+        "react-router-dom"
       ],
       esbuildOptions: {
         define: {
           global: "globalThis",
         },
-        // Optimize for better tree shaking
-        treeShaking: true,
-        // Target modern browsers for better optimization
-        target: "es2020",
-        // Add more aggressive optimization
-        minifyIdentifiers: isProduction,
-        minifySyntax: isProduction,
-        minifyWhitespace: isProduction
+        target: "es2020"
       },
     },
 
     esbuild: {
       drop: isProduction ? ["console", "debugger"] : [],
-      treeShaking: true,
-      target: "es2020",
-      // Enable minification for better compression
-      minifyIdentifiers: isProduction,
-      minifySyntax: isProduction,
-      minifyWhitespace: isProduction,
+      target: "es2020"
     },
 
     experimental: {
