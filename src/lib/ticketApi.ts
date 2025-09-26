@@ -135,6 +135,11 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
   const insertPayload = {
     user_id: userId,
     title: ticketData.title?.toString().slice(0, 200) || 'Support Ticket',
+    // Provide safe defaults for likely NOT NULL columns
+    type: (ticketData.type as any) || 'general',
+    priority: (ticketData.priority as any) || 'medium',
+    status: 'open' as const,
+    preferred_contact_method: ticketData.preferred_contact_method || 'email',
   }
   // Casting supabase to any to bypass strict table inference issues until generated types include custom columns
   // Select only stable columns known to exist in production
