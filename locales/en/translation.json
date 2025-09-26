@@ -23,5 +23,97 @@
     "company": "Company",
     "sector": "Sector",
     "workshop_location": "Workshop Location"
+  },
+  "3d": {
+    "interactive": {
+      "title": "Interactive 3D Model",
+      "loading": "Loading model...",
+      "error": "Error loading model",
+      "noModel": "Model not found"
+    },
+    "annotations": {
+      "clickToSelect": "Click to select",
+      "selected": "Selected",
+      "hoverToHighlight": "Hover to highlight"
+    },
+    "parts": {
+      "frame": "Frame",
+      "glass": "Glass",
+      "handle": "Handle",
+      "seal": "Seal",
+      "hinge": "Hinge",
+      "lock": "Lock",
+      "sill": "Sill",
+      "jamb": "Jamb"
+    },
+    "materials": {
+      "aluminum": "Aluminum",
+      "glass": "Glass",
+      "steel": "Steel",
+      "rubber": "Rubber",
+      "plastic": "Plastic",
+      "wood": "Wood"
+    },
+    "instructions": {
+      "click": "Click on parts to select/deselect",
+      "hover": "Hover to highlight parts",
+      "pricing": "Real-time pricing updates",
+      "rotate": "Drag to rotate",
+      "zoom": "Scroll to zoom"
+    },
+    "selectedParts": "Selected Parts",
+    "clearSelection": "Clear Selection",
+    "showPricing": "Show Pricing",
+    "hidePricing": "Hide Pricing",
+    "ar": {
+      "android": "AR (Android)",
+      "ios": "AR (iOS)",
+      "webxr": "WebXR AR",
+      "notSupported": "AR not supported"
+    }
+  },
+  "pricing": {
+    "calculator": {
+      "title": "Pricing Calculator",
+      "noParts": "Select parts from the 3D model to see pricing",
+      "selectedParts": "Selected Parts",
+      "quantity": "Quantity",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "total": "Total",
+      "requestQuote": "Request Quote",
+      "addToCart": "Add to Cart",
+      "vatInfo": "VAT included in prices. All prices are in local currency."
+    },
+    "tax": {
+      "vat": "VAT",
+      "included": "Included",
+      "excluded": "Excluded",
+      "rate": "Rate"
+    }
+  },
+  "recommendations": {
+    "title": "Equipment Recommendations",
+    "loading": "Loading recommendations...",
+    "best_match": "Best Match",
+    "match_score": "Match Score",
+    "technical": "Technical",
+    "business": "Business",
+    "market": "Market",
+    "view_details": "View Details",
+    "highly_recommended": "Highly Recommended",
+    "recommended": "Recommended",
+    "consider": "Consider"
+  },
+  "turkish_documents": {
+    "title": "Turkish Compliance Documents",
+    "description": "Automatically generate all required documents for the Turkish market",
+    "fatura": "Invoice",
+    "irsaliye": "Delivery Note",
+    "ce_belgesi": "CE Certificate",
+    "test_raporu": "Test Report",
+    "kullanım_kılavuzu": "User Manual",
+    "required": "Required",
+    "generate": "Generate"
   }
 }

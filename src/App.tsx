@@ -4,10 +4,11 @@ import { TooltipProvider } from "@/shared/ui/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
+import { useLocation, Link } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import SEO from "./components/SEO";
 import { PageLoadingWrapper } from "./components/ui/PageLoadingWrapper";
-import { CriticalPathLoader } from "./components/ui/CriticalPathLoader";
+import { PrestigeLoader } from "./components/ui/PrestigeLoader";
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { ChunkLoadingErrorBoundary } from "./components/ui/ChunkLoadingErrorBoundary";
 import { MainChunkTest } from "./components/ui/MainChunkTest";
@@ -15,6 +16,7 @@ import { QuoteProvider } from "./context/QuoteContext.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
 import { LoadingProvider } from "./context/LoadingContext.tsx";
 import { Analytics } from "@vercel/analytics/react";
+import RegionAwareLayout from "./components/layout/RegionAwareLayout";
 
 // Core pages (essential)
 const Index = lazy(() => import("./pages/Index"));
@@ -60,6 +62,8 @@ const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
 const CreateTicketPage = lazy(() => import("./pages/CreateTicketPage.tsx"));
 const RegisterMachinePage = lazy(() => import("./pages/RegisterMachinePage.tsx"));
 const CustomerSupport = lazy(() => import("./pages/CustomerSupport.tsx"));
+const RegionalFeaturesDemo = lazy(() => import("./pages/RegionalFeaturesDemo.tsx"));
+const AIRecommendationDemo = lazy(() => import("./pages/AIRecommendationDemo.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -101,7 +105,7 @@ const GlobalDynamicImportGuard = () => {
 const App = () => (
   <ChunkLoadingErrorBoundary>
     <ErrorBoundary>
-      <CriticalPathLoader>
+      <PrestigeLoader>
         <QueryClientProvider client={queryClient}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
             <TooltipProvider>
@@ -117,10 +121,13 @@ const App = () => (
                         v7_relativeSplatPath: true,
                       }}
                     >
+                      <ScrollRestoration />
+                      <NavPrefetchHints />
                       <GlobalDynamicImportGuard />
                       <Analytics />
                       <MainChunkTest />
-                <Routes>
+                      <RegionAwareLayout showRegionalFeatures={true} enableRegionSwitching={true}>
+                        <Routes>
                   {/* Core pages */}
                   <Route path="/" element={<Suspense fallback={getLoadingComponent('/')}><Index /></Suspense>} />
                   <Route path="/about" element={<Suspense fallback={getLoadingComponent('/about')}><About /></Suspense>} />
@@ -179,19 +186,73 @@ const App = () => (
                   <Route path="/admin/dashboard" element={<Suspense fallback={getLoadingComponent('/admin')}><ProtectedRoute><AdminDashboard /></ProtectedRoute></Suspense>} />
                   <Route path="/admin/demo" element={<Suspense fallback={getLoadingComponent('/admin')}><ProtectedRoute><AdminDashboard /></ProtectedRoute></Suspense>} />
                   
+                  {/* Regional Features Demo */}
+                  <Route path="/demo/regional-features" element={<Suspense fallback={getLoadingComponent('/demo')}><RegionalFeaturesDemo /></Suspense>} />
+                  
+                  {/* AI Recommendation Demo */}
+                  <Route path="/demo/ai-recommendations" element={<Suspense fallback={getLoadingComponent('/demo')}><AIRecommendationDemo /></Suspense>} />
+                  
                   {/* 404 */}
                   <Route path="*" element={<Suspense fallback={getLoadingComponent('/404')}><NotFound /></Suspense>} />
-                </Routes>
-              </BrowserRouter>
+                        </Routes>
+                      </RegionAwareLayout>
+                    </BrowserRouter>
                   </QuoteProvider>
                 </LoadingProvider>
               </AuthProvider>
             </TooltipProvider>
           </ThemeProvider>
         </QueryClientProvider>
-      </CriticalPathLoader>
+      </PrestigeLoader>
     </ErrorBoundary>
   </ChunkLoadingErrorBoundary>
 );
 
 export default App;
+
+// Smooth scroll restoration on route change
+function ScrollRestoration() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if ('scrollBehavior' in document.documentElement.style) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname]);
+  return null;
+}
+
+// Prefetch route chunks on hover/focus for primary nav links
+function NavPrefetchHints() {
+  useEffect(() => {
+    const selector = 'a[data-prefetch="true"]';
+    const handler = (e: Event) => {
+      const el = e.currentTarget as HTMLAnchorElement;
+      const href = el.getAttribute('href');
+      if (!href) return;
+      // Hint browser to prefetch target document
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.as = 'document';
+      link.href = href;
+      document.head.appendChild(link);
+      // remove later to avoid head bloat
+      setTimeout(() => link.remove(), 5000);
+    };
+    const els = Array.from(document.querySelectorAll(selector));
+    els.forEach(el => {
+      el.addEventListener('mouseenter', handler, { passive: true });
+      el.addEventListener('focus', handler, { passive: true });
+      el.addEventListener('touchstart', handler, { passive: true });
+    });
+    return () => {
+      els.forEach(el => {
+        el.removeEventListener('mouseenter', handler as any);
+        el.removeEventListener('focus', handler as any);
+        el.removeEventListener('touchstart', handler as any);
+      });
+    };
+  }, []);
+  return null;
+}

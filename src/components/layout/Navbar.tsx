@@ -40,6 +40,7 @@ const NavLink = ({
     <Link
       to={to}
       onClick={onClick}
+      data-prefetch={!isMobile ? 'true' : undefined}
       className={`relative text-sm font-medium transition-colors duration-300 group ${
         isMobile ? "text-lg flex items-center gap-4 py-2" : ""
       }`}

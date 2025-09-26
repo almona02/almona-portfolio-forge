@@ -100,7 +100,8 @@ async function http<T>(url: string, options: RequestInit = {}): Promise<T> {
   return res.json() as Promise<T>
 }
 
-const BASE = '/api/v2/tickets'
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || ''
+const BASE = `${API_BASE}/api/v2/tickets`
 
 export const ticketsV2Api = {
   create(payload: V2CreateTicketPayload) {
