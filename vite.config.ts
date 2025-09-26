@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === "production";
 
   return {
+    base: '/',
     define: {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
@@ -121,10 +122,16 @@ export default defineConfig(({ mode }) => {
       target: "esnext",
       minify: isProduction ? "terser" : false,
       sourcemap: !isProduction,
-      chunkSizeWarningLimit: 100, // Extreme warning threshold to force tiny chunks
+      chunkSizeWarningLimit: 150, // Balanced warning threshold
       assetsInlineLimit: 2048, // Smaller inline limit
       reportCompressedSize: false, // Disable compressed size reporting for faster builds
       cssCodeSplit: true, // Enable CSS code splitting
+      rollupOptions: {
+        maxParallelFileOps: 5, // Limit parallel operations to prevent memory issues
+        output: {
+          manualChunks: undefined, // Let Vite handle chunking automatically for now
+        }
+      },
       // Add better compression and optimization
       terserOptions: isProduction ? {
         compress: {
@@ -169,7 +176,7 @@ export default defineConfig(({ mode }) => {
                   a = ((a << 5) - a) + b.charCodeAt(0);
                   return a & a;
                 }, 0);
-                return `vendor-react-${Math.abs(hash) % 15}`;
+                return `vendor-react-${Math.abs(hash) % 8}`;
               }
               // Three.js ecosystem - separate from other vendors
               if (id.includes('three') || id.includes('@react-three')) {
@@ -178,7 +185,7 @@ export default defineConfig(({ mode }) => {
                   a = ((a << 5) - a) + b.charCodeAt(0);
                   return a & a;
                 }, 0);
-                return `vendor-threejs-${Math.abs(hash) % 20}`;
+                return `vendor-threejs-${Math.abs(hash) % 10}`;
               }
               // UI libraries
               if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('@radix-ui')) {
@@ -252,7 +259,7 @@ export default defineConfig(({ mode }) => {
                 a = ((a << 5) - a) + b.charCodeAt(0);
                 return a & a;
               }, 0);
-              const chunkIndex = Math.abs(hash) % 500; // Split into 500 chunks for maximum distribution
+              const chunkIndex = Math.abs(hash) % 100; // Split into 100 chunks for better balance
               return `vendor-misc-${chunkIndex}`;
             }
             
