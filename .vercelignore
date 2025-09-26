@@ -106,7 +106,9 @@ docs/
 !README.md
 
 # Scripts
+# Allow build-control script to run on Vercel
 scripts/
+!scripts/should-build.mjs
 *.sh
 *.bat
 
