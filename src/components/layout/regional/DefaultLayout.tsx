@@ -6,6 +6,7 @@
 import React from 'react';
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
 import Navbar from '../Navbar';
+import Footer from '../Footer';
 
 interface DefaultLayoutProps {
   children: React.ReactNode;
@@ -29,13 +30,13 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
       {/* Main Navigation */}
       <Navbar />
 
-
       {/* Main content */}
       <div className="relative">
         {children}
       </div>
 
-
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
