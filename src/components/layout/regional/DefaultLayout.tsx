@@ -9,6 +9,7 @@ import { RegionSelectionModal } from '@/components/ui/RegionSelectionModal';
 import { Button } from '@/components/ui/button';
 import { Globe, Settings, Sparkles, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Navbar from '../Navbar';
 
 interface DefaultLayoutProps {
   children: React.ReactNode;
@@ -48,6 +49,9 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
 
   return (
     <div className="min-h-screen bg-almona-dark text-white">
+      {/* Main Navigation */}
+      <Navbar />
+      
       {/* Welcome Animation */}
       {showWelcome && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-blue-900/90 to-purple-900/90 backdrop-blur-sm">
@@ -63,7 +67,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
       )}
 
       {/* Enhanced header banner */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white py-3 px-4 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white py-3 px-4 relative overflow-hidden mt-16">
         {/* Animated background */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-blue-800/50 animate-pulse" />
         
