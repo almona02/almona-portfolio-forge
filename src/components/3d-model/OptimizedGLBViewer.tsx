@@ -2,11 +2,13 @@ import React, { useEffect, useRef, useState, Suspense } from 'react'
 import { 
   useFrame, 
   useThree,
-  OptimizedCanvas,
-  OptimizedLighting,
-  OptimizedControls,
-  useOptimizedGLTF,
-  useOptimizedAnimations,
+  Canvas,
+  OrbitControls,
+  useGLTF,
+  useAnimations,
+  getOptimizedCanvasProps,
+  getOptimizedLightingProps,
+  getOptimizedControlsProps,
   type Group
 } from '@/lib/three-optimized'
 
@@ -39,8 +41,8 @@ const OptimizedModel = ({
 }: OptimizedGLBViewerProps) => {
   const groupRef = useRef<Group>(null)
   const { gl, camera } = useThree()
-  const { scene, animations } = useOptimizedGLTF(modelPath)
-  const { actions } = useOptimizedAnimations(animations, scene)
+  const { scene, animations } = useGLTF(modelPath)
+  const { actions } = useAnimations(animations, scene)
 
   const [arSupported, setArSupported] = useState(false)
   const [isARSession, setIsARSession] = useState(false)
@@ -161,14 +163,20 @@ const ModelLoadingFallback = () => (
  * - Includes performance optimizations for better loading times
  */
 export function OptimizedGLBViewer(props: OptimizedGLBViewerProps) {
+  const canvasProps = getOptimizedCanvasProps()
+  const lightingProps = getOptimizedLightingProps()
+  const controlsProps = getOptimizedControlsProps()
+
   return (
-    <OptimizedCanvas>
-      <OptimizedLighting />
+    <Canvas {...canvasProps}>
+      <ambientLight {...lightingProps.ambientLight} />
+      <directionalLight {...lightingProps.directionalLight} />
+      <pointLight {...lightingProps.pointLight} />
       <Suspense fallback={<ModelLoadingFallback />}>
         <OptimizedModel {...props} />
       </Suspense>
-      <OptimizedControls />
-    </OptimizedCanvas>
+      <OrbitControls {...controlsProps} />
+    </Canvas>
   )
 }
 

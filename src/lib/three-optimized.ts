@@ -65,46 +65,36 @@ export const preloadModels = (urls: string[]) => {
 };
 
 // Optimized Canvas component with default settings
-export const OptimizedCanvas = ({ children, ...props }: any) => (
-  <Canvas
-    camera={{ position: [0, 0, 5], fov: 50 }}
-    gl={{ 
-      antialias: true, 
-      alpha: true,
-      powerPreference: "high-performance"
-    }}
-    dpr={[1, 2]} // Limit device pixel ratio for better performance
-    performance={{ min: 0.5 }} // Lower performance threshold
-    {...props}
-  >
-    {children}
-  </Canvas>
-);
+export const getOptimizedCanvasProps = () => ({
+  camera: { position: [0, 0, 5], fov: 50 },
+  gl: { 
+    antialias: true, 
+    alpha: true,
+    powerPreference: "high-performance" as const
+  },
+  dpr: [1, 2] as [number, number], // Limit device pixel ratio for better performance
+  performance: { min: 0.5 } // Lower performance threshold
+});
 
-// Optimized lighting setup
-export const OptimizedLighting = () => (
-  <>
-    <ambientLight intensity={0.4} />
-    <directionalLight 
-      position={[10, 10, 5]} 
-      intensity={1}
-      castShadow
-      shadow-mapSize-width={1024}
-      shadow-mapSize-height={1024}
-    />
-    <pointLight position={[-10, -10, -10]} intensity={0.5} />
-  </>
-);
+// Optimized lighting setup props
+export const getOptimizedLightingProps = () => ({
+  ambientLight: { intensity: 0.4 },
+  directionalLight: { 
+    position: [10, 10, 5] as [number, number, number], 
+    intensity: 1,
+    castShadow: true,
+    'shadow-mapSize-width': 1024,
+    'shadow-mapSize-height': 1024
+  },
+  pointLight: { position: [-10, -10, -10] as [number, number, number], intensity: 0.5 }
+});
 
-// Optimized controls
-export const OptimizedControls = (props: any) => (
-  <OrbitControls
-    enablePan={true}
-    enableZoom={true}
-    enableRotate={true}
-    enableDamping={true}
-    dampingFactor={0.05}
-    maxPolarAngle={Math.PI / 2}
-    {...props}
-  />
-);
+// Optimized controls props
+export const getOptimizedControlsProps = () => ({
+  enablePan: true,
+  enableZoom: true,
+  enableRotate: true,
+  enableDamping: true,
+  dampingFactor: 0.05,
+  maxPolarAngle: Math.PI / 2
+});
