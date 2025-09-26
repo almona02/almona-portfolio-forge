@@ -1,8 +1,10 @@
 import { 
-  OptimizedCanvas,
-  OptimizedLighting,
-  OptimizedControls,
-  useOptimizedGLTF,
+  Canvas,
+  OrbitControls,
+  useGLTF,
+  getOptimizedCanvasProps,
+  getOptimizedLightingProps,
+  getOptimizedControlsProps,
   type GLTF
 } from '@/lib/three-optimized';
 import { Suspense, useState, useEffect } from 'react';
@@ -23,7 +25,7 @@ const OptimizedMachineModel = ({
   productId: string; 
   activeAttachment: MachineAttachment 
 }) => {
-  const { scene } = useOptimizedGLTF(`/models/${productId}.glb`);
+  const { scene } = useGLTF(`/models/${productId}.glb`);
 
   useEffect(() => {
     if (scene) {
@@ -66,7 +68,7 @@ const OptimizedAttachment = ({
     processor: '/models/attachments/processor.glb'
   };
 
-  const { scene } = useOptimizedGLTF(attachmentModels[type]);
+  const { scene } = useGLTF(attachmentModels[type]);
 
   return (
     <primitive 
@@ -92,10 +94,16 @@ export const OptimizedProductConfigurator = ({
 
   if (!isMounted) return null;
 
+  const canvasProps = getOptimizedCanvasProps()
+  const lightingProps = getOptimizedLightingProps()
+  const controlsProps = getOptimizedControlsProps()
+
   return (
     <div className={`h-full w-full ${className}`}>
-      <OptimizedCanvas camera={{ position: [0, 0, 5], fov: 50 }}>
-        <OptimizedLighting />
+      <Canvas {...canvasProps}>
+        <ambientLight {...lightingProps.ambientLight} />
+        <directionalLight {...lightingProps.directionalLight} />
+        <pointLight {...lightingProps.pointLight} />
         <Suspense fallback={<ModelLoader />}>
           <OptimizedMachineModel 
             productId={productId} 
@@ -106,12 +114,8 @@ export const OptimizedProductConfigurator = ({
             isActive={!!activeAttachment}
           />
         </Suspense>
-        <OptimizedControls 
-          enablePan={true}
-          enableZoom={true}
-          enableRotate={true}
-        />
-      </OptimizedCanvas>
+        <OrbitControls {...controlsProps} />
+      </Canvas>
 
       <div className="absolute bottom-4 left-4 bg-almona-darker/80 p-4 rounded-lg">
         <h3 className="text-lg font-semibold mb-2">Attachments</h3>
