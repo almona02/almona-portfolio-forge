@@ -121,7 +121,7 @@ export default defineConfig(({ mode }) => {
       target: "esnext",
       minify: isProduction ? "terser" : false,
       sourcemap: !isProduction,
-      chunkSizeWarningLimit: 150, // Ultra-low warning threshold to force even smaller chunks
+      chunkSizeWarningLimit: 100, // Extreme warning threshold to force tiny chunks
       assetsInlineLimit: 2048, // Smaller inline limit
       reportCompressedSize: false, // Disable compressed size reporting for faster builds
       cssCodeSplit: true, // Enable CSS code splitting
@@ -169,7 +169,7 @@ export default defineConfig(({ mode }) => {
                   a = ((a << 5) - a) + b.charCodeAt(0);
                   return a & a;
                 }, 0);
-                return `vendor-react-${Math.abs(hash) % 6}`;
+                return `vendor-react-${Math.abs(hash) % 15}`;
               }
               // Three.js ecosystem - separate from other vendors
               if (id.includes('three') || id.includes('@react-three')) {
@@ -178,7 +178,7 @@ export default defineConfig(({ mode }) => {
                   a = ((a << 5) - a) + b.charCodeAt(0);
                   return a & a;
                 }, 0);
-                return `vendor-threejs-${Math.abs(hash) % 8}`;
+                return `vendor-threejs-${Math.abs(hash) % 20}`;
               }
               // UI libraries
               if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('@radix-ui')) {
@@ -252,7 +252,7 @@ export default defineConfig(({ mode }) => {
                 a = ((a << 5) - a) + b.charCodeAt(0);
                 return a & a;
               }, 0);
-              const chunkIndex = Math.abs(hash) % 200; // Split into 200 chunks for maximum distribution
+              const chunkIndex = Math.abs(hash) % 500; // Split into 500 chunks for maximum distribution
               return `vendor-misc-${chunkIndex}`;
             }
             
@@ -324,7 +324,22 @@ export default defineConfig(({ mode }) => {
         "react-dom",
         "react-dom/client",
         "react-reconciler",
-        "react-router-dom",
+        "react-router-dom"
+      ],
+      exclude: [
+        "@tensorflow/tfjs",
+        // Three.js will be handled by manual chunks and loaded on demand
+        "three",
+        "@react-three/fiber", 
+        "@react-three/drei",
+        "@react-three/xr",
+        "three-stdlib",
+        // Exclude heavy libraries that should be loaded on demand
+        "gsap",
+        "lottie-react",
+        "react-spring",
+        "react-use-gesture",
+        // Exclude more libraries to reduce initial bundle
         "@tanstack/react-query",
         "framer-motion",
         "lucide-react",
@@ -340,20 +355,6 @@ export default defineConfig(({ mode }) => {
         "clsx",
         "tailwind-merge",
         "class-variance-authority"
-      ],
-      exclude: [
-        "@tensorflow/tfjs",
-        // Three.js will be handled by manual chunks and loaded on demand
-        "three",
-        "@react-three/fiber", 
-        "@react-three/drei",
-        "@react-three/xr",
-        "three-stdlib",
-        // Exclude heavy libraries that should be loaded on demand
-        "gsap",
-        "lottie-react",
-        "react-spring",
-        "react-use-gesture"
       ],
       esbuildOptions: {
         define: {
