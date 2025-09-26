@@ -1,16 +1,5 @@
 import React, { useEffect, useRef, useState, Suspense } from 'react'
-import { 
-  useFrame, 
-  useThree,
-  Canvas,
-  OrbitControls,
-  useGLTF,
-  useAnimations,
-  getOptimizedCanvasProps,
-  getOptimizedLightingProps,
-  getOptimizedControlsProps,
-  type Group
-} from '@/lib/three-optimized'
+import { LazyThreeJS } from './LazyThreeJS'
 
 // Props extended to support AR, scaling, positioning, and animation auto‑play
 export interface OptimizedGLBViewerProps {
@@ -37,12 +26,13 @@ const OptimizedModel = ({
   onReady,
   arScaleMultiplier = 0.5,
   enableShadows = false,
-  enableAnimations = true
-}: OptimizedGLBViewerProps) => {
-  const groupRef = useRef<Group>(null)
-  const { gl, camera } = useThree()
-  const { scene, animations } = useGLTF(modelPath)
-  const { actions } = useAnimations(animations, scene)
+  enableAnimations = true,
+  threeJS
+}: OptimizedGLBViewerProps & { threeJS: any }) => {
+  const groupRef = useRef<any>(null)
+  const { gl, camera } = threeJS.useThree()
+  const { scene, animations } = threeJS.useGLTF(modelPath)
+  const { actions } = threeJS.useAnimations(animations, scene)
 
   const [arSupported, setArSupported] = useState(false)
   const [isARSession, setIsARSession] = useState(false)
@@ -163,20 +153,26 @@ const ModelLoadingFallback = () => (
  * - Includes performance optimizations for better loading times
  */
 export function OptimizedGLBViewer(props: OptimizedGLBViewerProps) {
-  const canvasProps = getOptimizedCanvasProps()
-  const lightingProps = getOptimizedLightingProps()
-  const controlsProps = getOptimizedControlsProps()
-
   return (
-    <Canvas {...canvasProps}>
-      <ambientLight {...lightingProps.ambientLight} />
-      <directionalLight {...lightingProps.directionalLight} />
-      <pointLight {...lightingProps.pointLight} />
-      <Suspense fallback={<ModelLoadingFallback />}>
-        <OptimizedModel {...props} />
-      </Suspense>
-      <OrbitControls {...controlsProps} />
-    </Canvas>
+    <LazyThreeJS>
+      {(threeJS) => {
+        const canvasProps = threeJS.getOptimizedCanvasProps()
+        const lightingProps = threeJS.getOptimizedLightingProps()
+        const controlsProps = threeJS.getOptimizedControlsProps()
+
+        return (
+          <threeJS.Canvas {...canvasProps}>
+            <threeJS.ambientLight {...lightingProps.ambientLight} />
+            <threeJS.directionalLight {...lightingProps.directionalLight} />
+            <threeJS.pointLight {...lightingProps.pointLight} />
+            <Suspense fallback={<ModelLoadingFallback />}>
+              <OptimizedModel {...props} threeJS={threeJS} />
+            </Suspense>
+            <threeJS.OrbitControls {...controlsProps} />
+          </threeJS.Canvas>
+        )
+      }}
+    </LazyThreeJS>
   )
 }
 

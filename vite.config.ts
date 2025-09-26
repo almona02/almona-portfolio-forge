@@ -121,10 +121,21 @@ export default defineConfig(({ mode }) => {
       target: "esnext",
       minify: isProduction ? "esbuild" : false,
       sourcemap: !isProduction,
-      chunkSizeWarningLimit: 1000,
-      assetsInlineLimit: 4096,
+      chunkSizeWarningLimit: 500, // Lower warning threshold
+      assetsInlineLimit: 2048, // Smaller inline limit
       reportCompressedSize: false, // Disable compressed size reporting for faster builds
       cssCodeSplit: true, // Enable CSS code splitting
+      // Add better compression and optimization
+      terserOptions: isProduction ? {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn']
+        },
+        mangle: {
+          safari10: true
+        }
+      } : undefined,
       rollupOptions: {
         treeshake: {
           moduleSideEffects: true,
@@ -136,44 +147,61 @@ export default defineConfig(({ mode }) => {
           entryFileNames: 'assets/[name]-[hash].js',
           chunkFileNames: 'assets/[name]-[hash].js',
           manualChunks: (id) => {
-            // Vendor chunk for core libraries
+            // More aggressive vendor splitting
             if (id.includes('node_modules')) {
-              if (id.includes('react') || id.includes('react-dom')) {
+              // React ecosystem
+              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
                 return 'vendor-react';
               }
+              // Three.js ecosystem - separate from other vendors
               if (id.includes('three') || id.includes('@react-three')) {
                 return 'vendor-threejs';
               }
-              if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('@tanstack')) {
+              // UI libraries
+              if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('@radix-ui')) {
                 return 'vendor-ui';
               }
+              // Query and state management
+              if (id.includes('@tanstack') || id.includes('zustand') || id.includes('jotai')) {
+                return 'vendor-state';
+              }
+              // Supabase
               if (id.includes('@supabase')) {
                 return 'vendor-supabase';
               }
-              return 'vendor';
+              // Form libraries
+              if (id.includes('react-hook-form') || id.includes('@hookform') || id.includes('zod')) {
+                return 'vendor-forms';
+              }
+              // Date and utility libraries
+              if (id.includes('date-fns') || id.includes('lodash') || id.includes('clsx') || id.includes('tailwind-merge')) {
+                return 'vendor-utils';
+              }
+              // Animation libraries
+              if (id.includes('gsap') || id.includes('lottie') || id.includes('framer-motion')) {
+                return 'vendor-animations';
+              }
+              // Everything else goes to a smaller vendor chunk
+              return 'vendor-misc';
             }
             
-            // Admin components chunk
+            // Application chunks
             if (id.includes('/admin/') || id.includes('/pages/AdminDashboard')) {
               return 'admin';
             }
             
-            // 3D model components chunk
             if (id.includes('/3d-model/') || id.includes('/configurator/') || id.includes('/ar/')) {
               return '3d-models';
             }
             
-            // Shop and product components chunk
             if (id.includes('/shop/') || id.includes('/pages/Products') || id.includes('/pages/Shop')) {
               return 'shop';
             }
             
-            // UI components chunk
             if (id.includes('/components/ui/') || id.includes('/shared/ui/')) {
               return 'ui';
             }
             
-            // Utils and libs chunk
             if (id.includes('/lib/') || id.includes('/hooks/') || id.includes('/context/')) {
               return 'utils';
             }
@@ -229,12 +257,17 @@ export default defineConfig(({ mode }) => {
       ],
       exclude: [
         "@tensorflow/tfjs",
-        // Three.js will be handled by manual chunks
+        // Three.js will be handled by manual chunks and loaded on demand
         "three",
         "@react-three/fiber", 
         "@react-three/drei",
         "@react-three/xr",
-        "three-stdlib"
+        "three-stdlib",
+        // Exclude heavy libraries that should be loaded on demand
+        "gsap",
+        "lottie-react",
+        "react-spring",
+        "react-use-gesture"
       ],
       esbuildOptions: {
         define: {
@@ -243,7 +276,11 @@ export default defineConfig(({ mode }) => {
         // Optimize for better tree shaking
         treeShaking: true,
         // Target modern browsers for better optimization
-        target: "es2020"
+        target: "es2020",
+        // Add more aggressive optimization
+        minifyIdentifiers: isProduction,
+        minifySyntax: isProduction,
+        minifyWhitespace: isProduction
       },
     },
 
