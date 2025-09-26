@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import NewLogo from "@/assets/logo.png";
 import { useAuth } from "@/context/AuthContext";
 import { useQuote } from "@/context/QuoteContext";
+import { useRegionDetection } from "@/hooks/useRegionDetection";
+import { RegionCode } from "@/config/regionalConfig";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Info,
@@ -15,6 +17,7 @@ import {
   X,
   ChevronDown,
   Shield,
+  Globe,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -69,9 +72,24 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [servicesSubmenuOpen, setServicesSubmenuOpen] = useState(false);
   const [productsSubmenuOpen, setProductsSubmenuOpen] = useState(false);
+  const [showRegionDropdown, setShowRegionDropdown] = useState(false);
   const location = useLocation();
   const { quoteItems } = useQuote();
   const { user, signOut } = useAuth();
+  const { regionState, setRegion } = useRegionDetection();
+
+  // Region configuration
+  const regionConfigs = {
+    TR: { name: 'Turkey', flag: '🇹🇷' },
+    EG: { name: 'Egypt', flag: '🇪🇬' },
+    DEFAULT: { name: 'International', flag: '🌍' }
+  };
+
+  const handleRegionChange = (region: RegionCode) => {
+    setRegion(region);
+    setShowRegionDropdown(false);
+  };
+
   const handleLogout = async () => {
     try {
       await signOut();
@@ -96,6 +114,23 @@ const Navbar = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  // Close region dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showRegionDropdown) {
+        const target = event.target as Element;
+        if (!target.closest('.region-selector')) {
+          setShowRegionDropdown(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showRegionDropdown]);
 
   const handleCloseMobileMenu = () => {
     setIsMobileMenuOpen(false);
@@ -295,6 +330,51 @@ const Navbar = () => {
         </nav>
 
         <div className="hidden lg:flex items-center gap-4">
+          {/* Region Selector */}
+          <motion.div
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.65, duration: 0.3 }}
+            className="relative region-selector"
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowRegionDropdown(!showRegionDropdown)}
+              className="flex items-center space-x-2 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white bg-transparent"
+            >
+              <Globe className="h-4 w-4" />
+              <span className="text-sm">{regionConfigs[regionState.region].flag}</span>
+              <span className="hidden sm:inline text-sm">{regionConfigs[regionState.region].name}</span>
+              <ChevronDown className="h-3 w-3" />
+            </Button>
+
+            {/* Region Dropdown */}
+            {showRegionDropdown && (
+              <div className="absolute top-full right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50">
+                <div className="p-2">
+                  {Object.entries(regionConfigs).map(([code, config]) => (
+                    <button
+                      key={code}
+                      onClick={() => handleRegionChange(code as RegionCode)}
+                      className={`w-full flex items-center justify-between px-3 py-2 text-left hover:bg-gray-700 rounded-md transition-colors ${
+                        regionState.region === code ? 'bg-gray-700' : ''
+                      }`}
+                    >
+                      <span className="flex items-center space-x-2">
+                        <span>{config.flag}</span>
+                        <span className="text-sm text-white">{config.name}</span>
+                      </span>
+                      {regionState.region === code && (
+                        <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </motion.div>
+
           <motion.div
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -570,6 +650,34 @@ const Navbar = () => {
                     </div>
                   ))}
                 </nav>
+                
+                {/* Mobile Region Selector */}
+                <div className="px-6 py-4 border-t border-gray-800">
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium text-gray-400 mb-2">Region</h3>
+                    {Object.entries(regionConfigs).map(([code, config]) => (
+                      <button
+                        key={code}
+                        onClick={() => {
+                          handleRegionChange(code as RegionCode);
+                          handleCloseMobileMenu();
+                        }}
+                        className={`w-full flex items-center justify-between px-3 py-2 text-left hover:bg-gray-700 rounded-md transition-colors ${
+                          regionState.region === code ? 'bg-gray-700' : ''
+                        }`}
+                      >
+                        <span className="flex items-center space-x-3">
+                          <span className="text-lg">{config.flag}</span>
+                          <span className="text-white">{config.name}</span>
+                        </span>
+                        {regionState.region === code && (
+                          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="mt-auto p-6 border-t border-gray-800 space-y-4">
                   {user ? (
                     <>
