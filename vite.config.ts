@@ -154,7 +154,7 @@ export default defineConfig(({ mode }) => {
               return 'app';
             }
             
-            // Ultra-simple vendor chunking - only essential splits
+            // Optimized vendor chunking to prevent large chunks
             if (id.includes('node_modules')) {
               if (id.includes('react') || id.includes('react-dom')) {
                 return 'vendor-react';
@@ -162,8 +162,31 @@ export default defineConfig(({ mode }) => {
               if (id.includes('three') || id.includes('@react-three')) {
                 return 'vendor-threejs';
               }
-              // Everything else in one big vendor chunk
-              return 'vendor';
+              if (id.includes('@supabase')) {
+                return 'vendor-supabase';
+              }
+              if (id.includes('@tanstack') || id.includes('react-router')) {
+                return 'vendor-routing';
+              }
+              if (id.includes('framer-motion') || id.includes('@radix-ui')) {
+                return 'vendor-ui';
+              }
+              if (id.includes('react-hook-form') || id.includes('@hookform') || id.includes('zod')) {
+                return 'vendor-forms';
+              }
+              if (id.includes('date-fns') || id.includes('lodash') || id.includes('clsx') || id.includes('tailwind-merge')) {
+                return 'vendor-utils';
+              }
+              if (id.includes('i18next') || id.includes('react-i18next')) {
+                return 'vendor-i18n';
+              }
+              // Split remaining vendors into smaller chunks
+              const hash = id.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+              }, 0);
+              const chunkIndex = Math.abs(hash) % 5; // Split into 5 smaller chunks
+              return `vendor-misc-${chunkIndex}`;
             }
           },
           assetFileNames: (assetInfo) => {
