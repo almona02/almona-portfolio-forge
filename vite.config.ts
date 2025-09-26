@@ -90,7 +90,7 @@ export default defineConfig(({ mode }) => {
       //     ]
       //   }
       // }),
-      ...(isProduction
+      ...(isProduction && process.env.ANALYZE === 'true'
         ? [
             visualizer({
               filename: "dist/stats.json",
@@ -98,7 +98,6 @@ export default defineConfig(({ mode }) => {
               gzipSize: true,
               brotliSize: true,
               template: "raw-data",
-              // Disabled sourcemap to fix build warnings
               sourcemap: false,
             }),
           ]
@@ -137,17 +136,7 @@ export default defineConfig(({ mode }) => {
       outDir: 'dist',
       assetsDir: 'assets',
       target: "esnext",
-      minify: isProduction ? "terser" : false,
-      terserOptions: isProduction ? {
-        module: true,
-        compress: {
-          passes: 2,
-          hoist_vars: false,
-          hoist_funs: false,
-        },
-        mangle: true,
-        safari10: true
-      } : undefined,
+      minify: isProduction ? "esbuild" : false,
       sourcemap: false, // Disable sourcemaps to speed up build
       chunkSizeWarningLimit: 1500, // Set to 1500 kB to allow for reasonable chunk sizes
       assetsInlineLimit: 4096, // Increased to inline more assets
