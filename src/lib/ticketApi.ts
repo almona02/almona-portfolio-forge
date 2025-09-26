@@ -130,23 +130,30 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
   } catch (err) {
     console.warn('V2 create failed, legacy fallback:', err)
   }
+  // Normalize payload to match DB Insert shape strictly. Any extra fields go into `context` JSON.
+  const extraContext: Record<string, unknown> = {}
+  const maybeMachineModel = (ticketData as any).machine_model
+  if (maybeMachineModel) extraContext.machine_model = maybeMachineModel
+  const maybeMachineId = (ticketData as any).machine_id
+  if (maybeMachineId) extraContext.machine_id = maybeMachineId
+
   const insertPayload = {
     user_id: userId,
-    title: ticketData.title,
-    description: ticketData.description,
-    type: ticketData.type,
-    priority: ticketData.priority,
-    status: 'open',
+    title: ticketData.title?.toString().slice(0, 200) || 'Support Ticket',
+    description: ticketData.description || null,
+    type: (ticketData.type as any) || 'general',
+    priority: (ticketData.priority as any) || 'medium',
+    status: 'open' as const,
     related_quote_id: ticketData.related_quote_id || null,
     related_order_id: ticketData.related_order_id || null,
     related_product_id: ticketData.related_product_id || null,
-  maintenance_type: (ticketData as any).maintenance_type || null,
+    maintenance_type: (ticketData as any).maintenance_type || null,
     contact_phone: ticketData.contact_phone || null,
     contact_email: ticketData.contact_email || null,
     preferred_contact_method: ticketData.preferred_contact_method || 'email',
     site_location: ticketData.site_location || null,
-  machine_serial_number: ticketData.machine_serial_number || null,
-  machine_model: (ticketData as any).machine_model || null
+    machine_serial_number: ticketData.machine_serial_number || null,
+    context: Object.keys(extraContext).length ? extraContext : null
   }
   // Casting supabase to any to bypass strict table inference issues until generated types include custom columns
   const { data, error } = await (supabase as any)
@@ -154,7 +161,11 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     .insert([insertPayload])
     .select()
     .single()
-  if (error) throw new Error(error.message)
+  if (error) {
+    // Surface more diagnostics to help troubleshoot 400s in production
+    console.error('[tickets.createTicket] insert error', { message: error.message, details: (error as any).details, hint: (error as any).hint })
+    throw new Error(error.message)
+  }
   return mapTicket(data)
 }
 
