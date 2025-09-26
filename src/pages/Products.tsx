@@ -34,7 +34,7 @@ interface SourceMachineLike {
 }
 import { Eye } from "lucide-react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback, Suspense, lazy } from "react";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 
 // UI wrapper union ensures compatibility with comparison + quote components expecting UiMachine shape
@@ -420,15 +420,17 @@ const Products = function ProductsPage() {
         machines={selectedMachines as unknown as UiMachine[]}
       />
 
-      <QuoteRequestDialog
-        open={showQuoteDialog}
-        onOpenChange={setShowQuoteDialog}
-        initialData={{
-          products: selectedProduct ? [selectedProduct as unknown as UiMachine] : (selectedMachines as unknown as UiMachine[]),
-          services: [],
-          contactInfo: {},
-        }}
-      />
+      <Suspense fallback={null}>
+        <QuoteRequestDialog
+          open={showQuoteDialog}
+          onOpenChange={setShowQuoteDialog}
+          initialData={{
+            products: selectedProduct ? [selectedProduct as unknown as UiMachine] : (selectedMachines as unknown as UiMachine[]),
+            services: [],
+            contactInfo: {},
+          }}
+        />
+      </Suspense>
 
       {selectedMachineFor3D && (
         <Model3DDialog

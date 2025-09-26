@@ -30,6 +30,10 @@
       #root{min-height:100vh;}
       .app-fade-enter{opacity:0;transition:opacity .25s ease-in;}
       .app-fade-enter.app-fade-enter-active{opacity:1;}
+      /* Critical hero above-the-fold (safe minimal) */
+      .hero{display:flex;align-items:center;justify-content:center;min-height:70vh;background:linear-gradient(180deg,#0d0f12,#0b0d10)}
+      .hero-title{font-size:clamp(28px,5vw,48px);font-weight:800;letter-spacing:-.02em}
+      .hero-sub{opacity:.8;margin-top:8px;max-width:720px}
       
       /* Loading screen styles */
       .loading-screen {
@@ -89,6 +93,9 @@
     <!-- Preconnect to Supabase and CDNs to reduce handshake latency -->
     <link rel="preconnect" href="https://shfsebdncjnncqqnewfj.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <!-- Route-level prefetch hints -->
+    <link rel="prefetch" href="/products" as="document">
+    <link rel="prefetch" href="/shop" as="document">
     <!-- Preload system font to avoid FOUT for Inter-like stack (optional) -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">

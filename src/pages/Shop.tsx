@@ -1,6 +1,6 @@
 // Enhanced Shop Component for Almona Portfolio
 
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo, useCallback, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import { 
   Search, 
@@ -25,7 +25,7 @@ import { IndustrialProductCard } from "@/components/shop/IndustrialProductCard";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
 import { RecentlyViewedProducts } from "@/components/shop/RecentlyViewedProducts";
 // import { EquipmentComparisonTool } from "@/components/shop/EquipmentComparisonTool";
-import AiEquipmentAdvisor from "@/components/shop/ai-advisor/AiEquipmentAdvisor";
+const AiEquipmentAdvisor = lazy(() => import("@/components/shop/ai-advisor/AiEquipmentAdvisor"));
 import FreightCalculator from "@/components/shop/FreightCalculator";
 import EgyptianStandardsGuide from "@/components/shop/EgyptianStandardsGuide";
 import EgyptianTechnicalSupportHub from "@/components/shop/EgyptianTechnicalSupportHub";
@@ -875,7 +875,9 @@ const Shop = () => {
         <RecentlyViewedProducts />
 
         {/* AI Advisor Modal */}
-        <AiEquipmentAdvisor open={advisorOpen} onOpenChange={setAdvisorOpen} />
+        <Suspense fallback={null}>
+          <AiEquipmentAdvisor open={advisorOpen} onOpenChange={setAdvisorOpen} />
+        </Suspense>
 
         {/* Quick View Modal */}
         {quickViewProduct && (
