@@ -126,6 +126,7 @@ export default defineConfig(({ mode }) => {
       assetsInlineLimit: 2048,
       reportCompressedSize: false,
       cssCodeSplit: true,
+      // EMERGENCY FIX: Add build timestamp to force cache invalidation
       rollupOptions: {
         maxParallelFileOps: 5,
         treeshake: {
@@ -136,7 +137,7 @@ export default defineConfig(({ mode }) => {
         output: {
           entryFileNames: 'assets/[name]-[hash].js',
           chunkFileNames: 'assets/[name]-[hash].js',
-          // EMERGENCY FIX: Simplified chunking to prevent infinite loops
+          // EMERGENCY FIX: Ultra-simplified chunking to ensure compatibility
           manualChunks: (id) => {
             // Force all lucide-react icons into a single chunk to prevent infinite chunking
             if (id.includes('lucide-react')) {
@@ -148,7 +149,7 @@ export default defineConfig(({ mode }) => {
               return 'app';
             }
             
-            // Simple vendor chunking - no complex splitting
+            // Ultra-simple vendor chunking - only essential splits
             if (id.includes('node_modules')) {
               if (id.includes('react') || id.includes('react-dom')) {
                 return 'vendor-react';
@@ -156,17 +157,8 @@ export default defineConfig(({ mode }) => {
               if (id.includes('three') || id.includes('@react-three')) {
                 return 'vendor-threejs';
               }
-              if (id.includes('@tanstack') || id.includes('react-router')) {
-                return 'vendor-routing';
-              }
-              if (id.includes('framer-motion') || id.includes('@radix-ui')) {
-                return 'vendor-ui';
-              }
-              if (id.includes('@supabase')) {
-                return 'vendor-supabase';
-              }
-              // All other vendors in one chunk
-              return 'vendor-misc';
+              // Everything else in one big vendor chunk
+              return 'vendor';
             }
           },
           assetFileNames: (assetInfo) => {
@@ -207,6 +199,7 @@ export default defineConfig(({ mode }) => {
     },
 
     optimizeDeps: {
+      force: true, // EMERGENCY FIX: Force re-optimization
       include: [
         "react",
         "react-dom",
