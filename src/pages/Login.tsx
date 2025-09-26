@@ -41,7 +41,8 @@ const Login = () => {
     setError(null);
     try {
       await login(email, password);
-      // Redirection is now handled by the useEffect hook.
+      // On some mobile browsers auth state propagation can be delayed; navigate optimistically.
+      navigate('/', { replace: true });
     } catch (error: any) {
       setError(error.message || 'Login failed. Please check your credentials.');
       toast.error(error.message || 'Login failed.');
