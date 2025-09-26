@@ -182,7 +182,7 @@
     "vite-bundle-visualizer": "^1.2.1",
     "vite-imagetools": "^7.1.0",
     "vite-plugin-gltf": "^4.0.0",
-    "vite-plugin-pwa": "^1.0.1",
+    "vite-plugin-pwa": "^0.20.5",
     "vitest": "^3.2.4"
   }
 }

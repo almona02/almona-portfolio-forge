@@ -40,72 +40,46 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react(),
-      VitePWA({
-        registerType: "autoUpdate",
-        injectRegister: "auto",
-        workbox: {
-          globPatterns: ["**/*.{js,css,html,ico,png,svg,json,woff,woff2}"],
-          // Exclude the large stats file from the service worker
-          globIgnores: ['**/stats.json'],
-          cleanupOutdatedCaches: true,
-          runtimeCaching: [
-            {
-              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-              handler: "CacheFirst",
-              options: {
-                cacheName: "google-fonts-cache",
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-              },
-            },
-            {
-              urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-              handler: "CacheFirst",
-              options: {
-                cacheName: "gstatic-fonts-cache",
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
-                },
-                cacheableResponse: {
-                  statuses: [0, 200],
-                },
-              },
-            },
-          ],
-        },
-        includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg", "pwa-192x192.png", "pwa-512x512.png"],
-        manifest: {
-          name: "Almona Portfolio Forge - Industrial Machinery Solutions",
-          short_name: "Almona",
-          description: "Leading provider of industrial machinery, fabrication services, and technical solutions in Egypt and the Middle East.",
-          theme_color: "#0d0f12",
-          background_color: "#0d0f12",
-          display: "standalone",
-          orientation: "portrait",
-          start_url: "/",
-          scope: "/",
-          icons: [
-            {
-              src: "pwa-192x192.png",
-              sizes: "192x192",
-              type: "image/png",
-              purpose: "any maskable"
-            },
-            {
-              src: "pwa-512x512.png",
-              sizes: "512x512",
-              type: "image/png",
-              purpose: "any maskable"
-            },
-          ],
-        },
-      }),
+      // Temporarily disabled PWA plugin due to globbing error
+      // VitePWA({
+      //   registerType: "autoUpdate",
+      //   injectRegister: "auto",
+      //   workbox: {
+      //     globPatterns: ["**/*.{js,css,html,ico,png,svg,json,woff,woff2}"],
+      //     globIgnores: ['**/stats.json'],
+      //     cleanupOutdatedCaches: true,
+      //     skipWaiting: true,
+      //     clientsClaim: true,
+      //     navigateFallback: null,
+      //     navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
+      //   },
+      //   includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg", "pwa-192x192.png", "pwa-512x512.png"],
+      //   manifest: {
+      //     name: "Almona Portfolio Forge - Industrial Machinery Solutions",
+      //     short_name: "Almona",
+      //     description: "Leading provider of industrial machinery, fabrication services, and technical solutions in Egypt and the Middle East.",
+      //     theme_color: "#0d0f12",
+      //     background_color: "#0d0f12",
+      //     display: "standalone",
+      //     orientation: "portrait",
+      //     start_url: "/",
+      //     scope: "/",
+      //     icons: [
+      //       {
+      //         src: "pwa-192x192.png",
+      //         sizes: "192x192",
+      //         type: "image/png",
+      //         purpose: "any maskable"
+      //       },
+      //       {
+      //         src: "pwa-512x512.png",
+      //         sizes: "512x512",
+      //         type: "image/png",
+      //         purpose: "any maskable"
+      //       },
+      //     ],
+      //   },
+      // }),
       ...(isProduction
         ? [
             visualizer({
