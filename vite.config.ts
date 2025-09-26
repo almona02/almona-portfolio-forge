@@ -114,6 +114,7 @@ export default defineConfig(({ mode }) => {
         "url": path.resolve(__dirname, "./src/lib/polyfills/url.ts"),
         "zlib": path.resolve(__dirname, "./src/lib/polyfills/zlib.ts"),
       },
+      dedupe: ["react", "react-dom"]
     },
 
     css: {
@@ -136,7 +137,17 @@ export default defineConfig(({ mode }) => {
       outDir: 'dist',
       assetsDir: 'assets',
       target: "esnext",
-      minify: isProduction ? "esbuild" : false, // Use esbuild instead of terser for faster builds
+      minify: isProduction ? "terser" : false,
+      terserOptions: isProduction ? {
+        module: true,
+        compress: {
+          passes: 2,
+          hoist_vars: false,
+          hoist_funs: false,
+        },
+        mangle: true,
+        safari10: true
+      } : undefined,
       sourcemap: false, // Disable sourcemaps to speed up build
       chunkSizeWarningLimit: 1500, // Set to 1500 kB to allow for reasonable chunk sizes
       assetsInlineLimit: 4096, // Increased to inline more assets
@@ -160,19 +171,14 @@ export default defineConfig(({ mode }) => {
               // Remove markdown editor CSS imports and emitted files from @uiw/react-md-editor only
               Object.keys(bundle).forEach(fileName => {
                 const asset = bundle[fileName];
-                if (asset.type === 'chunk' && asset.code) {
-                  asset.code = asset.code.replace(
+                if ((asset as any).type === 'chunk' && (asset as any).code) {
+                  (asset as any).code = (asset as any).code.replace(
                     /import\s+['"][^'"\n]*@uiw\/react-md-editor[^'"\n]*\.css['"];?\s*/g,
                     ''
                   );
                 }
-                // Only strip assets clearly tied to the UIW markdown editor
-                if (
-                  fileName.includes('@uiw') ||
-                  fileName.includes('md-editor') ||
-                  fileName.includes('vendor-markdown')
-                ) {
-                  delete bundle[fileName];
+                if (fileName.includes('vendor-markdown')) {
+                  delete (bundle as any)[fileName];
                 }
               });
             }
@@ -193,124 +199,9 @@ export default defineConfig(({ mode }) => {
           },
         ],
         output: {
-          // Simplified chunking strategy to prevent build hanging
           entryFileNames: `assets/[name]-[hash].js`,
           chunkFileNames: `assets/[name]-[hash].js`,
-          // Optimized chunking strategy to reduce bundle sizes
-          manualChunks: (id) => {
-            // Keep main app code together
-            if (id.includes('/src/') && !id.includes('node_modules')) {
-              return 'app';
-            }
-            
-            // Granular vendor chunking to prevent large bundles
-            if (id.includes('node_modules')) {
-              // Core React ecosystem (exclude markdown editor)
-              if ((id.includes('react') || id.includes('react-dom') || id.includes('react-router')) && !id.includes('@uiw/react-md-editor')) {
-                return 'vendor-react';
-              }
-              
-              // Three.js ecosystem (3D graphics)
-              if (id.includes('three') || id.includes('@react-three')) {
-                return 'vendor-threejs';
-              }
-              
-              // Supabase
-              if (id.includes('@supabase')) {
-                return 'vendor-supabase';
-              }
-              
-              // UI Components (Radix UI, etc.)
-              if (id.includes('@radix-ui') || id.includes('lucide-react') || id.includes('framer-motion')) {
-                return 'vendor-ui';
-              }
-              
-              // Chart and visualization libraries
-              if (id.includes('chart.js') || id.includes('recharts') || id.includes('d3')) {
-                return 'vendor-charts';
-              }
-              
-              // Form and validation libraries
-              if (id.includes('react-hook-form') || id.includes('zod') || id.includes('@hookform')) {
-                return 'vendor-forms';
-              }
-              
-              // Utility libraries
-              if (id.includes('lodash') || id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
-                return 'vendor-utils';
-              }
-              
-              // Excel processing (separate from other files)
-              if (id.includes('exceljs')) {
-                return 'vendor-excel';
-              }
-              
-              // File processing (separate from Excel)
-              if (id.includes('file-saver') || id.includes('pdf-lib')) {
-                return 'vendor-files';
-              }
-              
-              // AI and ML libraries
-              if (id.includes('@google/generative-ai') || id.includes('@huggingface') || id.includes('@tensorflow')) {
-                return 'vendor-ai';
-              }
-              
-              // Network and state management
-              if (id.includes('axios') || id.includes('zustand')) {
-                return 'vendor-network';
-              }
-              
-              // Avoid forcing a dedicated text bundle; let Rollup decide
-              if (id.includes('@uiw/react-md-editor')) {
-                return 'vendor-uiw';
-              }
-              
-              // Animation and motion libraries
-              if (id.includes('framer-motion') || id.includes('lottie')) {
-                return 'vendor-animation';
-              }
-              
-              // Large libraries that need separate chunks
-              if (id.includes('jwt-decode') || id.includes('web-vitals') || id.includes('sonner')) {
-                return 'vendor-web';
-              }
-              
-              // Internationalization
-              if (id.includes('i18next') || id.includes('react-i18next')) {
-                return 'vendor-i18n';
-              }
-              
-              // Large libraries that might be in the remaining vendor chunk
-              if (id.includes('@tanstack') || id.includes('react-query')) {
-                return 'vendor-query';
-              }
-              
-              // Everything else goes into vendor chunk
-              return 'vendor';
-            }
-          },
-          assetFileNames: (assetInfo) => {
-            const info = assetInfo.name?.split(".") || [];
-            const ext = info[info.length - 1];
-
-            if (
-              /\\.(png|jpe?g|svg|gif|tiff|bmp|ico)$/i.test(assetInfo.name || "")
-            ) {
-              return `assets/images/[name]-[hash].${ext}`;
-            }
-
-            if (/\\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name || ""))
-            {
-              return `assets/fonts/[name]-[hash].${ext}`;
-            }
-
-            if (/\\.css$/i.test(assetInfo.name || ""))
-            {
-              return `assets/[name]-[hash].${ext}`;
-            }
-
-            return `assets/[name]-[hash].${ext}`;
-          },
+          // Let Rollup decide optimal chunking to avoid brittle execution order issues
         },
       },
     },
