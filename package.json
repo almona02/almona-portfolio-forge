@@ -34,6 +34,7 @@
     "test:full": "npm run test:api && npm run test:react && npm run test:security && npm run test:performance",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
+    "build:ci": "vite build --mode production",
     "analyze": "vite build --mode analyze",
     "performance": "node scripts/performance-optimize.js",
     "performance:audit": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",

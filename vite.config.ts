@@ -203,11 +203,7 @@ export default defineConfig(({ mode }) => {
         "react-router-dom",
         "exceljs"
       ],
-      exclude: [
-        "@google/generative-ai",
-        "@huggingface/inference",
-        "@tensorflow/tfjs"
-      ],
+      exclude: ["@google/generative-ai","@huggingface/inference","@tensorflow/tfjs","three"],
       esbuildOptions: {
         define: {
           global: "globalThis",
@@ -229,6 +225,8 @@ export default defineConfig(({ mode }) => {
           return { relative: true };
         }
       },
+      // Hint to split heavy libs dynamically when possible
+      // Consumers should import('three') / import('exceljs') lazily where feasible.
     },
   };
 });
