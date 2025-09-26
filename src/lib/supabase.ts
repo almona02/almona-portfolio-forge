@@ -35,6 +35,8 @@ const supabaseOptions = {
   global: {
     headers: {
       'X-Client-Info': 'almona-industrial@2.0.0',
+      // Ensure PostgREST sees an API key header for browser requests
+      apikey: (supabaseKey || fallbackKey) as string,
     },
   },
   db: {
