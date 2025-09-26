@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
+import Navbar from '../Navbar';
 
 interface TurkishLayoutProps {
   children: React.ReactNode;
@@ -21,8 +22,11 @@ export const TurkishLayout: React.FC<TurkishLayoutProps> = ({
 }) => {
   return (
     <div className="min-h-screen bg-almona-dark text-white">
+      {/* Main Navigation */}
+      <Navbar />
+      
       {/* Turkish-specific header banner */}
-      <div className="bg-gradient-to-r from-red-600 to-red-800 text-white py-2 px-4 text-center text-sm">
+      <div className="bg-gradient-to-r from-red-600 to-red-800 text-white py-2 px-4 text-center text-sm mt-16">
         <div className="flex items-center justify-center space-x-4">
           <span>🇹🇷</span>
           <span>Türkiye pazarı için optimize edilmiştir</span>
