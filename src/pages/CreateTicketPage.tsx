@@ -32,8 +32,7 @@ const CreateTicketPage = () => {
 
   if (!user) {
     return (
-      <div className="flex flex-col min-h-screen bg-almona-dark text-white">
-        <Navbar />
+      <>
         <main className="flex-grow pt-24 pb-12">
           <div className="container mx-auto px-4">
             <Card className="max-w-2xl mx-auto bg-almona-dark/60 border-almona-light/20">
@@ -48,14 +47,12 @@ const CreateTicketPage = () => {
             </Card>
           </div>
         </main>
-        <Footer />
-      </div>
-    );
+    </>
+  );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-almona-dark text-white">
-      <Navbar />
+    <>
       <main className="flex-grow pt-24 pb-12">
         <div className="container mx-auto px-4">
           <div className="mb-6">
@@ -76,8 +73,7 @@ const CreateTicketPage = () => {
           </motion.div>
         </div>
       </main>
-      <Footer />
-    </div>
+    </>
   );
 };
 

@@ -95,8 +95,6 @@ const SupportNewTicketMenu = () => {
           </motion.div>
         </div>
       </main>
-      <Footer />
-    </div>
   );
 };
 

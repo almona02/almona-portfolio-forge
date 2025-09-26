@@ -18,8 +18,6 @@ import { inventory } from "@/data/inventory";
 import { useQuote } from "@/context/QuoteContext";
 import { useToast } from "@/hooks/useToast";
 // import { useAuth } from "@/context/AuthContext";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 // import ErrorBoundary from "@/components/ErrorBoundary";
 import { IndustrialProductCard } from "@/components/shop/IndustrialProductCard";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
@@ -577,10 +575,7 @@ const Shop = () => {
   const productTabs: ProductTab[] = ['industrial-machines', 'industrial-parts', 'unique-prototypes', 'unique-custom-fabrications'];
 
   return (
-    <div className="flex flex-col min-h-screen bg-almona-dark text-white">
-      <Navbar />
-      
-      <main className="flex-grow pt-24">
+    <main className="flex-grow pt-20">
         {/* Hero Section */}
         <motion.section 
           initial={{ opacity: 0, y: 20 }}
@@ -888,9 +883,6 @@ const Shop = () => {
           />
         )}
       </main>
-
-      <Footer />
-    </div>
   );
 };
 

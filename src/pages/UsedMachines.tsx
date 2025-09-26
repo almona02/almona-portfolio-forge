@@ -54,9 +54,7 @@ const UsedMachines = () => {
   });
 
   return (
-    <div className="flex flex-col min-h-screen bg-almona-dark text-white">
-      <Navbar />
-      <main className="flex-grow pt-24">
+    <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-12 text-center bg-gradient-to-r from-orange-900 to-orange-700 py-12 px-4 rounded-xl">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -267,8 +265,6 @@ const UsedMachines = () => {
           </Tabs>
         </div>
       </main>
-      <Footer />
-    </div>
   );
 };
 

@@ -23,9 +23,7 @@ const QuotePage = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-almona-dark text-white">
-      <Navbar />
-      <main className="flex-grow pt-24">
+    <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 py-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gradient-orange">Your Quote Request</h1>
 
@@ -109,8 +107,6 @@ const QuotePage = () => {
           )}
         </div>
       </main>
-      <Footer />
-    </div>
   );
 };
 

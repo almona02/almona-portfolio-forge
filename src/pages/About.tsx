@@ -8,8 +8,6 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { Factory, Globe, Award, Target } from 'lucide-react';
 
 const About = () => {
