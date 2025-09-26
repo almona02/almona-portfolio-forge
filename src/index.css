@@ -28,6 +28,8 @@ body {
   background: var(--ad);
   color: var(--fg);
   -webkit-font-smoothing: antialiased;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
   font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
 }
 
@@ -35,20 +37,7 @@ html {
   scroll-behavior: smooth;
 }
 
-.scrollbar-none {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
-}
-
-.glass-effect {
-  backdrop-filter: blur(12px);
-  background: #0003;
-  border: 1px solid #fff1;
-}
+/* Removed unused .glass-effect */
 
 .text-gradient-orange {
   background: linear-gradient(45deg, #ff5f1f, #ff8c42);
@@ -61,13 +50,4 @@ html {
   filter: url(#neonGlow);
 }
 
-.animate-on-scroll {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: all .7s ease;
-}
-
-.animate-on-scroll.animate-active {
-  opacity: 1;
-  transform: translateY(0);
-}
+/* Removed unused .animate-on-scroll */

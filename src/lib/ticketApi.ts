@@ -132,8 +132,8 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     // Silent fallback to legacy without noisy logs when disabled/missing backend
   }
   // Minimal, schema-safe payload to avoid 400 due to column diffs
+  // Omit user_id so DB default/auth trigger can set it to auth.uid()
   const insertPayload = {
-    user_id: userId,
     title: ticketData.title?.toString().slice(0, 200) || 'Support Ticket',
     // Provide safe defaults for likely NOT NULL columns
     type: (ticketData.type as any) || 'general',
@@ -143,7 +143,7 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
   }
   // Casting supabase to any to bypass strict table inference issues until generated types include custom columns
   // Select only stable columns known to exist in production
-  const selectColumns = 'id,user_id,title,created_at,updated_at'
+  const selectColumns = 'id'
   let { data, error } = await (supabase as any)
     .from('service_tickets')
     .insert([insertPayload])
@@ -154,26 +154,15 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     console.error('[tickets.createTicket] insert error (after retry)', { message: error.message, details: (error as any).details, hint: (error as any).hint })
     throw new Error(error.message)
   }
-  // Best-effort patch to add optional fields after creation; ignore errors
+  // Fetch full row (including generated ticket_number/digital_twin_code) after insert
   try {
-    const patch: Record<string, unknown> = {}
-    if (ticketData.description != null) patch.description = ticketData.description
-    if (ticketData.type != null) patch.type = ticketData.type
-    if (ticketData.priority != null) patch.priority = ticketData.priority
-    if (ticketData.contact_phone != null) patch.contact_phone = ticketData.contact_phone
-    if (ticketData.contact_email != null) patch.contact_email = ticketData.contact_email
-    if (ticketData.preferred_contact_method != null) patch.preferred_contact_method = ticketData.preferred_contact_method
-    if (ticketData.site_location != null) patch.site_location = ticketData.site_location
-    if (ticketData.machine_serial_number != null) patch.machine_serial_number = ticketData.machine_serial_number
-    if (Object.keys(patch).length) {
-      await (supabase as any)
-        .from('service_tickets')
-        .update(patch)
-        .eq('id', (data as any).id)
-    }
-  } catch {
-    // ignore non-fatal patch errors
-  }
+    const { data: full } = await (supabase as any)
+      .from('service_tickets')
+      .select('*')
+      .eq('id', (data as any).id)
+      .single()
+    if (full) data = full
+  } catch { /* ignore */ }
   return mapTicket(data)
 }
 
