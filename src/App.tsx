@@ -7,6 +7,7 @@ import { Suspense, lazy, useEffect } from "react";
 import SEO from "./components/SEO";
 import UsedMachineDetailPage from "./pages/UsedMachineDetail.tsx";
 import { PageLoadingWrapper } from "./components/ui/PageLoadingWrapper";
+import { AppPreloader } from "./components/ui/AppPreloader";
 // (Removed complex retry/prefetch helpers to simplify lazy loading.)
 
 // Lazy load all page components with optimized chunking
@@ -126,23 +127,24 @@ const GlobalDynamicImportGuard = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-      <TooltipProvider>
-        <SEO />
-        <Toaster />
-        <Sonner />
-        <AuthProvider>
-          <LoadingProvider>
-            <QuoteProvider>
-              <BrowserRouter
-                future={{
-                  v7_startTransition: true,
-                  v7_relativeSplatPath: true,
-                }}
-              >
-                <GlobalDynamicImportGuard />
-                <Analytics />
+  <AppPreloader>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+        <TooltipProvider>
+          <SEO />
+          <Toaster />
+          <Sonner />
+          <AuthProvider>
+            <LoadingProvider>
+              <QuoteProvider>
+                <BrowserRouter
+                  future={{
+                    v7_startTransition: true,
+                    v7_relativeSplatPath: true,
+                  }}
+                >
+                  <GlobalDynamicImportGuard />
+                  <Analytics />
                 {/* Centralized route configuration for maintainability */}
                 {(() => {
                   const routes = [
@@ -258,6 +260,7 @@ const App = () => (
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
+  </AppPreloader>
 );
 
 export default App;
