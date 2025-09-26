@@ -123,11 +123,12 @@ export default defineConfig(({ mode }) => {
           additionalData: `@import \"@/styles/variables.scss\";`,
         },
       },
-      // Optimize CSS processing
-      postcss: {
-        plugins: [
-          // PostCSS plugins will be configured in postcss.config.cjs
-        ]
+      // Use external PostCSS config
+      postcss: './postcss.config.cjs',
+      // Enable CSS code splitting with careful configuration
+      cssCodeSplit: true,
+      modules: {
+        generateScopedName: isProduction ? '[hash:base64:5]' : '[name]__[local]___[hash:base64:5]'
       }
     },
 
@@ -137,10 +138,10 @@ export default defineConfig(({ mode }) => {
       target: "esnext",
       minify: isProduction ? "esbuild" : false, // Use esbuild instead of terser for faster builds
       sourcemap: false, // Disable sourcemaps to speed up build
-      chunkSizeWarningLimit: 2000, // Increased to prevent warnings
+      chunkSizeWarningLimit: 1500, // Set to 1500 kB to allow for reasonable chunk sizes
       assetsInlineLimit: 4096, // Increased to inline more assets
       reportCompressedSize: false,
-      cssCodeSplit: false, // Disable CSS code splitting to simplify build
+      cssCodeSplit: true, // Enable CSS code splitting to reduce main bundle size
       // PERFORMANCE OPTIMIZATIONS
       rollupOptions: {
         maxParallelFileOps: 5,
@@ -151,25 +152,74 @@ export default defineConfig(({ mode }) => {
         },
         input: "index.html",
         external: [],
+        // Exclude markdown editor CSS from main bundle
+        plugins: [
+          {
+            name: 'exclude-md-editor-css',
+            generateBundle(options, bundle) {
+              // Remove markdown editor CSS from all chunks
+              Object.keys(bundle).forEach(fileName => {
+                const asset = bundle[fileName];
+                if (asset.type === 'chunk' && asset.code) {
+                  // Remove markdown editor CSS imports from chunk code
+                  asset.code = asset.code.replace(
+                    /import\s+['"][^'"]*@uiw\/react-md-editor[^'"]*\.css['"];?\s*/g,
+                    ''
+                  );
+                }
+                // Delete both JS and CSS files related to markdown (including vendor-markdown)
+                if (fileName.includes('md-editor') || 
+                    fileName.includes('markdown') || 
+                    fileName.includes('@uiw') ||
+                    fileName.includes('vendor-markdown')) {
+                  delete bundle[fileName];
+                }
+              });
+            }
+          },
+          {
+            name: 'remove-md-editor-css',
+            generateBundle(options, bundle) {
+              // Remove CSS files that contain markdown editor styles
+              Object.keys(bundle).forEach(fileName => {
+                const asset = bundle[fileName];
+                if (asset.type === 'asset' && fileName.endsWith('.css') && asset.source) {
+                  const cssContent = asset.source.toString();
+                  if (cssContent.includes('.wmde-markdown') || cssContent.includes('@uiw/react-md-editor')) {
+                    // Remove markdown editor CSS from the file
+                    const cleanedCSS = cssContent.replace(
+                      /\.wmde-markdown[^{]*\{[^}]*\}/g,
+                      ''
+                    ).replace(
+                      /@media[^{]*\{[^}]*\.wmde-markdown[^{]*\{[^}]*\}[^}]*\}/g,
+                      ''
+                    );
+                    asset.source = cleanedCSS;
+                  }
+                }
+              });
+            }
+          },
+        ],
         output: {
           // Simplified chunking strategy to prevent build hanging
           entryFileNames: `assets/[name]-[hash].js`,
           chunkFileNames: `assets/[name]-[hash].js`,
-          // Simplified manual chunks to prevent circular dependencies
+          // Optimized chunking strategy to reduce bundle sizes
           manualChunks: (id) => {
             // Keep main app code together
             if (id.includes('/src/') && !id.includes('node_modules')) {
               return 'app';
             }
             
-            // Simple vendor chunking to prevent build issues
+            // Granular vendor chunking to prevent large bundles
             if (id.includes('node_modules')) {
-              // Core React ecosystem
-              if (id.includes('react') || id.includes('react-dom')) {
+              // Core React ecosystem (exclude markdown editor)
+              if ((id.includes('react') || id.includes('react-dom') || id.includes('react-router')) && !id.includes('@uiw/react-md-editor')) {
                 return 'vendor-react';
               }
               
-              // Three.js ecosystem
+              // Three.js ecosystem (3D graphics)
               if (id.includes('three') || id.includes('@react-three')) {
                 return 'vendor-threejs';
               }
@@ -177,6 +227,76 @@ export default defineConfig(({ mode }) => {
               // Supabase
               if (id.includes('@supabase')) {
                 return 'vendor-supabase';
+              }
+              
+              // UI Components (Radix UI, etc.)
+              if (id.includes('@radix-ui') || id.includes('lucide-react') || id.includes('framer-motion')) {
+                return 'vendor-ui';
+              }
+              
+              // Chart and visualization libraries
+              if (id.includes('chart.js') || id.includes('recharts') || id.includes('d3')) {
+                return 'vendor-charts';
+              }
+              
+              // Form and validation libraries
+              if (id.includes('react-hook-form') || id.includes('zod') || id.includes('@hookform')) {
+                return 'vendor-forms';
+              }
+              
+              // Utility libraries
+              if (id.includes('lodash') || id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
+                return 'vendor-utils';
+              }
+              
+              // Excel processing (separate from other files)
+              if (id.includes('exceljs')) {
+                return 'vendor-excel';
+              }
+              
+              // File processing (separate from Excel)
+              if (id.includes('file-saver') || id.includes('pdf-lib')) {
+                return 'vendor-files';
+              }
+              
+              // AI and ML libraries
+              if (id.includes('@google/generative-ai') || id.includes('@huggingface') || id.includes('@tensorflow')) {
+                return 'vendor-ai';
+              }
+              
+              // Network and state management
+              if (id.includes('axios') || id.includes('zustand')) {
+                return 'vendor-network';
+              }
+              
+              // Text processing (exclude markdown editor)
+              if ((id.includes('markdown') || id.includes('dompurify')) && !id.includes('@uiw/react-md-editor')) {
+                return 'vendor-text';
+              }
+              
+              // Explicitly exclude markdown editor from chunking
+              if (id.includes('@uiw/react-md-editor')) {
+                return undefined; // Don't chunk this
+              }
+              
+              // Animation and motion libraries
+              if (id.includes('framer-motion') || id.includes('lottie')) {
+                return 'vendor-animation';
+              }
+              
+              // Large libraries that need separate chunks
+              if (id.includes('jwt-decode') || id.includes('web-vitals') || id.includes('sonner')) {
+                return 'vendor-web';
+              }
+              
+              // Internationalization
+              if (id.includes('i18next') || id.includes('react-i18next')) {
+                return 'vendor-i18n';
+              }
+              
+              // Large libraries that might be in the remaining vendor chunk
+              if (id.includes('@tanstack') || id.includes('react-query')) {
+                return 'vendor-query';
               }
               
               // Everything else goes into vendor chunk
@@ -214,7 +334,13 @@ export default defineConfig(({ mode }) => {
         "react",
         "react-dom",
         "react-dom/client",
-        "react-router-dom"
+        "react-router-dom",
+        "exceljs"
+      ],
+      exclude: [
+        "@google/generative-ai",
+        "@huggingface/inference",
+        "@tensorflow/tfjs"
       ],
       esbuildOptions: {
         define: {

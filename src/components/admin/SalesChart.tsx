@@ -1,18 +1,33 @@
-import React from 'react'
+import React, { lazy, Suspense } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+// Lazy load chart components to reduce bundle size
+const LazyAreaChart = lazy(() => import('recharts').then(module => ({
+  default: module.AreaChart
+})));
+const LazyArea = lazy(() => import('recharts').then(module => ({
+  default: module.Area
+})));
+const LazyCartesianGrid = lazy(() => import('recharts').then(module => ({
+  default: module.CartesianGrid
+})));
+const LazyXAxis = lazy(() => import('recharts').then(module => ({
+  default: module.XAxis
+})));
+const LazyYAxis = lazy(() => import('recharts').then(module => ({
+  default: module.YAxis
+})));
+const LazyChartContainer = lazy(() => import('@/shared/ui/ui/chart').then(module => ({
+  default: module.ChartContainer
+})));
+const LazyChartTooltip = lazy(() => import('@/shared/ui/ui/chart').then(module => ({
+  default: module.ChartTooltip
+})));
+const LazyChartTooltipContent = lazy(() => import('@/shared/ui/ui/chart').then(module => ({
+  default: module.ChartTooltipContent
+})));
+
 import { supabase } from '@/lib/supabase'
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-} from 'recharts'
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/shared/ui/ui/chart'
 
 type OrderRow = { total_amount: number | null; created_at: string; status: string }
 
@@ -91,24 +106,26 @@ export const SalesChart: React.FC = () => {
           <div className="h-56 flex items-center justify-center text-sm text-red-600">{error}</div>
         ) : (
           <div className="h-56">
-            <ChartContainer
-              config={{ revenue: { label: 'Revenue (EGP)', color: 'var(--almona-orange, #FF5F1F)' } }}
-              className="h-56"
-            >
-              <AreaChart data={points} margin={{ left: 8, right: 8, top: 8, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#FF5F1F" stopOpacity={0.3} />
-                    <stop offset="100%" stopColor="#FF5F1F" stopOpacity={0.05} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
-                <XAxis dataKey="label" tickMargin={6} minTickGap={16} tickLine={false} axisLine={false} />
-                <YAxis tickFormatter={(v) => fmtEGP(Number(v))} width={72} axisLine={false} tickLine={false} />
-                <ChartTooltip cursor={{ stroke: 'rgba(0,0,0,0.1)' }} content={<ChartTooltipContent />} />
-                <Area type="monotone" dataKey="revenue" stroke="#FF5F1F" strokeWidth={2} fill="url(#revFill)" />
-              </AreaChart>
-            </ChartContainer>
+            <Suspense fallback={<div className="h-56 flex items-center justify-center text-sm text-muted-foreground">Loading chart...</div>}>
+              <LazyChartContainer
+                config={{ revenue: { label: 'Revenue (EGP)', color: 'var(--almona-orange, #FF5F1F)' } }}
+                className="h-56"
+              >
+                <LazyAreaChart data={points} margin={{ left: 8, right: 8, top: 8, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#FF5F1F" stopOpacity={0.3} />
+                      <stop offset="100%" stopColor="#FF5F1F" stopOpacity={0.05} />
+                    </linearGradient>
+                  </defs>
+                  <LazyCartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                  <LazyXAxis dataKey="label" tickMargin={6} minTickGap={16} tickLine={false} axisLine={false} />
+                  <LazyYAxis tickFormatter={(v) => fmtEGP(Number(v))} width={72} axisLine={false} tickLine={false} />
+                  <LazyChartTooltip cursor={{ stroke: 'rgba(0,0,0,0.1)' }} content={<LazyChartTooltipContent />} />
+                  <LazyArea type="monotone" dataKey="revenue" stroke="#FF5F1F" strokeWidth={2} fill="url(#revFill)" />
+                </LazyAreaChart>
+              </LazyChartContainer>
+            </Suspense>
           </div>
         )}
       </CardContent>

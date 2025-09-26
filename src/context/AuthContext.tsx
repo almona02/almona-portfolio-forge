@@ -170,6 +170,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     const getInitialSession = async () => {
       try {
+        // Check if Supabase is properly configured
+        if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_KEY) {
+          console.warn('Supabase not configured, skipping authentication');
+          if (isMounted) {
+            setUser(null);
+            setSupabaseUser(null);
+            setLoading(false);
+          }
+          return;
+        }
+
         // Add timeout to prevent hanging on network issues
         const sessionPromise = supabase.auth.getSession();
         const timeoutPromise = new Promise<never>((_, reject) =>
@@ -217,9 +228,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen for auth changes with debouncing to prevent excessive updates
     let authChangeTimeout: NodeJS.Timeout;
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    
+    // Only set up auth listener if Supabase is properly configured
+    let subscription: any = null;
+    if (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_KEY) {
+      const {
+        data: { subscription: authSubscription },
+      } = supabase.auth.onAuthStateChange(async (event, session) => {
+      subscription = authSubscription;
       // Clear any pending auth change
       if (authChangeTimeout) {
         clearTimeout(authChangeTimeout);
@@ -281,6 +297,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(false);
       }, 100); // 100ms debounce
     });
+    }
 
     return () => {
       if (authChangeTimeout) {
@@ -288,7 +305,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       // Clear ongoing fetches on unmount
       ongoingFetches.current.clear();
-      subscription.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
   }, [fetchUserProfile]);
 
