@@ -35,8 +35,22 @@ export const RegionAwareLayout: React.FC<RegionAwareLayoutProps> = ({
 }) => {
   const { regionState, setRegion } = useRegionDetection();
   const { config, isLoading, error } = useRegionalConfig();
+  const [loadingTimeout, setLoadingTimeout] = React.useState(false);
 
-  if (isLoading) {
+  // Add a timeout to prevent infinite loading
+  React.useEffect(() => {
+    if (isLoading) {
+      const timeout = setTimeout(() => {
+        setLoadingTimeout(true);
+      }, 3000); // 3 second timeout
+
+      return () => clearTimeout(timeout);
+    } else {
+      setLoadingTimeout(false);
+    }
+  }, [isLoading]);
+
+  if (isLoading && !loadingTimeout) {
     return <PageLoadingWrapper />;
   }
 
