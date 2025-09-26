@@ -3,11 +3,10 @@
  * Standard layout for international/default markets with enhanced region selection
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
-import { RegionSelectionModal } from '@/components/ui/RegionSelectionModal';
 import { Button } from '@/components/ui/button';
-import { Globe, Settings, Sparkles, ArrowRight } from 'lucide-react';
+import { Globe, Settings, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Navbar from '../Navbar';
 
@@ -24,47 +23,14 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
   onRegionChange,
   enableRegionSwitching
 }) => {
-  const [showRegionModal, setShowRegionModal] = useState(false);
-  const [isFirstVisit, setIsFirstVisit] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
-
-  useEffect(() => {
-    // Check if this is the user's first visit
-    const hasVisited = localStorage.getItem('almona_has_visited');
-    if (!hasVisited) {
-      setIsFirstVisit(true);
-      setShowWelcome(true);
-      setTimeout(() => {
-        setShowWelcome(false);
-        setShowRegionModal(true);
-      }, 2000);
-      localStorage.setItem('almona_has_visited', 'true');
-    }
-  }, []);
-
   const handleRegionChange = (region: RegionCode) => {
     onRegionChange(region);
-    setShowRegionModal(false);
   };
 
   return (
     <div className="min-h-screen bg-almona-dark text-white">
       {/* Main Navigation */}
       <Navbar />
-      
-      {/* Welcome Animation */}
-      {showWelcome && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-blue-900/90 to-purple-900/90 backdrop-blur-sm">
-          <div className="text-center animate-pulse">
-            <div className="relative mb-6">
-              <Globe className="w-16 h-16 text-blue-400 mx-auto animate-spin" style={{ animationDuration: '2s' }} />
-              <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400 animate-bounce" />
-            </div>
-            <h2 className="text-3xl font-bold text-white mb-2">Welcome to Almona Forge</h2>
-            <p className="text-gray-300">Setting up your personalized experience...</p>
-          </div>
-        </div>
-      )}
 
       {/* Enhanced header banner */}
       <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 text-white py-3 px-4 relative overflow-hidden mt-16">
@@ -203,13 +169,6 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
         </div>
       </footer>
 
-      {/* Region Selection Modal */}
-      <RegionSelectionModal
-        isOpen={showRegionModal}
-        onRegionSelect={handleRegionChange}
-        onClose={() => setShowRegionModal(false)}
-        currentRegion="DEFAULT"
-      />
     </div>
   );
 };
