@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { EmergencyServiceDialog } from "@/components/services/EmergencyServiceDialog";
 import { FormSkeleton } from "@/components/ui/FormSkeleton";
@@ -95,9 +93,8 @@ const Services = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-almona-dark text-white">
-      <Navbar />
-      <main className="flex-grow pt-24">
+    <>
+      <main className="flex-grow pt-20">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -287,12 +284,11 @@ const Services = () => {
           setTicketWizardOpen(false);
         }}
       />
-      <Footer />
       <OperatorTrainingIncentiveDialog
         open={operatorTrainingOpen}
         onOpenChange={setOperatorTrainingOpen}
       />
-    </div>
+    </>
   );
 };
 
