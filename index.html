@@ -83,7 +83,10 @@
       }
     </style>
     
-    <!-- Critical resource preloading (removed unused logo preload to avoid warnings) -->
+    <!-- Critical resource preloading -->
+    <link rel="preload" href="/assets/index-SFVGTjHE.css" as="style" crossorigin>
+    <link rel="modulepreload" href="/assets/index-DBRl-uxu.js" crossorigin>
+    <!-- Preload system font to avoid FOUT for Inter-like stack (optional) -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
   </head>
@@ -92,4 +95,17 @@
     <div id="root" class="app-fade-enter"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
+  <script>
+    // Defer Facebook SDK load until after load event
+    window.addEventListener('load', function() {
+      setTimeout(function(){
+        try {
+          var s = document.createElement('script');
+          s.src = 'https://connect.facebook.net/en_US/sdk.js';
+          s.async = true; s.defer = true;
+          document.head.appendChild(s);
+        } catch(e) {}
+      }, 1000);
+    });
+  </script>
 </html>
