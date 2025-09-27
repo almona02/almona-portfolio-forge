@@ -54,7 +54,7 @@ interface AdminTicketDashboardProps {
 
 export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
   currentUserId,
-  userRole
+  userRole: _userRole
 }) => {
   const [selectedTicket, setSelectedTicket] = useState<TicketWithDetails | null>(null)
   const [assignmentDialogOpen, setAssignmentDialogOpen] = useState(false)

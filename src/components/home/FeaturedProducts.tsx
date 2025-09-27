@@ -8,7 +8,7 @@ import { ArrowRight } from "lucide-react";
 import { yilmazMachines } from "@/constants/yilmazMachines";
 import { alfapenProfiles } from "@/constants/productsData";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Machine, Profile } from "@/types";
+import { Machine } from "@/types";
 
 const FeaturedProducts = () => {
   const [activeTab, setActiveTab] = useState("machines");
@@ -43,7 +43,7 @@ const FeaturedProducts = () => {
   // Get featured profiles with proper typing
   const featuredProfiles = alfapenProfiles.slice(0, 3);
   
-  const profileProducts = featuredProfiles.map((profile: Profile) => ({
+  const profileProducts = featuredProfiles.map((profile: any) => ({
     id: profile.id,
     title: profile.name,
     description: profile.description,

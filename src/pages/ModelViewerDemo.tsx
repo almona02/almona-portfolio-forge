@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { LazyEnhancedGLBViewer } from '../components/3d-model/LazyGLBViewer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,20 +16,20 @@ export function ModelViewerDemo() {
   const [scale, setScale] = useState(1);
   const [autoRotate, setAutoRotate] = useState(false);
   const [autoRotateSpeed, setAutoRotateSpeed] = useState(0.5);
-  const [showGrid, setShowGrid] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [showGrid, setShowGrid] = useState(false);
+  const [isLoading, _setIsLoading] = useState(true);
+  const [error, _setError] = useState<string | null>(null);
   const [modelPath] = useState("/models/AR-Code-Object-Capture-app-1752786892 (1).glb");
 
-  const handleLoad = () => {
-    setIsLoading(false);
-    setError(null);
-  };
+  // const handleLoad = () => {
+  //   setIsLoading(false);
+  //   setError(null);
+  // };
 
-  const handleError = (error: Error) => {
-    setError(error.message);
-    setIsLoading(false);
-  };
+  // const handleError = (error: Error) => {
+  //   setError(error.message);
+  //   setIsLoading(false);
+  // };
 
   const resetView = () => {
     setScale(1);

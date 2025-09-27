@@ -7,6 +7,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+/**
+ * Country Code Select Component
+ * 
+ * A dropdown component for selecting international country codes with flags.
+ * Features:
+ * - Pre-configured list of Middle Eastern and international country codes
+ * - Visual flag emojis for easy identification
+ * - Supports common countries in the region (Saudi Arabia, UAE, Egypt, etc.)
+ * - Used in forms requiring international phone number input
+ * 
+ * @param value - Currently selected country code (e.g., "+966")
+ * @param onChange - Callback function when selection changes
+ * @param className - Optional CSS class for styling
+ */
+
 interface CountryCodeSelectProps {
   value: string;
   onChange: (value: string) => void;
@@ -31,11 +46,11 @@ const countryCodes = [
 export const CountryCodeSelect: React.FC<CountryCodeSelectProps> = ({
   value,
   onChange,
-  className,
+  className: _className,
 }) => {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className={className}>
+      <SelectTrigger>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

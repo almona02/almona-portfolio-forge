@@ -1,6 +1,6 @@
 import React from 'react';
-import { Input } from '../../shared/ui/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../shared/ui/ui/select';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface UsedMachineFiltersProps {
   searchQuery: string;
@@ -47,10 +47,10 @@ const UsedMachineFilters: React.FC<UsedMachineFiltersProps> = ({
         </div>
         <div>
           <Select onValueChange={onLocationChange} value={locationFilter}>
-            <SelectTrigger className="bg-almona-dark border-almona-light text-right">
+            <SelectTrigger>
               <SelectValue placeholder="جميع المحافظات" />
             </SelectTrigger>
-            <SelectContent className="bg-almona-darker text-white">
+            <SelectContent>
               {governorates.map((gov) => (
                 <SelectItem key={gov} value={gov}>{gov === 'all' ? 'جميع المحافظات' : gov}</SelectItem>
               ))}
@@ -59,10 +59,10 @@ const UsedMachineFilters: React.FC<UsedMachineFiltersProps> = ({
         </div>
         <div>
           <Select onValueChange={onMachineTypeChange} value={machineTypeFilter}>
-            <SelectTrigger className="bg-almona-dark border-almona-light text-right">
+            <SelectTrigger>
               <SelectValue placeholder="جميع الأنواع" />
             </SelectTrigger>
-            <SelectContent className="bg-almona-darker text-white">
+            <SelectContent>
               {machineTypes.map((type) => (
                 <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
               ))}

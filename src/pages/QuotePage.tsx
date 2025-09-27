@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { useQuote } from '@/context/QuoteContext';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+// import Navbar from '@/components/layout/Navbar';
+// import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/shared/ui/ui/label';
@@ -13,7 +13,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 const QuotePage = () => {
   const { quoteItems, removeFromQuote, updateQuantity, clearQuote } = useQuote();
 
-  const total = quoteItems.reduce((acc, item) => acc + (item.product.pricing?.basePrice || 0) * item.quantity, 0);
+  const total = quoteItems.reduce((acc, item) => acc + (item.product.price || 0) * item.quantity, 0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,10 +48,10 @@ const QuotePage = () => {
                           className="flex items-center justify-between py-4 border-b border-almona-light"
                         >
                           <div className="flex items-center gap-4">
-                            <img src={item.product.imageUrl} alt={item.product.name} className="w-20 h-20 object-cover rounded-md" />
+                            <img src={item.product.image_urls?.[0] || '/placeholder.png'} alt={item.product.name_en} className="w-20 h-20 object-cover rounded-md" />
                             <div>
-                              <h3 className="font-semibold">{item.product.name}</h3>
-                              <p className="text-sm text-gray-400">{item.product.pricing?.basePrice ? `${item.product.pricing.basePrice.toLocaleString()} EGP` : 'Price on request'}</p>
+                              <h3 className="font-semibold">{item.product.name_en}</h3>
+                              <p className="text-sm text-gray-400">{item.product.price ? `${item.product.price.toLocaleString()} EGP` : 'Price on request'}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-4">

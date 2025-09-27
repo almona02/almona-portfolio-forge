@@ -12,15 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/shared/ui/ui/radio-group";
 import { 
-  ArrowRight, 
   Calculator, 
-  Ruler, 
   Shield, 
-  Truck, 
   Clock, 
   CheckCircle, 
   Building, 
-  Home, 
   Zap, 
   Thermometer, 
   Volume2, 
@@ -35,10 +31,11 @@ import {
   Sparkles,
   Square,
   DollarSign,
-  RotateCcw,
-  Scan
+  RotateCcw
 } from 'lucide-react';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 
 const systemsData = {
   upvc: {
@@ -166,12 +163,12 @@ const projectTypes = [
 ];
 
 const FabricationServices = () => {
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const [activeSystem, setActiveSystem] = useState("upvc");
   const [expandedFeature, setExpandedFeature] = useState<number | null>(null);
   const [showConsultationForm, setShowConsultationForm] = useState(false);
   const [selectedProjectType, setSelectedProjectType] = useState("");
-  const [calculatorActive, setCalculatorActive] = useState(false);
+  const [_calculatorActive, setCalculatorActive] = useState(false);
   const [calculatorValues, setCalculatorValues] = useState({
     width: "",
     height: "",
@@ -440,10 +437,10 @@ const FabricationServices = () => {
                       value={calculatorValues.profileType} 
                       onValueChange={(value) => handleCalculatorChange('profileType', value)}
                     >
-                      <SelectTrigger className={`bg-almona-dark/80 border-almona-light/30 hover:border-almona-orange/70 transition-colors ${calculatorValues.profileType !== 'standard' ? 'border-almona-orange ring-2 ring-almona-orange/50' : ''}`}>
+                      <SelectTrigger>
                         <SelectValue placeholder="Select profile type" />
                       </SelectTrigger>
-                      <SelectContent className="bg-almona-dark/95 text-white border-almona-light/30">
+                      <SelectContent>
                         {systemsData[calculatorValues.systemType].calculatorConfig.profileTypes.map((profile) => (
                           <SelectItem key={profile.id} value={profile.id}>{profile.name}</SelectItem>
                         ))}
@@ -458,10 +455,10 @@ const FabricationServices = () => {
                         value={calculatorValues.glassType} 
                         onValueChange={(value) => handleCalculatorChange('glassType', value)}
                       >
-                        <SelectTrigger className={`bg-almona-dark/80 border-almona-light/30 hover:border-almona-orange/70 transition-colors ${calculatorValues.glassType !== 'double' ? 'border-almona-orange ring-2 ring-almona-orange/50' : ''}`}>
+                        <SelectTrigger>
                           <SelectValue placeholder="Select glass type" />
                         </SelectTrigger>
-                        <SelectContent className="bg-almona-dark/95 text-white border-almona-light/30">
+                        <SelectContent>
                           {systemsData[calculatorValues.systemType].calculatorConfig.glassTypes.map((glass) => (
                             <SelectItem key={glass.id} value={glass.id}>{glass.name}</SelectItem>
                           ))}
@@ -475,10 +472,10 @@ const FabricationServices = () => {
                         value={calculatorValues.openingType} 
                         onValueChange={(value) => handleCalculatorChange('openingType', value)}
                       >
-                        <SelectTrigger className={`bg-almona-dark/80 border-almona-light/30 hover:border-almona-orange/70 transition-colors ${calculatorValues.openingType !== 'casement' ? 'border-almona-orange ring-2 ring-almona-orange/50' : ''}`}>
+                        <SelectTrigger>
                           <SelectValue placeholder="Select opening type" />
                         </SelectTrigger>
-                        <SelectContent className="bg-almona-dark/95 text-white border-almona-light/30">
+                        <SelectContent>
                           {systemsData[calculatorValues.systemType].calculatorConfig.openingTypes.map((opening) => (
                             <SelectItem key={opening.id} value={opening.id}>{opening.name}</SelectItem>
                           ))}
@@ -1018,10 +1015,10 @@ const FabricationServices = () => {
                 <div className="space-y-2">
                   <Label htmlFor="projectType">Project Type</Label>
                   <Select value={selectedProjectType} onValueChange={setSelectedProjectType}>
-                    <SelectTrigger className={`bg-almona-dark/80 border-almona-light/30 transition-colors ${selectedProjectType ? 'border-almona-orange ring-2 ring-almona-orange/50' : ''}`}>
+                    <SelectTrigger>
                       <SelectValue placeholder="Select project type" />
                     </SelectTrigger>
-                    <SelectContent className="bg-almona-dark/95 text-white border-almona-light/30">
+                    <SelectContent>
                       {projectTypes.map((type) => (
                         <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
                       ))}

@@ -1,9 +1,28 @@
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 
-export const AdvancedFilters = ({ onFilterChange }) => {
+/**
+ * Advanced Filters Component
+ * 
+ * Provides advanced filtering options for product listings.
+ * Features:
+ * - Power consumption range slider (0-100 kW)
+ * - Price range slider (0-100,000 $)
+ * - Tag-based filtering (New, Used, Sale)
+ * - Real-time filter updates
+ * 
+ * Used in product catalog pages to help users narrow down search results.
+ * All filter changes are immediately communicated to parent components.
+ */
+
+interface AdvancedFiltersProps {
+  onFilterChange: (filters: any) => void;
+}
+
+export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onFilterChange }) => {
   const handlePowerChange = (value: number[]) => {
     onFilterChange({ power: value });
   };
@@ -44,15 +63,15 @@ export const AdvancedFilters = ({ onFilterChange }) => {
           <Label>Tags</Label>
           <div className="space-y-2">
             <div className="flex items-center">
-              <Checkbox id="tag-new" onCheckedChange={(checked) => handleTagChange("new", checked)} />
+              <Checkbox id="tag-new" onCheckedChange={(checked) => handleTagChange("new", checked as boolean)} />
               <Label htmlFor="tag-new" className="ml-2">New</Label>
             </div>
             <div className="flex items-center">
-              <Checkbox id="tag-used" onCheckedChange={(checked) => handleTagChange("used", checked)} />
+              <Checkbox id="tag-used" onCheckedChange={(checked) => handleTagChange("used", checked as boolean)} />
               <Label htmlFor="tag-used" className="ml-2">Used</Label>
             </div>
             <div className="flex items-center">
-              <Checkbox id="tag-sale" onCheckedChange={(checked) => handleTagChange("sale", checked)} />
+              <Checkbox id="tag-sale" onCheckedChange={(checked) => handleTagChange("sale", checked as boolean)} />
               <Label htmlFor="tag-sale" className="ml-2">Sale</Label>
             </div>
           </div>

@@ -2,20 +2,21 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import { ServiceCard } from "../components/services/ServiceCard";
-import { MachineRegistration } from "../components/services/MachineRegistration";
+// import { MachineRegistration } from "../components/services/MachineRegistration";
 import { MaintenanceDashboard } from "../components/services/MaintenanceDashboard";
-import { CustomerPortal } from "../components/services/CustomerPortal";
+// import { CustomerPortal } from "../components/services/CustomerPortal";
 import AIFeatures from "./AIFeatures";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "../components/ui/tabs";
-import { Input } from "../components/ui/input";
+} from "../shared/ui/ui/tabs";
+// import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Separator } from "../components/ui/separator";
+import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
 const Services = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -123,7 +124,10 @@ const Services = () => {
 
             {/* Machine Registration */}
             <TabsContent value="register">
-              <MachineRegistration />
+              <div className="text-center py-12">
+                <h3 className="text-xl font-semibold mb-4">Machine Registration</h3>
+                <p className="text-gray-400">Machine registration component will be available soon.</p>
+              </div>
             </TabsContent>
 
             {/* Maintenance Dashboard */}
@@ -133,7 +137,10 @@ const Services = () => {
 
             {/* Customer Portal */}
             <TabsContent value="portal">
-              <CustomerPortal />
+              <div className="text-center py-12">
+                <h3 className="text-xl font-semibold mb-4">Customer Portal</h3>
+                <p className="text-gray-400">Customer portal component will be available soon.</p>
+              </div>
             </TabsContent>
 
             {/* AI Features */}
@@ -186,4 +193,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default withErrorBoundary(Services);

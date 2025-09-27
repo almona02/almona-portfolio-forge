@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { Button } from '@/shared/ui/ui/button';
+import { Button } from '@/components/ui/button';
 
-const FileUploader = ({ onNext, onBack }) => {
-  const [files, setFiles] = useState([]);
+interface FileUploaderProps {
+  onNext: (data: { images: File[] }) => void;
+  onBack: () => void;
+}
+
+const FileUploader: React.FC<FileUploaderProps> = ({ onNext, onBack }) => {
+  const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState('');
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files);
     const validFiles = selectedFiles.filter(file => file.type.startsWith('image/'));
 

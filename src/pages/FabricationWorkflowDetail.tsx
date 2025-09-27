@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/shared/ui/ui/separator";
 import { Icons } from "@/components/ui/icons";
 import { WorkflowDiagram } from "@/components/about/WorkflowDiagram";
 import { LocalStandardsTable } from "@/components/comparison/LocalStandardsTable";
@@ -303,7 +302,7 @@ const FabricationWorkflowDetail = () => {
     visible: { 
       y: 0, 
       opacity: 1,
-      transition: { type: 'spring', stiffness: 100 }
+      transition: { type: 'spring' as const, stiffness: 100 }
     }
   };
 
@@ -331,7 +330,7 @@ const FabricationWorkflowDetail = () => {
           </Badge>
           <h1 className="text-5xl font-bold text-gradient-orange mb-4">Egyptian Fabrication Workflows</h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Specialized processes developed for Egypt's unique climate and market needs
+            Specialized processes developed for Egypt&apos;s unique climate and market needs
           </p>
         </motion.div>
 

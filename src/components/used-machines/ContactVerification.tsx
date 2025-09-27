@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
-const ContactVerification = ({ onComplete, onBack }) => {
-  const [formData, setFormData] = useState({});
+interface ContactVerificationProps {
+  onComplete: (data: Record<string, string>) => void;
+  onBack: () => void;
+}
 
-  const handleChange = (e) => {
+const ContactVerification: React.FC<ContactVerificationProps> = ({ onComplete, onBack }) => {
+  const [formData, setFormData] = useState<Record<string, string>>({});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 

@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Factory, Calendar, Gauge, ChevronLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
