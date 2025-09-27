@@ -1,0 +1,148 @@
+{
+  "title": "طلبات الدعم التقني",
+  "subtitle": "دعم تقني مهني لمعداتك الصناعية",
+  "types": {
+    "general": "دعم عام",
+    "maintenance": "طلب صيانة",
+    "repair": "طلب إصلاح",
+    "installation": "طلب تركيب",
+    "training": "طلب تدريب",
+    "warranty": "طلب ضمان",
+    "spare_parts": "طلب قطع غيار",
+    "technical_consultation": "استشارة تقنية",
+    "emergency": "دعم طارئ",
+    "preventive_maintenance": "صيانة وقائية",
+    "predictive_maintenance": "صيانة تنبؤية",
+    "calibration": "معايرة",
+    "upgrade": "ترقية",
+    "customization": "تخصيص"
+  },
+  "priorities": {
+    "low": "منخفض",
+    "medium": "متوسط",
+    "high": "عالي",
+    "critical": "حرج",
+    "emergency": "طوارئ"
+  },
+  "status": {
+    "open": "مفتوح",
+    "assigned": "مُعين",
+    "in_progress": "قيد التنفيذ",
+    "resolved": "محلول",
+    "closed": "مغلق",
+    "pending": "في الانتظار",
+    "cancelled": "ملغي",
+    "on_hold": "معلق",
+    "escalated": "مُرفع"
+  },
+  "maintenance_types": {
+    "preventive": "الصيانة الوقائية",
+    "corrective": "الصيانة التصحيحية",
+    "predictive": "الصيانة التنبؤية",
+    "emergency": "الصيانة الطارئة",
+    "scheduled": "الصيانة المجدولة",
+    "unscheduled": "الصيانة غير المجدولة",
+    "routine": "الصيانة الروتينية",
+    "major": "الصيانة الكبرى",
+    "minor": "الصيانة الصغرى"
+  },
+  "form": {
+    "subject": "الموضوع",
+    "description": "الوصف",
+    "machine_serial": "الرقم التسلسلي للماكينة",
+    "machine_model": "موديل الماكينة",
+    "location": "الموقع",
+    "contact_person": "شخص الاتصال",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "urgency": "الأولوية",
+    "preferred_date": "التاريخ المفضل",
+    "preferred_time": "الوقت المفضل",
+    "attachments": "المرفقات",
+    "submit": "إرسال الطلب",
+    "update": "تحديث",
+    "cancel": "إلغاء",
+    "save_draft": "حفظ مسودة",
+    "add_attachment": "إضافة مرفق",
+    "remove_attachment": "إزالة مرفق"
+  },
+  "fields": {
+    "ticket_id": "رقم الطلب",
+    "created_date": "تاريخ الإنشاء",
+    "updated_date": "تاريخ التحديث",
+    "assigned_to": "مُعين لـ",
+    "assigned_date": "تاريخ التعيين",
+    "resolution_date": "تاريخ الحل",
+    "estimated_resolution": "التاريخ المتوقع للحل",
+    "actual_resolution": "تاريخ الحل الفعلي",
+    "time_spent": "الوقت المستغرق",
+    "customer_satisfaction": "رضا العميل",
+    "follow_up_required": "متابعة مطلوبة",
+    "follow_up_date": "تاريخ المتابعة"
+  },
+  "actions": {
+    "create_ticket": "إنشاء طلب جديد",
+    "view_ticket": "عرض الطلب",
+    "edit_ticket": "تعديل الطلب",
+    "close_ticket": "إغلاق الطلب",
+    "reopen_ticket": "إعادة فتح الطلب",
+    "assign_ticket": "تعيين الطلب",
+    "escalate_ticket": "رفع الطلب",
+    "add_comment": "إضافة تعليق",
+    "add_attachment": "إضافة مرفق",
+    "update_status": "تحديث الحالة",
+    "schedule_maintenance": "جدولة الصيانة",
+    "request_quote": "طلب عرض سعر"
+  },
+  "filters": {
+    "all": "الكل",
+    "my_tickets": "طلباتي",
+    "open_tickets": "الطلبات المفتوحة",
+    "closed_tickets": "الطلبات المغلقة",
+    "high_priority": "أولوية عالية",
+    "overdue": "متأخر",
+    "this_week": "هذا الأسبوع",
+    "this_month": "هذا الشهر",
+    "last_30_days": "آخر 30 يوم"
+  },
+  "search": {
+    "search_tickets": "البحث في الطلبات",
+    "search_placeholder": "ابحث برقم الطلب أو الموضوع أو الوصف...",
+    "no_results": "لم يتم العثور على نتائج",
+    "search_results": "نتائج البحث"
+  },
+  "notifications": {
+    "ticket_created": "تم إنشاء الطلب بنجاح",
+    "ticket_updated": "تم تحديث الطلب",
+    "ticket_assigned": "تم تعيين الطلب",
+    "ticket_closed": "تم إغلاق الطلب",
+    "ticket_reopened": "تم إعادة فتح الطلب",
+    "comment_added": "تم إضافة تعليق",
+    "attachment_added": "تم إضافة مرفق",
+    "status_updated": "تم تحديث الحالة"
+  },
+  "messages": {
+    "no_tickets": "لا توجد طلبات بعد",
+    "loading_tickets": "جاري تحميل الطلبات...",
+    "error_loading": "حدث خطأ أثناء تحميل الطلبات",
+    "ticket_not_found": "الطلب غير موجود",
+    "unauthorized_access": "ليس لديك صلاحية للوصول لهذا الطلب",
+    "invalid_ticket_id": "رقم طلب غير صحيح"
+  },
+  "sla": {
+    "response_time": "وقت الاستجابة",
+    "resolution_time": "وقت الحل",
+    "sla_breach": "انتهاك اتفاقية مستوى الخدمة",
+    "sla_met": "تم الوفاء باتفاقية مستوى الخدمة",
+    "sla_warning": "تحذير اتفاقية مستوى الخدمة",
+    "escalation_required": "رفع مطلوب"
+  },
+  "reports": {
+    "ticket_summary": "ملخص الطلبات",
+    "response_time_report": "تقرير وقت الاستجابة",
+    "resolution_time_report": "تقرير وقت الحل",
+    "customer_satisfaction": "رضا العملاء",
+    "ticket_volume": "حجم الطلبات",
+    "trend_analysis": "تحليل الاتجاهات"
+  }
+}

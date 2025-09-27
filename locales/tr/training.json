@@ -1,0 +1,145 @@
+{
+  "title": "Operatör Eğitim Programları",
+  "subtitle": "Endüstriyel ekipman operatörleri için kapsamlı eğitim programları",
+  "programs": {
+    "basic_operator": "Temel Operatör Eğitimi",
+    "advanced_operator": "İleri Operatör Eğitimi",
+    "maintenance_technician": "Bakım Teknisyeni Eğitimi",
+    "safety_training": "Güvenlik Eğitimi",
+    "cnc_programming": "CNC Programlama Eğitimi",
+    "quality_control": "Kalite Kontrol Eğitimi",
+    "troubleshooting": "Arıza Giderme Eğitimi",
+    "preventive_maintenance": "Önleyici Bakım Eğitimi"
+  },
+  "training_types": {
+    "on_site": "Sahada Eğitim",
+    "remote": "Uzaktan Eğitim",
+    "classroom": "Sınıf Eğitimi",
+    "hands_on": "Uygulamalı Eğitim",
+    "virtual": "Sanal Eğitim",
+    "hybrid": "Karma Eğitim",
+    "self_paced": "Kendi Hızında Eğitim",
+    "instructor_led": "Eğitmen Eşliğinde"
+  },
+  "levels": {
+    "beginner": "Başlangıç",
+    "intermediate": "Orta",
+    "advanced": "İleri",
+    "expert": "Uzman",
+    "master": "Usta"
+  },
+  "duration": {
+    "hours": "Saat",
+    "days": "Gün",
+    "weeks": "Hafta",
+    "months": "Ay",
+    "flexible": "Esnek"
+  },
+  "certification": {
+    "certificate": "Sertifika",
+    "certification": "Sertifikasyon",
+    "certified_operator": "Sertifikalı Operatör",
+    "certified_technician": "Sertifikalı Teknisyen",
+    "certification_validity": "Sertifika Geçerlilik Süresi",
+    "renewal_required": "Yenileme Gerekli",
+    "continuing_education": "Sürekli Eğitim"
+  },
+  "topics": {
+    "machine_operation": "Makine Operasyonu",
+    "safety_procedures": "Güvenlik Prosedürleri",
+    "maintenance_procedures": "Bakım Prosedürleri",
+    "troubleshooting": "Arıza Giderme",
+    "quality_control": "Kalite Kontrol",
+    "programming": "Programlama",
+    "setup_procedures": "Kurulum Prosedürleri",
+    "tooling": "Takım Tezgahları",
+    "material_handling": "Malzeme Taşıma",
+    "measurement": "Ölçüm"
+  },
+  "instructors": {
+    "certified_instructor": "Sertifikalı Eğitmen",
+    "senior_technician": "Kıdemli Teknisyen",
+    "field_expert": "Saha Uzmanı",
+    "manufacturer_representative": "Üretici Temsilcisi",
+    "local_trainer": "Yerel Eğitmen",
+    "remote_expert": "Uzaktan Uzman"
+  },
+  "materials": {
+    "training_manual": "Eğitim Kılavuzu",
+    "video_tutorials": "Video Eğitimleri",
+    "interactive_simulations": "Etkileşimli Simülasyonlar",
+    "practice_exercises": "Pratik Egzersizler",
+    "assessment_tests": "Değerlendirme Testleri",
+    "reference_guides": "Referans Kılavuzları",
+    "safety_manuals": "Güvenlik Kılavuzları",
+    "maintenance_manuals": "Bakım Kılavuzları"
+  },
+  "scheduling": {
+    "schedule_training": "Eğitim Planla",
+    "available_dates": "Müsait Tarihler",
+    "training_calendar": "Eğitim Takvimi",
+    "group_training": "Grup Eğitimi",
+    "individual_training": "Bireysel Eğitim",
+    "custom_schedule": "Özel Program",
+    "flexible_timing": "Esnek Zamanlama",
+    "weekend_training": "Hafta Sonu Eğitimi"
+  },
+  "pricing": {
+    "training_cost": "Eğitim Maliyeti",
+    "per_person": "Kişi Başı",
+    "group_discount": "Grup İndirimi",
+    "package_deal": "Paket Fiyat",
+    "custom_pricing": "Özel Fiyatlandırma",
+    "payment_terms": "Ödeme Şartları",
+    "cancellation_policy": "İptal Politikası",
+    "refund_policy": "İade Politikası"
+  },
+  "registration": {
+    "register": "Kayıt Ol",
+    "registration_form": "Kayıt Formu",
+    "prerequisites": "Ön Koşullar",
+    "required_skills": "Gerekli Beceriler",
+    "recommended_experience": "Önerilen Deneyim",
+    "equipment_requirements": "Ekipman Gereksinimleri",
+    "confirmation": "Onay",
+    "payment": "Ödeme"
+  },
+  "assessment": {
+    "assessment": "Değerlendirme",
+    "written_test": "Yazılı Test",
+    "practical_test": "Pratik Test",
+    "oral_examination": "Sözlü Sınav",
+    "performance_evaluation": "Performans Değerlendirmesi",
+    "passing_score": "Geçme Notu",
+    "certification_exam": "Sertifikasyon Sınavı",
+    "retake_policy": "Tekrar Alma Politikası"
+  },
+  "support": {
+    "training_support": "Eğitim Desteği",
+    "technical_support": "Teknik Destek",
+    "learning_support": "Öğrenme Desteği",
+    "mentorship": "Mentorluk",
+    "peer_learning": "Akran Öğrenmesi",
+    "online_forum": "Çevrimiçi Forum",
+    "help_desk": "Yardım Masası",
+    "faq": "Sık Sorulan Sorular"
+  },
+  "feedback": {
+    "course_feedback": "Kurs Geri Bildirimi",
+    "instructor_rating": "Eğitmen Değerlendirmesi",
+    "content_rating": "İçerik Değerlendirmesi",
+    "facility_rating": "Tesis Değerlendirmesi",
+    "overall_satisfaction": "Genel Memnuniyet",
+    "recommendation": "Tavsiye",
+    "improvement_suggestions": "İyileştirme Önerileri"
+  },
+  "tracking": {
+    "progress_tracking": "İlerleme Takibi",
+    "completion_status": "Tamamlanma Durumu",
+    "learning_analytics": "Öğrenme Analitiği",
+    "performance_metrics": "Performans Metrikleri",
+    "attendance_record": "Devam Kaydı",
+    "achievement_badges": "Başarı Rozetleri",
+    "learning_path": "Öğrenme Yolu"
+  }
+}

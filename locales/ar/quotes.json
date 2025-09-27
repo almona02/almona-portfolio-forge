@@ -1,0 +1,128 @@
+{
+  "title": "طلبات العروض",
+  "subtitle": "احصل على عرض سعر مفصل لمشاريعك الصناعية",
+  "steps": {
+    "project_details": "تفاصيل المشروع",
+    "equipment_selection": "اختيار المعدات",
+    "requirements": "المتطلبات",
+    "review": "المراجعة والموافقة"
+  },
+  "project_types": {
+    "new_installation": "تركيب جديد",
+    "upgrade": "ترقية",
+    "replacement": "استبدال",
+    "expansion": "توسعة",
+    "maintenance_contract": "عقد صيانة",
+    "training_program": "برنامج تدريبي",
+    "consulting_service": "خدمة استشارية",
+    "custom_solution": "حل مخصص"
+  },
+  "urgency": {
+    "standard": "قياسي (2-3 أسابيع)",
+    "express": "سريع (أسبوع واحد) +15%",
+    "urgent": "عاجل (3 أيام) +30%",
+    "emergency": "طوارئ (24 ساعة) +50%"
+  },
+  "delivery_options": {
+    "standard": "تسليم قياسي",
+    "express": "تسليم سريع",
+    "white_glove": "خدمة القفازات البيضاء",
+    "installation_included": "التركيب مشمول",
+    "turnkey": "مفتاح في اليد"
+  },
+  "form": {
+    "project_description": "وصف المشروع",
+    "budget_range": "نطاق الميزانية",
+    "timeline": "الجدول الزمني",
+    "delivery_location": "موقع التسليم",
+    "special_requirements": "متطلبات خاصة",
+    "contact_info": "معلومات الاتصال",
+    "company_info": "معلومات الشركة",
+    "technical_requirements": "المتطلبات التقنية",
+    "submit_quote": "طلب عرض سعر",
+    "save_draft": "حفظ مسودة",
+    "cancel": "إلغاء",
+    "next": "التالي",
+    "previous": "السابق",
+    "finish": "إنهاء"
+  },
+  "equipment": {
+    "select_equipment": "اختر المعدات",
+    "add_equipment": "إضافة معدات",
+    "remove_equipment": "إزالة معدات",
+    "equipment_quantity": "كمية المعدات",
+    "equipment_specifications": "مواصفات المعدات",
+    "custom_requirements": "متطلبات مخصصة",
+    "accessories": "الملحقات",
+    "spare_parts": "قطع الغيار"
+  },
+  "services": {
+    "installation": "خدمة التركيب",
+    "training": "خدمة التدريب",
+    "maintenance": "خدمة الصيانة",
+    "support": "خدمة الدعم",
+    "consulting": "خدمة الاستشارة",
+    "customization": "خدمة التخصيص",
+    "warranty": "خدمة الضمان",
+    "spare_parts": "خدمة قطع الغيار"
+  },
+  "pricing": {
+    "equipment_cost": "تكلفة المعدات",
+    "installation_cost": "تكلفة التركيب",
+    "training_cost": "تكلفة التدريب",
+    "maintenance_cost": "تكلفة الصيانة",
+    "delivery_cost": "تكلفة التسليم",
+    "tax": "الضريبة",
+    "total_cost": "التكلفة الإجمالية",
+    "discount": "خصم",
+    "final_price": "السعر النهائي"
+  },
+  "terms": {
+    "payment_terms": "شروط الدفع",
+    "delivery_terms": "شروط التسليم",
+    "warranty_terms": "شروط الضمان",
+    "maintenance_terms": "شروط الصيانة",
+    "cancellation_terms": "شروط الإلغاء",
+    "force_majeure": "القوة القاهرة",
+    "governing_law": "القانون المطبق",
+    "dispute_resolution": "حل النزاعات"
+  },
+  "status": {
+    "draft": "مسودة",
+    "submitted": "مُرسل",
+    "under_review": "قيد المراجعة",
+    "quoted": "تم تقديم العرض",
+    "accepted": "مقبول",
+    "rejected": "مرفوض",
+    "expired": "منتهي الصلاحية",
+    "cancelled": "ملغي"
+  },
+  "actions": {
+    "request_quote": "طلب عرض سعر",
+    "view_quote": "عرض العرض",
+    "accept_quote": "قبول العرض",
+    "reject_quote": "رفض العرض",
+    "modify_quote": "تعديل العرض",
+    "download_quote": "تحميل العرض",
+    "print_quote": "طباعة العرض",
+    "share_quote": "مشاركة العرض"
+  },
+  "notifications": {
+    "quote_submitted": "تم إرسال طلب العرض بنجاح",
+    "quote_updated": "تم تحديث العرض",
+    "quote_expired": "انتهت صلاحية العرض",
+    "quote_accepted": "تم قبول العرض",
+    "quote_rejected": "تم رفض العرض"
+  },
+  "validation": {
+    "required_field": "هذا الحقل مطلوب",
+    "invalid_email": "عنوان بريد إلكتروني غير صحيح",
+    "invalid_phone": "رقم هاتف غير صحيح",
+    "invalid_date": "تاريخ غير صحيح",
+    "invalid_number": "رقم غير صحيح",
+    "min_length": "الحد الأدنى {min} حرف مطلوب",
+    "max_length": "الحد الأقصى {max} حرف مسموح",
+    "min_value": "الحد الأدنى للقيمة {min}",
+    "max_value": "الحد الأقصى للقيمة {max}"
+  }
+}

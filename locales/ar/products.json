@@ -1,0 +1,85 @@
+{
+  "shop": {
+    "tabs": {
+      "industrial-machines": "مكائن التشغيل الصناعية",
+      "industrial-parts": "قطع الغيار الصناعية",
+      "unique-prototypes": "النماذج الأولية المميزة",
+      "unique-custom-fabrications": "حلول التصنيع المخصصة",
+      "profiles": "البروفيلات الألومنيومية",
+      "reports": "التقارير التقنية"
+    },
+    "products": {
+      "KM-212": {
+        "title": "ماكينة يلماز KM-212 CNC للقطع",
+        "description": "ماكينة قطع عالية الدقة محكومة بـ CNC. محسنة للبروفيلات الألومنيومية والصلبية."
+      },
+      "DC-421-PBS": {
+        "title": "ماكينة يلماز DC-421-PBS ثنائية الأعمدة",
+        "description": "ماكينة تشغيل CNC ثنائية الأعمدة مصممة للأعمال الصناعية الثقيلة."
+      }
+    },
+    "buttons": {
+      "configure": "التكوين التقني",
+      "requestQuote": "اطلب عرض سعر مفصل",
+      "compare": "مقارنة تقنية",
+      "viewInAR": "عرض بالواقع المعزز",
+      "scheduleDemo": "احجز عرض توضيحي",
+      "downloadSpecs": "تحميل الوثائق التقنية",
+      "contactExpert": "تواصل مع الخبير",
+      "requestInfo": "اطلب معلومات"
+    },
+    "labels": {
+      "price": "السعر",
+      "contactWhatsApp": "الدعم التقني عبر واتساب",
+      "availability": "حالة التوفر",
+      "delivery": "مدة التسليم",
+      "warranty": "فترة الضمان",
+      "certification": "الشهادات",
+      "specifications": "المواصفات التقنية",
+      "features": "المميزات",
+      "applications": "مجالات التطبيق",
+      "maintenance": "معلومات الصيانة"
+    },
+    "messages": {
+      "localShipping": "حاسبة النقل المحلي",
+      "cashOnDelivery": "الدفع عند التسليم",
+      "ramadanMode": "وضع رمضان",
+      "eidMode": "وضع العيد",
+      "industrialShipping": "النقل الصناعي",
+      "whiteGloveService": "خدمة القفازات البيضاء",
+      "installationIncluded": "التركيب مشمول",
+      "trainingIncluded": "التدريب مشمول"
+    },
+    "categories": {
+      "cnc_machines": "مكائن التشغيل CNC",
+      "cutting_equipment": "معدات القطع",
+      "welding_machines": "مكائن اللحام",
+      "fabrication_tools": "أدوات التصنيع",
+      "automation_systems": "أنظمة الأتمتة",
+      "quality_control": "أجهزة مراقبة الجودة",
+      "spare_parts": "قطع الغيار",
+      "consumables": "المواد الاستهلاكية"
+    },
+    "filters": {
+      "price_range": "نطاق السعر",
+      "brand": "العلامة التجارية",
+      "category": "الفئة",
+      "power_consumption": "استهلاك الطاقة",
+      "precision": "الدقة",
+      "capacity": "السعة",
+      "certification": "الشهادة",
+      "availability": "حالة التوفر",
+      "delivery_time": "مدة التسليم"
+    },
+    "sorting": {
+      "price_low_high": "السعر (منخفض-عالي)",
+      "price_high_low": "السعر (عالي-منخفض)",
+      "name_a_z": "الاسم (أ-ي)",
+      "name_z_a": "الاسم (ي-أ)",
+      "newest": "الأحدث",
+      "most_popular": "الأكثر شعبية",
+      "best_rated": "الأعلى تقييماً",
+      "relevance": "الصلة"
+    }
+  }
+}

@@ -88,24 +88,96 @@ export async function generateComparisonPDF(
   const margin = 40;
 
   type PDFPage = ReturnType<typeof pdf.addPage>;
-  const drawHeader = async (page: PDFPage, pageIndex: number, totalPages?: number) => {
+  const drawProfessionalHeader = async (page: PDFPage, pageIndex: number, totalPages?: number) => {
     const yTop = pageHeight - margin;
+    
+    // Company header section
+    const headerHeight = 120;
+    const headerY = yTop - headerHeight;
+    
+    // Header background
+    page.drawRectangle({ 
+      x: margin, 
+      y: headerY, 
+      width: pageWidth - margin * 2, 
+      height: headerHeight, 
+      color: rgb(0.95, 0.95, 0.97),
+      borderColor: rgb(0.8, 0.8, 0.85),
+      borderWidth: 1
+    });
+    
+    // Logo placement with optimized sizing
+    let logoX = margin + 15;
+    let logoY = headerY + 25;
     if (logoDataUrl) {
       try {
         const base64 = logoDataUrl.split(',')[1];
         const logoBytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
         const logoImage = await pdf.embedPng(logoBytes);
-        const logoDims = logoImage.scale(0.3);
-        page.drawImage(logoImage, { x: margin, y: yTop - logoDims.height, width: logoDims.width, height: logoDims.height });
+        // Optimized logo size for professional appearance
+        const logoDims = logoImage.scale(0.25); // Reduced from 0.4 to 0.25
+        const maxLogoHeight = 50; // Maximum logo height
+        const maxLogoWidth = 120; // Maximum logo width
+        
+        let finalWidth = logoDims.width;
+        let finalHeight = logoDims.height;
+        
+        // Scale down if too large
+        if (finalHeight > maxLogoHeight) {
+          const scale = maxLogoHeight / finalHeight;
+          finalWidth *= scale;
+          finalHeight *= scale;
+        }
+        if (finalWidth > maxLogoWidth) {
+          const scale = maxLogoWidth / finalWidth;
+          finalWidth *= scale;
+          finalHeight *= scale;
+        }
+        
+        page.drawImage(logoImage, { 
+          x: logoX, 
+          y: logoY, 
+          width: finalWidth, 
+          height: finalHeight 
+        });
+        logoX += finalWidth + 25;
       } catch (e) {
         // ignore logo embedding errors silently
       }
     }
-    page.drawText('ALMONA Machine Comparison Report', { x: margin + 180, y: yTop - 20, size: 20, font: bold, color: rgb(0.2,0.2,0.2) });
-    page.drawText(new Date().toLocaleString(), { x: pageWidth - margin - 150, y: yTop - 14, size: 10, font, color: rgb(0.3,0.3,0.3) });
+    
+    // Two-column header layout to separate company and document details
+    const innerX = margin + 15;
+    const innerWidth = pageWidth - margin * 2 - 30;
+    const leftWidth = innerWidth * 0.55;
+    const rightX = innerX + leftWidth + 20; // gutter
+    const rightWidth = innerWidth - leftWidth - 20;
+
+    // Company details (left column)
+    const companyX = Math.max(logoX, innerX);
+    const companyY = headerY + 60;
+    
+    drawFittedText(page, 'ALMONA INDUSTRIAL SOLUTIONS', companyX, companyY, 17, bold, rgb(0.1, 0.1, 0.1), leftWidth - (companyX - innerX));
+    
+    drawFittedText(page, 'Authorized YILMAZ Machinery Dealer', companyX, companyY - 28, 12, font, rgb(0.3, 0.3, 0.3), leftWidth - (companyX - innerX));
+    
+    drawFittedText(page, 'Professional Industrial Equipment Solutions', companyX, companyY - 56, 10, font, rgb(0.4, 0.4, 0.4), leftWidth - (companyX - innerX));
+    
+    // Document details (right column)
+    const docX = rightX;
+    const docY = headerY + 60;
+    
+    drawFittedText(page, 'MACHINE COMPARISON QUOTATION', docX, docY, 14, bold, rgb(0.1, 0.1, 0.1), rightWidth);
+    
+    drawFittedText(page, `Date: ${new Date().toLocaleDateString()}`, docX, docY - 26, 10, font, rgb(0.3, 0.3, 0.3), rightWidth);
+    
+    drawFittedText(page, `Time: ${new Date().toLocaleTimeString()}`, docX, docY - 44, 10, font, rgb(0.3, 0.3, 0.3), rightWidth);
+    
     if (totalPages) {
-      page.drawText(`Page ${pageIndex + 1} / ${totalPages}` , { x: pageWidth - margin - 100, y: margin / 2, size: 10, font, color: rgb(0.4,0.4,0.4) });
+      drawFittedText(page, `Page ${pageIndex + 1} / ${totalPages}`, docX, docY - 62, 9, font, rgb(0.4, 0.4, 0.4), rightWidth);
     }
+    
+    return headerY - 20; // Return Y position for content start
   };
 
   // Build tabular data (condensed vs full)
@@ -160,107 +232,391 @@ export async function generateComparisonPDF(
     .replace(/≥/g, '>=')
     .replace(/³/g, '^3');
 
-  // Simple table rendering with wrapping pages if needed
-  const lineHeight = 18;
-  const headerHeight = 24;
-  let y = pageHeight - margin - 80;
+  // Helper: draw text fitted within a max width (adds ellipsis if needed)
+  const drawFittedText = (
+    pageRef: ReturnType<typeof pdf.addPage>,
+    rawText: string,
+    xPos: number,
+    yPos: number,
+    fontSize: number,
+    fontRef: any,
+    colorRef: any,
+    maxWidth: number
+  ) => {
+    const cleaned = sanitize(rawText);
+    let textToDraw = cleaned;
+    let width = fontRef.widthOfTextAtSize(textToDraw, fontSize);
+    if (width <= maxWidth) {
+      pageRef.drawText(textToDraw, { x: xPos, y: yPos, size: fontSize, font: fontRef, color: colorRef });
+      return;
+    }
+    while (textToDraw.length > 3 && fontRef.widthOfTextAtSize(textToDraw + '…', fontSize) > maxWidth) {
+      textToDraw = textToDraw.slice(0, -1);
+    }
+    pageRef.drawText(textToDraw + '…', { x: xPos, y: yPos, size: fontSize, font: fontRef, color: colorRef });
+  };
+
+  // Professional table rendering with enhanced spacing
+  const lineHeight = 30; // Increased for better readability and professional spacing
+  const headerHeight = 46; // Taller header to allow two-line header labels
+  const tableMargin = 25; // Increased margin for better spacing
+  const sectionSpacing = 35; // Added spacing between sections
 
   const pages: PDFPage[] = [];
   const createPage = () => { const p = pdf.addPage([pageWidth, pageHeight]); pages.push(p); return p; };
   let page = createPage();
 
-  // Draw header first (we will retro-fit page numbers later if multiple pages)
-  await drawHeader(page, 0);
+  // Draw professional header first (we will retro-fit page numbers later if multiple pages)
+  let y = await drawProfessionalHeader(page, 0);
 
-  // Draw table header
-  page.drawRectangle({ x: margin, y: y - headerHeight + 4, width: pageWidth - margin*2, height: headerHeight, color: rgb(0.95,0.95,0.97) });
-  let x = margin + 4;
-  // Dynamic column width distribution: first column wider, remaining share space
-  const baseWidths = condensed
-    ? [190,140,140,80]
-    : [160,100,90,170,90,130];
+  // Draw professional table header
+  const tableX = margin + tableMargin;
+  const tableWidth = pageWidth - margin * 2 - tableMargin * 2;
+  
+  // Header background with border
+  page.drawRectangle({ 
+    x: tableX, 
+    y: y - headerHeight + 4, 
+    width: tableWidth, 
+    height: headerHeight, 
+    color: rgb(0.2, 0.2, 0.3),
+    borderColor: rgb(0.1, 0.1, 0.2),
+    borderWidth: 1
+  });
+  
+  let x = tableX + 10;
+  // Optimized column width distribution for up to 5 machines
   const colCount = columns.length;
-  let colWidths = baseWidths;
-  if (colCount !== baseWidths.length) {
-    // Recompute: allocate first col 0.22 of width, rest evenly
-    const tableInner = pageWidth - margin * 2 - 8; // padding allowance
-    const first = Math.min(220, tableInner * 0.22);
-    const remaining = tableInner - first;
-    const each = remaining / (colCount - 1);
-    colWidths = [first, ...Array.from({ length: colCount - 1 }, () => each)];
+  const tableInner = tableWidth - 20; // padding allowance
+  
+  let colWidths: number[];
+  if (condensed) {
+    // Condensed mode: Name, Power, Air, Voltage
+    const nameWidth = Math.min(180, tableInner * 0.3);
+    const remaining = tableInner - nameWidth;
+    const each = remaining / 3;
+    colWidths = [nameWidth, each, each, each];
+  } else {
+    // Full mode: Name, Type, Release Date, Power, Voltage, Air
+    const nameWidth = Math.min(200, tableInner * 0.25);
+    const typeWidth = Math.min(120, tableInner * 0.15);
+    const dateWidth = Math.min(100, tableInner * 0.12);
+    const powerWidth = Math.min(150, tableInner * 0.18);
+    const voltageWidth = Math.min(80, tableInner * 0.1);
+    const airWidth = Math.min(140, tableInner * 0.17);
+    
+    // Adjust if total exceeds available width
+    const totalWidth = nameWidth + typeWidth + dateWidth + powerWidth + voltageWidth + airWidth;
+    if (totalWidth > tableInner) {
+      const scale = tableInner / totalWidth;
+      colWidths = [
+        nameWidth * scale,
+        typeWidth * scale,
+        dateWidth * scale,
+        powerWidth * scale,
+        voltageWidth * scale,
+        airWidth * scale
+      ];
+    } else {
+      colWidths = [nameWidth, typeWidth, dateWidth, powerWidth, voltageWidth, airWidth];
+    }
   }
   columns.forEach((col, i) => {
-    page.drawText(sanitize(col), { x, y: y - 16, size: 11, font: bold });
+    const match = col.match(/^(.*?)\s*\((.*)\)$/);
+    if (match) {
+      const label = sanitize(match[1]);
+      const units = '(' + sanitize(match[2]) + ')';
+      drawFittedText(page, label, x, y - 22, 13, bold, rgb(1,1,1), colWidths[i] - 8);
+      drawFittedText(page, units, x, y - 36, 10, font, rgb(0.9,0.9,0.95), colWidths[i] - 8);
+    } else {
+      drawFittedText(page, sanitize(col), x, y - 26, 13, bold, rgb(1,1,1), colWidths[i] - 8);
+    }
     x += colWidths[i];
   });
   y -= headerHeight;
 
-  rows.forEach((row, rowIndex) => {
-    if (y < margin + 40) { // new page
+  for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+    const row = rows[rowIndex];
+    if (y < margin + 60) { // new page
       page = createPage();
-      y = pageHeight - margin - 60;
-      drawHeader(page, 0); // page number fix later
-      // redraw header
-      page.drawRectangle({ x: margin, y: y - headerHeight + 4, width: pageWidth - margin*2, height: headerHeight, color: rgb(0.95,0.95,0.97) });
-      let xh = margin + 4;
-  columns.forEach((col, i) => { page.drawText(sanitize(col), { x: xh, y: y - 16, size: 11, font: bold }); xh += colWidths[i]; });
+      y = await drawProfessionalHeader(page, 0);
+      // redraw table header
+      page.drawRectangle({ 
+        x: tableX, 
+        y: y - headerHeight + 4, 
+        width: tableWidth, 
+        height: headerHeight, 
+        color: rgb(0.2, 0.2, 0.3),
+        borderColor: rgb(0.1, 0.1, 0.2),
+        borderWidth: 1
+      });
+      let xh = tableX + 8;
+      columns.forEach((col, i) => { 
+        const match = col.match(/^(.*?)\s*\((.*)\)$/);
+        if (match) {
+          const label = sanitize(match[1]);
+          const units = '(' + sanitize(match[2]) + ')';
+          drawFittedText(page, label, xh, y - 20, 12, bold, rgb(1,1,1), colWidths[i] - 8);
+          drawFittedText(page, units, xh, y - 32, 9, font, rgb(0.9,0.9,0.95), colWidths[i] - 8);
+        } else {
+          drawFittedText(page, sanitize(col), xh, y - 22, 12, bold, rgb(1,1,1), colWidths[i] - 8);
+        }
+        xh += colWidths[i]; 
+      });
       y -= headerHeight;
     }
-    let cx = margin + 4;
-  const isTotal = row[0] === 'TOTAL';
+    let cx = tableX + 10;
+    const isTotal = row[0] === 'TOTAL';
+    
+    // Professional row styling
     if (!isTotal) {
-      page.drawRectangle({ x: margin, y: y - lineHeight + 4, width: pageWidth - margin*2, height: lineHeight, color: (rowIndex % 2 === 0) ? rgb(0.99,0.99,1) : rgb(1,1,1) });
+      // Alternating row colors with professional borders
+      page.drawRectangle({ 
+        x: tableX, 
+        y: y - lineHeight + 2, 
+        width: tableWidth, 
+        height: lineHeight, 
+        color: (rowIndex % 2 === 0) ? rgb(0.98, 0.98, 1) : rgb(1, 1, 1),
+        borderColor: rgb(0.85, 0.85, 0.9),
+        borderWidth: 0.3
+      });
     } else {
-      page.drawRectangle({ x: margin, y: y - lineHeight + 4, width: pageWidth - margin*2, height: lineHeight, color: rgb(0.93,0.93,0.97) });
+      // Special styling for total row with enhanced appearance and spacing
+      page.drawRectangle({ 
+        x: tableX, 
+        y: y - lineHeight + 3, 
+        width: tableWidth, 
+        height: lineHeight, 
+        color: rgb(0.92, 0.96, 0.92),
+        borderColor: rgb(0.1, 0.4, 0.1),
+        borderWidth: 2
+      });
     }
+    
     row.forEach((cell, ci) => {
       const raw = sanitize(String(cell));
-      const maxWidth = colWidths[ci] - 8;
+      const maxWidth = colWidths[ci] - 15;
       let text = raw;
-      // Truncate if width exceeds (simple measure)
-      const width = (isTotal ? bold : font).widthOfTextAtSize(text, isTotal ? 11 : 9.5);
+      
+      // Improved text sizing for better readability
+      const fontSize = isTotal ? 12 : 10.5;
+      const textFont = isTotal ? bold : font;
+      
+      // Truncate if width exceeds (improved measure)
+      const width = textFont.widthOfTextAtSize(text, fontSize);
       if (width > maxWidth) {
-        while (text.length > 3 && (isTotal ? bold : font).widthOfTextAtSize(text + '…', isTotal ? 11 : 9.5) > maxWidth) {
+        while (text.length > 3 && textFont.widthOfTextAtSize(text + '…', fontSize) > maxWidth) {
           text = text.slice(0, -1);
         }
         text = text + '…';
       }
-      page.drawText(text, { x: cx, y: y - 14, size: isTotal ? 11 : 9.5, font: isTotal ? bold : font, color: isTotal ? rgb(0.05,0.05,0.05) : rgb(0,0,0) });
+      
+      // Enhanced text positioning with professional spacing
+      const textY = y - 24;
+      const textColor = isTotal ? rgb(0.05, 0.25, 0.05) : rgb(0.1, 0.1, 0.1);
+      
+      page.drawText(text, { 
+        x: cx, 
+        y: textY, 
+        size: fontSize, 
+        font: textFont, 
+        color: textColor 
+      });
       cx += colWidths[ci];
     });
     y -= lineHeight;
+  }
+
+  // Add professional summary section with enhanced spacing
+  if (y - 140 < margin) {
+    page = createPage();
+    y = await drawProfessionalHeader(page, 0);
+  }
+  
+  // Enhanced summary section with professional styling and spacing
+  const summaryY = y - sectionSpacing;
+  const summaryHeight = 100; // Increased height for better presentation and spacing
+  
+  page.drawRectangle({ 
+    x: tableX, 
+    y: summaryY - summaryHeight, 
+    width: tableWidth, 
+    height: summaryHeight, 
+    color: rgb(0.96, 0.98, 0.96),
+    borderColor: rgb(0.15, 0.35, 0.15),
+    borderWidth: 1.5
+  });
+  
+  // Summary title with enhanced styling
+  page.drawText('QUOTATION SUMMARY', { 
+    x: tableX + 20, 
+    y: summaryY - 20, 
+    size: 16, 
+    font: bold, 
+    color: rgb(0.08, 0.25, 0.08) 
+  });
+  
+  y = summaryY - 50;
+  
+  // Machine count information with enhanced professional spacing
+  page.drawText(sanitize(`Machines Compared: ${machines.length} units`), { 
+    x: tableX + 30, 
+    y: y, 
+    size: 14, 
+    font: bold, 
+    color: rgb(0.15, 0.15, 0.15) 
+  });
+  y -= 25;
+  
+  if (condensed) {
+    page.drawText(sanitize(`Total Power Required: ${totalPowerDisplay} | Total Air Consumption: ${totalAirDisplay}`), { 
+      x: tableX + 30, 
+      y: y, 
+      size: 13, 
+      font, 
+      color: rgb(0.2, 0.2, 0.2) 
+    });
+    y -= 22;
+  } else {
+    page.drawText(sanitize(`Total Power Required: ${totalPowerDisplay}`), { 
+      x: tableX + 30, 
+      y: y, 
+      size: 13, 
+      font, 
+      color: rgb(0.2, 0.2, 0.2) 
+    });
+    y -= 22;
+    page.drawText(sanitize(`Total Air Consumption: ${totalAirDisplay}`), { 
+      x: tableX + 30, 
+      y: y, 
+      size: 13, 
+      font, 
+      color: rgb(0.2, 0.2, 0.2) 
+    });
+    y -= 22;
+  }
+  
+  // Enhanced professional notes section with better spacing
+  y -= 30;
+  page.drawText('IMPORTANT TECHNICAL NOTES:', { 
+    x: tableX + 30, 
+    y: y, 
+    size: 12, 
+    font: bold, 
+    color: rgb(0.25, 0.25, 0.25) 
+  });
+  y -= 20;
+  page.drawText(sanitize('• Verify electrical capacity and maintain >=20% safety margin for optimal performance'), { 
+    x: tableX + 30, 
+    y: y, 
+    size: 10, 
+    font, 
+    color: rgb(0.35, 0.35, 0.35) 
+  });
+  y -= 16;
+  page.drawText(sanitize('• All specifications are nominal values (not peak load) - consult technical team for peak requirements'), { 
+    x: tableX + 30, 
+    y: y, 
+    size: 10, 
+    font, 
+    color: rgb(0.35, 0.35, 0.35) 
+  });
+  y -= 16;
+  page.drawText(sanitize('• Contact our technical team for detailed installation planning and site preparation'), { 
+    x: tableX + 30, 
+    y: y, 
+    size: 10, 
+    font, 
+    color: rgb(0.35, 0.35, 0.35) 
+  });
+  y -= 16;
+  page.drawText(sanitize('• This quotation is valid for 30 days from the date of issue'), { 
+    x: tableX + 30, 
+    y: y, 
+    size: 10, 
+    font, 
+    color: rgb(0.35, 0.35, 0.35) 
   });
 
-  // Add summary section
-  if (y - 100 < margin) {
-    page = createPage();
-    y = pageHeight - margin - 60;
-    await drawHeader(page, 0);
-  }
-  page.drawText('Summary', { x: margin, y: y - 10, size: 14, font: bold });
-  y -= 30;
-  if (condensed) {
-    page.drawText(sanitize(`Totals: Power ${totalPowerDisplay} | Air ${totalAirDisplay}`), { x: margin, y: y, size: 11, font });
-    y -= 16;
-  } else {
-    page.drawText(sanitize(`Total Power Required: ${totalPowerDisplay}`), { x: margin, y: y, size: 11, font });
-    y -= 16;
-    page.drawText(sanitize(`Total Air Consumption: ${totalAirDisplay}`), { x: margin, y: y, size: 11, font });
-    y -= 16;
-  }
-  page.drawText(sanitize('Notes: Verify capacity & keep >=20% margin. For mobile view use condensed mode; figures are nominal (not peak).'), { x: margin, y: y, size: 9, font, maxWidth: pageWidth - margin*2 });
-
-  // Add footers with page numbers & branding
+  // Add professional footers with contact details
   if (includeFooter) {
     const total = pages.length;
     pages.forEach((p, idx) => {
-      const footerY = 20;
-      // divider line
-      p.drawLine({ start: { x: margin, y: footerY + 10 }, end: { x: pageWidth - margin, y: footerY + 10 }, thickness: 0.5, color: rgb(0.8,0.8,0.85) });
-      p.drawText('ALMONA | almona02.com | Authorized YILMAZ Dealer', { x: margin, y: footerY, size: 9, font, color: rgb(0.25,0.25,0.3) });
+      const footerY = 25;
+      const footerHeight = 60;
+      
+      // Footer background
+      p.drawRectangle({ 
+        x: margin, 
+        y: footerY, 
+        width: pageWidth - margin * 2, 
+        height: footerHeight, 
+        color: rgb(0.95, 0.95, 0.97),
+        borderColor: rgb(0.8, 0.8, 0.85),
+        borderWidth: 1
+      });
+      
+      // Divider line
+      p.drawLine({ 
+        start: { x: margin, y: footerY + footerHeight - 10 }, 
+        end: { x: pageWidth - margin, y: footerY + footerHeight - 10 }, 
+        thickness: 0.5, 
+        color: rgb(0.7, 0.7, 0.75) 
+      });
+      
+      // Company branding
+      p.drawText('ALMONA INDUSTRIAL SOLUTIONS', { 
+        x: margin + 15, 
+        y: footerY + 35, 
+        size: 10, 
+        font: bold, 
+        color: rgb(0.2, 0.2, 0.3) 
+      });
+      
+      p.drawText('Authorized YILMAZ Machinery Dealer', { 
+        x: margin + 15, 
+        y: footerY + 20, 
+        size: 8, 
+        font, 
+        color: rgb(0.3, 0.3, 0.4) 
+      });
+      
+      // Contact information
+      const contactX = pageWidth - margin - 200;
+      p.drawText('CONTACT INFORMATION', { 
+        x: contactX, 
+        y: footerY + 35, 
+        size: 9, 
+        font: bold, 
+        color: rgb(0.2, 0.2, 0.3) 
+      });
+      
+      p.drawText('Website: almona02.com', { 
+        x: contactX, 
+        y: footerY + 20, 
+        size: 8, 
+        font, 
+        color: rgb(0.3, 0.3, 0.4) 
+      });
+      
+      p.drawText('Email: info@almona02.com', { 
+        x: contactX, 
+        y: footerY + 8, 
+        size: 8, 
+        font, 
+        color: rgb(0.3, 0.3, 0.4) 
+      });
+      
+      // Page number
       const pageLabel = `Page ${idx + 1} / ${total}`;
       const labelWidth = font.widthOfTextAtSize(pageLabel, 9);
-      p.drawText(pageLabel, { x: pageWidth - margin - labelWidth, y: footerY, size: 9, font, color: rgb(0.35,0.35,0.4) });
+      p.drawText(pageLabel, { 
+        x: pageWidth - margin - labelWidth - 15, 
+        y: footerY + 8, 
+        size: 9, 
+        font, 
+        color: rgb(0.4, 0.4, 0.5) 
+      });
     });
   }
 
