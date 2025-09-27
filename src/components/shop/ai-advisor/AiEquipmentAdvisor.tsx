@@ -10,21 +10,44 @@ import {
 } from '@/lib/ai/SparePartsService';
 import ErrorBoundary from '../../ErrorBoundary';
 
+/**
+ * Props for the AI Equipment Advisor component
+ */
 interface AiEquipmentAdvisorProps {
+  /** Whether the dialog is open */
   open: boolean;
+  /** Callback to handle dialog open/close state changes */
   onOpenChange: (open: boolean) => void;
 }
 
+/**
+ * Available methods for part identification
+ */
 type PartIdentificationMethod = 'image' | 'description' | 'symptom' | 'predictiveInventory';
 
+/**
+ * AI Equipment Advisor Component
+ * 
+ * A comprehensive tool for identifying spare parts using multiple methods:
+ * - Image recognition: Upload a photo of the part
+ * - Description: Describe the part in text
+ * - Symptoms: Describe machine symptoms to identify needed parts
+ * - Predictive inventory: Get recommendations based on machine and location
+ * 
+ * Features:
+ * - Multiple identification methods via tabs
+ * - Real-time AI-powered part identification
+ * - Analytics tracking for usage patterns
+ * - Error handling with user-friendly messages
+ */
 const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorProps) => {
   const [method, setMethod] = useState<PartIdentificationMethod>('description');
   const [inputValue, setInputValue] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState('');
-  const [productId, setProductId] = useState('');
-  const [location, setLocation] = useState('');
+  const [_productId, _setProductId] = useState('');
+  const [_location, _setLocation] = useState('');
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -57,12 +80,13 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
       } else if (method === 'symptom' && inputValue) {
         response = await predictPartDemand('DK-502', 'Cairo');
         setResult(response);
-      } else if (method === 'predictiveInventory' && productId && location) {
+      } else if (method === 'predictiveInventory' && _productId && _location) {
         // Placeholder for predictive inventory API call
-        response = await predictPartDemand(productId, location);
+        response = await predictPartDemand(_productId, _location);
         setResult(response);
       }
     } catch (error) {
+      console.error('Error identifying part:', error);
       setResult('Error identifying part. Please try again.');
     } finally {
       setIsLoading(false);

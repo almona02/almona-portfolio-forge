@@ -49,7 +49,7 @@ export const SalesChart: React.FC = () => {
         .from('orders')
         .select('total_amount,created_at,status')
         .gte('created_at', since.toISOString())
-        .eq('status', 'delivered')
+        .eq('status', 'delivered' as any)
         .order('created_at', { ascending: true })
 
       if (!mounted) return

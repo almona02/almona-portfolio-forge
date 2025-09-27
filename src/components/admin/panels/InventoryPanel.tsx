@@ -18,6 +18,22 @@ type Product = Database['public']['Tables']['products']['Row']
 
 type ServerPage<T> = { rows: T[]; total: number }
 
+/**
+ * Inventory Panel Component
+ * 
+ * Provides comprehensive inventory management for administrators.
+ * Features:
+ * - Real-time stock level monitoring
+ * - Advanced filtering by category, stock status, and active status
+ * - Bulk operations for stock adjustments and product activation
+ * - Server-side pagination for large inventory datasets
+ * - Live updates via Supabase real-time subscriptions
+ * - Stock level alerts and management
+ * 
+ * Displays product inventory with stock quantities, minimum/maximum levels,
+ * and activation status. Supports bulk operations for stock adjustments
+ * and product status management.
+ */
 export const InventoryPanel: React.FC = () => {
   const [data, setData] = React.useState<Product[]>([])
   const [loading, setLoading] = React.useState(true)
@@ -48,11 +64,11 @@ export const InventoryPanel: React.FC = () => {
   const fetchServerPage = React.useCallback(async (): Promise<ServerPage<Product>> => {
     let query = supabase.from('products').select('*', { count: 'exact' })
 
-    if (category !== 'all') query = query.eq('category', category)
-    if (active !== 'all') query = query.eq('is_active', active === 'active')
-    if (stockStatus === 'ok') query = query.gt('stock_quantity', 10)
-    if (stockStatus === 'low') query = query.gt('stock_quantity', 0).lte('stock_quantity', 10)
-    if (stockStatus === 'out') query = query.eq('stock_quantity', 0)
+    if (category !== 'all') query = query.eq('category', category as any)
+    if (active !== 'all') query = query.eq('is_active', (active === 'active') as any)
+    if (stockStatus === 'ok') query = query.gt('stock_quantity', 10 as any)
+    if (stockStatus === 'low') query = query.gt('stock_quantity', 0 as any).lte('stock_quantity', 10 as any)
+    if (stockStatus === 'out') query = query.eq('stock_quantity', 0 as any)
     if (search) query = query.or(`sku.ilike.%${search}%,name_en.ilike.%${search}%`)
 
     const from = (page - 1) * pageSize
@@ -60,7 +76,7 @@ export const InventoryPanel: React.FC = () => {
     const { data, count, error } = await query.range(from, to).order('stock_quantity', { ascending: true })
 
     if (error) throw error
-    return { rows: (data as Product[]) ?? [], total: count ?? 0 }
+    return { rows: (data as unknown as Product[]) ?? [], total: count ?? 0 }
   }, [page, pageSize, category, stockStatus, active, search])
 
   React.useEffect(() => {

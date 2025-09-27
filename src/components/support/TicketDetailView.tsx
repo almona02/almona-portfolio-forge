@@ -2,9 +2,8 @@ import React, { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/context/AuthContext'
 import { getTicketById, getTicketMessages, createMessage, updateTicketStatus } from '@/lib/ticketApi'
-import { CreateMessageData, MessageWithAuthor, TicketWithDetails } from '@/types/tickets'
+import { CreateMessageData } from '@/types/tickets'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -14,7 +13,6 @@ import {
   ArrowLeft, 
   Send, 
   Paperclip, 
-  Clock, 
   User, 
   Phone, 
   Mail, 

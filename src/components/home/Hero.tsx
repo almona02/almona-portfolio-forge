@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Phone } from "lucide-react";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
-import ResponsiveImage from "@/shared/ui/ui/ResponsiveImage";
-import Logo from "@/assets/almona-new-logo.svg"; // Update path
+// import ResponsiveImage from "@/shared/ui/ui/ResponsiveImage";
+// import Logo from "@/assets/almona-new-logo.svg"; // Update path
 
 const Hero = () => {
   const [activeSlide, setActiveSlide] = useState(0);

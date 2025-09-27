@@ -15,7 +15,7 @@ export const FacebookLoginButton: React.FC<FacebookLoginButtonProps> = ({
   useEffect(() => {
     // Load Facebook SDK
     const loadFacebookSDK = () => {
-      if ((window as any).FB) {
+      if ((window as Window & { FB?: any }).FB) {
         setSdkLoaded(true);
         return;
       }
@@ -28,7 +28,7 @@ export const FacebookLoginButton: React.FC<FacebookLoginButtonProps> = ({
       script.crossOrigin = 'anonymous';
       
       script.onload = () => {
-        (window as any).FB.init({
+        (window as unknown as Window & { FB: any }).FB.init({
           appId: import.meta.env.VITE_FACEBOOK_APP_ID || '1234567890', // Replace with your Facebook App ID
           cookie: true,
           xfbml: true,
@@ -51,17 +51,17 @@ export const FacebookLoginButton: React.FC<FacebookLoginButtonProps> = ({
   const handleFacebookLogin = async () => {
     try {
       // Check if Facebook SDK is loaded
-      if (!(window as any).FB || !sdkLoaded) {
+      if (!(window as Window & { FB?: any }).FB || !sdkLoaded) {
         toast.error("Facebook SDK not loaded. Please try again later.");
         return;
       }
 
-      (window as any).FB.login(
-        async (response: any) => {
+      (window as unknown as Window & { FB: any }).FB.login(
+        async (response: { authResponse?: { accessToken: string } }) => {
           if (response.authResponse) {
             try {
               // Get user info from Facebook
-              (window as any).FB.api('/me', { fields: 'name,email' }, async (userInfo: any) => {
+              (window as unknown as Window & { FB: any }).FB.api('/me', { fields: 'name,email' }, async (userInfo: { name: string; email: string }) => {
                 try {
                   // Send to backend for processing
                   const res = await fetch("/api/auth/facebook/callback", {

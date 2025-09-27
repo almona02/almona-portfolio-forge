@@ -7,7 +7,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRegionDetection } from '@/hooks/useRegionDetection';
 import { 
-  convertCurrency, 
   getAvailableCurrencies, 
   getCurrencyInfo, 
   getCurrencyForRegion,
@@ -37,7 +36,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
 }) => {
   const { t } = useTranslation();
   const { regionState } = useRegionDetection();
-  const { convert, getRate, refreshRates, rates, loading, error } = useCurrencyConverter();
+  const { convert, getRate, refreshRates, loading, error } = useCurrencyConverter();
   
   const [fromCurrency, setFromCurrency] = useState<string>('USD');
   const [toCurrency, setToCurrency] = useState<string>('TRY');
@@ -185,7 +184,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
               {t('currency.converter.from', 'Kaynak')}
             </Label>
             <Select value={fromCurrency} onValueChange={setFromCurrency}>
-              <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -207,7 +206,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
               {t('currency.converter.to', 'Hedef')}
             </Label>
             <Select value={toCurrency} onValueChange={setToCurrency}>
-              <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

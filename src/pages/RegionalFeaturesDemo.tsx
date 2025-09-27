@@ -12,7 +12,7 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRegionDetection, useRegionUtils, useTurkishTaxUtils } from '@/hooks/useRegionDetection';
+import { useRegionDetection, useRegionUtils, useTurkishTaxUtils, useRegionalConfig } from '@/hooks/useRegionDetection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,17 +26,19 @@ import TurkishComplianceDocs from '@/components/regional/turkish/TurkishComplian
 import TurkishChatSupport from '@/components/regional/turkish/TurkishChatSupport';
 import CurrencyConverter from '@/components/currency/CurrencyConverter';
 import InteractiveModelDemo from '@/components/3d-model/InteractiveModelDemo';
+import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
 const RegionalFeaturesDemo: React.FC = () => {
   const { t } = useTranslation();
   const { regionState, setRegion, refreshRegion } = useRegionDetection();
   const utils = useRegionUtils();
   const turkishTaxUtils = useTurkishTaxUtils();
+  const { config: _config } = useRegionalConfig();
   
   const [activeTab, setActiveTab] = useState('overview');
 
   const handleRegionChange = (newRegion: string) => {
-    setRegion(newRegion as any);
+    setRegion(newRegion as 'TR' | 'EG' | 'DEFAULT');
   };
 
   return (
@@ -90,7 +92,7 @@ const RegionalFeaturesDemo: React.FC = () => {
               <div className="text-center">
                 <div className="text-2xl mb-2">💱</div>
                 <h3 className="text-white font-semibold">
-                  {utils.config.currency.symbol} {utils.config.currency.code}
+                  {_config.currency.symbol} {_config.currency.code}
                 </h3>
                 <p className="text-gray-400 text-sm">
                   {t('demo.regionStatus.currency', 'Currency')}
@@ -100,7 +102,7 @@ const RegionalFeaturesDemo: React.FC = () => {
               <div className="text-center">
                 <div className="text-2xl mb-2">📊</div>
                 <h3 className="text-white font-semibold">
-                  {utils.config.tax.vatRate * 100}% {utils.config.tax.vatName}
+                  {_config.tax.vatRate * 100}% {_config.tax.vatName}
                 </h3>
                 <p className="text-gray-400 text-sm">
                   {t('demo.regionStatus.taxRate', 'Tax Rate')}
@@ -177,7 +179,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                       {t('demo.overview.regionDetection.features', 'Enabled Features')}
                     </h4>
                     <div className="flex flex-wrap gap-2">
-                      {Object.entries(utils.config.features).map(([feature, enabled]) => (
+                      {Object.entries(_config.features).map(([feature, enabled]) => (
                         <Badge
                           key={feature}
                           variant={enabled ? 'default' : 'secondary'}
@@ -194,7 +196,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                       {t('demo.overview.regionDetection.businessHours', 'Business Hours')}
                     </h4>
                     <p className="text-white">
-                      {utils.config.business.workingHours.start} - {utils.config.business.workingHours.end} ({utils.config.business.workingHours.timezone})
+                      {_config.business.workingHours.start} - {_config.business.workingHours.end} ({_config.business.workingHours.timezone})
                     </p>
                     <p className="text-sm text-gray-400">
                       {utils.isBusinessHours() ? t('demo.overview.regionDetection.open', 'Currently Open') : t('demo.overview.regionDetection.closed', 'Currently Closed')}
@@ -235,7 +237,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                           {t('demo.overview.turkishFeatures.compliance', 'Compliance Standards')}
                         </h4>
                         <div className="flex flex-wrap gap-2">
-                          {utils.config.compliance.standards.map(standard => (
+                          {_config.compliance.standards.map(standard => (
                             <Badge key={standard} variant="outline" className="text-blue-400 border-blue-400">
                               {standard}
                             </Badge>
@@ -292,7 +294,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                         {t('demo.compliance.standards.required', 'Required Standards')}
                       </h4>
                       <div className="flex flex-wrap gap-2">
-                        {utils.config.compliance.standards.map(standard => (
+                        {_config.compliance.standards.map(standard => (
                           <Badge key={standard} variant="outline" className="text-green-400 border-green-400">
                             {standard}
                           </Badge>
@@ -305,7 +307,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                         {t('demo.compliance.standards.certifications', 'Certifications')}
                       </h4>
                       <div className="flex flex-wrap gap-2">
-                        {utils.config.compliance.certifications.map(cert => (
+                        {_config.compliance.certifications.map(cert => (
                           <Badge key={cert} variant="outline" className="text-blue-400 border-blue-400">
                             {cert}
                           </Badge>
@@ -318,7 +320,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                         {t('demo.compliance.standards.documents', 'Required Documents')}
                       </h4>
                       <ul className="text-white space-y-1">
-                        {utils.config.compliance.documentation.required.map(doc => (
+                        {_config.compliance.documentation.required.map(doc => (
                           <li key={doc} className="flex items-center space-x-2">
                             <span className="text-green-400">✓</span>
                             <span>{doc}</span>
@@ -342,4 +344,4 @@ const RegionalFeaturesDemo: React.FC = () => {
   );
 };
 
-export default RegionalFeaturesDemo;
+export default withErrorBoundary(RegionalFeaturesDemo);

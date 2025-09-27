@@ -32,7 +32,7 @@ interface SourceMachineLike {
 }
 import { Eye } from "lucide-react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import React, { useEffect, useState, useMemo, useCallback, Suspense, lazy } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 
 // UI wrapper union ensures compatibility with comparison + quote components expecting UiMachine shape

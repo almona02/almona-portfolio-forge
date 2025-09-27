@@ -4,8 +4,7 @@ import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { AlertTriangle, Check, HardHat, Loader2 } from 'lucide-react';
-import { Badge } from '../ui/badge';
+import { AlertTriangle, Check, Loader2 } from 'lucide-react';
 import { sendSms } from '@/lib/smsService';
 
 type FormData = {
@@ -41,7 +40,7 @@ export const IntelligentForm = ({
   const [serialValidating, setSerialValidating] = useState(false);
   const [serialValid, setSerialValid] = useState<boolean | null>(null);
 
-  const inquiryType = watch('inquiryType');
+  const _inquiryType = watch('inquiryType');
   const machineSerial = watch('machineSerial');
 
   // Validate machine serial number

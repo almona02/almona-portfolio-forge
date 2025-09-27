@@ -10,7 +10,7 @@ const NotFound = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(10);
-  const [isHovered, setIsHovered] = useState(false);
+  // const [isHovered, setIsHovered] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [canRender3D, setCanRender3D] = useState(true);
   const lastPathRef = useRef<string | null>(null);
@@ -23,7 +23,6 @@ const NotFound = () => {
     if (lastPathRef.current !== location.pathname) {
       if (import.meta.env.DEV) {
         // Only log in dev
-        // eslint-disable-next-line no-console
         console.error('404 Error: User attempted to access non-existent route:', location.pathname);
       }
       lastPathRef.current = location.pathname;
@@ -73,7 +72,7 @@ const NotFound = () => {
         <div className="max-w-2xl w-full bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 text-center border border-white/20">
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">Page Not Found</h2>
           <p className="text-gray-600 mb-6">
-            The page you're looking for doesn't exist.
+            The page you&apos;re looking for doesn&apos;t exist.
           </p>
           <button
             onClick={handleGoHome}
@@ -147,7 +146,7 @@ const NotFound = () => {
           {/* Error Message */}
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">Lost in the Digital Space</h2>
           <p className="text-gray-600 mb-6">
-            The page you're looking for seems to have drifted into orbit. 
+            The page you&apos;re looking for seems to have drifted into orbit. 
             Let us guide you back to familiar territory.
           </p>
 
@@ -162,8 +161,8 @@ const NotFound = () => {
             <button
               onClick={handleGoHome}
               className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
+              // onMouseEnter={() => setIsHovered(true)}
+              // onMouseLeave={() => setIsHovered(false)}
             >
               Return to Homebase
             </button>

@@ -8,13 +8,32 @@ import { Label } from '@/shared/ui/ui/label';
 import { Star } from 'lucide-react';
 import { toast } from 'sonner';
 
+/**
+ * Props for the ReviewForm component
+ */
 interface ReviewFormProps {
+  /** ID of the product being reviewed */
   productId: string;
+  /** Callback function called when review is submitted */
   onSubmit: (rating: number, comment: string, reviewerName: string) => void;
 }
 
+/**
+ * ReviewForm Component
+ * 
+ * A form component for customers to submit product reviews.
+ * Features:
+ * - 5-star rating system with hover effects
+ * - Text comment field
+ * - Reviewer name field
+ * - Form validation with error messages
+ * - Internationalization support
+ * - Toast notifications for feedback
+ * 
+ * Validates that both rating and reviewer name are provided before submission.
+ */
 export const ReviewForm: React.FC<ReviewFormProps> = ({
-  productId,
+  productId: _productId,
   onSubmit,
 }) => {
   const { t } = useTranslation('shop');

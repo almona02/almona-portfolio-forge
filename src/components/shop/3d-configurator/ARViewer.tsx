@@ -4,6 +4,18 @@ import { WorkshopARView } from '../ar/WorkspaceChecker';
 import { MACHINE_PRESETS } from '../ar/machinePresets';
 import { getEquipmentRecommendation } from '@/lib/ai/gemini';
 
+/**
+ * ARViewer Component
+ * 
+ * Provides an Augmented Reality interface for viewing machines in a 3D workspace.
+ * Features include:
+ * - WebXR AR support detection
+ * - Machine selection from presets
+ * - Predictive maintenance information via AI
+ * - Fallback to 2D view for unsupported devices
+ * 
+ * @param productId - The ID of the product to display in AR
+ */
 export const ARViewer = ({ productId }: { productId: string }) => {
   const [isSupported, setIsSupported] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -44,6 +56,7 @@ export const ARViewer = ({ productId }: { productId: string }) => {
         const info = await getEquipmentRecommendation(prompt);
         setMaintenanceInfo(info);
       } catch (error) {
+        console.error('Failed to fetch maintenance info:', error);
         setMaintenanceInfo('Failed to load maintenance info.');
       }
     };

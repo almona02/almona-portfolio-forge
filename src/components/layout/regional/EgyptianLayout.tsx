@@ -17,9 +17,9 @@ interface EgyptianLayoutProps {
 
 export const EgyptianLayout: React.FC<EgyptianLayoutProps> = ({
   children,
-  config,
-  onRegionChange,
-  enableRegionSwitching
+  config: _config,
+  onRegionChange: _onRegionChange,
+  enableRegionSwitching: _enableRegionSwitching
 }) => {
   return (
     <div className="min-h-screen bg-almona-dark text-white" dir="rtl">

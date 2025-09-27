@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
-import userEvent from '@testing-library/user-event';
+// import userEvent from '@testing-library/user-event';
 
-import { AiEquipmentAdvisor } from './AiEquipmentAdvisor';
+import AiEquipmentAdvisor from './AiEquipmentAdvisor';
 
 // Mock the SparePartsService functions
 vi.mock('@/lib/ai/SparePartsService', () => ({
@@ -23,7 +23,6 @@ vi.mock('@/lib/ai/SparePartsService', () => ({
 
 describe('AiEquipmentAdvisor', () => {
   const mockOnOpenChange = vi.fn();
-  const user = userEvent.setup();
 
   beforeEach(() => {
     vi.clearAllMocks();

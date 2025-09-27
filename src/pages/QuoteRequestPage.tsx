@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/useToast';
 import { QuoteRequestStepper } from '@/components/quotes/QuoteRequestStepper';
-import Navbar from '@/components/layout/Navbar';
+// import Navbar from '@/components/layout/Navbar';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import Footer from '@/components/layout/Footer';
+// import Footer from '@/components/layout/Footer';
 
 // Define interfaces for the quote data
 interface QuoteProduct {
@@ -57,7 +57,7 @@ const QuoteRequestPage: React.FC = () => {
     }
   }, [location]);
 
-  const handleSubmit = async (quoteData: QuoteData) => {
+  const handleSubmit = async (quoteData: any) => {
     try {
       // Simulate API call
       console.log('Quote submitted:', quoteData);

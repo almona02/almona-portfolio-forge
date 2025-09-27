@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+// import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { 
   Search, 
   Filter, 
@@ -9,12 +9,7 @@ import {
   Zap, 
   Wrench, 
   ChevronRight,
-  Sparkles,
-  ArrowRight,
-  Download,
-  ShoppingCart,
-  X,
-  CheckCircle
+  ShoppingCart
 } from "lucide-react";
 
 
@@ -30,9 +25,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import { useToast } from "@/hooks/useToast";
 import { yilmazMachines } from "@/constants/productsData";
+import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
 // Types
 interface SparePart {
@@ -146,19 +142,27 @@ const partCategories: PartCategory[] = [
   }
 ];
 
+/**
+ * SpareParts Component
+ * 
+ * A comprehensive spare parts catalog for industrial machinery.
+ * Features include search, filtering by category, and cart functionality.
+ * 
+ * @returns {JSX.Element} The SpareParts page component
+ */
 const SpareParts = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
-  const [selectedMachine, setSelectedMachine] = useState<string>("all");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
-  const [inStockOnly, setInStockOnly] = useState(false);
+  const [_selectedSubcategory, _setSelectedSubcategory] = useState<string>("all");
+  const [_selectedMachine, _setSelectedMachine] = useState<string>("all");
+  const [_priceRange, _setPriceRange] = useState<[number, number]>([0, 10000]);
+  const [_inStockOnly, _setInStockOnly] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedParts, setSelectedParts] = useState<string[]>([]);
-  const [aiWizardOpen, setAiWizardOpen] = useState(false);
-  const [aiStep, setAiStep] = useState(0);
-  const [aiSelections, setAiSelections] = useState<Record<string, string>>({});
+  const [_selectedParts, _setSelectedParts] = useState<string[]>([]);
+  const [_aiWizardOpen, _setAiWizardOpen] = useState(false);
+  const [_aiStep, _setAiStep] = useState(0);
+  const [_aiSelections, _setAiSelections] = useState<Record<string, string>>({});
 
   useEffect(() => {
     document.title = "Spare Parts - ALMONA";
@@ -176,24 +180,28 @@ const SpareParts = () => {
         selectedCategory === "all" || part.category === selectedCategory;
       
       const matchesSubcategory = 
-        selectedSubcategory === "all" || part.subcategory === selectedSubcategory;
+        _selectedSubcategory === "all" || part.subcategory === _selectedSubcategory;
       
       const matchesMachine = 
-        selectedMachine === "all" || part.compatibleMachines.includes(selectedMachine);
+        _selectedMachine === "all" || part.compatibleMachines.includes(_selectedMachine);
       
       const matchesPrice = 
-        part.price >= priceRange[0] && part.price <= priceRange[1];
+        part.price >= _priceRange[0] && part.price <= _priceRange[1];
       
       const matchesStock = 
-        !inStockOnly || part.stock > 0;
+        !_inStockOnly || part.stock > 0;
 
       return matchesSearch && matchesCategory && matchesSubcategory && 
              matchesMachine && matchesPrice && matchesStock;
     });
-  }, [searchTerm, selectedCategory, selectedSubcategory, selectedMachine, priceRange, inStockOnly]);
+  }, [searchTerm, selectedCategory, _selectedSubcategory, _selectedMachine, _priceRange, _inStockOnly]);
 
+  /**
+   * Handles adding a spare part to the cart
+   * @param {string} partId - The ID of the part to add to cart
+   */
   const handleAddToCart = (partId: string) => {
-    setSelectedParts(prev => [...prev, partId]);
+    _setSelectedParts(prev => [...prev, partId]);
     toast({
       title: "Part added",
       description: "Part has been added to your cart",
@@ -242,7 +250,7 @@ const SpareParts = () => {
               >
                 <Filter className="h-4 w-4" />
                 Filters
-                {(selectedCategory !== "all" || selectedMachine !== "all" || selectedSubcategory !== "all") && (
+                {(selectedCategory !== "all" || _selectedMachine !== "all" || _selectedSubcategory !== "all") && (
                   <Badge variant="secondary" className="ml-1">
                     Active
                   </Badge>
@@ -288,7 +296,7 @@ const SpareParts = () => {
                 <h2 className="text-2xl font-semibold">
                   {filteredParts.length} Parts Found
                   {selectedCategory !== "all" && ` in ${partCategories.find(c => c.id === selectedCategory)?.name}`}
-                  {selectedMachine !== "all" && ` for ${yilmazMachines.find(m => m.id === selectedMachine)?.name}`}
+                  {_selectedMachine !== "all" && ` for ${yilmazMachines.find(m => m.id === _selectedMachine)?.name}`}
                 </h2>
                 
                 <Select defaultValue="popular">
@@ -401,4 +409,4 @@ const SpareParts = () => {
   );
 };
 
-export default SpareParts;
+export default withErrorBoundary(SpareParts);

@@ -33,7 +33,7 @@ const Contact = () => {
     resolver: zodResolver(contactSchema),
   });
 
-  const onSubmit = (data: ContactFormValues) => {
+  const onSubmit = (_data: ContactFormValues) => {
     setIsSubmitting(true);
     // Simulate API call
     setTimeout(() => {

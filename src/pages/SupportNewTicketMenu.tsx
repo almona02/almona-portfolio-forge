@@ -7,11 +7,28 @@ import { motion } from 'framer-motion';
 import { Wrench, AlertTriangle, GraduationCap, Settings, Clock, FilePlus2 } from 'lucide-react';
 import { buildNavigationState } from '@/lib/ticketing/unifiedTicketing';
 import { useAuth } from '@/context/AuthContext';
+import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
+/**
+ * SupportNewTicketMenu Component
+ * 
+ * A menu interface for creating new support tickets with categorized options.
+ * Provides different ticket types including technical issues, emergencies, and maintenance requests.
+ * 
+ * @returns {JSX.Element} The SupportNewTicketMenu page component
+ */
 const SupportNewTicketMenu = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  /**
+   * Creates a new support ticket with pre-filled data
+   * @param {Object} prefill - Pre-filled ticket data
+   * @param {string} prefill.source - The source of the ticket
+   * @param {string} [prefill.type] - The type of ticket
+   * @param {string} [prefill.priority] - The priority level
+   * @param {string} [prefill.maintenanceType] - The maintenance type if applicable
+   */
   const create = (prefill: { source: 'services' | 'quote' | 'spare_parts' | 'training' | 'emergency' | 'maintenance' | 'machine'; type?: string; priority?: string; maintenanceType?: 'preventive' | 'corrective' | 'emergency' }) => {
     if (!user) {
       navigate('/login');
@@ -95,7 +112,9 @@ const SupportNewTicketMenu = () => {
           </motion.div>
         </div>
       </main>
+      <Footer />
+    </div>
   );
 };
 
-export default SupportNewTicketMenu;
+export default withErrorBoundary(SupportNewTicketMenu);

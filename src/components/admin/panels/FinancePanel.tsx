@@ -9,6 +9,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { supabase } from '@/lib/supabase'
 import type { Database } from '@/types/database'
 
+/**
+ * Finance Panel Component
+ * 
+ * Provides comprehensive financial data management for administrators.
+ * Features:
+ * - Real-time order and payment tracking
+ * - Advanced filtering by payment status and date ranges
+ * - Server-side pagination for large datasets
+ * - CSV export functionality
+ * - Live updates via Supabase real-time subscriptions
+ * 
+ * Displays orders with payment status, amounts, and creation dates.
+ * Supports filtering by payment status (pending, paid, failed, refunded).
+ */
+
 type Order = Database['public']['Tables']['orders']['Row']
 
 type ServerPage<T> = { rows: T[]; total: number }
@@ -46,7 +61,7 @@ export const FinancePanel: React.FC = () => {
 
   const fetchServerPage = React.useCallback(async (): Promise<ServerPage<Order>> => {
     let query = supabase.from('orders').select('*', { count: 'exact' })
-    if (payment !== 'all') query = query.eq('payment_status', payment)
+    if (payment !== 'all') query = query.eq('payment_status', payment as any)
     if (dateFrom) query = query.gte('created_at', new Date(dateFrom).toISOString())
     if (dateTo) {
       const dt = new Date(dateTo)
@@ -57,7 +72,7 @@ export const FinancePanel: React.FC = () => {
     const to = from + pageSize - 1
     const { data, count, error } = await query.range(from, to).order('created_at', { ascending: false })
     if (error) throw error
-    return { rows: (data as Order[]) ?? [], total: count ?? 0 }
+    return { rows: (data as unknown as Order[]) ?? [], total: count ?? 0 }
   }, [payment, dateFrom, dateTo, page, pageSize])
 
   React.useEffect(() => {

@@ -5,7 +5,7 @@
 
 import React, { Suspense, lazy } from 'react';
 import { useRegionDetection, useRegionalConfig } from '@/hooks/useRegionDetection';
-import { RegionCode } from '@/config/regionalConfig';
+import { RegionCode, RegionalMarketConfig } from '@/config/regionalConfig';
 import { PageLoadingWrapper } from '@/components/ui/PageLoadingWrapper';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
@@ -51,7 +51,7 @@ export const RegionAwareLayout: React.FC<RegionAwareLayoutProps> = ({
   }, [isLoading]);
 
   if (isLoading && !loadingTimeout) {
-    return <PageLoadingWrapper />;
+    return <PageLoadingWrapper>{children}</PageLoadingWrapper>;
   }
 
   if (error) {
@@ -116,7 +116,7 @@ export const RegionAwareLayout: React.FC<RegionAwareLayoutProps> = ({
     <ErrorBoundary>
       <div className={`min-h-screen ${config.features.rtl ? 'rtl' : 'ltr'}`}>
         {/* Region-specific layout */}
-        <Suspense fallback={<PageLoadingWrapper />}>
+        <Suspense fallback={<PageLoadingWrapper>{children}</PageLoadingWrapper>}>
           {renderRegionalLayout()}
         </Suspense>
 
@@ -137,7 +137,7 @@ export const RegionAwareLayout: React.FC<RegionAwareLayoutProps> = ({
  */
 interface RegionalFeaturesOverlayProps {
   region: RegionCode;
-  config: any;
+  config: RegionalMarketConfig;
 }
 
 const RegionalFeaturesOverlay: React.FC<RegionalFeaturesOverlayProps> = ({ region, config }) => {

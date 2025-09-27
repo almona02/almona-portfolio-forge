@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/shared/ui/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import SEO from "./components/SEO";
 import { PageLoadingWrapper } from "./components/ui/PageLoadingWrapper";
@@ -251,9 +251,9 @@ function NavPrefetchHints() {
     });
     return () => {
       els.forEach(el => {
-        el.removeEventListener('mouseenter', handler as any);
-        el.removeEventListener('focus', handler as any);
-        el.removeEventListener('touchstart', handler as any);
+        el.removeEventListener('mouseenter', handler as EventListener);
+        el.removeEventListener('focus', handler as EventListener);
+        el.removeEventListener('touchstart', handler as EventListener);
       });
     };
   }, []);

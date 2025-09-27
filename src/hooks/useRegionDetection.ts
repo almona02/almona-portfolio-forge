@@ -3,7 +3,7 @@
  * Integrates with existing i18n structure and provides region-aware functionality
  */
 
-import { useState, useEffect, useCallback, useContext } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RegionCode, getRegionalConfig } from '@/config/regionalConfig';
 
@@ -200,7 +200,7 @@ export function useRegionDetection(options: RegionDetectionOptions = {}): {
     isLoading: false, // Start with false to avoid loading state
     error: null,
     detectedBy: 'fallback',
-    lastUpdated: null
+    lastUpdated: new Date() // Initialize with current time
   });
 
   /**
@@ -252,7 +252,10 @@ export function useRegionDetection(options: RegionDetectionOptions = {}): {
    * Refresh region detection
    */
   const refreshRegion = useCallback(async () => {
-    setRegionState(prev => ({ ...prev, isLoading: true, error: null }));
+    // Only set loading if we don't already have a valid region
+    if (regionState.region === opts.fallbackRegion && !regionState.lastUpdated) {
+      setRegionState(prev => ({ ...prev, isLoading: true, error: null }));
+    }
 
     try {
       // 1. Check cache first
@@ -308,14 +311,17 @@ export function useRegionDetection(options: RegionDetectionOptions = {}): {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       updateRegionState(opts.fallbackRegion, 'fallback', errorMessage);
     }
-  }, [opts, updateRegionState]);
+  }, [opts, updateRegionState, regionState.region, regionState.lastUpdated]);
 
   /**
    * Initial region detection
    */
   useEffect(() => {
-    refreshRegion();
-  }, [refreshRegion]);
+    // Only refresh if we don't have a valid region yet
+    if (regionState.region === opts.fallbackRegion && !regionState.lastUpdated) {
+      refreshRegion();
+    }
+  }, [refreshRegion, regionState.region, regionState.lastUpdated, opts.fallbackRegion]);
 
   /**
    * Listen to i18n language changes and update region accordingly

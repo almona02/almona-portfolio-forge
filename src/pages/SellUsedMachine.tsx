@@ -11,6 +11,7 @@ import { useNavigate, Navigate, Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
 const sellMachineSchema = z.object({
   name: z.string().min(2, 'Machine name must be at least 2 characters'),
@@ -52,11 +53,17 @@ const SellUsedMachine = () => {
 
   const onSubmit = async (data: SellMachineFormValues) => {
     try {
-      await api.registerMachine({ ...data, user_id: user.id, is_used: true });
+      await api.registerMachine({ 
+        name: data.name,
+        model: data.model,
+        serial_number: `USED-${Date.now()}`,
+        owner_id: user.id
+      });
       toast.success('Your machine has been listed for sale!');
       navigate('/usedmachines');
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to list your machine.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to list your machine.';
+      toast.error(errorMessage);
     }
   };
 
@@ -168,4 +175,4 @@ const SellUsedMachine = () => {
   );
 };
 
-export default SellUsedMachine;
+export default withErrorBoundary(SellUsedMachine);

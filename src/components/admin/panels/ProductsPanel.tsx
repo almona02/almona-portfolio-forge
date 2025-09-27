@@ -22,6 +22,22 @@ type ServerPage<T> = {
   total: number
 }
 
+/**
+ * Products Panel Component
+ * 
+ * Provides comprehensive product management for administrators.
+ * Features:
+ * - Real-time product catalog management
+ * - Advanced filtering by category, stock status, and active status
+ * - Bulk operations for product activation, featuring, and stock management
+ * - Server-side pagination for large product datasets
+ * - Live updates via Supabase real-time subscriptions
+ * - Product editing and status management
+ * 
+ * Displays products with SKU, name, category, price, stock levels, and status.
+ * Supports bulk operations for activation, featuring, and stock adjustments.
+ * Includes individual product editing capabilities.
+ */
 export const ProductsPanel: React.FC = () => {
   type InClient = { update: (v: unknown) => { in: (col: string, vals: string[]) => Promise<{ error: unknown }> } }
   type EqClient = { update: (v: unknown) => { eq: (col: string, val: string) => Promise<{ error: unknown }> } }
@@ -62,11 +78,11 @@ export const ProductsPanel: React.FC = () => {
     // Build query with filters
     let query = supabase.from('products').select('*', { count: 'exact' })
 
-    if (category !== 'all') query = query.eq('category', category)
-    if (active !== 'all') query = query.eq('is_active', active === 'active')
-    if (stock === 'low') query = query.gt('stock_quantity', 0).lte('stock_quantity', 10)
-    if (stock === 'out') query = query.eq('stock_quantity', 0)
-    if (stock === 'in') query = query.gt('stock_quantity', 10)
+    if (category !== 'all') query = query.eq('category', category as any)
+    if (active !== 'all') query = query.eq('is_active', (active === 'active') as any)
+    if (stock === 'low') query = query.gt('stock_quantity', 0 as any).lte('stock_quantity', 10 as any)
+    if (stock === 'out') query = query.eq('stock_quantity', 0 as any)
+    if (stock === 'in') query = query.gt('stock_quantity', 10 as any)
     if (search) query = query.ilike('sku', `%${search}%`)
 
     const from = (page - 1) * pageSize
@@ -74,7 +90,7 @@ export const ProductsPanel: React.FC = () => {
     const { data, count, error } = await query.range(from, to).order('created_at', { ascending: false })
 
     if (error) throw error
-    return { rows: (data as Product[]) ?? [], total: count ?? 0 }
+    return { rows: (data as unknown as Product[]) ?? [], total: count ?? 0 }
   }, [page, pageSize, category, active, stock, search])
 
   React.useEffect(() => {

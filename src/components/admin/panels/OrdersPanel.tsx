@@ -22,6 +22,22 @@ type ServerPage<T> = {
   total: number
 }
 
+/**
+ * Orders Panel Component
+ * 
+ * Provides comprehensive order management for administrators.
+ * Features:
+ * - Real-time order tracking and management
+ * - Advanced filtering by status, date ranges, and order ID
+ * - Bulk operations for status and payment updates
+ * - Server-side pagination for large order datasets
+ * - Live updates via Supabase real-time subscriptions
+ * - Individual order detail viewing and editing
+ * 
+ * Displays orders with ID, status, total amount, payment status, and creation date.
+ * Supports bulk operations for updating order status and payment status.
+ * Includes detailed order view and editing capabilities.
+ */
 export const OrdersPanel: React.FC = () => {
   type InClient = { update: (v: unknown) => { in: (col: string, vals: string[]) => Promise<{ error: unknown }> } }
   const [data, setData] = React.useState<Order[]>([])
@@ -56,7 +72,7 @@ export const OrdersPanel: React.FC = () => {
   const fetchServerPage = React.useCallback(async (): Promise<ServerPage<Order>> => {
     let query = supabase.from('orders').select('*', { count: 'exact' })
 
-    if (status !== 'all') query = query.eq('status', status)
+    if (status !== 'all') query = query.eq('status', status as any)
     if (search) query = query.ilike('id', `%${search}%`)
     if (dateFrom) query = query.gte('created_at', new Date(dateFrom).toISOString())
     if (dateTo) {
@@ -69,7 +85,7 @@ export const OrdersPanel: React.FC = () => {
     const to = from + pageSize - 1
     const { data, count, error } = await query.range(from, to).order('created_at', { ascending: false })
     if (error) throw error
-    return { rows: (data as Order[]) ?? [], total: count ?? 0 }
+    return { rows: (data as unknown as Order[]) ?? [], total: count ?? 0 }
   }, [status, search, dateFrom, dateTo, page, pageSize])
 
   React.useEffect(() => {

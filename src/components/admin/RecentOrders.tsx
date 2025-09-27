@@ -33,7 +33,7 @@ export const RecentOrders: React.FC = () => {
         setError('Failed to load recent orders')
         setOrders([])
       } else {
-        setOrders(data ?? [])
+        setOrders((data as unknown as OrderRow[]) ?? [])
       }
       setLoading(false)
     }

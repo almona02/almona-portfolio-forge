@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Progress } from '@/shared/ui/ui/progress';
-import { Button } from '@/shared/ui/ui/button';
+import { Button } from '@/components/ui/button';
 import MachineSpecsForm from './MachineSpecsForm';
 import FileUploader from './FileUploader';
 import ContactVerification from './ContactVerification';
 
 const SellUsedMachineForm = () => {
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<Record<string, string | File[]>>({});
   const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ const SellUsedMachineForm = () => {
     }
   }, []);
 
-  const handleNext = (data) => {
+  const handleNext = (data: Record<string, string | File[]>) => {
     const updatedData = { ...formData, ...data };
     setFormData(updatedData);
     localStorage.setItem('usedMachineForm', JSON.stringify(updatedData));
@@ -28,7 +28,7 @@ const SellUsedMachineForm = () => {
     setStep(step - 1);
   };
 
-  const handleVerificationComplete = (data) => {
+  const handleVerificationComplete = (data: Record<string, string>) => {
     const updatedData = { ...formData, ...data };
     setFormData(updatedData);
     setIsVerified(true);

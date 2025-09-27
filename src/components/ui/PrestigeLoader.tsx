@@ -8,7 +8,7 @@ interface PrestigeLoaderProps {
 export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [loadingMessage, setLoadingMessage] = useState('Initializing Almona Forge...');
+  const [loadingMessage, setLoadingMessage] = useState('Initializing Almona Platforms ...');
   const [showWelcome, setShowWelcome] = useState(false);
   const [showParticles, setShowParticles] = useState(false);
 
@@ -20,7 +20,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
       { progress: 60, message: 'Building the future...' },
       { progress: 75, message: 'Perfecting quality...' },
       { progress: 90, message: 'Almost ready...' },
-      { progress: 100, message: 'Welcome to Almona Forge' }
+      { progress: 100, message: 'Welcome to Almona Company' }
     ];
 
     let currentStep = 0;
@@ -52,7 +52,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
   if (!isLoaded) {
     return (
       <>
-        <style jsx>{`
+        <style>{`
           @keyframes shimmer {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }

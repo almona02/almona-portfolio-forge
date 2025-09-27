@@ -53,12 +53,7 @@ export function ModelViewerTest() {
               <CardContent className="h-[500px] p-0">
                 <LazyEnhancedGLBViewer
                   modelPath="/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
-                  scale={scale}
-                  autoRotate={autoRotate}
-                  autoRotateSpeed={0.5}
-                  shadows={true}
-                  onLoad={handleLoad}
-                  onError={handleError}
+                  onLoaded={handleLoad}
                 />
               </CardContent>
             </Card>

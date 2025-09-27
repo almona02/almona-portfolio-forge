@@ -16,8 +16,18 @@ export const LazyWrapper: React.FC<LazyWrapperProps> = ({
   delay = 200,
   children 
 }) => {
+  const [showFallback, setShowFallback] = React.useState(false);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowFallback(true);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [delay]);
+
   return (
-    <Suspense fallback={fallback}>
+    <Suspense fallback={showFallback ? fallback : null}>
       {children}
     </Suspense>
   );
@@ -32,7 +42,7 @@ export function withLazyLoading<T extends object>(
 ) {
   const LazyComponent = lazy(importFunc);
   
-  return React.forwardRef<any, T>((props, ref) => (
+  return React.forwardRef<HTMLElement, T>((props, ref) => (
     <LazyWrapper fallback={fallback}>
       <LazyComponent {...props} ref={ref} />
     </LazyWrapper>
@@ -42,16 +52,20 @@ export function withLazyLoading<T extends object>(
 /**
  * Preload function for critical components
  */
-export function preloadComponent(importFunc: () => Promise<any>) {
+export function preloadComponent(importFunc: () => Promise<{ default: ComponentType<any> }>) {
   // Preload on idle
   if ('requestIdleCallback' in window) {
     requestIdleCallback(() => {
-      importFunc();
+      importFunc().catch((error) => {
+        console.warn('Failed to preload component:', error);
+      });
     });
   } else {
     // Fallback for browsers without requestIdleCallback
     setTimeout(() => {
-      importFunc();
+      importFunc().catch((error) => {
+        console.warn('Failed to preload component:', error);
+      });
     }, 100);
   }
 }
@@ -68,6 +82,9 @@ export function useIntersectionLazyLoad(
   const ref = React.useRef<HTMLElement>(null);
 
   React.useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !hasLoaded) {
@@ -79,11 +96,11 @@ export function useIntersectionLazyLoad(
       { threshold, rootMargin }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
+    observer.observe(element);
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, [threshold, rootMargin, hasLoaded]);
 
   return { ref, isVisible, hasLoaded };
@@ -118,21 +135,23 @@ export const LazyImage: React.FC<LazyImageProps> = ({
     }
   }, [isVisible, src]);
 
-  const handleError = () => {
+  const handleError = React.useCallback(() => {
     if (fallback && !hasError) {
       setHasError(true);
       setImageSrc(fallback);
     }
-  };
+  }, [fallback, hasError]);
+
+  const handleRef = React.useCallback((el: HTMLImageElement | null) => {
+    setImageRef(el);
+    if (ref && typeof ref === 'object' && ref !== null) {
+      (ref as React.MutableRefObject<HTMLImageElement | null>).current = el;
+    }
+  }, [ref]);
 
   return (
     <img
-      ref={(el) => {
-        setImageRef(el);
-        if (ref) {
-          (ref as React.RefObject<HTMLImageElement>).current = el;
-        }
-      }}
+      ref={handleRef}
       src={imageSrc}
       alt={alt}
       onError={handleError}

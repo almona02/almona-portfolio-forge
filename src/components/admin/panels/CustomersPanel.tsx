@@ -13,6 +13,21 @@ type Profile = Database['public']['Tables']['profiles']['Row']
 
 type ServerPage<T> = { rows: T[]; total: number }
 
+/**
+ * Customers Panel Component
+ * 
+ * Provides comprehensive customer management for administrators.
+ * Features:
+ * - Real-time customer profile tracking
+ * - Advanced filtering by role, sector, verification status, and location
+ * - Server-side pagination for large customer datasets
+ * - Live updates via Supabase real-time subscriptions
+ * - Search functionality across name, company, and username
+ * 
+ * Displays customer profiles with verification status, roles, and contact information.
+ * Supports filtering by user roles (customer, admin, sales_rep, technician, support)
+ * and business sectors (ALUMINIUM, UPVC, STEEL, GLASS, GENERAL).
+ */
 export const CustomersPanel: React.FC = () => {
   const [data, setData] = React.useState<Profile[]>([])
   const [loading, setLoading] = React.useState(true)
@@ -33,9 +48,9 @@ export const CustomersPanel: React.FC = () => {
   const fetchServerPage = React.useCallback(async (): Promise<ServerPage<Profile>> => {
     let query = supabase.from('profiles').select('*', { count: 'exact' })
 
-    if (role !== 'all') query = query.eq('role', role)
-    if (sector !== 'all') query = query.eq('sector', sector)
-    if (verified !== 'all') query = query.eq('is_verified', verified === 'verified')
+    if (role !== 'all') query = query.eq('role', role as any)
+    if (sector !== 'all') query = query.eq('sector', sector as any)
+    if (verified !== 'all') query = query.eq('is_verified', (verified === 'verified') as any)
     if (governorate) query = query.ilike('governorate', `%${governorate}%`)
     if (search) {
       const s = search.replace(/%/g, '')
@@ -49,7 +64,7 @@ export const CustomersPanel: React.FC = () => {
     const { data, count, error } = await query.range(from, to).order('created_at', { ascending: false })
 
     if (error) throw error
-    return { rows: (data as Profile[]) ?? [], total: count ?? 0 }
+    return { rows: (data as unknown as Profile[]) ?? [], total: count ?? 0 }
   }, [role, sector, verified, governorate, search, page, pageSize])
 
   React.useEffect(() => {
