@@ -17,7 +17,7 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({ open, onOpenCha
       <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create Support Ticket</DialogTitle>
-          <DialogDescription>Describe your issue and we'll help you resolve it quickly.</DialogDescription>
+          <DialogDescription>Describe your issue and we&apos;ll help you resolve it quickly.</DialogDescription>
         </DialogHeader>
         <TicketForm mode="dialog" showAttachments={false} showContactFields onSuccess={onTicketCreated} />
         <DialogFooter />

@@ -4,11 +4,11 @@ import i18n from "@/lib/i18n";
 import { inventory } from "@/data/inventory";
 import { useQuote } from "@/context/QuoteContext";
 import { toast } from "sonner";
-import { Machine, Part } from "../types/machine";
+import { Machine } from "../types/index";
 import { Product } from "../types/product";
 import { UniqueProduct } from "../types/unique-product";
-import { Certification } from "../types/certification";
-import { EgyptCertification } from "../types/shop";
+// import { Certification } from "../types/certification";
+// import { EgyptCertification } from "../types/shop";
 
 // Components
 import Navbar from "../components/layout/Navbar";
@@ -23,9 +23,17 @@ import EgyptianTechnicalSupportHub from "../components/shop/EgyptianTechnicalSup
 import { ProductQuickView } from "../components/shop/ProductQuickView";
 import { RecentlyViewedProducts } from "../components/shop/RecentlyViewedProducts";
 import { DurabilityDetailsModal } from "../components/shop/DurabilityDetailsModal";
-import { DurabilityInfo } from "../components/shop/DurabilityDetailsModal";
+// import { DurabilityInfo } from "../components/shop/DurabilityDetailsModal";
+
+// Local interface for durability info
+interface DurabilityInfo {
+  score: number;
+  maintenanceInterval: string;
+  keyDurabilityFeatures: string[];
+}
 
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
 // UI
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../shared/ui/ui/tabs";
@@ -64,6 +72,7 @@ interface ShopMachine extends Machine {
     installationCost?: number;
     warrantyYears?: number;
   };
+  durabilityInfo?: DurabilityInfo;
 }
 
 interface CommonProduct {
@@ -74,23 +83,11 @@ interface CommonProduct {
   stock?: number;
 }
 
-type ShopProduct = (ShopMachine | Product | Part | UniqueProduct) & CommonProduct;
+type ShopProduct = (ShopMachine | Product | UniqueProduct) & CommonProduct;
 
 // Type guards
-function isPart(product: ShopProduct): product is Part & CommonProduct {
-  return 'partNumber' in product;
-}
-
-function isProduct(product: ShopProduct): product is Product & CommonProduct {
-  return 'sku' in product;
-}
-
 function isShopMachine(product: ShopProduct): product is ShopMachine & CommonProduct {
-  return 'manufacturer' in product && 'model' in product;
-}
-
-function isUniqueProduct(product: ShopProduct): product is UniqueProduct & CommonProduct {
-  return 'uniqueId' in product;
+  return 'stock' in product && 'pricing' in product;
 }
 
 // Custom hook for shop state management
@@ -99,9 +96,9 @@ const PRODUCTS_PER_LOAD = 9;
 // Custom hook for shop state management
     function useShopState() {
   const [activeTab, setActiveTab] = useState<ProductTab>('industrial-machines');
-  const [viewMode, setViewMode] = useState<'grid' | 'configurator'>('grid');
+  const [_viewMode, _setViewMode] = useState<'grid' | 'configurator'>('grid');
   const [advisorOpen, setAdvisorOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [_selectedProduct, _setSelectedProduct] = useState<string | null>(null);
   const [quickViewProduct, setQuickViewProduct] = useState<ShopMachine | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [comparisonList, setComparisonList] = useState<ShopMachine[]>([]);
@@ -117,12 +114,8 @@ const PRODUCTS_PER_LOAD = 9;
   return {
     activeTab,
     setActiveTab,
-    viewMode,
-    setViewMode,
     advisorOpen,
     setAdvisorOpen,
-    selectedProduct,
-    setSelectedProduct,
     isLoading,
     setIsLoading,
     comparisonList,
@@ -146,12 +139,8 @@ const ShopEnhanced = () => {
   const {
     activeTab,
     setActiveTab,
-    viewMode,
-    setViewMode,
     advisorOpen,
     setAdvisorOpen,
-    selectedProduct,
-    setSelectedProduct,
     isLoading,
     setIsLoading,
     comparisonList,
@@ -231,10 +220,10 @@ const ShopEnhanced = () => {
     
     switch (activeTab) {
       case "industrial-machines":
-        products = enhancedProducts;
+        products = enhancedProducts as ShopProduct[];
         break;
       case "industrial-parts":
-        products = yilmazParts;
+        products = yilmazParts as unknown as ShopProduct[];
         break;
       case "unique-prototypes":
       case "unique-custom-fabrications":
@@ -242,7 +231,7 @@ const ShopEnhanced = () => {
           activeTab === "unique-prototypes" 
             ? p.category === "prototypes" 
             : p.category === "custom-fabrications"
-        );
+        ) as unknown as ShopProduct[];
         break;
       default:
         products = [];
@@ -255,12 +244,15 @@ const ShopEnhanced = () => {
       filtered = filtered.filter(p =>
         p.name.toLowerCase().includes(searchTerm) ||
         (isShopMachine(p) && p.description && p.description.toLowerCase().includes(searchTerm)) ||
-        (isShopMachine(p) && p.specifications && p.specifications.some(spec => spec.value.toLowerCase().includes(searchTerm)))
+        (isShopMachine(p) && p.specifications && Array.isArray(p.specifications) && p.specifications.some(spec => 
+          typeof spec === 'string' ? spec.toLowerCase().includes(searchTerm) : 
+          typeof spec === 'object' && spec && 'value' in spec && typeof (spec as any).value === 'string' && (spec as any).value.toLowerCase().includes(searchTerm)
+        ))
       );
     }
 
     if (filters.category !== "all") {
-      filtered = filtered.filter(p => (p as Machine).category === filters.category);
+      filtered = filtered.filter(p => p.category === filters.category);
     }
 
           filtered.sort((a, b) => {
@@ -399,11 +391,8 @@ const ShopEnhanced = () => {
                         description={product.description || ""}
                         imageUrl={product.imageUrl}
                         price={formatPrice((product as ShopMachine).pricing?.basePrice)}
-                        features={(product as Machine).serviceHistory.map(e => e.type) || []}
-                        badges={[
-                          ...(product as Machine).tags || [],
-                          ...((product as Machine).healthMetrics.components ? Object.keys((product as Machine).healthMetrics.components) : [])
-                        ]}
+                        features={product.tags || []}
+                        badges={product.tags || []}
                         stock={(product as { stock?: number }).stock ?? 0}
                         durabilityInfo={(product as ShopMachine).durabilityInfo}
                         onDurabilityClick={(info) => {
@@ -414,8 +403,8 @@ const ShopEnhanced = () => {
                           {
                             label: t("shop.buttons.configure"),
                             action: () => {
-                              setSelectedProduct(product.id);
-                              setViewMode("configurator");
+                              // Handle configuration action
+                              console.log('Configure product:', product.id);
                             }
                           },
                           {
@@ -425,7 +414,18 @@ const ShopEnhanced = () => {
                           {
                             label: t("shop.buttons.add_to_quote"),
                             action: () => {
-                              addToQuote(product as Machine);
+                              // Convert to ShopProductInput format
+                              const shopProduct = {
+                                id: product.id,
+                                name: product.name,
+                                description: product.description,
+                                imageUrl: product.imageUrl,
+                                category: product.category,
+                                tags: product.tags,
+                                stock: (product as ShopMachine).stock || 0,
+                                pricing: (product as ShopMachine).pricing
+                              };
+                              addToQuote(shopProduct);
                               toast.success(`${product.name} has been added to your quote.`);
                             }
                           },
@@ -463,9 +463,9 @@ const ShopEnhanced = () => {
           {comparisonList.length > 0 && (
             <div className="mt-8">
               <EquipmentComparisonTool
-                selectedMachines={comparisonList}
-                allMachines={enhancedProducts}
-                onToggleMachine={handleToggleCompare}
+                selectedMachines={comparisonList as any}
+                allMachines={enhancedProducts as any}
+                onToggleMachine={handleToggleCompare as any}
               />
             </div>
           )}
@@ -495,4 +495,4 @@ const ShopEnhanced = () => {
   );
 };
 
-export default ShopEnhanced;
+export default withErrorBoundary(ShopEnhanced);

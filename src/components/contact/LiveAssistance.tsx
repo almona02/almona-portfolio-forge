@@ -6,6 +6,22 @@ import { AlertTriangle, Video, Mic, ScreenShare, MessageSquare, X, Share2, Downl
 import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
+/**
+ * Live Assistance Component
+ * 
+ * Provides real-time technical support through video calls and chat.
+ * Features:
+ * - Video call interface with technician selection
+ * - Real-time chat messaging
+ * - Screen sharing capabilities
+ * - Collaborative whiteboard for technical discussions
+ * - Session recording and transcript download
+ * - Technician availability status and ratings
+ * 
+ * Supports multiple communication channels for comprehensive technical support.
+ * Includes mock technician data and simulated responses for demonstration.
+ */
+
 type Technician = {
   id: string;
   name: string;
@@ -57,18 +73,17 @@ export const LiveAssistance = () => {
     }
   ];
 
-  // Mock initial messages
-  const initialMessages: Message[] = [
-    {
-      id: '1',
-      sender: 'technician',
-      text: 'Hello! How can I assist you today?',
-      timestamp: new Date(Date.now() - 60000)
-    }
-  ];
-
   useEffect(() => {
     if (callActive) {
+      // Mock initial messages
+      const initialMessages: Message[] = [
+        {
+          id: '1',
+          sender: 'technician',
+          text: 'Hello! How can I assist you today?',
+          timestamp: new Date(Date.now() - 60000)
+        }
+      ];
       setMessages(initialMessages);
     } else {
       setMessages([]);
@@ -140,7 +155,7 @@ export const LiveAssistance = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="technician">Select Technician</Label>
-                <Select onValueChange={setSelectedTech}>
+                <Select value={selectedTech} onValueChange={setSelectedTech}>
                   <SelectTrigger>
                     <SelectValue placeholder="Choose available technician" />
                   </SelectTrigger>
@@ -149,7 +164,6 @@ export const LiveAssistance = () => {
                       <SelectItem 
                         key={tech.id} 
                         value={tech.id}
-                        disabled={!tech.available}
                       >
                         <div className="flex items-center">
                           <span>{tech.name}</span>

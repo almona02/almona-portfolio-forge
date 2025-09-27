@@ -15,13 +15,22 @@ import { TicketPriority, TicketType } from '@/types/tickets';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 
+/**
+ * Props for the TicketForm component
+ */
 export interface TicketFormProps {
+  /** Display mode - either in a dialog or as a full page */
   mode: 'dialog' | 'page';
+  /** Initial form values for editing existing tickets */
   initialValues?: Partial<UnifiedTicketFormData>;
+  /** Callback called when ticket is successfully created */
   onSuccess?: () => void;
-  showAttachments?: boolean; // placeholder for future integration
+  /** Whether to show attachment upload functionality (placeholder for future integration) */
+  showAttachments?: boolean;
+  /** Whether to show contact information fields */
   showContactFields?: boolean;
-  context?: unknown; // TicketContext (structure not required inside form component)
+  /** Additional context data (structure not required inside form component) */
+  context?: unknown;
 }
 
 const typeMeta: Record<string, { label: string; desc: string }> = {
@@ -45,13 +54,29 @@ const priorityMeta: { value: TicketPriority; label: string; desc: string }[] = [
   { value: 'critical', label: 'Critical', desc: 'Production stopped' },
 ];
 
+/**
+ * TicketForm Component
+ * 
+ * A comprehensive form for creating support tickets with multiple input methods.
+ * Features:
+ * - Multiple ticket types with visual selection pills
+ * - Priority levels with descriptions
+ * - Maintenance type selection for maintenance tickets
+ * - Contact information fields
+ * - Multi-step form with attachments and preview (when in page mode)
+ * - Form validation using Zod schema
+ * - Animated transitions between form steps
+ * - Error handling with user feedback
+ * 
+ * Supports both dialog and full-page display modes.
+ */
 export const TicketForm: React.FC<TicketFormProps> = ({
   mode,
   initialValues,
   onSuccess,
   showAttachments = false,
   showContactFields = true,
-  context
+  context: _context
 }) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -177,7 +202,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
                 <Controller name="maintenance_type" control={control} render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                    <SelectContent className="bg-almona-darker border-almona-light/30">
+                    <SelectContent>
                       <SelectItem value="preventive">Preventive</SelectItem>
                       <SelectItem value="corrective">Corrective</SelectItem>
                       <SelectItem value="emergency">Emergency</SelectItem>
@@ -222,7 +247,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
                   <Controller name="preferred_contact_method" control={control} render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                      <SelectContent className="bg-almona-darker border-almona-light/30">
+                      <SelectContent>
                         <SelectItem value="email">Email</SelectItem>
                         <SelectItem value="phone">Phone</SelectItem>
                         <SelectItem value="sms">SMS</SelectItem>

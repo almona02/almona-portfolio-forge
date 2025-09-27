@@ -62,7 +62,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
         cohort_id: values.cohortId || null,
         notes: values.notes,
       };
-  const { error } = await supabase.from('training_enrollments').insert(payload as Record<string, unknown>);
+  const { error } = await supabase.from('training_enrollments').insert(payload as any);
       if (error) {
         // Fallback if table missing (e.g., code 42P01) just log and continue success UX
         console.warn('[training] Enrollment insert fallback:', error.message);

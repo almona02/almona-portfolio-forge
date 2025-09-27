@@ -47,9 +47,10 @@ export const SmsOtpModal: React.FC<SmsOtpModalProps> = ({
         setError(data.message || 'Failed to send OTP.');
         toast.error(data.message || 'Failed to send OTP.');
       }
-    } catch (err: any) {
-      setError(err.message || 'An error occurred.');
-      toast.error(err.message || 'An error occurred.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -63,9 +64,10 @@ export const SmsOtpModal: React.FC<SmsOtpModalProps> = ({
       toast.success('Phone number verified and logged in successfully!');
       onSuccess();
       onClose();
-    } catch (err: any) {
-      setError(err.message || 'Failed to verify OTP.');
-      toast.error(err.message || 'Failed to verify OTP.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to verify OTP.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

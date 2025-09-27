@@ -17,9 +17,9 @@ interface TurkishLayoutProps {
 
 export const TurkishLayout: React.FC<TurkishLayoutProps> = ({
   children,
-  config,
-  onRegionChange,
-  enableRegionSwitching
+  config: _config,
+  onRegionChange: _onRegionChange,
+  enableRegionSwitching: _enableRegionSwitching
 }) => {
   return (
     <div className="min-h-screen bg-almona-dark text-white">

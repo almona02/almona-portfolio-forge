@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const MachineSpecsForm = ({ onNext }) => {
-  const [formData, setFormData] = useState({});
+interface MachineSpecsFormProps {
+  onNext: (data: Record<string, string>) => void;
+  onBack?: () => void;
+}
 
-  const handleChange = (e) => {
+const MachineSpecsForm: React.FC<MachineSpecsFormProps> = ({ onNext }) => {
+  const [formData, setFormData] = useState<Record<string, string>>({});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSelectChange = (name, value) => {
+  const handleSelectChange = (name: string, value: string) => {
     setFormData({ ...formData, [name]: value });
   };
 
@@ -24,7 +29,7 @@ const MachineSpecsForm = ({ onNext }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input name="title" placeholder="Machine Title" onChange={handleChange} />
         <Input name="price" placeholder="Price" onChange={handleChange} />
-        <Select onValueChange={(value) => handleSelectChange('condition', value)}>
+        <Select value={formData.condition || ''} onValueChange={(value) => handleSelectChange('condition', value)}>
           <SelectTrigger><SelectValue placeholder="Condition" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="excellent">Excellent</SelectItem>

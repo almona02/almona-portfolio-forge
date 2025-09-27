@@ -1,13 +1,29 @@
-// Excel import utility for Spare Parts (maps to products table with category 'spare_part')
-// If you maintain a dedicated `spare_parts` table, adjust the upsert section accordingly.
-// Lazy-load exceljs to avoid inflating initial bundle
-let ExcelJS: any;
+/**
+ * Excel Import Utility for Spare Parts
+ * 
+ * This utility provides functionality to import spare parts data from Excel files
+ * into the database. It maps to the products table with category 'spare_part'.
+ * 
+ * Features:
+ * - Lazy-loads ExcelJS to avoid inflating initial bundle
+ * - Supports flexible column header variations (case-insensitive)
+ * - Maps to either products table or dedicated spare_parts table
+ * - Handles data type conversions and validation
+ * - Provides detailed error reporting
+ * 
+ * If you maintain a dedicated `spare_parts` table, adjust the upsert section accordingly.
+ */
+let ExcelJS: typeof import('exceljs');
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 import { table } from '@/lib/data/clientCore';
 
 type ProductsTable = Database['public']['Tables']['products'];
 
+/**
+ * Interface for spare part data as it appears in Excel files
+ * Supports multiple case variations for field names to handle different Excel formats
+ */
 interface SparePartExcelRow {
   part_number?: string;
   PART_NUMBER?: string;
@@ -54,12 +70,24 @@ const toInt = (v: string | number | null | undefined): number | null => {
   return Number.isNaN(n) ? null : n;
 };
 
+/**
+ * Options for configuring the import process
+ */
 export interface ImportOptions {
-  // If true, writes to a dedicated 'spare_parts' table using part_number as unique key.
-  // Otherwise, upserts into 'products' with category='spare_part' and maps part_number -> sku.
+  /** 
+   * If true, writes to a dedicated 'spare_parts' table using part_number as unique key.
+   * Otherwise, upserts into 'products' with category='spare_part' and maps part_number -> sku.
+   */
   useDedicatedTable?: boolean;
 }
 
+/**
+ * Imports spare parts data from an Excel file
+ * 
+ * @param file - The Excel file to import
+ * @param options - Configuration options for the import process
+ * @returns Promise with success status and any errors encountered
+ */
 export const importSpareParts = async (file: File, options: ImportOptions = {}) => {
   if (!ExcelJS) {
     ExcelJS = await import('exceljs');
@@ -203,11 +231,11 @@ export const importSpareParts = async (file: File, options: ImportOptions = {}) 
           specifications: payload.specifications ?? {},
           features: {},
           compatible_machines: payload.compatible_machines ?? [],
-          image_urls: payload.image_url ? [payload.image_url] : [],
-          video_urls: [],
-          document_urls: [],
+          image_urls: payload.image_url ? [payload.image_url] : [] as string[],
+          video_urls: [] as string[],
+          document_urls: [] as string[],
           model_3d_url: null,
-          keywords: [],
+          keywords: [] as string[],
           is_active: payload.is_active ?? true,
           is_featured: false,
           is_new: false,

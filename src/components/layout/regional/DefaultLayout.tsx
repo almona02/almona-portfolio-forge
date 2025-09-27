@@ -17,11 +17,11 @@ interface DefaultLayoutProps {
 
 export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
   children,
-  config,
+  config: _config,
   onRegionChange,
-  enableRegionSwitching
+  enableRegionSwitching: _enableRegionSwitching
 }) => {
-  const handleRegionChange = (region: RegionCode) => {
+  const _handleRegionChange = (region: RegionCode) => {
     onRegionChange(region);
   };
 

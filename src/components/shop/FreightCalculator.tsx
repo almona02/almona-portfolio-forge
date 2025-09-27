@@ -1,10 +1,27 @@
 import React, { useState } from 'react';
 import { MachineSpec } from '@/types/shop';
 
+/**
+ * Props for the FreightCalculator component
+ */
 interface FreightCalculatorProps {
+  /** Machine specification containing weight and other details */
   machine: MachineSpec;
 }
 
+/**
+ * FreightCalculator Component
+ * 
+ * Calculates shipping costs for machines using the Nile River freight system.
+ * Features:
+ * - Multiple port options (Alexandria, Port Said, Suez)
+ * - Egyptian governorate destinations
+ * - Weight-based cost calculation
+ * - Arabic language interface
+ * - Real-time cost updates
+ * 
+ * Uses a base rate calculation: weight × distance × baseRate / 100
+ */
 const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
   const [fromPort, setFromPort] = useState<'Alexandria' | 'PortSaid' | 'Suez'>('Alexandria');
   const [toGovernorate, setToGovernorate] = useState('Cairo');
@@ -49,7 +66,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
         <label className="block mb-1">ميناء الشحن</label>
         <select
           value={fromPort}
-          onChange={(e) => setFromPort(e.target.value as any)}
+          onChange={(e) => setFromPort(e.target.value as 'Alexandria' | 'PortSaid' | 'Suez')}
           className="w-full border p-2 rounded"
         >
           <option value="Alexandria">الإسكندرية</option>

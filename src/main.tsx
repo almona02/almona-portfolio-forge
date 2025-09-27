@@ -112,10 +112,10 @@ if (!rootElement) {
 }
 
 // Create React root (with HMR support)
-let root = (rootElement as any)._reactRootContainer;
+let root = (rootElement as HTMLElement & { _reactRootContainer?: ReactDOM.Root })._reactRootContainer;
 if (!root) {
   root = ReactDOM.createRoot(rootElement);
-  (rootElement as any)._reactRootContainer = root;
+  (rootElement as HTMLElement & { _reactRootContainer?: ReactDOM.Root })._reactRootContainer = root;
 }
 
 // Render application

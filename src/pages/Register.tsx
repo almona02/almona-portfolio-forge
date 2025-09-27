@@ -10,9 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Phone, User, Mail, Lock, Building, Factory, MapPin, ArrowRight, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+// import Navbar from '@/components/layout/Navbar';
+// import Footer from '@/components/layout/Footer';
 import { useState } from 'react';
+import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
 const egyptianCities = [
   "Cairo", "Alexandria", "Giza", "Shubra El-Kheima", "Port Said", "Suez",
@@ -55,10 +56,18 @@ export const Register = () => {
 
   const onSubmit = async (data: RegisterFormValues) => {
     try {
-      await signUp(data);
+      await signUp({
+        email: data.email,
+        password: data.password,
+        full_name: data.name,
+        company_name: data.company,
+        phone: data.phone,
+        sector: data.sector
+      });
       toast.success('Registration successful! Please check your email to verify your account.');
-    } catch (err) {
-      toast.error(err.message || 'Registration failed.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Registration failed.';
+      toast.error(errorMessage);
     }
   };
 
@@ -511,4 +520,4 @@ export const Register = () => {
   );
 };
 
-export default Register;
+export default withErrorBoundary(Register);

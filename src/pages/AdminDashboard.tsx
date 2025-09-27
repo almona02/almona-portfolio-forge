@@ -125,7 +125,7 @@ const AdminDashboard: React.FC = () => {
       const { data: revenueData } = await supabase
         .from('orders')
         .select('total_amount,status')
-        .eq('status', 'delivered')
+        .eq('status', 'delivered' as any)
 
   const rows = (revenueData ?? []) as Array<{ total_amount: number | null }>
   const totalRevenue = rows.reduce((sum: number, r) => sum + (r.total_amount ?? 0), 0)
@@ -136,7 +136,7 @@ const AdminDashboard: React.FC = () => {
       const { count: pendingOrders } = await supabase
         .from('orders')
         .select('*', { count: 'exact' })
-        .in('status', ['pending', 'confirmed', 'processing'])
+        .in('status', ['pending', 'confirmed', 'processing'] as any[])
 
       const { count: lowStockItems } = await supabase
         .from('products')
@@ -166,7 +166,7 @@ const AdminDashboard: React.FC = () => {
         .order('created_at', { ascending: false })
         .limit(10)
 
-      setNotifications(data || [])
+      setNotifications((data as unknown as Notification[]) || [])
     } catch (error) {
       console.error('Error fetching notifications:', error)
     }

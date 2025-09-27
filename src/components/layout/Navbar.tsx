@@ -11,9 +11,7 @@ import {
   Menu,
   Settings,
   ShoppingCart,
-  Store,
   Users,
-  Wrench,
   X,
   ChevronDown,
   Shield,
@@ -21,6 +19,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import AdminNavDropdown from "@/components/admin/AdminNavDropdown";
 
 interface NavLinkProps {
   to: string;
@@ -400,18 +399,7 @@ const Navbar = () => {
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.75, duration: 0.3 }}
                 >
-                  <Button
-                    className="bg-almona-orange hover:bg-almona-orange-dark text-white rounded-full px-5"
-                    asChild
-                    title="Admin Dashboard"
-                  >
-                    <Link to="/admin/dashboard">
-                      <span className="inline-flex items-center gap-2">
-                        <Shield className="h-4 w-4" />
-                        <span>Admin</span>
-                      </span>
-                    </Link>
-                  </Button>
+                  <AdminNavDropdown />
                 </motion.div>
               )}
               <motion.div

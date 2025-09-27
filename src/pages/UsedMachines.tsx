@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+// import Navbar from '@/components/layout/Navbar';
+// import Footer from '@/components/layout/Footer';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Input } from '@/shared/ui/ui/input';
@@ -12,7 +12,16 @@ import { ChevronRight, MapPin, Factory, Calendar, Gauge } from 'lucide-react';
 import { usedMachines } from '@/data/usedMachines';
 import SellUsedMachineForm from '@/components/used-machines/SellUsedMachineForm';
 import { useAuth } from '@/context/AuthContext';
+import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
+/**
+ * UsedMachines Component
+ * 
+ * A comprehensive marketplace for buying and selling used industrial machinery.
+ * Features include machine browsing, filtering, search, and selling functionality.
+ * 
+ * @returns {JSX.Element} The UsedMachines page component
+ */
 const UsedMachines = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -21,6 +30,9 @@ const UsedMachines = () => {
   const [locationFilter, setLocationFilter] = useState('all');
   const [machineTypeFilter, setMachineTypeFilter] = useState('all');
 
+  /**
+   * Handles the sell button click, redirecting to login if user is not authenticated
+   */
   const handleSellClick = () => {
     if (user) {
       navigate('/usedmachines/sell');
@@ -207,7 +219,7 @@ const UsedMachines = () => {
                     <div className="text-5xl mb-4">🔍</div>
                     <h4 className="text-xl font-semibold mb-2">Thorough Technical Inspection</h4>
                     <p className="text-gray-400">
-                      Our technical team inspects every machine before it's listed.
+                      Our technical team inspects every machine before it&apos;s listed.
                     </p>
                   </div>
                   <div className="bg-almona-darker/50 p-6 rounded-lg border border-almona-light/20">
@@ -268,4 +280,4 @@ const UsedMachines = () => {
   );
 };
 
-export default UsedMachines;
+export default withErrorBoundary(UsedMachines);

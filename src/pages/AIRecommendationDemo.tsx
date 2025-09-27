@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useRegionDetection } from '@/hooks/useRegionDetection';
 import { EquipmentRecommender } from '@/components/recommendation/EquipmentRecommender';
 import { InteractiveGLBViewer } from '@/components/3d-model/InteractiveGLBViewer';
 import { ComplianceDocumentGenerator } from '@/components/regional/turkish/ComplianceDocumentGenerator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 // Mock data for demonstration
@@ -13,6 +11,12 @@ const mockMachines = [
   {
     id: '1',
     name: 'Almona CNC-2000',
+    description: 'High-precision CNC machine for industrial applications',
+    imageUrl: '/images/machines/cnc-2000.jpg',
+    category: 'CNC Machines',
+    releaseDate: '2023-01-01',
+    type: 'CNC',
+    powerSpec: { voltage: '220V', frequency: '50Hz', power: '15kW', phase: '3-phase', consumption: 'High' },
     specifications: {
       power_kw: 15,
       weight_kg: 2500,
@@ -31,6 +35,12 @@ const mockMachines = [
   {
     id: '2',
     name: 'Almona CNC-3000',
+    description: 'Advanced CNC machine with enhanced capabilities',
+    imageUrl: '/images/machines/cnc-3000.jpg',
+    category: 'CNC Machines',
+    releaseDate: '2023-06-01',
+    type: 'CNC',
+    powerSpec: { voltage: '220V', frequency: '50Hz', power: '25kW', phase: '3-phase', consumption: 'High' },
     specifications: {
       power_kw: 25,
       weight_kg: 3500,
@@ -49,6 +59,12 @@ const mockMachines = [
   {
     id: '3',
     name: 'Almona CNC-5000',
+    description: 'Professional-grade CNC machine for heavy-duty operations',
+    imageUrl: '/images/machines/cnc-5000.jpg',
+    category: 'CNC Machines',
+    releaseDate: '2023-12-01',
+    type: 'CNC',
+    powerSpec: { voltage: '220V', frequency: '50Hz', power: '40kW', phase: '3-phase', consumption: 'High' },
     specifications: {
       power_kw: 40,
       weight_kg: 5000,
@@ -116,10 +132,8 @@ const mockAnnotations = [
 ];
 
 export const AIRecommendationDemo: React.FC = () => {
-  const { t } = useTranslation();
   const { regionState } = useRegionDetection();
-  const [selectedPart, setSelectedPart] = useState<any>(null);
-  const [selectedConfiguration, setSelectedConfiguration] = useState<string[]>([]);
+  const [selectedConfiguration] = useState<string[]>([]);
 
   const mockCustomerProfile = {
     production_capacity: {
@@ -135,16 +149,8 @@ export const AIRecommendationDemo: React.FC = () => {
     }
   };
 
-  const handlePartSelect = (part: any) => {
-    setSelectedPart(part);
+  const handlePartSelect = (part: { id: string; name: string; price: number }) => {
     console.log('Selected part:', part);
-  };
-
-  const handleConfigurationChange = (partId: string) => {
-    const newConfig = selectedConfiguration.includes(partId)
-      ? selectedConfiguration.filter(id => id !== partId)
-      : [...selectedConfiguration, partId];
-    setSelectedConfiguration(newConfig);
   };
 
   return (
@@ -170,7 +176,7 @@ export const AIRecommendationDemo: React.FC = () => {
         <CardContent>
           <EquipmentRecommender
             customerProfile={mockCustomerProfile}
-            machines={mockMachines}
+            machines={mockMachines as any}
           />
         </CardContent>
       </Card>

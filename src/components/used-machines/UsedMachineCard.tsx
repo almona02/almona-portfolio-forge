@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '../../shared/ui/ui/button';
-import { Badge } from '../../shared/ui/ui/badge';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../shared/ui/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronRight, MapPin, Factory, Calendar, Gauge } from 'lucide-react';
 import { EnhancedImage } from '../../components/ui/EnhancedImage';
 

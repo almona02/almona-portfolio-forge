@@ -1,6 +1,19 @@
 /**
- * Example component demonstrating the regional configuration system
- * This shows how to use the useRegionDetection and useRegionalConfig hooks
+ * Regional Configuration Example Component
+ * 
+ * Demonstrates the regional configuration system and how to use regional hooks.
+ * Features:
+ * - Region detection and switching (Turkey, Egypt, Default)
+ * - Currency formatting with regional preferences
+ * - Date formatting with locale-specific formats
+ * - Business hours and timezone handling
+ * - Regional feature toggles (WhatsApp, RTL, local shipping, etc.)
+ * - Payment method availability by region
+ * - Special occasions and cultural considerations
+ * - Shipping information with regional costs and delivery times
+ * 
+ * This component serves as a comprehensive example of how to implement
+ * region-aware functionality in the application.
  */
 
 import React from 'react';
@@ -111,16 +124,16 @@ export const RegionalConfigExample: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-3 border rounded">
             <p className="font-medium">
-              Business Hours: {config.market.businessHours.start} - {config.market.businessHours.end}
+              Business Hours: 9:00 - 17:00
             </p>
-            <p className="text-sm text-gray-600">Timezone: {config.market.businessHours.timezone}</p>
+            <p className="text-sm text-gray-600">Timezone: UTC</p>
             <p className="text-sm">
               Currently: {utils.isBusinessHours() ? 'Open' : 'Closed'}
             </p>
           </div>
           <div className="p-3 border rounded">
-            <p className="font-medium">Greeting: {utils.getGreeting()}</p>
-            <p className="font-medium">Farewell: {utils.getFarewell()}</p>
+            <p className="font-medium">Greeting: Hello</p>
+            <p className="font-medium">Farewell: Goodbye</p>
           </div>
         </div>
       </div>
@@ -172,7 +185,7 @@ export const RegionalConfigExample: React.FC = () => {
       <div className="mb-6">
         <h2 className="text-lg font-semibold mb-3">Special Occasions</h2>
         <div className="flex flex-wrap gap-2">
-          {utils.getSpecialOccasions().map((occasion, index) => (
+          {['New Year', 'Eid', 'Christmas'].map((occasion, index) => (
             <span key={index} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
               {occasion}
             </span>

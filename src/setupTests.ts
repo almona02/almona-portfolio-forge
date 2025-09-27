@@ -4,11 +4,12 @@ import { afterEach, vi } from 'vitest';
 
 // Mock global objects that would normally be provided by the browser
 if (typeof window === 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { JSDOM } = require('jsdom');
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
-  global.window = dom.window;
-  global.document = dom.window.document;
-  global.navigator = dom.window.navigator;
+  (global as typeof globalThis & { window: typeof window; document: typeof document; navigator: typeof navigator }).window = dom.window;
+  (global as typeof globalThis & { window: typeof window; document: typeof document; navigator: typeof navigator }).document = dom.window.document;
+  (global as typeof globalThis & { window: typeof window; document: typeof document; navigator: typeof navigator }).navigator = dom.window.navigator;
 }
 
 afterEach(() => {
@@ -19,6 +20,6 @@ afterEach(() => {
 // Vitest exposes the same API surface under vi
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-if (!(global as any).jest) {
-  (global as any).jest = vi;
+if (!(global as typeof globalThis & { jest?: typeof vi }).jest) {
+  (global as typeof globalThis & { jest?: typeof vi }).jest = vi as any;
 }
