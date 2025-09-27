@@ -1,94 +1,151 @@
 {
-  "title": "Endüstriyel Ekipman Servisleri",
-  "subtitle": "Endüstriyel ekipmanlarınız için kapsamlı bakım, destek ve lojistik çözümleri",
+  "title": "Endüstriyel Teknik Hizmetler",
+  "subtitle": "Endüstriyel ekipmanlarınız için kapsamlı bakım, teknik destek ve lojistik çözümleri",
   "yilmazRegistration": {
-    "title": "Yilmaz Makinesi Kaydı",
+    "title": "YILMAZ Makine Kaydı",
     "serialNumberLabel": "Seri Numarası",
-    "validateButton": "Doğrula"
+    "validateButton": "Doğrula",
+    "modelNumber": "Model Numarası",
+    "purchaseDate": "Satın Alma Tarihi",
+    "installationDate": "Kurulum Tarihi",
+    "warrantyExpiry": "Garanti Bitiş Tarihi"
   },
   "yilmazValidation": {
-    "success": "Seri başarıyla doğrulandı",
-    "invalidSerial": "Geçersiz seri numarası veya bulunamadı"
+    "success": "Makine seri numarası başarıyla doğrulandı",
+    "invalidSerial": "Geçersiz seri numarası veya sistemde bulunamadı",
+    "alreadyRegistered": "Bu makine zaten kayıtlı",
+    "warrantyActive": "Aktif garanti kapsamında",
+    "warrantyExpired": "Garanti süresi dolmuş"
   },
-  "egypt_support_cta": "Mısır Desteği Al",
+  "egypt_support_cta": "Mısır Teknik Desteği",
   "tabs": {
-    "overview": "Genel Bakış",
+    "overview": "Hizmet Genel Bakışı",
     "register": "Makine Kaydı",
-    "dashboard": "Bakım Panosu",
+    "dashboard": "Bakım Yönetim Panosu",
     "portal": "Müşteri Portalı",
-    "nile_logistics": "Nil Lojistiği",
-    "egypt_support": "Mısır Desteği",
-    "ai": "AI Özellikleri"
+    "nile_logistics": "Nil Nehri Lojistiği",
+    "egypt_support": "Mısır Teknik Desteği",
+    "ai": "AI Destekli Özellikler",
+    "maintenance": "Bakım Hizmetleri",
+    "training": "Operatör Eğitimi",
+    "spare_parts": "Yedek Parça Hizmetleri",
+    "consulting": "Teknik Danışmanlık"
   },
   "cards": {
     "maintenance": {
-      "title": "Önleyici Bakım",
-      "description": "Ekipmanınızın en iyi performansta çalışması için programlanmış bakım",
+      "title": "Önleyici Bakım Hizmetleri",
+      "description": "Ekipmanınızın optimum performansta çalışması için programlanmış bakım hizmetleri",
       "features": [
-        "Özel bakım programları",
-        "Uzaktan tanılama",
-        "Otomatik servis hatırlatıcıları"
+        "Özelleştirilmiş bakım programları",
+        "Uzaktan tanılama ve izleme",
+        "Otomatik servis hatırlatıcıları",
+        "Öngörülü bakım analizi",
+        "Bakım geçmişi raporları"
       ],
       "action": "Bakım Planla"
     },
     "emergency": {
-      "title": "7/24 Acil Destek",
-      "description": "Kritik ekipman arızaları için anında yardım",
+      "title": "7/24 Acil Teknik Destek",
+      "description": "Kritik ekipman arızaları için anında teknik müdahale",
       "features": [
         "2 saatlik yanıt garantisi",
-        "Mısırlı teknik uzmanlar",
-        "Mobil onarım birimleri"
+        "Sertifikalı teknik uzmanlar",
+        "Mobil onarım birimleri",
+        "Acil yedek parça tedariki",
+        "Uzaktan destek hizmetleri"
       ],
-      "action": "Acil Destek İste"
+      "action": "Acil Destek Talep Et"
     },
     "training": {
-      "title": "Operatör Eğitimi",
-      "description": "Ekipman operatörleri için kapsamlı eğitim programları",
+      "title": "Operatör Eğitim Programları",
+      "description": "Ekipman operatörleri için kapsamlı teknik eğitim programları",
       "features": [
         "Sertifikalı eğitmenler",
-        "Sahada veya sanal oturumlar",
-        "Özelleştirilmiş eğitim materyalleri"
+        "Sahada veya sanal eğitim oturumları",
+        "Özelleştirilmiş eğitim materyalleri",
+        "Pratik uygulama seansları",
+        "Eğitim sertifikası"
       ],
-      "action": "Eğitim Programlarını Görüntüle"
+      "action": "Eğitim Programlarını İncele"
     },
     "nile_logistics": {
-      "title": "Nil Nehri Lojistiği",
-      "description": "Nil Nehri boyunca özel taşıma çözümleri",
+      "title": "Nil Nehri Endüstriyel Lojistiği",
+      "description": "Nil Nehri boyunca ağır ekipman taşıma çözümleri",
       "features": [
-        "Ağır ekipman taşımacılığı",
-        "Gümrük işlemleri yardımı",
-        "Gerçek zamanlı kargo takibi"
+        "Ağır endüstriyel ekipman taşımacılığı",
+        "Gümrük işlemleri danışmanlığı",
+        "Gerçek zamanlı kargo takibi",
+        "Sigorta kapsamı",
+        "Teslimat garantisi"
       ],
-      "action": "Taşıma Maliyetini Hesapla"
+      "action": "Nakliye Maliyetini Hesapla"
+    },
+    "spare_parts": {
+      "title": "Yedek Parça Hizmetleri",
+      "description": "Orijinal yedek parça tedariki ve hızlı teslimat",
+      "features": [
+        "Orijinal üretici yedek parçalar",
+        "Hızlı teslimat garantisi",
+        "Stok durumu takibi",
+        "Teknik uyumluluk kontrolü",
+        "Fiyat garantisi"
+      ],
+      "action": "Yedek Parça Sorgula"
+    },
+    "consulting": {
+      "title": "Teknik Danışmanlık",
+      "description": "Endüstriyel süreçleriniz için uzman teknik danışmanlık",
+      "features": [
+        "Süreç optimizasyonu",
+        "Ekipman seçimi danışmanlığı",
+        "Teknik çözüm önerileri",
+        "Performans analizi",
+        "Maliyet optimizasyonu"
+      ],
+      "action": "Danışmanlık Talep Et"
     }
   },
   "connected_network": {
-    "title": "Bağlı Ekipman Ağı",
-    "serial": "Seri",
-    "installed": "Kurulu",
-    "show_map": "Harita Görünümünü Göster",
-    "show_list": "Liste Görünümünü Göster",
-    "active_warranty": "Aktif Garanti"
+    "title": "Bağlı Endüstriyel Ekipman Ağı",
+    "serial": "Seri No",
+    "installed": "Kurulum Tarihi",
+    "show_map": "Harita Görünümü",
+    "show_list": "Liste Görünümü",
+    "active_warranty": "Aktif Garanti",
+    "last_maintenance": "Son Bakım",
+    "next_maintenance": "Sonraki Bakım",
+    "status": "Durum",
+    "location": "Konum",
+    "operator": "Operatör"
   },
   "tech_highlights": {
-    "badge": "Teknoloji",
-    "title": "Gelişmiş Servis Teknolojisi",
-    "description": "Mısır operasyonlarımız üstün hizmet sunmak için son teknolojiyi kullanır",
+    "badge": "İleri Teknoloji",
+    "title": "Gelişmiş Endüstriyel Servis Teknolojisi",
+    "description": "Mısır operasyonlarımız üstün teknik hizmet sunmak için son teknolojiyi kullanır",
     "features": [
-      "IoT destekli ekipman izleme",
-      "AI destekli öngörülü bakım",
+      "IoT destekli ekipman izleme ve tanılama",
+      "AI destekli öngörülü bakım analizi",
       "Artırılmış gerçeklik onarım kılavuzları",
-      "Blockchain tabanlı servis kayıtları"
+      "Blockchain tabanlı servis kayıtları",
+      "Uzaktan erişim ve kontrol sistemleri",
+      "Gerçek zamanlı performans analizi"
     ]
   },
   "service_network": {
-    "title": "Mısır Servis Ağı",
-    "description": "Teknik uzmanlarımızın ülke çapındaki ağı tüm büyük endüstriyel bölgeleri kapsar"
+    "title": "Mısır Teknik Servis Ağı",
+    "description": "Sertifikalı teknik uzmanlarımızın ülke çapındaki ağı tüm büyük endüstriyel bölgeleri kapsar",
+    "coverage": "Kapsama Alanı",
+    "response_time": "Yanıt Süresi",
+    "technicians": "Teknik Uzmanlar",
+    "service_centers": "Servis Merkezleri"
   },
   "standards": {
     "title": "Mısır Endüstriyel Standartları",
     "description": "Tüm hizmetler ekipman bakımı için Mısır Endüstriyel Standardı ES 1109'a uygundur",
-    "cta": "Uygunluk Sertifikasını Görüntüle"
+    "cta": "Uygunluk Sertifikasını Görüntüle",
+    "certifications": "Sertifikalar",
+    "compliance": "Uygunluk",
+    "quality_assurance": "Kalite Güvencesi"
   },
   "old_page_title": "Servis Sayfası Bakımda",
   "old_page_message": "Mısır pazarına daha iyi hizmet vermek için servis sayfamızı güncelliyoruz",

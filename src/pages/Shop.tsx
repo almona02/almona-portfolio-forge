@@ -625,7 +625,7 @@ const Shop = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="lg:w-1/4"
             >
-              <div className="bg-almona-darker/50 p-6 rounded-lg border border-almona-light/20 sticky top-24">
+              <div className="bg-slate-800 p-6 rounded-lg border border-slate-600 sticky top-24 shadow-xl">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold">Filters</h3>
                   <Button 
@@ -668,12 +668,12 @@ const Shop = () => {
                       value={filters.category} 
                       onValueChange={(value) => handleFilterChange('category', value)}
                     >
-                      <SelectTrigger className="bg-almona-dark border-almona-light/30">
+                      <SelectTrigger className="bg-slate-700 border-slate-500">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-slate-800 border-slate-600">
                         {categories.map(category => (
-                          <SelectItem key={category.id} value={category.id}>
+                          <SelectItem key={category.id} value={category.id} className="text-white hover:bg-slate-700">
                             {category.name}
                           </SelectItem>
                         ))}
@@ -709,13 +709,13 @@ const Shop = () => {
                       value={filters.rating.toString()} 
                       onValueChange={(value) => handleFilterChange('rating', parseInt(value))}
                     >
-                      <SelectTrigger className="bg-almona-dark border-almona-light/30">
+                      <SelectTrigger className="bg-slate-700 border-slate-500">
                         <SelectValue placeholder="Select rating" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="0">Any Rating</SelectItem>
-                        <SelectItem value="4">4 Stars & Up</SelectItem>
-                        <SelectItem value="4.5">4.5 Stars & Up</SelectItem>
+                      <SelectContent className="bg-slate-800 border-slate-600">
+                        <SelectItem value="0" className="text-white hover:bg-slate-700">Any Rating</SelectItem>
+                        <SelectItem value="4" className="text-white hover:bg-slate-700">4 Stars & Up</SelectItem>
+                        <SelectItem value="4.5" className="text-white hover:bg-slate-700">4.5 Stars & Up</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -724,32 +724,32 @@ const Shop = () => {
 
               {/* Value Propositions */}
               <div className="mt-6 space-y-4">
-                <Card className="bg-almona-darker/50 border-almona-light/20">
+                <Card className="bg-slate-800 border-slate-600 shadow-lg">
                   <CardContent className="p-4 flex items-center gap-3">
                     <Truck className="h-6 w-6 text-almona-orange" />
                     <div>
-                      <h4 className="font-medium">Free Shipping</h4>
-                      <p className="text-sm text-gray-400">On orders over 50,000 EGP</p>
+                      <h4 className="font-medium text-white">Free Shipping in Cairo</h4>
+                      <p className="text-sm text-gray-300">On orders over 150,000 EGP</p>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-almona-darker/50 border-almona-light/20">
+                <Card className="bg-slate-800 border-slate-600 shadow-lg">
                   <CardContent className="p-4 flex items-center gap-3">
                     <Shield className="h-6 w-6 text-almona-orange" />
                     <div>
-                      <h4 className="font-medium">2-Year Warranty</h4>
-                      <p className="text-sm text-gray-400">On all machinery</p>
+                      <h4 className="font-medium text-white">1-Year Warranty</h4>
+                      <p className="text-sm text-gray-300">On all machinery</p>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-almona-darker/50 border-almona-light/20">
+                <Card className="bg-slate-800 border-slate-600 shadow-lg">
                   <CardContent className="p-4 flex items-center gap-3">
                     <RotateCcw className="h-6 w-6 text-almona-orange" />
                     <div>
-                      <h4 className="font-medium">30-Day Returns</h4>
-                      <p className="text-sm text-gray-400">No questions asked</p>
+                      <h4 className="font-medium text-white">24/7 Support</h4>
+                      <p className="text-sm text-gray-300">quality guaranteed</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -764,7 +764,7 @@ const Shop = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="bg-almona-darker/50 p-6 rounded-lg border border-almona-light/20 mb-8"
+                className="bg-almona-darker p-6 rounded-lg border border-almona-light/20 mb-8"
               >
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                   <h2 className="text-2xl font-bold">
@@ -798,13 +798,13 @@ const Shop = () => {
                       <SelectTrigger className="w-[180px] bg-almona-dark border-almona-light/30">
                         <SelectValue placeholder="Sort by" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="featured">Featured</SelectItem>
-                        <SelectItem value="newest">Newest</SelectItem>
-                        <SelectItem value="price-low">Price: Low to High</SelectItem>
-                        <SelectItem value="price-high">Price: High to Low</SelectItem>
-                        <SelectItem value="rating">Top Rated</SelectItem>
-                        <SelectItem value="name">Name A-Z</SelectItem>
+                      <SelectContent className="bg-slate-800 border-slate-600">
+                        <SelectItem value="featured" className="text-white hover:bg-slate-700">Featured</SelectItem>
+                        <SelectItem value="newest" className="text-white hover:bg-slate-700">Newest</SelectItem>
+                        <SelectItem value="price-low" className="text-white hover:bg-slate-700">Price: Low to High</SelectItem>
+                        <SelectItem value="price-high" className="text-white hover:bg-slate-700">Price: High to Low</SelectItem>
+                        <SelectItem value="rating" className="text-white hover:bg-slate-700">Top Rated</SelectItem>
+                        <SelectItem value="name" className="text-white hover:bg-slate-700">Name A-Z</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

@@ -1,15 +1,35 @@
 {
   "common": {
-    "welcome": "Almona'ya Hoş Geldiniz",
-    "products": "Ürünler",
-    "services": "Hizmetler",
+    "welcome": "Almona Endüstriyel Çözümler'e Hoş Geldiniz",
+    "products": "Endüstriyel Ekipmanlar",
+    "services": "Teknik Hizmetler",
     "contact": "İletişim",
     "login": "Giriş Yap",
     "register": "Kayıt Ol",
     "add_to_cart": "Sepete Ekle",
     "price": "Fiyat",
     "quantity": "Miktar",
-    "total": "Toplam"
+    "total": "Toplam",
+    "currency": "Para Birimi",
+    "machine": "Makine",
+    "equipment": "Ekipman",
+    "fabrication": "İmalat",
+    "manufacturing": "Üretim",
+    "industrial": "Endüstriyel",
+    "technical": "Teknik",
+    "specifications": "Teknik Özellikler",
+    "maintenance": "Bakım",
+    "installation": "Kurulum",
+    "training": "Eğitim",
+    "support": "Destek",
+    "warranty": "Garanti",
+    "certification": "Sertifikasyon",
+    "quality": "Kalite",
+    "performance": "Performans",
+    "efficiency": "Verimlilik",
+    "precision": "Hassasiyet",
+    "durability": "Dayanıklılık",
+    "reliability": "Güvenilirlik"
   },
   "auth": {
     "email": "E-posta",
@@ -18,28 +38,55 @@
     "forgot_password": "Şifremi unuttum?",
     "sign_in": "Giriş Yap",
     "sign_up": "Hesap Oluştur",
-    "name": "Ad",
+    "name": "Ad Soyad",
     "phone": "Telefon",
-    "company": "Şirket",
+    "company": "Firma Adı",
     "sector": "Sektör",
-    "workshop_location": "Atölye Konumu"
+    "workshop_location": "Atölye/İmalathane Konumu",
+    "business_type": "İşletme Türü",
+    "company_size": "Firma Büyüklüğü",
+    "industry": "Endüstri Dalı",
+    "experience": "Deneyim",
+    "specialization": "Uzmanlık Alanı"
   },
   "navigation": {
     "home": "Ana Sayfa",
     "about": "Hakkımızda",
-    "services": "Hizmetler",
-    "products": "Ürünler",
-    "shop": "Mağaza",
+    "services": "Teknik Hizmetler",
+    "products": "Endüstriyel Ekipmanlar",
+    "shop": "Ekipman Mağazası",
     "contact": "İletişim",
-    "portfolio": "Portföy"
+    "portfolio": "Referanslar",
+    "machines": "Makineler",
+    "used_machines": "İkinci El Ekipmanlar",
+    "spare_parts": "Yedek Parçalar",
+    "training": "Operatör Eğitimi",
+    "maintenance": "Bakım Hizmetleri",
+    "support": "Teknik Destek",
+    "quotes": "Teklif Talepleri",
+    "customer_portal": "Müşteri Portalı"
   },
   "actions": {
-    "viewMore": "Daha Fazla Gör",
-    "contactUs": "Bizimle İletişime Geç",
-    "requestQuote": "Teklif İste",
-    "downloadSpec": "Özellikleri İndir",
-    "watchVideo": "Videoyu İzle",
-    "learnMore": "Daha Fazla Öğren"
+    "viewMore": "Detayları Görüntüle",
+    "contactUs": "Teknik Danışmanlık Al",
+    "requestQuote": "Teklif Talep Et",
+    "downloadSpec": "Teknik Dökümanları İndir",
+    "watchVideo": "Demonstrasyon İzle",
+    "learnMore": "Daha Fazla Bilgi",
+    "configure": "Yapılandır",
+    "compare": "Karşılaştır",
+    "viewInAR": "AR ile Görüntüle",
+    "scheduleDemo": "Demo Randevusu Al",
+    "requestInfo": "Bilgi Talep Et",
+    "getSupport": "Destek Al",
+    "bookTraining": "Eğitim Rezervasyonu",
+    "scheduleMaintenance": "Bakım Planla",
+    "registerMachine": "Makine Kaydı",
+    "trackOrder": "Sipariş Takibi",
+    "downloadManual": "Kullanım Kılavuzu İndir",
+    "viewCertificates": "Sertifikaları Görüntüle",
+    "requestWarranty": "Garanti Talebi",
+    "contactSales": "Satış Temsilcisi"
   },
   "status": {
     "loading": "Yükleniyor",
@@ -106,22 +153,34 @@
   },
   "pricing": {
     "calculator": {
-      "title": "Fiyat Hesaplayıcısı",
-      "noParts": "Fiyatlandırmayı görmek için 3D modelden parça seçin",
-      "selectedParts": "Seçilen Parçalar",
-      "quantity": "Miktar",
+      "title": "Endüstriyel Fiyat Hesaplayıcısı",
+      "noParts": "Fiyatlandırma için 3D modelden parça seçiniz",
+      "selectedParts": "Seçilen Endüstriyel Parçalar",
+      "quantity": "Adet",
       "subtotal": "Ara Toplam",
-      "tax": "Vergi",
-      "total": "Toplam",
-      "requestQuote": "Teklif İste",
+      "tax": "KDV",
+      "total": "Genel Toplam",
+      "requestQuote": "Detaylı Teklif Talep Et",
       "addToCart": "Sepete Ekle",
-      "kdvInfo": "KDV %20 dahil fiyatlar. Tüm fiyatlar Türk Lirası cinsindendir."
+      "kdvInfo": "KDV %20 dahil fiyatlar. Tüm fiyatlar Türk Lirası cinsindendir.",
+      "industrialPricing": "Endüstriyel Fiyatlandırma",
+      "bulkDiscount": "Toplu Alım İndirimi",
+      "volumePricing": "Hacim Fiyatlandırması",
+      "customQuote": "Özel Teklif",
+      "installationCost": "Kurulum Maliyeti",
+      "trainingCost": "Eğitim Maliyeti",
+      "warrantyCost": "Garanti Maliyeti",
+      "shippingCost": "Nakliye Maliyeti",
+      "totalInvestment": "Toplam Yatırım"
     },
     "tax": {
       "kdv": "KDV",
       "included": "Dahil",
       "excluded": "Hariç",
-      "rate": "Oran"
+      "rate": "Oran",
+      "industrialRate": "Endüstriyel KDV Oranı",
+      "reducedRate": "İndirimli Oran",
+      "zeroRate": "Sıfır Oran"
     }
   },
   "turkish": {
@@ -207,35 +266,184 @@
   },
   "currency": {
     "converter": {
-      "title": "Döviz Çevirici",
-      "amount": "Miktar",
-      "from": "Kaynak",
-      "to": "Hedef",
+      "title": "Endüstriyel Döviz Çevirici",
+      "amount": "Tutar",
+      "from": "Kaynak Para Birimi",
+      "to": "Hedef Para Birimi",
       "exchangeRate": "Döviz Kuru",
       "lastUpdated": "Son Güncelleme",
-      "source": "Kaynak",
+      "source": "Veri Kaynağı",
       "updating": "Güncelleniyor",
       "refresh": "Yenile",
       "regionDetected": "Bölge algılandı",
-      "autoSelected": "Otomatik seçildi"
+      "autoSelected": "Otomatik seçildi",
+      "industrialRates": "Endüstriyel Döviz Kurları",
+      "bulkConversion": "Toplu Çeviri",
+      "historicalRates": "Geçmiş Kurlar",
+      "rateAlert": "Kur Uyarısı",
+      "currencyPair": "Para Birimi Çifti",
+      "conversionFee": "Çeviri Ücreti",
+      "bankRate": "Banka Kuru",
+      "marketRate": "Piyasa Kuru"
     },
     "source": {
-      "live": "Canlı",
+      "live": "Canlı Veri",
       "cached": "Önbellek",
-      "fallback": "Yedek"
+      "fallback": "Yedek Veri",
+      "centralBank": "Merkez Bankası",
+      "commercialBank": "Ticari Banka",
+      "forexMarket": "Döviz Piyasası"
     }
   },
   "recommendations": {
-    "title": "Ekipman Önerileri",
+    "title": "Endüstriyel Ekipman Önerileri",
     "loading": "Öneriler yükleniyor...",
     "best_match": "En İyi Eşleşme",
     "match_score": "Eşleşme Skoru",
-    "technical": "Teknik",
-    "business": "İş",
-    "market": "Pazar",
+    "technical": "Teknik Uygunluk",
+    "business": "İş Gereksinimleri",
+    "market": "Pazar Analizi",
     "view_details": "Detayları Görüntüle",
     "highly_recommended": "Çok Önerilen",
     "recommended": "Önerilen",
-    "consider": "Değerlendir"
+    "consider": "Değerlendir",
+    "ai_recommendations": "AI Destekli Öneriler",
+    "expert_analysis": "Uzman Analizi",
+    "cost_benefit": "Maliyet-Fayda Analizi",
+    "performance_metrics": "Performans Metrikleri"
+  },
+  "machines": {
+    "title": "Endüstriyel Makineler",
+    "categories": {
+      "cnc": "CNC İşleme Tezgahları",
+      "cutting": "Kesim Makineleri",
+      "welding": "Kaynak Makineleri",
+      "fabrication": "İmalat Ekipmanları",
+      "automation": "Otomasyon Sistemleri",
+      "quality_control": "Kalite Kontrol Cihazları"
+    },
+    "specifications": {
+      "power_consumption": "Güç Tüketimi",
+      "voltage": "Voltaj",
+      "dimensions": "Boyutlar",
+      "weight": "Ağırlık",
+      "precision": "Hassasiyet",
+      "speed": "Hız",
+      "capacity": "Kapasite",
+      "accuracy": "Doğruluk",
+      "repeatability": "Tekrarlanabilirlik",
+      "surface_finish": "Yüzey Kalitesi"
+    },
+    "features": {
+      "automatic": "Otomatik",
+      "semi_automatic": "Yarı Otomatik",
+      "manual": "Manuel",
+      "programmable": "Programlanabilir",
+      "cnc_controlled": "CNC Kontrollü",
+      "servo_driven": "Servo Tahrikli",
+      "hydraulic": "Hidrolik",
+      "pneumatic": "Pnömatik",
+      "electric": "Elektrikli"
+    },
+    "certifications": {
+      "ce": "CE Belgesi",
+      "iso": "ISO Sertifikası",
+      "tse": "TSE Belgesi",
+      "turkey_standard": "Türk Standardı",
+      "safety_certificate": "Güvenlik Sertifikası",
+      "quality_certificate": "Kalite Sertifikası"
+    }
+  },
+  "tickets": {
+    "title": "Teknik Destek Talepleri",
+    "types": {
+      "general": "Genel Destek",
+      "maintenance": "Bakım Talebi",
+      "repair": "Onarım Talebi",
+      "installation": "Kurulum Talebi",
+      "training": "Eğitim Talebi",
+      "warranty": "Garanti Talebi",
+      "spare_parts": "Yedek Parça Talebi",
+      "technical_consultation": "Teknik Danışmanlık"
+    },
+    "priorities": {
+      "low": "Düşük",
+      "medium": "Orta",
+      "high": "Yüksek",
+      "critical": "Kritik",
+      "emergency": "Acil"
+    },
+    "status": {
+      "open": "Açık",
+      "assigned": "Atanmış",
+      "in_progress": "Devam Ediyor",
+      "resolved": "Çözüldü",
+      "closed": "Kapalı",
+      "pending": "Beklemede",
+      "cancelled": "İptal Edildi"
+    },
+    "maintenance_types": {
+      "preventive": "Önleyici Bakım",
+      "corrective": "Düzeltici Bakım",
+      "predictive": "Öngörülü Bakım",
+      "emergency": "Acil Bakım",
+      "scheduled": "Planlı Bakım"
+    },
+    "form": {
+      "subject": "Konu",
+      "description": "Açıklama",
+      "machine_serial": "Makine Seri No",
+      "machine_model": "Makine Modeli",
+      "location": "Konum",
+      "contact_person": "İletişim Kişisi",
+      "phone": "Telefon",
+      "email": "E-posta",
+      "urgency": "Aciliyet",
+      "preferred_date": "Tercih Edilen Tarih",
+      "attachments": "Ekler",
+      "submit": "Talep Gönder",
+      "update": "Güncelle",
+      "cancel": "İptal Et"
+    }
+  },
+  "quotes": {
+    "title": "Teklif Talepleri",
+    "steps": {
+      "project_details": "Proje Detayları",
+      "equipment_selection": "Ekipman Seçimi",
+      "requirements": "Gereksinimler",
+      "review": "İnceleme"
+    },
+    "project_types": {
+      "new_installation": "Yeni Kurulum",
+      "upgrade": "Yükseltme",
+      "replacement": "Değişim",
+      "expansion": "Genişletme",
+      "maintenance_contract": "Bakım Sözleşmesi",
+      "training_program": "Eğitim Programı"
+    },
+    "urgency": {
+      "standard": "Standart (2-3 hafta)",
+      "express": "Hızlı (1 hafta) +%15",
+      "urgent": "Acil (3 gün) +%30"
+    },
+    "delivery_options": {
+      "standard": "Standart Teslimat",
+      "express": "Hızlı Teslimat",
+      "white_glove": "Beyaz Eldiven Hizmeti",
+      "installation_included": "Kurulum Dahil"
+    },
+    "form": {
+      "project_description": "Proje Açıklaması",
+      "budget_range": "Bütçe Aralığı",
+      "timeline": "Zaman Çizelgesi",
+      "delivery_location": "Teslimat Konumu",
+      "special_requirements": "Özel Gereksinimler",
+      "contact_info": "İletişim Bilgileri",
+      "company_info": "Firma Bilgileri",
+      "technical_requirements": "Teknik Gereksinimler",
+      "submit_quote": "Teklif Talep Et",
+      "save_draft": "Taslak Kaydet"
+    }
   }
 }

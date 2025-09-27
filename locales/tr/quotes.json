@@ -1,0 +1,128 @@
+{
+  "title": "Teklif Talepleri",
+  "subtitle": "Endüstriyel projeleriniz için detaylı teklif alın",
+  "steps": {
+    "project_details": "Proje Detayları",
+    "equipment_selection": "Ekipman Seçimi",
+    "requirements": "Gereksinimler",
+    "review": "İnceleme ve Onay"
+  },
+  "project_types": {
+    "new_installation": "Yeni Kurulum",
+    "upgrade": "Yükseltme",
+    "replacement": "Değişim",
+    "expansion": "Genişletme",
+    "maintenance_contract": "Bakım Sözleşmesi",
+    "training_program": "Eğitim Programı",
+    "consulting_service": "Danışmanlık Hizmeti",
+    "custom_solution": "Özel Çözüm"
+  },
+  "urgency": {
+    "standard": "Standart (2-3 hafta)",
+    "express": "Hızlı (1 hafta) +%15",
+    "urgent": "Acil (3 gün) +%30",
+    "emergency": "Acil Durum (24 saat) +%50"
+  },
+  "delivery_options": {
+    "standard": "Standart Teslimat",
+    "express": "Hızlı Teslimat",
+    "white_glove": "Beyaz Eldiven Hizmeti",
+    "installation_included": "Kurulum Dahil",
+    "turnkey": "Anahtar Teslimi"
+  },
+  "form": {
+    "project_description": "Proje Açıklaması",
+    "budget_range": "Bütçe Aralığı",
+    "timeline": "Zaman Çizelgesi",
+    "delivery_location": "Teslimat Konumu",
+    "special_requirements": "Özel Gereksinimler",
+    "contact_info": "İletişim Bilgileri",
+    "company_info": "Firma Bilgileri",
+    "technical_requirements": "Teknik Gereksinimler",
+    "submit_quote": "Teklif Talep Et",
+    "save_draft": "Taslak Kaydet",
+    "cancel": "İptal Et",
+    "next": "İleri",
+    "previous": "Geri",
+    "finish": "Tamamla"
+  },
+  "equipment": {
+    "select_equipment": "Ekipman Seçin",
+    "add_equipment": "Ekipman Ekle",
+    "remove_equipment": "Ekipman Kaldır",
+    "equipment_quantity": "Ekipman Miktarı",
+    "equipment_specifications": "Ekipman Özellikleri",
+    "custom_requirements": "Özel Gereksinimler",
+    "accessories": "Aksesuarlar",
+    "spare_parts": "Yedek Parçalar"
+  },
+  "services": {
+    "installation": "Kurulum Hizmeti",
+    "training": "Eğitim Hizmeti",
+    "maintenance": "Bakım Hizmeti",
+    "support": "Destek Hizmeti",
+    "consulting": "Danışmanlık Hizmeti",
+    "customization": "Özelleştirme Hizmeti",
+    "warranty": "Garanti Hizmeti",
+    "spare_parts": "Yedek Parça Hizmeti"
+  },
+  "pricing": {
+    "equipment_cost": "Ekipman Maliyeti",
+    "installation_cost": "Kurulum Maliyeti",
+    "training_cost": "Eğitim Maliyeti",
+    "maintenance_cost": "Bakım Maliyeti",
+    "delivery_cost": "Teslimat Maliyeti",
+    "tax": "Vergi",
+    "total_cost": "Toplam Maliyet",
+    "discount": "İndirim",
+    "final_price": "Son Fiyat"
+  },
+  "terms": {
+    "payment_terms": "Ödeme Şartları",
+    "delivery_terms": "Teslimat Şartları",
+    "warranty_terms": "Garanti Şartları",
+    "maintenance_terms": "Bakım Şartları",
+    "cancellation_terms": "İptal Şartları",
+    "force_majeure": "Mücbir Sebep",
+    "governing_law": "Uygulanacak Hukuk",
+    "dispute_resolution": "Uyuşmazlık Çözümü"
+  },
+  "status": {
+    "draft": "Taslak",
+    "submitted": "Gönderildi",
+    "under_review": "İnceleniyor",
+    "quoted": "Teklif Verildi",
+    "accepted": "Kabul Edildi",
+    "rejected": "Reddedildi",
+    "expired": "Süresi Doldu",
+    "cancelled": "İptal Edildi"
+  },
+  "actions": {
+    "request_quote": "Teklif Talep Et",
+    "view_quote": "Teklifi Görüntüle",
+    "accept_quote": "Teklifi Kabul Et",
+    "reject_quote": "Teklifi Reddet",
+    "modify_quote": "Teklifi Değiştir",
+    "download_quote": "Teklifi İndir",
+    "print_quote": "Teklifi Yazdır",
+    "share_quote": "Teklifi Paylaş"
+  },
+  "notifications": {
+    "quote_submitted": "Teklif talebiniz başarıyla gönderildi",
+    "quote_updated": "Teklif güncellendi",
+    "quote_expired": "Teklif süresi doldu",
+    "quote_accepted": "Teklif kabul edildi",
+    "quote_rejected": "Teklif reddedildi"
+  },
+  "validation": {
+    "required_field": "Bu alan zorunludur",
+    "invalid_email": "Geçersiz e-posta adresi",
+    "invalid_phone": "Geçersiz telefon numarası",
+    "invalid_date": "Geçersiz tarih",
+    "invalid_number": "Geçersiz sayı",
+    "min_length": "Minimum {min} karakter gerekli",
+    "max_length": "Maksimum {max} karakter olabilir",
+    "min_value": "Minimum değer {min} olmalı",
+    "max_value": "Maksimum değer {max} olmalı"
+  }
+}

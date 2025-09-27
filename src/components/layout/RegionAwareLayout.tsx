@@ -142,13 +142,93 @@ interface RegionalFeaturesOverlayProps {
 
 const RegionalFeaturesOverlay: React.FC<RegionalFeaturesOverlayProps> = ({ region, config }) => {
   const [showFeatures, setShowFeatures] = React.useState(false);
+  const [isVisible, setIsVisible] = React.useState(true);
+  const [autoHideTimer, setAutoHideTimer] = React.useState<NodeJS.Timeout | null>(null);
+
+  // Auto-hide the icon after 5 seconds
+  React.useEffect(() => {
+    if (isVisible && !showFeatures) {
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 5000); // Hide after 5 seconds
+      setAutoHideTimer(timer);
+    }
+
+    return () => {
+      if (autoHideTimer) {
+        clearTimeout(autoHideTimer);
+      }
+    };
+  }, [isVisible, showFeatures]);
+
+  // Show icon on mouse movement
+  React.useEffect(() => {
+    const handleMouseMove = () => {
+      if (!isVisible) {
+        setIsVisible(true);
+      }
+      // Reset auto-hide timer
+      if (autoHideTimer) {
+        clearTimeout(autoHideTimer);
+      }
+      if (!showFeatures) {
+        const timer = setTimeout(() => {
+          setIsVisible(false);
+        }, 5000);
+        setAutoHideTimer(timer);
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      if (autoHideTimer) {
+        clearTimeout(autoHideTimer);
+      }
+    };
+  }, [isVisible, showFeatures, autoHideTimer]);
+
+  // Close on escape key
+  React.useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showFeatures) {
+        setShowFeatures(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [showFeatures]);
+
+  // Close on click outside
+  React.useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showFeatures) {
+        const target = e.target as Element;
+        if (!target.closest('.regional-features-overlay')) {
+          setShowFeatures(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showFeatures]);
+
+  if (!isVisible) {
+    return null;
+  }
 
   if (!showFeatures) {
     return (
       <div className="fixed bottom-4 right-4 z-50">
         <button
           onClick={() => setShowFeatures(true)}
-          className="bg-orange-500 text-white p-3 rounded-full shadow-lg hover:bg-orange-600 transition-colors"
+          className="bg-orange-500 text-white p-3 rounded-full shadow-lg hover:bg-orange-600 transition-all duration-300 transform hover:scale-110"
           title="Regional Features"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,14 +240,15 @@ const RegionalFeaturesOverlay: React.FC<RegionalFeaturesOverlayProps> = ({ regio
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 max-w-sm">
+    <div className="regional-features-overlay fixed bottom-4 right-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 max-w-sm border border-gray-200 dark:border-gray-700">
       <div className="flex justify-between items-center mb-3">
         <h3 className="font-semibold text-gray-900 dark:text-white">
           Regional Features ({region})
         </h3>
         <button
           onClick={() => setShowFeatures(false)}
-          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+          title="Close"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

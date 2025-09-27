@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/ui/card";
 import { EnhancedImage } from "@/components/ui/EnhancedImage";
+import { motion, AnimatePresence } from "framer-motion";
 
 const EgyptCertificationBadge = ({ standard }: { standard: string }) => (
   <div className="flex items-center bg-[#ce1126] text-white px-2 py-1 rounded-full text-xs">
@@ -47,8 +48,34 @@ export const IndustrialProductCard = ({
   durabilityInfo,
   onDurabilityClick,
 }: IndustrialProductCardProps) => {
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const handleActionClick = (action: () => void) => {
+    // Check if this is an "Add to Quote" action
+    const isAddToQuote = actions.find(a => a.action === action)?.label.toLowerCase().includes('add to quote');
+    
+    if (isAddToQuote) {
+      setIsAnimating(true);
+      // Reset animation after 1 second
+      setTimeout(() => setIsAnimating(false), 1000);
+    }
+    
+    action();
+  };
+
   return (
-    <Card className="bg-almona-darker border-almona-light/20 hover:border-almona-light/40 transition-colors h-full flex flex-col">
+    <motion.div
+      animate={isAnimating ? {
+        scale: [1, 1.05, 1],
+        boxShadow: [
+          "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+          "0 0 20px rgba(255, 165, 0, 0.5)",
+          "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+        ]
+      } : {}}
+      transition={{ duration: 0.6, ease: "easeInOut" }}
+    >
+      <Card className="bg-almona-darker border-almona-light/20 hover:border-almona-light/40 transition-colors h-full flex flex-col">
       <CardHeader className="p-0 relative">
         <div className="aspect-video relative">
           <EnhancedImage 
@@ -140,7 +167,7 @@ export const IndustrialProductCard = ({
             <Button
               key={`action-${i}-${action.label}-${title.slice(0, 10)}`}
               variant={i === 0 ? "default" : "outline"}
-              onClick={action.action}
+              onClick={() => handleActionClick(action.action)}
               className={i === 0 ? "bg-orange-600 hover:bg-orange-700" : ""}
             >
               {action.label}
@@ -149,5 +176,6 @@ export const IndustrialProductCard = ({
         </div>
       </CardFooter>
     </Card>
+    </motion.div>
   );
 };

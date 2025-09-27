@@ -1,0 +1,148 @@
+{
+  "title": "Teknik Destek Talepleri",
+  "subtitle": "Endüstriyel ekipmanlarınız için profesyonel teknik destek",
+  "types": {
+    "general": "Genel Destek",
+    "maintenance": "Bakım Talebi",
+    "repair": "Onarım Talebi",
+    "installation": "Kurulum Talebi",
+    "training": "Eğitim Talebi",
+    "warranty": "Garanti Talebi",
+    "spare_parts": "Yedek Parça Talebi",
+    "technical_consultation": "Teknik Danışmanlık",
+    "emergency": "Acil Destek",
+    "preventive_maintenance": "Önleyici Bakım",
+    "predictive_maintenance": "Öngörülü Bakım",
+    "calibration": "Kalibrasyon",
+    "upgrade": "Yükseltme",
+    "customization": "Özelleştirme"
+  },
+  "priorities": {
+    "low": "Düşük",
+    "medium": "Orta",
+    "high": "Yüksek",
+    "critical": "Kritik",
+    "emergency": "Acil"
+  },
+  "status": {
+    "open": "Açık",
+    "assigned": "Atanmış",
+    "in_progress": "Devam Ediyor",
+    "resolved": "Çözüldü",
+    "closed": "Kapalı",
+    "pending": "Beklemede",
+    "cancelled": "İptal Edildi",
+    "on_hold": "Bekletildi",
+    "escalated": "Yükseltildi"
+  },
+  "maintenance_types": {
+    "preventive": "Önleyici Bakım",
+    "corrective": "Düzeltici Bakım",
+    "predictive": "Öngörülü Bakım",
+    "emergency": "Acil Bakım",
+    "scheduled": "Planlı Bakım",
+    "unscheduled": "Plansız Bakım",
+    "routine": "Rutin Bakım",
+    "major": "Büyük Bakım",
+    "minor": "Küçük Bakım"
+  },
+  "form": {
+    "subject": "Konu",
+    "description": "Açıklama",
+    "machine_serial": "Makine Seri No",
+    "machine_model": "Makine Modeli",
+    "location": "Konum",
+    "contact_person": "İletişim Kişisi",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "urgency": "Aciliyet",
+    "preferred_date": "Tercih Edilen Tarih",
+    "preferred_time": "Tercih Edilen Saat",
+    "attachments": "Ekler",
+    "submit": "Talep Gönder",
+    "update": "Güncelle",
+    "cancel": "İptal Et",
+    "save_draft": "Taslak Kaydet",
+    "add_attachment": "Ekle Ekle",
+    "remove_attachment": "Eki Kaldır"
+  },
+  "fields": {
+    "ticket_id": "Talep No",
+    "created_date": "Oluşturma Tarihi",
+    "updated_date": "Güncelleme Tarihi",
+    "assigned_to": "Atanan Kişi",
+    "assigned_date": "Atama Tarihi",
+    "resolution_date": "Çözüm Tarihi",
+    "estimated_resolution": "Tahmini Çözüm Tarihi",
+    "actual_resolution": "Gerçek Çözüm Tarihi",
+    "time_spent": "Harcanan Süre",
+    "customer_satisfaction": "Müşteri Memnuniyeti",
+    "follow_up_required": "Takip Gerekli",
+    "follow_up_date": "Takip Tarihi"
+  },
+  "actions": {
+    "create_ticket": "Yeni Talep Oluştur",
+    "view_ticket": "Talep Görüntüle",
+    "edit_ticket": "Talep Düzenle",
+    "close_ticket": "Talep Kapat",
+    "reopen_ticket": "Talep Yeniden Aç",
+    "assign_ticket": "Talep Ata",
+    "escalate_ticket": "Talep Yükselt",
+    "add_comment": "Yorum Ekle",
+    "add_attachment": "Ekle Ekle",
+    "update_status": "Durum Güncelle",
+    "schedule_maintenance": "Bakım Planla",
+    "request_quote": "Teklif Talep Et"
+  },
+  "filters": {
+    "all": "Tümü",
+    "my_tickets": "Taleplerim",
+    "open_tickets": "Açık Talepler",
+    "closed_tickets": "Kapalı Talepler",
+    "high_priority": "Yüksek Öncelik",
+    "overdue": "Gecikmiş",
+    "this_week": "Bu Hafta",
+    "this_month": "Bu Ay",
+    "last_30_days": "Son 30 Gün"
+  },
+  "search": {
+    "search_tickets": "Talepleri Ara",
+    "search_placeholder": "Talep no, konu veya açıklama ile ara...",
+    "no_results": "Sonuç bulunamadı",
+    "search_results": "Arama Sonuçları"
+  },
+  "notifications": {
+    "ticket_created": "Talep başarıyla oluşturuldu",
+    "ticket_updated": "Talep güncellendi",
+    "ticket_assigned": "Talep atandı",
+    "ticket_closed": "Talep kapatıldı",
+    "ticket_reopened": "Talep yeniden açıldı",
+    "comment_added": "Yorum eklendi",
+    "attachment_added": "Ekle eklendi",
+    "status_updated": "Durum güncellendi"
+  },
+  "messages": {
+    "no_tickets": "Henüz talep bulunmuyor",
+    "loading_tickets": "Talepler yükleniyor...",
+    "error_loading": "Talepler yüklenirken hata oluştu",
+    "ticket_not_found": "Talep bulunamadı",
+    "unauthorized_access": "Bu talebe erişim yetkiniz yok",
+    "invalid_ticket_id": "Geçersiz talep numarası"
+  },
+  "sla": {
+    "response_time": "Yanıt Süresi",
+    "resolution_time": "Çözüm Süresi",
+    "sla_breach": "SLA İhlali",
+    "sla_met": "SLA Karşılandı",
+    "sla_warning": "SLA Uyarısı",
+    "escalation_required": "Yükseltme Gerekli"
+  },
+  "reports": {
+    "ticket_summary": "Talep Özeti",
+    "response_time_report": "Yanıt Süresi Raporu",
+    "resolution_time_report": "Çözüm Süresi Raporu",
+    "customer_satisfaction": "Müşteri Memnuniyeti",
+    "ticket_volume": "Talep Hacmi",
+    "trend_analysis": "Trend Analizi"
+  }
+}

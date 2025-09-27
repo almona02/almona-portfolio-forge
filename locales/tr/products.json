@@ -1,38 +1,85 @@
 {
   "shop": {
     "tabs": {
-      "industrial-machines": "Endüstriyel Makineler",
-      "industrial-parts": "Endüstriyel Parçalar",
-      "unique-prototypes": "Benzersiz Prototipler",
-      "unique-custom-fabrications": "Özel İmalatlar",
-      "profiles": "Profiller",
-      "reports": "Raporlar"
+      "industrial-machines": "Endüstriyel İşleme Tezgahları",
+      "industrial-parts": "Endüstriyel Yedek Parçalar",
+      "unique-prototypes": "Özel Prototipler",
+      "unique-custom-fabrications": "Özel İmalat Çözümleri",
+      "profiles": "Alüminyum Profiller",
+      "reports": "Teknik Raporlar"
     },
     "products": {
       "KM-212": {
-        "title": "YILMAZ KM-212",
-        "description": "Yüksek hassasiyetli CNC kesim makinesi."
+        "title": "YILMAZ KM-212 CNC Kesim Tezgahı",
+        "description": "Yüksek hassasiyetli CNC kontrollü endüstriyel kesim makinesi. Alüminyum ve çelik profiller için optimize edilmiş."
       },
       "DC-421-PBS": {
-        "title": "YILMAZ DC-421-PBS",
-        "description": "Ağır işler için çift kolonlu işlemci."
+        "title": "YILMAZ DC-421-PBS Çift Kolonlu İşleme Tezgahı",
+        "description": "Ağır endüstriyel işlemler için tasarlanmış çift kolonlu CNC işleme tezgahı."
       }
     },
     "buttons": {
-      "configure": "Yapılandır",
-      "requestQuote": "Teklif İste",
-      "compare": "Karşılaştır",
-      "viewInAR": "Alanınızda Görüntüle"
+      "configure": "Teknik Yapılandırma",
+      "requestQuote": "Detaylı Teklif Talep Et",
+      "compare": "Teknik Karşılaştırma",
+      "viewInAR": "AR ile Görüntüle",
+      "scheduleDemo": "Demo Randevusu Al",
+      "downloadSpecs": "Teknik Dökümanları İndir",
+      "contactExpert": "Uzmanla İletişime Geç",
+      "requestInfo": "Bilgi Talep Et"
     },
     "labels": {
       "price": "Fiyat",
-      "contactWhatsApp": "WhatsApp ile İletişim"
+      "contactWhatsApp": "WhatsApp ile Teknik Destek",
+      "availability": "Stok Durumu",
+      "delivery": "Teslimat Süresi",
+      "warranty": "Garanti Süresi",
+      "certification": "Sertifikalar",
+      "specifications": "Teknik Özellikler",
+      "features": "Özellikler",
+      "applications": "Uygulama Alanları",
+      "maintenance": "Bakım Bilgileri"
     },
     "messages": {
-      "localShipping": "Yerel Kargo Hesaplayıcısı",
+      "localShipping": "Yerel Nakliye Hesaplayıcısı",
       "cashOnDelivery": "Kapıda Ödeme",
       "ramadanMode": "Ramazan Modu",
-      "eidMode": "Bayram Modu"
+      "eidMode": "Bayram Modu",
+      "industrialShipping": "Endüstriyel Nakliye",
+      "whiteGloveService": "Beyaz Eldiven Hizmeti",
+      "installationIncluded": "Kurulum Dahil",
+      "trainingIncluded": "Operatör Eğitimi Dahil"
+    },
+    "categories": {
+      "cnc_machines": "CNC İşleme Tezgahları",
+      "cutting_equipment": "Kesim Ekipmanları",
+      "welding_machines": "Kaynak Makineleri",
+      "fabrication_tools": "İmalat Aletleri",
+      "automation_systems": "Otomasyon Sistemleri",
+      "quality_control": "Kalite Kontrol Cihazları",
+      "spare_parts": "Yedek Parçalar",
+      "consumables": "Sarf Malzemeleri"
+    },
+    "filters": {
+      "price_range": "Fiyat Aralığı",
+      "brand": "Marka",
+      "category": "Kategori",
+      "power_consumption": "Güç Tüketimi",
+      "precision": "Hassasiyet",
+      "capacity": "Kapasite",
+      "certification": "Sertifikasyon",
+      "availability": "Stok Durumu",
+      "delivery_time": "Teslimat Süresi"
+    },
+    "sorting": {
+      "price_low_high": "Fiyat (Düşük-Yüksek)",
+      "price_high_low": "Fiyat (Yüksek-Düşük)",
+      "name_a_z": "İsim (A-Z)",
+      "name_z_a": "İsim (Z-A)",
+      "newest": "En Yeni",
+      "most_popular": "En Popüler",
+      "best_rated": "En İyi Değerlendirilen",
+      "relevance": "İlgililik"
     }
   }
 }

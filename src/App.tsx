@@ -11,7 +11,6 @@ import { PageLoadingWrapper } from "./components/ui/PageLoadingWrapper";
 import { PrestigeLoader } from "./components/ui/PrestigeLoader";
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { ChunkLoadingErrorBoundary } from "./components/ui/ChunkLoadingErrorBoundary";
-import { MainChunkTest } from "./components/ui/MainChunkTest";
 import { QuoteProvider } from "./context/QuoteContext.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
 import { LoadingProvider } from "./context/LoadingContext.tsx";
@@ -25,6 +24,9 @@ const Services = lazy(() => import("./pages/Services.tsx"));
 const Contact = lazy(() => import("./pages/Contact.tsx"));
 const About = lazy(() => import("./pages/About.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+
+// Test components
+const LocalizationTest = lazy(() => import("./components/test/LocalizationTest.tsx"));
 
 // Shop and e-commerce
 const Shop = lazy(() => import("./pages/Shop"));
@@ -125,13 +127,15 @@ const App = () => (
                       <NavPrefetchHints />
                       <GlobalDynamicImportGuard />
                       <Analytics />
-                      <MainChunkTest />
                       <RegionAwareLayout showRegionalFeatures={true} enableRegionSwitching={true}>
                         <Routes>
                   {/* Core pages */}
                   <Route path="/" element={<Suspense fallback={getLoadingComponent('/')}><Index /></Suspense>} />
                   <Route path="/about" element={<Suspense fallback={getLoadingComponent('/about')}><About /></Suspense>} />
                   <Route path="/contact" element={<Suspense fallback={getLoadingComponent('/contact')}><Contact /></Suspense>} />
+                  
+                  {/* Test routes */}
+                  <Route path="/test/localization" element={<Suspense fallback={getLoadingComponent('/test/localization')}><LocalizationTest /></Suspense>} />
                   
                   {/* Products */}
                   <Route path="/products" element={<Suspense fallback={getLoadingComponent('/products')}><Products /></Suspense>} />

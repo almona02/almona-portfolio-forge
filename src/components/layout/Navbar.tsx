@@ -379,11 +379,11 @@ const Navbar = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.3 }}
           >
-            <Button size="icon" asChild className="bg-transparent">
+            <Button size="icon" asChild className="bg-transparent relative">
               <Link to="/quote">
                 <ShoppingCart className="h-6 w-6 text-gray-300 hover:text-white" />
                 {quoteItems.length > 0 && (
-                  <span className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold border-2 border-gray-900">
                     {quoteItems.length}
                   </span>
                 )}
