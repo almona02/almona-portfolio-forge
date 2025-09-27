@@ -1,0 +1,254 @@
+{
+  "title": "Türkiye Endüstriyel Bölgeleri",
+  "subtitle": "Türkiye'nin önde gelen endüstriyel bölgeleri ve şehirleri",
+  "regions": {
+    "marmara": "Marmara Bölgesi",
+    "ege": "Ege Bölgesi",
+    "akdeniz": "Akdeniz Bölgesi",
+    "ic_anadolu": "İç Anadolu Bölgesi",
+    "karadeniz": "Karadeniz Bölgesi",
+    "dogu_anadolu": "Doğu Anadolu Bölgesi",
+    "guneydogu_anadolu": "Güneydoğu Anadolu Bölgesi"
+  },
+  "cities": {
+    "istanbul": {
+      "name": "İstanbul",
+      "region": "Marmara",
+      "industrial_zones": [
+        "Tuzla Organize Sanayi Bölgesi",
+        "Gebze Organize Sanayi Bölgesi",
+        "Çerkezköy Organize Sanayi Bölgesi",
+        "Hadımköy Organize Sanayi Bölgesi",
+        "Beylikdüzü Organize Sanayi Bölgesi"
+      ],
+      "industries": [
+        "Otomotiv",
+        "Tekstil",
+        "Kimya",
+        "Gıda",
+        "Metal İşleme",
+        "Elektronik",
+        "Makine İmalatı"
+      ]
+    },
+    "ankara": {
+      "name": "Ankara",
+      "region": "İç Anadolu",
+      "industrial_zones": [
+        "Sincan Organize Sanayi Bölgesi",
+        "Ostim Organize Sanayi Bölgesi",
+        "İvedik Organize Sanayi Bölgesi",
+        "Akyurt Organize Sanayi Bölgesi"
+      ],
+      "industries": [
+        "Savunma Sanayi",
+        "Makine İmalatı",
+        "Gıda",
+        "Tekstil",
+        "Kimya",
+        "Elektronik"
+      ]
+    },
+    "izmir": {
+      "name": "İzmir",
+      "region": "Ege",
+      "industrial_zones": [
+        "Atatürk Organize Sanayi Bölgesi",
+        "Kemalpaşa Organize Sanayi Bölgesi",
+        "Menemen Organize Sanayi Bölgesi",
+        "Torbalı Organize Sanayi Bölgesi"
+      ],
+      "industries": [
+        "Tekstil",
+        "Gıda",
+        "Kimya",
+        "Metal İşleme",
+        "Makine İmalatı",
+        "Otomotiv Yan Sanayi"
+      ]
+    },
+    "bursa": {
+      "name": "Bursa",
+      "region": "Marmara",
+      "industrial_zones": [
+        "Bursa Organize Sanayi Bölgesi",
+        "Nilüfer Organize Sanayi Bölgesi",
+        "İnegöl Organize Sanayi Bölgesi",
+        "Gemlik Organize Sanayi Bölgesi"
+      ],
+      "industries": [
+        "Otomotiv",
+        "Tekstil",
+        "Makine İmalatı",
+        "Gıda",
+        "Kimya",
+        "Metal İşleme"
+      ]
+    },
+    "kocaeli": {
+      "name": "Kocaeli",
+      "region": "Marmara",
+      "industrial_zones": [
+        "Gebze Organize Sanayi Bölgesi",
+        "Dilovası Organize Sanayi Bölgesi",
+        "Körfez Organize Sanayi Bölgesi",
+        "Derince Organize Sanayi Bölgesi"
+      ],
+      "industries": [
+        "Petrokimya",
+        "Otomotiv",
+        "Kimya",
+        "Metal İşleme",
+        "Makine İmalatı",
+        "Gıda"
+      ]
+    },
+    "adana": {
+      "name": "Adana",
+      "region": "Akdeniz",
+      "industrial_zones": [
+        "Adana Organize Sanayi Bölgesi",
+        "Ceyhan Organize Sanayi Bölgesi",
+        "Yumurtalık Organize Sanayi Bölgesi"
+      ],
+      "industries": [
+        "Tekstil",
+        "Gıda",
+        "Kimya",
+        "Metal İşleme",
+        "Makine İmalatı",
+        "Petrokimya"
+      ]
+    },
+    "gaziantep": {
+      "name": "Gaziantep",
+      "region": "Güneydoğu Anadolu",
+      "industrial_zones": [
+        "Gaziantep Organize Sanayi Bölgesi",
+        "Nizip Organize Sanayi Bölgesi",
+        "Oğuzeli Organize Sanayi Bölgesi"
+      ],
+      "industries": [
+        "Tekstil",
+        "Gıda",
+        "Makine İmalatı",
+        "Metal İşleme",
+        "Kimya",
+        "Plastik"
+      ]
+    },
+    "konya": {
+      "name": "Konya",
+      "region": "İç Anadolu",
+      "industrial_zones": [
+        "Konya Organize Sanayi Bölgesi",
+        "Selçuklu Organize Sanayi Bölgesi",
+        "Meram Organize Sanayi Bölgesi"
+      ],
+      "industries": [
+        "Gıda",
+        "Tekstil",
+        "Makine İmalatı",
+        "Metal İşleme",
+        "Kimya",
+        "Otomotiv Yan Sanayi"
+      ]
+    },
+    "antalya": {
+      "name": "Antalya",
+      "region": "Akdeniz",
+      "industrial_zones": [
+        "Antalya Organize Sanayi Bölgesi",
+        "Serik Organize Sanayi Bölgesi",
+        "Manavgat Organize Sanayi Bölgesi"
+      ],
+      "industries": [
+        "Gıda",
+        "Tekstil",
+        "Kimya",
+        "Metal İşleme",
+        "Makine İmalatı",
+        "Turizm Ekipmanları"
+      ]
+    },
+    "trabzon": {
+      "name": "Trabzon",
+      "region": "Karadeniz",
+      "industrial_zones": [
+        "Trabzon Organize Sanayi Bölgesi",
+        "Akçaabat Organize Sanayi Bölgesi"
+      ],
+      "industries": [
+        "Gıda",
+        "Tekstil",
+        "Metal İşleme",
+        "Makine İmalatı",
+        "Kimya",
+        "Balık İşleme"
+      ]
+    }
+  },
+  "industrial_zones": {
+    "organize_sanayi_bolgesi": "Organize Sanayi Bölgesi",
+    "teknoloji_gelistirme_bolgesi": "Teknoloji Geliştirme Bölgesi",
+    "serbest_bolge": "Serbest Bölge",
+    "endustri_bolgesi": "Endüstri Bölgesi",
+    "kucuk_sanayi_sitesi": "Küçük Sanayi Sitesi"
+  },
+  "industries": {
+    "automotive": "Otomotiv",
+    "textile": "Tekstil",
+    "food": "Gıda",
+    "chemical": "Kimya",
+    "metal_processing": "Metal İşleme",
+    "machine_manufacturing": "Makine İmalatı",
+    "electronics": "Elektronik",
+    "petrochemical": "Petrokimya",
+    "pharmaceutical": "İlaç",
+    "construction": "İnşaat",
+    "energy": "Enerji",
+    "mining": "Madencilik",
+    "agriculture": "Tarım",
+    "tourism": "Turizm",
+    "defense": "Savunma Sanayi"
+  },
+  "facilities": {
+    "factory": "Fabrika",
+    "manufacturing_plant": "İmalat Tesisi",
+    "production_facility": "Üretim Tesisi",
+    "assembly_plant": "Montaj Tesisi",
+    "processing_plant": "İşleme Tesisi",
+    "warehouse": "Depo",
+    "distribution_center": "Dağıtım Merkezi",
+    "service_center": "Servis Merkezi",
+    "training_center": "Eğitim Merkezi",
+    "research_center": "Araştırma Merkezi",
+    "laboratory": "Laboratuvar",
+    "quality_control": "Kalite Kontrol",
+    "maintenance_facility": "Bakım Tesisi"
+  },
+  "infrastructure": {
+    "highway": "Otoyol",
+    "railway": "Demiryolu",
+    "airport": "Havaalanı",
+    "port": "Liman",
+    "power_plant": "Elektrik Santrali",
+    "water_treatment": "Su Arıtma",
+    "waste_management": "Atık Yönetimi",
+    "telecommunications": "Telekomünikasyon",
+    "internet": "İnternet",
+    "logistics": "Lojistik",
+    "transportation": "Ulaştırma",
+    "utilities": "Altyapı"
+  },
+  "zones": {
+    "industrial_zone": "Endüstriyel Bölge",
+    "commercial_zone": "Ticari Bölge",
+    "residential_zone": "Konut Bölgesi",
+    "mixed_zone": "Karma Bölge",
+    "special_zone": "Özel Bölge",
+    "free_zone": "Serbest Bölge",
+    "technology_zone": "Teknoloji Bölgesi",
+    "logistics_zone": "Lojistik Bölgesi"
+  }
+}

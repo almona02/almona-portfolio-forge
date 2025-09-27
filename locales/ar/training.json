@@ -1,0 +1,145 @@
+{
+  "title": "برامج تدريب المشغلين",
+  "subtitle": "برامج تدريبية شاملة لمشغلي المعدات الصناعية",
+  "programs": {
+    "basic_operator": "تدريب المشغل الأساسي",
+    "advanced_operator": "تدريب المشغل المتقدم",
+    "maintenance_technician": "تدريب فني الصيانة",
+    "safety_training": "تدريب الأمان",
+    "cnc_programming": "تدريب برمجة CNC",
+    "quality_control": "تدريب مراقبة الجودة",
+    "troubleshooting": "تدريب استكشاف الأخطاء",
+    "preventive_maintenance": "تدريب الصيانة الوقائية"
+  },
+  "training_types": {
+    "on_site": "تدريب في الموقع",
+    "remote": "تدريب عن بعد",
+    "classroom": "تدريب في الفصل",
+    "hands_on": "تدريب عملي",
+    "virtual": "تدريب افتراضي",
+    "hybrid": "تدريب مختلط",
+    "self_paced": "تدريب ذاتي السرعة",
+    "instructor_led": "تدريب بقيادة المدرب"
+  },
+  "levels": {
+    "beginner": "مبتدئ",
+    "intermediate": "متوسط",
+    "advanced": "متقدم",
+    "expert": "خبير",
+    "master": "أستاذ"
+  },
+  "duration": {
+    "hours": "ساعات",
+    "days": "أيام",
+    "weeks": "أسابيع",
+    "months": "أشهر",
+    "flexible": "مرن"
+  },
+  "certification": {
+    "certificate": "شهادة",
+    "certification": "شهادة",
+    "certified_operator": "مشغل معتمد",
+    "certified_technician": "فني معتمد",
+    "certification_validity": "صلاحية الشهادة",
+    "renewal_required": "تجديد مطلوب",
+    "continuing_education": "التعليم المستمر"
+  },
+  "topics": {
+    "machine_operation": "تشغيل الماكينة",
+    "safety_procedures": "إجراءات الأمان",
+    "maintenance_procedures": "إجراءات الصيانة",
+    "troubleshooting": "استكشاف الأخطاء",
+    "quality_control": "مراقبة الجودة",
+    "programming": "البرمجة",
+    "setup_procedures": "إجراءات الإعداد",
+    "tooling": "الأدوات",
+    "material_handling": "مناولة المواد",
+    "measurement": "القياس"
+  },
+  "instructors": {
+    "certified_instructor": "مدرب معتمد",
+    "senior_technician": "فني أول",
+    "field_expert": "خبير ميداني",
+    "manufacturer_representative": "ممثل المصنع",
+    "local_trainer": "مدرب محلي",
+    "remote_expert": "خبير عن بعد"
+  },
+  "materials": {
+    "training_manual": "دليل التدريب",
+    "video_tutorials": "دروس فيديو",
+    "interactive_simulations": "محاكاة تفاعلية",
+    "practice_exercises": "تمارين عملية",
+    "assessment_tests": "اختبارات التقييم",
+    "reference_guides": "أدلة مرجعية",
+    "safety_manuals": "أدلة الأمان",
+    "maintenance_manuals": "أدلة الصيانة"
+  },
+  "scheduling": {
+    "schedule_training": "جدولة التدريب",
+    "available_dates": "التواريخ المتاحة",
+    "training_calendar": "تقويم التدريب",
+    "group_training": "تدريب جماعي",
+    "individual_training": "تدريب فردي",
+    "custom_schedule": "جدول مخصص",
+    "flexible_timing": "توقيت مرن",
+    "weekend_training": "تدريب نهاية الأسبوع"
+  },
+  "pricing": {
+    "training_cost": "تكلفة التدريب",
+    "per_person": "لكل شخص",
+    "group_discount": "خصم جماعي",
+    "package_deal": "صفقة حزمة",
+    "custom_pricing": "تسعير مخصص",
+    "payment_terms": "شروط الدفع",
+    "cancellation_policy": "سياسة الإلغاء",
+    "refund_policy": "سياسة الاسترداد"
+  },
+  "registration": {
+    "register": "تسجيل",
+    "registration_form": "نموذج التسجيل",
+    "prerequisites": "المتطلبات المسبقة",
+    "required_skills": "المهارات المطلوبة",
+    "recommended_experience": "الخبرة الموصى بها",
+    "equipment_requirements": "متطلبات المعدات",
+    "confirmation": "التأكيد",
+    "payment": "الدفع"
+  },
+  "assessment": {
+    "assessment": "التقييم",
+    "written_test": "اختبار كتابي",
+    "practical_test": "اختبار عملي",
+    "oral_examination": "امتحان شفهي",
+    "performance_evaluation": "تقييم الأداء",
+    "passing_score": "درجة النجاح",
+    "certification_exam": "امتحان الشهادة",
+    "retake_policy": "سياسة إعادة الاختبار"
+  },
+  "support": {
+    "training_support": "دعم التدريب",
+    "technical_support": "الدعم التقني",
+    "learning_support": "دعم التعلم",
+    "mentorship": "الإرشاد",
+    "peer_learning": "التعلم من الأقران",
+    "online_forum": "منتدى إلكتروني",
+    "help_desk": "مكتب المساعدة",
+    "faq": "الأسئلة الشائعة"
+  },
+  "feedback": {
+    "course_feedback": "تقييم الدورة",
+    "instructor_rating": "تقييم المدرب",
+    "content_rating": "تقييم المحتوى",
+    "facility_rating": "تقييم المرافق",
+    "overall_satisfaction": "الرضا العام",
+    "recommendation": "التوصية",
+    "improvement_suggestions": "اقتراحات التحسين"
+  },
+  "tracking": {
+    "progress_tracking": "تتبع التقدم",
+    "completion_status": "حالة الإكمال",
+    "learning_analytics": "تحليلات التعلم",
+    "performance_metrics": "مقاييس الأداء",
+    "attendance_record": "سجل الحضور",
+    "achievement_badges": "شارات الإنجاز",
+    "learning_path": "مسار التعلم"
+  }
+}
