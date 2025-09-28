@@ -230,7 +230,9 @@ export async function generateComparisonPDF(
     .replace(/…/g, '...')
     .replace(/×/g, 'x')
     .replace(/≥/g, '>=')
-    .replace(/³/g, '^3');
+    .replace(/³/g, '^3')
+    .replace(/°/g, 'deg')
+    .replace(/±/g, '+/-');
 
   // Helper: draw text fitted within a max width (adds ellipsis if needed)
   const drawFittedText = (
@@ -250,10 +252,10 @@ export async function generateComparisonPDF(
       pageRef.drawText(textToDraw, { x: xPos, y: yPos, size: fontSize, font: fontRef, color: colorRef });
       return;
     }
-    while (textToDraw.length > 3 && fontRef.widthOfTextAtSize(textToDraw + '…', fontSize) > maxWidth) {
+    while (textToDraw.length > 3 && fontRef.widthOfTextAtSize(textToDraw + '...', fontSize) > maxWidth) {
       textToDraw = textToDraw.slice(0, -1);
     }
-    pageRef.drawText(textToDraw + '…', { x: xPos, y: yPos, size: fontSize, font: fontRef, color: colorRef });
+    pageRef.drawText(textToDraw + '...', { x: xPos, y: yPos, size: fontSize, font: fontRef, color: colorRef });
   };
 
   // Professional table rendering with enhanced spacing
@@ -531,6 +533,14 @@ export async function generateComparisonPDF(
   });
   y -= 16;
   page.drawText(sanitize('• This quotation is valid for 30 days from the date of issue'), { 
+    x: tableX + 30, 
+    y: y, 
+    size: 10, 
+    font, 
+    color: rgb(0.35, 0.35, 0.35) 
+  });
+  y -= 16;
+  page.drawText(sanitize('• Professional installation and training services available upon request'), { 
     x: tableX + 30, 
     y: y, 
     size: 10, 
