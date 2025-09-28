@@ -1,9 +1,5 @@
 import React from "react";
 import { Machine } from "@/types/index";
-
-interface ExtendedMachine extends Machine {
-  airSpec?: { consumption?: string; pressure?: string };
-}
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/ui/table";
 
 interface CompareTableProps {
@@ -12,8 +8,8 @@ interface CompareTableProps {
 
 const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
   // Handle both legacy and new machine types with proper data sync
-  const getMachineValue = (machine: ExtendedMachine | Record<string, unknown>, key: string) => {
-    const m = machine as ExtendedMachine & Record<string, unknown>;
+  const getMachineValue = (machine: Machine | Record<string, unknown>, key: string) => {
+    const m = machine as Machine & Record<string, unknown>;
     
     switch (key) {
       case 'name':

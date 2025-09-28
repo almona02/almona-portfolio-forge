@@ -7,6 +7,7 @@ import { createQuote as createQuoteDomain, updateQuoteStatus } from '@/lib/data/
 import { Database, ProductCategory } from '@/types/database';
 import type { ShopProductInput, ShopMachine } from '@/types/shopProduct';
 import { useTranslation } from 'react-i18next';
+import { validateStock } from '@/lib/inventory';
 
 // Enhanced QuoteItem interface
 interface QuoteItem {
@@ -156,6 +157,9 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
     quantity: number = 1,
     configurations?: Record<string, unknown>
   ) => {
+    // Allow adding to quote without authentication for better UX
+    // Authentication will be required only when submitting the quote
+
     try {
       const product = isDbProduct(productInput)
         ? productInput
@@ -212,6 +216,15 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
               updated_at: now,
             } as Database['public']['Tables']['products']['Row'];
           })();
+      // Check stock availability before adding to quote
+      // Validate stock availability
+      if (product.stock_quantity !== undefined) {
+        const stockValidation = await validateStock(product.id, quantity);
+        if (!stockValidation.isValid) {
+          throw new Error(stockValidation.message);
+        }
+      }
+
       // Calculate tiered pricing
       const unitPrice = calculateTieredPrice(product.price || 0, quantity);
       const totalPrice = unitPrice * quantity;

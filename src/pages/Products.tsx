@@ -1,11 +1,15 @@
 import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
 import CompareBar from "@/components/comparison/CompareBar";
 import CompareDialog from "@/components/comparison/CompareDialog";
-
+import { VirtualizedMachineGrid } from "@/components/optimized/VirtualizedMachineGrid";
+import { MobileOptimizedGrid } from "@/components/optimized/MobileOptimizedGrid";
+import { MobileFilterPanel } from "@/components/optimized/MobileFilterPanel";
 import { QuoteRequestDialog } from "@/components/quotes/QuoteRequestDialog";
 import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
-import { alfapenProfiles, yilmazMachines } from "@/constants/productsData";
+import { alfapenProfiles } from "@/constants/productsData";
+import { useVirtualizedMachines } from "@/hooks/useVirtualizedMachines";
 import { useToast } from "@/hooks/useToast";
+import { useAuth } from "@/context/AuthContext";
 import { loadComparisons, saveComparison } from "@/lib/comparisonStorage";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
@@ -21,6 +25,7 @@ import {
 import { Separator } from "@/shared/ui/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import type { Machine as UiMachine } from "@/types/index";
+import type { Machine } from "@/constants/yilmazMachines";
 
 interface SourceMachineLike {
   id: string; name: string; description?: string; imageUrl?: string; image_url?: string;
@@ -53,6 +58,7 @@ const mapToUiMachine = (m: SourceMachineLike): UiMachine => ({
     phase: m.powerSpec?.phase || '3'
   },
   dimensions: m.dimensions || { length: '', width: '', height: '' },
+  airSpec: m.airSpec || { consumption: '0 L/min', pressure: '0 bar' },
   safetyFeatures: (m.safetyFeatures || []).filter((s): s is 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop' =>
     ['TwoHandOperation','AutomaticGuards','EmergencyStop'].includes(s as 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop')
   ),
@@ -60,19 +66,33 @@ const mapToUiMachine = (m: SourceMachineLike): UiMachine => ({
 
 const Products = function ProductsPage() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortOption, setSortOption] = useState("featured");
   
-  const [selectedMachines, setSelectedMachines] = useState<UiMachine[]>([]);
+  const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
   const [showCompareDialog, setShowCompareDialog] = useState(false);
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<UiMachine | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Machine | null>(null);
   const [show3DModel, setShow3DModel] = useState(false);
-  const [selectedMachineFor3D, setSelectedMachineFor3D] =
-    useState<UiMachine | null>(null);
+  const [selectedMachineFor3D, setSelectedMachineFor3D] = useState<Machine | null>(null);
   const [wizardOpen, setWizardOpen] = useState(false);
   const scrolled = useScrollThreshold(48);
+
+  // Use virtualized machines hook for better performance
+  const {
+    machines: virtualizedMachines,
+    totalCount,
+    hasMore,
+    loadMore,
+    isLoading: isLoadingMore
+  } = useVirtualizedMachines({
+    searchTerm,
+    categoryFilter,
+    sortOption,
+    pageSize: 12
+  });
 
   // Load saved comparisons on mount
   useEffect(() => {
@@ -83,9 +103,9 @@ const Products = function ProductsPage() {
   useEffect(() => {
     const handleOpen3DModel = (event: CustomEvent) => {
       const { machineId } = event.detail;
-      const machine = yilmazMachines.find((m) => m.id === machineId);
+      const machine = virtualizedMachines.find((m) => m.id === machineId);
       if (machine) {
-        setSelectedMachineFor3D(mapToUiMachine(machine));
+        setSelectedMachineFor3D(machine);
         setShow3DModel(true);
       }
     };
@@ -98,10 +118,9 @@ const Products = function ProductsPage() {
         handleOpen3DModel as EventListener
       );
     };
-  }, []);
+  }, [virtualizedMachines]);
 
-  const handleSelectMachine = (machine: SourceMachineLike, selected: boolean) => {
-    const ui = mapToUiMachine(machine);
+  const handleSelectMachine = (machine: Machine, selected: boolean) => {
     if (selected) {
       if (selectedMachines.length >= 5) {
         toast({
@@ -111,9 +130,9 @@ const Products = function ProductsPage() {
         });
         return;
       }
-      setSelectedMachines((prev) => [...prev, ui]);
+      setSelectedMachines((prev) => [...prev, machine]);
     } else {
-      setSelectedMachines((prev) => prev.filter((m) => m.id !== ui.id));
+      setSelectedMachines((prev) => prev.filter((m) => m.id !== machine.id));
     }
   };
 
@@ -137,37 +156,18 @@ const Products = function ProductsPage() {
     document.title = "Products - ALMONA";
   }, []);
 
-  const filteredMachines = yilmazMachines.filter((machine) => {
-    const matchesSearch =
-      machine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      machine.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      categoryFilter === "all" || machine.category === categoryFilter;
-    return (
-      matchesSearch &&
-      matchesCategory
-    );
-  });
+  const handleQuoteRequest = (machine: Machine) => {
+    setSelectedProduct(machine);
+    setShowQuoteDialog(true);
+  };
 
-  const sortedMachines = [...filteredMachines].sort((a, b) => {
-    switch (sortOption) {
-      case "name-asc":
-        return a.name.localeCompare(b.name);
-      case "name-desc":
-        return b.name.localeCompare(a.name);
-      case "newest":
-        return (
-          new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime()
-        );
-      case "featured":
-      default:
-        return a.featured ? -1 : b.featured ? 1 : 0;
-    }
-  });
+  const handle3DView = (machine: Machine) => {
+    setSelectedMachineFor3D(machine);
+    setShow3DModel(true);
+  };
 
   return (
-    <>
-      <main className="flex-grow pt-24">
+    <main className="flex-grow pt-24">
           <div className="container mx-auto px-4 py-12">
             {/* Existing Products page content */}
             <div className="mb-12 text-center">
@@ -194,9 +194,19 @@ const Products = function ProductsPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                   
                   <div className="lg:col-span-4">
-                    {/* Machine filtering and sorting controls */}
-                    {/* Sticky Filter & sorting controls with adaptive gradient */}
-                    <div className={`sticky top-16 z-40 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 rounded-md p-4 shadow-md border transition-colors ${scrolled ? 'border-orange-500/40 shadow-orange-500/10' : 'border-gray-800/70'} bg-[linear-gradient(145deg,rgba(0,0,0,0.92)_0%,rgba(18,18,18,0.92)_50%,rgba(32,32,32,0.88)_100%)] backdrop-blur`}> 
+                    {/* Mobile Filter Panel */}
+                    <MobileFilterPanel
+                      searchTerm={searchTerm}
+                      onSearchChange={setSearchTerm}
+                      categoryFilter={categoryFilter}
+                      onCategoryChange={setCategoryFilter}
+                      sortOption={sortOption}
+                      onSortChange={setSortOption}
+                      resultCount={virtualizedMachines.length}
+                    />
+
+                    {/* Desktop Filter & sorting controls */}
+                    <div className={`hidden lg:block sticky top-16 z-40 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 rounded-md p-4 shadow-md border transition-colors ${scrolled ? 'border-orange-500/40 shadow-orange-500/10' : 'border-gray-800/70'} bg-[linear-gradient(145deg,rgba(0,0,0,0.92)_0%,rgba(18,18,18,0.92)_50%,rgba(32,32,32,0.88)_100%)] backdrop-blur`}> 
                       <div className="w-full md:w-1/2">
                         <Input
                           placeholder="Search machines..."
@@ -237,8 +247,8 @@ const Products = function ProductsPage() {
                       </div>
                     </div>
 
-                    {/* Machine listings */}
-                    {filteredMachines.length === 0 ? (
+                    {/* Machine listings with responsive virtualization */}
+                    {virtualizedMachines.length === 0 ? (
                       <div className="text-center py-12">
                         <h3 className="text-xl font-medium mb-2">
                           No machines found
@@ -257,64 +267,35 @@ const Products = function ProductsPage() {
                         </Button>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 transition-opacity">
-                        {sortedMachines.map((machine) => (
-                          <div key={machine.id} className={`relative group rounded-lg ${scrolled ? 'bg-[linear-gradient(180deg,rgba(15,15,15,0.85)_0%,rgba(10,10,10,0.92)_100%)] border border-gray-800/70 backdrop-blur-sm' : ''} transition-colors`}> 
-                            <ProductCard
-                              isSelected={selectedMachines.some(
-                                (m) => m.id === machine.id
-                              )}
-                              onSelect={(selected) =>
-                                handleSelectMachine(machine, selected)
-                              }
-                              title={machine.name}
-                              description={machine.description}
-                              imageUrl={machine.imageUrl}
-                              features={[
-                                `Type: ${machine.type}`,
-                                `Power: ${machine.powerSpec.consumption}`,
-                                `Dimensions: ${machine.dimensions.length} × ${machine.dimensions.width} × ${machine.dimensions.height}`,
-                              ]}
-                              tags={machine.tags}
-                              ctaText="Request Quote"
-                              onCtaClick={() => {
-                                setSelectedProduct(mapToUiMachine(machine));
-                                setShowQuoteDialog(true);
-                              }}
-                              badge={machine.featured ? "Featured" : undefined}
-                              specPdf={machine.specPdf}
-                              youtubeUrl={machine.youtubeUrl}
-                            />
-                            {(machine.id === "ym-028" ||
-                              machine.id === "ym-029" ||
-                              machine.id === "ym-030" ||
-                              machine.name.toLowerCase().includes("fr 223") ||
-                              machine.name.toLowerCase().includes("fr223")) && (
-                              <div className="absolute bottom-20 right-4 z-10">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    const event = new CustomEvent(
-                                      "open3DModel",
-                                      {
-                                        detail: {
-                                          machineId: machine.id,
-                                          machineName: machine.name,
-                                        },
-                                      }
-                                    );
-                                    window.dispatchEvent(event);
-                                  }}
-                                  className="flex items-center gap-1 px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                                >
-                                  <Eye className="w-3 h-3" />
-                                  3D
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+                      <>
+                        {/* Mobile-optimized grid */}
+                        <div className="lg:hidden">
+                          <MobileOptimizedGrid
+                            machines={virtualizedMachines}
+                            selectedMachines={selectedMachines}
+                            onSelectMachine={handleSelectMachine}
+                            onQuoteRequest={handleQuoteRequest}
+                            on3DView={handle3DView}
+                            hasMore={hasMore}
+                            onLoadMore={loadMore}
+                            isLoading={isLoadingMore}
+                          />
+                        </div>
+                        
+                        {/* Desktop virtualized grid */}
+                        <div className="hidden lg:block">
+                          <VirtualizedMachineGrid
+                            machines={virtualizedMachines}
+                            selectedMachines={selectedMachines}
+                            onSelectMachine={handleSelectMachine}
+                            onQuoteRequest={handleQuoteRequest}
+                            on3DView={handle3DView}
+                            hasMore={hasMore}
+                            onLoadMore={loadMore}
+                            isLoading={isLoadingMore}
+                          />
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>
@@ -387,62 +368,48 @@ const Products = function ProductsPage() {
               </div>
             </div>
           </div>
-        </main>
 
-      <CompareBar
-        machines={selectedMachines}
-        onRemove={handleRemoveMachine}
-        onCompare={() => setShowCompareDialog(true)}
-        onClear={handleClearSelection}
-        onExport={handleSaveComparison}
-        onShare={() => {
-          navigator.clipboard.writeText(
-            `${window.location.origin}/compare?ids=${selectedMachines
-              .map((m) => m.id)
-              .join(",")}`
-          );
-          toast({
-            title: "Link copied",
-            description: "Share this link to compare these machines",
-          });
-        }}
-      />
+          <CompareBar
+            machines={selectedMachines}
+            onRemove={handleRemoveMachine}
+            onCompare={() => setShowCompareDialog(true)}
+            onClear={handleClearSelection}
+          />
+          <CompareDialog
+            open={showCompareDialog}
+            onOpenChange={setShowCompareDialog}
+            machines={selectedMachines as unknown as UiMachine[]}
+          />
 
-      <CompareDialog
-        open={showCompareDialog}
-        onOpenChange={setShowCompareDialog}
-        machines={selectedMachines as unknown as UiMachine[]}
-      />
+          <Suspense fallback={null}>
+            <QuoteRequestDialog
+              open={showQuoteDialog}
+              onOpenChange={setShowQuoteDialog}
+              initialData={{
+                products: selectedProduct ? [selectedProduct as unknown as UiMachine] : (selectedMachines as unknown as UiMachine[]),
+                services: [],
+                contactInfo: {},
+              }}
+            />
+          </Suspense>
 
-      <Suspense fallback={null}>
-        <QuoteRequestDialog
-          open={showQuoteDialog}
-          onOpenChange={setShowQuoteDialog}
-          initialData={{
-            products: selectedProduct ? [selectedProduct as unknown as UiMachine] : (selectedMachines as unknown as UiMachine[]),
-            services: [],
-            contactInfo: {},
-          }}
-        />
-      </Suspense>
+          {selectedMachineFor3D && (
+            <Model3DDialog
+              isOpen={show3DModel}
+              onClose={() => setShow3DModel(false)}
+              machineName={selectedMachineFor3D.name}
+              modelPath={
+                selectedMachineFor3D.modelPath ||
+                "/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
+              }
+            />
+          )}
 
-      {selectedMachineFor3D && (
-        <Model3DDialog
-          isOpen={show3DModel}
-          onClose={() => setShow3DModel(false)}
-          machineName={selectedMachineFor3D.name}
-          modelPath={
-            (selectedMachineFor3D as unknown as { modelPath?: string }).modelPath ||
-            "/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
-          }
-        />
-      )}
-
-      <MachineRecommendationWizard
+          <MachineRecommendationWizard
         open={wizardOpen}
         onOpenChange={setWizardOpen}
       />
-    </>
+    </main>
   );
 };
 

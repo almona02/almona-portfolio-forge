@@ -36,3 +36,48 @@ export function getAppliedDiscountRate(quantity: number): number {
   if (quantity >= 5) return 0.05;
   return 0;
 }
+
+// Advanced pricing functions for dynamic pricing
+export function calculateDynamicPrice(
+  basePrice: number, 
+  quantity: number, 
+  userRole?: string,
+  productCategory?: string
+): number {
+  let price = calculateTieredPrice(basePrice, quantity);
+  
+  // Apply role-based discounts
+  if (userRole === 'admin' || userRole === 'sales_rep') {
+    price *= 0.9; // 10% discount for staff
+  }
+  
+  // Apply category-based pricing
+  if (productCategory === 'machine') {
+    price *= 1.05; // 5% markup for machines
+  } else if (productCategory === 'spare_part') {
+    price *= 0.95; // 5% discount for spare parts
+  }
+  
+  return Math.max(0, price);
+}
+
+// Calculate bulk pricing with custom tiers
+export function calculateBulkPrice(
+  basePrice: number,
+  quantity: number,
+  customTiers?: Array<{ min: number; max?: number; discount: number }>
+): number {
+  if (!customTiers || customTiers.length === 0) {
+    return calculateTieredPrice(basePrice, quantity);
+  }
+  
+  const applicableTier = customTiers.find(tier => 
+    quantity >= tier.min && (tier.max === undefined || quantity <= tier.max)
+  );
+  
+  if (applicableTier) {
+    return basePrice * (1 - applicableTier.discount) * quantity;
+  }
+  
+  return basePrice * quantity;
+}

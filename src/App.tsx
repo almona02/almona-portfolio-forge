@@ -16,8 +16,9 @@ import { AuthProvider } from "./context/AuthContext.tsx";
 import { LoadingProvider } from "./context/LoadingContext.tsx";
 import { Analytics } from "@vercel/analytics/react";
 import RegionAwareLayout from "./components/layout/RegionAwareLayout";
+import { useRoutePrefetching } from "./hooks/useRoutePrefetching";
 
-// Core pages (essential)
+// Core pages (essential) - loaded immediately
 const Index = lazy(() => import("./pages/Index"));
 const Products = lazy(() => import("./pages/Products.tsx"));
 const Services = lazy(() => import("./pages/Services.tsx"));
@@ -25,41 +26,41 @@ const Contact = lazy(() => import("./pages/Contact.tsx"));
 const About = lazy(() => import("./pages/About.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
-// Test components
+// Test components - lazy loaded
 const LocalizationTest = lazy(() => import("./components/test/LocalizationTest.tsx"));
 
-// Shop and e-commerce
+// Shop and e-commerce - lazy loaded with prefetch
 const Shop = lazy(() => import("./pages/Shop"));
 const UsedMachines = lazy(() => import("./pages/UsedMachines"));
 const UsedMachineDetailPage = lazy(() => import("./pages/UsedMachineDetail.tsx"));
 const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine.tsx"));
 const SpareParts = lazy(() => import("./pages/SpareParts.tsx"));
 
-// Product details
+// Product details - lazy loaded
 const MachineDetail = lazy(() => import("./pages/machines/MachineDetail.tsx"));
 const ProfileDetail = lazy(() => import("./pages/profiles/ProfileDetail.tsx"));
 
-// Workflow and fabrication
+// Workflow and fabrication - lazy loaded
 const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail"));
 const FabricationWorkflowDetail = lazy(() => import("./pages/FabricationWorkflowDetail.tsx"));
 const FabricationServices = lazy(() => import("./pages/FabricationServices.tsx"));
 const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
 
-// Quote system
+// Quote system - lazy loaded
 const QuotePage = lazy(() => import("./pages/QuotePage.tsx"));
 const QuoteConfirmationPage = lazy(() => import("./pages/QuoteConfirmationPage.tsx"));
 
-// 3D model viewers
+// 3D model viewers - lazy loaded (heavy components)
 const ModelViewerDemo = lazy(() => import("./pages/ModelViewerDemo.tsx"));
 const ModelViewerTest = lazy(() => import("./pages/ModelViewerTest.tsx"));
 
-// Authentication
+// Authentication - lazy loaded
 const Login = lazy(() => import("./pages/Login.tsx"));
 const Register = lazy(() => import("./pages/Register.tsx"));
 const CustomerPortal = lazy(() => import("./pages/CustomerPortal.tsx"));
 const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute.tsx"));
 
-// Admin and support
+// Admin and support - lazy loaded (admin features)
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
 const CreateTicketPage = lazy(() => import("./pages/CreateTicketPage.tsx"));
 const RegisterMachinePage = lazy(() => import("./pages/RegisterMachinePage.tsx"));
@@ -126,6 +127,7 @@ const App = () => (
                       <ScrollRestoration />
                       <NavPrefetchHints />
                       <GlobalDynamicImportGuard />
+                      <RoutePrefetching />
                       <Analytics />
                       <RegionAwareLayout showRegionalFeatures={true} enableRegionSwitching={true}>
                         <Routes>
@@ -261,5 +263,11 @@ function NavPrefetchHints() {
       });
     };
   }, []);
+  return null;
+}
+
+// Route prefetching component
+function RoutePrefetching() {
+  useRoutePrefetching();
   return null;
 }

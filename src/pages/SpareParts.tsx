@@ -27,6 +27,8 @@ import {
 } from "@/shared/ui/ui/select";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import { useToast } from "@/hooks/useToast";
+import { useAuth } from "@/context/AuthContext";
+import { ProtectedComponent } from "@/components/auth/ProtectedComponent";
 import { yilmazMachines } from "@/constants/productsData";
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
@@ -152,6 +154,7 @@ const partCategories: PartCategory[] = [
  */
 const SpareParts = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [_selectedSubcategory, _setSelectedSubcategory] = useState<string>("all");
@@ -209,7 +212,10 @@ const SpareParts = () => {
   };
 
   return (
-    <main className="flex-grow pt-20">
+    <ProtectedComponent 
+      message="يجب تسجيل الدخول للوصول إلى قطع الغيار"
+    >
+      <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 py-8">
           {/* Hero Section */}
           <motion.div 
@@ -406,6 +412,7 @@ const SpareParts = () => {
           </div>
         </div>
       </main>
+    </ProtectedComponent>
   );
 };
 

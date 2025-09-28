@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Machine } from "@/constants/productsData";
+import { Machine } from "@/types/index";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/shared/ui/ui/dialog";
 import { Button } from "@/shared/ui/ui/button";
 import CompareTable from "./CompareTable";
 import { Download, Share2 } from "lucide-react";
 import type { ComparisonMachine } from "@/lib/reports/comparisonPdf";
 import { QuoteRequestDialog } from "@/components/quotes/QuoteRequestDialog";
+import { PDFGenerationProgress } from "@/components/optimized/PDFGenerationProgress";
 
 interface CompareDialogProps {
   open: boolean;
@@ -19,6 +20,12 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
   machines 
 }) => {
   const [showQuoteDialog, setShowQuoteDialog] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [pdfProgress, setPdfProgress] = useState(0);
+  const [pdfStage, setPdfStage] = useState('Preparing');
+  const [pdfError, setPdfError] = useState<string | null>(null);
+  const [generatedPdfBlob, setGeneratedPdfBlob] = useState<Blob | null>(null);
+  
   // Removed unit/orientation controls for simplified UI: infer orientation by machine count
   const inferredOrientation: 'landscape' | 'portrait' = machines.length > 3 ? 'landscape' : 'portrait';
 
@@ -26,12 +33,28 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
     try {
       if (!machines.length) return;
       
-      // Show loading state
-      const button = document.querySelector('[data-pdf-export]') as HTMLButtonElement;
-      if (button) {
-        button.disabled = true;
-        button.textContent = 'Generating PDF...';
-      }
+      setIsGeneratingPDF(true);
+      setPdfProgress(0);
+      setPdfStage('Preparing');
+      setPdfError(null);
+      setGeneratedPdfBlob(null);
+      
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setPdfProgress(prev => {
+          if (prev < 30) {
+            setPdfStage('Preparing');
+            return prev + 2;
+          } else if (prev < 70) {
+            setPdfStage('Processing');
+            return prev + 1;
+          } else if (prev < 95) {
+            setPdfStage('Finalizing');
+            return prev + 0.5;
+          }
+          return prev;
+        });
+      }, 100);
       
       // Dynamically import PDF generation to reduce initial bundle size
       const { generateComparisonPDF } = await import("@/lib/reports/comparisonPdf");
@@ -40,7 +63,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
         let logoDataUrl: string | undefined;
         try {
           // Try to load the background-removed logo first, fallback to regular logo
-          let logoPath = '/logo-bg-removed.png';
+          const logoPath = '/logo-bg-removed.png';
           try {
             const res = await fetch(logoPath);
             if (!res.ok) throw new Error('Background-removed logo not found');
@@ -66,34 +89,59 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
           // logo optional
         }
       
+      // Debug: Log machines being passed to PDF
+      console.log('CompareDialog - Machines passed to PDF:', machines.map(m => ({
+        name: m.name,
+        airSpec: m.airSpec,
+        powerSpec: m.powerSpec
+      })));
+      
       const pdfBytes = await generateComparisonPDF(
-        machines as unknown as ComparisonMachine[], 
+        machines as ComparisonMachine[], 
         logoDataUrl,
         { orientation: inferredOrientation }
       );
       
-      const bytes = new Uint8Array(pdfBytes); // ensure proper ArrayBuffer instance
+      clearInterval(progressInterval);
+      setPdfProgress(100);
+      setPdfStage('Complete');
+      
+      const bytes = new Uint8Array(pdfBytes);
       const blob = new Blob([bytes], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const ts = new Date().toISOString().replace(/[:T]/g,'-').split('.')[0];
-      a.download = `almona-comparison-${ts}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      setGeneratedPdfBlob(blob);
+      
     } catch (err) {
+      clearInterval(progressInterval);
       console.error('PDF export failed', err);
-      alert('Failed to export PDF');
+      setPdfError(err instanceof Error ? err.message : 'Failed to generate PDF');
     } finally {
-      // Reset button state
-      const button = document.querySelector('[data-pdf-export]') as HTMLButtonElement;
-      if (button) {
-        button.disabled = false;
-        button.innerHTML = '<Download size={16} className="mr-1" />PDF';
-      }
+      setIsGeneratingPDF(false);
     }
+  };
+
+  const handleDownloadPDF = () => {
+    if (!generatedPdfBlob) return;
+    
+    const url = URL.createObjectURL(generatedPdfBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    const ts = new Date().toISOString().replace(/[:T]/g,'-').split('.')[0];
+    a.download = `almona-comparison-${ts}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    // Reset state
+    setGeneratedPdfBlob(null);
+    setPdfProgress(0);
+  };
+
+  const handleCancelPDF = () => {
+    setIsGeneratingPDF(false);
+    setPdfProgress(0);
+    setPdfError(null);
+    setGeneratedPdfBlob(null);
   };
 
   const handleShare = () => {
@@ -111,9 +159,16 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
     const m = val.match(/([0-9]+(?:\.[0-9]+)?)/);
     return m ? parseFloat(m[1]) : 0;
   };
-  const typedMachines = machines as unknown as ComparisonMachine[];
-  const totalPowerKw = typedMachines.reduce((s, m) => s + numeric(m.powerSpec?.consumption), 0);
-  const totalAir = typedMachines.reduce((s, m) => s + numeric(m.airSpec?.consumption), 0);
+  const totalPowerKw = machines.reduce((s, m) => s + numeric(m.powerSpec?.consumption), 0);
+  const totalAir = machines.reduce((s, m) => s + numeric(m.airSpec?.consumption), 0);
+  
+  // Debug: Log air consumption data
+  console.log('CompareDialog - Machines with air data:', machines.map(m => ({
+    name: m.name,
+    airSpec: m.airSpec,
+    parsed: numeric(m.airSpec?.consumption)
+  })));
+  console.log('CompareDialog - Total Air:', totalAir);
 
   return (
     <>
@@ -142,10 +197,10 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
                   variant="outline" 
                   size="sm"
                   onClick={handleExportPDF}
-                  data-pdf-export
+                  disabled={isGeneratingPDF}
                 >
                   <Download size={16} className="mr-1" />
-                  PDF
+                  {isGeneratingPDF ? 'Generating...' : 'PDF'}
                 </Button>
               </div>
             </div>
@@ -196,6 +251,16 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
           services: [],
           contactInfo: {}
         }}
+      />
+
+      <PDFGenerationProgress
+        isGenerating={isGeneratingPDF}
+        progress={pdfProgress}
+        stage={pdfStage}
+        onCancel={handleCancelPDF}
+        onDownload={handleDownloadPDF}
+        fileName={`almona-comparison-${machines.length}-machines.pdf`}
+        error={pdfError}
       />
     </>
   );

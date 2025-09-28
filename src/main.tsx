@@ -78,6 +78,22 @@ class CriticalErrorBoundary extends React.Component<
 try {
   initializePolyfills();
   initializePerformanceMonitoring();
+  
+  // Initialize critical CSS
+  import('./lib/criticalCSS').then(({ initializeCriticalCSS }) => {
+    initializeCriticalCSS();
+  });
+  
+  // Initialize Web Vitals monitoring
+  if (import.meta.env.PROD) {
+    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+      getCLS(console.log);
+      getFID(console.log);
+      getFCP(console.log);
+      getLCP(console.log);
+      getTTFB(console.log);
+    });
+  }
 } catch (error) {
   console.error('Failed to initialize polyfills or performance monitoring:', error);
 }

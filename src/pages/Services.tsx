@@ -93,8 +93,7 @@ const Services = () => {
   };
 
   return (
-    <>
-      <main className="flex-grow pt-20">
+    <main className="flex-grow pt-20">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -271,12 +270,11 @@ const Services = () => {
           </Tabs>
 
         </motion.div>
-      </main>
 
-      {/* Dialog Mount */}
-      {/* Removed legacy <ScheduleMaintenance /> dialog in favor of unified TicketWizardDialog */}
-      {/* Unified Ticket Wizard Launcher */}
-      <TicketWizardDialog
+        {/* Dialog Mount */}
+        {/* Removed legacy <ScheduleMaintenance /> dialog in favor of unified TicketWizardDialog */}
+        {/* Unified Ticket Wizard Launcher */}
+        <TicketWizardDialog
         open={ticketWizardOpen}
         onOpenChange={setTicketWizardOpen}
         initialValues={ticketInitialValues}
@@ -288,7 +286,7 @@ const Services = () => {
         open={operatorTrainingOpen}
         onOpenChange={setOperatorTrainingOpen}
       />
-    </>
+    </main>
   );
 };
 
