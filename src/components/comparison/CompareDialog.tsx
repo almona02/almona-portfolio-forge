@@ -36,20 +36,35 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
       // Dynamically import PDF generation to reduce initial bundle size
       const { generateComparisonPDF } = await import("@/lib/reports/comparisonPdf");
       
-      // Attempt to load logo from public path
-      let logoDataUrl: string | undefined;
-      try {
-        const res = await fetch('/logo.png');
-        const blob = await res.blob();
-        logoDataUrl = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = () => reject(reader.error);
-            reader.readAsDataURL(blob);
-        });
-      } catch {
-        // logo optional
-      }
+        // Attempt to load background-removed logo from public path
+        let logoDataUrl: string | undefined;
+        try {
+          // Try to load the background-removed logo first, fallback to regular logo
+          let logoPath = '/logo-bg-removed.png';
+          try {
+            const res = await fetch(logoPath);
+            if (!res.ok) throw new Error('Background-removed logo not found');
+            const blob = await res.blob();
+            logoDataUrl = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result as string);
+              reader.onerror = () => reject(reader.error);
+              reader.readAsDataURL(blob);
+            });
+          } catch {
+            // Fallback to regular logo
+            const res = await fetch('/logo.png');
+            const blob = await res.blob();
+            logoDataUrl = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result as string);
+              reader.onerror = () => reject(reader.error);
+              reader.readAsDataURL(blob);
+            });
+          }
+        } catch {
+          // logo optional
+        }
       
       const pdfBytes = await generateComparisonPDF(
         machines as unknown as ComparisonMachine[], 
