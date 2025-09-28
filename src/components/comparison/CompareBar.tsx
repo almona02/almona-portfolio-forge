@@ -2,25 +2,20 @@ import React from "react";
 import { Machine } from "@/constants/productsData";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { X, BarChart2, Share2, Download } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { X, BarChart2 } from "lucide-react";
 
 interface CompareBarProps {
   machines: Machine[];
   onRemove: (machineId: string) => void;
   onCompare: () => void;
   onClear: () => void;
-  onExport?: () => void;
-  onShare?: () => void;
 }
 
 const CompareBar: React.FC<CompareBarProps> = ({ 
   machines,
   onRemove,
   onCompare,
-  onClear,
-  onExport = () => alert("Export feature coming soon"),
-  onShare = () => alert("Share feature coming soon")
+  onClear
 }) => {
   if (machines.length === 0) return null;
 
@@ -47,38 +42,6 @@ const CompareBar: React.FC<CompareBarProps> = ({
         </div>
         
         <div className="flex gap-2 w-full sm:w-auto justify-end">
-          <Tooltip>
-            <TooltipTrigger>
-              <Button 
-                variant="ghost"
-                size="sm"
-                onClick={onShare}
-                disabled={machines.length < 2}
-                className="text-white hover:bg-white/10"
-              >
-                <Share2 size={16} className="mr-1" />
-                Share
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Share this comparison</TooltipContent>
-          </Tooltip>
-          
-          <Tooltip>
-            <TooltipTrigger>
-              <Button 
-                variant="ghost"
-                size="sm"
-                onClick={onExport}
-                disabled={machines.length < 2}
-                className="text-white hover:bg-white/10"
-              >
-                <Download size={16} className="mr-1" />
-                Export
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Export as PDF or Excel</TooltipContent>
-          </Tooltip>
-          
           <Button 
             variant="outline"
             size="sm"

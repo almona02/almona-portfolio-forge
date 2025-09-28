@@ -138,8 +138,8 @@ export default defineConfig(({ mode }) => {
       target: "esnext",
       minify: isProduction ? "esbuild" : false,
       sourcemap: false, // Disable sourcemaps to speed up build
-      chunkSizeWarningLimit: 1500, // Set to 1500 kB to allow for reasonable chunk sizes
-      assetsInlineLimit: 4096, // Increased to inline more assets
+      chunkSizeWarningLimit: 1000, // Reduced to 1000 kB for better performance
+      assetsInlineLimit: 2048, // Reduced to prevent large inline assets
       reportCompressedSize: false,
       cssCodeSplit: true, // Enable CSS code splitting to reduce main bundle size
       // PERFORMANCE OPTIMIZATIONS
@@ -190,7 +190,16 @@ export default defineConfig(({ mode }) => {
         output: {
           entryFileNames: `assets/[name]-[hash].js`,
           chunkFileNames: `assets/[name]-[hash].js`,
-          // Let Rollup decide optimal chunking to avoid brittle execution order issues
+          assetFileNames: `assets/[name]-[hash].[ext]`,
+          // Optimize chunk splitting for better caching
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs'],
+            'chart-vendor': ['chart.js', 'react-chartjs-2'],
+            'pdf-vendor': ['pdf-lib'],
+            'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
+            'utils-vendor': ['date-fns', 'clsx', 'tailwind-merge']
+          }
         },
       },
     },

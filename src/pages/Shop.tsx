@@ -17,7 +17,7 @@ import i18n from "@/lib/i18n";
 import { inventory } from "@/data/inventory";
 import { useQuote } from "@/context/QuoteContext";
 import { useToast } from "@/hooks/useToast";
-// import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 // import ErrorBoundary from "@/components/ErrorBoundary";
 import { IndustrialProductCard } from "@/components/shop/IndustrialProductCard";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
@@ -350,6 +350,7 @@ const ProductGrid = ({
 const Shop = () => {
   const { addToQuote } = useQuote();
   const { toast } = useToast();
+  const { user } = useAuth();
   
   const [activeTab, setActiveTab] = useState<ProductTab>('industrial-machines');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
