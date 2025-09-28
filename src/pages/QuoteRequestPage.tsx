@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/useToast';
+import { useAuth } from '@/context/AuthContext';
+import { ProtectedComponent } from '@/components/auth/ProtectedComponent';
 import { QuoteRequestStepper } from '@/components/quotes/QuoteRequestStepper';
 // import Navbar from '@/components/layout/Navbar';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
@@ -34,6 +36,7 @@ const QuoteRequestPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [initialData, setInitialData] = useState<QuoteData>({});
 
   React.useEffect(() => {
@@ -78,7 +81,10 @@ const QuoteRequestPage: React.FC = () => {
   };
 
   return (
-    <main className="flex-grow pt-20">
+    <ProtectedComponent 
+      message="يجب تسجيل الدخول لطلب عرض سعر"
+    >
+      <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto bg-almona-darker rounded-xl p-8 border border-almona-light/20">
             <h1 className="text-3xl font-bold mb-2 text-gradient-orange">
@@ -97,6 +103,7 @@ const QuoteRequestPage: React.FC = () => {
           </div>
         </div>
       </main>
+    </ProtectedComponent>
   );
 };
 

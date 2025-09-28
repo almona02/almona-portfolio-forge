@@ -23,6 +23,10 @@ export interface Machine {
   releaseDate: string;
   type: string;
   powerSpec: PowerSpecification;
+  airSpec?: {
+    consumption: string;
+    pressure?: string;
+  };
   dimensions: {
     length: string;
     width: string;
@@ -65,7 +69,7 @@ const createPowerSpec = (powerStr: string): PowerSpecification => {
 export const yilmazMachines: Machine[] = [
   {
     id: "ym-001",
-    name: "YILMAZ ALM6510",
+    name: "ALM6510",
     description: "High-precision CNC cutting and processing machine for aluminum profiles",
     imageUrl: "/images/machines/cutting-machine.jpg",
     specPdf: "/documents/specs/cnc-cutting-machine.pdf",
@@ -79,6 +83,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '3',
       consumption: '32.0 kW'
+    },
+    airSpec: {
+      consumption: '520 L/min',
+      pressure: '6 bar'
     },
     dimensions: {
       length: '7500mm',
@@ -101,7 +109,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-002",
-    name: "YILMAZ DC 421 PBS",
+    name: "DC 421 PBS",
     description: "High-precision Double Head cutting machine for aluminum profiles",
     imageUrl: "/images/machines/DC-421-PBS.jpg",
     specPdf: "/documents/specs/DC-421-PBS.pdf",
@@ -115,6 +123,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '3',
       consumption: '32.0 kW'
+    },
+    airSpec: {
+      consumption: '480 L/min',
+      pressure: '6 bar'
     },
     dimensions: {
       length: '4000mm',
@@ -132,7 +144,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-003",
-    name: "YILMAZ DK502",
+    name: "DK502",
     description: "High-Quality Double Head Welding machine for UPVC profiles",
     imageUrl: "/images/machines/DK-502.jpg",
     specPdf: "/documents/specs/DK-502.pdf",
@@ -146,6 +158,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '1',
       consumption: '2.2 kW'
+    },
+    airSpec: {
+      consumption: '150 L/min',
+      pressure: '4 bar'
     },
     dimensions: {
       length: '3500mm',
@@ -163,7 +179,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-004",
-    name: "YILMAZ KM 212",
+    name: "KM 212",
     description: "Portable End Milling Machine for aluminum profiles",
     imageUrl: "/images/machines/KM-212.jpg",
     specPdf: "/documents/specs/KM-212.pdf",
@@ -177,6 +193,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '1',
       consumption: '0.75 kW'
+    },
+    airSpec: {
+      consumption: '80 L/min',
+      pressure: '3 bar'
     },
     dimensions: {
       length: '600mm',
@@ -194,7 +214,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-005",
-    name: "YILMAZ KD 402 S",
+    name: "KD 402 S",
     description: "Double Head Mitre Saw Machine with hydro-pneumatic feed",
     imageUrl: "/images/machines/KD-402-S.jpg",
     specPdf: "/documents/specs/KD-402-S.pdf",
@@ -208,6 +228,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '3',
       consumption: '4.4 kW'
+    },
+    airSpec: {
+      consumption: '320 L/min',
+      pressure: '5 bar'
     },
     dimensions: {
       length: '3500mm',
@@ -225,7 +249,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-006",
-    name: "YILMAZ FR 221 S",
+    name: "FR 221 S",
     description: "High-QUALITY COPY ROUTER machine for aluminum profiles",
     imageUrl: "/images/machines/FR-221-S.jpg",
     specPdf: "/documents/specs/FR-221-S.pdf",
@@ -239,6 +263,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '1',
       consumption: '0.740 kW'
+    },
+    airSpec: {
+      consumption: '100 L/min',
+      pressure: '4 bar'
     },
     dimensions: {
       length: '1000mm',
@@ -257,7 +285,7 @@ export const yilmazMachines: Machine[] = [
   // New machines from catalogue
   {
     id: "ym-007",
-    name: "YILMAZ PIM 6509",
+    name: "PIM 6509",
     description: "PVC Profile Machining and Cutting Center with 8-axis CNC control",
     imageUrl: "/images/machines/PIM-6509.jpg",
     specPdf: "/documents/specs/PIM-6509.pdf",
@@ -271,6 +299,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '3',
       consumption: '17.0 kW'
+    },
+    airSpec: {
+      consumption: '380 L/min',
+      pressure: '6 bar'
     },
     dimensions: {
       length: '2790mm',
@@ -291,7 +323,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-008",
-    name: "YILMAZ CCL 1661",
+    name: "CCL 1661",
     description: "PVC Welding and Corner Cleaning Line with automated production",
     imageUrl: "/images/machines/CCL-1661.jpg",
     specPdf: "/documents/specs/CCL-1661.pdf",
@@ -305,6 +337,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '3',
       consumption: '14.0 kW'
+    },
+    airSpec: {
+      consumption: '280 L/min',
+      pressure: '5 bar'
     },
     dimensions: {
       length: '5000mm',
@@ -324,7 +360,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-009",
-    name: "YILMAZ CDC 600",
+    name: "CDC 600",
     description: "FULL AUTOMATIC DOUBLE HEAD COMPOUND CUTTING MACHINE",
     imageUrl: "/images/machines/CDC-600.jpg",
     specPdf: "/documents/specs/CDC-600.pdf",
@@ -338,6 +374,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '3',
       consumption: '12.5 kW'
+    },
+    airSpec: {
+      consumption: '350 L/min',
+      pressure: '6 bar'
     },
     dimensions: {
       length: '3500mm',
@@ -361,7 +401,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-010",
-    name: "YILMAZ DC 421 PSD",
+    name: "DC 421 PSD",
     description: "Full Automatic Double Head Mitre Saw Machine with touch screen",
     imageUrl: "/images/machines/DC-421-PSD.jpg",
     specPdf: "/documents/specs/DC-421-PSD.pdf",
@@ -375,6 +415,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '3',
       consumption: '5.0 kW'
+    },
+    airSpec: {
+      consumption: '300 L/min',
+      pressure: '5 bar'
     },
     dimensions: {
       length: '4000mm',
@@ -394,7 +438,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-011",
-    name: "YILMAZ ACK 420 S",
+    name: "ACK 420 S",
     description: "Up-Cutting Saw Machine for specialized operations",
     imageUrl: "/images/machines/ACK-420-S.jpg",
     specPdf: "/documents/specs/ACK-420-S.pdf",
@@ -408,6 +452,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '3',
       consumption: '2.2 kW'
+    },
+    airSpec: {
+      consumption: '180 L/min',
+      pressure: '4 bar'
     },
     dimensions: {
       length: '2000mm',
@@ -427,7 +475,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-012",
-    name: "YILMAZ FR 226 S",
+    name: "FR 226 S",
     description: "Automatic Copy Router Machine for precision operations",
     imageUrl: "/images/machines/FR-226-S.jpg",
     specPdf: "/documents/specs/FR-226-S.pdf",
@@ -441,6 +489,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '3',
       consumption: '1.5 kW'
+    },
+    airSpec: {
+      consumption: '120 L/min',
+      pressure: '4 bar'
     },
     dimensions: {
       length: '850mm',
@@ -460,7 +512,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-013",
-    name: "YILMAZ NCR 300",
+    name: "NCR 300",
     description: "4 Axis Numerical Controlled NC Router Machine",
     imageUrl: "/images/machines/NCR-300.jpg",
     specPdf: "/documents/specs/NCR-300.pdf",
@@ -474,6 +526,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '3',
       consumption: '5.5 kW'
+    },
+    airSpec: {
+      consumption: '200 L/min',
+      pressure: '5 bar'
     },
     dimensions: {
       length: '1835mm',
@@ -493,7 +549,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-014",
-    name: "YILMAZ TK 505",
+    name: "TK 505",
     description: "Single Corner PVC Welding Machine",
     imageUrl: "/images/machines/TK-505.jpg",
     specPdf: "/documents/specs/TK-505.pdf",
@@ -507,6 +563,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '1',
       consumption: '1.5 kW'
+    },
+    airSpec: {
+      consumption: '90 L/min',
+      pressure: '3 bar'
     },
     dimensions: {
       length: '1500mm',
@@ -527,7 +587,7 @@ export const yilmazMachines: Machine[] = [
   // Additional machines from catalogue
   {
     id: "ym-015",
-    name: "YILMAZ KM 215 S",
+    name: "KM 215 S",
     description: "Semi Automatic End Milling Machine for aluminum profiles",
     imageUrl: "/images/machines/KM-215-S.jpg",
     specPdf: "/documents/specs/KM-215-S.pdf",
@@ -541,6 +601,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '3',
       consumption: '1.2 kW'
+    },
+    airSpec: {
+      consumption: '100 L/min',
+      pressure: '4 bar'
     },
     dimensions: {
       length: '1200mm',
@@ -559,7 +623,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-016",
-    name: "YILMAZ CRM 250 S",
+    name: "CRM 250 S",
     description: "3 Spindle Copy Router Machine for complex operations",
     imageUrl: "/images/machines/CRM-250-S.jpg",
     specPdf: "/documents/specs/CRM-250-S.pdf",
@@ -573,6 +637,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '1',
       consumption: '3.3 kW'
+    },
+    airSpec: {
+      consumption: '150 L/min',
+      pressure: '4 bar'
     },
     dimensions: {
       length: '1860mm',
@@ -591,7 +659,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-017",
-    name: "YILMAZ ST 264",
+    name: "ST 264",
     description: "Automatic PVC Water Slot Machine",
     imageUrl: "/images/machines/ST-264.jpg",
     specPdf: "/documents/specs/ST-264.pdf",
@@ -605,6 +673,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '1',
       consumption: '0.66 kW'
+    },
+    airSpec: {
+      consumption: '60 L/min',
+      pressure: '3 bar'
     },
     dimensions: {
       length: '730mm',
@@ -623,7 +695,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-018",
-    name: "YILMAZ SDT 275",
+    name: "SDT 275",
     description: "Reinforcement Steel and Square Profile Cutting Saw",
     imageUrl: "/images/machines/SDT-275.jpg",
     specPdf: "/documents/specs/SDT-275.pdf",
@@ -637,6 +709,10 @@ export const yilmazMachines: Machine[] = [
       frequency: '50Hz',
       phase: '3',
       consumption: '1.8 kW'
+    },
+    airSpec: {
+      consumption: '140 L/min',
+      pressure: '4 bar'
     },
     dimensions: {
       length: '1500mm',
@@ -655,7 +731,7 @@ export const yilmazMachines: Machine[] = [
   }, 
   {
   id: "ym-019",
-  name: "YILMAZ MK 450",
+  name: "MK 450",
   description: "Single Head Cutting Machine with versatile angle options",
   imageUrl: "/images/machines/MK-450.jpg",
   specPdf: "/documents/specs/MK-450.pdf",
@@ -668,6 +744,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '1',
     consumption: '2.2 kW'
+  },
+  airSpec: {
+    consumption: '160 L/min',
+    pressure: '4 bar'
   },
   dimensions: {
     length: '1500mm',
@@ -686,7 +766,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-020",
-  name: "YILMAZ RYK 420 W",
+  name: "RYK 420 W",
   description: "Radial Saw Machine with ergonomic design",
   imageUrl: "/images/machines/RYK-420-W.jpg",
   specPdf: "/documents/specs/RYK-420-W.pdf",
@@ -700,6 +780,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '3',
     consumption: '2.2 kW'
+  },
+  airSpec: {
+    consumption: '170 L/min',
+    pressure: '4 bar'
   },
   dimensions: {
     length: '900mm',
@@ -718,7 +802,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-021",
-  name: "YILMAZ SCM 420 L4",
+  name: "SCM 420 L4",
   description: "Servo Controlled Serial Cutting Machine (3.6m stroke)",
   imageUrl: "/images/machines/SCM-420-L4.jpg",
   specPdf: "/documents/specs/SCM-420-L4.pdf",
@@ -732,6 +816,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '3',
     consumption: '2.2 kW'
+  },
+  airSpec: {
+    consumption: '180 L/min',
+    pressure: '4 bar'
   },
   dimensions: {
     length: '1130mm',
@@ -750,7 +838,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-022",
-  name: "YILMAZ CK 412",
+  name: "CK 412",
   description: "PVC Glazing Bead Saw for precise cutting",
   imageUrl: "/images/machines/CK-412.jpg",
   specPdf: "/documents/specs/CK-412.pdf",
@@ -764,6 +852,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '3',
     consumption: '0.24 kW'
+  },
+  airSpec: {
+    consumption: '40 L/min',
+    pressure: '3 bar'
   },
   dimensions: {
     length: '1035mm',
@@ -782,7 +874,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-023",
-  name: "YILMAZ DK 540",
+  name: "DK 540",
   description: "Four Head Welding Machine for PVC profiles",
   imageUrl: "/images/machines/DK-540.jpg",
   specPdf: "/documents/specs/DK-540.pdf",
@@ -796,6 +888,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '3',
     consumption: '5.0 kW'
+  },
+  airSpec: {
+    consumption: '220 L/min',
+    pressure: '5 bar'
   },
   dimensions: {
     length: '3000mm',
@@ -814,7 +910,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-024",
-  name: "YILMAZ CNC 608",
+  name: "CNC 608",
   description: "Corner Cleaning Machine with CNC control",
   imageUrl: "/images/machines/CNC-608.jpg",
   specPdf: "/documents/specs/CNC-608.pdf",
@@ -828,6 +924,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '3',
     consumption: '12.0 kW'
+  },
+  airSpec: {
+    consumption: '280 L/min',
+    pressure: '5 bar'
   },
   dimensions: {
     length: '2500mm',
@@ -846,7 +946,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-025",
-  name: "YILMAZ KD 305",
+  name: "KD 305",
   description: "Mitre Saw Machine with manual operation",
   imageUrl: "/images/machines/KD-305.jpg",
   specPdf: "/documents/specs/KD-305.pdf",
@@ -860,6 +960,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '1',
     consumption: '0.74 kW'
+  },
+  airSpec: {
+    consumption: '50 L/min',
+    pressure: '3 bar'
   },
   dimensions: {
     length: '700mm',
@@ -878,7 +982,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-026",
-  name: "YILMAZ KD 350 PS",
+  name: "KD 350 PS",
   description: "Mitre Saw Machine with pneumatic system",
   imageUrl: "/images/machines/KD-350-PS.jpg",
   specPdf: "/documents/specs/KD-350-PS.pdf",
@@ -892,6 +996,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '3',
     consumption: '2.2 kW'
+  },
+  airSpec: {
+    consumption: '120 L/min',
+    pressure: '4 bar'
   },
   dimensions: {
     length: '720mm',
@@ -910,7 +1018,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-027",
-  name: "YILMAZ KD 350 M",
+  name: "KD 350 M",
   description: "Compact Mitre Saw Machine",
   imageUrl: "/images/machines/KD-350-M.jpg",
   specPdf: "/documents/specs/KD-350-M.pdf",
@@ -924,6 +1032,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '3',
     consumption: '2.2 kW'
+  },
+  airSpec: {
+    consumption: '110 L/min',
+    pressure: '4 bar'
   },
   dimensions: {
     length: '620mm',
@@ -942,7 +1054,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-028",
-  name: "YILMAZ FR 223",
+  name: "FR 223",
   description: "Portable Template Copy Router",
   imageUrl: "/images/machines/FR-223.jpg",
   specPdf: "/documents/specs/FR-223.pdf",
@@ -956,6 +1068,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '1',
     consumption: '0.75 kW'
+  },
+  airSpec: {
+    consumption: '70 L/min',
+    pressure: '3 bar'
   },
   dimensions: {
     length: '590mm',
@@ -974,7 +1090,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-029",
-  name: "YILMAZ FR 223 S",
+  name: "FR 223 S",
   description: "Portable Template Copy Router with spray cooling",
   imageUrl: "/images/machines/FR-223-S.jpg",
   specPdf: "/documents/specs/FR-223-S.pdf",
@@ -989,6 +1105,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '1',
     consumption: '0.75 kW'
+  },
+  airSpec: {
+    consumption: '80 L/min',
+    pressure: '3 bar'
   },
   dimensions: {
     length: '590mm',
@@ -1007,7 +1127,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-030",
-  name: "YILMAZ FR 222",
+  name: "FR 222",
   description: "Economical Portable Template Copy Router",
   imageUrl: "/images/machines/FR-222.jpg",
   specPdf: "/documents/specs/FR-222.pdf",
@@ -1022,6 +1142,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '1',
     consumption: '1.2 kW'
+  },
+  airSpec: {
+    consumption: '90 L/min',
+    pressure: '3 bar'
   },
   dimensions: {
     length: '500mm',
@@ -1040,7 +1164,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-031",
-  name: "YILMAZ KM 211 S",
+  name: "KM 211 S",
   description: "Manual End Milling Machine with pneumatic clamps",
   imageUrl: "/images/machines/KM-211-S.jpg",
   specPdf: "/documents/specs/KM-211-S.jpg",
@@ -1054,6 +1178,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '3',
     consumption: '1.2 kW'
+  },
+  airSpec: {
+    consumption: '110 L/min',
+    pressure: '4 bar'
   },
   dimensions: {
     length: '440mm',
@@ -1072,7 +1200,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-032",
-  name: "YILMAZ SA 250",
+  name: "SA 250",
   description: "Cooling Unit for welding systems",
   imageUrl: "/images/machines/SA-250.jpg",
   specPdf: "/documents/specs/SA-250.pdf",
@@ -1086,6 +1214,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '3',
     consumption: '0.5 kW'
+  },
+  airSpec: {
+    consumption: '30 L/min',
+    pressure: '2 bar'
   },
   dimensions: {
     length: '1000mm',
@@ -1104,7 +1236,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-033",
-  name: "YILMAZ SA 260",
+  name: "SA 260",
   description: "Robot Unit for profile transfer",
   imageUrl: "/images/machines/SA-260.jpg",
   specPdf: "/documents/specs/SA-260.pdf",
@@ -1118,6 +1250,10 @@ export const yilmazMachines: Machine[] = [
     frequency: '50Hz',
     phase: '3',
     consumption: '0.85 kW'
+  },
+  airSpec: {
+    consumption: '50 L/min',
+    pressure: '3 bar'
   },
   dimensions: {
     length: '1500mm',
@@ -1136,13 +1272,6 @@ export const yilmazMachines: Machine[] = [
 }
 ];
 
-// Inject placeholder air specifications if missing (future real data to replace)
-interface AirAugmentedMachine extends Machine { airSpec?: { consumption?: string; pressure?: string } }
-; (yilmazMachines as AirAugmentedMachine[]).forEach(m => {
-  if (!m.airSpec) {
-    m.airSpec = { consumption: '0 L/min', pressure: '6 bar' };
-  }
-});
 
 // Utilities to support comparison summaries
 export const getTotalPowerKw = (machines: Machine[]) => machines.reduce((sum, m) => {
@@ -1150,7 +1279,7 @@ export const getTotalPowerKw = (machines: Machine[]) => machines.reduce((sum, m)
   return sum + (match ? parseFloat(match[1]) : 0);
 }, 0);
 
-export const getTotalAirConsumption = (machines: Machine[]) => (machines as AirAugmentedMachine[]).reduce((sum, m) => {
+export const getTotalAirConsumption = (machines: Machine[]) => machines.reduce((sum, m) => {
   const air = m.airSpec?.consumption;
   const match = air?.match(/([0-9]+(?:\.[0-9]+)?)/);
   return sum + (match ? parseFloat(match[1]) : 0);
