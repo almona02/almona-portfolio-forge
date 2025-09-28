@@ -119,6 +119,9 @@ __tests__/
 test/
 tests/
 
+# Allow app test components used in production routes
+!src/components/test/**
+
 # Config files that aren't needed in production
 .eslintrc*
 .prettierrc*
