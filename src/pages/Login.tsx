@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -72,7 +71,6 @@ const Login = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-almona-dark">
-      <Navbar />
       <main 
         className="flex-grow flex items-center justify-center p-4 bg-cover bg-center relative" 
         style={{ backgroundImage: "url('/images/machines/processing-center.jpg')" }}

@@ -38,7 +38,7 @@ export const ToastViewport = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "fixed top-0 right-0 flex flex-col p-4 gap-2 w-full max-w-[100vw] m-0 list-none z-[2147483647] outline-none",
+      "fixed top-20 right-4 flex flex-col p-4 gap-2 max-w-md m-0 list-none z-[200] outline-none",
       className
     )}
     {...props}

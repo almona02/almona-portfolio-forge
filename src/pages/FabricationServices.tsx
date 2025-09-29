@@ -34,7 +34,6 @@ import {
   RotateCcw
 } from 'lucide-react';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 
 const systemsData = {
@@ -258,8 +257,6 @@ const FabricationServices = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-almona-dark text-white">
-      <Navbar />
-      
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div 

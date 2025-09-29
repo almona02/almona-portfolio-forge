@@ -25,6 +25,8 @@
     "ar:optimize": "node scripts/optimize-glb.mjs",
     "pwa:icons": "node scripts/generate-pwa-icons.js",
     "test": "vitest",
+    "test:predictive": "vitest run src/lib/predictive/tests",
+    "test:all": "vitest run src/lib/predictive/tests src/components/__tests__",
     "test:pricing": "vitest run src/lib/pricing.test.ts",
     "test:watch": "vitest watch",
     "test:api": "cd python_backend && python -m pytest tests/run_tests.py -v",

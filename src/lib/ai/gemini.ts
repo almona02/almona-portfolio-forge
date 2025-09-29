@@ -14,7 +14,7 @@ Egyptian Market Considerations:
   - Small: 50,000-150,000 EGP 
   - Medium: 150,000-300,000 EGP
   - Large: 300,000+ EGP
-- Popular brands: YILMAZ, ALFAPEN, Kaban
+- Popular brands: YILMAZ, Kaban
 `;
 
 export const getEquipmentRecommendation = async (query: string) => {

@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
   Menu, 
   X, 
@@ -8,6 +8,8 @@ import {
   User, 
   LogOut,
   Globe,
+  Phone,
+  Mail,
   Shield
 } from "lucide-react";
 
@@ -17,7 +19,7 @@ interface NavbarProps {
     email: string;
     role: string;
   };
-  quoteItems?: unknown[];
+  quoteItems?: any[];
   onLogout?: () => void;
 }
 
@@ -26,6 +28,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const navbarRef = useRef<HTMLElement>(null);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout>();
 

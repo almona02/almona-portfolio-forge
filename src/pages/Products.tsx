@@ -6,7 +6,6 @@ import { MobileOptimizedGrid } from "@/components/optimized/MobileOptimizedGrid"
 import { MobileFilterPanel } from "@/components/optimized/MobileFilterPanel";
 import { QuoteRequestDialog } from "@/components/quotes/QuoteRequestDialog";
 import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
-import { alfapenProfiles } from "@/constants/productsData";
 import { useVirtualizedMachines } from "@/hooks/useVirtualizedMachines";
 import { useToast } from "@/hooks/useToast";
 import { useAuth } from "@/context/AuthContext";
@@ -185,9 +184,8 @@ const Products = function ProductsPage() {
 
             <Tabs defaultValue="yilmaz" className="mb-8">
               {/* Category selection with adaptive gradient */}
-              <TabsList className="grid w-full grid-cols-2 max-w-xs mx-auto rounded-md shadow-sm border border-gray-700 bg-[linear-gradient(135deg,rgba(0,0,0,0.85)_0%,rgba(30,30,30,0.85)_60%,rgba(55,55,55,0.75)_100%)] backdrop-blur">
+              <TabsList className="grid w-full grid-cols-1 max-w-xs mx-auto rounded-md shadow-sm border border-gray-700 bg-[linear-gradient(135deg,rgba(0,0,0,0.85)_0%,rgba(30,30,30,0.85)_60%,rgba(55,55,55,0.75)_100%)] backdrop-blur">
                 <TabsTrigger value="yilmaz">YILMAZ Machines</TabsTrigger>
-                <TabsTrigger value="alfapen">ALFAPEN Profiles</TabsTrigger>
               </TabsList>
 
               <TabsContent value="yilmaz">
@@ -206,7 +204,7 @@ const Products = function ProductsPage() {
                     />
 
                     {/* Desktop Filter & sorting controls */}
-                    <div className={`hidden lg:block sticky top-16 z-40 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 rounded-md p-4 shadow-md border transition-colors ${scrolled ? 'border-orange-500/40 shadow-orange-500/10' : 'border-gray-800/70'} bg-[linear-gradient(145deg,rgba(0,0,0,0.92)_0%,rgba(18,18,18,0.92)_50%,rgba(32,32,32,0.88)_100%)] backdrop-blur`}> 
+                    <div className={`hidden lg:flex sticky top-16 z-40 flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 rounded-md p-4 shadow-md border transition-colors ${scrolled ? 'border-orange-500/40 shadow-orange-500/10' : 'border-gray-800/70'} bg-[linear-gradient(145deg,rgba(0,0,0,0.92)_0%,rgba(18,18,18,0.92)_50%,rgba(32,32,32,0.88)_100%)] backdrop-blur`}> 
                       <div className="w-full md:w-1/2">
                         <Input
                           placeholder="Search machines..."
@@ -301,25 +299,6 @@ const Products = function ProductsPage() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="alfapen">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {alfapenProfiles.map((profile) => (
-                    <ProductCard
-                      key={profile.id}
-                      title={profile.name}
-                      description={profile.description}
-                      imageUrl={profile.imageUrl}
-                      features={[
-                        `Material: ${profile.material}`,
-                        `Color: ${profile.color}`,
-                        `Applications: ${profile.applications.join(", ")}`,
-                      ]}
-                      ctaText="View Details"
-                      ctaLink={`/products/alfapen/${profile.id}`}
-                    />
-                  ))}
-                </div>
-              </TabsContent>
             </Tabs>
 
             <Separator className="my-12 bg-almona-light/20" />

@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { Factory, Globe, Award, Target } from 'lucide-react';
-import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 
 const About = () => {
@@ -32,7 +31,6 @@ const About = () => {
 
   return (
     <>
-      <Navbar />
       <main className="pt-24">
         <div className="container py-8 px-4 sm:py-12 sm:px-6">
       <motion.div

@@ -8,11 +8,11 @@ import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 
 const Index = () => {
   useEffect(() => {
-    document.title = "ALMONA - YILMAZ Machines & ALFAPEN Profiles Dealer in Egypt";
+    document.title = "ALMONA - YILMAZ Machines Dealer in Egypt";
   }, []);
 
   return (
-    <main className="flex-grow pt-20">
+    <main className="flex-grow">
       <Hero />
       <AboutSection />
       <ServicesSection />

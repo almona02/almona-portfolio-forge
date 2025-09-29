@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
-import Navbar from '../Navbar';
+import ConditionalNavbar from '../ConditionalNavbar';
 import Footer from '../Footer';
 
 interface TurkishLayoutProps {
@@ -24,7 +24,7 @@ export const TurkishLayout: React.FC<TurkishLayoutProps> = ({
   return (
     <div className="min-h-screen bg-almona-dark text-white">
       {/* Main Navigation */}
-      <Navbar />
+      <ConditionalNavbar />
       
       {/* Main content */}
       <div className="relative">
