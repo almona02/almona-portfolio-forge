@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState, Suspense } from 'react';
-import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { aluminiumStages, upvcStages, trainingLevels, generateUpcomingCohorts, IconName } from '@/data/trainingPrograms';
 import { GraduationCap, Layers, Scissors, Thermometer, Settings, Zap, ShieldCheck, Gauge, Calendar, Star, Crown } from 'lucide-react';
@@ -48,7 +47,6 @@ const TrainingServicesPage: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-almona-dark text-white">
-      <Navbar />
       <main className="flex-grow pt-24 pb-24 container mx-auto px-4">
         {/* Hero */}
         <div className="mb-12">

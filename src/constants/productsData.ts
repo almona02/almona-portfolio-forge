@@ -174,33 +174,4 @@ export const yilmazParts: LegacyPart[] = [
   }
 ];
 
-export const alfapenProfiles: Profile[] = [
-  {
-    id: "ap-001",
-    name: "ALFAPEN Window System",
-    description: "High-performance UPVC window profiles",
-    imageUrl: "/images/profiles/window-system.jpg",
-    category: "windows",
-    material: "UPVC",
-    color: "White",
-    applications: ["Residential", "Commercial"],
-    releaseDate: "2022-11-10",
-    featured: true,
-    tags: ["UPVC", "Energy Efficient"]
-  }, 
-   {
-    id: "ap-002",
-    name: "ALFAPEN Door System",
-    description: "High-performance UPVC door profiles",
-    imageUrl: "/images/profiles/door-system.jpg",
-    category: "doors",
-    material: "UPVC",
-    color: "White",
-    applications: ["Residential", "Commercial"],
-    releaseDate: "2023-03-15",
-    featured: true,
-    tags: ["UPVC", "Durable"]
-  }
-
-];
 

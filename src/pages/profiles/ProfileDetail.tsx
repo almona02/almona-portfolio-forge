@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { alfapenProfiles, Profile } from "../../constants/productsData";
+import { Profile } from "../../constants/productsData";
 import { ReviewForm } from "@/components/shop/ReviewForm";
 import { ReviewList } from "@/components/shop/ReviewList";
 import { getReviewsByProductId, addReview, Review } from "@/lib/reviewsApi";
@@ -38,9 +38,7 @@ const ProfileDetail: React.FC = () => {
     toast.success(t("reviews.review_submitted_success"));
   };
 
-  const profile: Profile | undefined = alfapenProfiles.find(
-    (p) => p.id === profileId
-  );
+  const profile: Profile | undefined = undefined; // alfapenProfiles removed
 
   if (!profile) {
     return (

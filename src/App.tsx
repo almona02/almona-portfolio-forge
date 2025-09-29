@@ -44,6 +44,7 @@ const ProfileDetail = lazy(() => import("./pages/profiles/ProfileDetail.tsx"));
 const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail"));
 const FabricationWorkflowDetail = lazy(() => import("./pages/FabricationWorkflowDetail.tsx"));
 const FabricationServices = lazy(() => import("./pages/FabricationServices.tsx"));
+const FabricatorWorkflow = lazy(() => import("./pages/FabricatorWorkflow.tsx"));
 const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
 
 // Quote system - lazy loaded
@@ -163,6 +164,7 @@ const App = () => (
                   <Route path="/workflows/upvc-fabrication" element={<Suspense fallback={getLoadingComponent('/workflows')}><WorkflowDetail /></Suspense>} />
                   <Route path="/workflows/fabrication-detail" element={<Suspense fallback={getLoadingComponent('/workflows')}><FabricationWorkflowDetail /></Suspense>} />
                   <Route path="/fabrication-services" element={<Suspense fallback={getLoadingComponent('/fabrication')}><FabricationServices /></Suspense>} />
+                  <Route path="/fabricator-workflow" element={<Suspense fallback={getLoadingComponent('/fabricator')}><FabricatorWorkflow /></Suspense>} />
                   
                   {/* Shop & E-commerce */}
                   <Route path="/shop" element={<Suspense fallback={getLoadingComponent('/shop')}><Shop /></Suspense>} />
