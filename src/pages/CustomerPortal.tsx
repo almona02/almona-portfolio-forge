@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 import { TicketCard } from '@/components/support/TicketCard';
 import { useReducedMotionPref } from '@/hooks/useReducedMotionPref';
-import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -204,7 +203,6 @@ const CustomerPortal = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-almona-dark text-white">
-      <Navbar />
       <main className="flex-grow pt-24 pb-12">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}

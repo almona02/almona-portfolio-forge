@@ -11,8 +11,8 @@ interface SEOProps {
 
 const SEO = ({
   title = 'ALMONA Co. - Industrial Machinery & Construction Materials',
-  description = 'ALMONA Co. is a leading Egyptian industrial company established in 1991, specializing in YILMAZ machinery and ALFAPEN UPVC profiles for construction.',
-  keywords = 'ALMONA, YILMAZ machines, ALFAPEN profiles, industrial machinery, construction materials, Egypt, aluminum processing, PVC processing',
+  description = 'ALMONA Co. is a leading Egyptian industrial company established in 1991, specializing in YILMAZ machinery for construction.',
+  keywords = 'ALMONA, YILMAZ machines, industrial machinery, construction materials, Egypt, aluminum processing, PVC processing',
   image = '/logo.svg',
   url = import.meta.env.VITE_APP_URL || 'https://almona.eg',
   type = 'website'

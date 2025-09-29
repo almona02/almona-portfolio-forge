@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import { CheckCircle2, Wrench, Bolt, GraduationCap, Ship } from "lucide-react";
+import { CheckCircle2, Wrench, Bolt, GraduationCap, Ship, Brain } from "lucide-react";
 
 interface ServiceCardProps {
-  icon: "wrench" | "bolt" | "graduation-cap" | "ship";
+  icon: "wrench" | "bolt" | "graduation-cap" | "ship" | "brain";
   title: string;
   description: string;
   features: string[];
@@ -28,6 +28,7 @@ const iconMap = {
   "bolt": <Bolt className="h-6 w-6" />,
   "graduation-cap": <GraduationCap className="h-6 w-6" />,
   "ship": <Ship className="h-6 w-6" />,
+  "brain": <Brain className="h-6 w-6" />,
 };
 
 const SparePartsWidget = ({ machineModel }: { machineModel: string }) => {
@@ -39,8 +40,8 @@ const SparePartsWidget = ({ machineModel }: { machineModel: string }) => {
       // Placeholder data
       const allParts: SparePart[] = [
         { id: "1", name: "Blade Set", compatibleMachines: ["YILMAZ PRO-5000"], localStock: 5, price: 1200 },
-        { id: "2", name: "Hydraulic Pump", compatibleMachines: ["YILMAZ PRO-5000", "ALFAPEN X200"], localStock: 0, price: 3500 },
-        { id: "3", name: "Motor Belt", compatibleMachines: ["ALFAPEN X200"], localStock: 3, price: 800 },
+        { id: "2", name: "Hydraulic Pump", compatibleMachines: ["YILMAZ PRO-5000"], localStock: 0, price: 3500 },
+        { id: "3", name: "Motor Belt", compatibleMachines: ["YILMAZ PRO-5000"], localStock: 3, price: 800 },
       ];
       return allParts.filter(part => part.compatibleMachines.includes(model));
     };

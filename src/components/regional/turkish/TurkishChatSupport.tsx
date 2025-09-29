@@ -51,7 +51,7 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
     greeting: [
       "Merhaba! Almona müşteri hizmetlerine hoş geldiniz. YILMAZ alüminyum ve UPVC işleme makineleri konusunda size nasıl yardımcı olabilirim?",
       "İyi günler! Almona teknik destek ekibindeyim. Alüminyum pencere, kapı veya UPVC profil üretimi için hangi makineye ihtiyacınız var?",
-      "Merhaba! YILMAZ makineleri ve ALFAPEN profilleri uzmanıyım. Projeniz için en uygun çözümü bulmanıza yardımcı olayım."
+      "Merhaba! YILMAZ makineleri uzmanıyım. Projeniz için en uygun çözümü bulmanıza yardımcı olayım."
     ],
     pricing: [
       "Fiyat bilgileri için size özel teklif hazırlayabilirim. Hangi YILMAZ makine modeli ile ilgileniyorsunuz? (örn: CNC, Köşe Kaynak, Kesim)",

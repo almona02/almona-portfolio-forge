@@ -66,7 +66,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.6), 0 0 60px rgba(249, 115, 22, 0.4); }
           }
         `}</style>
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
         {/* Animated background particles */}
         <div className="absolute inset-0">
           {showParticles && (

@@ -8,7 +8,6 @@ import { Textarea } from '@/shared/ui/ui/textarea';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
-import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
@@ -34,7 +33,6 @@ const SellUsedMachine = () => {
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen bg-almona-dark text-white">
-        <Navbar />
         <div className="flex-grow flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-almona-orange mx-auto mb-4"></div>

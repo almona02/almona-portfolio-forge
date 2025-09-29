@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import ProductCard from "@/shared/ui/ui/ProductCard";
 import { ArrowRight } from "lucide-react";
 import { yilmazMachines } from "@/constants/yilmazMachines";
-import { alfapenProfiles } from "@/constants/productsData";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Machine } from "@/types";
 
@@ -41,7 +40,7 @@ const FeaturedProducts = () => {
   }));
 
   // Get featured profiles with proper typing
-  const featuredProfiles = alfapenProfiles.slice(0, 3);
+  const featuredProfiles: any[] = [];
   
   const profileProducts = featuredProfiles.map((profile: any) => ({
     id: profile.id,
@@ -72,7 +71,7 @@ const FeaturedProducts = () => {
             Featured <span className="text-gradient-orange">Products</span>
           </h2>
           <p className="text-gray-400">
-            Discover our selection of premium YILMAZ machines and ALFAPEN profiles, 
+            Discover our selection of premium YILMAZ machines, 
             designed to elevate your aluminum and UPVC fabrication projects.
           </p>
         </div>
@@ -85,12 +84,6 @@ const FeaturedProducts = () => {
                 className={`${activeTab === "machines" ? "text-white" : "text-gray-400"} px-6`}
               >
                 YILMAZ Machines
-              </TabsTrigger>
-              <TabsTrigger 
-                value="profiles" 
-                className={`${activeTab === "profiles" ? "text-white" : "text-gray-400"} px-6`}
-              >
-                ALFAPEN Profiles
               </TabsTrigger>
             </TabsList>
           </div>
@@ -111,21 +104,6 @@ const FeaturedProducts = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="profiles" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {profileProducts.map((product) => (
-                <ProductCard key={product.id} {...product} />
-              ))}
-            </div>
-            <div className="mt-12 text-center">
-              <Button asChild className="bg-gradient-orange hover:bg-almona-orange-dark text-white">
-                <Link to="/shop">
-                  {t('common.actions.viewMore')} Profiles
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </TabsContent>
         </Tabs>
       </div>
     </section>

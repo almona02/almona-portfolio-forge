@@ -16,7 +16,7 @@ const AboutSection = () => {
               With over three decades of experience in the machinery and profile industry, ALMONA has established itself as a leading provider of high-quality equipment and materials for aluminum and UPVC fabrication in Egypt.
             </p>
             <p className="text-gray-300 mb-6">
-              As the first and authorized dealer of YILMAZ machines since 2000, we&apos;ve built a reputation for excellence in both products and services. Our commitment to quality extends to our partnership with ALFAPEN profiles, ensuring our clients receive only the best materials for their projects.
+              As the first and authorized dealer of YILMAZ machines since 2000, we&apos;ve built a reputation for excellence in both products and services. Our commitment to quality ensures our clients receive only the best materials for their projects.
             </p>
             <div className="grid grid-cols-2 gap-4 mb-8">
               <div className="bg-almona-dark p-4 rounded-lg border border-gray-800">

@@ -11,7 +11,6 @@ import { UniqueProduct } from "../types/unique-product";
 // import { EgyptCertification } from "../types/shop";
 
 // Components
-import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import AiEquipmentAdvisor from "../components/shop/ai-advisor/AiEquipmentAdvisor";
 import { IndustrialProductCard } from "../components/shop/IndustrialProductCard";
@@ -290,7 +289,6 @@ const ShopEnhanced = () => {
   return (
     <div dir={i18n.language === "ar" ? "rtl" : "ltr"} 
          className={`flex flex-col min-h-screen bg-almona-dark text-white ${i18n.language === "ar" ? "font-tajawal" : ""}`}>
-      <Navbar />
       <main className="flex-grow pt-24">
         <div className="container mx-auto px-4 py-12">
           <div className="mb-16 text-center">

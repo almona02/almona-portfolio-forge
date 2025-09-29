@@ -62,15 +62,6 @@ export const MILESTONES: Milestone[] = [
     ]
   },
   {
-    year: 2010,
-    title: "ALFAPEN Profiles Partnership",
-    description: "Added ALFAPEN profiles to our product line, providing comprehensive solutions for aluminum and UPVC manufacturing.",
-    comparison: {
-      before: '/images/company/before-alfapen.jpg',
-      after: '/images/company/after-alfapen.jpg'
-    }
-  },
-  {
     year: 2015,
     title: "Digital Transformation",
     description: "Launched our first digital platform and began integrating modern technology into our operations and customer service.",
