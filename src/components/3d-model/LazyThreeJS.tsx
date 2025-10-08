@@ -1,12 +1,5 @@
-import React, { Suspense, lazy, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageLoadingWrapper } from '@/components/ui/PageLoadingWrapper';
-
-// Lazy load Three.js components only when needed
-const ThreeJSComponents = lazy(() => 
-  import('@/lib/three-optimized').then(module => ({
-    default: module
-  }))
-);
 
 interface LazyThreeJSProps {
   children: (threeJS: any) => React.ReactNode;
@@ -76,11 +69,7 @@ export const LazyThreeJS: React.FC<LazyThreeJSProps> = ({
     return <>{fallback}</>;
   }
 
-  return (
-    <Suspense fallback={fallback}>
-      {children(threeJS)}
-    </Suspense>
-  );
+  return <>{children(threeJS)}</>;
 };
 
 export default LazyThreeJS;
