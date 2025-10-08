@@ -1,15 +1,16 @@
 import React, { memo } from 'react';
-import { OptimizedProductCard } from './OptimizedProductCard';
+import EnhancedProductCard from '@/shared/ui/ui/EnhancedProductCard';
 import { Button } from '@/shared/ui/ui/button';
 import { Loader2 } from 'lucide-react';
 import type { Machine } from '@/constants/yilmazMachines';
 
 interface VirtualizedMachineGridProps {
-  machines: Machine[];
+  machines: (Machine & { has3DModel?: boolean; modelPath?: string })[];
   selectedMachines: Machine[];
   onSelectMachine: (machine: Machine, selected: boolean) => void;
   onQuoteRequest: (machine: Machine) => void;
   on3DView?: (machine: Machine) => void;
+  onQuickPreview?: (machine: Machine) => void;
   hasMore: boolean;
   onLoadMore: () => void;
   isLoading: boolean;
@@ -23,6 +24,7 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
   onSelectMachine,
   onQuoteRequest,
   on3DView,
+  onQuickPreview,
   hasMore,
   onLoadMore,
   isLoading
@@ -34,13 +36,15 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
         {machines.map((machine) => {
           const isSelected = selectedMachines.some(m => m.id === machine.id);
           return (
-            <OptimizedProductCard
+            <EnhancedProductCard
               key={machine.id}
               machine={machine}
               isSelected={isSelected}
-              onSelect={(selected) => onSelectMachine(machine, selected)}
-              onQuoteRequest={() => onQuoteRequest(machine)}
-              on3DView={on3DView ? () => on3DView(machine) : undefined}
+              onSelect={onSelectMachine}
+              onQuoteRequest={onQuoteRequest}
+              on3DView={on3DView}
+              onQuickPreview={onQuickPreview}
+              show3DBadge={true}
             />
           );
         })}
