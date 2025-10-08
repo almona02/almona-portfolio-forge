@@ -1,4 +1,6 @@
+import { motion, AnimatePresence } from 'framer-motion';
 import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
+import { EnhancedModel3DDialog } from "@/components/3d-model/EnhancedModel3DDialog";
 import CompareBar from "@/components/comparison/CompareBar";
 import CompareDialog from "@/components/comparison/CompareDialog";
 import { VirtualizedMachineGrid } from "@/components/optimized/VirtualizedMachineGrid";
@@ -215,62 +217,119 @@ const Products = function ProductsPage() {
     setShow3DModel(true);
   };
 
-  // Quick Preview Modal Component
+  // Quick Preview Modal Component with Framer Motion
   const QuickPreviewModal = ({ machine, onClose }: { machine: Machine; onClose: () => void }) => {
     if (!machine) return null;
 
     return (
-      <div 
+      <motion.div 
         className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
         onClick={onClose}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
       >
-        <div 
+        <motion.div 
           className="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-orange-500/20"
           onClick={(e) => e.stopPropagation()}
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.9, y: 20 }}
+          transition={{ 
+            duration: 0.3, 
+            ease: [0.25, 0.46, 0.45, 0.94] 
+          }}
         >
-          <div className="p-6">
+          <motion.div 
+            className="p-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-white">{machine.name}</h2>
-              <Button
-                variant="ghost"
-                onClick={onClose}
-                className="text-gray-400 hover:text-white"
+              <motion.h2 
+                className="text-2xl font-bold text-white"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
               >
-                ✕
-              </Button>
+                {machine.name}
+              </motion.h2>
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Button
+                  variant="ghost"
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-white"
+                >
+                  ✕
+                </Button>
+              </motion.div>
             </div>
             
             <div className="grid md:grid-cols-2 gap-8">
               {/* Image Section */}
-              <div className="space-y-4">
-                <div className="bg-gray-800 rounded-xl p-4 aspect-[4/3] flex items-center justify-center">
-                  <img
+              <motion.div 
+                className="space-y-4"
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+              >
+                <motion.div 
+                  className="bg-gray-800 rounded-xl p-4 aspect-[4/3] flex items-center justify-center"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <motion.img
                     src={machine.imageUrl}
                     alt={machine.name}
                     className="rounded-lg object-contain max-h-full w-full"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.4 }}
                   />
-                </div>
+                </motion.div>
                 
                 {machine.has3DModel && (
-                  <Button 
-                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
-                    onClick={() => {
-                      handle3DView(machine);
-                      onClose();
-                    }}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.5 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <Eye className="mr-2 h-4 w-4" />
-                    View Full 3D Model
-                  </Button>
+                    <Button 
+                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
+                      onClick={() => {
+                        handle3DView(machine);
+                        onClose();
+                      }}
+                    >
+                      <Eye className="mr-2 h-4 w-4" />
+                      View Full 3D Model
+                    </Button>
+                  </motion.div>
                 )}
-              </div>
+              </motion.div>
               
               {/* Details Section */}
-              <div className="space-y-6">
-                <div>
+              <motion.div 
+                className="space-y-6"
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.5 }}
+                >
                   <h3 className="text-lg font-semibold text-white mb-3">Description</h3>
                   <p className="text-gray-300 leading-relaxed">{machine.description}</p>
-                </div>
+                </motion.div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   {machine.powerSpec?.consumption && (
@@ -309,11 +368,11 @@ const Products = function ProductsPage() {
                     </div>
                   </div>
                 )}
-              </div>
+              </motion.div>
             </div>
-          </div>
-        </div>
-      </div>
+          </motion.div>
+        </motion.div>
+      </motion.div>
     );
   };
 
@@ -509,12 +568,14 @@ const Products = function ProductsPage() {
           </div>
 
           {/* Quick Preview Modal */}
-          {quickPreviewMachine && (
-            <QuickPreviewModal
-              machine={quickPreviewMachine}
-              onClose={() => setQuickPreviewMachine(null)}
-            />
-          )}
+          <AnimatePresence>
+            {quickPreviewMachine && (
+              <QuickPreviewModal
+                machine={quickPreviewMachine}
+                onClose={() => setQuickPreviewMachine(null)}
+              />
+            )}
+          </AnimatePresence>
 
           <CompareBar
             machines={selectedMachines}
@@ -541,7 +602,7 @@ const Products = function ProductsPage() {
           </Suspense>
 
           {selectedMachineFor3D && (
-            <Model3DDialog
+            <EnhancedModel3DDialog
               isOpen={show3DModel}
               onClose={() => setShow3DModel(false)}
               machineName={selectedMachineFor3D.name}
@@ -549,6 +610,15 @@ const Products = function ProductsPage() {
                 selectedMachineFor3D.modelPath ||
                 "/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
               }
+              machineData={{
+                dimensions: selectedMachineFor3D.dimensions ? {
+                  length: selectedMachineFor3D.dimensions.length,
+                  width: selectedMachineFor3D.dimensions.width,
+                  height: selectedMachineFor3D.dimensions.height
+                } : undefined,
+                power: selectedMachineFor3D.powerSpec?.consumption,
+                features: selectedMachineFor3D.tags
+              }}
             />
           )}
 
