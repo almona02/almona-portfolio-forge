@@ -160,16 +160,18 @@ export function OptimizedGLBViewer(props: OptimizedGLBViewerProps) {
         const lightingProps = threeJS.getOptimizedLightingProps()
         const controlsProps = threeJS.getOptimizedControlsProps()
 
+        const { Canvas, AmbientLight, DirectionalLight, PointLight, OrbitControls } = threeJS
+
         return (
-          <threeJS.Canvas {...canvasProps}>
-            <threeJS.ambientLight {...lightingProps.ambientLight} />
-            <threeJS.directionalLight {...lightingProps.directionalLight} />
-            <threeJS.pointLight {...lightingProps.pointLight} />
+          <Canvas {...canvasProps}>
+            <AmbientLight {...lightingProps.ambientLight} />
+            <DirectionalLight {...lightingProps.directionalLight} />
+            <PointLight {...lightingProps.pointLight} />
             <Suspense fallback={<ModelLoadingFallback />}>
               <OptimizedModel {...props} threeJS={threeJS} />
             </Suspense>
-            <threeJS.OrbitControls {...controlsProps} />
-          </threeJS.Canvas>
+            <OrbitControls {...controlsProps} />
+          </Canvas>
         )
       }}
     </LazyThreeJS>
