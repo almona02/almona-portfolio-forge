@@ -95,6 +95,11 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
           path: "/products/ar-viewer", 
           description: "See it in your space" 
         },
+        { 
+          name: "3D Gallery", 
+          path: "/products/3d-gallery", 
+          description: "Interactive 3D model collection" 
+        },
       ]
     },
     { 
