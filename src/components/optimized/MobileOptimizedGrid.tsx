@@ -1,13 +1,14 @@
 import React, { memo, useMemo } from 'react';
-import { OptimizedProductCard } from './OptimizedProductCard';
+import EnhancedProductCard from '@/shared/ui/ui/EnhancedProductCard';
 import type { Machine } from '@/constants/yilmazMachines';
 
 interface MobileOptimizedGridProps {
-  machines: Machine[];
+  machines: (Machine & { has3DModel?: boolean; modelPath?: string })[];
   selectedMachines: Machine[];
   onSelectMachine: (machine: Machine, selected: boolean) => void;
   onQuoteRequest: (machine: Machine) => void;
   on3DView?: (machine: Machine) => void;
+  onQuickPreview?: (machine: Machine) => void;
   hasMore: boolean;
   onLoadMore: () => void;
   isLoading: boolean;
@@ -19,6 +20,7 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
   onSelectMachine,
   onQuoteRequest,
   on3DView,
+  onQuickPreview,
   hasMore,
   onLoadMore,
   isLoading
@@ -45,17 +47,19 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
           key={machine.id}
           className="transform transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
         >
-          <OptimizedProductCard
+          <EnhancedProductCard
             machine={machine}
             isSelected={isSelected}
-            onSelect={(selected) => onSelectMachine(machine, selected)}
-            onQuoteRequest={() => onQuoteRequest(machine)}
-            on3DView={on3DView ? () => on3DView(machine) : undefined}
+            onSelect={onSelectMachine}
+            onQuoteRequest={onQuoteRequest}
+            on3DView={on3DView}
+            onQuickPreview={onQuickPreview}
+            show3DBadge={true}
           />
         </div>
       );
     });
-  }, [machines, selectedMachines, onSelectMachine, onQuoteRequest, on3DView]);
+  }, [machines, selectedMachines, onSelectMachine, onQuoteRequest, on3DView, onQuickPreview]);
 
   return (
     <div className="w-full">

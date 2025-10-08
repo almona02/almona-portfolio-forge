@@ -39,8 +39,9 @@ interface SourceMachineLike {
 }
 import { Eye } from "lucide-react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import React, { useEffect, useState, Suspense, useCallback } from "react";
+import React, { useEffect, useState, Suspense, useCallback, useMemo } from "react";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
+import { debounce } from "@/lib/utils";
 
 // UI wrapper union ensures compatibility with comparison + quote components expecting UiMachine shape
 const mapToUiMachine = (m: SourceMachineLike): UiMachine => ({
@@ -69,9 +70,13 @@ const mapToUiMachine = (m: SourceMachineLike): UiMachine => ({
 const Products = function ProductsPage() {
   const { toast } = useToast();
   const { user } = useAuth();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [sortOption, setSortOption] = useState("featured");
+  
+  // SINGLE SOURCE OF TRUTH for filters
+  const [filters, setFilters] = useState({
+    searchTerm: "",
+    category: "all",
+    sortOption: "featured"
+  });
   
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
   const [showCompareDialog, setShowCompareDialog] = useState(false);
@@ -80,7 +85,25 @@ const Products = function ProductsPage() {
   const [show3DModel, setShow3DModel] = useState(false);
   const [selectedMachineFor3D, setSelectedMachineFor3D] = useState<Machine | null>(null);
   const [wizardOpen, setWizardOpen] = useState(false);
+  const [quickPreviewMachine, setQuickPreviewMachine] = useState<Machine | null>(null);
   const scrolled = useScrollThreshold(48);
+
+  // Debounced filter handler for search performance
+  const debouncedSetFilters = useMemo(
+    () => debounce((key: keyof typeof filters, value: string) => {
+      setFilters(prev => ({ ...prev, [key]: value }));
+    }, 300),
+    []
+  );
+
+  const handleFilterChange = useCallback((key: keyof typeof filters, value: string) => {
+    // For search, use debounce; for others, update immediately
+    if (key === 'searchTerm') {
+      debouncedSetFilters(key, value);
+    } else {
+      setFilters(prev => ({ ...prev, [key]: value }));
+    }
+  }, [debouncedSetFilters]);
 
   // Map smart category to legacy category for filtering
   const getLegacyCategoryFilter = useCallback((smartCategory: string) => {
@@ -88,7 +111,7 @@ const Products = function ProductsPage() {
     return smartCategoryMapping[smartCategory] || smartCategory;
   }, []);
 
-  // Use virtualized machines hook for better performance
+  // Use virtualized machines hook with consolidated filters
   const {
     machines: virtualizedMachines,
     totalCount,
@@ -96,11 +119,29 @@ const Products = function ProductsPage() {
     loadMore,
     isLoading: isLoadingMore
   } = useVirtualizedMachines({
-    searchTerm,
-    categoryFilter: getLegacyCategoryFilter(categoryFilter),
-    sortOption,
+    searchTerm: filters.searchTerm,
+    categoryFilter: getLegacyCategoryFilter(filters.category),
+    sortOption: filters.sortOption,
     pageSize: 12
   });
+
+  // Enhanced machines with 3D model flags
+  const enhancedMachines = useMemo(() => {
+    return virtualizedMachines.map(machine => ({
+      ...machine,
+      has3DModel: Boolean(machine.modelPath) || machine.id === 'FR223',
+      modelPath: machine.modelPath || (machine.id === 'FR223' ? '/models/FR223.glb' : undefined)
+    }));
+  }, [virtualizedMachines]);
+
+  // Clear all filters
+  const handleClearFilters = useCallback(() => {
+    setFilters({
+      searchTerm: "",
+      category: "all",
+      sortOption: "featured"
+    });
+  }, []);
 
   // Load saved comparisons on mount
   useEffect(() => {
@@ -111,7 +152,7 @@ const Products = function ProductsPage() {
   useEffect(() => {
     const handleOpen3DModel = (event: CustomEvent) => {
       const { machineId } = event.detail;
-      const machine = virtualizedMachines.find((m) => m.id === machineId);
+      const machine = enhancedMachines.find((m) => m.id === machineId);
       if (machine) {
         setSelectedMachineFor3D(machine);
         setShow3DModel(true);
@@ -126,7 +167,7 @@ const Products = function ProductsPage() {
         handleOpen3DModel as EventListener
       );
     };
-  }, [virtualizedMachines]);
+  }, [enhancedMachines]);
 
   const handleSelectMachine = (machine: Machine, selected: boolean) => {
     if (selected) {
@@ -174,6 +215,108 @@ const Products = function ProductsPage() {
     setShow3DModel(true);
   };
 
+  // Quick Preview Modal Component
+  const QuickPreviewModal = ({ machine, onClose }: { machine: Machine; onClose: () => void }) => {
+    if (!machine) return null;
+
+    return (
+      <div 
+        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        onClick={onClose}
+      >
+        <div 
+          className="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-orange-500/20"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-white">{machine.name}</h2>
+              <Button
+                variant="ghost"
+                onClick={onClose}
+                className="text-gray-400 hover:text-white"
+              >
+                ✕
+              </Button>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Image Section */}
+              <div className="space-y-4">
+                <div className="bg-gray-800 rounded-xl p-4 aspect-[4/3] flex items-center justify-center">
+                  <img
+                    src={machine.imageUrl}
+                    alt={machine.name}
+                    className="rounded-lg object-contain max-h-full w-full"
+                  />
+                </div>
+                
+                {machine.has3DModel && (
+                  <Button 
+                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
+                    onClick={() => {
+                      handle3DView(machine);
+                      onClose();
+                    }}
+                  >
+                    <Eye className="mr-2 h-4 w-4" />
+                    View Full 3D Model
+                  </Button>
+                )}
+              </div>
+              
+              {/* Details Section */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-3">Description</h3>
+                  <p className="text-gray-300 leading-relaxed">{machine.description}</p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  {machine.powerSpec?.consumption && (
+                    <div className="bg-gray-800 p-4 rounded-lg">
+                      <div className="text-sm text-gray-400">Power</div>
+                      <div className="text-white font-semibold">{machine.powerSpec.consumption}</div>
+                    </div>
+                  )}
+                  
+                  {machine.category && (
+                    <div className="bg-gray-800 p-4 rounded-lg">
+                      <div className="text-sm text-gray-400">Category</div>
+                      <div className="text-white font-semibold capitalize">{machine.category}</div>
+                    </div>
+                  )}
+                  
+                  {machine.dimensions && (
+                    <div className="bg-gray-800 p-4 rounded-lg col-span-2">
+                      <div className="text-sm text-gray-400">Dimensions</div>
+                      <div className="text-white font-semibold text-sm">
+                        {machine.dimensions.length} × {machine.dimensions.width} × {machine.dimensions.height}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {machine.tags && machine.tags.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-400 mb-2">Features</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {machine.tags.map((tag, index) => (
+                        <Badge key={index} variant="secondary" className="bg-gray-700 text-gray-300">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <main className="flex-grow pt-24">
           <div className="container mx-auto px-4 py-12">
@@ -202,10 +345,10 @@ const Products = function ProductsPage() {
                   {/* Smart Category Navigation Sidebar */}
                   <div className="w-full xl:w-80 xl:flex-shrink-0">
                     <SmartCategoryNavigation
-                      machines={virtualizedMachines}
-                      selectedCategory={categoryFilter}
-                      onCategorySelect={setCategoryFilter}
-                      onSearchChange={setSearchTerm}
+                      machines={enhancedMachines}
+                      selectedCategory={filters.category}
+                      onCategorySelect={(category) => handleFilterChange('category', category)}
+                      onSearchChange={(search) => handleFilterChange('searchTerm', search)}
                       onSearchResults={(results) => {
                         // The search results are already filtered by the SmartCategoryNavigation
                         // The onSearchChange will update the main search term for useVirtualizedMachines
@@ -222,27 +365,49 @@ const Products = function ProductsPage() {
                     {/* Breadcrumb Navigation */}
                     <div className="mb-6">
                       <CategoryBreadcrumb
-                        currentCategoryId={categoryFilter}
-                        onCategorySelect={setCategoryFilter}
-                        onHomeClick={() => setCategoryFilter('all')}
+                        currentCategoryId={filters.category}
+                        onCategorySelect={(category) => handleFilterChange('category', category)}
+                        onHomeClick={() => handleFilterChange('category', 'all')}
                         className="text-sm"
                       />
+                      
+                      {/* Filter Status Bar */}
+                      {(filters.searchTerm || filters.category !== 'all' || enhancedMachines.length < totalCount) && (
+                        <div className="flex items-center justify-between mt-4 p-3 bg-gray-800/50 rounded-lg">
+                          <div className="text-sm text-gray-300">
+                            Showing {enhancedMachines.length} of {totalCount} machines
+                            {(filters.searchTerm || filters.category !== 'all') && (
+                              <span className="text-orange-400 ml-2">• Filtered</span>
+                            )}
+                          </div>
+                          {(filters.searchTerm || filters.category !== 'all') && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={handleClearFilters}
+                              className="text-orange-400 hover:text-orange-300 hover:bg-orange-500/10"
+                            >
+                              Clear filters
+                            </Button>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {/* Mobile Filter Panel */}
                     <MobileFilterPanel
-                      searchTerm={searchTerm}
-                      onSearchChange={setSearchTerm}
-                      categoryFilter={categoryFilter}
-                      onCategoryChange={setCategoryFilter}
-                      sortOption={sortOption}
-                      onSortChange={setSortOption}
-                      resultCount={virtualizedMachines.length}
+                      searchTerm={filters.searchTerm}
+                      onSearchChange={(search) => handleFilterChange('searchTerm', search)}
+                      categoryFilter={filters.category}
+                      onCategoryChange={(category) => handleFilterChange('category', category)}
+                      sortOption={filters.sortOption}
+                      onSortChange={(sort) => handleFilterChange('sortOption', sort)}
+                      resultCount={enhancedMachines.length}
                     />
 
 
                     {/* Machine listings with responsive virtualization */}
-                    {virtualizedMachines.length === 0 ? (
+                    {enhancedMachines.length === 0 ? (
                       <div className="text-center py-12">
                         <h3 className="text-xl font-medium mb-2">
                           No machines found
@@ -252,10 +417,7 @@ const Products = function ProductsPage() {
                         </p>
                         <Button
                           className="mt-4 border border-almona-light hover:bg-almona-light/10"
-                          onClick={() => {
-                            setSearchTerm("");
-                            setCategoryFilter("all");
-                          }}
+                          onClick={handleClearFilters}
                         >
                           Clear filters
                         </Button>
@@ -265,11 +427,12 @@ const Products = function ProductsPage() {
                         {/* Mobile-optimized grid */}
                         <div className="lg:hidden">
                           <MobileOptimizedGrid
-                            machines={virtualizedMachines}
+                            machines={enhancedMachines}
                             selectedMachines={selectedMachines}
                             onSelectMachine={handleSelectMachine}
                             onQuoteRequest={handleQuoteRequest}
                             on3DView={handle3DView}
+                            onQuickPreview={(machine) => setQuickPreviewMachine(machine)}
                             hasMore={hasMore}
                             onLoadMore={loadMore}
                             isLoading={isLoadingMore}
@@ -279,11 +442,12 @@ const Products = function ProductsPage() {
                         {/* Desktop virtualized grid */}
                         <div className="hidden lg:block">
                           <VirtualizedMachineGrid
-                            machines={virtualizedMachines}
+                            machines={enhancedMachines}
                             selectedMachines={selectedMachines}
                             onSelectMachine={handleSelectMachine}
                             onQuoteRequest={handleQuoteRequest}
                             on3DView={handle3DView}
+                            onQuickPreview={(machine) => setQuickPreviewMachine(machine)}
                             hasMore={hasMore}
                             onLoadMore={loadMore}
                             isLoading={isLoadingMore}
@@ -343,6 +507,14 @@ const Products = function ProductsPage() {
               </div>
             </div>
           </div>
+
+          {/* Quick Preview Modal */}
+          {quickPreviewMachine && (
+            <QuickPreviewModal
+              machine={quickPreviewMachine}
+              onClose={() => setQuickPreviewMachine(null)}
+            />
+          )}
 
           <CompareBar
             machines={selectedMachines}
