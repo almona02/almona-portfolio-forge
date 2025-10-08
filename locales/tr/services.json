@@ -172,5 +172,144 @@
   },
   "recently_viewed": {
     "title": "Son Görüntülenen Ürünler"
+  },
+  "packages": {
+    "title": "Hizmet Paketleri",
+    "subtitle": "Atölyeniz veya fabrikanız için mükemmel bakım planını seçin",
+    "basic": {
+      "name": "Temel Bakım",
+      "description": "Yeni başlayan küçük atölyeler için ideal",
+      "price": "12,000",
+      "currency": "TL",
+      "period": "ay",
+      "machines": "1-3 makine",
+      "features": [
+        "Aylık makine sağlık kontrolü",
+        "Temel yedek parça (%15 indirim)",
+        "Telefon/E-posta desteği (08:00-18:00)",
+        "48 saat yanıt süresi",
+        "Yılda 2 operatör eğitimi",
+        "Dijital makine pasaportu"
+      ],
+      "action": "Başla",
+      "ideal_for": "Küçük atölyeler"
+    },
+    "professional": {
+      "name": "Profesyonel Bakım",
+      "description": "Büyüyen fabrikalar için",
+      "price": "28,000",
+      "currency": "TL",
+      "period": "ay",
+      "machines": "4-10 makine",
+      "features": [
+        "Haftalık uzaktan izleme",
+        "Öncelikli yedek parça (%25 indirim)",
+        "7/24 acil hat",
+        "24 saat yerinde müdahale",
+        "Yılda 4 operatör eğitimi",
+        "Üretim optimizasyonu tavsiyesi",
+        "Gelişmiş makine teşhisi"
+      ],
+      "action": "Başla",
+      "ideal_for": "Büyüyen fabrikalar",
+      "popular": true
+    },
+    "enterprise": {
+      "name": "Kurumsal Bakım",
+      "description": "Büyük üretim tesisleri için",
+      "price": "Özel",
+      "currency": "",
+      "period": "fiyatlandırma",
+      "machines": "10+ makine",
+      "features": [
+        "Gerçek zamanlı AI öngörülü bakım",
+        "Özel teknik ekip",
+        "4 saat acil müdahale garantisi",
+        "Yedek parça (%40 indirim)",
+        "Sınırsız eğitim seansları",
+        "Özel üretim raporları",
+        "Teknoloji yükseltme danışmanlığı",
+        "İhracat uyumluluk desteği"
+      ],
+      "action": "Satış Ekibiyle İletişim",
+      "ideal_for": "Büyük üretim tesisleri"
+    }
+  },
+  "categories": {
+    "machine": {
+      "name": "Makine Hizmetleri",
+      "services": [
+        "Kurulum ve Ayarlama",
+        "Düzenli Bakım",
+        "Acil Onarımlar",
+        "Makine Optimizasyonu",
+        "Teknoloji Yükseltmeleri"
+      ]
+    },
+    "training": {
+      "name": "Eğitim Programları",
+      "services": [
+        "Temel Operatör Eğitimi",
+        "Gelişmiş İmalat",
+        "Kalite Kontrolü",
+        "Takım Lideri Programları",
+        "Güvenlik Sertifikasyonu"
+      ]
+    },
+    "support": {
+      "name": "Destek Hizmetleri",
+      "services": [
+        "Yedek Parça Tedariki",
+        "Üretim Danışmanlığı",
+        "Kalite Güvencesi",
+        "İhracat Hazırlığı",
+        "Özel Çözümler"
+      ]
+    }
+  },
+  "process": {
+    "title": "Hizmetimiz Nasıl Çalışır",
+    "steps": [
+      {
+        "step": "1",
+        "title": "Paket Seçin",
+        "description": "İhtiyaçlarınız için mükemmel hizmet planını seçin"
+      },
+      {
+        "step": "2",
+        "title": "Makine Kaydı",
+        "description": "Makinelerinizi dijital takip için kaydedin"
+      },
+      {
+        "step": "3",
+        "title": "Hizmet Aktivasyonu",
+        "description": "Özel destek ekibiniz atanır"
+      },
+      {
+        "step": "4",
+        "title": "Sürekli Bakım",
+        "description": "Düzenli bakım ve 7/24 destek"
+      }
+    ]
+  },
+  "cta": {
+    "title": "İmalat İşinizi Dönüştürmeye Hazır mısınız?",
+    "subtitle": "Makine bakımları için ALMONA'ya güvenen yüzlerce memnun alüminyum ve UPVC üreticisine katılın.",
+    "primary": "Ücretsiz Danışmanlık Alın",
+    "secondary": "Vaka Çalışmalarını Görüntüle"
+  },
+  "features": {
+    "health_check": "Makine Sağlık Kontrolü",
+    "spare_parts_discount": "Yedek Parça İndirimi",
+    "response_time": "Yanıt Süresi",
+    "support_hours": "Destek Saatleri",
+    "remote_monitoring": "Uzaktan İzleme",
+    "ai_predictive": "AI Öngörülü Bakım",
+    "dedicated_team": "Özel Ekip",
+    "custom_reports": "Özel Raporlar",
+    "training_sessions": "Eğitim Seansları",
+    "operator_training": "Operatör Eğitimi",
+    "production_optimization": "Üretim Optimizasyonu",
+    "export_support": "İhracat Desteği"
   }
 }
