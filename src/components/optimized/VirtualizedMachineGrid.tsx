@@ -30,7 +30,7 @@ export const VirtualizedMachineGrid = memo<VirtualizedMachineGridProps>(({
   // Simplified implementation without react-window dependency
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
         {machines.map((machine) => {
           const isSelected = selectedMachines.some(m => m.id === machine.id);
           return (
