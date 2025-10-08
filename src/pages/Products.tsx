@@ -6,10 +6,13 @@ import { MobileOptimizedGrid } from "@/components/optimized/MobileOptimizedGrid"
 import { MobileFilterPanel } from "@/components/optimized/MobileFilterPanel";
 import { QuoteRequestDialog } from "@/components/quotes/QuoteRequestDialog";
 import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
+import SmartCategoryNavigation from "@/components/products/SmartCategoryNavigation";
+import CategoryBreadcrumb from "@/components/products/CategoryBreadcrumb";
 import { useVirtualizedMachines } from "@/hooks/useVirtualizedMachines";
 import { useToast } from "@/hooks/useToast";
 import { useAuth } from "@/context/AuthContext";
 import { loadComparisons, saveComparison } from "@/lib/comparisonStorage";
+import { smartCategoryMapping } from "@/constants/smartCategories";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Input } from "@/shared/ui/ui/input";
@@ -36,7 +39,7 @@ interface SourceMachineLike {
 }
 import { Eye } from "lucide-react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, Suspense, useCallback } from "react";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 
 // UI wrapper union ensures compatibility with comparison + quote components expecting UiMachine shape
@@ -79,6 +82,12 @@ const Products = function ProductsPage() {
   const [wizardOpen, setWizardOpen] = useState(false);
   const scrolled = useScrollThreshold(48);
 
+  // Map smart category to legacy category for filtering
+  const getLegacyCategoryFilter = useCallback((smartCategory: string) => {
+    if (smartCategory === 'all') return 'all';
+    return smartCategoryMapping[smartCategory] || smartCategory;
+  }, []);
+
   // Use virtualized machines hook for better performance
   const {
     machines: virtualizedMachines,
@@ -88,7 +97,7 @@ const Products = function ProductsPage() {
     isLoading: isLoadingMore
   } = useVirtualizedMachines({
     searchTerm,
-    categoryFilter,
+    categoryFilter: getLegacyCategoryFilter(categoryFilter),
     sortOption,
     pageSize: 12
   });
@@ -189,9 +198,37 @@ const Products = function ProductsPage() {
               </TabsList>
 
               <TabsContent value="yilmaz">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <div className="flex flex-col xl:flex-row gap-6 xl:gap-8">
+                  {/* Smart Category Navigation Sidebar */}
+                  <div className="w-full xl:w-80 xl:flex-shrink-0">
+                    <SmartCategoryNavigation
+                      machines={virtualizedMachines}
+                      selectedCategory={categoryFilter}
+                      onCategorySelect={setCategoryFilter}
+                      onSearchChange={setSearchTerm}
+                      onSearchResults={(results) => {
+                        // The search results are already filtered by the SmartCategoryNavigation
+                        // The onSearchChange will update the main search term for useVirtualizedMachines
+                      }}
+                      className="sticky top-24"
+                      showSearch={true}
+                      showRecommendations={true}
+                      showPopular={true}
+                      desktopMode="dropdown"
+                    />
+                  </div>
                   
-                  <div className="lg:col-span-4">
+                  <div className="flex-1 min-w-0">
+                    {/* Breadcrumb Navigation */}
+                    <div className="mb-6">
+                      <CategoryBreadcrumb
+                        currentCategoryId={categoryFilter}
+                        onCategorySelect={setCategoryFilter}
+                        onHomeClick={() => setCategoryFilter('all')}
+                        className="text-sm"
+                      />
+                    </div>
+
                     {/* Mobile Filter Panel */}
                     <MobileFilterPanel
                       searchTerm={searchTerm}
@@ -203,47 +240,6 @@ const Products = function ProductsPage() {
                       resultCount={virtualizedMachines.length}
                     />
 
-                    {/* Desktop Filter & sorting controls */}
-                    <div className={`hidden lg:flex sticky top-16 z-40 flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 rounded-md p-4 shadow-md border transition-colors ${scrolled ? 'border-orange-500/40 shadow-orange-500/10' : 'border-gray-800/70'} bg-[linear-gradient(145deg,rgba(0,0,0,0.92)_0%,rgba(18,18,18,0.92)_50%,rgba(32,32,32,0.88)_100%)] backdrop-blur`}> 
-                      <div className="w-full md:w-1/2">
-                        <Input
-                          placeholder="Search machines..."
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          className="bg-black/70 hover:bg-black/80 focus:bg-black/90 border-gray-600 focus:border-orange-500 placeholder:text-gray-400 transition-colors"
-                        />
-                      </div>
-                      <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                          <SelectTrigger className="w-[180px] bg-black/70 border-gray-600 focus:border-orange-500 focus:ring-0 hover:bg-black/80 transition-colors">
-                            <SelectValue placeholder="Filter by category" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-gray-700">
-                            <SelectItem value="all">All Categories</SelectItem>
-                            <SelectItem value="cutting-machines">Cutting Machines</SelectItem>
-                            <SelectItem value="welding-machines">Welding Machines</SelectItem>
-                            <SelectItem value="processing-centers">Processing Centers</SelectItem>
-                            <SelectItem value="milling-machines">Milling Machines</SelectItem>
-                            <SelectItem value="cnc-machines">CNC Machines</SelectItem>
-                            <SelectItem value="production-lines">Production Lines</SelectItem>
-                            <SelectItem value="cleaning-machines">Cleaning Machines</SelectItem>
-                            <SelectItem value="routing-machines">Routing Machines</SelectItem>
-                            <SelectItem value="accessories">Accessories</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Select value={sortOption} onValueChange={setSortOption}>
-                          <SelectTrigger className="w-[180px] bg-black/70 border-gray-600 focus:border-orange-500 focus:ring-0 hover:bg-black/80 transition-colors">
-                            <SelectValue placeholder="Sort by" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-gray-700">
-                            <SelectItem value="featured">Featured</SelectItem>
-                            <SelectItem value="name-asc">Name (A-Z)</SelectItem>
-                            <SelectItem value="name-desc">Name (Z-A)</SelectItem>
-                            <SelectItem value="newest">Newest</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
 
                     {/* Machine listings with responsive virtualization */}
                     {virtualizedMachines.length === 0 ? (

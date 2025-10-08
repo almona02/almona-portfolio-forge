@@ -115,5 +115,144 @@
   },
   "recently_viewed": {
     "title": "Recently Viewed Products"
+  },
+  "packages": {
+    "title": "Service Packages",
+    "subtitle": "Choose the perfect care plan for your workshop or factory",
+    "basic": {
+      "name": "Basic Care",
+      "description": "Perfect for small workshops starting out",
+      "price": "3,500",
+      "currency": "EGP",
+      "period": "month",
+      "machines": "1-3 machines",
+      "features": [
+        "Monthly machine health check",
+        "Basic spare parts (15% discount)",
+        "Phone/Email support (8AM-6PM)",
+        "48-hour response time",
+        "2 operator training sessions/year",
+        "Digital machine passport"
+      ],
+      "action": "Get Started",
+      "ideal_for": "Small workshops"
+    },
+    "professional": {
+      "name": "Professional Care",
+      "description": "For growing factories",
+      "price": "8,500",
+      "currency": "EGP",
+      "period": "month",
+      "machines": "4-10 machines",
+      "features": [
+        "Weekly remote monitoring",
+        "Priority spare parts (25% discount)",
+        "24/7 emergency hotline",
+        "24-hour onsite response",
+        "4 operator training sessions/year",
+        "Production optimization advice",
+        "Advanced machine diagnostics"
+      ],
+      "action": "Get Started",
+      "ideal_for": "Growing factories",
+      "popular": true
+    },
+    "enterprise": {
+      "name": "Enterprise Care",
+      "description": "For large production facilities",
+      "price": "Custom",
+      "currency": "",
+      "period": "pricing",
+      "machines": "10+ machines",
+      "features": [
+        "Real-time AI predictive maintenance",
+        "Dedicated technical team",
+        "4-hour emergency response guarantee",
+        "Spare parts (40% discount)",
+        "Unlimited training sessions",
+        "Custom production reports",
+        "Technology upgrade consulting",
+        "Export compliance support"
+      ],
+      "action": "Contact Sales",
+      "ideal_for": "Large production facilities"
+    }
+  },
+  "categories": {
+    "machine": {
+      "name": "Machine Services",
+      "services": [
+        "Installation & Setup",
+        "Regular Maintenance",
+        "Emergency Repairs",
+        "Machine Optimization",
+        "Technology Upgrades"
+      ]
+    },
+    "training": {
+      "name": "Training Programs",
+      "services": [
+        "Basic Operator Training",
+        "Advanced Fabrication",
+        "Quality Control",
+        "Team Leader Programs",
+        "Safety Certification"
+      ]
+    },
+    "support": {
+      "name": "Support Services",
+      "services": [
+        "Spare Parts Supply",
+        "Production Consulting",
+        "Quality Assurance",
+        "Export Preparation",
+        "Custom Solutions"
+      ]
+    }
+  },
+  "process": {
+    "title": "How Our Service Works",
+    "steps": [
+      {
+        "step": "1",
+        "title": "Choose Package",
+        "description": "Select the perfect service plan for your needs"
+      },
+      {
+        "step": "2",
+        "title": "Machine Registration",
+        "description": "Register your machines for digital tracking"
+      },
+      {
+        "step": "3",
+        "title": "Service Activation",
+        "description": "Your dedicated support team is assigned"
+      },
+      {
+        "step": "4",
+        "title": "Ongoing Care",
+        "description": "Regular maintenance and 24/7 support"
+      }
+    ]
+  },
+  "cta": {
+    "title": "Ready to Transform Your Fabrication Business?",
+    "subtitle": "Join hundreds of satisfied aluminum and UPVC fabricators who trust ALMONA for their machine care.",
+    "primary": "Get Free Consultation",
+    "secondary": "View Case Studies"
+  },
+  "features": {
+    "health_check": "Machine Health Check",
+    "spare_parts_discount": "Spare Parts Discount",
+    "response_time": "Response Time",
+    "support_hours": "Support Hours",
+    "remote_monitoring": "Remote Monitoring",
+    "ai_predictive": "AI Predictive Maintenance",
+    "dedicated_team": "Dedicated Team",
+    "custom_reports": "Custom Reports",
+    "training_sessions": "Training Sessions",
+    "operator_training": "Operator Training",
+    "production_optimization": "Production Optimization",
+    "export_support": "Export Support"
   }
 }

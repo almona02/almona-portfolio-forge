@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { EmergencyServiceDialog } from "@/components/services/EmergencyServiceDialog";
 import { FormSkeleton } from "@/components/ui/FormSkeleton";
+import { ServiceViewToggle } from "@/components/services/ServiceViewToggle";
+import { SimpleServicesView } from "@/components/services/SimpleServicesView";
 import { lazy, Suspense } from "react";
 
 // Lazy loaded components
@@ -93,6 +95,7 @@ interface SensorData {
 
 const Services = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [viewMode, setViewMode] = useState<'simple' | 'advanced'>('simple');
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -258,6 +261,24 @@ const Services = () => {
     setTicketWizardOpen(true);
   };
 
+  const handlePackageSelection = (packageId: string) => {
+    if (!user) {
+      navigate('/login', { state: { redirect: '/services', package: packageId } });
+      return;
+    }
+
+    // Create a service package ticket
+    const packageTicketData = {
+      type: 'service' as const,
+      priority: packageId === 'enterprise' ? 'high' as const : 'medium' as const,
+      title: `Service Package Request - ${packageId}`,
+      description: `Customer interested in ${packageId} service package. Please contact for consultation.`
+    };
+
+    setTicketInitialValues(packageTicketData);
+    setTicketWizardOpen(true);
+  };
+
   const getStatusColor = (status: MachineHealth['status']) => {
     switch (status) {
       case 'optimal': return 'text-green-400';
@@ -286,28 +307,36 @@ const Services = () => {
         transition={{ duration: 0.5, delay: 0.2 }}
         className="container mx-auto px-4 py-12"
       >
-        {/* Enhanced Hero Section with AI Focus */}
-        <div className="mb-16 text-center">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.7 }}
-            className="inline-flex items-center gap-3 mb-6 px-6 py-3 rounded-full bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20"
-          >
-            <Brain className="h-6 w-6 text-orange-400" />
-            <Badge variant="secondary" className="text-sm font-semibold">
-              AI-POWERED PREDICTIVE MAINTENANCE
-            </Badge>
-          </motion.div>
-          
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
-            Industrial AI Services Hub
-          </h1>
-          <p className="text-xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
-            Machine learning-driven predictive maintenance, real-time equipment monitoring, 
-            and intelligent lifecycle management for aluminum window and door manufacturing systems.
-          </p>
-        </div>
+        {/* View Toggle */}
+        <ServiceViewToggle viewMode={viewMode} onViewChange={setViewMode} />
+
+        {/* Conditional Rendering */}
+        {viewMode === 'simple' ? (
+          <SimpleServicesView onPackageSelect={handlePackageSelection} />
+        ) : (
+          <>
+            {/* Enhanced Hero Section with AI Focus */}
+            <div className="mb-16 text-center">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.7 }}
+                className="inline-flex items-center gap-3 mb-6 px-6 py-3 rounded-full bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20"
+              >
+                <Brain className="h-6 w-6 text-orange-400" />
+                <Badge variant="secondary" className="text-sm font-semibold">
+                  AI-POWERED PREDICTIVE MAINTENANCE
+                </Badge>
+              </motion.div>
+              
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                Industrial AI Services Hub
+              </h1>
+              <p className="text-xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
+                Machine learning-driven predictive maintenance, real-time equipment monitoring, 
+                and intelligent lifecycle management for aluminum window and door manufacturing systems.
+              </p>
+            </div>
 
         {/* Emergency Service Dialog */}
         <EmergencyServiceDialog 
@@ -657,6 +686,8 @@ const Services = () => {
             </motion.div>
           </TabsContent>
         </Tabs>
+          </>
+        )}
       </motion.div>
 
       {/* Dialogs */}

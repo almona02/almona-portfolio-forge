@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { yilmazMachines } from '@/constants/yilmazMachines';
+import { intelligentSearch, categorizeMachine } from '@/constants/smartCategories';
 import type { Machine } from '@/constants/yilmazMachines';
 
 interface UseVirtualizedMachinesOptions {
@@ -28,14 +29,24 @@ export function useVirtualizedMachines({
 
   // Memoize filtered and sorted machines to prevent unnecessary recalculations
   const filteredAndSortedMachines = useMemo(() => {
-    const filtered = yilmazMachines.filter((machine) => {
-      const matchesSearch = 
-        machine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        machine.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = 
-        categoryFilter === 'all' || machine.category === categoryFilter;
-      return matchesSearch && matchesCategory;
-    });
+    let filtered = yilmazMachines;
+
+    // Apply AI-powered search if search term exists
+    if (searchTerm.trim()) {
+      filtered = intelligentSearch(searchTerm, filtered);
+    }
+
+    // Apply category filter
+    if (categoryFilter !== 'all') {
+      filtered = filtered.filter((machine) => {
+        // Check both legacy category and smart category
+        const legacyMatch = machine.category === categoryFilter;
+        const smartCategory = categorizeMachine(machine);
+        const smartMatch = smartCategory === categoryFilter;
+        
+        return legacyMatch || smartMatch;
+      });
+    }
 
     return [...filtered].sort((a, b) => {
       switch (sortOption) {

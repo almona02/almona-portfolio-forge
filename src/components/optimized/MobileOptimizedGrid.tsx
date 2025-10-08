@@ -23,15 +23,15 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
   onLoadMore,
   isLoading
 }) => {
-  // Optimize grid layout for mobile devices
+  // Optimize grid layout for mobile devices with better aspect ratio support
   const gridClasses = useMemo(() => {
     return `
       grid gap-4
       grid-cols-1
       sm:grid-cols-2
-      lg:grid-cols-3
-      xl:grid-cols-4
-      2xl:grid-cols-5
+      lg:grid-cols-2
+      xl:grid-cols-2
+      2xl:grid-cols-3
     `.trim().replace(/\s+/g, ' ');
   }, []);
 

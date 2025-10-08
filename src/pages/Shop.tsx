@@ -22,6 +22,9 @@ import { useAuth } from "@/context/AuthContext";
 import { IndustrialProductCard } from "@/components/shop/IndustrialProductCard";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
 import { RecentlyViewedProducts } from "@/components/shop/RecentlyViewedProducts";
+import SmartCategoryNavigation from "@/components/products/SmartCategoryNavigation";
+import CategoryBreadcrumb from "@/components/products/CategoryBreadcrumb";
+import SmartCategoryFilter from "@/components/products/SmartCategoryFilter";
 // import { EquipmentComparisonTool } from "@/components/shop/EquipmentComparisonTool";
 const AiEquipmentAdvisor = lazy(() => import("@/components/shop/ai-advisor/AiEquipmentAdvisor"));
 import FreightCalculator from "@/components/shop/FreightCalculator";
@@ -45,6 +48,7 @@ import { Slider } from "@/shared/ui/ui/slider";
 import { yilmazMachines, yilmazParts } from "@/constants/productsData";
 import { yilmazMachines as yilmazMachinesSpecs } from "@/constants/yilmazMachines";
 import { uniqueProducts } from "@/constants/uniqueProductsData";
+import { smartCategoryMapping } from "@/constants/smartCategories";
 import type { Database, ProductCategory } from "@/types/database";
 import type { Machine as TypesMachine } from "@/types";
 
@@ -420,6 +424,12 @@ const Shop = () => {
     }).format(price);
   }, []);
 
+  // Map smart category to legacy category for filtering
+  const getLegacyCategoryFilter = useCallback((smartCategory: string) => {
+    if (smartCategory === 'all') return 'all';
+    return smartCategoryMapping[smartCategory] || smartCategory;
+  }, []);
+
   // Handle filter changes
   const handleFilterChange = useCallback((key: keyof ShopFilters, value: string | number | [number, number] | boolean) => {
     setFilters(prev => ({ ...prev, [key]: value }));
@@ -503,7 +513,8 @@ const Shop = () => {
     }
 
     if (filters.category !== "all") {
-      filtered = filtered.filter(p => p.category === filters.category);
+      const legacyCategory = getLegacyCategoryFilter(filters.category);
+      filtered = filtered.filter(p => p.category === legacyCategory);
     }
 
     if (filters.inStock) {
@@ -618,17 +629,29 @@ const Shop = () => {
 
         {/* Main Shop Content */}
         <section className="container mx-auto px-4 py-12">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Filters Sidebar */}
+          <div className="flex flex-col xl:flex-row gap-6 xl:gap-8">
+            {/* Smart Category Navigation Sidebar */}
             <motion.aside 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="lg:w-1/4"
+              className="w-full xl:w-80 xl:flex-shrink-0"
             >
-              <div className="bg-slate-800 p-6 rounded-lg border border-slate-600 sticky top-24 shadow-xl">
+              <SmartCategoryNavigation
+                machines={enhancedProducts}
+                selectedCategory={filters.category}
+                onCategorySelect={(categoryId) => handleFilterChange('category', categoryId)}
+                className="sticky top-24"
+                showSearch={true}
+                showRecommendations={true}
+                showPopular={true}
+                desktopMode="dropdown"
+              />
+              
+              {/* Additional Filters */}
+              <div className="bg-slate-800 p-6 rounded-lg border border-slate-600 sticky top-24 shadow-xl max-h-[calc(100vh-8rem)] overflow-y-auto mt-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold">Filters</h3>
+                  <h3 className="text-lg font-semibold">Additional Filters</h3>
                   <Button 
                     onClick={() => setFilters({
                       searchTerm: "",
@@ -662,29 +685,9 @@ const Shop = () => {
                     </div>
                   </div>
 
-                  {/* Categories */}
-                  <div>
-                    <Label className="mb-3 block">Categories</Label>
-                    <Select 
-                      value={filters.category} 
-                      onValueChange={(value) => handleFilterChange('category', value)}
-                    >
-                      <SelectTrigger className="bg-slate-700 border-slate-500">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-600">
-                        {categories.map(category => (
-                          <SelectItem key={category.id} value={category.id} className="text-white hover:bg-slate-700">
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
                   {/* Filters */}
                   <div className="space-y-3">
-                    <Label className="block">Filters</Label>
+                    <Label className="block">Availability</Label>
                     <div className="flex items-center space-x-2">
                       <Checkbox 
                         id="inStock" 
@@ -758,17 +761,27 @@ const Shop = () => {
             </motion.aside>
 
             {/* Main Content */}
-            <div className="lg:w-3/4">
+            <div className="flex-1 min-w-0">
+              {/* Breadcrumb Navigation */}
+              <div className="mb-6">
+                <CategoryBreadcrumb
+                  currentCategoryId={filters.category}
+                  onCategorySelect={(categoryId) => handleFilterChange('category', categoryId)}
+                  onHomeClick={() => handleFilterChange('category', 'all')}
+                  className="text-sm"
+                />
+              </div>
+
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as ProductTab)}>
               {/* Header with tabs and controls */}
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="bg-almona-darker p-6 rounded-lg border border-almona-light/20 mb-8"
+                className="bg-almona-darker p-4 lg:p-6 rounded-lg border border-almona-light/20 mb-8"
               >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                  <h2 className="text-2xl font-bold">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+                  <h2 className="text-xl lg:text-2xl font-bold">
                     {activeTab === 'industrial-machines' && 'Industrial Machinery'}
                     {activeTab === 'industrial-parts' && 'Spare Parts'}
                     {activeTab === 'egypt-standards' && 'Egyptian Standards'}
@@ -776,7 +789,7 @@ const Shop = () => {
                     {activeTab === 'local-support' && 'Technical Support'}
                   </h2>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
                     <div className="flex bg-almona-dark rounded-lg p-1">
                       <Button
                         onClick={() => setViewMode('grid')}
@@ -796,7 +809,7 @@ const Shop = () => {
                       value={filters.sortBy} 
                       onValueChange={(value) => handleFilterChange('sortBy', value as ShopFilters['sortBy'])}
                     >
-                      <SelectTrigger className="w-[180px] bg-almona-dark border-almona-light/30">
+                      <SelectTrigger className="w-full sm:w-[180px] bg-almona-dark border-almona-light/30">
                         <SelectValue placeholder="Sort by" />
                       </SelectTrigger>
                       <SelectContent className="bg-slate-800 border-slate-600">
@@ -811,8 +824,8 @@ const Shop = () => {
                   </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-grow relative">
+                <div className="flex flex-col lg:flex-row gap-4">
+                  <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                     <Input
                       placeholder="Search machinery, parts, accessories..."
@@ -822,9 +835,9 @@ const Shop = () => {
                     />
                   </div>
 
-                  <TabsList className="bg-almona-dark border border-almona-light/20">
+                  <TabsList className="bg-almona-dark border border-almona-light/20 w-full lg:w-auto">
                     {menuData.map((menu) => (
-                      <TabsTrigger key={menu.key} value={menu.key} className="flex items-center gap-2">
+                      <TabsTrigger key={menu.key} value={menu.key} className="flex items-center gap-2 flex-1 lg:flex-none">
                         {menu.icon}
                         <span className="hidden sm:inline">{menu.label}</span>
                       </TabsTrigger>
