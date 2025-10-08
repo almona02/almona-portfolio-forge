@@ -26,6 +26,9 @@ const Contact = lazy(() => import("./pages/Contact.tsx"));
 const About = lazy(() => import("./pages/About.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
+// 3D Gallery - lazy loaded
+const Model3DGallery = lazy(() => import("./pages/Model3DGallery.tsx"));
+
 // Test components - lazy loaded
 const LocalizationTest = lazy(() => import("./components/test/LocalizationTest.tsx"));
 
@@ -146,6 +149,7 @@ const App = () => (
                   <Route path="/products/configurator" element={<Suspense fallback={getLoadingComponent('/products')}><Products /></Suspense>} />
                   <Route path="/products/ar-viewer" element={<Suspense fallback={getLoadingComponent('/products')}><Products /></Suspense>} />
                   <Route path="/products/profiles" element={<Suspense fallback={getLoadingComponent('/products')}><Products /></Suspense>} />
+                  <Route path="/products/3d-gallery" element={<Suspense fallback={getLoadingComponent('/products/3d-gallery')}><Model3DGallery /></Suspense>} />
                   <Route path="/products/machines/:machineId" element={<Suspense fallback={getLoadingComponent('/products')}><MachineDetail /></Suspense>} />
                   <Route path="/products/profiles/:profileId" element={<Suspense fallback={getLoadingComponent('/products')}><ProfileDetail /></Suspense>} />
                   
