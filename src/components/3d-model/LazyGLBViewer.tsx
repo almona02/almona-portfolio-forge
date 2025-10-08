@@ -2,9 +2,9 @@ import React, { Suspense, lazy } from 'react';
 import { Model3DLoading } from '@/components/ui/loading/Model3DLoading';
 
 // Lazy load the heavy 3D components
-const EnhancedGLBViewer = lazy(() => import('./EnhancedGLBViewer').then(module => ({ default: module.EnhancedGLBViewer })));
-const OptimizedGLBViewer = lazy(() => import('./OptimizedGLBViewer').then(module => ({ default: module.OptimizedGLBViewer })));
-const UniversalARViewer = lazy(() => import('./UniversalARViewer').then(module => ({ default: module.UniversalARViewer })));
+const EnhancedGLBViewer = lazy(() => import('./EnhancedGLBViewer'));
+const OptimizedGLBViewer = lazy(() => import('./OptimizedGLBViewer'));
+const UniversalARViewer = lazy(() => import('./UniversalARViewer'));
 
 // Loading fallback component
 const ModelLoadingFallback: React.FC<{ message?: string; variant?: 'default' | 'minimal' | 'detailed' }> = ({ 
