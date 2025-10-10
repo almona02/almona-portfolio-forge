@@ -7,6 +7,7 @@ import React from 'react';
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
 import ConditionalNavbar from '../ConditionalNavbar';
 import Footer from '../Footer';
+import { WhatsAppContact } from '@/components/contact/WhatsAppContact';
 
 interface DefaultLayoutProps {
   children: React.ReactNode;
@@ -37,6 +38,13 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
 
       {/* Footer */}
       <Footer />
+
+      {/* WhatsApp Contact */}
+      <WhatsAppContact 
+        phoneNumber="+201234567890"
+        businessHours="8AM - 6PM (GMT+2)"
+        position="bottom-right"
+      />
     </div>
   );
 };
