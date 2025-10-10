@@ -1,0 +1,107 @@
+{
+  "title": "Nos Services",
+  "subtitle": "Solutions complètes pour votre industrie",
+  "installation": {
+    "title": "Installation",
+    "description": "Installation professionnelle de machines industrielles",
+    "features": [
+      "Configuration sur site",
+      "Test et calibrage",
+      "Formation des opérateurs",
+      "Documentation complète"
+    ]
+  },
+  "maintenance": {
+    "title": "Maintenance",
+    "description": "Maintenance préventive et corrective",
+    "features": [
+      "Maintenance préventive programmée",
+      "Dépannage d'urgence 24/7",
+      "Pièces de rechange originales",
+      "Rapports détaillés"
+    ]
+  },
+  "training": {
+    "title": "Formation",
+    "description": "Formation complète pour vos équipes",
+    "features": [
+      "Formation théorique",
+      "Formation pratique",
+      "Certification des opérateurs",
+      "Support continu"
+    ]
+  },
+  "consultation": {
+    "title": "Consultation",
+    "description": "Conseil d'experts pour votre projet",
+    "features": [
+      "Analyse des besoins",
+      "Recommandations personnalisées",
+      "Planification de projet",
+      "Optimisation des processus"
+    ]
+  },
+  "support": {
+    "title": "Support Technique",
+    "description": "Support technique professionnel",
+    "features": [
+      "Support téléphonique",
+      "Assistance à distance",
+      "Documentation technique",
+      "Mises à jour logicielles"
+    ]
+  },
+  "warranty": {
+    "title": "Garantie",
+    "description": "Garantie complète et étendue",
+    "features": [
+      "Garantie fabricant",
+      "Extension de garantie",
+      "Réparations sous garantie",
+      "Remplacement si nécessaire"
+    ]
+  },
+  "packages": {
+    "basic": {
+      "title": "Package Basique",
+      "description": "Services essentiels pour débuter",
+      "price": "À partir de €2,500",
+      "features": [
+        "Installation de base",
+        "Formation initiale",
+        "Garantie 12 mois",
+        "Support téléphonique"
+      ]
+    },
+    "standard": {
+      "title": "Package Standard", 
+      "description": "Solution complète pour la plupart des besoins",
+      "price": "À partir de €4,500",
+      "features": [
+        "Installation complète",
+        "Formation avancée",
+        "Maintenance préventive",
+        "Garantie 24 mois",
+        "Support prioritaire"
+      ]
+    },
+    "premium": {
+      "title": "Package Premium",
+      "description": "Service complet haut de gamme",
+      "price": "À partir de €7,500",
+      "features": [
+        "Installation experte",
+        "Formation personnalisée",
+        "Maintenance complète",
+        "Garantie 36 mois",
+        "Support 24/7",
+        "Pièces de rechange incluses"
+      ]
+    }
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "description": "Discutons de vos besoins en services",
+    "cta": "Demander un devis"
+  }
+}

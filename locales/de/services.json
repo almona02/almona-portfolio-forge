@@ -1,0 +1,107 @@
+{
+  "title": "Unsere Dienstleistungen",
+  "subtitle": "Komplette Lösungen für Ihre Industrie",
+  "installation": {
+    "title": "Installation",
+    "description": "Professionelle Installation von Industriemaschinen",
+    "features": [
+      "Vor-Ort-Konfiguration",
+      "Test und Kalibrierung",
+      "Bedienerschulung",
+      "Vollständige Dokumentation"
+    ]
+  },
+  "maintenance": {
+    "title": "Wartung",
+    "description": "Vorbeugende und korrektive Wartung",
+    "features": [
+      "Geplante vorbeugende Wartung",
+      "24/7 Notfall-Support",
+      "Original-Ersatzteile",
+      "Detaillierte Berichte"
+    ]
+  },
+  "training": {
+    "title": "Schulung",
+    "description": "Umfassende Schulung für Ihre Teams",
+    "features": [
+      "Theoretische Ausbildung",
+      "Praktische Schulung",
+      "Bedienerzertifizierung",
+      "Kontinuierlicher Support"
+    ]
+  },
+  "consultation": {
+    "title": "Beratung",
+    "description": "Expertenberatung für Ihr Projekt",
+    "features": [
+      "Bedarfsanalyse",
+      "Maßgeschneiderte Empfehlungen",
+      "Projektplanung",
+      "Prozessoptimierung"
+    ]
+  },
+  "support": {
+    "title": "Technischer Support",
+    "description": "Professioneller technischer Support",
+    "features": [
+      "Telefon-Support",
+      "Remote-Unterstützung",
+      "Technische Dokumentation",
+      "Software-Updates"
+    ]
+  },
+  "warranty": {
+    "title": "Garantie",
+    "description": "Umfassende und erweiterte Garantie",
+    "features": [
+      "Herstellergarantie",
+      "Garantieverlängerung",
+      "Garantiereparaturen",
+      "Ersatz bei Bedarf"
+    ]
+  },
+  "packages": {
+    "basic": {
+      "title": "Basis-Paket",
+      "description": "Wesentliche Services für den Einstieg",
+      "price": "Ab €2.500",
+      "features": [
+        "Grundinstallation",
+        "Grundschulung",
+        "12 Monate Garantie",
+        "Telefon-Support"
+      ]
+    },
+    "standard": {
+      "title": "Standard-Paket",
+      "description": "Komplettlösung für die meisten Anforderungen",
+      "price": "Ab €4.500",
+      "features": [
+        "Vollständige Installation",
+        "Erweiterte Schulung",
+        "Vorbeugende Wartung",
+        "24 Monate Garantie",
+        "Prioritäts-Support"
+      ]
+    },
+    "premium": {
+      "title": "Premium-Paket",
+      "description": "Kompletter Premium-Service",
+      "price": "Ab €7.500",
+      "features": [
+        "Experten-Installation",
+        "Individuelle Schulung",
+        "Vollständige Wartung",
+        "36 Monate Garantie",
+        "24/7 Support",
+        "Ersatzteile inklusive"
+      ]
+    }
+  },
+  "contact": {
+    "title": "Kontaktieren Sie uns",
+    "description": "Lassen Sie uns über Ihre Service-Anforderungen sprechen",
+    "cta": "Angebot anfordern"
+  }
+}

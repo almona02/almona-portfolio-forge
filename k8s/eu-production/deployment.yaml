@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: almona-api-eu
+  namespace: almona-industrial-eu
+  labels:
+    app: almona-api
+    version: v2.0.0
+    region: eu-west-1
+    compliance: gdpr
+spec:
+  replicas: 5  # Higher replica count for EU market
+  selector:
+    matchLabels:
+      app: almona-api
+      region: eu-west-1
+  template:
+    metadata:
+      labels:
+        app: almona-api
+        version: v2.0.0
+        region: eu-west-1
+        compliance: gdpr
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8001"
+        prometheus.io/path: "/metrics"
+        almona.com/data-residency: "eu"
+    spec:
+      containers:
+      - name: almona-api
+        image: almona-industrial-api:eu-production
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 8001
+          name: metrics
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: REGION
+          value: "eu-west-1"
+        - name: DATA_RESIDENCY
+          value: "eu"
+        - name: GDPR_COMPLIANCE
+          value: "enabled"
+        - name: SUPPORTED_LANGUAGES
+          value: "en,fr,de,ar,tr"
+        envFrom:
+        - configMapRef:
+            name: almona-config-eu
+        - secretRef:
+            name: almona-secrets-eu
+        resources:
+          requests:
+            memory: "768Mi"  # Increased for EU market
+            cpu: "350m"
+          limits:
+            memory: "1.5Gi"
+            cpu: "750m"
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health/ready
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 15
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: logs
+          mountPath: /app/logs
+        - name: gdpr-config
+          mountPath: /app/config/gdpr
+          readOnly: true
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}
+      - name: gdpr-config
+        configMap:
+          name: gdpr-compliance-config
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 45
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - almona-api
+              topologyKey: kubernetes.io/hostname
+      nodeSelector:
+        region: eu-west-1
+        compliance: gdpr

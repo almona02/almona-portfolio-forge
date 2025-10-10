@@ -1,0 +1,77 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: almona-ingress-eu
+  namespace: almona-industrial-eu
+  labels:
+    app: almona-api
+    region: eu-west-1
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    
+    # GDPR and Security Headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header X-Frame-Options "SAMEORIGIN" always;
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-XSS-Protection "1; mode=block" always;
+      add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+      add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.googleapis.com *.gstatic.com; style-src 'self' 'unsafe-inline' *.googleapis.com; img-src 'self' data: https:; font-src 'self' *.googleapis.com *.gstatic.com; connect-src 'self' *.supabase.co wss://*.supabase.co" always;
+      
+      # GDPR Cookie Banner
+      add_header Set-Cookie "gdpr-region=eu; Path=/; SameSite=Strict; Secure" always;
+    
+    # Rate Limiting for EU Region
+    nginx.ingress.kubernetes.io/rate-limit: "1000"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    
+    # Geographic Routing
+    nginx.ingress.kubernetes.io/server-snippet: |
+      set $eu_region "true";
+      set $gdpr_required "true";
+      
+    # Load Balancing
+    nginx.ingress.kubernetes.io/load-balance: "ewma"
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$request_uri"
+    
+spec:
+  tls:
+  - hosts:
+    - eu.almona.com
+    - europe.almona.com
+    - almona.eu
+    secretName: almona-eu-tls
+  rules:
+  - host: eu.almona.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: almona-service-eu
+            port:
+              number: 80
+  - host: europe.almona.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: almona-service-eu
+            port:
+              number: 80
+  - host: almona.eu
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: almona-service-eu
+            port:
+              number: 80
