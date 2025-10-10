@@ -1,0 +1,261 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "about": "Über Uns",
+    "products": "Produkte",
+    "services": "Dienstleistungen",
+    "contact": "Kontakt",
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "portal": "Kundenportal",
+    "shop": "Shop",
+    "support": "Support"
+  },
+  "home": {
+    "hero": {
+      "title": "Exzellente Industrielle Lösungen",
+      "subtitle": "Marktführer für Industrieanlagen für Aluminium und UPVC im Nahen Osten",
+      "cta": "Unsere Lösungen Entdecken",
+      "cta_secondary": "Angebot Anfordern"
+    },
+    "features": {
+      "title": "Warum Almona Wählen",
+      "digital_twin": {
+        "title": "Digitale Überwachung",
+        "description": "Echtzeitüberwachung Ihrer Maschinen mit künstlicher Intelligenz"
+      },
+      "ai_support": {
+        "title": "KI-Support 24/7",
+        "description": "Intelligenter technischer Assistent jederzeit verfügbar"
+      },
+      "predictive": {
+        "title": "Predictive Maintenance",
+        "description": "Ausfälle verhindern, bevor sie auftreten"
+      }
+    }
+  },
+  "portal": {
+    "welcome": "Willkommen, {{name}}",
+    "dashboard": "Dashboard",
+    "machines": "Meine Maschinen",
+    "health": "Gesundheitsstatus",
+    "support": "Support-Tickets",
+    "documents": "Dokumente",
+    "settings": "Einstellungen",
+    "machine_health": {
+      "title": "Maschinen-Gesundheitsstatus",
+      "overall_health": "Gesamtgesundheit",
+      "temperature": "Temperatur",
+      "pressure": "Druck",
+      "vibration": "Vibration",
+      "efficiency": "Effizienz",
+      "alerts": "Warnungen",
+      "maintenance": "Wartung",
+      "status": {
+        "running": "In Betrieb",
+        "idle": "Bereit",
+        "maintenance": "Wartung",
+        "offline": "Offline",
+        "error": "Fehler"
+      }
+    },
+    "tickets": {
+      "create": "Ticket Erstellen",
+      "priority": "Priorität",
+      "status": "Status",
+      "created": "Erstellt am",
+      "updated": "Aktualisiert am"
+    }
+  },
+  "ai": {
+    "chatbot": {
+      "title": "KI-Technischer Assistent",
+      "placeholder": "Beschreiben Sie Ihr technisches Problem...",
+      "emergency": "🚨 Notfall - Notabschaltung",
+      "maintenance": "Wartungsberatung",
+      "parts": "Ersatzteil identifizieren",
+      "general": "Allgemeiner technischer Support",
+      "connecting": "Verbindung zur KI...",
+      "thinking": "KI analysiert...",
+      "available": "KI-Assistent 24/7 verfügbar"
+    }
+  },
+  "mobile": {
+    "ticket": {
+      "title": "Service-Ticket Erstellen",
+      "category": "Problemkategorie",
+      "details": "Problemdetails",
+      "media": "Dateien Hinzufügen",
+      "location": "Standort und Priorität",
+      "review": "Überprüfung und Senden",
+      "emergency": "Notfall",
+      "maintenance": "Wartung",
+      "parts": "Ersatzteile",
+      "support": "Technischer Support",
+      "take_photo": "Foto Aufnehmen",
+      "record_audio": "Audioaufnahme",
+      "get_location": "Standort Ermitteln",
+      "submit": "Ticket Senden",
+      "offline_saved": "Offline gespeichert - wird bei Verbindung gesendet"
+    }
+  },
+  "iot": {
+    "dashboard": {
+      "title": "IoT-Dashboard",
+      "sensors": "Echtzeit-Sensoren",
+      "analytics": "Analysen",
+      "maintenance": "Wartung",
+      "connected": "Mit IoT-Plattform Verbunden",
+      "disconnected": "IoT-Verbindung Verloren",
+      "oee": "Gesamtanlageneffektivität (OEE)",
+      "availability": "Verfügbarkeit",
+      "performance": "Leistung",
+      "quality": "Qualität"
+    },
+    "sensors": {
+      "temperature": "Temperatur",
+      "pressure": "Druck",
+      "vibration": "Vibration",
+      "current": "Strom",
+      "voltage": "Spannung",
+      "power": "Leistung",
+      "flow_rate": "Durchfluss",
+      "level": "Füllstand",
+      "speed": "Geschwindigkeit",
+      "torque": "Drehmoment"
+    },
+    "status": {
+      "normal": "Normal",
+      "warning": "Warnung",
+      "critical": "Kritisch"
+    }
+  },
+  "products": {
+    "title": "Unsere Produkte",
+    "categories": "Kategorien",
+    "machines": "Maschinen",
+    "spare_parts": "Ersatzteile",
+    "raw_materials": "Rohmaterialien",
+    "view_details": "Details Anzeigen",
+    "request_quote": "Angebot Anfordern",
+    "add_to_cart": "In Warenkorb",
+    "specifications": "Spezifikationen",
+    "technical_docs": "Technische Dokumentation"
+  },
+  "compliance": {
+    "gdpr": {
+      "title": "DSGVO-Konformität",
+      "cookie_consent": "Diese Website verwendet Cookies, um Ihre Erfahrung zu verbessern. Akzeptieren Sie die Verwendung von Cookies?",
+      "accept": "Akzeptieren",
+      "decline": "Ablehnen",
+      "customize": "Anpassen",
+      "essential": "Wesentliche Cookies",
+      "analytics": "Analyse-Cookies",
+      "marketing": "Marketing-Cookies",
+      "data_processing": "Datenverarbeitung",
+      "data_protection": "Wir schützen Ihre Daten gemäß DSGVO",
+      "privacy_policy": "Datenschutzrichtlinie",
+      "terms_of_service": "Nutzungsbedingungen",
+      "data_request": "Datenanfrage",
+      "data_deletion": "Datenlöschung",
+      "consent_withdrawal": "Einverständnis Widerrufen"
+    },
+    "ce": {
+      "title": "CE-Zertifizierung",
+      "compliant": "CE-Konform",
+      "standards": "Europäische Standards",
+      "documentation": "Konformitätsdokumentation"
+    }
+  },
+  "enterprise": {
+    "title": "Unternehmenslösungen",
+    "multi_tenant": "Multi-Tenant-Architektur",
+    "custom_branding": "Individuelles Branding",
+    "advanced_reporting": "Erweiterte Berichte",
+    "workflow_automation": "Workflow-Automatisierung",
+    "sla_management": "SLA-Management",
+    "contact_sales": "Vertrieb Kontaktieren"
+  },
+  "marketplace": {
+    "title": "Partner-Marktplatz",
+    "partners": "Unsere Partner",
+    "become_partner": "Partner Werden",
+    "api_access": "API-Zugang",
+    "integration": "Integration",
+    "commission": "Provision",
+    "analytics": "Partner-Analysen"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "submit": "Senden",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "view": "Anzeigen",
+    "download": "Herunterladen",
+    "upload": "Hochladen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "sort": "Sortieren",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "close": "Schließen",
+    "open": "Öffnen",
+    "yes": "Ja",
+    "no": "Nein",
+    "maybe": "Vielleicht",
+    "required": "Erforderlich",
+    "optional": "Optional"
+  },
+  "notifications": {
+    "success": {
+      "data_saved": "Daten erfolgreich gespeichert",
+      "email_sent": "E-Mail erfolgreich gesendet",
+      "ticket_created": "Ticket erfolgreich erstellt",
+      "maintenance_scheduled": "Wartung erfolgreich geplant"
+    },
+    "error": {
+      "generic": "Ein Fehler ist aufgetreten",
+      "network": "Netzwerkfehler",
+      "permission": "Berechtigung verweigert",
+      "validation": "Datenvalidierungsfehler"
+    }
+  },
+  "units": {
+    "celsius": "°C",
+    "fahrenheit": "°F",
+    "bar": "bar",
+    "psi": "psi",
+    "mm": "mm",
+    "inches": "Zoll",
+    "kg": "kg",
+    "lbs": "lbs",
+    "rpm": "U/min",
+    "hz": "Hz",
+    "volts": "V",
+    "amps": "A",
+    "watts": "W"
+  },
+  "time": {
+    "now": "Jetzt",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "this_week": "Diese Woche",
+    "last_week": "Letzte Woche",
+    "this_month": "Dieser Monat",
+    "last_month": "Letzter Monat"
+  },
+  "regions": {
+    "egypt": "Ägypten",
+    "turkey": "Türkei",
+    "uae": "Vereinigte Arabische Emirate",
+    "saudi_arabia": "Saudi-Arabien",
+    "france": "Frankreich",
+    "germany": "Deutschland",
+    "spain": "Spanien",
+    "italy": "Italien"
+  }
+}
