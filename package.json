@@ -53,7 +53,13 @@
     "test:coverage": "vitest run --coverage",
     "scan:dup": "node scripts/find-duplicates.mjs",
     "clean:zero": "node scripts/remove-zero-byte-files.mjs",
-    "clean:zero:dry": "node scripts/remove-zero-byte-files.mjs --dry-run=true"
+    "clean:zero:dry": "node scripts/remove-zero-byte-files.mjs --dry-run=true",
+    "test:new-features": "node scripts/test-new-features.js",
+    "test:iot-connection": "node scripts/test-iot-connection.js",
+    "test:production-ready": "npm run test:new-features && npm run test:iot-connection && npm run test:performance",
+    "verify:implementation": "bash scripts/verify-implementation.sh",
+    "deploy:production": "bash scripts/deploy-production.sh",
+    "deploy:staging": "bash scripts/deploy-production.sh --staging-only"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
