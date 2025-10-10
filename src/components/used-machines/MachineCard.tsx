@@ -12,6 +12,7 @@ interface MachineCardProps {
   machine: UsedMachine;
   isCompact?: boolean;
   showSellerRating?: boolean;
+  onClick?: () => void;
 }
 
 /**
@@ -23,7 +24,8 @@ interface MachineCardProps {
 const MachineCard: React.FC<MachineCardProps> = ({
   machine,
   isCompact = false,
-  showSellerRating = true
+  showSellerRating = true,
+  onClick
 }) => {
   
   const cardHeight = isCompact ? 'h-80' : 'h-auto';
@@ -132,7 +134,11 @@ const MachineCard: React.FC<MachineCardProps> = ({
           size={isCompact ? "sm" : "default"}
           className="bg-orange-600 hover:bg-orange-700 flex-1"
         >
-          <Link to={`/used-machines/${machine.id}`} className="flex items-center justify-center">
+          <Link 
+            to={`/used-machines/${machine.id}`} 
+            className="flex items-center justify-center"
+            onClick={onClick}
+          >
             Details <ChevronRight className="w-4 h-4 ml-1" />
           </Link>
         </Button>
