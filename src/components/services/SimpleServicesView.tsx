@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { ServicePackageGrid } from './ServicePackageGrid';
 import { PackageComparisonTable } from './PackageComparisonTable';
+import { PackageCalculator } from './PackageCalculator';
+import { CustomerStories } from './CustomerStories';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Factory, Users, Zap, CheckCircle2, Clock, Shield, TrendingUp } from 'lucide-react';
@@ -97,6 +99,13 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
         </div>
       </section>
 
+      {/* Package Calculator */}
+      <section className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <PackageCalculator onPackageRecommend={onPackageSelect} />
+        </div>
+      </section>
+
       {/* Service Packages */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
@@ -108,6 +117,13 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <PackageComparisonTable />
+        </div>
+      </section>
+
+      {/* Customer Success Stories */}
+      <section className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <CustomerStories showFeaturedOnly={true} maxStories={3} />
         </div>
       </section>
 

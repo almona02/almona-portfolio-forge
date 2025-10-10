@@ -254,5 +254,49 @@
     "operator_training": "Operator Training",
     "production_optimization": "Production Optimization",
     "export_support": "Export Support"
+  },
+  "calculator": {
+    "title": "Smart Package Calculator",
+    "subtitle": "Find your perfect service package in minutes",
+    "inputs": {
+      "machine_count": "Number of Machines",
+      "business_size": "Business Size",
+      "production_volume": "Production Volume",
+      "urgency": "Support Urgency",
+      "location": "Location"
+    },
+    "business_sizes": {
+      "small": "Small Workshop (1-10 employees)",
+      "medium": "Medium Factory (11-50 employees)",
+      "large": "Large Facility (50+ employees)"
+    },
+    "production_volumes": {
+      "low": "Low (Seasonal/On-demand)",
+      "medium": "Medium (Regular production)",
+      "high": "High (24/7 production)"
+    },
+    "urgency_levels": {
+      "standard": "Standard (48-hour response)",
+      "priority": "Priority (24-hour response)",
+      "critical": "Critical (4-hour response)"
+    },
+    "locations": {
+      "cairo": "Cairo & Giza",
+      "alexandria": "Alexandria",
+      "other": "Other Governorates"
+    },
+    "results": {
+      "recommended_package": "Recommended Package",
+      "confidence": "Match",
+      "why_this_package": "Why This Package?",
+      "potential_savings": "Potential Savings",
+      "estimated_cost": "Estimated monthly cost",
+      "compared_to_individual": "Compared to individual service requests"
+    },
+    "actions": {
+      "get_recommendation": "Get Recommendation",
+      "calculating": "Calculating...",
+      "select_package": "Select {package} Care"
+    }
   }
 }
