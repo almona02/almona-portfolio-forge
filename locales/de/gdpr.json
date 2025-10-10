@@ -1,0 +1,26 @@
+{
+  "gdpr": {
+    "cookieTitle": "Wir respektieren Ihre Privatsphäre",
+    "cookieDescription": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern und unseren Verkehr zu analysieren. Sie können wählen, welche Cookies Sie akzeptieren möchten.",
+    "acceptAll": "Alle akzeptieren",
+    "rejectAll": "Alle ablehnen",
+    "customize": "Anpassen",
+    "cookiePreferences": "Cookie-Einstellungen",
+    "necessary": "Notwendige Cookies",
+    "necessaryDesc": "Erforderlich für die ordnungsgemäße Funktionsweise der Website.",
+    "analytics": "Analyse-Cookies",
+    "analyticsDesc": "Helfen uns zu verstehen, wie Besucher mit unserer Website interagieren.",
+    "marketing": "Marketing-Cookies",
+    "marketingDesc": "Werden verwendet, um personalisierte Werbung zu liefern.",
+    "required": "Erforderlich",
+    "savePreferences": "Einstellungen speichern",
+    "cancel": "Abbrechen",
+    "dataRights": "Ihre Datenrechte",
+    "dataRightsDesc": "Unter der DSGVO haben Sie das Recht, auf Ihre personenbezogenen Daten zuzugreifen, sie zu korrigieren oder zu löschen.",
+    "viewPreferences": "Einstellungen anzeigen",
+    "exportData": "Daten exportieren",
+    "deleteData": "Daten löschen",
+    "confirmDeletion": "Sind Sie sicher, dass Sie alle Ihre Daten löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deletionSuccess": "Ihre Daten wurden erfolgreich gelöscht."
+  }
+}

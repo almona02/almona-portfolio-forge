@@ -49,47 +49,133 @@ export default defineConfig(({ mode }) => {
         // Optimize JSX runtime
         jsxRuntime: 'automatic'
       }),
-      // Temporarily disabled PWA plugin due to configuration issues
-      // TODO: Re-enable with proper configuration
-      // VitePWA({
-      //   registerType: "autoUpdate",
-      //   injectRegister: "auto",
-      //   workbox: {
-      //     globPatterns: ["**/*.{js,css,html,ico,png,svg,json,woff,woff2}"],
-      //     globIgnores: ['**/stats.json'],
-      //     cleanupOutdatedCaches: true,
-      //     skipWaiting: true,
-      //     clientsClaim: true,
-      //     navigateFallback: null,
-      //     navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
-      //   },
-      //   includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg", "pwa-192x192.png", "pwa-512x512.png"],
-      //   manifest: {
-      //     name: "Almona Portfolio Forge - Industrial Machinery Solutions",
-      //     short_name: "Almona",
-      //     description: "Leading provider of industrial machinery, fabrication services, and technical solutions in Egypt and the Middle East.",
-      //     theme_color: "#0d0f12",
-      //     background_color: "#0d0f12",
-      //     display: "standalone",
-      //     orientation: "portrait",
-      //     start_url: "/",
-      //     scope: "/",
-      //     icons: [
-      //       {
-      //         src: "pwa-192x192.png",
-      //         sizes: "192x192",
-      //         type: "image/png",
-      //         purpose: "any maskable"
-      //       },
-      //       {
-      //         src: "pwa-512x512.png",
-      //         sizes: "512x512",
-      //         type: "image/png",
-      //         purpose: "any maskable"
-      //       }
-      //     ]
-      //   }
-      // }),
+      // Enhanced PWA configuration with offline support for service tickets
+      VitePWA({
+        registerType: "autoUpdate",
+        injectRegister: "auto",
+        devOptions: {
+          enabled: true // Enable in development for testing
+        },
+        workbox: {
+          globPatterns: ["**/*.{js,css,html,ico,png,svg,json,woff,woff2}"],
+          globIgnores: ['**/stats.json'],
+          cleanupOutdatedCaches: true,
+          skipWaiting: true,
+          clientsClaim: true,
+          navigateFallback: 'index.html',
+          navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
+          // Enhanced runtime caching for offline functionality
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365 // 365 days
+                },
+                cacheKeyWillBeUsed: async ({ request }) => {
+                  return `${request.url}?${Date.now()}`;
+                }
+              }
+            },
+            {
+              urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'gstatic-fonts-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365 // 365 days
+                }
+              }
+            },
+            {
+              // Cache API calls for offline fallback
+              urlPattern: /\/api\/.*/i,
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'api-cache',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 60 * 60 * 24 // 24 hours
+                },
+                networkTimeoutSeconds: 10
+              }
+            },
+            {
+              // Cache images
+              urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'images-cache',
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+                }
+              }
+            }
+          ]
+        },
+        includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg"],
+        manifest: {
+          name: "Almona Portfolio Forge - Industrial Machinery Solutions",
+          short_name: "Almona",
+          description: "Leading provider of industrial machinery, fabrication services, and technical solutions in Egypt and the Middle East. Now with offline support for service tickets.",
+          theme_color: "#f97316",
+          background_color: "#0d0f12",
+          display: "standalone",
+          orientation: "any",
+          start_url: "/",
+          scope: "/",
+          categories: ["business", "productivity", "utilities"],
+          lang: "ar",
+          dir: "rtl",
+          shortcuts: [
+            {
+              name: "Create Service Ticket",
+              short_name: "New Ticket",
+              description: "Create a new service ticket",
+              url: "/portal/tickets/new",
+              icons: [{ src: "/icons/ticket-icon.png", sizes: "96x96" }]
+            },
+            {
+              name: "Machine Health",
+              short_name: "Health",
+              description: "View machine health dashboard",
+              url: "/portal/health",
+              icons: [{ src: "/icons/health-icon.png", sizes: "96x96" }]
+            }
+          ],
+          icons: [
+            {
+              src: "/icons/pwa-192x192.png",
+              sizes: "192x192",
+              type: "image/png",
+              purpose: "any"
+            },
+            {
+              src: "/icons/pwa-512x512.png",
+              sizes: "512x512", 
+              type: "image/png",
+              purpose: "any"
+            },
+            {
+              src: "/icons/pwa-192x192.png",
+              sizes: "192x192",
+              type: "image/png",
+              purpose: "maskable"
+            },
+            {
+              src: "/icons/pwa-512x512.png",
+              sizes: "512x512",
+              type: "image/png", 
+              purpose: "maskable"
+            }
+          ]
+        }
+      }),
       ...(isProduction && process.env.ANALYZE === 'true'
         ? [
             visualizer({

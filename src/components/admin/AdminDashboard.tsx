@@ -22,6 +22,7 @@ import { OrdersPanel } from './panels/OrdersPanel';
 import { FinancePanel } from './panels/FinancePanel';
 import { SalesChart } from './SalesChart';
 import { RecentOrders } from './RecentOrders';
+import { BusinessKPIDashboard } from '../analytics/BusinessKPIDashboard';
 
 /**
  * Admin Dashboard Component
@@ -103,8 +104,9 @@ export const AdminDashboard: React.FC = () => {
 
       {/* Dashboard Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="business-kpi">Business KPI</TabsTrigger>
           <TabsTrigger value="customers">Customers</TabsTrigger>
           <TabsTrigger value="products">Products</TabsTrigger>
           <TabsTrigger value="inventory">Inventory</TabsTrigger>
@@ -225,6 +227,11 @@ export const AdminDashboard: React.FC = () => {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Business KPI Dashboard Tab */}
+        <TabsContent value="business-kpi">
+          <BusinessKPIDashboard />
         </TabsContent>
 
         {/* Individual Panel Tabs */}

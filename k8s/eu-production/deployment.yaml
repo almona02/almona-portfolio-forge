@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: almona-api
+  namespace: almona-industrial-eu
+  labels:
+    app: almona-api
+    version: v2.0.0
+    region: eu-west-1
+    compliance: gdpr
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: almona-api
+  template:
+    metadata:
+      labels:
+        app: almona-api
+        version: v2.0.0
+        region: eu-west-1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8001"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: almona-api
+        image: almona-industrial-api:eu-production
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 8001
+          name: metrics
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: REGION
+          value: "eu-west-1"
+        - name: GDPR_COMPLIANCE
+          value: "enabled"
+        - name: NODE_ENV
+          value: "production"
+        envFrom:
+        - configMapRef:
+            name: almona-config
+        - configMapRef:
+            name: gdpr-compliance-config
+        - secretRef:
+            name: almona-secrets
+        resources:
+          requests:
+            memory: "768Mi"
+            cpu: "400m"
+          limits:
+            memory: "1.5Gi"
+            cpu: "800m"
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health/ready
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 10
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: logs
+          mountPath: /app/logs
+        - name: gdpr-config
+          mountPath: /app/config/gdpr
+          readOnly: true
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: logs
+        emptyDir: {}
+      - name: gdpr-config
+        configMap:
+          name: gdpr-compliance-config
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
