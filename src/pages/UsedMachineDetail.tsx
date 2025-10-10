@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import UsedMachineDetails from '../components/used-machines/UsedMachineDetails';
+import MachineSEO from '../components/used-machines/MachineSEO';
 import { usedMachines, UsedMachine } from '../data/usedMachines';
 
 const UsedMachineDetailPage = () => {
@@ -24,12 +25,17 @@ const UsedMachineDetailPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-almona-dark pt-24 pb-8">
-      <UsedMachineDetails
-        machine={machine}
-        onBack={() => navigate('/used-machines')}
-      />
-    </div>
+    <>
+      {/* SEO Component for individual machine */}
+      <MachineSEO machine={machine} />
+      
+      <div className="min-h-screen bg-almona-dark pt-24 pb-8">
+        <UsedMachineDetails
+          machine={machine}
+          onBack={() => navigate('/used-machines')}
+        />
+      </div>
+    </>
   );
 };
 
