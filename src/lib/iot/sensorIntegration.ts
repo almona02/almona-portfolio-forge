@@ -1,6 +1,7 @@
 // IoT Sensor Integration Framework for Industry 4.0
 // Handles real-time sensor data collection, processing, and analytics
 
+import React from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -539,7 +540,7 @@ export class IoTDataProcessor {
   }
 }
 
-// React hooks for IoT integration
+// React hooks for IoT integration  
 export const useIoTSensorData = (machineId: string) => {
   const [sensorData, setSensorData] = React.useState<SensorReading[]>([]);
   const [digitalTwinData, setDigitalTwinData] = React.useState<DigitalTwinData | null>(null);
