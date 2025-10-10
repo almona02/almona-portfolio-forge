@@ -1,0 +1,145 @@
+{
+  "title": "Operator Training Programs",
+  "subtitle": "Comprehensive training programs for industrial equipment operators",
+  "programs": {
+    "basic_operator": "Basic Operator Training",
+    "advanced_operator": "Advanced Operator Training",
+    "maintenance_technician": "Maintenance Technician Training",
+    "safety_training": "Safety Training",
+    "cnc_programming": "CNC Programming Training",
+    "quality_control": "Quality Control Training",
+    "troubleshooting": "Troubleshooting Training",
+    "preventive_maintenance": "Preventive Maintenance Training"
+  },
+  "training_types": {
+    "on_site": "On-site Training",
+    "remote": "Remote Training",
+    "classroom": "Classroom Training",
+    "hands_on": "Hands-on Training",
+    "virtual": "Virtual Training",
+    "hybrid": "Hybrid Training",
+    "self_paced": "Self-paced Training",
+    "instructor_led": "Instructor-led Training"
+  },
+  "levels": {
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "expert": "Expert",
+    "master": "Master"
+  },
+  "duration": {
+    "hours": "Hours",
+    "days": "Days",
+    "weeks": "Weeks",
+    "months": "Months",
+    "flexible": "Flexible"
+  },
+  "certification": {
+    "certificate": "Certificate",
+    "certification": "Certification",
+    "certified_operator": "Certified Operator",
+    "certified_technician": "Certified Technician",
+    "certification_validity": "Certification Validity",
+    "renewal_required": "Renewal Required",
+    "continuing_education": "Continuing Education"
+  },
+  "topics": {
+    "machine_operation": "Machine Operation",
+    "safety_procedures": "Safety Procedures",
+    "maintenance_procedures": "Maintenance Procedures",
+    "troubleshooting": "Troubleshooting",
+    "quality_control": "Quality Control",
+    "programming": "Programming",
+    "setup_procedures": "Setup Procedures",
+    "tooling": "Tooling",
+    "material_handling": "Material Handling",
+    "measurement": "Measurement"
+  },
+  "instructors": {
+    "certified_instructor": "Certified Instructor",
+    "senior_technician": "Senior Technician",
+    "field_expert": "Field Expert",
+    "manufacturer_representative": "Manufacturer Representative",
+    "local_trainer": "Local Trainer",
+    "remote_expert": "Remote Expert"
+  },
+  "materials": {
+    "training_manual": "Training Manual",
+    "video_tutorials": "Video Tutorials",
+    "interactive_simulations": "Interactive Simulations",
+    "practice_exercises": "Practice Exercises",
+    "assessment_tests": "Assessment Tests",
+    "reference_guides": "Reference Guides",
+    "safety_manuals": "Safety Manuals",
+    "maintenance_manuals": "Maintenance Manuals"
+  },
+  "scheduling": {
+    "schedule_training": "Schedule Training",
+    "available_dates": "Available Dates",
+    "training_calendar": "Training Calendar",
+    "group_training": "Group Training",
+    "individual_training": "Individual Training",
+    "custom_schedule": "Custom Schedule",
+    "flexible_timing": "Flexible Timing",
+    "weekend_training": "Weekend Training"
+  },
+  "pricing": {
+    "training_cost": "Training Cost",
+    "per_person": "Per Person",
+    "group_discount": "Group Discount",
+    "package_deal": "Package Deal",
+    "custom_pricing": "Custom Pricing",
+    "payment_terms": "Payment Terms",
+    "cancellation_policy": "Cancellation Policy",
+    "refund_policy": "Refund Policy"
+  },
+  "registration": {
+    "register": "Register",
+    "registration_form": "Registration Form",
+    "prerequisites": "Prerequisites",
+    "required_skills": "Required Skills",
+    "recommended_experience": "Recommended Experience",
+    "equipment_requirements": "Equipment Requirements",
+    "confirmation": "Confirmation",
+    "payment": "Payment"
+  },
+  "assessment": {
+    "assessment": "Assessment",
+    "written_test": "Written Test",
+    "practical_test": "Practical Test",
+    "oral_examination": "Oral Examination",
+    "performance_evaluation": "Performance Evaluation",
+    "passing_score": "Passing Score",
+    "certification_exam": "Certification Exam",
+    "retake_policy": "Retake Policy"
+  },
+  "support": {
+    "training_support": "Training Support",
+    "technical_support": "Technical Support",
+    "learning_support": "Learning Support",
+    "mentorship": "Mentorship",
+    "peer_learning": "Peer Learning",
+    "online_forum": "Online Forum",
+    "help_desk": "Help Desk",
+    "faq": "FAQ"
+  },
+  "feedback": {
+    "course_feedback": "Course Feedback",
+    "instructor_rating": "Instructor Rating",
+    "content_rating": "Content Rating",
+    "facility_rating": "Facility Rating",
+    "overall_satisfaction": "Overall Satisfaction",
+    "recommendation": "Recommendation",
+    "improvement_suggestions": "Improvement Suggestions"
+  },
+  "tracking": {
+    "progress_tracking": "Progress Tracking",
+    "completion_status": "Completion Status",
+    "learning_analytics": "Learning Analytics",
+    "performance_metrics": "Performance Metrics",
+    "attendance_record": "Attendance Record",
+    "achievement_badges": "Achievement Badges",
+    "learning_path": "Learning Path"
+  }
+}
