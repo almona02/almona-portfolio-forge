@@ -16,7 +16,8 @@ import {
   Download, 
   Search,
   Plus,
-  User
+  User,
+  Activity
 } from 'lucide-react';
 import { TicketCard } from '@/components/support/TicketCard';
 import { useReducedMotionPref } from '@/hooks/useReducedMotionPref';
@@ -27,6 +28,9 @@ import TicketWizardDialog from '@/components/support/TicketWizardDialog';
 import { QuoteTwinSearchPanel } from '@/components/quotes/QuoteTwinSearchPanel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
+import { MachineHealthDashboard } from '@/components/portal/MachineHealthDashboard';
+import { AITechnicalChatbot } from '@/components/support/AITechnicalChatbot';
+import { MobileTicketCreator } from '@/components/mobile/MobileTicketCreator';
 
 // Define local types that match the API response
 interface Machine {
@@ -68,6 +72,7 @@ const CustomerPortal = () => {
   const { user, loading: authLoading, stableDisplayEmail } = useAuth();
   const queryClient = useQueryClient();
   const [isTicketWizardOpen, setIsTicketWizardOpen] = useState(false);
+  const [isMobileTicketOpen, setIsMobileTicketOpen] = useState(false);
   // Tracks only the very first full data bootstrap; once true we never show the big skeleton again
   const [bootstrapped, setBootstrapped] = useState(false);
   const navigate = useNavigate();
@@ -182,7 +187,6 @@ const CustomerPortal = () => {
 
   const LoadingSkeleton = () => (
     <div className="flex flex-col min-h-screen bg-almona-dark">
-      <Navbar />
       <div className="flex-grow pt-24 pb-12">
         <div className="container mx-auto px-4 space-y-6">
           <Skeleton className="h-12 w-64 mb-8" />
@@ -222,8 +226,11 @@ const CustomerPortal = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="machines" className="mb-8">
-            <TabsList className="grid w-full grid-cols-3 bg-almona-dark/80 rounded-lg p-1 mb-6">
+          <Tabs defaultValue="health" className="mb-8">
+            <TabsList className="grid w-full grid-cols-4 bg-almona-dark/80 rounded-lg p-1 mb-6">
+              <TabsTrigger value="health" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
+                <Activity className="h-4 w-4 mr-2" /> Health Dashboard
+              </TabsTrigger>
               <TabsTrigger value="machines" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
                 <Package className="h-4 w-4 mr-2" /> My Machines
               </TabsTrigger>
@@ -234,6 +241,17 @@ const CustomerPortal = () => {
                 <Download className="h-4 w-4 mr-2" /> Documents
               </TabsTrigger>
             </TabsList>
+
+            <TabsContent value="health">
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="space-y-6"
+              >
+                <MachineHealthDashboard />
+              </motion.div>
+            </TabsContent>
 
             <TabsContent value="machines">
               <motion.div
@@ -518,6 +536,31 @@ const CustomerPortal = () => {
           }
         }}
       />
+      
+      {/* Mobile Floating Action Button for Quick Ticket Creation */}
+      <div className="fixed bottom-20 left-6 z-40 md:hidden">
+        <Button
+          onClick={() => setIsMobileTicketOpen(true)}
+          className="rounded-full w-14 h-14 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg"
+          size="lg"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
+      </div>
+
+      <MobileTicketCreator 
+        isOpen={isMobileTicketOpen}
+        onClose={() => setIsMobileTicketOpen(false)}
+        onTicketCreated={(ticketId) => {
+          setIsMobileTicketOpen(false);
+          if (user) {
+            queryClient.invalidateQueries({ queryKey: ['tickets', user.id] });
+          }
+          toast.success(`تم إنشاء الطلب: ${ticketId}`);
+        }}
+      />
+      
+      <AITechnicalChatbot />
       <Footer />
     </div>
   );

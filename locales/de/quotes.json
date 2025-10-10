@@ -1,0 +1,129 @@
+{
+  "title": "Quote Requests",
+  "subtitle": "Get detailed quotes for your industrial projects",
+  "steps": {
+    "project_details": "Project Details",
+    "equipment_selection": "Equipment Selection",
+    "requirements": "Requirements",
+    "review": "Review & Approval"
+  },
+  "project_types": {
+    "new_installation": "New Installation",
+    "upgrade": "Upgrade",
+    "replacement": "Replacement",
+    "expansion": "Expansion",
+    "maintenance_contract": "Maintenance Contract",
+    "training_program": "Training Program",
+    "consulting_service": "Consulting Service",
+    "custom_solution": "Custom Solution"
+  },
+  "urgency": {
+    "standard": "Standard (2-3 weeks)",
+    "express": "Express (1 week) +15%",
+    "urgent": "Urgent (3 days) +30%",
+    "emergency": "Emergency (24 hours) +50%"
+  },
+  "delivery_options": {
+    "standard": "Standard Delivery",
+    "express": "Express Delivery",
+    "white_glove": "White Glove Service",
+    "installation_included": "Installation Included",
+    "turnkey": "Turnkey Solution"
+  },
+  "form": {
+    "project_description": "Project Description",
+    "budget_range": "Budget Range",
+    "timeline": "Timeline",
+    "delivery_location": "Delivery Location",
+    "special_requirements": "Special Requirements",
+    "contact_info": "Contact Information",
+    "company_info": "Company Information",
+    "technical_requirements": "Technical Requirements",
+    "submit_quote": "Request Quote",
+    "save_draft": "Save Draft",
+    "cancel": "Cancel",
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish"
+  },
+  "equipment": {
+    "select_equipment": "Select Equipment",
+    "add_equipment": "Add Equipment",
+    "remove_equipment": "Remove Equipment",
+    "equipment_quantity": "Equipment Quantity",
+    "equipment_specifications": "Equipment Specifications",
+    "custom_requirements": "Custom Requirements",
+    "accessories": "Accessories",
+    "spare_parts": "Spare Parts"
+  },
+  "services": {
+    "installation": "Installation Service",
+    "training": "Training Service",
+    "maintenance": "Maintenance Service",
+    "support": "Support Service",
+    "consulting": "Consulting Service",
+    "customization": "Customization Service",
+    "warranty": "Warranty Service",
+    "spare_parts": "Spare Parts Service"
+  },
+  "pricing": {
+    "equipment_cost": "Equipment Cost",
+    "installation_cost": "Installation Cost",
+    "training_cost": "Training Cost",
+    "maintenance_cost": "Maintenance Cost",
+    "delivery_cost": "Delivery Cost",
+    "tax": "Tax",
+    "total_cost": "Total Cost",
+    "discount": "Discount",
+    "final_price": "Final Price"
+  },
+  "terms": {
+    "payment_terms": "Payment Terms",
+    "delivery_terms": "Delivery Terms",
+    "warranty_terms": "Warranty Terms",
+    "maintenance_terms": "Maintenance Terms",
+    "cancellation_terms": "Cancellation Terms",
+    "force_majeure": "Force Majeure",
+    "governing_law": "Governing Law",
+    "dispute_resolution": "Dispute Resolution"
+  },
+  "status": {
+    "draft": "Draft",
+    "submitted": "Submitted",
+    "under_review": "Under Review",
+    "quoted": "Quoted",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "expired": "Expired",
+    "cancelled": "Cancelled"
+  },
+  "actions": {
+    "request_quote": "Request Quote",
+    "view_quote": "View Quote",
+    "accept_quote": "Accept Quote",
+    "reject_quote": "Reject Quote",
+    "modify_quote": "Modify Quote",
+    "download_quote": "Download Quote",
+    "print_quote": "Print Quote",
+    "share_quote": "Share Quote"
+  },
+  "notifications": {
+    "quote_submitted": "Quote request submitted successfully",
+    "quote_updated": "Quote updated",
+    "quote_expired": "Quote expired",
+    "quote_accepted": "Quote accepted",
+    "quote_rejected": "Quote rejected"
+  },
+  "validation": {
+    "required_field": "This field is required",
+    "invalid_email": "Invalid email address",
+    "invalid_phone": "Invalid phone number",
+    "invalid_date": "Invalid date",
+    "invalid_number": "Invalid number",
+    "min_length": "Minimum {min} characters required",
+    "max_length": "Maximum {max} characters allowed",
+    "min_value": "Minimum value is {min}",
+    "max_value": "Maximum value is {max}"
+  }
+}
+
