@@ -1,0 +1,148 @@
+{
+  "title": "Technical Support Tickets",
+  "subtitle": "Professional technical support for your industrial equipment",
+  "types": {
+    "general": "General Support",
+    "maintenance": "Maintenance Request",
+    "repair": "Repair Request",
+    "installation": "Installation Request",
+    "training": "Training Request",
+    "warranty": "Warranty Request",
+    "spare_parts": "Spare Parts Request",
+    "technical_consultation": "Technical Consultation",
+    "emergency": "Emergency Support",
+    "preventive_maintenance": "Preventive Maintenance",
+    "predictive_maintenance": "Predictive Maintenance",
+    "calibration": "Calibration",
+    "upgrade": "Upgrade",
+    "customization": "Customization"
+  },
+  "priorities": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "critical": "Critical",
+    "emergency": "Emergency"
+  },
+  "status": {
+    "open": "Open",
+    "assigned": "Assigned",
+    "in_progress": "In Progress",
+    "resolved": "Resolved",
+    "closed": "Closed",
+    "pending": "Pending",
+    "cancelled": "Cancelled",
+    "on_hold": "On Hold",
+    "escalated": "Escalated"
+  },
+  "maintenance_types": {
+    "preventive": "Preventive Maintenance",
+    "corrective": "Corrective Maintenance",
+    "predictive": "Predictive Maintenance",
+    "emergency": "Emergency Maintenance",
+    "scheduled": "Scheduled Maintenance",
+    "unscheduled": "Unscheduled Maintenance",
+    "routine": "Routine Maintenance",
+    "major": "Major Maintenance",
+    "minor": "Minor Maintenance"
+  },
+  "form": {
+    "subject": "Subject",
+    "description": "Description",
+    "machine_serial": "Machine Serial Number",
+    "machine_model": "Machine Model",
+    "location": "Location",
+    "contact_person": "Contact Person",
+    "phone": "Phone",
+    "email": "Email",
+    "urgency": "Priority",
+    "preferred_date": "Preferred Date",
+    "preferred_time": "Preferred Time",
+    "attachments": "Attachments",
+    "submit": "Submit Request",
+    "update": "Update",
+    "cancel": "Cancel",
+    "save_draft": "Save Draft",
+    "add_attachment": "Add Attachment",
+    "remove_attachment": "Remove Attachment"
+  },
+  "fields": {
+    "ticket_id": "Ticket ID",
+    "created_date": "Created Date",
+    "updated_date": "Updated Date",
+    "assigned_to": "Assigned To",
+    "assigned_date": "Assigned Date",
+    "resolution_date": "Resolution Date",
+    "estimated_resolution": "Estimated Resolution",
+    "actual_resolution": "Actual Resolution",
+    "time_spent": "Time Spent",
+    "customer_satisfaction": "Customer Satisfaction",
+    "follow_up_required": "Follow-up Required",
+    "follow_up_date": "Follow-up Date"
+  },
+  "actions": {
+    "create_ticket": "Create New Ticket",
+    "view_ticket": "View Ticket",
+    "edit_ticket": "Edit Ticket",
+    "close_ticket": "Close Ticket",
+    "reopen_ticket": "Reopen Ticket",
+    "assign_ticket": "Assign Ticket",
+    "escalate_ticket": "Escalate Ticket",
+    "add_comment": "Add Comment",
+    "add_attachment": "Add Attachment",
+    "update_status": "Update Status",
+    "schedule_maintenance": "Schedule Maintenance",
+    "request_quote": "Request Quote"
+  },
+  "filters": {
+    "all": "All",
+    "my_tickets": "My Tickets",
+    "open_tickets": "Open Tickets",
+    "closed_tickets": "Closed Tickets",
+    "high_priority": "High Priority",
+    "overdue": "Overdue",
+    "this_week": "This Week",
+    "this_month": "This Month",
+    "last_30_days": "Last 30 Days"
+  },
+  "search": {
+    "search_tickets": "Search Tickets",
+    "search_placeholder": "Search by ticket ID, subject, or description...",
+    "no_results": "No results found",
+    "search_results": "Search Results"
+  },
+  "notifications": {
+    "ticket_created": "Ticket created successfully",
+    "ticket_updated": "Ticket updated",
+    "ticket_assigned": "Ticket assigned",
+    "ticket_closed": "Ticket closed",
+    "ticket_reopened": "Ticket reopened",
+    "comment_added": "Comment added",
+    "attachment_added": "Attachment added",
+    "status_updated": "Status updated"
+  },
+  "messages": {
+    "no_tickets": "No tickets yet",
+    "loading_tickets": "Loading tickets...",
+    "error_loading": "Error loading tickets",
+    "ticket_not_found": "Ticket not found",
+    "unauthorized_access": "Unauthorized access to this ticket",
+    "invalid_ticket_id": "Invalid ticket ID"
+  },
+  "sla": {
+    "response_time": "Response Time",
+    "resolution_time": "Resolution Time",
+    "sla_breach": "SLA Breach",
+    "sla_met": "SLA Met",
+    "sla_warning": "SLA Warning",
+    "escalation_required": "Escalation Required"
+  },
+  "reports": {
+    "ticket_summary": "Ticket Summary",
+    "response_time_report": "Response Time Report",
+    "resolution_time_report": "Resolution Time Report",
+    "customer_satisfaction": "Customer Satisfaction",
+    "ticket_volume": "Ticket Volume",
+    "trend_analysis": "Trend Analysis"
+  }
+}

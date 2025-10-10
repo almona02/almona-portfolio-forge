@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: almona-industrial-eu
+  labels:
+    name: almona-industrial-eu
+    environment: eu-production
+    region: eu-west-1
+    compliance: gdpr-enabled

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: almona-api-service
+  namespace: almona-industrial-eu
+  labels:
+    app: almona-api
+    region: eu-west-1
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8001"
+    prometheus.io/path: "/metrics"
+spec:
+  selector:
+    app: almona-api
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  - name: metrics
+    port: 8001
+    targetPort: 8001
+    protocol: TCP
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: almona-api-headless
+  namespace: almona-industrial-eu
+  labels:
+    app: almona-api
+    region: eu-west-1
+spec:
+  selector:
+    app: almona-api
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+  - name: metrics
+    port: 8001
+    targetPort: 8001
+    protocol: TCP
+  clusterIP: None

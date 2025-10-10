@@ -1,0 +1,166 @@
+{
+  "title": "Industrial Regions",
+  "subtitle": "Major industrial regions and cities",
+  "regions": {
+    "north_america": "North America",
+    "europe": "Europe",
+    "asia": "Asia",
+    "middle_east": "Middle East",
+    "africa": "Africa",
+    "oceania": "Oceania",
+    "south_america": "South America"
+  },
+  "cities": {
+    "new_york": {
+      "name": "New York",
+      "region": "North America",
+      "industrial_zones": [
+        "Brooklyn Navy Yard",
+        "Hunts Point Industrial Park",
+        "Long Island City Industrial Zone"
+      ],
+      "industries": [
+        "Manufacturing",
+        "Technology",
+        "Finance",
+        "Healthcare",
+        "Food Processing",
+        "Textiles"
+      ]
+    },
+    "london": {
+      "name": "London",
+      "region": "Europe",
+      "industrial_zones": [
+        "Thames Gateway",
+        "London Industrial Park",
+        "Docklands"
+      ],
+      "industries": [
+        "Financial Services",
+        "Technology",
+        "Manufacturing",
+        "Creative Industries",
+        "Healthcare",
+        "Logistics"
+      ]
+    },
+    "tokyo": {
+      "name": "Tokyo",
+      "region": "Asia",
+      "industrial_zones": [
+        "Keihin Industrial Zone",
+        "Tokyo Bay Area",
+        "Ota Industrial District"
+      ],
+      "industries": [
+        "Electronics",
+        "Automotive",
+        "Technology",
+        "Manufacturing",
+        "Finance",
+        "Robotics"
+      ]
+    },
+    "istanbul": {
+      "name": "Istanbul",
+      "region": "Europe",
+      "industrial_zones": [
+        "Organize Sanayi Bölgesi",
+        "Tuzla Industrial Zone",
+        "Gebze Industrial Zone"
+      ],
+      "industries": [
+        "Textiles",
+        "Automotive",
+        "Electronics",
+        "Food Processing",
+        "Chemicals",
+        "Machinery"
+      ]
+    },
+    "cairo": {
+      "name": "Cairo",
+      "region": "Africa",
+      "industrial_zones": [
+        "10th of Ramadan City",
+        "Badr City",
+        "Obour City"
+      ],
+      "industries": [
+        "Textiles",
+        "Food Processing",
+        "Chemicals",
+        "Electronics",
+        "Automotive",
+        "Pharmaceuticals"
+      ]
+    }
+  },
+  "industrial_zones": {
+    "industrial_zone": "Industrial Zone",
+    "free_zone": "Free Zone",
+    "special_zone": "Special Zone",
+    "technology_zone": "Technology Zone",
+    "logistics_zone": "Logistics Zone",
+    "export_zone": "Export Zone",
+    "investment_zone": "Investment Zone",
+    "development_zone": "Development Zone"
+  },
+  "industries": {
+    "automotive": "Automotive",
+    "textile": "Textile",
+    "food": "Food",
+    "chemical": "Chemical",
+    "metal_processing": "Metal Processing",
+    "machine_manufacturing": "Machine Manufacturing",
+    "electronics": "Electronics",
+    "petrochemical": "Petrochemical",
+    "pharmaceutical": "Pharmaceutical",
+    "construction": "Construction",
+    "energy": "Energy",
+    "mining": "Mining",
+    "agriculture": "Agriculture",
+    "tourism": "Tourism",
+    "defense": "Defense"
+  },
+  "facilities": {
+    "factory": "Factory",
+    "manufacturing_plant": "Manufacturing Plant",
+    "production_facility": "Production Facility",
+    "assembly_plant": "Assembly Plant",
+    "processing_plant": "Processing Plant",
+    "warehouse": "Warehouse",
+    "distribution_center": "Distribution Center",
+    "service_center": "Service Center",
+    "training_center": "Training Center",
+    "research_center": "Research Center",
+    "laboratory": "Laboratory",
+    "quality_control": "Quality Control",
+    "maintenance_facility": "Maintenance Facility"
+  },
+  "infrastructure": {
+    "highway": "Highway",
+    "railway": "Railway",
+    "airport": "Airport",
+    "port": "Port",
+    "power_plant": "Power Plant",
+    "water_treatment": "Water Treatment",
+    "waste_management": "Waste Management",
+    "telecommunications": "Telecommunications",
+    "internet": "Internet",
+    "logistics": "Logistics",
+    "transportation": "Transportation",
+    "utilities": "Utilities"
+  },
+  "zones": {
+    "industrial_zone": "Industrial Zone",
+    "commercial_zone": "Commercial Zone",
+    "residential_zone": "Residential Zone",
+    "mixed_zone": "Mixed Zone",
+    "special_zone": "Special Zone",
+    "free_zone": "Free Zone",
+    "technology_zone": "Technology Zone",
+    "logistics_zone": "Logistics Zone"
+  }
+}
