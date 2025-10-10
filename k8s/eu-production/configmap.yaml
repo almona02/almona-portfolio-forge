@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: almona-config-eu
+  namespace: almona-industrial-eu
+  labels:
+    app: almona-api
+    region: eu-west-1
+    compliance: gdpr
+data:
+  # Application Configuration
+  NODE_ENV: "production"
+  REGION: "eu-west-1"
+  DATA_CENTER: "eu-production"
+  
+  # GDPR Compliance
+  GDPR_COMPLIANCE: "enabled"
+  DATA_RETENTION_POLICY: "gdpr"
+  COOKIE_CONSENT_REQUIRED: "true"
+  DATA_EXPORT_ENABLED: "true"
+  RIGHT_TO_ERASURE_ENABLED: "true"
+  
+  # Multi-Language Support
+  DEFAULT_LANGUAGE: "en"
+  SUPPORTED_LANGUAGES: "en,fr,de,ar,tr"
+  RTL_LANGUAGES: "ar"
+  
+  # Database Configuration
+  DB_SSL_MODE: "require"
+  DB_CONNECTION_TIMEOUT: "30"
+  DB_QUERY_TIMEOUT: "60"
+  
+  # Cache Configuration
+  REDIS_CLUSTER_MODE: "enabled"
+  CACHE_TTL_DEFAULT: "3600"
+  CACHE_TTL_GDPR_CONSENT: "31536000"  # 1 year
+  
+  # API Configuration
+  API_RATE_LIMIT_ENABLED: "true"
+  API_RATE_LIMIT_REQUESTS: "1000"
+  API_RATE_LIMIT_WINDOW: "3600"
+  
+  # Monitoring
+  METRICS_ENABLED: "true"
+  TRACING_ENABLED: "true"
+  LOG_LEVEL: "info"
+  
+  # Business Configuration
+  BUSINESS_HOURS_TIMEZONE: "Europe/Paris"
+  CURRENCY_PRIMARY: "EUR"
+  CURRENCY_SUPPORTED: "EUR,USD,GBP"
+  
+  # Feature Flags
+  FEATURE_BUSINESS_KPI_DASHBOARD: "enabled"
+  FEATURE_WHITE_LABEL_PORTAL: "enabled"
+  FEATURE_PARTNER_MARKETPLACE: "enabled"
+  FEATURE_ADVANCED_ANALYTICS: "enabled"
+  
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gdpr-compliance-config
+  namespace: almona-industrial-eu
+  labels:
+    app: almona-api
+    type: gdpr-config
+data:
+  gdpr-policy.json: |
+    {
+      "version": "1.0",
+      "dataRetentionPeriods": {
+        "userProfiles": "7 years",
+        "orderHistory": "7 years", 
+        "quotesHistory": "3 years",
+        "analyticsData": "26 months",
+        "marketingConsent": "until withdrawn",
+        "supportTickets": "3 years"
+      },
+      "dataProcessingPurposes": [
+        {
+          "purpose": "Contract Performance",
+          "legalBasis": "Art. 6(1)(b) GDPR",
+          "dataCategories": ["contact", "billing", "order"],
+          "retention": "7 years"
+        },
+        {
+          "purpose": "Marketing Communications", 
+          "legalBasis": "Art. 6(1)(a) GDPR",
+          "dataCategories": ["contact", "preferences"],
+          "retention": "until consent withdrawn"
+        },
+        {
+          "purpose": "Website Analytics",
+          "legalBasis": "Art. 6(1)(f) GDPR", 
+          "dataCategories": ["usage", "technical"],
+          "retention": "26 months"
+        }
+      ],
+      "cookieCategories": {
+        "necessary": {
+          "required": true,
+          "description": "Essential for basic site functionality"
+        },
+        "analytics": {
+          "required": false,
+          "description": "Help us understand site usage"
+        },
+        "marketing": {
+          "required": false,
+          "description": "Used for relevant advertisements"
+        },
+        "functional": {
+          "required": false,
+          "description": "Enable enhanced features"
+        },
+        "personalization": {
+          "required": false,
+          "description": "Customize user experience"
+        }
+      }
+    }
