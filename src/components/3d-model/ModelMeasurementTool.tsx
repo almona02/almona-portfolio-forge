@@ -45,6 +45,8 @@ interface ModelMeasurementToolProps {
   modelDimensions?: { length: number; width: number; height: number };
   unit: 'mm' | 'cm' | 'm' | 'in' | 'ft';
   onUnitChange: (unit: 'mm' | 'cm' | 'm' | 'in' | 'ft') => void;
+  onAutoRotateToggle?: (enabled: boolean) => void;
+  autoRotateEnabled?: boolean;
 }
 
 export function ModelMeasurementTool({
@@ -55,7 +57,9 @@ export function ModelMeasurementTool({
   onMeasurementExport,
   modelDimensions,
   unit,
-  onUnitChange
+  onUnitChange,
+  onAutoRotateToggle,
+  autoRotateEnabled = false
 }: ModelMeasurementToolProps) {
   const [measurements, setMeasurements] = useState<MeasurementLine[]>([]);
   const [isMeasuring, setIsMeasuring] = useState(false);
@@ -66,6 +70,8 @@ export function ModelMeasurementTool({
   const [showLabels, setShowLabels] = useState(true);
   const [measurementColor, setMeasurementColor] = useState('#ff6b35');
   const [labelColor, setLabelColor] = useState('#ffffff');
+  const [autoRotateSpeed, setAutoRotateSpeed] = useState(1);
+  const [showGrid, setShowGrid] = useState(false);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
@@ -170,6 +176,15 @@ export function ModelMeasurementTool({
   const stopMeasuring = useCallback(() => {
     setIsMeasuring(false);
   }, []);
+
+  const toggleAutoRotate = useCallback(() => {
+    const newState = !autoRotateEnabled;
+    onAutoRotateToggle?.(newState);
+    toast({
+      title: newState ? "Auto Rotate Enabled" : "Auto Rotate Disabled",
+      description: newState ? "Model will rotate automatically" : "Manual rotation only",
+    });
+  }, [autoRotateEnabled, onAutoRotateToggle, toast]);
 
   // Animation variants
   const toolVariants = {
@@ -357,6 +372,33 @@ export function ModelMeasurementTool({
                 <RotateCcw className="w-4 h-4" />
               </Button>
             </div>
+            
+            {/* Auto Rotate Control */}
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant={autoRotateEnabled ? 'default' : 'outline'}
+                onClick={toggleAutoRotate}
+                className="flex-1"
+              >
+                <RotateCcw className={`w-4 h-4 mr-2 ${autoRotateEnabled ? 'animate-spin' : ''}`} />
+                Auto Rotate
+              </Button>
+              {autoRotateEnabled && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400">Speed:</span>
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="3"
+                    step="0.5"
+                    value={autoRotateSpeed}
+                    onChange={(e) => setAutoRotateSpeed(Number(e.target.value))}
+                    className="w-16 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Settings Panel */}
@@ -393,6 +435,18 @@ export function ModelMeasurementTool({
                       className="text-gray-400 hover:text-white"
                     >
                       {snapToGrid ? <Zap className="w-4 h-4" /> : <Zap className="w-4 h-4 opacity-50" />}
+                    </Button>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-300">Show Grid</span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setShowGrid(!showGrid)}
+                      className="text-gray-400 hover:text-white"
+                    >
+                      {showGrid ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                     </Button>
                   </div>
                 </div>

@@ -31,8 +31,27 @@ const OptimizedModel = ({
 }: OptimizedGLBViewerProps & { threeJS: any }) => {
   const groupRef = useRef<any>(null)
   const { gl, camera } = threeJS.useThree()
-  const { scene, animations } = threeJS.useGLTF(modelPath)
-  const { actions } = threeJS.useAnimations(animations, scene)
+  
+  // Safe GLTF loading with error handling
+  let scene, animations;
+  try {
+    const gltfResult = threeJS.useGLTF(modelPath);
+    scene = gltfResult.scene;
+    animations = gltfResult.animations || [];
+  } catch (error) {
+    console.error('Failed to load GLTF model:', error);
+    return null;
+  }
+  
+  // Safe animations setup
+  let actions = {};
+  try {
+    if (scene && animations.length > 0) {
+      actions = threeJS.useAnimations(animations, scene)?.actions || {};
+    }
+  } catch (error) {
+    console.warn('Failed to setup animations:', error);
+  }
 
   const [arSupported, setArSupported] = useState(false)
   const [isARSession, setIsARSession] = useState(false)
@@ -57,12 +76,16 @@ const OptimizedModel = ({
 
   // Auto-play animations
   useEffect(() => {
-    if (enableAnimations && actions) {
-      Object.values(actions).forEach((action) => {
-        if (action) {
-          action.play()
-        }
-      })
+    if (enableAnimations && actions && Object.keys(actions).length > 0) {
+      try {
+        Object.values(actions).forEach((action: any) => {
+          if (action && typeof action.play === 'function') {
+            action.play()
+          }
+        })
+      } catch (error) {
+        console.warn('Failed to play animations:', error);
+      }
     }
   }, [actions, enableAnimations])
 
@@ -96,12 +119,16 @@ const OptimizedModel = ({
   // Apply shadows if enabled
   useEffect(() => {
     if (enableShadows && scene) {
-      scene.traverse((child) => {
-        if (child.isMesh) {
-          child.castShadow = true
-          child.receiveShadow = true
-        }
-      })
+      try {
+        scene.traverse((child: any) => {
+          if (child.isMesh) {
+            child.castShadow = true
+            child.receiveShadow = true
+          }
+        })
+      } catch (error) {
+        console.warn('Failed to apply shadows:', error);
+      }
     }
   }, [scene, enableShadows])
 

@@ -50,18 +50,32 @@ export type { GLTF } from 'three-stdlib';
 
 // Optimized model loading hook
 export const useOptimizedGLTF = (url: string) => {
-  return useGLTF(url, true); // Enable draco compression
+  try {
+    return useGLTF(url, true); // Enable draco compression
+  } catch (error) {
+    console.error('Error loading GLTF:', error);
+    throw error;
+  }
 };
 
 // Optimized animation hook
 export const useOptimizedAnimations = (animations: any[], group: any) => {
-  return useAnimations(animations, group);
+  try {
+    return useAnimations(animations, group);
+  } catch (error) {
+    console.error('Error setting up animations:', error);
+    throw error;
+  }
 };
 
 // Preload critical models
 export const preloadModels = (urls: string[]) => {
   urls.forEach(url => {
-    useGLTF.preload(url);
+    try {
+      useGLTF.preload(url);
+    } catch (error) {
+      console.warn(`Failed to preload model: ${url}`, error);
+    }
   });
 };
 

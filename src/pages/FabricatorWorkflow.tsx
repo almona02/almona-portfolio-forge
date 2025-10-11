@@ -326,8 +326,8 @@ export const FabricatorWorkflow: React.FC = () => {
   }, [currentProject]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white pt-20">
+      {/* Main Content Container */}
       <div className="container mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
