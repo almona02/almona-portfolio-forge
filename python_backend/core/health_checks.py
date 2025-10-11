@@ -11,6 +11,7 @@ from fastapi import HTTPException, status
 from core.config import settings
 from core.connection_pool import get_connection_pool
 from core.monitoring import get_structured_logger, record_error_metrics
+from core.railway_health import railway_health
 
 logger = get_structured_logger(__name__)
 
@@ -205,6 +206,38 @@ class SystemResourcesHealthCheck(HealthCheck):
         return HealthStatus.HEALTHY
 
 
+class RailwayServicesHealthCheck(HealthCheck):
+    """Health check for Railway services (PostgreSQL, Redis, Email)."""
+    
+    def __init__(self):
+        super().__init__("railway_services", critical=False)
+    
+    async def _perform_check(self) -> HealthStatus:
+        """Check Railway services health."""
+        try:
+            # Get Railway services status
+            railway_status = await railway_health.check_all_services()
+            
+            self.details = {
+                "railway_services": railway_status["services"],
+                "overall_status": railway_status["overall_status"],
+                "recommendations_available": True
+            }
+            
+            # Convert Railway status to our health status
+            if railway_status["overall_status"] == "healthy":
+                return HealthStatus.HEALTHY
+            elif railway_status["overall_status"] == "degraded":
+                return HealthStatus.DEGRADED
+            else:
+                return HealthStatus.UNHEALTHY
+            
+        except Exception as e:
+            logger.error(f"Railway services health check failed: {e}")
+            self.details = {"error": str(e)}
+            raise
+
+
 class HealthCheckManager:
     """Manages all health checks."""
     
@@ -214,6 +247,7 @@ class HealthCheckManager:
             RedisHealthCheck(),
             ExternalServicesHealthCheck(),
             SystemResourcesHealthCheck(),
+            RailwayServicesHealthCheck(),
         ]
         self.start_time = time.time()
     

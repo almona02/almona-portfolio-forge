@@ -33,6 +33,12 @@ class Settings(BaseSettings):
     REDIS_URL: str = Field(
         default_factory=lambda: os.getenv('REDIS_URL', '')
     )
+    REDIS_HOST: str = Field(
+        default_factory=lambda: os.getenv('REDIS_HOST', 'localhost')
+    )
+    REDIS_PORT: int = Field(
+        default_factory=lambda: int(os.getenv('REDIS_PORT', '6379'))
+    )
 
     # JWT
     JWT_SECRET_KEY: str = Field(
@@ -159,7 +165,22 @@ class Settings(BaseSettings):
         default_factory=lambda: int(os.getenv("SUPABASE_MAX_RETRIES", "3"))
     )
 
-    # SendGrid Configuration
+    # Email Configuration - Railway Resend (Priority) + SendGrid (Fallback)
+    RESEND_API_KEY: str = Field(
+        default_factory=lambda: os.getenv("RESEND_API_KEY", "")
+    )
+    RESEND_FROM_EMAIL: str = Field(
+        default_factory=lambda: os.getenv(
+            "RESEND_FROM_EMAIL", "noreply@almona.com"
+        )
+    )
+    RESEND_FROM_NAME: str = Field(
+        default_factory=lambda: os.getenv(
+            "RESEND_FROM_NAME", "Almona Industrial"
+        )
+    )
+    
+    # SendGrid Configuration (Fallback)
     SENDGRID_API_KEY: str = Field(
         default_factory=lambda: os.getenv("SENDGRID_API_KEY", "")
     )
@@ -190,6 +211,9 @@ class Settings(BaseSettings):
     # Monitoring Configuration
     ENVIRONMENT: str = Field(
         default_factory=lambda: os.getenv("ENVIRONMENT", "development")
+    )
+    DEBUG: bool = Field(
+        default_factory=lambda: os.getenv("DEBUG", "false").lower() == "true"
     )
     LOG_LEVEL: str = Field(
         default_factory=lambda: os.getenv("LOG_LEVEL", "INFO")

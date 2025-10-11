@@ -13,6 +13,7 @@ from core.middleware import (
 from core.connection_pool import get_connection_pool
 from core.monitoring import setup_monitoring, monitoring, get_structured_logger
 from core.health_checks import get_health_status, get_liveness_status, get_readiness_status
+from core.railway_health import get_railway_recommendations
 
 app = FastAPI(
     title="Almona Industrial API",
@@ -240,3 +241,12 @@ async def database_health():
             "last_check": "N/A"  # Could add timestamp
         }
     }
+
+
+@app.get("/health/railway")
+async def railway_services_recommendations():
+    """
+    Railway services health and recommendations endpoint.
+    Shows what services are missing and provides setup commands.
+    """
+    return await get_railway_recommendations()
