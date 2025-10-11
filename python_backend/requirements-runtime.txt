@@ -38,6 +38,9 @@ requests==2.31.0
 pillow==10.4.0
 numpy==1.26.4
 
+# OpenTelemetry
+opentelemetry-semantic-conventions==0.42b0
+
 # Utilities
 pydantic-core==2.14.1
 typing-extensions==4.8.0
