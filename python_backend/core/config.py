@@ -33,6 +33,12 @@ class Settings(BaseSettings):
     REDIS_URL: str = Field(
         default_factory=lambda: os.getenv('REDIS_URL', '')
     )
+    REDIS_HOST: str = Field(
+        default_factory=lambda: os.getenv('REDIS_HOST', 'localhost')
+    )
+    REDIS_PORT: int = Field(
+        default_factory=lambda: int(os.getenv('REDIS_PORT', '6379'))
+    )
 
     # JWT
     JWT_SECRET_KEY: str = Field(
@@ -190,6 +196,9 @@ class Settings(BaseSettings):
     # Monitoring Configuration
     ENVIRONMENT: str = Field(
         default_factory=lambda: os.getenv("ENVIRONMENT", "development")
+    )
+    DEBUG: bool = Field(
+        default_factory=lambda: os.getenv("DEBUG", "false").lower() == "true"
     )
     LOG_LEVEL: str = Field(
         default_factory=lambda: os.getenv("LOG_LEVEL", "INFO")
