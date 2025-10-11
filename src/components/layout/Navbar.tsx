@@ -7,7 +7,6 @@ import {
   ShoppingCart, 
   User, 
   LogOut,
-  Globe,
   Shield,
   Search,
   Sparkles
@@ -33,12 +32,6 @@ interface NavItem {
   badge?: "NEW" | "AI" | "PRO";
 }
 
-interface Region {
-  code: string;
-  name: string;
-  flag: string;
-  language: string;
-}
 
 // Throttle utility for performance
 const throttle = <T extends (...args: unknown[]) => unknown>(
@@ -158,12 +151,6 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
     },
   ], []);
 
-  // Memoized regions data
-  const regions = useMemo<Region[]>(() => [
-    { code: "TR", name: "Turkey", flag: "🇹🇷", language: "Türkçe" },
-    { code: "EG", name: "Egypt", flag: "🇪🇬", language: "العربية" },
-    { code: "INT", name: "International", flag: "🌍", language: "English" },
-  ], []);
 
   // Optimized dropdown handlers
   const handleDropdownEnter = useCallback((dropdownName: string) => {
@@ -517,44 +504,6 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
               </div>
             </form>
 
-            {/* Region Selector */}
-            <div className="relative">
-              <button
-                className="flex items-center space-x-2 px-3 py-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-300 border border-transparent hover:border-orange-500/20"
-                onClick={() => setActiveDropdown(activeDropdown === "region" ? null : "region")}
-              >
-                <Globe className="h-4 w-4" />
-                <span className="text-sm font-medium">TR</span>
-                <ChevronDown className="h-3 w-3" />
-              </button>
-
-              {activeDropdown === "region" && (
-                <div className="absolute top-full right-0 mt-3 w-56 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-2xl shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-300">
-                  <div className="p-2">
-                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      Select Region
-                    </div>
-                    {regions.map((region) => (
-                      <button
-                        key={region.code}
-                        className="w-full text-left px-3 py-3 text-sm text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10 rounded-xl transition-all duration-300 flex items-center space-x-3 group"
-                        onClick={closeAllDropdowns}
-                      >
-                        <span className="text-xl">{region.flag}</span>
-                        <div className="flex-1">
-                          <div className="font-medium group-hover:text-orange-300">
-                            {region.name}
-                          </div>
-                          <div className="text-xs text-gray-400 group-hover:text-gray-300">
-                            {region.language}
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
 
             {/* Quote Cart */}
             <Link

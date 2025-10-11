@@ -36,6 +36,8 @@ interface EnhancedModel3DDialogProps {
     power?: string;
     features?: string[];
   };
+  autoRotateEnabled?: boolean;
+  onAutoRotateChange?: (enabled: boolean) => void;
 }
 
 interface LoadingProgress {
@@ -49,7 +51,9 @@ export function EnhancedModel3DDialog({
   onClose, 
   modelPath = "/models/AR-Code-Object-Capture-app-1752786892 (1).glb",
   machineName = "3D Model Viewer",
-  machineData
+  machineData,
+  autoRotateEnabled = false,
+  onAutoRotateChange
 }: EnhancedModel3DDialogProps) {
   const [loadingProgress, setLoadingProgress] = useState<LoadingProgress>({
     stage: 'initializing',
@@ -61,7 +65,7 @@ export function EnhancedModel3DDialog({
   const [showMeasurements, setShowMeasurements] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [autoRotate, setAutoRotate] = useState(false);
+  const [autoRotate, setAutoRotate] = useState(autoRotateEnabled);
   const [isMuted, setIsMuted] = useState(false);
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'ar'>('desktop');
   
@@ -363,7 +367,11 @@ export function EnhancedModel3DDialog({
                   <Button
                     size="sm"
                     variant="secondary"
-                    onClick={() => setAutoRotate(!autoRotate)}
+                    onClick={() => {
+                      const newState = !autoRotate;
+                      setAutoRotate(newState);
+                      onAutoRotateChange?.(newState);
+                    }}
                     className="bg-black/50 backdrop-blur-sm text-white border-gray-600"
                   >
                     {autoRotate ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}

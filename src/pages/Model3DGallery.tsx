@@ -105,6 +105,7 @@ export default function Model3DGalleryPage() {
   const [show3DDialog, setShow3DDialog] = useState(false);
   const [showMeasurementTool, setShowMeasurementTool] = useState(false);
   const [measurementUnit, setMeasurementUnit] = useState<'mm' | 'cm' | 'm' | 'in' | 'ft'>('mm');
+  const [autoRotateEnabled, setAutoRotateEnabled] = useState(false);
   const { toast } = useToast();
 
   const handleModelSelect = (model: any) => {
@@ -305,6 +306,8 @@ export default function Model3DGalleryPage() {
               features: selectedModel.tags,
               fileSize: selectedModel.fileSize
             }}
+            autoRotateEnabled={autoRotateEnabled}
+            onAutoRotateChange={setAutoRotateEnabled}
           />
         )}
 
@@ -322,6 +325,8 @@ export default function Model3DGalleryPage() {
           } : undefined}
           unit={measurementUnit}
           onUnitChange={setMeasurementUnit}
+          onAutoRotateToggle={setAutoRotateEnabled}
+          autoRotateEnabled={autoRotateEnabled}
         />
       </div>
     </main>
