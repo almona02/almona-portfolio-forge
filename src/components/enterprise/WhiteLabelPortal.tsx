@@ -586,7 +586,7 @@ export const WhiteLabelPortal: React.FC = () => {
                       <div className="bg-purple-600 h-2 rounded-full" style={{ width: '32%' }}></div>
                     </div>
                   </div>
-                </div>
+                </CardContent>
               </Card>
             </TabsContent>
 

@@ -31,7 +31,7 @@ structlog==23.2.0
 prometheus-client==0.19.0
 
 # HTTP Client
-httpx==0.24.1
+httpx>=0.24.0,<0.25.0
 requests==2.31.0
 
 # Utilities

@@ -152,18 +152,87 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
           >
             {/* Main logo container with animated logo */}
             <div className="w-32 h-32 rounded-full bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 flex items-center justify-center shadow-2xl relative overflow-hidden">
-              {/* Animated Logo */}
-              <motion.img
-                src="/logo.png"
-                alt="Almona Logo"
-                className="w-20 h-20 object-contain filter brightness-0 invert"
+              {/* Animated Logo - Same as Navbar */}
+              <motion.div
+                className="w-20 h-20"
                 initial={{ rotate: 0, scale: 0.5 }}
                 animate={{ rotate: 360, scale: 1 }}
                 transition={{ 
                   rotate: { duration: 2, repeat: Infinity, ease: "linear" },
                   scale: { duration: 0.8, ease: "easeOut" }
                 }}
-              />
+              >
+                <svg 
+                  className="w-full h-full transition-transform duration-500" 
+                  viewBox="0 0 100 100" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {/* Outer glow effect */}
+                  <circle cx="50" cy="50" r="48" fill="url(#logoGradient)" opacity="0.15" />
+                  
+                  {/* Main disc body with metallic sheen */}
+                  <circle cx="50" cy="50" r="42" fill="url(#logoGradient)" />
+                  <circle cx="50" cy="50" r="42" fill="url(#metallicSheen)" opacity="0.3" />
+                  
+                  {/* Triple Chip Grind (TCG) Teeth - 24 teeth for aluminum cutting */}
+                  {[...Array(24)].map((_, i) => {
+                    const angle = (i * 15) - 90; // 15 degrees per tooth, start at top
+                    const x1 = 50 + 35 * Math.cos(angle * Math.PI / 180);
+                    const y1 = 50 + 35 * Math.sin(angle * Math.PI / 180);
+                    const x2 = 50 + 42 * Math.cos(angle * Math.PI / 180);
+                    const y2 = 50 + 42 * Math.sin(angle * Math.PI / 180);
+                    return (
+                      <line
+                        key={i}
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        stroke="white"
+                        strokeWidth="1.5"
+                        opacity="0.8"
+                      />
+                    );
+                  })}
+                  
+                  {/* Center hole */}
+                  <circle cx="50" cy="50" r="8" fill="url(#centerGradient)" />
+                  <circle cx="50" cy="50" r="6" fill="url(#innerGradient)" />
+                  
+                  {/* Brand text */}
+                  <text
+                    x="50"
+                    y="75"
+                    textAnchor="middle"
+                    className="text-xs font-bold fill-white"
+                    opacity="0.9"
+                  >
+                    ALMONA
+                  </text>
+                  
+                  {/* Gradient definitions */}
+                  <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#FF5F1F" />
+                      <stop offset="50%" stopColor="#FF8C00" />
+                      <stop offset="100%" stopColor="#E14A00" />
+                    </linearGradient>
+                    <linearGradient id="metallicSheen" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#FFFFFF" />
+                      <stop offset="50%" stopColor="transparent" />
+                      <stop offset="100%" stopColor="#FFFFFF" />
+                    </linearGradient>
+                    <linearGradient id="centerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#2D2D2D" />
+                      <stop offset="100%" stopColor="#1A1A1A" />
+                    </linearGradient>
+                    <linearGradient id="innerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#404040" />
+                      <stop offset="100%" stopColor="#2D2D2D" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </motion.div>
               
               {/* Inner metallic shine */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent rounded-full"></div>
