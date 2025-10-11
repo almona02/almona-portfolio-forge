@@ -165,7 +165,22 @@ class Settings(BaseSettings):
         default_factory=lambda: int(os.getenv("SUPABASE_MAX_RETRIES", "3"))
     )
 
-    # SendGrid Configuration
+    # Email Configuration - Railway Resend (Priority) + SendGrid (Fallback)
+    RESEND_API_KEY: str = Field(
+        default_factory=lambda: os.getenv("RESEND_API_KEY", "")
+    )
+    RESEND_FROM_EMAIL: str = Field(
+        default_factory=lambda: os.getenv(
+            "RESEND_FROM_EMAIL", "noreply@almona.com"
+        )
+    )
+    RESEND_FROM_NAME: str = Field(
+        default_factory=lambda: os.getenv(
+            "RESEND_FROM_NAME", "Almona Industrial"
+        )
+    )
+    
+    # SendGrid Configuration (Fallback)
     SENDGRID_API_KEY: str = Field(
         default_factory=lambda: os.getenv("SENDGRID_API_KEY", "")
     )
