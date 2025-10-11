@@ -103,10 +103,16 @@ app.add_middleware(RequestValidationMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RateLimitMiddleware, requests_per_minute=100, burst_limit=20)
 
-# CORS middleware (static list per provided spec)
+# CORS middleware (production domains)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://yourdomain.com"],
+    allow_origins=[
+        "http://localhost:5173",  # Development
+        "https://www.almona02.com",  # Production domain
+        "https://almona-portfolio-forge.vercel.app",  # Vercel domain
+        "https://almona-portfolio-forge-kz44hknh6.vercel.app",  # Vercel preview
+        "https://almona-portfolio-forge-git-main.vercel.app"  # Vercel branch
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
