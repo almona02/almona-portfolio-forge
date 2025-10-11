@@ -1,0 +1,182 @@
+#!/usr/bin/env node
+
+/**
+ * Railway Environment Variables Generator
+ * 
+ * This script helps generate the necessary environment variables for Railway deployment
+ * Run with: node scripts/generate-railway-env.js
+ */
+
+import readline from 'readline';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+// Color codes for console output
+const colors = {
+  reset: '\x1b[0m',
+  bright: '\x1b[1m',
+  red: '\x1b[31m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  magenta: '\x1b[35m',
+  cyan: '\x1b[36m'
+};
+
+function colorLog(color, message) {
+  console.log(`${colors[color]}${message}${colors.reset}`);
+}
+
+function question(prompt) {
+  return new Promise((resolve) => {
+    rl.question(prompt, resolve);
+  });
+}
+
+async function generateEnvironmentVariables() {
+  colorLog('cyan', '🚀 Railway Environment Variables Generator');
+  colorLog('cyan', '==========================================\n');
+
+  colorLog('yellow', 'This script will help you generate environment variables for Railway deployment.\n');
+
+  const envVars = {};
+
+  // Required variables
+  colorLog('bright', '📋 REQUIRED VARIABLES (Essential for basic functionality)');
+  colorLog('yellow', 'These are the minimum variables needed for your app to work:\n');
+
+  envVars.VITE_SUPABASE_URL = await question('🔗 Supabase URL (https://your-project-id.supabase.co): ');
+  envVars.VITE_SUPABASE_KEY = await question('🔑 Supabase Anon Key: ');
+  envVars.NODE_ENV = 'production';
+  envVars.NODE_VERSION = '20';
+
+  console.log('\n');
+
+  // Optional AI Services
+  colorLog('bright', '🤖 AI SERVICES (Optional - for AI features)');
+  const includeAI = await question('Include AI services? (y/n): ');
+  
+  if (includeAI.toLowerCase() === 'y') {
+    envVars.VITE_GEMINI_KEY = await question('🔑 Google Gemini API Key: ');
+    envVars.VITE_OPENAI_API_KEY = await question('🔑 OpenAI API Key (optional): ');
+  }
+
+  console.log('\n');
+
+  // Optional Maps
+  colorLog('bright', '🗺️ MAPS & LOCATION (Optional - for map features)');
+  const includeMaps = await question('Include Google Maps? (y/n): ');
+  
+  if (includeMaps.toLowerCase() === 'y') {
+    envVars.VITE_GOOGLE_MAPS_API_KEY = await question('🗺️ Google Maps API Key: ');
+  }
+
+  console.log('\n');
+
+  // Optional Analytics
+  colorLog('bright', '📊 ANALYTICS (Optional - for tracking)');
+  const includeAnalytics = await question('Include Analytics? (y/n): ');
+  
+  if (includeAnalytics.toLowerCase() === 'y') {
+    envVars.VITE_GOOGLE_ANALYTICS_ID = await question('📊 Google Analytics ID: ');
+    envVars.VITE_ENABLE_ANALYTICS = 'true';
+    envVars.VITE_SENTRY_DSN = await question('🐛 Sentry DSN (optional): ');
+  }
+
+  console.log('\n');
+
+  // Contact Information
+  colorLog('bright', '📧 CONTACT INFORMATION');
+  envVars.VITE_CONTACT_EMAIL = await question('📧 Contact Email (default: info@almona.eg): ') || 'info@almona.eg';
+  envVars.VITE_APP_URL = await question('🌐 App URL (default: https://almona.eg): ') || 'https://almona.eg';
+
+  console.log('\n');
+
+  // Social Media (optional)
+  colorLog('bright', '📱 SOCIAL MEDIA (Optional)');
+  const includeSocial = await question('Include Social Media URLs? (y/n): ');
+  
+  if (includeSocial.toLowerCase() === 'y') {
+    envVars.VITE_FACEBOOK_URL = await question('📘 Facebook URL: ');
+    envVars.VITE_LINKEDIN_URL = await question('💼 LinkedIn URL: ');
+    envVars.VITE_INSTAGRAM_URL = await question('📷 Instagram URL: ');
+  }
+
+  console.log('\n');
+
+  // Generate the environment file
+  const envContent = generateEnvFile(envVars);
+  
+  // Save to file
+  const envFilePath = path.join(process.cwd(), 'railway.env');
+  fs.writeFileSync(envFilePath, envContent);
+
+  colorLog('green', '✅ Environment variables generated successfully!');
+  colorLog('green', `📁 Saved to: ${envFilePath}\n`);
+
+  // Display summary
+  colorLog('bright', '📋 SUMMARY');
+  colorLog('cyan', '==========');
+  colorLog('green', `✅ Required variables: ${Object.keys(envVars).filter(key => ['VITE_SUPABASE_URL', 'VITE_SUPABASE_KEY', 'NODE_ENV', 'NODE_VERSION'].includes(key)).length}`);
+  colorLog('blue', `🔧 Total variables: ${Object.keys(envVars).length}`);
+  
+  console.log('\n');
+  colorLog('yellow', '🚀 NEXT STEPS:');
+  colorLog('yellow', '1. Copy the contents of railway.env');
+  colorLog('yellow', '2. Go to your Railway project dashboard');
+  colorLog('yellow', '3. Navigate to Variables tab');
+  colorLog('yellow', '4. Add each variable from the file');
+  colorLog('yellow', '5. Deploy your application!');
+
+  console.log('\n');
+  colorLog('bright', '📄 Generated Environment Variables:');
+  console.log('=====================================');
+  console.log(envContent);
+
+  rl.close();
+}
+
+function generateEnvFile(envVars) {
+  let content = '# Railway Environment Variables\n';
+  content += '# Generated by Railway Environment Variables Generator\n';
+  content += '# Copy these variables to your Railway project dashboard\n\n';
+
+  // Group variables by category
+  const categories = {
+    'REQUIRED': ['VITE_SUPABASE_URL', 'VITE_SUPABASE_KEY', 'NODE_ENV', 'NODE_VERSION'],
+    'AI_SERVICES': ['VITE_GEMINI_KEY', 'VITE_OPENAI_API_KEY'],
+    'MAPS': ['VITE_GOOGLE_MAPS_API_KEY'],
+    'ANALYTICS': ['VITE_GOOGLE_ANALYTICS_ID', 'VITE_ENABLE_ANALYTICS', 'VITE_SENTRY_DSN'],
+    'CONTACT': ['VITE_CONTACT_EMAIL', 'VITE_APP_URL'],
+    'SOCIAL': ['VITE_FACEBOOK_URL', 'VITE_LINKEDIN_URL', 'VITE_INSTAGRAM_URL']
+  };
+
+  Object.entries(categories).forEach(([category, keys]) => {
+    const categoryVars = keys.filter(key => envVars[key]);
+    if (categoryVars.length > 0) {
+      content += `# ${category}\n`;
+      categoryVars.forEach(key => {
+        content += `${key}=${envVars[key]}\n`;
+      });
+      content += '\n';
+    }
+  });
+
+  return content;
+}
+
+// Run the generator
+if (import.meta.url === `file://${process.argv[1]}`) {
+  generateEnvironmentVariables().catch(console.error);
+}
+
+export { generateEnvironmentVariables };

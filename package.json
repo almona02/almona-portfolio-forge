@@ -59,7 +59,10 @@
     "test:production-ready": "npm run test:new-features && npm run test:iot-connection && npm run test:performance",
     "verify:implementation": "bash scripts/verify-implementation.sh",
     "deploy:production": "bash scripts/deploy-production.sh",
-    "deploy:staging": "bash scripts/deploy-production.sh --staging-only"
+    "deploy:staging": "bash scripts/deploy-production.sh --staging-only",
+    "railway:env": "node scripts/generate-railway-env.js",
+    "railway:deploy": "railway up",
+    "railway:logs": "railway logs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

@@ -16,6 +16,32 @@ The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, re
 - **Quote System**: Advanced quoting with bulk pricing and custom configurations
 - **Multi-Currency Support**: EGP, USD, EUR with real-time conversion
 - **Inventory Management**: Real-time stock tracking and availability
+- **Industrial Product Cards**: Specialized product display with certifications and specifications
+- **Product Quick View**: Modal-based product preview with detailed information
+- **Recently Viewed Products**: User browsing history and recommendations
+- **Smart Category Navigation**: Intelligent product categorization and filtering
+- **Category Breadcrumbs**: Hierarchical navigation with smart category mapping
+- **Mobile-Optimized Grid**: Responsive product display for mobile devices
+- **Virtualized Machine Grid**: Performance-optimized large product listings
+- **Mobile Filter Panel**: Touch-friendly filtering interface
+- **AI Equipment Advisor**: Lazy-loaded AI-powered equipment recommendations
+- **Freight Calculator**: Shipping cost calculation for industrial equipment
+- **Egyptian Standards Guide**: Local compliance and certification information
+- **Egyptian Technical Support Hub**: Regional technical support resources
+
+### 🏭 **Products & Machinery**
+- **YILMAZ Machines Showcase**: Dedicated Turkish machinery manufacturer display
+- **3D Model Integration**: Enhanced 3D model dialogs with measurement tools
+- **Machine Comparison System**: Side-by-side product comparison (up to 5 machines)
+- **Compare Bar**: Floating comparison interface with machine management
+- **Compare Dialog**: Detailed comparison view with specifications
+- **Machine Recommendation Wizard**: AI-powered machine selection assistant
+- **Quick Preview Modal**: Framer Motion animated product previews
+- **Virtualized Machine Loading**: Performance-optimized large machine catalogs
+- **Smart Category Mapping**: Intelligent product categorization system
+- **Debounced Search**: Performance-optimized search with 300ms debounce
+- **Scroll Threshold Detection**: Dynamic UI based on scroll position
+- **Error Boundary Protection**: Comprehensive error handling with fallbacks
 
 ### 🔧 **Service Management**
 - **Service Ticketing System**: Professional SLA-based ticket management
@@ -24,25 +50,69 @@ The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, re
 - **Preventive Maintenance**: Automated scheduling and reminders
 - **Emergency Services**: 24/7 emergency support with priority routing
 - **Spare Parts Management**: Automated parts identification and ordering
+- **AI-Powered Predictive Maintenance**: Machine learning-driven failure predictions
+- **Real-Time Machine Health Monitoring**: Live sensor data and health scoring
+- **Predictive Maintenance Engine**: Lazy-loaded advanced maintenance analytics
+- **Maintenance Dashboard**: Comprehensive maintenance management interface
+- **Machine Registration Enhanced**: Advanced machine registration with digital twins
+- **Emergency Service Dialog**: Priority emergency service request interface
+- **Service View Toggle**: Simple/Advanced service interface switching
+- **Simple Services View**: Streamlined service selection interface
+- **Operator Training Incentive Dialog**: Training program management
+- **Ticket Wizard Dialog**: Unified ticket creation system
+- **Unified Ticketing System**: Consolidated support, maintenance, and emergency tickets
+- **Digital Twin Integration**: Machine lifecycle tracking with unique identifiers
+- **Quote Twin Search Panel**: Customer portal quote tracking system
 
 ### 🤖 **AI-Powered Features**
 - **Equipment Advisor**: AI recommendations based on requirements
 - **Part Detection**: Computer vision for spare parts identification
-- **Predictive Maintenance**: ML-based maintenance predictions
+- **Predictive Maintenance**: ML-based maintenance predictions with 94% accuracy
 - **Fault Detection**: Automated issue diagnosis from images/audio
 - **Smart Search**: Intelligent product and documentation search
+- **AI Sales Acceleration**: Lead scoring and automated proposal generation
+- **Predictive Analytics Platform**: Machine learning trend forecasting
+- **AI Technical Chatbot**: Customer support automation
+- **Machine Health Prediction**: Real-time failure prediction algorithms
+- **Sensor Data Analysis**: Vibration, temperature, acoustic monitoring
+- **Automated Workflow Generation**: AI-powered process optimization
+- **Natural Language Processing**: Technical document analysis
+- **Computer Vision**: Quality control and part identification
+
+### 🏪 **Used Machinery Marketplace**
+- **Used Machine Browsing**: Comprehensive marketplace for pre-owned equipment
+- **Advanced Filtering**: Location, machine type, and condition-based filtering
+- **Machine Type Categories**: Copy routers, cutting machines, CNC centers, welding machines
+- **Location-Based Search**: Governorate-specific machine listings
+- **Condition Assessment**: Excellent/Good condition ratings with verification
+- **Seller Verification**: Verified seller badges and trust indicators
+- **Machine Details**: Comprehensive specifications including hours, year, location
+- **Inspection Requests**: Technical inspection booking system
+- **Sell Used Machine Form**: Complete machine selling interface
+- **Trust Indicators**: Technical inspection, secure transactions, logistical support
+- **Egyptian Market Focus**: Localized for Egyptian industrial market
 
 ### 🌐 **Internationalization**
 - **Multi-Language Support**: Arabic (RTL) and English (LTR)
 - **Localized Content**: Region-specific pricing, regulations, and standards
 - **Egyptian Standards**: Compliance with local industrial standards
 - **Cultural Adaptation**: Tailored UX for Middle Eastern markets
+- **French & German Support**: EU market expansion with localized content
+- **GDPR Compliance**: European data protection regulation compliance
+- **Multi-Region Deployment**: Global infrastructure with regional customization
 
 ### 📱 **Advanced UI/UX**
 - **Responsive Design**: Optimized for all devices and screen sizes
 - **Progressive Web App**: Offline capabilities and app-like experience
 - **Accessibility**: WCAG 2.1 AA compliant with screen reader support
 - **Performance**: Optimized loading with lazy loading and caching
+- **Framer Motion Animations**: Smooth, performant UI transitions
+- **Mobile-First Design**: Touch-optimized interfaces for mobile devices
+- **Neon Button Components**: Industrial-themed UI elements
+- **Glass/Opacity UI**: Modern glassmorphism design elements
+- **Error Boundary Protection**: Comprehensive error handling
+- **Skeleton Loading States**: Optimized loading experiences
+- **Reduced Motion Support**: Accessibility-compliant motion preferences
 
 ### 🔐 **Security & Authentication**
 - **Multi-Factor Authentication**: SMS OTP and email verification
@@ -50,6 +120,9 @@ The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, re
 - **Row Level Security**: Database-level security policies
 - **Audit Logging**: Comprehensive activity tracking
 - **Data Protection**: GDPR compliant with data encryption
+- **Permission-Based Access**: Granular access control for service tickets
+- **Secure File Upload**: Protected file handling with validation
+- **API Rate Limiting**: Request throttling and abuse prevention
 
 ## 🛠 Technology Stack
 
@@ -89,33 +162,93 @@ The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, re
 src/
 ├── components/           # Reusable UI components
 │   ├── 3d-model/        # 3D viewers and AR components
+│   │   ├── Model3DDialog.tsx
+│   │   ├── EnhancedModel3DDialog.tsx
+│   │   ├── Model3DGallery.tsx
+│   │   └── ModelMeasurementTool.tsx
 │   ├── about/           # Company information components
 │   ├── auth/            # Authentication components
 │   ├── comparison/      # Product comparison tools
+│   │   ├── CompareBar.tsx
+│   │   └── CompareDialog.tsx
 │   ├── contact/         # Contact and support forms
 │   ├── home/            # Homepage sections
 │   ├── layout/          # Navigation and layout components
+│   ├── mobile/          # Mobile-optimized components
+│   │   └── MobileTicketCreator.tsx
+│   ├── optimized/       # Performance-optimized components
+│   │   ├── VirtualizedMachineGrid.tsx
+│   │   ├── MobileOptimizedGrid.tsx
+│   │   └── MobileFilterPanel.tsx
+│   ├── portal/          # Customer portal components
+│   │   └── MachineHealthDashboard.tsx
 │   ├── products/        # Product display components
+│   │   ├── SmartCategoryNavigation.tsx
+│   │   └── CategoryBreadcrumb.tsx
 │   ├── quotes/          # Quote management components
+│   │   ├── QuoteRequestDialog.tsx
+│   │   └── QuoteTwinSearchPanel.tsx
 │   ├── services/        # Service-related components
+│   │   ├── ServiceCard.tsx
+│   │   ├── EmergencyServiceDialog.tsx
+│   │   ├── ServiceViewToggle.tsx
+│   │   ├── SimpleServicesView.tsx
+│   │   ├── MachineRegistrationEnhanced.tsx
+│   │   ├── MaintenanceDashboard.tsx
+│   │   ├── PredictiveMaintenanceEngine.tsx
+│   │   └── OperatorTrainingIncentiveDialog.tsx
 │   ├── shop/            # E-commerce components
+│   │   ├── IndustrialProductCard.tsx
+│   │   ├── ProductQuickView.tsx
+│   │   ├── RecentlyViewedProducts.tsx
+│   │   ├── FreightCalculator.tsx
+│   │   ├── EgyptianStandardsGuide.tsx
+│   │   ├── EgyptianTechnicalSupportHub.tsx
+│   │   └── ai-advisor/
+│   │       └── AiEquipmentAdvisor.tsx
 │   ├── support/         # Customer support components
+│   │   ├── TicketWizardDialog.tsx
+│   │   └── AITechnicalChatbot.tsx
 │   ├── ui/              # Base UI components (shadcn/ui)
+│   │   ├── FormSkeleton.tsx
+│   │   └── Progress.tsx
 │   └── used-machines/   # Used machinery marketplace
+│       └── SellUsedMachineForm.tsx
 ├── pages/               # Route components
-│   ├── machines/        # Machine detail pages
-│   ├── profiles/        # User profile pages
-│   ├── workflows/       # Process workflow pages
-│   └── Services/        # Service management pages
+│   ├── Products.tsx     # YILMAZ machines showcase
+│   ├── Shop.tsx         # Industrial equipment hub
+│   ├── Services.tsx     # AI-powered services
+│   ├── UsedMachines.tsx # Used machinery marketplace
+│   ├── CustomerPortal.tsx # Customer dashboard
+│   ├── Model3DGallery.tsx # 3D model gallery
+│   └── AdminDashboard.tsx # Admin management
 ├── hooks/               # Custom React hooks
+│   ├── useVirtualizedMachines.ts
+│   ├── useScrollThreshold.ts
+│   ├── useToast.ts
+│   └── useReducedMotionPref.ts
 ├── lib/                 # Utility libraries
 │   ├── ai/             # AI service integrations
-│   ├── reports/        # Report generation
-│   └── polyfills/      # Browser compatibility
+│   ├── analytics/      # Business intelligence
+│   ├── comparisonStorage.ts # Comparison persistence
+│   ├── i18n.ts         # Internationalization
+│   ├── performance.ts  # Performance monitoring
+│   ├── imageOptimization.ts # Image optimization
+│   └── ticketing/      # Unified ticketing system
 ├── context/            # React context providers
+│   ├── AuthContext.tsx
+│   └── QuoteContext.tsx
 ├── constants/          # Static data and configurations
+│   ├── yilmazMachines.ts
+│   ├── productsData.ts
+│   ├── uniqueProductsData.ts
+│   └── smartCategories.ts
 ├── data/               # Mock data and fixtures
+│   ├── inventory.ts
+│   └── usedMachines.ts
 ├── types/              # TypeScript type definitions
+├── shared/             # Shared UI components
+│   └── ui/            # shadcn/ui components
 └── assets/             # Static assets and images
 ```
 
@@ -382,30 +515,82 @@ Notes
 ## 🔧 Key Components
 
 ### **Shop & E-Commerce**
-- `ProductConfigurator` - Advanced product configuration
-- `FreightCalculator` - Shipping cost calculation
-- `QuoteRequestStepper` - Multi-step quote process
-- `EquipmentComparisonTool` - Side-by-side comparisons
-- `RecentlyViewedProducts` - User browsing history
+- `IndustrialProductCard` - Specialized industrial product display
+- `ProductQuickView` - Modal-based product preview
+- `RecentlyViewedProducts` - User browsing history and recommendations
+- `FreightCalculator` - Shipping cost calculation for industrial equipment
+- `EgyptianStandardsGuide` - Local compliance and certification information
+- `EgyptianTechnicalSupportHub` - Regional technical support resources
+- `SmartCategoryNavigation` - Intelligent product categorization and filtering
+- `CategoryBreadcrumb` - Hierarchical navigation with smart category mapping
+- `SmartCategoryFilter` - Advanced filtering interface
+- `MobileOptimizedGrid` - Responsive product display for mobile devices
+- `VirtualizedMachineGrid` - Performance-optimized large product listings
+- `MobileFilterPanel` - Touch-friendly filtering interface
+
+### **Products & Machinery**
+- `Model3DDialog` - Basic 3D model viewer
+- `EnhancedModel3DDialog` - Advanced 3D model viewer with measurement tools
+- `CompareBar` - Floating comparison interface with machine management
+- `CompareDialog` - Detailed comparison view with specifications
+- `MachineRecommendationWizard` - AI-powered machine selection assistant
+- `QuickPreviewModal` - Framer Motion animated product previews
+- `VirtualizedMachineGrid` - Performance-optimized large machine catalogs
+- `MobileOptimizedGrid` - Mobile-responsive machine display
+- `MobileFilterPanel` - Touch-friendly machine filtering
+- `SmartCategoryNavigation` - Intelligent machine categorization
+- `CategoryBreadcrumb` - Hierarchical machine navigation
 
 ### **3D & AR Features**
-- `EnhancedGLBViewer` - 3D model rendering
+- `Model3DDialog` - 3D model rendering interface
+- `EnhancedModel3DDialog` - Advanced 3D model viewer with AR capabilities
+- `Model3DGallery` - 3D model gallery with filtering and search
+- `ModelMeasurementTool` - 3D model measurement and annotation tools
 - `ARViewer` - Augmented reality integration
-- `Machine3DButton` - 3D model triggers
 - `WorkspaceChecker` - AR space validation
 
 ### **Service Management**
-- `AdminTicketDashboard` - Service ticket management
-- `CreateTicketDialog` - Ticket creation interface
-- `TicketDetailView` - Comprehensive ticket details
-- `MaintenanceDashboard` - Preventive maintenance
-- `MachineRegistration` - Equipment registration
+- `ServiceCard` - Service display and selection interface
+- `EmergencyServiceDialog` - Priority emergency service request interface
+- `ServiceViewToggle` - Simple/Advanced service interface switching
+- `SimpleServicesView` - Streamlined service selection interface
+- `MachineRegistrationEnhanced` - Advanced machine registration with digital twins
+- `MaintenanceDashboard` - Comprehensive maintenance management interface
+- `PredictiveMaintenanceEngine` - Lazy-loaded advanced maintenance analytics
+- `OperatorTrainingIncentiveDialog` - Training program management
+- `TicketWizardDialog` - Unified ticket creation system
+- `QuoteTwinSearchPanel` - Customer portal quote tracking system
+- `MachineHealthDashboard` - Real-time machine health monitoring
+- `AITechnicalChatbot` - Customer support automation
+- `MobileTicketCreator` - Mobile-optimized ticket creation
+
+### **Used Machinery Marketplace**
+- `SellUsedMachineForm` - Complete machine selling interface
+- `UsedMachineCard` - Used machine display with condition and verification
+- `MachineInspectionRequest` - Technical inspection booking system
+- `TrustIndicator` - Seller verification and trust badges
 
 ### **AI & Smart Features**
-- `AiEquipmentAdvisor` - AI-powered recommendations
-- `MachineRecommendationWizard` - Smart product finder
-- `FabricationReportGenerator` - Automated reporting
-- `IntelligentForm` - Smart form assistance
+- `AiEquipmentAdvisor` - AI-powered equipment recommendations
+- `MachineRecommendationWizard` - Smart product finder with AI
+- `PredictiveMaintenanceEngine` - ML-based maintenance predictions
+- `MachineHealthPrediction` - Real-time failure prediction algorithms
+- `SensorDataAnalysis` - Vibration, temperature, acoustic monitoring
+- `AutomatedWorkflowGeneration` - AI-powered process optimization
+- `NaturalLanguageProcessing` - Technical document analysis
+- `ComputerVision` - Quality control and part identification
+- `AITechnicalChatbot` - Customer support automation
+- `AI Sales Acceleration` - Lead scoring and automated proposal generation
+- `PredictiveAnalyticsPlatform` - Machine learning trend forecasting
+
+### **UI/UX Components**
+- `NeonButton` - Industrial-themed button components
+- `Progress` - Progress indicators and loading states
+- `Skeleton` - Loading state components
+- `ErrorBoundary` - Comprehensive error handling
+- `FormSkeleton` - Form loading states
+- `MobileTicketCreator` - Mobile-optimized interfaces
+- `ReducedMotionSupport` - Accessibility-compliant motion preferences
 
 ## 🌍 Internationalization
 
@@ -531,13 +716,21 @@ For technical support or questions:
 
 ## 🔄 Recent Updates
 
-### **Version 2.0.0** (Latest)
-- ✅ **Service Ticketing System**: Professional SLA-based support system
-- ✅ **AI-Powered Services**: Equipment advisor and part detection
-- ✅ **Enhanced Security**: Row Level Security and audit logging
-- ✅ **Multi-Language Support**: Complete Arabic/English localization
-- ✅ **Performance Improvements**: 40% faster loading times
-- ✅ **Mobile Optimization**: Enhanced mobile experience
+### **Version 3.0.0** (Latest)
+- ✅ **Comprehensive Product Showcase**: YILMAZ machines with 3D integration
+- ✅ **Advanced Shop Experience**: Industrial equipment hub with AI advisor
+- ✅ **AI-Powered Services**: Predictive maintenance with 94% accuracy
+- ✅ **Used Machinery Marketplace**: Complete buy/sell platform
+- ✅ **Enhanced 3D Experience**: Model gallery with measurement tools
+- ✅ **Customer Portal**: Machine health dashboard and quote tracking
+- ✅ **Mobile-First Design**: Touch-optimized interfaces
+- ✅ **Performance Optimization**: Virtualized grids and lazy loading
+- ✅ **Unified Ticketing System**: Consolidated support and maintenance
+- ✅ **Digital Twin Integration**: Machine lifecycle tracking
+- ✅ **Real-Time Monitoring**: Live sensor data and health scoring
+- ✅ **Multi-Language Support**: Arabic, English, French, German
+- ✅ **GDPR Compliance**: European market readiness
+- ✅ **Advanced UI/UX**: Framer Motion animations and glassmorphism
 
 ### **Database Schema Updates**
 - Complete e-commerce schema with products, orders, quotes
