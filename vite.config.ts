@@ -49,74 +49,18 @@ export default defineConfig(({ mode }) => {
         // Optimize JSX runtime
         jsxRuntime: 'automatic'
       }),
-      // Enhanced PWA configuration with offline support for service tickets
+      // Simplified PWA configuration for reliable builds
       VitePWA({
         registerType: "autoUpdate",
         injectRegister: "auto",
         devOptions: {
-          enabled: true // Enable in development for testing
+          enabled: false // Disable in development to avoid build issues
         },
         workbox: {
-          globPatterns: ["**/*.{js,css,html,ico,png,svg,json,woff,woff2}"],
-          globIgnores: ['**/stats.json'],
+          globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
           cleanupOutdatedCaches: true,
           skipWaiting: true,
-          clientsClaim: true,
-          navigateFallback: 'index.html',
-          navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
-          // Enhanced runtime caching for offline functionality
-          runtimeCaching: [
-            {
-              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'google-fonts-cache',
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365 // 365 days
-                },
-                cacheKeyWillBeUsed: async ({ request }) => {
-                  return `${request.url}?${Date.now()}`;
-                }
-              }
-            },
-            {
-              urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'gstatic-fonts-cache',
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365 // 365 days
-                }
-              }
-            },
-            {
-              // Cache API calls for offline fallback
-              urlPattern: /\/api\/.*/i,
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'api-cache',
-                expiration: {
-                  maxEntries: 50,
-                  maxAgeSeconds: 60 * 60 * 24 // 24 hours
-                },
-                networkTimeoutSeconds: 10
-              }
-            },
-            {
-              // Cache images
-              urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'images-cache',
-                expiration: {
-                  maxEntries: 100,
-                  maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
-                }
-              }
-            }
-          ]
+          clientsClaim: true
         },
         includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg"],
         manifest: {

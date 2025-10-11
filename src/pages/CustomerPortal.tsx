@@ -28,7 +28,7 @@ import TicketWizardDialog from '@/components/support/TicketWizardDialog';
 import { QuoteTwinSearchPanel } from '@/components/quotes/QuoteTwinSearchPanel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
-import { MachineHealthDashboard } from '@/components/portal/MachineHealthDashboard';
+// import { MachineHealthDashboard } from '@/components/portal/MachineHealthDashboard'; // Temporarily disabled for deployment
 import { AITechnicalChatbot } from '@/components/support/AITechnicalChatbot';
 import { MobileTicketCreator } from '@/components/mobile/MobileTicketCreator';
 
@@ -249,7 +249,11 @@ const CustomerPortal = () => {
                 animate="visible"
                 className="space-y-6"
               >
-                <MachineHealthDashboard />
+                {/* <MachineHealthDashboard /> */}
+                <div className="bg-almona-darker p-6 rounded-lg border border-almona-light/20">
+                  <h3 className="text-lg font-semibold mb-4">Machine Health Dashboard</h3>
+                  <p className="text-almona-light/70">Machine health monitoring coming soon...</p>
+                </div>
               </motion.div>
             </TabsContent>
 
