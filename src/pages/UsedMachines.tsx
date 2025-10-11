@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// import Navbar from '@/components/layout/Navbar';
-// import Footer from '@/components/layout/Footer';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Input } from '@/shared/ui/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { ChevronRight, MapPin, Factory, Calendar, Gauge } from 'lucide-react';
+import { ChevronRight, MapPin, Factory, Calendar, Gauge, Filter, Brain, TrendingUp } from 'lucide-react';
 import { usedMachines } from '@/data/usedMachines';
 import SellUsedMachineForm from '@/components/used-machines/SellUsedMachineForm';
 import { useAuth } from '@/context/AuthContext';
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
+import OptimizedImage from '@/components/shared/OptimizedImage';
+import PriceRangeFilter from '@/components/used-machines/PriceRangeFilter';
+import ConditionBadge from '@/components/used-machines/ConditionBadge';
+import MachineSEO from '@/components/used-machines/MachineSEO';
+import MachineCard from '@/components/used-machines/MachineCard';
+import SmartSearchBox from '@/components/search/SmartSearchBox';
+import RelatedMachinesSection from '@/components/search/RelatedMachinesSection';
+import { getPriceRange, isPriceInRange } from '@/utils/priceUtils';
+import { SearchResultsManager, SearchResult } from '@/services/SearchResultsManager';
+import { ParsedQuery } from '@/services/NaturalLanguageProcessor';
 
 /**
  * UsedMachines Component
@@ -29,6 +37,17 @@ const UsedMachines = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('all');
   const [machineTypeFilter, setMachineTypeFilter] = useState('all');
+  
+  // Enhanced filtering state
+  const priceRange = useMemo(() => getPriceRange(usedMachines), []);
+  const [priceFilter, setPriceFilter] = useState<[number, number]>([priceRange.min, priceRange.max]);
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // Smart search state
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [parsedQuery, setParsedQuery] = useState<ParsedQuery | null>(null);
+  const [currentSearchEventId, setCurrentSearchEventId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * Handles the sell button click, redirecting to login if user is not authenticated
@@ -56,17 +75,49 @@ const UsedMachines = () => {
     'Qena', 'Faiyum', 'Kafr El Sheikh', 'Beni Suef', 'Port Said'
   ];
 
-  const filteredMachines = usedMachines.filter(machine => {
-    const matchesSearch = machine.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          machine.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesLocation = locationFilter === 'all' || machine.location === locationFilter;
-    const matchesType = machineTypeFilter === 'all' || machine.type === machineTypeFilter;
+  // Perform intelligent search when filters change
+  useEffect(() => {
+    setIsLoading(true);
     
-    return matchesSearch && matchesLocation && matchesType;
-  });
+    const searchFilters = {
+      query: searchQuery,
+      priceRange: priceFilter,
+      location: locationFilter,
+      machineType: machineTypeFilter
+    };
+    
+    const { results, analytics, eventId } = SearchResultsManager.searchMachines(
+      usedMachines,
+      searchFilters
+    );
+    
+    setSearchResults(results);
+    setParsedQuery(analytics);
+    setCurrentSearchEventId(eventId);
+    setIsLoading(false);
+  }, [searchQuery, locationFilter, machineTypeFilter, priceFilter]);
+
+  const clearAllFilters = () => {
+    setSearchQuery('');
+    setLocationFilter('all');
+    setMachineTypeFilter('all');
+    setPriceFilter([priceRange.min, priceRange.max]);
+  };
+
+  // Handle search from SmartSearchBox
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  // Get machines to display
+  const machinesToShow = searchResults.map(result => result.machine);
 
   return (
-    <main className="flex-grow pt-20">
+    <>
+      {/* SEO Component */}
+      <MachineSEO machines={usedMachines} isListingPage={true} />
+      
+      <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-12 text-center bg-gradient-to-r from-orange-900 to-orange-700 py-12 px-4 rounded-xl">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
@@ -97,19 +148,32 @@ const UsedMachines = () => {
             </TabsList>
 
             <TabsContent value="browse">
-              <div className="mb-8 bg-almona-darker p-6 rounded-lg">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {/* AI-Powered Search Section */}
+              <div className="mb-8 bg-almona-darker p-6 rounded-lg border border-almona-light/20">
+                {/* Smart Search Header */}
+                <div className="flex items-center mb-4">
+                  <Brain className="w-5 h-5 text-orange-400 mr-2" />
+                  <h3 className="text-lg font-semibold text-almona-light">AI-Powered Search</h3>
+                  {parsedQuery && (
+                    <Badge className="ml-3 bg-blue-600/20 text-blue-400 border-blue-400/30">
+                      {parsedQuery.intent} • {parsedQuery.urgency} priority
+                    </Badge>
+                  )}
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                   <div className="md:col-span-2">
-                    <Input
-                      placeholder="Search for a machine (copy router, cutting, CNC...)"
-                      className="bg-almona-dark border-almona-light"
+                    <SmartSearchBox
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={setSearchQuery}
+                      onSearch={handleSearch}
+                      placeholder="Try: 'cheap CNC machine in Cairo' or 'copy router under 100k'"
+                      className=""
                     />
                   </div>
                   <div>
                     <Select onValueChange={setLocationFilter} value={locationFilter}>
-                      <SelectTrigger className="bg-almona-dark border-almona-light">
+                      <SelectTrigger className="bg-almona-dark border-almona-light h-11">
                         <SelectValue placeholder="All Governorates" />
                       </SelectTrigger>
                       <SelectContent className="bg-almona-darker text-white">
@@ -121,95 +185,141 @@ const UsedMachines = () => {
                     </Select>
                   </div>
                   <div>
-                    <Select onValueChange={setMachineTypeFilter} value={machineTypeFilter}>
-                      <SelectTrigger className="bg-almona-dark border-almona-light">
-                        <SelectValue placeholder="All Types" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-almona-darker text-white">
-                        {machineTypes.map(type => (
-                          <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Button
+                      onClick={() => setShowFilters(!showFilters)}
+                      className="w-full h-11 bg-orange-600 hover:bg-orange-700"
+                    >
+                      <Filter className="w-4 h-4 mr-2" />
+                      Advanced Filters
+                    </Button>
                   </div>
                 </div>
+
+                {/* Machine Type Filter */}
+                <div className="mb-4">
+                  <Select onValueChange={setMachineTypeFilter} value={machineTypeFilter}>
+                    <SelectTrigger className="bg-almona-dark border-almona-light">
+                      <SelectValue placeholder="All Types" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-almona-darker text-white">
+                      {machineTypes.map(type => (
+                        <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Advanced Filters Panel */}
+                {showFilters && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4 border-t border-almona-light/20">
+                    <PriceRangeFilter
+                      minPrice={priceRange.min}
+                      maxPrice={priceRange.max}
+                      currentRange={priceFilter}
+                      onRangeChange={setPriceFilter}
+                    />
+                    
+                    {/* Smart Results Summary */}
+                    <div className="bg-almona-dark p-4 rounded-lg">
+                      <div className="flex items-center mb-3">
+                        <Brain className="w-4 h-4 text-orange-400 mr-2" />
+                        <h4 className="text-sm font-medium text-almona-light">Search Results</h4>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span>Machines Found:</span>
+                          <span className="text-orange-400 font-bold">{searchResults.length}</span>
+                        </div>
+                        {searchQuery && (
+                          <div className="flex items-center justify-between">
+                            <span>Search:</span>
+                            <span className="text-blue-400">"{searchQuery}"</span>
+                          </div>
+                        )}
+                        {locationFilter !== 'all' && (
+                          <div className="flex items-center justify-between">
+                            <span>Location:</span>
+                            <span className="text-green-400">{locationFilter}</span>
+                          </div>
+                        )}
+                        {machineTypeFilter !== 'all' && (
+                          <div className="flex items-center justify-between">
+                            <span>Type:</span>
+                            <span className="text-purple-400">{machineTypes.find(t => t.value === machineTypeFilter)?.label}</span>
+                          </div>
+                        )}
+                        {parsedQuery?.expandedTerms && parsedQuery.expandedTerms.length > 1 && (
+                          <div className="text-xs text-almona-light/60 mt-2 p-2 bg-almona-light/5 rounded">
+                            <strong>AI Enhanced:</strong> Also searching for {parsedQuery.expandedTerms.slice(1, 4).join(', ')}
+                          </div>
+                        )}
+                        <Button
+                          onClick={clearAllFilters}
+                          className="mt-2 h-8 px-3 text-xs bg-almona-light/10 hover:bg-almona-light/20"
+                          size="sm"
+                        >
+                          Clear All Filters
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {filteredMachines.length === 0 ? (
+              {isLoading ? (
                 <div className="text-center py-12">
-                  <p className="text-xl text-gray-400">No machines found matching your search.</p>
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mb-4"></div>
+                  <p className="text-almona-light">Searching with AI...</p>
+                </div>
+              ) : searchResults.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">🔍</div>
+                  <p className="text-xl text-gray-400 mb-2">No machines found matching your search.</p>
+                  <p className="text-sm text-gray-500 mb-6">Try adjusting your filters or search terms</p>
                   <Button 
-                    className="mt-4"
-                    onClick={() => {
-                      setSearchQuery('');
-                      setLocationFilter('all');
-                      setMachineTypeFilter('all');
-                    }}
+                    className="mt-4 bg-orange-600 hover:bg-orange-700"
+                    onClick={clearAllFilters}
                   >
                     Clear All Filters
                   </Button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {filteredMachines.map(machine => (
-                    <Card key={machine.id} className="bg-almona-darker border-almona-light overflow-hidden">
-                      <div className="relative">
-                        <div className="h-48 overflow-hidden">
-                          <img 
-                            src={machine.images[0]} 
-                            alt={machine.title}
-                            className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-                          />
-                        </div>
-                        <Badge className="absolute top-2 left-2 bg-green-600">
-                          {machine.condition === 'Excellent' ? 'Excellent' : 'Good'}
+                  {searchResults.map((result, index) => (
+                    <div key={result.machine.id} className="relative">
+                      {/* Relevance Score Badge */}
+                      {result.relevanceScore > 0.8 && (
+                        <Badge className="absolute -top-2 -right-2 z-10 bg-green-600 text-white text-xs">
+                          {Math.round(result.relevanceScore * 100)}% match
                         </Badge>
-                      </div>
-                      <CardHeader>
-                        <CardTitle className="text-xl">{machine.title}</CardTitle>
-                        <div className="flex justify-between items-center text-orange-400 font-bold text-lg">
-                          {machine.price}
-                          {machine.seller.verified && (
-                            <Badge className="bg-blue-600">
-                              Verified
+                      )}
+                      <MachineCard 
+                        machine={result.machine}
+                        showSellerRating={true}
+                      />
+                      {/* Match Reasons */}
+                      {result.matchReasons.length > 0 && searchQuery.trim() && (
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {result.matchReasons.slice(0, 3).map((reason, idx) => (
+                            <Badge key={idx} variant="outline" className="text-xs bg-blue-600/10 text-blue-400 border-blue-400/30">
+                              {reason}
                             </Badge>
-                          )}
+                          ))}
                         </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-400 mb-4">{machine.description}</p>
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div className="flex items-center">
-                            <MapPin className="w-4 h-4 mr-2 text-orange-500" />
-                            <span>{machine.location}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Factory className="w-4 h-4 mr-2 text-orange-500" />
-                            <span>{machine.seller.name}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Calendar className="w-4 h-4 mr-2 text-orange-500" />
-                            <span>Year: {machine.year}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Gauge className="w-4 h-4 mr-2 text-orange-500" />
-                            <span>Hours: {machine.hours.toLocaleString()}</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                      <CardFooter className="flex justify-between">
-                        <Button className="border-orange-500 text-orange-500">
-                          Request Inspection
-                        </Button>
-                        <Button asChild>
-                          <Link to={`/used-machines/${machine.id}`} className="flex items-center">
-                            Details <ChevronRight className="w-4 h-4 mr-1" />
-                          </Link>
-                        </Button>
-                      </CardFooter>
-                    </Card>
+                      )}
+                    </div>
                   ))}
                 </div>
+              )}
+              
+              {/* Trending Machines Section */}
+              {!searchQuery.trim() && (
+                <RelatedMachinesSection
+                  allMachines={usedMachines}
+                  showTrending={true}
+                  title="🔥 Trending This Week"
+                  className="mt-16"
+                />
               )}
 
               <div className="mt-16 text-center">
@@ -277,6 +387,7 @@ const UsedMachines = () => {
           </Tabs>
         </div>
       </main>
+    </>
   );
 };
 
