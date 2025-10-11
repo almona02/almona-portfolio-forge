@@ -2,7 +2,8 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "DOCKERFILE",
-    "dockerfilePath": "Dockerfile.prod"
+    "dockerfilePath": "python_backend/Dockerfile.prod",
+    "context": "python_backend"
   },
   "deploy": {
     "startCommand": "uvicorn apis.main:app --host 0.0.0.0 --port $PORT",
