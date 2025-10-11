@@ -56,8 +56,8 @@ export const IndustrialProductCard = ({
     
     if (isAddToQuote) {
       setIsAnimating(true);
-      // Reset animation after 1 second
-      setTimeout(() => setIsAnimating(false), 1000);
+      // Reset animation after a shorter duration to prevent flashing
+      setTimeout(() => setIsAnimating(false), 300);
     }
     
     action();
@@ -66,14 +66,14 @@ export const IndustrialProductCard = ({
   return (
     <motion.div
       animate={isAnimating ? {
-        scale: [1, 1.05, 1],
+        scale: [1, 1.02, 1],
         boxShadow: [
           "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-          "0 0 20px rgba(255, 165, 0, 0.5)",
+          "0 0 15px rgba(255, 165, 0, 0.3)",
           "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
         ]
       } : {}}
-      transition={{ duration: 0.6, ease: "easeInOut" }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
     >
       <Card className="bg-almona-darker border-almona-light/20 hover:border-almona-light/40 transition-colors h-full flex flex-col">
       <CardHeader className="p-0 relative">
