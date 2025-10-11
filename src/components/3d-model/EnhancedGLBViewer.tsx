@@ -25,10 +25,27 @@ class CanvasErrorBoundary extends React.Component<React.PropsWithChildren, Canva
 
 function FittedModel({ modelPath, onLoaded, autoPlayAnimations = true }: { modelPath: string; onLoaded?: () => void; autoPlayAnimations?: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
-  const gltf = useGLTF(modelPath) as unknown as { scene?: THREE.Object3D; animations?: THREE.AnimationClip[] };
-  const scene = gltf.scene;
-  // wire animations
-  const { actions } = useAnimations(gltf.animations ?? [], scene as unknown as THREE.Object3D);
+  
+  // Safe GLTF loading with error handling
+  let gltf, scene, actions = {};
+  try {
+    gltf = useGLTF(modelPath) as unknown as { scene?: THREE.Object3D; animations?: THREE.AnimationClip[] };
+    scene = gltf.scene;
+    
+    // Safe animations setup
+    if (scene && gltf.animations && gltf.animations.length > 0) {
+      try {
+        const animationResult = useAnimations(gltf.animations, scene as unknown as THREE.Object3D);
+        actions = animationResult?.actions || {};
+      } catch (error) {
+        console.warn('Failed to setup animations:', error);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load GLTF model:', error);
+    return null;
+  }
+  
   const bounds = useBounds();
   const fired = useRef(false);
   useEffect(() => {
@@ -38,11 +55,29 @@ function FittedModel({ modelPath, onLoaded, autoPlayAnimations = true }: { model
     }
   }, [scene, bounds, onLoaded]);
   useEffect(() => {
-    if (autoPlayAnimations && actions) {
-      Object.values(actions).forEach(a => a?.play?.());
+    if (autoPlayAnimations && actions && Object.keys(actions).length > 0) {
+      try {
+        Object.values(actions).forEach((a: any) => {
+          if (a && typeof a.play === 'function') {
+            a.play();
+          }
+        });
+      } catch (error) {
+        console.warn('Failed to play animations:', error);
+      }
     }
     return () => {
-      if (actions) Object.values(actions).forEach(a => a?.stop?.());
+      if (actions && Object.keys(actions).length > 0) {
+        try {
+          Object.values(actions).forEach((a: any) => {
+            if (a && typeof a.stop === 'function') {
+              a.stop();
+            }
+          });
+        } catch (error) {
+          console.warn('Failed to stop animations:', error);
+        }
+      }
     };
   }, [actions, autoPlayAnimations]);
   if (!scene) return null;
