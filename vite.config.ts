@@ -60,7 +60,9 @@ export default defineConfig(({ mode }) => {
           globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
           cleanupOutdatedCaches: true,
           skipWaiting: true,
-          clientsClaim: true
+          clientsClaim: true,
+          // Fix for crypto.hash compatibility
+          runtimeCaching: []
         },
         includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg"],
         manifest: {
