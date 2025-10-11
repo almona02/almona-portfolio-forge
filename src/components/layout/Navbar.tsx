@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Menu, 
   X, 
@@ -9,7 +10,8 @@ import {
   LogOut,
   Shield,
   Search,
-  Sparkles
+  Sparkles,
+  Globe
 } from "lucide-react";
 
 interface User {
@@ -151,6 +153,29 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
     },
   ], []);
 
+  // Regions data
+  const regions = useMemo(() => [
+    { code: 'EG', name: 'Egypt', flag: '🇪🇬', currency: 'EGP' },
+    { code: 'TR', name: 'Turkey', flag: '🇹🇷', currency: 'TRY' },
+    { code: 'SA', name: 'Saudi Arabia', flag: '🇸🇦', currency: 'SAR' },
+    { code: 'AE', name: 'UAE', flag: '🇦🇪', currency: 'AED' },
+    { code: 'KW', name: 'Kuwait', flag: '🇰🇼', currency: 'KWD' },
+    { code: 'QA', name: 'Qatar', flag: '🇶🇦', currency: 'QAR' },
+    { code: 'BH', name: 'Bahrain', flag: '🇧🇭', currency: 'BHD' },
+    { code: 'OM', name: 'Oman', flag: '🇴🇲', currency: 'OMR' },
+    { code: 'JO', name: 'Jordan', flag: '🇯🇴', currency: 'JOD' },
+    { code: 'LB', name: 'Lebanon', flag: '🇱🇧', currency: 'LBP' },
+    { code: 'IQ', name: 'Iraq', flag: '🇮🇶', currency: 'IQD' },
+    { code: 'LY', name: 'Libya', flag: '🇱🇾', currency: 'LYD' },
+    { code: 'MA', name: 'Morocco', flag: '🇲🇦', currency: 'MAD' },
+    { code: 'TN', name: 'Tunisia', flag: '🇹🇳', currency: 'TND' },
+    { code: 'DZ', name: 'Algeria', flag: '🇩🇿', currency: 'DZD' },
+    { code: 'SD', name: 'Sudan', flag: '🇸🇩', currency: 'SDG' },
+    { code: 'ET', name: 'Ethiopia', flag: '🇪🇹', currency: 'ETB' },
+    { code: 'KE', name: 'Kenya', flag: '🇰🇪', currency: 'KES' },
+    { code: 'NG', name: 'Nigeria', flag: '🇳🇬', currency: 'NGN' },
+    { code: 'ZA', name: 'South Africa', flag: '🇿🇦', currency: 'ZAR' }
+  ], []);
 
   // Optimized dropdown handlers
   const handleDropdownEnter = useCallback((dropdownName: string) => {
@@ -504,6 +529,62 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
               </div>
             </form>
 
+            {/* Region Selector */}
+            <div 
+              className="relative"
+              onMouseEnter={() => handleDropdownEnter('region')}
+              onMouseLeave={handleDropdownLeave}
+            >
+              <button
+                className="flex items-center space-x-2 p-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-300 border border-transparent hover:border-orange-500/20 group"
+                onClick={closeAllDropdowns}
+              >
+                <Globe className="h-5 w-5 group-hover:text-orange-400 transition-colors" />
+                <span className="hidden lg:block text-sm font-medium">Region</span>
+                <ChevronDown className="h-4 w-4 group-hover:text-orange-400 transition-colors" />
+              </button>
+
+              {/* Region Dropdown */}
+              <AnimatePresence>
+                {activeDropdown === 'region' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="absolute right-0 top-full mt-2 w-80 bg-almona-dark border border-almona-light/20 rounded-xl shadow-2xl z-50 overflow-hidden"
+                  >
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold text-white mb-3">Select Your Region</h3>
+                      <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
+                        {regions.map((region) => (
+                          <button
+                            key={region.code}
+                            className="flex items-center justify-between p-3 text-left hover:bg-white/5 rounded-lg transition-colors group"
+                            onClick={() => {
+                              // Handle region selection
+                              console.log('Selected region:', region);
+                              setActiveDropdown(null);
+                            }}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <span className="text-2xl">{region.flag}</span>
+                              <div>
+                                <div className="text-white font-medium">{region.name}</div>
+                                <div className="text-gray-400 text-sm">{region.currency}</div>
+                              </div>
+                            </div>
+                            <div className="text-gray-400 group-hover:text-orange-400 transition-colors">
+                              <ChevronDown className="h-4 w-4 rotate-[-90deg]" />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Quote Cart */}
             <Link

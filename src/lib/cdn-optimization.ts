@@ -1,6 +1,7 @@
 // Advanced CDN and Global Performance Optimization
 // Handles dynamic content delivery, image optimization, and regional caching
 
+import React from 'react';
 import { performanceMonitor } from './performance-monitoring';
 
 // CDN Configuration for Global Delivery
@@ -548,35 +549,30 @@ export const OptimizedImage: React.FC<{
     };
   }, [isLoaded, quality, width]);
 
-  return (
-    <div className={`relative ${className || ''}`} onClick={onClick}>
-      <img
-        src={optimizedProps.src}
-        srcSet={optimizedProps.srcSet}
-        alt={alt}
-        width={width}
-        height={height}
-        loading={optimizedProps.loading}
-        decoding={optimizedProps.decoding}
-        onLoad={() => setIsLoaded(true)}
-        onError={() => setHasError(true)}
-        className={`transition-opacity duration-300 ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        } ${hasError ? 'bg-gray-200' : ''}`}
-      />
-      
-      {/* Loading placeholder */}
-      {!isLoaded && !hasError && (
-        <div className="absolute inset-0 bg-almona-dark/40 animate-pulse rounded" />
-      )}
-      
-      {/* Error fallback */}
-      {hasError && (
-        <div className="absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
-          Image unavailable
-        </div>
-      )}
-    </div>
+  return React.createElement('div', {
+    className: `relative ${className || ''}`,
+    onClick: onClick
+  },
+    React.createElement('img', {
+      src: optimizedProps.src,
+      srcSet: optimizedProps.srcSet,
+      alt: alt,
+      width: width,
+      height: height,
+      loading: optimizedProps.loading,
+      decoding: optimizedProps.decoding,
+      onLoad: () => setIsLoaded(true),
+      onError: () => setHasError(true),
+      className: `transition-opacity duration-300 ${
+        isLoaded ? 'opacity-100' : 'opacity-0'
+      } ${hasError ? 'bg-gray-200' : ''}`
+    }),
+    !isLoaded && !hasError && React.createElement('div', {
+      className: "absolute inset-0 bg-almona-dark/40 animate-pulse rounded"
+    }),
+    hasError && React.createElement('div', {
+      className: "absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500 text-sm"
+    }, "Image unavailable")
   );
 };
 

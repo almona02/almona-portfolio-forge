@@ -19,7 +19,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "npx eslint . --ext ts,tsx --report-unused-disable-directives",
+    "lint": "npx eslint . --ext ts,tsx",
     "preview": "vite preview",
     "i18n:audit": "node scripts/i18n-audit.js",
     "ar:optimize": "node scripts/optimize-glb.mjs",
