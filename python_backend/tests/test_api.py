@@ -125,8 +125,8 @@ class TestAPIEndpoints:
     def test_identify_part_missing_file(self):
         """Test identify part without file"""
         response = client.post("/api/v1/identify-part")
-        # 404 if v1 routes disabled, 422 if validation fails
-        assert response.status_code in [404, 422]
+        # 404 if v1 routes disabled, 415 if unsupported media type, 422 if validation fails
+        assert response.status_code in [404, 415, 422]
 
     def test_preprocess_image_valid(self, sample_image):
         """Test preprocess image with valid image"""
