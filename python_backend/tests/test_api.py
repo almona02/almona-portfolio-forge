@@ -8,16 +8,40 @@ client = TestClient(app)
 class TestAPIEndpoints:
     """Test cases for API endpoints"""
 
-    @patch('core.health_checks.check_database_health')
-    def test_health_check(self, mock_db_health):
+    @patch('core.health_checks.get_health_status')
+    def test_health_check(self, mock_health_status):
         """Test health check endpoint"""
-        # Mock the database health check to return True
-        mock_db_health.return_value = True
+        # Mock the health status to return healthy
+        mock_health_status.return_value = {
+            "status": "healthy",
+            "timestamp": "2025-01-01T00:00:00Z",
+            "uptime_seconds": 100,
+            "total_check_time_ms": 50,
+            "checks": {
+                "database": {
+                    "status": "healthy",
+                    "message": "Check passed",
+                    "details": {},
+                    "response_time_ms": 10,
+                    "last_check": "2025-01-01T00:00:00Z",
+                    "critical": True
+                }
+            },
+            "summary": {
+                "total_checks": 1,
+                "healthy_checks": 1,
+                "degraded_checks": 0,
+                "unhealthy_checks": 0,
+                "critical_failures": 0
+            }
+        }
 
         response = client.get("/health")
         assert response.status_code == 200
-        assert response.json()["status"] == "healthy"
-        assert "service" in response.json()
+        data = response.json()
+        assert data["status"] == "healthy"
+        assert "checks" in data
+        assert "summary" in data
 
     def test_root_endpoint(self):
         """Test root endpoint"""
