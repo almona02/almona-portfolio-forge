@@ -208,7 +208,7 @@ const IndustrialNavbar = () => {
           </motion.div>
 
           {/* Central Navigation - CNC Control Panel Style */}
-          <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2">
+          <nav className="hidden lg:flex items-center gap-2 xl:gap-3">
             {mainNavigation.map((item) => (
               <motion.div
                 key={item.name}
