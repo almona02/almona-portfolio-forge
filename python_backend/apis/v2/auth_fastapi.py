@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, Depends, HTTPException, status, Body, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
@@ -68,11 +68,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return token_data
 
 @router.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(OAuth2PasswordRequestForm)):
+async def login_for_access_token(
+    username: str = Form(...),
+    password: str = Form(...)
+):
     try:
         user_response = supabase_client.client.auth.sign_in_with_password({
-            "email": form_data.username,
-            "password": form_data.password,
+            "email": username,
+            "password": password,
         })
         
         if user_response.user:
