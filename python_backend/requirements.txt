@@ -60,6 +60,7 @@ mypy==1.7.1
 
 # ML frameworks required by part detection models
 tensorflow==2.15.0
+albucore>=0.0.17,<0.1.0
 albumentations==1.4.8
 
 # Production
