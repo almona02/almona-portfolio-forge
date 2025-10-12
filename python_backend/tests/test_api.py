@@ -8,7 +8,7 @@ client = TestClient(app)
 class TestAPIEndpoints:
     """Test cases for API endpoints"""
 
-    @patch('core.health_checks.get_health_status')
+    @patch('apis.main.get_health_status')
     def test_health_check(self, mock_health_status):
         """Test health check endpoint"""
         # Mock the health status to return healthy
