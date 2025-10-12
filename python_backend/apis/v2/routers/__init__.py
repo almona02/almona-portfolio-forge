@@ -19,13 +19,9 @@ from apis.v2.core.errors import (
 
 router = APIRouter(prefix="/api/v2")
 
-# Add error handlers to the router
-router.add_exception_handler(V2APIError, v2_error_handler)
-router.add_exception_handler(
-    RequestValidationError, v2_validation_error_handler
-)
-router.add_exception_handler(HTTPException, v2_http_exception_handler)
-router.add_exception_handler(Exception, v2_general_exception_handler)
+# Note: Exception handlers are registered at the FastAPI app level in v2_app.
+# FastAPI's APIRouter does not support add_exception_handler; registering here
+# triggers AttributeError during import in tests. Handlers are added in app.py.
 
 # Mount sub-routers under the unified v2 router
 router.include_router(

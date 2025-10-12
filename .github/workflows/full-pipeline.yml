@@ -23,8 +23,10 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-      - name: Install deps
+      - name: Install deps (include devDependencies)
         run: npm ci --no-audit --no-fund
+        env:
+          NPM_CONFIG_PRODUCTION: "false"
       - name: Lint
         run: npm run lint
       - name: Type Check
