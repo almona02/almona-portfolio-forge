@@ -3,7 +3,14 @@ import tempfile
 import os
 from PIL import Image
 import numpy as np
+from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
+
+# Mock ML models before importing the app to avoid long load times
+import sys
+sys.modules['ultralytics'] = Mock()
+sys.modules['tensorflow'] = Mock()
+
 from apis.main import app
 
 @pytest.fixture

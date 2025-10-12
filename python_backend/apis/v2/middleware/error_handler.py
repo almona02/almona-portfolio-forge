@@ -162,31 +162,31 @@ async def v2_validation_error_handler(
             "input": error.get("input")
         })
 
-        # Get language from request
-        language = "ar" if "ar" in request.headers.get(
-            'Accept-Language', ''
-        ).lower() else "en"
+    # Get language from request
+    language = "ar" if "ar" in request.headers.get(
+        'Accept-Language', ''
+    ).lower() else "en"
 
-        # Get localized messages
-        localized_messages = error_translator.get_localized_error(
-            "VALIDATION_ERROR", language=language
-        )
+    # Get localized messages
+    localized_messages = error_translator.get_localized_error(
+        "VALIDATION_ERROR", language=language
+    )
 
-        response_data = {
-            "error": {
-                "code": V2ErrorCode.VALIDATION_ERROR.value,
-                "message": localized_messages.get(
-                    language, "Request validation failed"
-                ),
-                "timestamp": datetime.utcnow().isoformat() + "Z",
-                "path": str(request.url.path),
-                "method": request.method,
-                "request_id": getattr(request.state, 'request_id', None),
-                "details": {
-                    "validation_errors": errors
-                }
+    response_data = {
+        "error": {
+            "code": V2ErrorCode.VALIDATION_ERROR.value,
+            "message": localized_messages.get(
+                language, "Request validation failed"
+            ),
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "path": str(request.url.path),
+            "method": request.method,
+            "request_id": getattr(request.state, 'request_id', None),
+            "details": {
+                "validation_errors": errors
             }
         }
+    }
 
     # Include all language versions
     if localized_messages:
@@ -205,28 +205,28 @@ async def v2_general_exception_handler(
     # Log the full exception for debugging
     logger.exception(f"Unexpected error in v2 API: {str(exc)}")
 
-        # Get language from request
-        language = "ar" if "ar" in request.headers.get(
-            'Accept-Language', ''
-        ).lower() else "en"
+    # Get language from request
+    language = "ar" if "ar" in request.headers.get(
+        'Accept-Language', ''
+    ).lower() else "en"
 
-        # Get localized messages
-        localized_messages = error_translator.get_localized_error(
-            "INTERNAL_ERROR", language=language
-        )
+    # Get localized messages
+    localized_messages = error_translator.get_localized_error(
+        "INTERNAL_ERROR", language=language
+    )
 
-        response_data = {
-            "error": {
-                "code": V2ErrorCode.INTERNAL_ERROR.value,
-                "message": localized_messages.get(
-                    language, "An unexpected error occurred"
-                ),
-                "timestamp": datetime.utcnow().isoformat() + "Z",
-                "path": str(request.url.path),
-                "method": request.method,
-                "request_id": getattr(request.state, 'request_id', None)
-            }
+    response_data = {
+        "error": {
+            "code": V2ErrorCode.INTERNAL_ERROR.value,
+            "message": localized_messages.get(
+                language, "An unexpected error occurred"
+            ),
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "path": str(request.url.path),
+            "method": request.method,
+            "request_id": getattr(request.state, 'request_id', None)
         }
+    }
 
     # Include all language versions
     if localized_messages:
