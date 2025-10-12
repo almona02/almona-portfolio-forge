@@ -58,6 +58,9 @@ isort==5.12.0
 flake8==6.1.0
 mypy==1.7.1
 
+# ML frameworks required by part detection models
+tensorflow==2.15.0
+
 # Production
 gunicorn==21.2.0
 
