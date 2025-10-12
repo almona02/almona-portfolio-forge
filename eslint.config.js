@@ -1,22 +1,44 @@
-// ESLint flat config: minimal, permissive, TypeScript-aware
-import js from "@eslint/js";
+// ESLint flat config: parse TS in src/, no rules
 import tseslint from "typescript-eslint";
 
 export default [
-  // Ignore common build/output dirs only
   {
     ignores: [
       "dist",
       "build",
       "storybook-static",
       "node_modules",
-      "**/*.d.ts"
+      "**/*.d.ts",
+      "**/*.cjs",
+      "**/*.mjs",
+      "scripts/**",
+      "docs/**",
+      "sdk/**"
     ]
   },
-  // Apply recommended rules for JS/TS (no stylistic/strict rules)
-  js.configs.recommended,
-  ...tseslint.configs.recommended,
   {
-    files: ["**/*.{ts,tsx,js,jsx}"]
+    files: ["src/**/*.{ts,tsx}", "src/**/*.js"],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: "module",
+        ecmaFeatures: { jsx: true }
+      },
+      globals: {
+        window: "readonly",
+        document: "readonly",
+        navigator: "readonly",
+        console: "readonly",
+        setTimeout: "readonly",
+        clearTimeout: "readonly",
+        module: "readonly",
+        require: "readonly",
+        process: "readonly",
+        __dirname: "readonly",
+        __filename: "readonly"
+      }
+    },
+    rules: {}
   }
 ];
