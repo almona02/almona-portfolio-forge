@@ -17,7 +17,7 @@ logger = get_structured_logger(__name__)
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """Rate limiting middleware with sliding window."""
-    
+
     def __init__(self, app, requests_per_minute: int = 60,
                  burst_limit: int = 10):
         super().__init__(app)
@@ -25,51 +25,52 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.burst_limit = burst_limit
         self.clients: Dict[str, deque] = defaultdict(deque)
         self.burst_clients: Dict[str, deque] = defaultdict(deque)
-    
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+
+    async def dispatch(self, request: Request,
+                       call_next: Callable) -> Response:
         client_ip = self._get_client_ip(request)
         now = time.time()
-        
+
         # Check burst limit (requests per second)
         burst_window = self.burst_clients[client_ip]
         self._clean_old_requests(burst_window, now - 1)  # 1 sec window
-        
+
         if len(burst_window) >= self.burst_limit:
             return self._rate_limit_response("Burst limit exceeded")
-        
+
         # Check rate limit (requests per minute)
         rate_window = self.clients[client_ip]
         self._clean_old_requests(rate_window, now - 60)  # 1 min window
-        
+
         if len(rate_window) >= self.requests_per_minute:
             return self._rate_limit_response("Rate limit exceeded")
-        
+
         # Record request
         burst_window.append(now)
         rate_window.append(now)
-        
+
         response = await call_next(request)
         return response
-    
+
     def _get_client_ip(self, request: Request) -> str:
         """Get client IP address."""
         # Check for forwarded headers first
         forwarded_for = request.headers.get("X-Forwarded-For")
         if forwarded_for:
             return forwarded_for.split(",")[0].strip()
-        
+
         real_ip = request.headers.get("X-Real-IP")
         if real_ip:
             return real_ip
-        
+
         return (request.client.host if request.client
                 else "unknown")
-    
+
     def _clean_old_requests(self, window: deque, cutoff_time: float):
         """Remove old requests from the window."""
         while window and window[0] < cutoff_time:
             window.popleft()
-    
+
     def _rate_limit_response(self, message: str) -> JSONResponse:
         """Return rate limit exceeded response."""
         return JSONResponse(
@@ -85,10 +86,11 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Add security headers to all responses."""
-    
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+
+    async def dispatch(self, request: Request,
+                       call_next: Callable) -> Response:
         response = await call_next(request)
-        
+
         # Security headers
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
@@ -98,22 +100,23 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = (
             "strict-origin-when-cross-origin")
         response.headers["Content-Security-Policy"] = "default-src 'self'"
-        
+
         # Remove server header
         if "Server" in response.headers:
             del response.headers["Server"]
-        
+
         return response
 
 
 class RequestValidationMiddleware(BaseHTTPMiddleware):
     """Request validation and sanitization."""
-    
+
     def __init__(self, app, max_request_size: int = 10 * 1024 * 1024):
         super().__init__(app)
         self.max_request_size = max_request_size
-    
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+
+    async def dispatch(self, request: Request,
+                       call_next: Callable) -> Response:
         # Check request size
         content_length = request.headers.get("content-length")
         if content_length and int(content_length) > self.max_request_size:
@@ -125,7 +128,7 @@ class RequestValidationMiddleware(BaseHTTPMiddleware):
                                 f"{self.max_request_size} bytes")
                 }
             )
-        
+
         # Validate content type for POST/PUT requests
         if request.method in ["POST", "PUT", "PATCH"]:
             content_type = request.headers.get("content-type", "")
@@ -141,15 +144,16 @@ class RequestValidationMiddleware(BaseHTTPMiddleware):
                                     "application/x-www-form-urlencoded")
                     }
                 )
-        
+
         response = await call_next(request)
         return response
 
 
 class ErrorHandlingMiddleware(BaseHTTPMiddleware):
     """Global error handling middleware."""
-    
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+
+    async def dispatch(self, request: Request,
+                       call_next: Callable) -> Response:
         try:
             response = await call_next(request)
             return response
@@ -199,11 +203,12 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
 
 class RequestLoggingMiddleware(BaseHTTPMiddleware):
     """Request/response logging middleware."""
-    
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+
+    async def dispatch(self, request: Request,
+                       call_next: Callable) -> Response:
         start_time = time.time()
         request_id = f"req_{int(start_time * 1000)}"
-        
+
         # Log request with structured logging
         if logger:
             logger.info(
@@ -216,9 +221,9 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
                            else "unknown"),
                 user_agent=request.headers.get("user-agent", "")
             )
-        
+
         response = await call_next(request)
-        
+
         # Log response with structured logging
         duration = time.time() - start_time
         if logger:
@@ -230,5 +235,5 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
                 status_code=response.status_code,
                 duration_ms=duration * 1000
             )
-        
+
         return response
