@@ -380,7 +380,7 @@ const Products = function ProductsPage() {
 
   return (
     <main className="flex-grow pt-24">
-          <div className="container mx-auto px-4 py-12">
+          <div className="mx-auto px-4 xl:px-8 py-12 max-w-screen-2xl">
             {/* Existing Products page content */}
             <div className="mb-12 text-center">
               <h1 className="text-4xl font-bold mb-4">
