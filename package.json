@@ -18,7 +18,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "npx vite build || echo 'Build failed but continuing'",
+    "build": "npm install @vitejs/plugin-react && npx vite build || echo 'Build failed but continuing'",
     "lint": "echo 'Linting disabled - all files ignored' && exit 0",
     "preview": "vite preview",
     "i18n:audit": "node scripts/i18n-audit.js",
@@ -175,7 +175,7 @@
     "@types/node": "^22.5.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.6.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "@vitest/browser": "3.2.4",
     "@vitest/coverage-v8": "3.2.4",
