@@ -11,7 +11,6 @@ from datetime import datetime
 from typing import Any, Dict, Optional, Union
 
 import structlog
-<<<<<<< Current (Your changes)
 
 try:
     from opentelemetry import trace
@@ -25,7 +24,12 @@ try:
     from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor
-    from opentelemetry.semantic_conventions.resource import ResourceAttributes
+    # Prefer new import path introduced around OTEL 1.25/0.45b
+    try:
+        # Newer packages expose semantic conventions via `opentelemetry.semconv`
+        from opentelemetry.semconv.resource import ResourceAttributes  # type: ignore
+    except Exception:  # pragma: no cover - fallback for older environments
+        from opentelemetry.semantic_conventions.resource import ResourceAttributes  # type: ignore
     OPENTELEMETRY_AVAILABLE = True
 except ImportError:
     # Fallback for when OpenTelemetry is not available
@@ -34,25 +38,6 @@ except ImportError:
         SERVICE_VERSION = "service.version"
         DEPLOYMENT_ENVIRONMENT = "deployment.environment"
     OPENTELEMETRY_AVAILABLE = False
-=======
-from opentelemetry import trace
-from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-from opentelemetry.exporter.prometheus import PrometheusMetricReader
-from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.logging import LoggingInstrumentor
-from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
-from opentelemetry.sdk.metrics import MeterProvider
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
-# Prefer new import path introduced around OTEL 1.25/0.45b
-try:
-    # Newer packages expose semantic conventions via `opentelemetry.semconv`
-    from opentelemetry.semconv.resource import ResourceAttributes  # type: ignore
-except Exception:  # pragma: no cover - fallback for older environments
-    from opentelemetry.semantic_conventions.resource import ResourceAttributes  # type: ignore
->>>>>>> Incoming (Background Agent changes)
 from prometheus_client import Counter, Histogram, Gauge, Info, generate_latest, CONTENT_TYPE_LATEST
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
