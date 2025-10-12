@@ -22,7 +22,12 @@ from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.semantic_conventions.resource import ResourceAttributes
+# Prefer new import path introduced around OTEL 1.25/0.45b
+try:
+    # Newer packages expose semantic conventions via `opentelemetry.semconv`
+    from opentelemetry.semconv.resource import ResourceAttributes  # type: ignore
+except Exception:  # pragma: no cover - fallback for older environments
+    from opentelemetry.semantic_conventions.resource import ResourceAttributes  # type: ignore
 from prometheus_client import Counter, Histogram, Gauge, Info, generate_latest, CONTENT_TYPE_LATEST
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
