@@ -1,3 +1,4 @@
+import time
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 from apis.main import app
@@ -8,33 +9,25 @@ client = TestClient(app)
 class TestAPIEndpoints:
     """Test cases for API endpoints"""
 
-    @patch('apis.main.get_health_status')
-    def test_health_check(self, mock_health_status):
+    @patch('core.connection_pool.SupabaseConnectionPool.get_performance_stats')
+    def test_health_check(self, mock_performance_stats):
         """Test health check endpoint"""
-        # Mock the health status to return healthy
-        mock_health_status.return_value = {
-            "status": "healthy",
-            "timestamp": "2025-01-01T00:00:00Z",
-            "uptime_seconds": 100,
-            "total_check_time_ms": 50,
-            "checks": {
-                "database": {
-                    "status": "healthy",
-                    "message": "Check passed",
-                    "details": {},
-                    "response_time_ms": 10,
-                    "last_check": "2025-01-01T00:00:00Z",
-                    "critical": True
-                }
-            },
-            "summary": {
-                "total_checks": 1,
-                "healthy_checks": 1,
-                "degraded_checks": 0,
-                "unhealthy_checks": 0,
-                "critical_failures": 0
-            }
-        }
+        # Mock the performance stats to return healthy database stats
+        from core.connection_pool import PoolStats
+        mock_performance_stats.return_value = PoolStats(
+            total_connections=10,
+            active_connections=2,
+            idle_connections=8,
+            healthy_connections=10,  # This is the key - must be > 0
+            unhealthy_connections=0,
+            total_queries=100,
+            successful_queries=100,
+            failed_queries=0,
+            avg_response_time_ms=50.0,
+            error_rate=0.0,
+            pool_utilization=0.2,
+            last_health_check=time.time()
+        )
 
         response = client.get("/health")
         assert response.status_code == 200
