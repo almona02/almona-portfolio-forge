@@ -10,9 +10,9 @@ class TestAPIEndpoints:
     """Test cases for API endpoints"""
 
     @patch('core.health_checks.railway_health.check_all_services')
-    @patch('core.health_checks.psutil.virtual_memory')
-    @patch('core.health_checks.psutil.cpu_percent')
-    @patch('core.health_checks.psutil.disk_usage')
+    @patch('psutil.virtual_memory')
+    @patch('psutil.cpu_percent')
+    @patch('psutil.disk_usage')
     @patch('core.health_checks.get_connection_pool')
     def test_health_check(self, mock_get_pool, mock_disk_usage, mock_cpu_percent, 
                          mock_virtual_memory, mock_railway_check):
