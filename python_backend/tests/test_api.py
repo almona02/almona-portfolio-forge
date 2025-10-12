@@ -1,5 +1,5 @@
 import time
-from unittest.mock import patch
+from unittest.mock import patch, Mock, AsyncMock
 from fastapi.testclient import TestClient
 from apis.main import app
 
@@ -9,12 +9,14 @@ client = TestClient(app)
 class TestAPIEndpoints:
     """Test cases for API endpoints"""
 
-    @patch('core.connection_pool.SupabaseConnectionPool.get_performance_stats')
-    def test_health_check(self, mock_performance_stats):
+    @patch('core.health_checks.get_connection_pool')
+    def test_health_check(self, mock_get_pool):
         """Test health check endpoint"""
-        # Mock the performance stats to return healthy database stats
+        # Mock the connection pool and its methods
         from core.connection_pool import PoolStats
-        mock_performance_stats.return_value = PoolStats(
+        
+        mock_pool = Mock()
+        mock_pool.get_performance_stats.return_value = PoolStats(
             total_connections=10,
             active_connections=2,
             idle_connections=8,
@@ -28,6 +30,16 @@ class TestAPIEndpoints:
             error_rate=0.0,
             uptime_seconds=3600.0
         )
+        
+        # Mock the get_client context manager for database query test
+        mock_client = Mock()
+        mock_result = Mock()
+        mock_result.data = [{"id": "test"}]
+        mock_client.table.return_value.select.return_value.limit.return_value.execute = AsyncMock(return_value=mock_result)
+        mock_pool.get_client.return_value.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_pool.get_client.return_value.__aexit__ = AsyncMock(return_value=None)
+        
+        mock_get_pool.return_value = mock_pool
 
         response = client.get("/health")
         assert response.status_code == 200
