@@ -1,18 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
+  "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
-  "installCommand": "npm ci",
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "framework": "vite",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
   "rewrites": [
     {
       "source": "/((?!assets|js|css|fonts|images|favicon\\.ico|robots\\.txt|manifest\\.webmanifest|service-worker\\.js|.*\\..*).*)",

@@ -369,8 +369,8 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
           : "bg-gradient-to-b from-black/95 to-black/80"
       }`}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+      <div className="mx-auto px-4 xl:px-8 max-w-screen-2xl">
+        <div className="flex items-center justify-between h-16 lg:h-24">
           
           {/* Logo */}
           <Link 
@@ -507,12 +507,12 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-1">
+          <div className="hidden lg:flex items-center gap-2 xl:gap-3">
             {renderDesktopNavItems()}
           </div>
 
           {/* Right Side Actions */}
-          <div className="hidden lg:flex items-center space-x-2">
+          <div className="hidden lg:flex items-center gap-3 xl:gap-4">
             
             {/* Search */}
             <form onSubmit={handleSearch} className="relative">
@@ -523,7 +523,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-48 pl-10 pr-4 py-2.5 bg-white/5 border border-orange-500/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
+                  className="w-64 xl:w-80 pl-10 pr-4 py-3 bg-white/5 border border-orange-500/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               </div>

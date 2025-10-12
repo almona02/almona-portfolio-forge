@@ -264,19 +264,7 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
         </Button>
       </motion.div>
 
-      {/* Pulse Animation */}
-      <motion.div
-        className="absolute inset-0 w-14 h-14 rounded-full bg-green-500 opacity-20"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.2, 0.1, 0.2],
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
+      {/* Removed green pulse overlay */}
     </div>
   );
 };

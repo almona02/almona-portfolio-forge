@@ -18,7 +18,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "npm install @vitejs/plugin-react && npx vite build || echo 'Build failed but continuing'",
+    "build": "vite build --mode production",
     "lint": "echo 'Linting disabled - all files ignored' && exit 0",
     "preview": "vite preview",
     "i18n:audit": "node scripts/i18n-audit.js",
