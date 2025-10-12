@@ -9,8 +9,13 @@ client = TestClient(app)
 class TestAPIEndpoints:
     """Test cases for API endpoints"""
 
+    @patch('core.health_checks.railway_health.check_all_services')
+    @patch('core.health_checks.psutil.virtual_memory')
+    @patch('core.health_checks.psutil.cpu_percent')
+    @patch('core.health_checks.psutil.disk_usage')
     @patch('core.health_checks.get_connection_pool')
-    def test_health_check(self, mock_get_pool):
+    def test_health_check(self, mock_get_pool, mock_disk_usage, mock_cpu_percent, 
+                         mock_virtual_memory, mock_railway_check):
         """Test health check endpoint"""
         # Mock the connection pool and its methods
         from core.connection_pool import PoolStats
@@ -40,6 +45,29 @@ class TestAPIEndpoints:
         mock_pool.get_client.return_value.__aexit__ = AsyncMock(return_value=None)
         
         mock_get_pool.return_value = mock_pool
+        
+        # Mock system resources to be healthy
+        mock_memory = Mock()
+        mock_memory.percent = 50.0
+        mock_memory.available = 8 * (1024**3)  # 8 GB
+        mock_memory.total = 16 * (1024**3)  # 16 GB
+        mock_virtual_memory.return_value = mock_memory
+        
+        mock_cpu_percent.return_value = 30.0
+        
+        mock_disk = Mock()
+        mock_disk.total = 100 * (1024**3)  # 100 GB
+        mock_disk.used = 40 * (1024**3)  # 40 GB used
+        mock_disk_usage.return_value = mock_disk
+        
+        # Mock Railway services check
+        mock_railway_check.return_value = {
+            "overall_status": "healthy",
+            "services": {
+                "postgresql": "healthy",
+                "redis": "healthy"
+            }
+        }
 
         response = client.get("/health")
         assert response.status_code == 200
