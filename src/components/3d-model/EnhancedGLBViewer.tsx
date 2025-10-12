@@ -1,4 +1,4 @@
-import React, { Suspense, useRef, useEffect, useState } from 'react';
+import React, { Suspense, useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { useGLTF, Environment, OrbitControls, Bounds, useBounds, useAnimations } from '@react-three/drei';
 
@@ -8,6 +8,7 @@ interface EnhancedGLBViewerProps {
   enableAR?: boolean;          // show AR button(s)
   backgroundColor?: string;    // canvas background color
   onLoaded?: () => void;       // callback after model fits
+  onError?: (error: Error) => void; // callback for errors
   title?: string;              // AR title (for Android Scene Viewer)
   enableWebXR?: boolean;       // enable in-browser WebXR immersive-ar (desktop or supported mobile)
   webXRHitTest?: boolean;      // request hit-test feature when entering WebXR
@@ -23,7 +24,7 @@ class CanvasErrorBoundary extends React.Component<React.PropsWithChildren, Canva
   render() { if (this.state.hasError && this.state.error) { return <div className="p-4 text-sm bg-red-600 text-white">3D Viewer crashed: {this.state.error.message}</div>; } return this.props.children; }
 }
 
-function FittedModel({ modelPath, onLoaded, autoPlayAnimations = true }: { modelPath: string; onLoaded?: () => void; autoPlayAnimations?: boolean }) {
+function FittedModel({ modelPath, onLoaded, onError, autoPlayAnimations = true }: { modelPath: string; onLoaded?: () => void; onError?: (error: Error) => void; autoPlayAnimations?: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
   
   // Safe GLTF loading with error handling
@@ -43,6 +44,7 @@ function FittedModel({ modelPath, onLoaded, autoPlayAnimations = true }: { model
     }
   } catch (error) {
     console.error('Failed to load GLTF model:', error);
+    onError?.(error as Error);
     return null;
   }
   
@@ -84,18 +86,19 @@ function FittedModel({ modelPath, onLoaded, autoPlayAnimations = true }: { model
   return <group ref={groupRef}><primitive object={scene} /></group>;
 }
 
-export function EnhancedGLBViewer({
+export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
   modelPath,
   usdzPath = '/models/model.usdz',
   enableAR = true,
   backgroundColor = '#111',
   onLoaded,
+  onError,
   title = 'Model',
   enableWebXR = true,
   webXRHitTest = true,
   autoPlayAnimations = true,
   webXRScaleFactor = 0.6
-}: EnhancedGLBViewerProps) {
+}, ref) => {
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   const isIOS = /iPad|iPhone|iPod/i.test(ua);
   const isAndroid = /Android/i.test(ua);
@@ -105,6 +108,16 @@ export function EnhancedGLBViewer({
   const [isXRSession, setIsXRSession] = useState(false);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const modelGroupRef = useRef<THREE.Group | null>(null);
+  const controlsRef = useRef<any>(null);
+
+  // Expose methods via ref
+  useImperativeHandle(ref, () => ({
+    resetCamera: () => {
+      if (controlsRef.current) {
+        controlsRef.current.reset();
+      }
+    }
+  }));
 
   useEffect(() => {
     let cancelled = false;
@@ -234,18 +247,18 @@ export function EnhancedGLBViewer({
           <Suspense fallback={null}>
             <Bounds fit clip observe margin={1.15}>
               <group ref={modelGroupRef as unknown as React.Ref<THREE.Group>}>
-                <FittedModel modelPath={modelPath} onLoaded={onLoaded} autoPlayAnimations={autoPlayAnimations} />
+                <FittedModel modelPath={modelPath} onLoaded={onLoaded} onError={onError} autoPlayAnimations={autoPlayAnimations} />
               </group>
             </Bounds>
             <Environment preset="warehouse" />
           </Suspense>
           {!isXRSession && (
-            <OrbitControls makeDefault enableDamping dampingFactor={0.08} rotateSpeed={0.7} />
+            <OrbitControls ref={controlsRef} makeDefault enableDamping dampingFactor={0.08} rotateSpeed={0.7} />
           )}
         </Canvas>
       </div>
     </CanvasErrorBoundary>
   );
-}
+});
 
 export default EnhancedGLBViewer;

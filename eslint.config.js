@@ -1,8 +1,6 @@
-// Minimal ESLint config for deployment - ignores all files
+// ESLint config: ignore everything to avoid CI issues
 export default [
   {
-    ignores: [
-      "**/*"
-    ]
+    ignores: ["**/*"]
   }
 ];

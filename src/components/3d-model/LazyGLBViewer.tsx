@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, forwardRef } from 'react';
 import { Model3DLoading } from '@/components/ui/loading/Model3DLoading';
 
 // Lazy load the heavy 3D components
@@ -63,6 +63,7 @@ export interface LazyEnhancedGLBViewerProps {
   enableAR?: boolean;
   backgroundColor?: string;
   onLoaded?: () => void;
+  onError?: (error: Error) => void;
   title?: string;
   enableWebXR?: boolean;
   webXRHitTest?: boolean;
@@ -94,13 +95,13 @@ export interface LazyUniversalARViewerProps {
 }
 
 // Lazy wrapper components
-export const LazyEnhancedGLBViewer: React.FC<LazyEnhancedGLBViewerProps> = (props) => (
+export const LazyEnhancedGLBViewer = forwardRef<any, LazyEnhancedGLBViewerProps>((props, ref) => (
   <ModelErrorBoundary>
     <Suspense fallback={<ModelLoadingFallback message="Loading enhanced 3D viewer..." variant="detailed" />}>
-      <EnhancedGLBViewer {...props} />
+      <EnhancedGLBViewer {...props} ref={ref} />
     </Suspense>
   </ModelErrorBoundary>
-);
+));
 
 export const LazyOptimizedGLBViewer: React.FC<LazyOptimizedGLBViewerProps> = (props) => (
   <ModelErrorBoundary>

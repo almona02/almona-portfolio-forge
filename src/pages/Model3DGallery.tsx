@@ -303,8 +303,7 @@ export default function Model3DGalleryPage() {
             modelPath={selectedModel.modelPath}
             machineData={{
               dimensions: selectedModel.dimensions,
-              features: selectedModel.tags,
-              fileSize: selectedModel.fileSize
+              features: selectedModel.tags
             }}
             autoRotateEnabled={autoRotateEnabled}
             onAutoRotateChange={setAutoRotateEnabled}

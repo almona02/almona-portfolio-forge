@@ -46,7 +46,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
   showRegionalPricing = true,
   className = ''
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { regionState } = useRegionDetection();
   const utils = useRegionUtils();
   const turkishTaxUtils = useTurkishTaxUtils();
