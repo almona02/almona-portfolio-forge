@@ -11,6 +11,30 @@ from datetime import datetime
 from typing import Any, Dict, Optional, Union
 
 import structlog
+<<<<<<< Current (Your changes)
+
+try:
+    from opentelemetry import trace
+    from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+    from opentelemetry.exporter.prometheus import PrometheusMetricReader
+    from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+    from opentelemetry.instrumentation.logging import LoggingInstrumentor
+    from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
+    from opentelemetry.instrumentation.requests import RequestsInstrumentor
+    from opentelemetry.sdk.metrics import MeterProvider
+    from opentelemetry.sdk.resources import Resource
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor
+    from opentelemetry.semantic_conventions.resource import ResourceAttributes
+    OPENTELEMETRY_AVAILABLE = True
+except ImportError:
+    # Fallback for when OpenTelemetry is not available
+    class ResourceAttributes:
+        SERVICE_NAME = "service.name"
+        SERVICE_VERSION = "service.version"
+        DEPLOYMENT_ENVIRONMENT = "deployment.environment"
+    OPENTELEMETRY_AVAILABLE = False
+=======
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from opentelemetry.exporter.prometheus import PrometheusMetricReader
@@ -22,7 +46,13 @@ from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.semantic_conventions.resource import ResourceAttributes
+# Prefer new import path introduced around OTEL 1.25/0.45b
+try:
+    # Newer packages expose semantic conventions via `opentelemetry.semconv`
+    from opentelemetry.semconv.resource import ResourceAttributes  # type: ignore
+except Exception:  # pragma: no cover - fallback for older environments
+    from opentelemetry.semantic_conventions.resource import ResourceAttributes  # type: ignore
+>>>>>>> Incoming (Background Agent changes)
 from prometheus_client import Counter, Histogram, Gauge, Info, generate_latest, CONTENT_TYPE_LATEST
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -130,6 +160,8 @@ class StructuredLogger:
     
     def _add_trace_context(self, logger, method_name, event_dict):
         """Add OpenTelemetry trace context to log records."""
+        if not OPENTELEMETRY_AVAILABLE:
+            return event_dict
         span = trace.get_current_span()
         if span and span.is_recording():
             span_context = span.get_span_context()
@@ -152,7 +184,10 @@ class TracingMiddleware(BaseHTTPMiddleware):
     
     def __init__(self, app):
         super().__init__(app)
-        self.tracer = trace.get_tracer(__name__)
+        if OPENTELEMETRY_AVAILABLE:
+            self.tracer = trace.get_tracer(__name__)
+        else:
+            self.tracer = None
     
     async def dispatch(self, request: Request, call_next):
         """Process request with tracing and metrics."""
@@ -278,6 +313,10 @@ class MonitoringSetup:
     
     def setup_tracing(self):
         """Setup OpenTelemetry tracing."""
+        if not OPENTELEMETRY_AVAILABLE:
+            print("OpenTelemetry not available, skipping tracing setup")
+            return
+            
         # Create resource
         resource = Resource.create({
             ResourceAttributes.SERVICE_NAME: "almona-industrial-api",
@@ -306,6 +345,10 @@ class MonitoringSetup:
     
     def setup_metrics(self):
         """Setup Prometheus metrics."""
+        if not OPENTELEMETRY_AVAILABLE:
+            print("OpenTelemetry not available, skipping metrics setup")
+            return
+            
         # Create meter provider
         resource = Resource.create({
             ResourceAttributes.SERVICE_NAME: "almona-industrial-api",
@@ -318,6 +361,9 @@ class MonitoringSetup:
     
     def instrument_fastapi(self, app):
         """Instrument FastAPI application."""
+        if not OPENTELEMETRY_AVAILABLE:
+            print("OpenTelemetry not available, skipping FastAPI instrumentation")
+            return
         FastAPIInstrumentor.instrument_app(app, tracer_provider=self.tracer_provider)
     
     def get_metrics_response(self) -> Response:

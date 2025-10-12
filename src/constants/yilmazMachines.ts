@@ -18,6 +18,7 @@ export interface Machine {
   specPdf: string;
   youtubeUrl?: string;
   modelPath?: string;
+  has3DModel?: boolean;
   category: string;
   featured: boolean;
   releaseDate: string;

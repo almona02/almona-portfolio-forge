@@ -38,6 +38,8 @@ interface SourceMachineLike {
   dimensions?: { length?: string; width?: string; height?: string };
   safetyFeatures?: string[];
   specPdf?: string; youtubeUrl?: string; featured?: boolean;
+  airSpec?: { consumption?: string; pressure?: string };
+  modelPath?: string;
 }
 import { Eye } from "lucide-react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
