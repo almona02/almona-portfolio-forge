@@ -1,15 +1,25 @@
 import pytest
 import tempfile
 import os
+import sys
 from PIL import Image
 import numpy as np
+from unittest.mock import Mock
 from fastapi.testclient import TestClient
-from apis.main import app
+
+# Mock ML models before importing the app to avoid long load times
+sys.modules['ultralytics'] = Mock()
+sys.modules['tensorflow'] = Mock()
+
+# Import after mocking to avoid long load times
+from apis.main import app  # noqa: E402
+
 
 @pytest.fixture
 def client():
     """Create a test client for the FastAPI app"""
     return TestClient(app)
+
 
 @pytest.fixture
 def sample_image():
@@ -27,6 +37,7 @@ def sample_image():
     # Cleanup
     os.unlink(temp_file.name)
 
+
 @pytest.fixture
 def large_image():
     """Create a large test image (>15MB)"""
@@ -43,6 +54,7 @@ def large_image():
     
     # Cleanup
     os.unlink(temp_file.name)
+
 
 @pytest.fixture
 def invalid_file():
