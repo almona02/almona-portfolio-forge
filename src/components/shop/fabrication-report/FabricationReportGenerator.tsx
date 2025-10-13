@@ -5,7 +5,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { generateFabricationReport, compareMachines } from '@/lib/reports/generateReport';
+// Defer heavy PDF/report utilities to runtime to reduce main chunk size
+// import { generateFabricationReport, compareMachines } from '@/lib/reports/generateReport';
 // Lazy import file-saver to avoid adding to initial bundle
 let saveAsFn: ((data: Blob | File, filename?: string, opts?: unknown) => void) | null = null;
 
@@ -47,6 +48,7 @@ export default function FabricationReportGenerator() {
 
 
   const handleGenerateReport = useCallback(async () => {
+    const { generateFabricationReport, compareMachines } = await import('@/lib/reports/generateReport');
     const report = await generateFabricationReport({
       materialType,
       profileLength,
@@ -221,15 +223,17 @@ export default function FabricationReportGenerator() {
 
       <div className="flex items-center space-x-2 mb-6">
         <Label htmlFor="language">Language</Label>
-        <Select value={isArabic ? 'ar' : 'en'} onValueChange={(val) => setIsArabic(val === 'ar')}>
-          <SelectTrigger className="w-[100px]">
-            <SelectValue placeholder="Language" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="en">English</SelectItem>
-            <SelectItem value="ar">العربية</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="w-[100px]">
+          <Select value={isArabic ? 'ar' : 'en'} onValueChange={(val) => setIsArabic(val === 'ar')}>
+            <SelectTrigger>
+              <SelectValue placeholder="Language" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="en">English</SelectItem>
+              <SelectItem value="ar">العربية</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <Button 
