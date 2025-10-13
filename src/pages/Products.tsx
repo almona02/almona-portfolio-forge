@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
-import { EnhancedModel3DDialog } from "@/components/3d-model/EnhancedModel3DDialog";
+import React, { useEffect, useState, Suspense, useCallback, useMemo, lazy } from "react";
+// Lazy-load heavy 3D dialog to reduce initial chunks
+const EnhancedModel3DDialogLazy = lazy(() => import("@/components/3d-model/EnhancedModel3DDialog").then(m => ({ default: m.EnhancedModel3DDialog })));
 import CompareBar from "@/components/comparison/CompareBar";
 import CompareDialog from "@/components/comparison/CompareDialog";
 import { VirtualizedMachineGrid } from "@/components/optimized/VirtualizedMachineGrid";
@@ -43,7 +44,7 @@ interface SourceMachineLike {
 }
 import { Eye } from "lucide-react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import React, { useEffect, useState, Suspense, useCallback, useMemo } from "react";
+// (React import consolidated above)
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { debounce } from "@/lib/utils";
 
@@ -603,26 +604,28 @@ const Products = function ProductsPage() {
             />
           </Suspense>
 
-          {selectedMachineFor3D && (
-            <EnhancedModel3DDialog
-              isOpen={show3DModel}
-              onClose={() => setShow3DModel(false)}
-              machineName={selectedMachineFor3D.name}
-              modelPath={
-                selectedMachineFor3D.modelPath ||
-                "/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
-              }
-              machineData={{
-                dimensions: selectedMachineFor3D.dimensions ? {
-                  length: selectedMachineFor3D.dimensions.length,
-                  width: selectedMachineFor3D.dimensions.width,
-                  height: selectedMachineFor3D.dimensions.height
-                } : undefined,
-                power: selectedMachineFor3D.powerSpec?.consumption,
-                features: selectedMachineFor3D.tags
-              }}
-            />
-          )}
+          <Suspense fallback={null}>
+            {selectedMachineFor3D && (
+              <EnhancedModel3DDialogLazy
+                isOpen={show3DModel}
+                onClose={() => setShow3DModel(false)}
+                machineName={selectedMachineFor3D.name}
+                modelPath={
+                  selectedMachineFor3D.modelPath ||
+                  "/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
+                }
+                machineData={{
+                  dimensions: selectedMachineFor3D.dimensions ? {
+                    length: selectedMachineFor3D.dimensions.length,
+                    width: selectedMachineFor3D.dimensions.width,
+                    height: selectedMachineFor3D.dimensions.height
+                  } : undefined,
+                  power: selectedMachineFor3D.powerSpec?.consumption,
+                  features: selectedMachineFor3D.tags
+                }}
+              />
+            )}
+          </Suspense>
 
           <MachineRecommendationWizard
         open={wizardOpen}
