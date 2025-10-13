@@ -380,7 +380,7 @@ const Products = function ProductsPage() {
 
   return (
     <main className="flex-grow pt-24">
-          <div className="mx-auto px-4 xl:px-8 py-12 max-w-screen-2xl">
+          <div className="mx-auto px-4 xl:px-8 py-12 max-w-[1400px] 2xl:max-w-[1600px]">
             {/* Existing Products page content */}
             <div className="mb-12 text-center">
               <h1 className="text-4xl font-bold mb-4">
@@ -422,7 +422,7 @@ const Products = function ProductsPage() {
                     />
                   </div>
                   
-                  <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0">
                     {/* Breadcrumb Navigation */}
                     <div className="mb-6">
                       <CategoryBreadcrumb

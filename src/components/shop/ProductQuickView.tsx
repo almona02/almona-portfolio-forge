@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared/ui/ui/dialog';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -37,16 +38,26 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
   const { t } = useTranslation('shop');
   const { addToQuote } = useQuote();
   const [activeTab, setActiveTab] = useState('overview');
+  const [addedCount, setAddedCount] = useState(0);
+  const [isAdding, setIsAdding] = useState(false);
+  const hasVideo = useMemo(() => Boolean((product as any).youtubeUrl), [(product as any).youtubeUrl]);
+  const hasSpecPdf = useMemo(() => Boolean((product as any).specPdf), [(product as any).specPdf]);
 
   const handleAddToQuote = () => {
     addToQuote(product);
-    toast.success(`${product.name} has been added to your quote.`);
-    onClose();
+    setAddedCount((c) => c + 1);
+    setIsAdding(true);
+    setTimeout(() => setIsAdding(false), 450);
+    toast.success(`${product.name} added to quote.`);
   };
 
   const handleVideoPlay = () => {
-    // Simulate video play action
-    toast.success('Opening product video...');
+    const url = (product as any).youtubeUrl as string | undefined;
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      toast.error('No video available for this product');
+    }
   };
 
   const handleSpecsView = () => {
@@ -54,12 +65,16 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
   };
 
   const handleDownloadBrochure = () => {
-    // Simulate brochure download
-    toast.success('Downloading product brochure...');
+    const pdf = (product as any).specPdf as string | undefined;
+    if (pdf) {
+      window.open(pdf, '_blank', 'noopener,noreferrer');
+    } else {
+      toast.error('No brochure available for this product');
+    }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent className="max-w-5xl bg-almona-darker border-almona-light text-white p-0">
         <DialogHeader className="p-6 border-b border-gray-700">
           <div className="flex items-center justify-between">
@@ -76,6 +91,9 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                 <Shield className="w-3 h-3 mr-1" />
                 Warranty
               </Badge>
+              {addedCount > 0 && (
+                <Badge className="bg-orange-600/80 text-white">Added: {addedCount}</Badge>
+              )}
             </div>
           </div>
         </DialogHeader>
@@ -105,7 +123,8 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                         size="sm"
                         variant="secondary"
                         onClick={handleVideoPlay}
-                        className="bg-black/50 backdrop-blur-sm text-white border-gray-600 hover:bg-red-600/80"
+                        disabled={!hasVideo}
+                        className={`bg-black/50 backdrop-blur-sm text-white border-gray-600 ${hasVideo ? 'hover:bg-red-600/80' : 'opacity-50 cursor-not-allowed'}`}
                       >
                         <Play className="w-4 h-4" />
                       </Button>
@@ -125,7 +144,8 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                     <Button
                       variant="outline"
                       onClick={handleDownloadBrochure}
-                      className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                      disabled={!hasSpecPdf}
+                      className={`border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white ${!hasSpecPdf ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Brochure
@@ -145,9 +165,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   {/* Price */}
                   <div className="bg-gray-800 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold mb-2 text-orange-400">Pricing</h3>
-                    <p className="text-2xl font-bold text-gradient-orange">
-                      {product.pricing?.basePrice ? `${product.pricing.basePrice.toLocaleString()} EGP` : 'Price on request'}
-                    </p>
+                    <p className="text-2xl font-bold text-gradient-orange">Price on request</p>
                     <p className="text-sm text-gray-400 mt-1">Excluding VAT and shipping</p>
                   </div>
 
@@ -165,9 +183,14 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   </div>
 
                   {/* Add to Quote */}
-                  <Button onClick={handleAddToQuote} className="w-full bg-gradient-orange text-lg py-3">
-                    {t('shop.buttons.add_to_quote')}
-                  </Button>
+                  <motion.div whileTap={{ scale: 0.98 }} animate={isAdding ? { scale: [1, 1.03, 1] } : {}} transition={{ duration: 0.35 }}>
+                    <Button onClick={handleAddToQuote} className="w-full bg-gradient-orange text-lg py-3">
+                      {t('shop.buttons.add_to_quote')}
+                    </Button>
+                  </motion.div>
+                  {addedCount > 0 && (
+                    <div className="text-sm text-gray-300 text-center">Added to quote: <span className="text-orange-400 font-semibold">{addedCount}</span></div>
+                  )}
                 </div>
               </div>
             </TabsContent>

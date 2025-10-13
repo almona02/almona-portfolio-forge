@@ -1010,5 +1010,31 @@ export const yilmazMachines: Machine[] = [
   id: "ym-032",
   name: "YILMAZ SA 250",
   description: "Cooling Unit for welding systems",
+  imageUrl: "/images/machines/SA-250.jpg",
+  specPdf: "/documents/specs/SA-250.pdf",
+  category: "accessories",
+  featured: false,
+  releaseDate: "2021-01-01",
+  type: "Cooling Unit",
+  powerSpec: {
+    voltage: '400V',
+    frequency: '50Hz',
+    phase: '3',
+    consumption: '0.5 kW'
+  },
+  dimensions: {
+    length: '1000mm',
+    width: '800mm',
+    height: '1200mm'
+  },
+  tags: ["Cooling", "Welding"],
+  specifications: [
+    "For use with welding systems",
+    "Integrated in production lines",
+    "Automatic operation",
+    "Low maintenance"
+  ],
+  certifications: ['CE'],
+  safetyFeatures: []
   },
 ];
