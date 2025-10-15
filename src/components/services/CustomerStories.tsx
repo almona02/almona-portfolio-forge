@@ -17,7 +17,7 @@ import {
   ExternalLink,
   Quote
 } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface CustomerStory {
   id: string;
@@ -50,17 +50,17 @@ interface CustomerStory {
   featured: boolean;
 }
 
-const customerStories: CustomerStory[] = [
+const getCustomerStories = (t: any): CustomerStory[] => [
   {
     id: 'hassan-sons',
-    name: 'Ahmed Hassan',
-    company: 'Hassan & Sons Metalworks',
+    name: t('services.ahmed_hassan'),
+    company: t('services.hassan_sons_metalworks'),
     avatar: '/images/profiles/ahmed-hassan.jpg',
-    role: 'Production Manager',
-    location: 'Cairo, Egypt',
+    role: t('services.production_manager'),
+    location: t('services.cairo_egypt'),
     industry: 'Aluminum Fabrication',
     packageUsed: 'professional',
-    testimonial: "Almona's Professional Care package transformed our operations. We went from 3 days of downtime per month to just 4 hours. The predictive maintenance caught issues before they became problems.",
+    testimonial: t('services.almona_professional_care_transformed'),
     rating: 5,
     metrics: {
       before: {
@@ -87,23 +87,23 @@ const customerStories: CustomerStory[] = [
       'Operator training programs'
     ],
     results: [
-      '95% reduction in downtime',
-      '40% increase in production efficiency',
-      '60% reduction in maintenance costs',
+      t('services.ninety_five_percent_reduction_downtime'),
+      t('services.forty_percent_increase_production'),
+      t('services.sixty_percent_reduction_maintenance'),
       'ROI achieved in 3 months'
     ],
     featured: true
   },
   {
     id: 'al-sayed-upvc',
-    name: 'Fatima Al-Sayed',
-    company: 'Al-Sayed UPVC Windows',
+    name: t('services.fatima_alsayed'),
+    company: t('services.alsayed_upvc_windows'),
     avatar: '/images/profiles/fatima-al-sayed.jpg',
-    role: 'Operations Director',
-    location: 'Alexandria, Egypt',
+    role: t('services.operations_director'),
+    location: t('services.alexandria_egypt'),
     industry: 'UPVC Manufacturing',
     packageUsed: 'enterprise',
-    testimonial: "The Enterprise Care package gave us the AI-powered insights we needed to scale. We're now producing 300% more with the same equipment and have expanded to 3 new markets.",
+    testimonial: t('services.enterprise_care_ai_insights'),
     rating: 5,
     metrics: {
       before: {
@@ -193,10 +193,11 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
   showFeaturedOnly = false,
   maxStories = 3
 }) => {
-  const { t } = useTranslation('services');
+  const { t, language } = useLanguage();
   const [currentStory, setCurrentStory] = useState(0);
   const [selectedStory, setSelectedStory] = useState<CustomerStory | null>(null);
 
+  const customerStories = getCustomerStories(t);
   const stories = showFeaturedOnly 
     ? customerStories.filter(story => story.featured)
     : customerStories.slice(0, maxStories);
@@ -220,10 +221,10 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
 
   const getPackageLabel = (packageType: string) => {
     switch (packageType) {
-      case 'basic': return 'Basic Care';
-      case 'professional': return 'Professional Care';
-      case 'enterprise': return 'Enterprise Care';
-      default: return 'Service Package';
+      case 'basic': return t('services.basic_care_package');
+      case 'professional': return t('services.professional_care_package');
+      case 'enterprise': return t('services.enterprise_care_package');
+      default: return t('services.service_package');
     }
   };
 
@@ -237,14 +238,13 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
       >
         <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 rounded-full bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
           <Award className="h-6 w-6 text-orange-400" />
-          <span className="text-orange-400 font-semibold">Success Stories</span>
+          <span className="text-orange-400 font-semibold">{t('services.success_stories')}</span>
         </div>
         <h2 className="text-4xl font-bold text-white mb-4">
-          Real Results from <span className="text-orange-400">Real Customers</span>
+          {t('services.real_results_real_customers')}
         </h2>
         <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-          See how ALMONA's service packages have transformed businesses across Egypt. 
-          From small workshops to large factories, our customers achieve remarkable results.
+          {t('services.see_how_almona_transformed')}
         </p>
       </motion.div>
 
@@ -314,31 +314,31 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
 
                       {/* Metrics */}
                       <div className="space-y-6">
-                        <h4 className="text-xl font-semibold text-white">Results Achieved</h4>
+                        <h4 className="text-xl font-semibold text-white">{t('services.results_achieved')}</h4>
                         
                         <div className="grid grid-cols-3 gap-4">
                           <div className="text-center p-4 bg-slate-700/50 rounded-lg">
                             <TrendingUp className="h-6 w-6 text-green-400 mx-auto mb-2" />
                             <div className="text-2xl font-bold text-white">{story.metrics.after.production}</div>
-                            <div className="text-sm text-gray-400">Production</div>
+                            <div className="text-sm text-gray-400">{t('services.production')}</div>
                             <div className="text-xs text-green-400">vs {story.metrics.before.production}</div>
                           </div>
                           <div className="text-center p-4 bg-slate-700/50 rounded-lg">
                             <Clock className="h-6 w-6 text-blue-400 mx-auto mb-2" />
                             <div className="text-2xl font-bold text-white">{story.metrics.after.downtime}</div>
-                            <div className="text-sm text-gray-400">Downtime</div>
+                            <div className="text-sm text-gray-400">{t('services.downtime')}</div>
                             <div className="text-xs text-blue-400">vs {story.metrics.before.downtime}</div>
                           </div>
                           <div className="text-center p-4 bg-slate-700/50 rounded-lg">
                             <Factory className="h-6 w-6 text-purple-400 mx-auto mb-2" />
                             <div className="text-2xl font-bold text-white">{story.metrics.after.efficiency}</div>
-                            <div className="text-sm text-gray-400">Efficiency</div>
+                            <div className="text-sm text-gray-400">{t('services.efficiency')}</div>
                             <div className="text-xs text-purple-400">vs {story.metrics.before.efficiency}</div>
                           </div>
                         </div>
 
                         <div className="space-y-3">
-                          <h5 className="font-semibold text-white">Key Results:</h5>
+                          <h5 className="font-semibold text-white">{t('services.key_results')}</h5>
                           <ul className="space-y-1">
                             {story.results.slice(0, 3).map((result, idx) => (
                               <li key={idx} className="flex items-center gap-2 text-sm text-gray-300">
@@ -456,17 +456,17 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
       >
         <div className="bg-gradient-to-r from-orange-500/10 to-purple-500/10 rounded-2xl p-8 border border-white/10">
           <h3 className="text-2xl font-bold text-white mb-4">
-            Ready to Write Your Success Story?
+            {t('services.ready_write_success_story')}
           </h3>
           <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-            Join hundreds of satisfied customers who have transformed their businesses with ALMONA's service packages.
+            {t('services.join_hundreds_satisfied_customers')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-3">
-              Get Your Free Consultation
+              {t('services.get_free_consultation')}
             </Button>
             <Button variant="outline" className="border-white text-white hover:bg-white hover:text-slate-900 px-8 py-3">
-              View All Case Studies
+              {t('services.view_all_case_studies')}
             </Button>
           </div>
         </div>

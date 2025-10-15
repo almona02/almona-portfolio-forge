@@ -41,6 +41,8 @@ import { UnifiedTicketFormData } from '@/lib/validation/ticket';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/useToast';
 import { canCreateServiceTicket, trackServiceTicketBlocked } from '@/lib/permissions/tickets';
+import { useLanguage } from '@/context/LanguageContext';
+import { LanguageToggle } from '@/components/ui/LanguageToggle';
 import BusinessKPIDashboard from '@/components/analytics/BusinessKPIDashboard';
 import {
   AlertTriangle,
@@ -100,6 +102,7 @@ const Services = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { t, language } = useLanguage();
   // View state reserved for future use (list/map)
   const [emergencyDialogOpen, setEmergencyDialogOpen] = useState(false);
   const [operatorTrainingOpen, setOperatorTrainingOpen] = useState(false);
@@ -140,14 +143,14 @@ const Services = () => {
         machineId: 'YM-CUT-5000',
         machineName: 'YILMAZ Double Head Cutting Machine',
         severity: 'high',
-        component: 'Main Spindle Bearings',
-        issue: 'Increased vibration patterns detected',
+        component: t('services.main_spindle_bearings'),
+        issue: t('services.increased_vibration_patterns'),
         predictedFailureDate: '2024-02-15',
         confidence: 87,
         recommendedActions: [
-          'Schedule bearing replacement within 2 weeks',
-          'Monitor vibration levels daily',
-          'Check lubrication system'
+          t('services.schedule_bearing_replacement'),
+          t('services.monitor_vibration_levels'),
+          t('services.check_lubrication_system')
         ],
         sensorsInvolved: ['vibration', 'acoustic', 'temperature']
       },
@@ -156,14 +159,14 @@ const Services = () => {
         machineId: 'YM-MILL-3000',
         machineName: 'Vertical Copy Router',
         severity: 'medium',
-        component: 'Tool Changer Mechanism',
-        issue: 'Alignment drift detected',
+        component: t('services.tool_changer_mechanism'),
+        issue: t('services.alignment_drift_detected'),
         predictedFailureDate: '2024-03-01',
         confidence: 72,
         recommendedActions: [
-          'Calibrate tool changer alignment',
-          'Inspect pneumatic actuators',
-          'Verify positioning sensors'
+          t('services.calibrate_tool_changer'),
+          t('services.inspect_pneumatic_actuators'),
+          t('services.verify_positioning_sensors')
         ],
         sensorsInvolved: ['position', 'pressure', 'current']
       }
@@ -172,7 +175,7 @@ const Services = () => {
     const mockHealth: MachineHealth[] = [
       {
         machineId: 'YM-CUT-5000',
-        name: 'Double Head Cutting Machine',
+        name: t('services.double_head_cutting_machine'),
         type: 'cutting',
         status: 'degraded',
         healthScore: 67,
@@ -187,7 +190,7 @@ const Services = () => {
       },
       {
         machineId: 'YM-MILL-3000',
-        name: 'Vertical Copy Router',
+        name: t('services.vertical_copy_router'),
         type: 'milling',
         status: 'optimal',
         healthScore: 92,
@@ -262,15 +265,22 @@ const Services = () => {
     setTicketWizardOpen(true);
   };
 
-  const handlePackageSelection = (packageId: string) => {
+  const handlePackageSelection = (packageId: string, estimatedPrice?: number) => {
     if (!user) {
       navigate('/login', { state: { redirect: '/services', package: packageId } });
       return;
     }
 
+    // Show success message with package recommendation
+    toast({
+      title: 'Package Recommendation',
+      description: `We recommend the ${packageId} package for your needs. Estimated cost: $${estimatedPrice?.toLocaleString() || 'Contact for pricing'}`,
+      duration: 5000,
+    });
+
     // Create a service package ticket
     const packageTicketData = {
-      type: 'service' as const,
+      type: 'general' as const,
       priority: packageId === 'enterprise' ? 'high' as const : 'medium' as const,
       title: `Service Package Request - ${packageId}`,
       description: `Customer interested in ${packageId} service package. Please contact for consultation.`
@@ -287,6 +297,16 @@ const Services = () => {
       case 'maintenance_required': return 'text-orange-400';
       case 'critical': return 'text-red-400';
       default: return 'text-gray-400';
+    }
+  };
+
+  const getStatusText = (status: MachineHealth['status']) => {
+    switch (status) {
+      case 'optimal': return t('services.optimal');
+      case 'degraded': return t('services.degraded');
+      case 'maintenance_required': return t('services.maintenance_required');
+      case 'critical': return t('services.critical_status');
+      default: return status;
     }
   };
 
@@ -308,8 +328,11 @@ const Services = () => {
         transition={{ duration: 0.5, delay: 0.2 }}
         className="container mx-auto px-4 py-12"
       >
-        {/* View Toggle */}
-        <ServiceViewToggle viewMode={viewMode} onViewChange={setViewMode} />
+        {/* View Toggle and Language Toggle */}
+        <div className="flex justify-between items-center mb-6">
+          <ServiceViewToggle viewMode={viewMode} onViewChange={setViewMode} />
+          <LanguageToggle />
+        </div>
 
         {/* Conditional Rendering */}
         {viewMode === 'simple' ? (
@@ -326,16 +349,15 @@ const Services = () => {
               >
                 <Brain className="h-6 w-6 text-orange-400" />
                 <Badge variant="secondary" className="text-sm font-semibold">
-                  AI-POWERED PREDICTIVE MAINTENANCE
+                  {t('services.ai_powered_maintenance')}
                 </Badge>
               </motion.div>
               
               <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
-                Industrial AI Services Hub
+                {t('services.title')}
               </h1>
               <p className="text-xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
-                Machine learning-driven predictive maintenance, real-time equipment monitoring, 
-                and intelligent lifecycle management for aluminum window and door manufacturing systems.
+                {t('services.subtitle_enhanced')}
               </p>
             </div>
 
@@ -353,18 +375,18 @@ const Services = () => {
             className={realTimeData ? "bg-green-500 hover:bg-green-600" : "electric-border"}
           >
             <Activity className="h-4 w-4 mr-2" />
-            {realTimeData ? 'Live Data Active' : 'Enable Live Data'}
+            {realTimeData ? t('services.live_data_active') : t('services.enable_live_data')}
           </Button>
           <Link to="/portal">
             <Button variant="outline" className="text-white electric-border">
               <Gauge className="h-4 w-4 mr-2" />
-              Customer Portal
+              {t('services.customer_portal')}
             </Button>
           </Link>
           <Link to="/support">
             <Button variant="outline" className="text-white electric-border">
               <Shield className="h-4 w-4 mr-2" />
-              AI Support
+              {t('services.ai_support')}
             </Button>
           </Link>
         </div>
@@ -373,49 +395,49 @@ const Services = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <Card className="bg-gradient-to-br from-gray-900 to-black border-orange-500/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Alerts</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('services.active_alerts')}</CardTitle>
               <AlertTriangle className="h-4 w-4 text-orange-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-orange-400">{predictiveAlerts.length}</div>
               <p className="text-xs text-gray-400">
-                {predictiveAlerts.filter(a => a.severity === 'critical').length} critical
+                {predictiveAlerts.filter(a => a.severity === 'critical').length} {t('services.critical')}
               </p>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-gray-900 to-black border-green-500/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Healthy Machines</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('services.healthy_machines')}</CardTitle>
               <CheckCircle2 className="h-4 w-4 text-green-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-400">
                 {machineHealth.filter(m => m.status === 'optimal').length}
               </div>
-              <p className="text-xs text-gray-400">Optimal performance</p>
+              <p className="text-xs text-gray-400">{t('services.optimal_performance')}</p>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-gray-900 to-black border-blue-500/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Predictive Accuracy</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('services.predictive_accuracy')}</CardTitle>
               <Brain className="h-4 w-4 text-blue-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-400">94%</div>
-              <p className="text-xs text-gray-400">ML model confidence</p>
+              <p className="text-xs text-gray-400">{t('services.ml_model_confidence')}</p>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-gray-900 to-black border-purple-500/20">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Cost Savings</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('services.cost_savings')}</CardTitle>
               <TrendingUp className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-purple-400">37%</div>
-              <p className="text-xs text-gray-400">Reduced downtime</p>
+              <p className="text-xs text-gray-400">{t('services.reduced_downtime')}</p>
             </CardContent>
           </Card>
         </div>
@@ -425,23 +447,23 @@ const Services = () => {
           <TabsList className="grid w-full grid-cols-1 sm:grid-cols-5 max-w-6xl mx-auto mb-12 bg-gradient-to-r from-gray-900 to-black backdrop-blur-sm border border-orange-500/20 p-2 rounded-xl">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
-              AI Overview
+              {t('services.ai_overview')}
             </TabsTrigger>
             <TabsTrigger value="predictive" className="flex items-center gap-2">
               <Brain className="h-4 w-4" />
-              Predictive Engine
+              {t('services.predictive_engine')}
             </TabsTrigger>
             <TabsTrigger value="register" className="flex items-center gap-2">
               <Database className="h-4 w-4" />
-              Register Machine
+              {t('services.register_machine')}
             </TabsTrigger>
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
-              AI Dashboard
+              {t('services.ai_dashboard')}
             </TabsTrigger>
             <TabsTrigger value="service-kpis" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Service KPIs
+              {t('services.service_kpis')}
             </TabsTrigger>
           </TabsList>
 
@@ -459,10 +481,10 @@ const Services = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-orange-400">
                     <AlertTriangle className="h-5 w-5" />
-                    AI Predictive Alerts
+                    {t('services.ai_predictive_alerts')}
                   </CardTitle>
                   <CardDescription>
-                    Machine learning-driven failure predictions and maintenance recommendations
+                    {t('services.ml_driven_predictions')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -492,8 +514,8 @@ const Services = () => {
                             </div>
                             <p className="text-sm mb-2">{alert.component}: {alert.issue}</p>
                             <div className="flex items-center gap-4 text-xs text-gray-400">
-                              <span>Predicted: {alert.predictedFailureDate}</span>
-                              <span>Confidence: {alert.confidence}%</span>
+                              <span>{t('services.predicted_failure_date')}: {alert.predictedFailureDate}</span>
+                              <span>{t('services.confidence')}: {alert.confidence}%</span>
                               <div className="flex items-center gap-1">
                                 {alert.sensorsInvolved.map(sensor => (
                                   <Badge key={sensor} variant="outline" className="text-xs">
@@ -511,7 +533,7 @@ const Services = () => {
                             onClick={() => launchMaintenanceTicket('preventive')}
                             className="ml-4"
                           >
-                            Schedule
+                            {language === 'ar' ? 'جدولة' : 'Schedule'}
                           </Button>
                         </div>
                       </motion.div>
@@ -524,56 +546,56 @@ const Services = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <ServiceCard
                   icon="brain"
-                  title="AI Predictive Maintenance"
-                  description="Machine learning algorithms predict failures before they happen"
+                  title={t('services.ai_predictive_maintenance')}
+                  description={t('services.ml_algorithms_predict')}
                   features={[
-                    "Vibration analysis",
-                    "Thermal imaging",
-                    "Acoustic monitoring",
-                    "95% prediction accuracy"
+                    t('services.vibration_analysis'),
+                    t('services.thermal_imaging'),
+                    t('services.acoustic_monitoring'),
+                    t('services.prediction_accuracy')
                   ]}
-                  actionText={user ? "View Predictions" : "Login to Access"}
+                  actionText={user ? t('services.view_predictions') : t('services.login_to_access')}
                   onActionClick={() => setActiveTab("predictive")}
                   highlight={true}
                 />
                 <ServiceCard
                   icon="bolt"
-                  title="Emergency Repairs"
-                  description="24/7 AI-monitored critical response team"
+                  title={t('services.emergency_repairs')}
+                  description={t('services.ai_monitored_response')}
                   features={[
-                    "2-hour response guarantee",
-                    "Smart spare parts inventory",
-                    "Mobile repair units with IoT",
-                    "Real-time technician tracking"
+                    t('services.response_guarantee'),
+                    t('services.smart_spare_parts'),
+                    t('services.mobile_repair_units'),
+                    t('services.real_time_technician_tracking')
                   ]}
-                  actionText={user ? "Emergency Ticket" : "Login for Emergency"}
+                  actionText={user ? t('services.emergency_ticket') : t('services.login_for_emergency')}
                   onActionClick={() => launchMaintenanceTicket('emergency')}
                 />
                 <ServiceCard
                   icon="graduation-cap"
-                  title="AI Operator Training"
-                  description="Machine-specific certification with performance analytics"
+                  title={t('services.ai_operator_training')}
+                  description={t('services.machine_specific_certification')}
                   features={[
-                    "Virtual reality simulations",
-                    "Performance benchmarking",
-                    "Predictive skill assessment",
-                    "Certification tracking"
+                    t('services.vr_simulations'),
+                    t('services.performance_benchmarking'),
+                    t('services.predictive_skill_assessment'),
+                    t('services.certification_tracking')
                   ]}
-                  actionText="View Training Programs"
+                  actionText={t('services.view_training_programs')}
                   onActionClick={() => setOperatorTrainingOpen(true)}
                   highlight={true}
                 />
                 <ServiceCard
                   icon="factory"
-                  title="Fabricator Workflow Pro"
-                  description="AI-powered aluminum & UPVC fabrication system with smart optimization"
+                  title={t('services.fabricator_workflow_pro')}
+                  description={t('services.ai_powered_fabrication')}
                   features={[
-                    "Smart measuring interface",
-                    "Cutting optimization engine",
-                    "Real-time monitoring",
-                    "Quality control automation"
+                    t('services.smart_measuring_interface'),
+                    t('services.cutting_optimization_engine'),
+                    t('services.real_time_monitoring'),
+                    t('services.quality_control_automation')
                   ]}
-                  actionText="Launch Fabricator"
+                  actionText={t('services.launch_fabricator')}
                   onActionClick={() => navigate('/fabricator-workflow')}
                   highlight={true}
                 />
@@ -584,7 +606,7 @@ const Services = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <CircuitBoard className="h-5 w-5 text-orange-400" />
-                    Real-Time Machine Health
+                    {language === 'ar' ? 'صحة الماكينات في الوقت الفعلي' : 'Real-Time Machine Health'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -607,18 +629,18 @@ const Services = () => {
                               {machine.name}
                             </span>
                           </div>
-                          <Badge variant="outline">{machine.type}</Badge>
+                          <Badge variant="outline">{t(`services.${machine.type}`)}</Badge>
                         </div>
                         
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
-                            <span>Health Score:</span>
+                            <span>{t('services.health_score')}:</span>
                             <span className="font-semibold">{machine.healthScore}%</span>
                           </div>
                           <Progress value={machine.healthScore} className="h-2" />
                           
                           <div className="flex justify-between text-sm">
-                            <span>Operational Hours:</span>
+                            <span>{t('services.operational_hours')}:</span>
                             <span>{machine.operationalHours}h</span>
                           </div>
                           
@@ -629,13 +651,13 @@ const Services = () => {
                                   {sensor.type === 'vibration' && <Vibrate className="h-3 w-3" />}
                                   {sensor.type === 'temperature' && <Thermometer className="h-3 w-3" />}
                                   {sensor.type === 'acoustic' && <Camera className="h-3 w-3" />}
-                                  <span className="capitalize">{sensor.type}:</span>
+                                  <span className="capitalize">{t(`services.${sensor.type}`)}:</span>
                                 </div>
                                 <span className={
                                   sensor.status === 'normal' ? 'text-green-400' :
                                   sensor.status === 'warning' ? 'text-yellow-400' : 'text-red-400'
                                 }>
-                                  {sensor.value} {sensor.unit}
+                                  {sensor.value} {sensor.unit} ({t(`services.${sensor.status}`)})
                                 </span>
                               </div>
                             ))}

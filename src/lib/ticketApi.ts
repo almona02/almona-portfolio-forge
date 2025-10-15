@@ -13,7 +13,7 @@ import { supabase } from '@/lib/supabase'
 import { Database } from '@/types/database'
 import { ticketsV2Api } from '@/lib/api/ticketsV2'
 
-type DBServiceTicketRow = Database['public']['Tables']['service_tickets']['Row'] & { source?: string | null; maintenance_type?: string | null }
+type DBServiceTicketRow = Database['public']['Tables']['service_tickets']['Row'] & { source?: string | null }
 type DBTicketMessageRow = Database['public']['Tables']['ticket_messages']['Row']
 
 // ---------- Helpers ----------
@@ -30,7 +30,7 @@ function mapTicket(row: DBServiceTicketRow): ServiceTicket {
   priority: row.priority as ServiceTicket['priority'],
   status: row.status as ServiceTicket['status'],
   source: (row as any).source ?? null,
-  maintenance_type: (row as any).maintenance_type ?? null,
+  // maintenance_type: (row as any).maintenance_type ?? null, // Removed - column doesn't exist
     related_quote_id: row.related_quote_id,
     related_order_id: row.related_order_id,
     related_product_id: row.related_product_id,
@@ -66,10 +66,11 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
   if (ENABLE_V2) try {
     let category: string | null = null
     if (ticketData.type === 'maintenance') {
-      const mt = (ticketData as any).maintenance_type
-      if (mt === 'emergency') category = 'emergency_service'
-      else if (mt === 'preventive') category = 'preventive_maintenance'
-      else if (mt) category = 'scheduled_maintenance'
+      // const mt = (ticketData as any).maintenance_type // Removed - column doesn't exist
+      // if (mt === 'emergency') category = 'emergency_service'
+      // else if (mt === 'preventive') category = 'preventive_maintenance'
+      // else if (mt) category = 'scheduled_maintenance'
+      category = 'scheduled_maintenance' // Default for maintenance tickets
     } else if (ticketData.type === 'sales') category = 'product_quote'
     else if (['general', 'technical'].includes(ticketData.type)) category = 'support'
 
@@ -85,7 +86,7 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
         },
       }
       if (category === 'preventive_maintenance') {
-        payload.maintenance_metadata = { maintenance_type: (ticketData as any).maintenance_type }
+        // payload.maintenance_metadata = { maintenance_type: (ticketData as any).maintenance_type } // Removed - column doesn't exist
       }
       const v2 = await ticketsV2Api.create(payload)
       return {
@@ -100,7 +101,7 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
         priority: v2.priority,
         status: v2.status as TicketStatus,
         source: null,
-        maintenance_type: (ticketData as any).maintenance_type || null,
+        // maintenance_type: (ticketData as any).maintenance_type || null, // Removed - column doesn't exist
         related_quote_id: null,
         related_order_id: null,
         related_product_id: null,
@@ -131,20 +132,62 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
   } catch (err) {
     // Silent fallback to legacy without noisy logs when disabled/missing backend
   }
+  // Get user ID once to avoid multiple async calls
+  const currentUser = (await supabase.auth.getUser()).data.user;
+  const currentUserId = currentUser?.id || undefined;
+
+  // Generate ticket number on client side (database trigger not working)
+  const generateTicketNumber = () => {
+    const year = new Date().getFullYear();
+    const timestamp = Date.now().toString().slice(-6);
+    const randomSuffix = Math.random().toString(36).substring(2, 4).toUpperCase();
+    return `TKT-${year}-${timestamp}${randomSuffix}`;
+  };
+
+  // Generate digital twin code for maintenance tickets (more unique)
+  const generateDigitalTwinCode = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hour = String(now.getHours()).padStart(2, '0');
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    const second = String(now.getSeconds()).padStart(2, '0');
+    const user = currentUserId || 'anonymous';
+    const randomSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const timestamp = now.getTime().toString().slice(-6);
+    return `ST-${year}${month}${day}-${hour}${minute}${second}-${randomSuffix}${timestamp}`;
+  };
+
   // Minimal, schema-safe payload to avoid 400 due to column diffs
-  // Explicitly include user_id when available for RLS policies expecting it
+  // Let database trigger handle ticket_number generation
   const insertPayload = {
     title: ticketData.title?.toString().slice(0, 200) || 'Support Ticket',
+    description: ticketData.description || 'Support ticket created via services page',
     // Provide safe defaults for likely NOT NULL columns
     type: (ticketData.type as any) || 'general',
     priority: (ticketData.priority as any) || 'medium',
     status: 'open' as const,
     preferred_contact_method: ticketData.preferred_contact_method || 'email',
-    user_id: (await supabase.auth.getUser()).data.user?.id || undefined,
+    user_id: currentUserId,
+    // Generate ticket_number on client side (database trigger not working)
+    ticket_number: generateTicketNumber(),
+    digital_twin_code: generateDigitalTwinCode(),
+    // Additional optional fields
+    contact_phone: ticketData.contact_phone || null,
+    contact_email: ticketData.contact_email || null,
+    site_location: ticketData.site_location || null,
+    machine_serial_number: ticketData.machine_serial_number || null,
+    machine_model: (ticketData as any).machine_model || null,
+    // maintenance_type: (ticketData as any).maintenance_type || null, // Removed - column doesn't exist in database
   }
+  
+  // Debug: Log the payload being sent
+  console.log('[tickets.createTicket] Insert payload:', insertPayload);
+  
   // Casting supabase to any to bypass strict table inference issues until generated types include custom columns
-  // Select only stable columns known to exist in production
-  const selectColumns = '*'
+  // Select all columns including digital_twin_code and ticket_number
+  const selectColumns = 'id, title, description, type, priority, status, preferred_contact_method, user_id, ticket_number, digital_twin_code, contact_phone, contact_email, site_location, machine_serial_number, machine_model, created_at, updated_at'
   let { data, error } = await (supabase as any)
     .from('service_tickets')
     .insert([insertPayload])
@@ -155,6 +198,10 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     console.error('[tickets.createTicket] insert error (after retry)', { message: error.message, details: (error as any).details, hint: (error as any).hint })
     throw new Error(error.message)
   }
+  
+  // Debug: Log the response data
+  console.log('[tickets.createTicket] Response data:', data);
+  console.log('[tickets.createTicket] Digital twin code in response:', data?.digital_twin_code);
   return mapTicket(data)
 }
 

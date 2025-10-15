@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/context/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Factory, Users, TrendingUp, Calculator, CheckCircle2, Star } from 'lucide-react';
 import { calculateTieredPrice, calculateDynamicPrice } from '@/lib/pricing';
@@ -37,7 +37,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
   onPackageRecommend,
   className = ''
 }) => {
-  const { t } = useTranslation('services');
+  const { t, language } = useLanguage();
   const { variant: designVariant, track: trackDesign } = useExperiment('package-card-design');
   const [inputs, setInputs] = useState<CalculatorInputs>({
     machineCount: 3,
@@ -199,13 +199,13 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
       >
         <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 rounded-full bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
           <Calculator className="h-6 w-6 text-orange-400" />
-          <span className="text-orange-400 font-semibold">Smart Package Calculator</span>
+          <span className="text-orange-400 font-semibold">{t('services.smart_package_calculator')}</span>
         </div>
         <h2 className="text-3xl font-bold text-white mb-4">
-          Find Your Perfect <span className="text-orange-400">Service Package</span>
+          {t('services.find_perfect_package')}
         </h2>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-          Answer a few questions and get an AI-powered recommendation for the ideal service plan for your business.
+          {t('services.answer_questions_recommendation')}
         </p>
       </motion.div>
 
@@ -220,86 +220,174 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
             <CardHeader>
               <CardTitle className="text-xl text-white flex items-center gap-2">
                 <Calculator className="h-5 w-5 text-orange-400" />
-                Business Information
+                {t('services.business_information')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Machine Count */}
               <div className="space-y-3">
-                <Label className="text-white">Number of Machines</Label>
-                <div className="space-y-2">
-                  <Slider
-                    value={[inputs.machineCount]}
-                    onValueChange={([value]) => handleInputChange('machineCount', value)}
-                    max={20}
-                    min={1}
-                    step={1}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-sm text-gray-400">
-                    <span>1</span>
-                    <span className="font-semibold text-orange-400">{inputs.machineCount} machines</span>
-                    <span>20+</span>
+                <Label className="text-white font-medium">{t('services.number_of_machines')}</Label>
+                <div className="space-y-4">
+                  <div className="relative">
+                    <Slider
+                      value={[inputs.machineCount]}
+                      onValueChange={([value]) => handleInputChange('machineCount', value)}
+                      max={20}
+                      min={1}
+                      step={1}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-sm text-gray-400 mt-2">
+                      <span className="flex items-center gap-1">
+                        <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                        1
+                      </span>
+                      <span className="font-semibold text-orange-400 bg-orange-400/10 px-3 py-1 rounded-full">
+                        {inputs.machineCount} {language === 'ar' ? 'ماكينة' : 'machines'}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <div className="w-2 h-2 rounded-full bg-red-400"></div>
+                        20+
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Quick selection buttons */}
+                  <div className="flex gap-2 flex-wrap">
+                    {[1, 3, 5, 10, 15, 20].map(count => (
+                      <button
+                        key={count}
+                        type="button"
+                        onClick={() => handleInputChange('machineCount', count)}
+                        className={`px-3 py-1 rounded-full text-xs font-medium border transition-all duration-200 ${
+                          inputs.machineCount === count
+                            ? 'bg-orange-500/20 border-orange-400 text-orange-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]'
+                            : 'border-slate-600 text-gray-400 hover:border-orange-400/60 hover:text-orange-300'
+                        }`}
+                      >
+                        {count}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
 
               {/* Business Size */}
               <div className="space-y-3">
-                <Label className="text-white">Business Size</Label>
+                <Label className="text-white font-medium">{t('services.business_size')}</Label>
                 <Select value={inputs.businessSize} onValueChange={(value) => handleInputChange('businessSize', value)}>
-                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
-                    <SelectValue />
+                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-700/70 focus:ring-2 focus:ring-orange-500/50 transition-all duration-200">
+                    <SelectValue placeholder="Select business size" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="small">Small Workshop (1-10 employees)</SelectItem>
-                    <SelectItem value="medium">Medium Factory (11-50 employees)</SelectItem>
-                    <SelectItem value="large">Large Facility (50+ employees)</SelectItem>
+                  <SelectContent className="bg-slate-800 border-slate-600">
+                    <SelectItem value="small" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                        {t('services.small_workshop')}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="medium" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
+                        {t('services.medium_factory')}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="large" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-red-400"></div>
+                        {t('services.large_facility')}
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Production Volume */}
               <div className="space-y-3">
-                <Label className="text-white">Production Volume</Label>
+                <Label className="text-white font-medium">{t('services.production_volume')}</Label>
                 <Select value={inputs.productionVolume} onValueChange={(value) => handleInputChange('productionVolume', value)}>
-                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
-                    <SelectValue />
+                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-700/70 focus:ring-2 focus:ring-orange-500/50 transition-all duration-200">
+                    <SelectValue placeholder="Select production volume" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low (Seasonal/On-demand)</SelectItem>
-                    <SelectItem value="medium">Medium (Regular production)</SelectItem>
-                    <SelectItem value="high">High (24/7 production)</SelectItem>
+                  <SelectContent className="bg-slate-800 border-slate-600">
+                    <SelectItem value="low" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                        {t('services.low_production')}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="medium" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+                        {t('services.medium_production')}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="high" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-red-400"></div>
+                        {t('services.high_production')}
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              {/* Urgency Level */}
+              {/* Support Urgency */}
               <div className="space-y-3">
-                <Label className="text-white">Support Urgency</Label>
+                <Label className="text-white font-medium">{t('services.support_urgency')}</Label>
                 <Select value={inputs.urgency} onValueChange={(value) => handleInputChange('urgency', value)}>
-                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
-                    <SelectValue />
+                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-700/70 focus:ring-2 focus:ring-orange-500/50 transition-all duration-200">
+                    <SelectValue placeholder="Select support urgency" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="standard">Standard (48-hour response)</SelectItem>
-                    <SelectItem value="priority">Priority (24-hour response)</SelectItem>
-                    <SelectItem value="critical">Critical (4-hour response)</SelectItem>
+                  <SelectContent className="bg-slate-800 border-slate-600">
+                    <SelectItem value="standard" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                        {t('services.standard_response')}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="priority" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
+                        {t('services.priority_response')}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="critical" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-red-400"></div>
+                        {t('services.critical_response')}
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Location */}
               <div className="space-y-3">
-                <Label className="text-white">Location</Label>
+                <Label className="text-white font-medium">{t('services.location')}</Label>
                 <Select value={inputs.location} onValueChange={(value) => handleInputChange('location', value)}>
-                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
-                    <SelectValue />
+                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-700/70 focus:ring-2 focus:ring-orange-500/50 transition-all duration-200">
+                    <SelectValue placeholder="Select location" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="cairo">Cairo & Giza</SelectItem>
-                    <SelectItem value="alexandria">Alexandria</SelectItem>
-                    <SelectItem value="other">Other Governorates</SelectItem>
+                  <SelectContent className="bg-slate-800 border-slate-600">
+                    <SelectItem value="cairo" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+                        {t('services.cairo_giza')}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="alexandria" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                        {t('services.alexandria')}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="other" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-gray-400"></div>
+                        {t('services.other_governorates')}
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -307,7 +395,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
               <Button 
                 onClick={handleCalculate}
                 disabled={isCalculating}
-                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3"
+                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {isCalculating ? (
                   <>
@@ -317,7 +405,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
                 ) : (
                   <>
                     <Calculator className="h-4 w-4 mr-2" />
-                    Get Recommendation
+                    {t('services.get_recommendation')}
                   </>
                 )}
               </Button>
@@ -408,8 +496,8 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
               <CardContent className="flex items-center justify-center h-96">
                 <div className="text-center text-gray-400">
                   <Calculator className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg">Fill in your business details</p>
-                  <p className="text-sm">and click "Get Recommendation" to see your perfect package</p>
+                  <p className="text-lg">{t('services.fill_business_details')}</p>
+                  <p className="text-sm">{t('services.click_get_recommendation')}</p>
                 </div>
               </CardContent>
             </Card>
