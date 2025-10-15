@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useRegionDetection, useRegionUtils } from '@/hooks/useRegionDetection';
+import maplibregl from 'maplibre-gl';
 
 interface Technician {
   id: string;
@@ -21,6 +22,34 @@ const TECHS: Technician[] = [
 export const ServiceCoverageMap: React.FC = () => {
   const { regionState } = useRegionDetection();
   const utils = useRegionUtils();
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const mapInstance = useRef<maplibregl.Map | null>(null);
+
+  useEffect(() => {
+    if (!mapRef.current || mapInstance.current) return;
+    const map = new maplibregl.Map({
+      container: mapRef.current,
+      style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+      center: [32.5, 29.5], // centered between Egypt/Turkey roughly
+      zoom: 4.2,
+      attributionControl: false
+    });
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+
+    map.on('load', () => {
+      TECHS.forEach(t => {
+        const el = document.createElement('div');
+        el.className = 'rounded-full border border-white/20 bg-orange-500/90 w-3 h-3 shadow';
+        new maplibregl.Marker({ element: el })
+          .setLngLat([t.coords[1], t.coords[0]])
+          .setPopup(new maplibregl.Popup({ offset: 12 }).setHTML(`<div style="font-size:12px"><strong>${t.name}</strong><br/>${t.city}<br/>ETA: ${Math.round(t.responseMins)} min</div>`))
+          .addTo(map);
+      });
+    });
+
+    mapInstance.current = map;
+    return () => { map.remove(); mapInstance.current = null; };
+  }, []);
 
   return (
     <Card className="bg-gradient-to-br from-gray-900 to-black border border-orange-500/20">
@@ -33,10 +62,10 @@ export const ServiceCoverageMap: React.FC = () => {
       <CardContent>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <div className="aspect-[16/9] w-full rounded-xl border border-white/10 bg-gradient-to-br from-slate-800 to-slate-900 p-3">
-              <div className="h-full w-full rounded-lg bg-[url('/images/maps/egypt-turkey.png')] bg-cover bg-center" />
+            <div className="aspect-[16/9] w-full rounded-xl border border-white/10 overflow-hidden">
+              <div ref={mapRef} className="h-full w-full" />
             </div>
-            <p className="text-xs text-gray-400 mt-2">Map placeholder — integrate MapLibre/OSM tiles in production.</p>
+            <p className="text-xs text-gray-400 mt-2">Map data © OpenStreetMap contributors, style © Carto.</p>
           </div>
 
           <div className="space-y-3">

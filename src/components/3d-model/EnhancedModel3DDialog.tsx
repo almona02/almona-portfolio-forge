@@ -79,6 +79,7 @@ export function EnhancedModel3DDialog({
   const [compareModels, setCompareModels] = useState<{left?: string; right?: string}>({});
   const [leftCamera, setLeftCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
   const [rightCamera, setRightCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
+  const [sharedMeasurements, setSharedMeasurements] = useState<Array<{ id: string; distance: number; unit: 'mm' | 'cm' | 'm' | 'in' | 'ft' }>>([]);
   
   const viewerRef = useRef<any>(null);
   const { toast } = useToast();
@@ -333,6 +334,13 @@ export function EnhancedModel3DDialog({
                         cameraState={rightCamera}
                         onCameraChange={setLeftCamera}
                       />
+                      {sharedMeasurements.length > 0 && (
+                        <div className="absolute bottom-3 left-3 text-xs text-gray-300 bg-black/50 px-2 py-1 rounded">
+                          {sharedMeasurements.map(m => (
+                            <div key={`left_${m.id}`}>{m.distance.toFixed(2)} {m.unit}</div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <div className="relative">
                       <LazyEnhancedGLBViewer
@@ -344,6 +352,13 @@ export function EnhancedModel3DDialog({
                         cameraState={leftCamera}
                         onCameraChange={setRightCamera}
                       />
+                      {sharedMeasurements.length > 0 && (
+                        <div className="absolute bottom-3 left-3 text-xs text-gray-300 bg-black/50 px-2 py-1 rounded">
+                          {sharedMeasurements.map(m => (
+                            <div key={`right_${m.id}`}>{m.distance.toFixed(2)} {m.unit}</div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -579,6 +594,8 @@ export function EnhancedModel3DDialog({
           onUnitChange={handleUnitChange}
           onAutoRotateToggle={(enabled) => setAutoRotate(enabled)}
           autoRotateEnabled={autoRotate}
+          onMeasurementAdd={(m) => setSharedMeasurements(prev => [...prev, { id: m.id, distance: m.distance, unit: m.unit }])}
+          onMeasurementRemove={(id) => setSharedMeasurements(prev => prev.filter(x => x.id !== id))}
         />
         </motion.div>
       </motion.div>
