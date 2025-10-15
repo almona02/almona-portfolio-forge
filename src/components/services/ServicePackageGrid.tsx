@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/context/LanguageContext';
 import { ServicePackageCard } from './ServicePackageCard';
 
 interface ServicePackageGridProps {
@@ -11,7 +11,7 @@ export const ServicePackageGrid: React.FC<ServicePackageGridProps> = ({
   onPackageSelect,
   className = ''
 }) => {
-  const { t } = useTranslation('services');
+  const { t } = useLanguage();
   
   const packages: Array<'basic' | 'professional' | 'enterprise'> = ['basic', 'professional', 'enterprise'];
 
@@ -20,10 +20,10 @@ export const ServicePackageGrid: React.FC<ServicePackageGridProps> = ({
       {/* Header */}
       <div className="text-center">
         <h2 className="text-4xl font-bold text-white mb-4">
-          {t('packages.title')}
+          {t('services.service_packages')}
         </h2>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-          {t('packages.subtitle')}
+          {t('services.choose_perfect_care_plan')}
         </p>
       </div>
 
@@ -47,19 +47,19 @@ export const ServicePackageGrid: React.FC<ServicePackageGridProps> = ({
             <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-bold">✓</span>
             </div>
-            <span className="text-lg">SLA Guarantee</span>
+            <span className="text-lg">{t('services.sla_guarantee')}</span>
           </div>
           <div className="flex items-center justify-center space-x-3">
             <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-bold">24</span>
             </div>
-            <span className="text-lg">24/7 Support</span>
+            <span className="text-lg">{t('services.twenty_four_seven_support')}</span>
           </div>
           <div className="flex items-center justify-center space-x-3">
             <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-bold">📊</span>
             </div>
-            <span className="text-lg">Performance Tracking</span>
+            <span className="text-lg">{t('services.performance_tracking')}</span>
           </div>
         </div>
       </div>

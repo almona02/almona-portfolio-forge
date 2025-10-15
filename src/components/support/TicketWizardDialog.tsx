@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React, { useState, useEffect, useRef, Suspense, useCallback } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface TicketWizardDialogProps {
   open: boolean;
@@ -25,34 +26,34 @@ interface TicketWizardDialogProps {
   initialValues?: Partial<UnifiedTicketFormData>;
 }
 
-const typeMeta: Record<string, { label: string; desc: string }> = {
-  general: { label: 'General Inquiry', desc: 'General questions or information requests' },
-  technical: { label: 'Technical Support', desc: 'Issues with equipment or software' },
-  installation: { label: 'Installation', desc: 'Help with installing or configuring equipment' },
-  maintenance: { label: 'Maintenance', desc: 'Scheduled or emergency maintenance' },
-  spare_parts: { label: 'Spare Parts', desc: 'Requests for replacement parts' },
-  warranty: { label: 'Warranty', desc: 'Warranty coverage or claims' },
-  billing: { label: 'Billing', desc: 'Invoice or payment questions' },
-  sales: { label: 'Sales', desc: 'Product / quote inquiries' },
-  complaint: { label: 'Complaint', desc: 'Service or product complaint' },
-  other: { label: 'Other', desc: 'Not covered by other categories' }
-};
+const getTypeMeta = (t: any): Record<string, { label: string; desc: string }> => ({
+  general: { label: t('ticket.general_inquiry'), desc: t('ticket.general_inquiry_desc') },
+  technical: { label: t('ticket.technical_support'), desc: t('ticket.technical_support_desc') },
+  installation: { label: t('ticket.installation'), desc: t('ticket.installation_desc') },
+  maintenance: { label: t('ticket.maintenance'), desc: t('ticket.maintenance_desc') },
+  spare_parts: { label: t('ticket.spare_parts'), desc: t('ticket.spare_parts_desc') },
+  warranty: { label: t('ticket.warranty'), desc: t('ticket.warranty_desc') },
+  billing: { label: t('ticket.billing'), desc: t('ticket.billing_desc') },
+  sales: { label: t('ticket.sales'), desc: t('ticket.sales_desc') },
+  complaint: { label: t('ticket.complaint'), desc: t('ticket.complaint_desc') },
+  other: { label: t('ticket.other'), desc: t('ticket.other_desc') }
+});
 
-const priorityMeta: { value: TicketPriority; label: string; desc: string }[] = [
-  { value: 'low', label: 'Low', desc: 'Can wait several days' },
-  { value: 'medium', label: 'Medium', desc: 'Normal response' },
-  { value: 'high', label: 'High', desc: 'Needs attention soon' },
-  { value: 'urgent', label: 'Urgent', desc: 'Immediate attention' },
-  { value: 'critical', label: 'Critical', desc: 'Production stopped' },
+const getPriorityMeta = (t: any): { value: TicketPriority; label: string; desc: string }[] => [
+  { value: 'low', label: t('ticket.low'), desc: t('ticket.low_desc') },
+  { value: 'medium', label: t('ticket.medium'), desc: t('ticket.medium_desc') },
+  { value: 'high', label: t('ticket.high'), desc: t('ticket.high_desc') },
+  { value: 'urgent', label: t('ticket.urgent'), desc: t('ticket.urgent_desc') },
+  { value: 'critical', label: t('ticket.critical'), desc: t('ticket.critical_desc') },
 ];
 
-const steps = [
-  { id: 'category', label: 'Category & Priority', fields: ['type','priority','maintenance_type'] as const },
-  { id: 'details', label: 'Details', fields: ['title','description'] as const },
-  { id: 'attachments', label: 'Attachments', fields: [] as const },
-  { id: 'contact', label: 'Contact & Context', fields: ['contact_phone','contact_email','preferred_contact_method','site_location','machine_serial_number'] as const },
-  { id: 'preview', label: 'Preview', fields: [] as const },
-  { id: 'success', label: 'Success', fields: [] as const }
+const getSteps = (t: any) => [
+  { id: 'category', label: t('ticket.category_priority'), fields: ['type','priority'] as const },
+  { id: 'details', label: t('ticket.details'), fields: ['title','description'] as const },
+  { id: 'attachments', label: t('ticket.attachments'), fields: [] as const },
+  { id: 'contact', label: t('ticket.contact_context'), fields: ['contact_phone','contact_email','preferred_contact_method','site_location','machine_serial_number'] as const },
+  { id: 'preview', label: t('ticket.preview'), fields: [] as const },
+  { id: 'success', label: t('ticket.success'), fields: [] as const }
 ] as const;
 
 // (removed unused StepId type)
@@ -60,6 +61,7 @@ const steps = [
 export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, onOpenChange, onTicketCreated, initialValues }) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t, language } = useLanguage();
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [createdTicketId, setCreatedTicketId] = useState<string | null>(null);
   const [createdTicketTwin, setCreatedTicketTwin] = useState<string | null>(null);
@@ -140,7 +142,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
       // Default to maintenance preventive for requested behavior
       type: 'maintenance',
       priority: 'medium',
-      maintenance_type: 'preventive',
+      // maintenance_type: 'preventive', // Removed - field doesn't exist in API
       preferred_contact_method: 'email',
       attachments: [],
       ...initialValues
@@ -150,7 +152,12 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
   const { control, handleSubmit, watch, trigger, setValue, register, formState: { isSubmitting, errors } } = form;
   const selectedType = watch('type');
   const selectedPriority = watch('priority');
-  const selectedMaintenanceType = watch('maintenance_type');
+  
+  // Get translated data
+  const steps = getSteps(t);
+  const typeMeta = getTypeMeta(t);
+  const priorityMeta = getPriorityMeta(t);
+  // const selectedMaintenanceType = watch('maintenance_type'); // Removed - field doesn't exist in API
   const selectedContactMethod = watch('preferred_contact_method');
   // Local UI state to avoid any watch timing issues and guarantee immediate highlight
   const [uiType, setUiType] = useState<string>(selectedType || 'maintenance');
@@ -250,19 +257,21 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         description: data.description,
         type: data.type as TicketType,
         priority: data.priority as TicketPriority,
-  maintenance_type: data.maintenance_type as ('preventive' | 'corrective' | 'predictive' | 'emergency' | undefined),
+        // maintenance_type: data.maintenance_type as ('preventive' | 'corrective' | 'predictive' | 'emergency' | undefined), // Removed - field doesn't exist in API
         contact_phone: data.contact_phone || undefined,
         contact_email: data.contact_email || undefined,
         preferred_contact_method: data.preferred_contact_method,
         site_location: data.site_location || undefined,
-  machine_serial_number: data.machine_serial_number || undefined,
-  machine_model: (data as UnifiedTicketFormData & { machine_model?: string }).machine_model || undefined,
+        machine_serial_number: data.machine_serial_number || undefined,
+        machine_model: (data as UnifiedTicketFormData & { machine_model?: string }).machine_model || undefined,
         related_product_id: undefined,
         related_quote_id: undefined,
         related_order_id: undefined,
       }, user.id);
     },
     onSuccess: (ticket: ServiceTicket) => {
+      console.log('[TicketWizardDialog] Ticket created successfully:', ticket);
+      console.log('[TicketWizardDialog] Digital twin code:', ticket.digital_twin_code);
       toast({ title: 'Ticket Created', description: 'Your support ticket has been submitted.' });
       setCreatedTicketId(ticket.id);
       setCreatedTicketTwin(ticket.digital_twin_code || null);
@@ -309,7 +318,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
     form.reset({
       type: initialValues?.type || 'general',
       priority: initialValues?.priority || 'medium',
-      maintenance_type: initialValues?.maintenance_type || 'corrective',
+      // maintenance_type: initialValues?.maintenance_type || 'corrective', // Removed - field doesn't exist in API
       preferred_contact_method: initialValues?.preferred_contact_method || 'email',
       title: initialValues?.title || '',
       description: initialValues?.description || '',
@@ -363,7 +372,13 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
     runQueue();
   }, [attachments]);
 
-  const TypePills = () => (
+  const handleTypeClick = useCallback((type: string) => {
+    userInteractedRef.current = true;
+    setUiType(type);
+    setValue('type', type as TicketType, { shouldDirty: true, shouldTouch: true });
+  }, [setValue]);
+
+  const TypePills = useCallback(() => (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
       {Object.entries(typeMeta).map(([value, meta]) => {
         const active = uiType === value;
@@ -374,7 +389,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
             role="radio"
             aria-checked={active}
             onMouseDown={() => { if (!userInteractedRef.current) userInteractedRef.current = true; }}
-            onClick={() => { userInteractedRef.current = true; setUiType(value); setValue('type', value as TicketType, { shouldDirty: true, shouldTouch: true }); }}
+            onClick={() => handleTypeClick(value)}
             aria-pressed={active}
             className={`relative text-left p-3 rounded-md border transition group focus:outline-none focus-visible:ring-2 focus-visible:ring-almona-orange/60 ${active ? 'border-almona-orange bg-gradient-to-br from-almona-orange/20 to-almona-orange/5 shadow-[0_0_0_1px_rgba(255,95,31,0.4)]' : 'border-almona-light/20 hover:border-almona-orange/40'}`}
           >
@@ -385,9 +400,15 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         );
       })}
     </div>
-  );
+  ), [uiType, handleTypeClick]);
 
-  const PriorityPills = () => (
+  const handlePriorityClick = useCallback((priority: TicketPriority) => {
+    userInteractedRef.current = true;
+    setUiPriority(priority);
+    setValue('priority', priority, { shouldDirty: true, shouldTouch: true });
+  }, [setValue]);
+
+  const PriorityPills = useCallback(() => (
     <div className="flex flex-wrap gap-2">
       {priorityMeta.map(p => {
         const active = uiPriority === p.value;
@@ -398,7 +419,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
             role="radio"
             aria-checked={active}
             onMouseDown={() => { if (!userInteractedRef.current) userInteractedRef.current = true; }}
-            onClick={() => { userInteractedRef.current = true; setUiPriority(p.value); setValue('priority', p.value, { shouldDirty: true, shouldTouch: true }); }}
+            onClick={() => handlePriorityClick(p.value)}
             aria-pressed={active}
             className={`relative px-3 py-2 rounded-md border text-left text-sm transition focus:outline-none focus-visible:ring-2 focus-visible:ring-almona-orange/60 ${active ? 'border-almona-orange bg-gradient-to-br from-almona-orange/25 to-almona-orange/5 shadow-[0_0_0_1px_rgba(255,95,31,0.4)]' : 'border-almona-light/20 hover:border-almona-orange/40'}`}
           >
@@ -409,7 +430,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         );
       })}
     </div>
-  );
+  ), [uiPriority, handlePriorityClick]);
 
   const activeStep = steps[activeStepIndex];
   const isLastFormStep = activeStep.id === 'preview';
@@ -432,7 +453,10 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl w-full max-h-[92vh] overflow-y-auto p-0 flex flex-col">
         <DialogHeader className="px-6 pt-6 pb-4 border-b border-almona-light/10 sticky top-0 bg-almona-dark/80 backdrop-blur z-10">
-          <DialogTitle ref={headingRef} tabIndex={-1} className="text-2xl font-semibold tracking-tight outline-none">Create Support Ticket</DialogTitle>
+          <DialogTitle ref={headingRef} tabIndex={-1} className="text-2xl font-semibold tracking-tight outline-none">{t('ticket.create_support_ticket')}</DialogTitle>
+          <DialogDescription className="text-sm text-gray-400 mt-2">
+            {t('ticket.wizard_description')}
+          </DialogDescription>
           <div className="mt-4">
             <div className="h-2 w-full rounded-full bg-almona-dark/40 overflow-hidden">
               <div className="h-full bg-gradient-to-r from-orange-500 via-red-500 to-rose-500 transition-all" style={{ width: `${progressPercent}%` }} aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100} role="progressbar" />
@@ -449,7 +473,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
           {/* Hidden registered inputs to ensure react-hook-form tracks these programmatic selections */}
           <input type="hidden" {...register('type')} />
           <input type="hidden" {...register('priority')} />
-          <input type="hidden" {...register('maintenance_type')} />
+          {/* <input type="hidden" {...register('maintenance_type')} /> */} {/* Removed - field doesn't exist in API */}
           <input type="hidden" {...register('preferred_contact_method')} />
           <input type="hidden" {...register('machine_model')} />
           <AnimatePresence mode="wait">
@@ -471,33 +495,14 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                     {errors.priority && <p className="text-xs text-red-500">{errors.priority.message}</p>}
                   </div>
                 </div>
-                {selectedType === 'maintenance' && (
-                  <div className="space-y-2">
-                    <Label>Maintenance Type</Label>
-                    <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Maintenance Type">
-                      {(['preventive','corrective','predictive','emergency'] as const).map(mt => {
-                        const active = selectedMaintenanceType === mt;
-                        return (
-                          <button
-                            key={mt}
-                            type="button"
-                            onMouseDown={() => { userInteractedRef.current = true; }}
-                            onClick={() => { setValue('maintenance_type', mt, { shouldDirty: true }); }}
-                            aria-pressed={active}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-orange-500/20 border-orange-400 text-orange-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-orange-400/60 hover:text-orange-300'} `}
-                          >{mt.charAt(0).toUpperCase()+mt.slice(1)}</button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                {/* Maintenance Type selection removed - field doesn't exist in API */}
               </motion.div>
             )}
 
             {!isSuccess && activeStep.id === 'details' && (
               <motion.div key="details" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Title</Label>
+                  <Label htmlFor="title">{t('ticket.title')}</Label>
                   <Controller name="title" control={control} render={({ field }) => (
                     <Input id="title" {...field} placeholder="Brief description" className="bg-almona-darker border-almona-light/30 focus:border-almona-orange/50" />
                   )} />
@@ -505,10 +510,10 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label>Description {richMode && <span className="text-xs text-gray-400 ml-1">(Rich Editor)</span>}</Label>
+                    <Label>{t('ticket.description')} {richMode && <span className="text-xs text-gray-400 ml-1">({t('ticket.rich_editor')})</span>}</Label>
                     <div className="flex gap-2 items-center text-xs">
                       <button type="button" onClick={() => setRichMode(m => !m)} className="px-2 py-1 rounded border border-almona-light/30 hover:border-almona-orange/50">
-                        {richMode ? 'Plain Markdown' : 'Rich Editor'}
+                        {richMode ? t('ticket.plain_markdown') : t('ticket.rich_editor')}
                       </button>
                     </div>
                   </div>
@@ -517,7 +522,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                       return (
                         <div className="border border-almona-light/30 rounded-md overflow-hidden bg-almona-darker">
                           <Suspense fallback={<div className="p-4 text-xs text-gray-400">Loading editor...</div>}>
-                            <RichEditor value={field.value} onChange={(val: string) => field.onChange(val)} preview={mdMode === 'preview' ? 'preview' : 'edit'} height={300} textareaProps={{ placeholder: 'Describe the issue, steps to reproduce...' }} />
+                            <RichEditor value={field.value} onChange={(val: string) => field.onChange(val)} preview={mdMode === 'preview' ? 'preview' : 'edit'} height={300} textareaProps={{ placeholder: t('ticket.describe_issue_placeholder') }} />
                           </Suspense>
                         </div>
                       );
@@ -526,13 +531,13 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                     let previewHtml = '';
                     if (mdMode === 'preview' && mdRenderer && sanitizer) {
                       try { previewHtml = sanitizer(mdRenderer.render(field.value || '')); }
-                      catch { previewHtml = '<p class="text-red-400 text-xs">Preview error</p>'; }
+                      catch { previewHtml = `<p class="text-red-400 text-xs">${t('ticket.preview_error')}</p>`; }
                     }
                     return (
                       <div className="border border-almona-light/30 rounded-md overflow-hidden">
                         <div className="flex text-xs bg-almona-dark/60 border-b border-almona-light/10">
-                          <button type="button" className={`px-3 py-2 transition-colors ${mdMode==='edit' ? 'text-orange-400' : 'hover:text-almona-orange'}`} onClick={() => setMdMode('edit')} aria-pressed={mdMode==='edit'}>Edit</button>
-                          <button type="button" className={`px-3 py-2 transition-colors ${mdMode==='preview' ? 'text-orange-400' : 'hover:text-almona-orange'}`} onClick={() => setMdMode('preview')} aria-pressed={mdMode==='preview'} disabled={!mdRenderer && !sanitizer && mdMode==='preview'}>Preview</button>
+                          <button type="button" className={`px-3 py-2 transition-colors ${mdMode==='edit' ? 'text-orange-400' : 'hover:text-almona-orange'}`} onClick={() => setMdMode('edit')} aria-pressed={mdMode==='edit'}>{t('ticket.edit')}</button>
+                          <button type="button" className={`px-3 py-2 transition-colors ${mdMode==='preview' ? 'text-orange-400' : 'hover:text-almona-orange'}`} onClick={() => setMdMode('preview')} aria-pressed={mdMode==='preview'} disabled={!mdRenderer && !sanitizer && mdMode==='preview'}>{t('ticket.preview')}</button>
                         </div>
                         {mdMode === 'edit' && (
                           <Textarea rows={8} {...field} placeholder="Details, steps to reproduce, error messages... (Markdown supported)" className="bg-almona-darker border-0 focus-visible:ring-0 focus:border-0" />
@@ -555,8 +560,8 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
 
             {!isSuccess && activeStep.id === 'attachments' && (
               <motion.div key="attachments" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
-                <h3 className="text-lg font-semibold">Attachments (Optional)</h3>
-                <p className="text-xs text-gray-400">Add reference images or logs. Files upload automatically (2 at a time). You can continue filling the form.</p>
+                <h3 className="text-lg font-semibold">{t('ticket.attachments_optional')}</h3>
+                <p className="text-xs text-gray-400">{t('ticket.add_reference_files')}</p>
                 <input
                   type="file"
                   multiple
@@ -589,15 +594,15 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                           {f.status === 'pending' && <span className="text-amber-400">Queued</span>}
                           {f.status === 'uploading' && <span className="text-blue-400">{f.progress ?? 0}%</span>}
                           {f.status === 'uploaded' && <span className="text-green-400">100%</span>}
-                          {f.status === 'error' && <button type="button" className="text-red-400 underline" onClick={(e) => { e.stopPropagation(); setAttachments(a => a.map((at,idx) => idx===i ? { ...at, status: 'pending', error: undefined, progress: 0 } : at)); }}>Retry</button>}
-                          <button type="button" className="text-red-400 hover:underline" onClick={(e) => { e.stopPropagation(); setAttachments(a => a.filter((_,idx)=> idx!==i)); }}>Remove</button>
+                          {f.status === 'error' && <button type="button" className="text-red-400 underline" onClick={(e) => { e.stopPropagation(); setAttachments(a => a.map((at,idx) => idx===i ? { ...at, status: 'pending', error: undefined, progress: 0 } : at)); }}>{t('ticket.retry')}</button>}
+                          <button type="button" className="text-red-400 hover:underline" onClick={(e) => { e.stopPropagation(); setAttachments(a => a.filter((_,idx)=> idx!==i)); }}>{t('ticket.remove')}</button>
                         </div>
                       </li>
                     ))}
                   </ul>
                 )}
                 <div className="flex justify-end">
-                  <Button type="button" variant="ghost" onClick={next}>Continue</Button>
+                  <Button type="button" variant="ghost" onClick={next}>{t('ticket.continue')}</Button>
                 </div>
               </motion.div>
             )}
@@ -610,12 +615,12 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
 
             {!isSuccess && activeStep.id === 'preview' && (
               <motion.div key="preview" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
-                <h3 className="text-lg font-semibold">Preview</h3>
+                <h3 className="text-lg font-semibold">{t('ticket.preview_title')}</h3>
                 <div className="bg-almona-darker/40 p-4 rounded border border-almona-light/20 text-sm space-y-2">
-                  <div><strong>Title:</strong> {watch('title')}</div>
+                  <div><strong>{t('ticket.preview_title_label')}</strong> {watch('title')}</div>
                   <div><strong>Type:</strong> {watch('type')}</div>
                   <div><strong>Priority:</strong> {watch('priority')}</div>
-                  <div><strong>Description:</strong><pre className="whitespace-pre-wrap mt-1 text-gray-300 text-xs">{watch('description')}</pre></div>
+                  <div><strong>{t('ticket.preview_description_label')}</strong><pre className="whitespace-pre-wrap mt-1 text-gray-300 text-xs">{watch('description')}</pre></div>
                   <div><strong>Contact:</strong> {watch('contact_email') || watch('contact_phone') || '—'}</div>
                   <div><strong>Machine Serial:</strong> {watch('machine_serial_number') || '—'}</div>
                   {['maintenance'].includes(watch('type') || '') && (
@@ -625,7 +630,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                   )}
                   {attachments.length > 0 && (
                     <div>
-                      <strong>Attachments:</strong> {attachments.filter(a=>a.status==='uploaded').length}/{attachments.length} uploaded
+                      <strong>{t('ticket.preview_attachments_label')}</strong> {attachments.filter(a=>a.status==='uploaded').length}/{attachments.length} {t('ticket.uploaded')}
                       <ul className="mt-2 space-y-1 text-xs max-h-40 overflow-y-auto pr-1">
                         {attachments.map((a, idx) => (
                           <li key={idx} className="flex gap-2 items-center">
@@ -652,12 +657,12 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                   <CheckCircle2 className="h-10 w-10 text-green-400" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-semibold mb-2">Ticket Created</h3>
-                  <p className="text-gray-400 max-w-md mx-auto">Your support ticket has been created successfully. Our team will respond as soon as possible.</p>
-                  {createdTicketTwin && (
+                  <h3 className="text-2xl font-semibold mb-2">{t('ticket.created')}</h3>
+                  <p className="text-gray-400 max-w-md mx-auto">{t('ticket.created_message')}</p>
+                  {createdTicketTwin ? (
                     <div className="mt-4 inline-flex flex-col items-center gap-2">
                       <div className="flex flex-col items-center gap-1">
-                        <span className="text-xs uppercase tracking-wide text-gray-500">Digital Twin Code</span>
+                        <span className="text-xs uppercase tracking-wide text-gray-500">{t('ticket.digital_twin_code')}</span>
                         <code className="px-3 py-1 rounded bg-almona-dark/60 border border-almona-light/20 text-almona-orange text-sm font-mono">{createdTicketTwin}</code>
                       </div>
                       <Button type="button" size="sm" variant="outline" className="flex items-center gap-1" onClick={() => {
@@ -669,17 +674,22 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                           });
                         }
                       }}>
-                        <Copy className="h-3 w-3" /> Copy Code
+                        <Copy className="h-3 w-3" /> {t('ticket.copy_code')}
                       </Button>
+                    </div>
+                  ) : (
+                    <div className="mt-4 text-center">
+                      <p className="text-sm text-yellow-400">Digital Twin Code: Not available</p>
+                      <p className="text-xs text-gray-500 mt-1">Debug: createdTicketTwin = {String(createdTicketTwin)}</p>
                     </div>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-3 justify-center">
-                  <Button onClick={() => { onOpenChange(false); }} variant="outline">Close</Button>
+                  <Button onClick={() => { onOpenChange(false); }} variant="outline">{t('ticket.close')}</Button>
                   {createdTicketId && (
-                    <Button onClick={() => window.location.assign(`/support/tickets/${createdTicketId}`)}>View Ticket</Button>
+                    <Button onClick={() => window.location.assign(`/support/tickets/${createdTicketId}`)}>{t('ticket.view_ticket')}</Button>
                   )}
-                  <Button variant="secondary" onClick={() => { setActiveStepIndex(0); setCreatedTicketId(null); }}>Create Another</Button>
+                  <Button variant="secondary" onClick={() => { setActiveStepIndex(0); setCreatedTicketId(null); }}>{t('ticket.create_another')}</Button>
                 </div>
               </motion.div>
             )}
@@ -689,14 +699,14 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         {!isSuccess && (
           <div className="px-6 pb-6 pt-4 border-t border-almona-light/10 flex flex-wrap gap-4 justify-between items-center bg-almona-dark/60 backdrop-blur">
             <div className="flex items-center gap-4">
-              <div className="text-xs text-gray-500">Step {activeStepIndex + 1} of {steps.length}</div>
+              <div className="text-xs text-gray-500">{t('ticket.step_of').replace('{current}', String(activeStepIndex + 1)).replace('{total}', String(steps.length))}</div>
               <button type="button" onClick={resetDraft} className="text-[11px] uppercase tracking-wide text-gray-400 hover:text-almona-orange transition-colors underline-offset-2 hover:underline">
-                Reset Draft
+{t('ticket.reset_draft')}
               </button>
             </div>
             <div className="flex gap-3">
-              {activeStepIndex > 0 && <Button type="button" variant="outline" onClick={back} className="flex items-center gap-1"><ChevronLeft className="h-4 w-4" /> Back</Button>}
-              {!isLastFormStep && <Button type="button" onClick={next} className="flex items-center gap-1">Next <ChevronRight className="h-4 w-4" /></Button>}
+              {activeStepIndex > 0 && <Button type="button" variant="outline" onClick={back} className="flex items-center gap-1"><ChevronLeft className="h-4 w-4" /> {t('ticket.back')}</Button>}
+              {!isLastFormStep && <Button type="button" onClick={next} className="flex items-center gap-1">{t('ticket.next')} <ChevronRight className="h-4 w-4" /></Button>}
             </div>
           </div>
         )}

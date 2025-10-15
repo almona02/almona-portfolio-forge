@@ -1,6 +1,6 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/context/LanguageContext';
 import { ServicePackageGrid } from './ServicePackageGrid';
 import { PackageComparisonTable } from './PackageComparisonTable';
 import { PackageCalculator } from './PackageCalculator';
@@ -19,41 +19,76 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
   onPackageSelect,
   className = ''
 }) => {
-  const { t } = useTranslation('services');
+  const { t, language } = useLanguage();
 
   const stats = [
-    { number: "98%", label: "Customer Satisfaction", icon: <CheckCircle2 className="h-6 w-6" /> },
-    { number: "24/7", label: "Support Availability", icon: <Clock className="h-6 w-6" /> },
-    { number: "2H", label: "Avg. Emergency Response", icon: <Zap className="h-6 w-6" /> },
-    { number: "500+", label: "Machines Serviced", icon: <Factory className="h-6 w-6" /> }
+    { number: "98%", label: t('services.customer_satisfaction'), icon: <CheckCircle2 className="h-6 w-6" /> },
+    { number: "24/7", label: t('services.support_availability'), icon: <Clock className="h-6 w-6" /> },
+    { number: "2H", label: t('services.avg_emergency_response'), icon: <Zap className="h-6 w-6" /> },
+    { number: "500+", label: t('services.machines_serviced'), icon: <Factory className="h-6 w-6" /> }
   ];
 
   const serviceCategories = [
     {
       id: "machine",
-      name: t('categories.machine.name'),
+      name: t('services.machine_services'),
       icon: <Factory className="h-6 w-6" />,
-      services: t('categories.machine.services', { returnObjects: true }) as string[]
+      services: [
+        t('services.installation_setup'),
+        t('services.regular_maintenance'),
+        t('services.emergency_repairs'),
+        t('services.machine_optimization'),
+        t('services.technology_upgrades')
+      ]
     },
     {
       id: "training",
-      name: t('categories.training.name'),
+      name: t('services.training_programs'),
       icon: <Users className="h-6 w-6" />,
-      services: t('categories.training.services', { returnObjects: true }) as string[]
+      services: [
+        t('services.basic_operator_training'),
+        t('services.advanced_fabrication'),
+        t('services.quality_control'),
+        t('services.team_leader_programs'),
+        t('services.safety_certification')
+      ]
     },
     {
       id: "support",
-      name: t('categories.support.name'),
+      name: t('services.support_services'),
       icon: <Zap className="h-6 w-6" />,
-      services: t('categories.support.services', { returnObjects: true }) as string[]
+      services: [
+        t('services.spare_parts_supply'),
+        t('services.production_consulting'),
+        t('services.quality_assurance'),
+        t('services.export_preparation'),
+        t('services.custom_solutions')
+      ]
     }
   ];
 
-  const processSteps = t('process.steps', { returnObjects: true }) as Array<{
-    step: string;
-    title: string;
-    description: string;
-  }>;
+  const processSteps = [
+    {
+      step: "1",
+      title: t('services.choose_package_step'),
+      description: t('services.select_perfect_service_plan')
+    },
+    {
+      step: "2",
+      title: t('services.machine_registration_step'),
+      description: t('services.register_machines_digital_tracking')
+    },
+    {
+      step: "3",
+      title: t('services.service_activation_step'),
+      description: t('services.dedicated_support_team_assigned')
+    },
+    {
+      step: "4",
+      title: t('services.ongoing_care_step'),
+      description: t('services.regular_maintenance_twenty_four_seven')
+    }
+  ];
 
   return (
     <div className={`space-y-20 ${className}`}>
@@ -67,7 +102,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
             className="text-5xl md:text-7xl font-bold mb-6"
           >
             <span className="bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
-              Premium Services
+              {t('services.premium_services')}
             </span>
           </motion.h1>
           <motion.p 
@@ -76,8 +111,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
             transition={{ delay: 0.1 }}
             className="text-xl md:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed"
           >
-            Complete care solutions for aluminum and UPVC fabrication machines. 
-            <span className="text-orange-400"> Smart enough for big factories, simple enough for small workshops.</span>
+            {t('services.complete_care_solutions')}
           </motion.p>
           
           {/* Stats */}
@@ -126,9 +160,9 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-4xl font-bold text-white">
-              Regional <span className="text-orange-400">Service Coverage</span>
+              {t('services.regional_service_coverage')}
             </h2>
-            <p className="text-xl text-gray-400">Technician locations, response times, and capacity</p>
+            <p className="text-xl text-gray-400">{t('services.technician_locations_response_times')}</p>
           </div>
           <ServiceCoverageMap />
         </div>
@@ -146,10 +180,10 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-white mb-4">
-              Complete <span className="text-orange-400">Service Catalog</span>
+              {t('services.complete_service_catalog')}
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-              Everything you need to keep your fabrication business running smoothly
+              {t('services.everything_keep_fabrication_running')}
             </p>
           </div>
 
@@ -194,7 +228,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-white mb-4">
-              How Our <span className="text-orange-400">Service Works</span>
+              {t('services.how_our_service_works')}
             </h2>
           </div>
 
@@ -227,17 +261,17 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
             className="bg-gradient-to-r from-orange-500/10 to-purple-500/10 rounded-3xl p-12 border border-white/10 backdrop-blur-sm"
           >
             <h2 className="text-4xl font-bold text-white mb-4">
-              Ready to Transform Your <span className="text-orange-400">Fabrication Business?</span>
+              {t('services.ready_transform_fabrication_business')}
             </h2>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join hundreds of satisfied aluminum and UPVC fabricators who trust ALMONA for their machine care.
+              {t('services.join_hundreds_satisfied_fabricators')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl text-lg">
-                Get Free Consultation
+                {t('services.get_free_consultation_cta')}
               </Button>
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-slate-900 px-8 py-3 rounded-xl text-lg">
-                View Case Studies
+                {t('services.view_case_studies_cta')}
               </Button>
             </div>
           </motion.div>

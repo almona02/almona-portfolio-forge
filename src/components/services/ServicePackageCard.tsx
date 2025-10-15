@@ -1,6 +1,6 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -44,9 +44,59 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
   onSelect,
   className = ''
 }) => {
-  const { t } = useTranslation('services');
+  const { t, language } = useLanguage();
   
-  const packageData = t(`packages.${packageId}`, { returnObjects: true }) as any;
+  // Package data based on packageId
+  const packageData = {
+    basic: {
+      title: t('services.basic_care_package'),
+      machines: t('services.basic_care_machines'),
+      price: t('services.basic_care_price'),
+      features: [
+        t('services.monthly_health_check'),
+        t('services.basic_spare_parts'),
+        t('services.phone_email_support'),
+        t('services.forty_eight_hour_response'),
+        t('services.two_training_sessions'),
+        t('services.digital_machine_passport')
+      ],
+      actionText: t('services.get_started'),
+      popular: false
+    },
+    professional: {
+      title: t('services.professional_care_package'),
+      machines: t('services.professional_care_machines'),
+      price: t('services.professional_care_price'),
+      features: [
+        t('services.weekly_remote_monitoring'),
+        t('services.priority_spare_parts'),
+        t('services.emergency_hotline'),
+        t('services.twenty_four_hour_onsite'),
+        t('services.four_training_sessions'),
+        t('services.production_optimization_advice'),
+        t('services.advanced_machine_diagnostics')
+      ],
+      actionText: t('services.get_started'),
+      popular: true
+    },
+    enterprise: {
+      title: t('services.enterprise_care_package'),
+      machines: t('services.enterprise_care_machines'),
+      price: t('services.custom_pricing'),
+      features: [
+        t('services.real_time_ai_predictive'),
+        t('services.dedicated_technical_team'),
+        t('services.four_hour_emergency_guarantee'),
+        t('services.forty_percent_spare_parts'),
+        t('services.unlimited_training_sessions'),
+        t('services.custom_production_reports'),
+        t('services.technology_upgrade_consulting'),
+        t('services.export_compliance_support')
+      ],
+      actionText: t('services.contact_sales'),
+      popular: false
+    }
+  }[packageId];
   const colors = packageColors[packageId];
   const icon = packageIcons[packageId];
   const isPopular = packageData?.popular || false;
@@ -66,7 +116,7 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
           <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full">
             <Star className="h-3 w-3 mr-1 fill-current" />
-            Most Popular
+            {t('services.most_popular')}
           </Badge>
         </div>
       )}
@@ -79,7 +129,7 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
             {icon}
           </div>
           <CardTitle className="text-2xl font-bold text-white">
-            {packageData?.name || packageId}
+            {packageData?.title || packageId}
           </CardTitle>
           <CardDescription className="text-gray-300">
             {packageData?.machines || ''}
@@ -87,10 +137,10 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
           
           <div className="mt-4">
             <div className="text-4xl font-bold text-white">
-              {packageData?.price || 'N/A'} <span className="text-lg">{packageData?.currency || ''}</span>
+              {packageData?.price || 'N/A'}
             </div>
             <div className="text-gray-400 text-sm">
-              per {packageData?.period || 'month'}
+              {language === 'ar' ? 'شهرياً' : 'per month'}
             </div>
           </div>
         </CardHeader>
@@ -111,7 +161,7 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
             className={`w-full bg-gradient-to-r ${colors.gradient} hover:opacity-90 text-white font-semibold py-3 rounded-xl transition-all`}
             onClick={handleSelect}
           >
-            {packageData?.action || 'Get Started'}
+            {packageData?.actionText || 'Get Started'}
           </Button>
         </CardFooter>
       </Card>
