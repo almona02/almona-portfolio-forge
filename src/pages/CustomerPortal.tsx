@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { api } from '@/lib/api';
 // getUserTickets import removed (no direct usage here) to satisfy linter
 import { Button } from '@/components/ui/button';
@@ -21,7 +22,6 @@ import {
 } from 'lucide-react';
 import { TicketCard } from '@/components/support/TicketCard';
 import { useReducedMotionPref } from '@/hooks/useReducedMotionPref';
-import Footer from '@/components/layout/Footer';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import TicketWizardDialog from '@/components/support/TicketWizardDialog';
@@ -31,6 +31,7 @@ import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 // import { MachineHealthDashboard } from '@/components/portal/MachineHealthDashboard'; // Temporarily disabled for deployment
 import { AITechnicalChatbot } from '@/components/support/AITechnicalChatbot';
 import { MobileTicketCreator } from '@/components/mobile/MobileTicketCreator';
+import { LanguageToggle } from '@/components/ui/LanguageToggle';
 
 // Define local types that match the API response
 interface Machine {
@@ -70,6 +71,7 @@ interface Document {
 
 const CustomerPortal = () => {
   const { user, loading: authLoading, stableDisplayEmail } = useAuth();
+  const { t, language } = useLanguage();
   const queryClient = useQueryClient();
   const [isTicketWizardOpen, setIsTicketWizardOpen] = useState(false);
   const [isMobileTicketOpen, setIsMobileTicketOpen] = useState(false);
@@ -215,30 +217,33 @@ const CustomerPortal = () => {
           className="container mx-auto px-4"
         >
           <div className="mb-8">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 bg-almona-orange/20 rounded-full flex items-center justify-center">
-                <User className="h-8 w-8 text-almona-orange" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-almona-orange/20 rounded-full flex items-center justify-center">
+                  <User className="h-8 w-8 text-almona-orange" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold">{t('portal.welcome_back')}, {stableDisplayEmail || user?.email}</h1>
+                  <p className="text-gray-400">{t('portal.manage_description')}</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-3xl font-bold">Welcome back, {stableDisplayEmail || user?.email}</h1>
-                <p className="text-gray-400">Manage your machines, support tickets, and account details</p>
-              </div>
+              <LanguageToggle />
             </div>
           </div>
 
           <Tabs defaultValue="health" className="mb-8">
             <TabsList className="grid w-full grid-cols-4 bg-almona-dark/80 rounded-lg p-1 mb-6">
               <TabsTrigger value="health" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
-                <Activity className="h-4 w-4 mr-2" /> Health Dashboard
+                <Activity className="h-4 w-4 mr-2" /> {t('portal.health_dashboard')}
               </TabsTrigger>
               <TabsTrigger value="machines" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
-                <Package className="h-4 w-4 mr-2" /> My Machines
+                <Package className="h-4 w-4 mr-2" /> {t('portal.my_machines')}
               </TabsTrigger>
               <TabsTrigger value="support" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
-                <FileText className="h-4 w-4 mr-2" /> Support Tickets
+                <FileText className="h-4 w-4 mr-2" /> {t('portal.support_tickets')}
               </TabsTrigger>
               <TabsTrigger value="documents" className="data-[state=active]:bg-almona-orange data-[state=active]:text-white rounded-md py-3">
-                <Download className="h-4 w-4 mr-2" /> Documents
+                <Download className="h-4 w-4 mr-2" /> {t('portal.documents')}
               </TabsTrigger>
             </TabsList>
 
@@ -251,8 +256,8 @@ const CustomerPortal = () => {
               >
                 {/* <MachineHealthDashboard /> */}
                 <div className="bg-almona-darker p-6 rounded-lg border border-almona-light/20">
-                  <h3 className="text-lg font-semibold mb-4">Machine Health Dashboard</h3>
-                  <p className="text-almona-light/70">Machine health monitoring coming soon...</p>
+                  <h3 className="text-lg font-semibold mb-4">{t('portal.machine_health_dashboard')}</h3>
+                  <p className="text-almona-light/70">{t('portal.health_monitoring_coming_soon')}</p>
                 </div>
               </motion.div>
             </TabsContent>
@@ -268,7 +273,7 @@ const CustomerPortal = () => {
                   <div className="relative w-full md:w-64">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input 
-                      placeholder="Search machines..." 
+                      placeholder={t('portal.search_machines')} 
                       className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:border-almona-orange/50"
                     />
                   </div>
@@ -276,7 +281,7 @@ const CustomerPortal = () => {
                     className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
                     onClick={() => navigate('/portal/register-machine')}
                   >
-                    <Plus className="h-4 w-4 mr-2" /> Register New Machine
+                    <Plus className="h-4 w-4 mr-2" /> {t('portal.register_new_machine')}
                   </Button>
                 </motion.div>
 
@@ -303,17 +308,17 @@ const CustomerPortal = () => {
                           <CardContent>
                             <div className="space-y-3 text-sm">
                               <div className="flex justify-between">
-                                <span className="text-gray-400">Serial Number:</span>
+                                <span className="text-gray-400">{t('portal.serial_number')}:</span>
                                 <span className="font-mono text-almona-light">{machine.serial_number}</span>
                               </div>
                               {machine.installation_date && (
                                 <div className="flex justify-between">
-                                  <span className="text-gray-400">Installation:</span>
+                                  <span className="text-gray-400">{t('portal.installation')}:</span>
                                   <span>{new Date(machine.installation_date).toLocaleDateString()}</span>
                                 </div>
                               )}
                               <div className="flex justify-between">
-                                <span className="text-gray-400">Status:</span>
+                                <span className="text-gray-400">{t('portal.status')}:</span>
                                 <span className="capitalize">{machine.status || 'active'}</span>
                               </div>
                             </div>
@@ -345,13 +350,13 @@ const CustomerPortal = () => {
                     className="text-center py-16 border-2 border-dashed border-almona-light/20 rounded-lg bg-almona-dark/40"
                   >
                     <Package className="h-16 w-16 text-gray-500 mx-auto mb-4 opacity-60" />
-                    <h3 className="text-lg font-medium text-gray-400 mb-2">No machines registered yet</h3>
-                    <p className="text-gray-500 mb-6">Register your first machine to get started with support and services</p>
+                    <h3 className="text-lg font-medium text-gray-400 mb-2">{t('portal.no_machines_registered')}</h3>
+                    <p className="text-gray-500 mb-6">{t('portal.register_first_machine')}</p>
                     <Button 
                       className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
                       onClick={() => navigate('/portal/register-machine')}
                     >
-                      <Plus className="h-4 w-4 mr-2" /> Register Machine
+                      <Plus className="h-4 w-4 mr-2" /> {t('portal.register_machine')}
                     </Button>
                   </motion.div>
                 )}
@@ -369,7 +374,7 @@ const CustomerPortal = () => {
                   <div className="relative w-full md:w-64">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input 
-                      placeholder="Search tickets..." 
+                      placeholder={t('portal.search_tickets')} 
                       className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:border-almona-orange/50"
                     />
                   </div>
@@ -377,12 +382,12 @@ const CustomerPortal = () => {
                     className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
                     onClick={() => setIsTicketWizardOpen(true)}
                   >
-                    <Plus className="h-4 w-4 mr-2" /> Create New Ticket
+                    <Plus className="h-4 w-4 mr-2" /> {t('portal.create_new_ticket')}
                   </Button>
                 </motion.div>
                 <motion.div variants={itemVariants} className="mt-4">
-                  <h3 className="text-lg font-semibold mb-2 text-almona-orange">Find Your Quotes</h3>
-                  <p className="text-sm text-gray-400 mb-3">Search by quote number, digital twin code (e.g. DTC-2025-ABCD1234), or your portal reference.</p>
+                  <h3 className="text-lg font-semibold mb-2 text-almona-orange">{t('portal.find_your_quotes')}</h3>
+                  <p className="text-sm text-gray-400 mb-3">{t('portal.quote_search_description')}</p>
                   <QuoteTwinSearchPanel onSelect={(quoteId) => navigate(`/portal/quotes/${quoteId}`)} />
                 </motion.div>
 
@@ -410,13 +415,13 @@ const CustomerPortal = () => {
                     className="text-center py-16 border-2 border-dashed border-almona-light/20 rounded-lg bg-almona-dark/40"
                   >
                     <FileText className="h-16 w-16 text-gray-500 mx-auto mb-4 opacity-60" />
-                    <h3 className="text-lg font-medium text-gray-400 mb-2">No support tickets yet</h3>
-                    <p className="text-gray-500 mb-6">Create your first support ticket to get help with your machines</p>
+                    <h3 className="text-lg font-medium text-gray-400 mb-2">{t('portal.no_tickets_found')}</h3>
+                    <p className="text-gray-500 mb-6">{t('portal.create_first_ticket')}</p>
                     <Button 
                       className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
                       onClick={() => setIsTicketWizardOpen(true)}
                     >
-                      <Plus className="h-4 w-4 mr-2" /> Create Ticket
+                      <Plus className="h-4 w-4 mr-2" /> {t('portal.create_ticket')}
                     </Button>
                   </motion.div>
                 )}
@@ -433,7 +438,7 @@ const CustomerPortal = () => {
                 <motion.div variants={itemVariants} className="relative w-full md:w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input 
-                    placeholder="Search documents..." 
+                    placeholder={t('portal.search_documents')} 
                     className="pl-10 bg-almona-dark/60 border-almona-light/30 focus:border-almona-orange/50"
                   />
                 </motion.div>
@@ -457,7 +462,7 @@ const CustomerPortal = () => {
                           </CardHeader>
                           <CardContent>
                             <div className="flex justify-between items-center text-sm text-gray-400 mb-4">
-                              <span>Uploaded: {new Date(document.upload_date).toLocaleDateString()}</span>
+                              <span>{t('portal.uploaded')}: {new Date(document.upload_date).toLocaleDateString()}</span>
                               <span>{document.size}</span>
                             </div>
                             <Button 
@@ -465,7 +470,7 @@ const CustomerPortal = () => {
                               className="w-full border-almona-light/30 text-almona-light hover:bg-almona-light/10 group-hover:border-almona-orange/50"
                               onClick={() => window.open(document.url, '_blank')}
                             >
-                              <Download className="h-4 w-4 mr-2" /> Download
+                              <Download className="h-4 w-4 mr-2" /> {t('portal.download')}
                             </Button>
                           </CardContent>
                         </Card>
@@ -478,8 +483,8 @@ const CustomerPortal = () => {
                     className="text-center py-16 border-2 border-dashed border-almona-light/20 rounded-lg bg-almona-dark/40"
                   >
                     <FileText className="h-16 w-16 text-gray-500 mx-auto mb-4 opacity-60" />
-                    <h3 className="text-lg font-medium text-gray-400 mb-2">No documents available</h3>
-                    <p className="text-gray-500">Your manuals, warranties, and other documents will appear here</p>
+                    <h3 className="text-lg font-medium text-gray-400 mb-2">{t('portal.no_documents_available')}</h3>
+                    <p className="text-gray-500">{t('portal.documents_description')}</p>
                   </motion.div>
                 )}
               </motion.div>
@@ -495,36 +500,36 @@ const CustomerPortal = () => {
             <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center">
-                  <Package className="h-5 w-5 mr-2 text-almona-orange" /> Registered Machines
+                  <Package className="h-5 w-5 mr-2 text-almona-orange" /> {t('portal.registered_machines')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold">{machines?.length || 0}</p>
-                <p className="text-sm text-gray-400 mt-1">Total machines in your account</p>
+                <p className="text-sm text-gray-400 mt-1">{language === 'ar' ? 'إجمالي الماكينات في حسابك' : 'Total machines in your account'}</p>
               </CardContent>
             </Card>
 
             <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center">
-                  <FileText className="h-5 w-5 mr-2 text-almona-orange" /> Active Tickets
+                  <FileText className="h-5 w-5 mr-2 text-almona-orange" /> {t('portal.active_tickets')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold">{tickets?.filter(t => t.status !== 'resolved' && t.status !== 'closed').length || 0}</p>
-                <p className="text-sm text-gray-400 mt-1">Open support requests</p>
+                <p className="text-sm text-gray-400 mt-1">{language === 'ar' ? 'طلبات الدعم المفتوحة' : 'Open support requests'}</p>
               </CardContent>
             </Card>
 
             <Card className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center">
-                  <Download className="h-5 w-5 mr-2 text-almona-orange" /> Documents
+                  <Download className="h-5 w-5 mr-2 text-almona-orange" /> {t('portal.total_documents')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-3xl font-bold">{documents?.length || 0}</p>
-                <p className="text-sm text-gray-400 mt-1">Available manuals & resources</p>
+                <p className="text-sm text-gray-400 mt-1">{language === 'ar' ? 'الدلائل والموارد المتاحة' : 'Available manuals & resources'}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -565,7 +570,6 @@ const CustomerPortal = () => {
       />
       
       <AITechnicalChatbot />
-      <Footer />
     </div>
   );
 };

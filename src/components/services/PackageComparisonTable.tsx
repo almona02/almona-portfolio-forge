@@ -1,6 +1,6 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/context/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Check, X } from 'lucide-react';
@@ -12,13 +12,13 @@ interface PackageComparisonTableProps {
 export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
   className = ''
 }) => {
-  const { t } = useTranslation('services');
+  const { t, language } = useLanguage();
 
   const packages = ['basic', 'professional', 'enterprise'] as const;
   
   const features = [
     {
-      category: 'Core Services',
+      category: t('services.core_services'),
       items: [
         { key: 'health_check', basic: true, professional: true, enterprise: true },
         { key: 'spare_parts_discount', basic: '15%', professional: '25%', enterprise: '40%' },
@@ -27,7 +27,7 @@ export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
       ]
     },
     {
-      category: 'Advanced Features',
+      category: t('services.advanced_features'),
       items: [
         { key: 'remote_monitoring', basic: false, professional: true, enterprise: true },
         { key: 'ai_predictive', basic: false, professional: false, enterprise: true },
@@ -36,7 +36,7 @@ export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
       ]
     },
     {
-      category: 'Training & Support',
+      category: t('services.training_support'),
       items: [
         { key: 'training_sessions', basic: '2/year', professional: '4/year', enterprise: 'Unlimited' },
         { key: 'operator_training', basic: true, professional: true, enterprise: true },
@@ -65,17 +65,17 @@ export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
     >
       <div className="text-center">
         <h3 className="text-2xl font-bold text-white mb-2">
-          Compare Our Service Packages
+          {t('services.compare_service_packages')}
         </h3>
         <p className="text-gray-400">
-          Choose the perfect plan for your business needs
+          {t('services.choose_perfect_plan')}
         </p>
       </div>
 
       <Card className="bg-slate-800/50 backdrop-blur-sm border border-white/10 overflow-hidden">
         <CardHeader className="bg-gradient-to-r from-slate-700/50 to-slate-800/50">
           <CardTitle className="text-white text-center">
-            Service Package Comparison
+            {t('services.service_package_comparison')}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -83,20 +83,39 @@ export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/10">
-                  <th className="text-left p-4 text-gray-300 font-medium">Features</th>
+                  <th className="text-left p-4 text-gray-300 font-medium">{t('services.features')}</th>
                   {packages.map((pkg) => {
-                    const packageData = t(`packages.${pkg}`, { returnObjects: true }) as any;
+                    const packageData = {
+                      basic: {
+                        name: t('services.basic_care_package'),
+                        machines: t('services.basic_care_machines'),
+                        price: t('services.basic_care_price'),
+                        popular: false
+                      },
+                      professional: {
+                        name: t('services.professional_care_package'),
+                        machines: t('services.professional_care_machines'),
+                        price: t('services.professional_care_price'),
+                        popular: true
+                      },
+                      enterprise: {
+                        name: t('services.enterprise_care_package'),
+                        machines: t('services.enterprise_care_machines'),
+                        price: t('services.custom_pricing'),
+                        popular: false
+                      }
+                    }[pkg];
                     return (
                       <th key={pkg} className="text-center p-4 min-w-[200px]">
                         <div className="space-y-2">
                           <div className="font-bold text-white">{packageData?.name}</div>
                           <div className="text-sm text-gray-400">{packageData?.machines}</div>
                           <div className="text-lg font-bold text-orange-400">
-                            {packageData?.price} {packageData?.currency}
+                            {packageData?.price}
                           </div>
                           {packageData?.popular && (
                             <Badge className="bg-yellow-500 text-white text-xs">
-                              Most Popular
+                              {t('services.most_popular')}
                             </Badge>
                           )}
                         </div>

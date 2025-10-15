@@ -14,6 +14,7 @@ import { ChunkLoadingErrorBoundary } from "./components/ui/ChunkLoadingErrorBoun
 import { QuoteProvider } from "./context/QuoteContext.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
 import { LoadingProvider } from "./context/LoadingContext.tsx";
+import { LanguageProvider } from "./context/LanguageContext.tsx";
 import { ABTestProvider } from "./components/analytics/ABTestProvider";
 import { Analytics } from "@vercel/analytics/react";
 import RegionAwareLayout from "./components/layout/RegionAwareLayout";
@@ -123,7 +124,8 @@ const App = () => (
               <AuthProvider>
                 <LoadingProvider>
                   <ABTestProvider>
-                    <QuoteProvider>
+                    <LanguageProvider>
+                      <QuoteProvider>
                     <BrowserRouter
                       future={{
                         v7_startTransition: true,
@@ -218,7 +220,8 @@ const App = () => (
                         </Routes>
                       </RegionAwareLayout>
                     </BrowserRouter>
-                    </QuoteProvider>
+                      </QuoteProvider>
+                    </LanguageProvider>
                   </ABTestProvider>
                 </LoadingProvider>
               </AuthProvider>
