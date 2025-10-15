@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useRegionDetection, useRegionUtils } from '@/hooks/useRegionDetection';
 import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 interface Technician {
   id: string;
@@ -37,6 +38,34 @@ export const ServiceCoverageMap: React.FC = () => {
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
 
     map.on('load', () => {
+      const features = TECHS.map(t => ({
+        type: 'Feature' as const,
+        properties: { response: t.responseMins, name: t.name, city: t.city },
+        geometry: { type: 'Point' as const, coordinates: [t.coords[1], t.coords[0]] }
+      }));
+      map.addSource('techs', { type: 'geojson', data: { type: 'FeatureCollection', features } });
+      // Simple heat-like circles scaled by response time
+      map.addLayer({
+        id: 'tech-heat',
+        type: 'circle',
+        source: 'techs',
+        paint: {
+          'circle-radius': [
+            'interpolate', ['linear'], ['get', 'response'],
+            60, 8,
+            120, 12,
+            240, 18
+          ],
+          'circle-color': [
+            'interpolate', ['linear'], ['get', 'response'],
+            60, '#22c55e',
+            120, '#eab308',
+            240, '#f97316'
+          ],
+          'circle-opacity': 0.25
+        }
+      });
+
       TECHS.forEach(t => {
         const el = document.createElement('div');
         el.className = 'rounded-full border border-white/20 bg-orange-500/90 w-3 h-3 shadow';
