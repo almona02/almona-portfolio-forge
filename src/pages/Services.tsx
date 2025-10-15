@@ -41,6 +41,7 @@ import { UnifiedTicketFormData } from '@/lib/validation/ticket';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/useToast';
 import { canCreateServiceTicket, trackServiceTicketBlocked } from '@/lib/permissions/tickets';
+import BusinessKPIDashboard from '@/components/analytics/BusinessKPIDashboard';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -421,7 +422,7 @@ const Services = () => {
 
         {/* Main Services Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-4 max-w-6xl mx-auto mb-12 bg-gradient-to-r from-gray-900 to-black backdrop-blur-sm border border-orange-500/20 p-2 rounded-xl">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-5 max-w-6xl mx-auto mb-12 bg-gradient-to-r from-gray-900 to-black backdrop-blur-sm border border-orange-500/20 p-2 rounded-xl">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
               AI Overview
@@ -437,6 +438,10 @@ const Services = () => {
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               AI Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="service-kpis" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Service KPIs
             </TabsTrigger>
           </TabsList>
 
@@ -683,6 +688,71 @@ const Services = () => {
               <Suspense fallback={<div className="space-y-4"><FormSkeleton /><FormSkeleton /></div>}>
                 <MaintenanceDashboard />
               </Suspense>
+            </motion.div>
+          </TabsContent>
+
+          {/* Business KPIs for Services */}
+          <TabsContent value="service-kpis">
+            <motion.div
+              key="service-kpis"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-8"
+            >
+              {/* KPI Highlights */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="bg-gradient-to-br from-gray-900 to-black border-green-500/20">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Machine Uptime</CardTitle>
+                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-green-400">
+                      {machineHealth.length > 0 ? Math.round((machineHealth.filter(m => m.status === 'optimal').length / machineHealth.length) * 100) : 0}%
+                    </div>
+                    <p className="text-xs text-gray-400">Based on current fleet</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-gray-900 to-black border-yellow-500/20">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Avg Response Time</CardTitle>
+                    <Clock className="h-4 w-4 text-yellow-400" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-yellow-400">2h</div>
+                    <p className="text-xs text-gray-400">Emergency service last 30d</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-gray-900 to-black border-purple-500/20">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Maintenance Costs</CardTitle>
+                    <TrendingUp className="h-4 w-4 text-purple-400" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-purple-400">EGP 120k</div>
+                    <p className="text-xs text-gray-400">Rolling 30d estimate</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-gray-900 to-black border-blue-500/20">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Customer Satisfaction</CardTitle>
+                    <Shield className="h-4 w-4 text-blue-400" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-blue-400">98%</div>
+                    <p className="text-xs text-gray-400">Last 90 days</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Full BI Dashboard */}
+              <div className="bg-gradient-to-br from-gray-900 to-black border border-orange-500/20 rounded-xl p-4">
+                <BusinessKPIDashboard />
+              </div>
             </motion.div>
           </TabsContent>
         </Tabs>

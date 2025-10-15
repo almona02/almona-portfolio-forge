@@ -24,6 +24,7 @@ import {
   VolumeX
 } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
+import { ModelMeasurementTool } from './ModelMeasurementTool';
 
 interface EnhancedModel3DDialogProps {
   isOpen: boolean;
@@ -63,11 +64,22 @@ export function EnhancedModel3DDialog({
   const [error, setError] = useState<string | null>(null);
   const [isARSupported, setIsARSupported] = useState(false);
   const [showMeasurements, setShowMeasurements] = useState(false);
+  const [measurementUnit, setMeasurementUnit] = useState<'mm' | 'cm' | 'm' | 'in' | 'ft'>(() => {
+    try {
+      const saved = localStorage.getItem('model_measurement_unit');
+      if (saved === 'mm' || saved === 'cm' || saved === 'm' || saved === 'in' || saved === 'ft') return saved;
+    } catch {/* ignore */}
+    return 'mm';
+  });
   const [showInfo, setShowInfo] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [autoRotate, setAutoRotate] = useState(autoRotateEnabled);
   const [isMuted, setIsMuted] = useState(false);
-  const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'ar'>('desktop');
+  const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'ar' | 'compare'>('desktop');
+  const [compareModels, setCompareModels] = useState<{left?: string; right?: string}>({});
+  const [leftCamera, setLeftCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
+  const [rightCamera, setRightCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
+  const [sharedMeasurements, setSharedMeasurements] = useState<Array<{ id: string; distance: number; unit: 'mm' | 'cm' | 'm' | 'in' | 'ft' }>>([]);
   
   const viewerRef = useRef<any>(null);
   const { toast } = useToast();
@@ -168,6 +180,11 @@ export function EnhancedModel3DDialog({
     }
   }, []);
 
+  const handleUnitChange = useCallback((unit: 'mm' | 'cm' | 'm' | 'in' | 'ft') => {
+    setMeasurementUnit(unit);
+    try { localStorage.setItem('model_measurement_unit', unit); } catch {/* ignore */}
+  }, []);
+
   // Animation variants
   const modalVariants = {
     initial: { opacity: 0, scale: 0.9, y: 20 },
@@ -251,6 +268,14 @@ export function EnhancedModel3DDialog({
                     <Move3D className="w-4 h-4" />
                   </Button>
                 )}
+                <Button
+                  size="sm"
+                  variant={viewMode === 'compare' ? 'default' : 'ghost'}
+                  onClick={() => setViewMode('compare')}
+                  className="text-white"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
               </div>
 
               {/* Action Buttons */}
@@ -288,14 +313,55 @@ export function EnhancedModel3DDialog({
             {/* 3D Viewer */}
             <div className="flex-1 relative">
               <div className={`${isFullscreen ? 'h-[calc(100vh-120px)]' : 'h-[60vh]'} min-h-[480px] relative`}>
-                <LazyEnhancedGLBViewer
-                  ref={viewerRef}
-                  modelPath={modelPath}
-                  enableAR={isARSupported}
-                  onLoaded={handleLoad}
-                  onError={handleError}
-                  autoPlayAnimations={autoRotate}
-                />
+                {viewMode !== 'compare' ? (
+                  <LazyEnhancedGLBViewer
+                    ref={viewerRef}
+                    modelPath={modelPath}
+                    enableAR={isARSupported}
+                    onLoaded={handleLoad}
+                    onError={handleError}
+                    autoPlayAnimations={autoRotate}
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 h-full">
+                    <div className="relative">
+                      <LazyEnhancedGLBViewer
+                        modelPath={compareModels.left || modelPath}
+                        enableAR={false}
+                        onLoaded={handleLoad}
+                        onError={handleError}
+                        autoPlayAnimations={false}
+                        cameraState={rightCamera}
+                        onCameraChange={setLeftCamera}
+                      />
+                      {sharedMeasurements.length > 0 && (
+                        <div className="absolute bottom-3 left-3 text-xs text-gray-300 bg-black/50 px-2 py-1 rounded">
+                          {sharedMeasurements.map(m => (
+                            <div key={`left_${m.id}`}>{m.distance.toFixed(2)} {m.unit}</div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <LazyEnhancedGLBViewer
+                        modelPath={compareModels.right || modelPath}
+                        enableAR={false}
+                        onLoaded={handleLoad}
+                        onError={handleError}
+                        autoPlayAnimations={false}
+                        cameraState={leftCamera}
+                        onCameraChange={setRightCamera}
+                      />
+                      {sharedMeasurements.length > 0 && (
+                        <div className="absolute bottom-3 left-3 text-xs text-gray-300 bg-black/50 px-2 py-1 rounded">
+                          {sharedMeasurements.map(m => (
+                            <div key={`right_${m.id}`}>{m.distance.toFixed(2)} {m.unit}</div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
                 
                 {/* Loading Overlay */}
                 <AnimatePresence>
@@ -378,6 +444,17 @@ export function EnhancedModel3DDialog({
                     {autoRotate ? 'Stop' : 'Auto'} Rotate
                   </Button>
                 </div>
+
+                {viewMode === 'compare' && (
+                  <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm p-3 rounded-lg border border-gray-700 space-y-2">
+                    <div className="text-xs text-gray-300">Compare Models</div>
+                    <div className="flex gap-2">
+                      <input type="text" placeholder="Left model path" className="px-2 py-1 text-xs bg-gray-800 border border-gray-700 rounded" value={compareModels.left || ''} onChange={(e) => setCompareModels(s => ({ ...s, left: e.target.value }))} />
+                      <input type="text" placeholder="Right model path" className="px-2 py-1 text-xs bg-gray-800 border border-gray-700 rounded" value={compareModels.right || ''} onChange={(e) => setCompareModels(s => ({ ...s, right: e.target.value }))} />
+                    </div>
+                    <div className="text-[10px] text-gray-400">Paths should be public GLB URLs</div>
+                  </div>
+                )}
 
                 {/* AR Button */}
                 {isARSupported && viewMode === 'ar' && (
@@ -508,6 +585,18 @@ export function EnhancedModel3DDialog({
               </div>
             </div>
           </div>
+
+        {/* Measurement Tool Overlay */}
+        <ModelMeasurementTool
+          isVisible={showMeasurements}
+          onToggle={() => setShowMeasurements(false)}
+          unit={measurementUnit}
+          onUnitChange={handleUnitChange}
+          onAutoRotateToggle={(enabled) => setAutoRotate(enabled)}
+          autoRotateEnabled={autoRotate}
+          onMeasurementAdd={(m) => setSharedMeasurements(prev => [...prev, { id: m.id, distance: m.distance, unit: m.unit }])}
+          onMeasurementRemove={(id) => setSharedMeasurements(prev => prev.filter(x => x.id !== id))}
+        />
         </motion.div>
       </motion.div>
     </AnimatePresence>

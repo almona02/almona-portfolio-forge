@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, Suspense } from 'react'
 import { LazyThreeJS } from './LazyThreeJS'
+import { initCompressedModelDecoders } from '@/lib/three-optimized'
 
 // Props extended to support AR, scaling, positioning, and animation auto‑play
 export interface OptimizedGLBViewerProps {
@@ -195,6 +196,7 @@ export function OptimizedGLBViewer(props: OptimizedGLBViewerProps) {
             <DirectionalLight {...lightingProps.directionalLight} />
             <PointLight {...lightingProps.pointLight} />
             <Suspense fallback={<ModelLoadingFallback />}>
+              <Initializer />
               <OptimizedModel {...props} threeJS={threeJS} />
             </Suspense>
             <OrbitControls {...controlsProps} />
@@ -203,6 +205,17 @@ export function OptimizedGLBViewer(props: OptimizedGLBViewerProps) {
       }}
     </LazyThreeJS>
   )
+}
+
+// Small helper to ensure decoders are initialized once before model load
+const Initializer: React.FC = () => {
+  const initializedRef = useRef(false)
+  useEffect(() => {
+    if (initializedRef.current) return
+    initializedRef.current = true
+    initCompressedModelDecoders('/').catch(() => {})
+  }, [])
+  return null
 }
 
 export default OptimizedGLBViewer
