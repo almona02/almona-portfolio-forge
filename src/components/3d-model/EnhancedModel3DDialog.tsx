@@ -24,6 +24,7 @@ import {
   VolumeX
 } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
+import { ModelMeasurementTool } from './ModelMeasurementTool';
 
 interface EnhancedModel3DDialogProps {
   isOpen: boolean;
@@ -63,6 +64,13 @@ export function EnhancedModel3DDialog({
   const [error, setError] = useState<string | null>(null);
   const [isARSupported, setIsARSupported] = useState(false);
   const [showMeasurements, setShowMeasurements] = useState(false);
+  const [measurementUnit, setMeasurementUnit] = useState<'mm' | 'cm' | 'm' | 'in' | 'ft'>(() => {
+    try {
+      const saved = localStorage.getItem('model_measurement_unit');
+      if (saved === 'mm' || saved === 'cm' || saved === 'm' || saved === 'in' || saved === 'ft') return saved;
+    } catch {/* ignore */}
+    return 'mm';
+  });
   const [showInfo, setShowInfo] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [autoRotate, setAutoRotate] = useState(autoRotateEnabled);
@@ -166,6 +174,11 @@ export function EnhancedModel3DDialog({
       document.exitFullscreen();
       setIsFullscreen(false);
     }
+  }, []);
+
+  const handleUnitChange = useCallback((unit: 'mm' | 'cm' | 'm' | 'in' | 'ft') => {
+    setMeasurementUnit(unit);
+    try { localStorage.setItem('model_measurement_unit', unit); } catch {/* ignore */}
   }, []);
 
   // Animation variants
@@ -508,6 +521,16 @@ export function EnhancedModel3DDialog({
               </div>
             </div>
           </div>
+
+        {/* Measurement Tool Overlay */}
+        <ModelMeasurementTool
+          isVisible={showMeasurements}
+          onToggle={() => setShowMeasurements(false)}
+          unit={measurementUnit}
+          onUnitChange={handleUnitChange}
+          onAutoRotateToggle={(enabled) => setAutoRotate(enabled)}
+          autoRotateEnabled={autoRotate}
+        />
         </motion.div>
       </motion.div>
     </AnimatePresence>

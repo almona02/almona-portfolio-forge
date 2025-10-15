@@ -1,6 +1,7 @@
 import React, { Suspense, useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { useGLTF, Environment, OrbitControls, Bounds, useBounds, useAnimations } from '@react-three/drei';
+import { initCompressedModelDecoders } from '@/lib/three-optimized';
 
 interface EnhancedGLBViewerProps {
   modelPath: string;           // .glb path (public served)
@@ -241,6 +242,8 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
             }
           }}
         >
+          {/* Initialize Draco/KTX2 decoders once */}
+          <DecoderInitializer />
           <ambientLight intensity={1.15} />
           <directionalLight position={[5, 5, 5]} intensity={1.6} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
           <directionalLight position={[-5, -3, -5]} intensity={0.45} />
@@ -262,3 +265,13 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
 });
 
 export default EnhancedGLBViewer;
+
+const DecoderInitializer: React.FC = () => {
+  const initializedRef = React.useRef(false);
+  React.useEffect(() => {
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+    initCompressedModelDecoders('/').catch(() => {});
+  }, []);
+  return null;
+};
