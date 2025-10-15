@@ -75,7 +75,8 @@ export function EnhancedModel3DDialog({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [autoRotate, setAutoRotate] = useState(autoRotateEnabled);
   const [isMuted, setIsMuted] = useState(false);
-  const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'ar'>('desktop');
+  const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'ar' | 'compare'>('desktop');
+  const [compareModels, setCompareModels] = useState<{left?: string; right?: string}>({});
   
   const viewerRef = useRef<any>(null);
   const { toast } = useToast();
@@ -264,6 +265,14 @@ export function EnhancedModel3DDialog({
                     <Move3D className="w-4 h-4" />
                   </Button>
                 )}
+                <Button
+                  size="sm"
+                  variant={viewMode === 'compare' ? 'default' : 'ghost'}
+                  onClick={() => setViewMode('compare')}
+                  className="text-white"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
               </div>
 
               {/* Action Buttons */}
@@ -301,14 +310,37 @@ export function EnhancedModel3DDialog({
             {/* 3D Viewer */}
             <div className="flex-1 relative">
               <div className={`${isFullscreen ? 'h-[calc(100vh-120px)]' : 'h-[60vh]'} min-h-[480px] relative`}>
-                <LazyEnhancedGLBViewer
-                  ref={viewerRef}
-                  modelPath={modelPath}
-                  enableAR={isARSupported}
-                  onLoaded={handleLoad}
-                  onError={handleError}
-                  autoPlayAnimations={autoRotate}
-                />
+                {viewMode !== 'compare' ? (
+                  <LazyEnhancedGLBViewer
+                    ref={viewerRef}
+                    modelPath={modelPath}
+                    enableAR={isARSupported}
+                    onLoaded={handleLoad}
+                    onError={handleError}
+                    autoPlayAnimations={autoRotate}
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 h-full">
+                    <div className="relative">
+                      <LazyEnhancedGLBViewer
+                        modelPath={compareModels.left || modelPath}
+                        enableAR={false}
+                        onLoaded={handleLoad}
+                        onError={handleError}
+                        autoPlayAnimations={false}
+                      />
+                    </div>
+                    <div className="relative">
+                      <LazyEnhancedGLBViewer
+                        modelPath={compareModels.right || modelPath}
+                        enableAR={false}
+                        onLoaded={handleLoad}
+                        onError={handleError}
+                        autoPlayAnimations={false}
+                      />
+                    </div>
+                  </div>
+                )}
                 
                 {/* Loading Overlay */}
                 <AnimatePresence>
@@ -391,6 +423,17 @@ export function EnhancedModel3DDialog({
                     {autoRotate ? 'Stop' : 'Auto'} Rotate
                   </Button>
                 </div>
+
+                {viewMode === 'compare' && (
+                  <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm p-3 rounded-lg border border-gray-700 space-y-2">
+                    <div className="text-xs text-gray-300">Compare Models</div>
+                    <div className="flex gap-2">
+                      <input type="text" placeholder="Left model path" className="px-2 py-1 text-xs bg-gray-800 border border-gray-700 rounded" value={compareModels.left || ''} onChange={(e) => setCompareModels(s => ({ ...s, left: e.target.value }))} />
+                      <input type="text" placeholder="Right model path" className="px-2 py-1 text-xs bg-gray-800 border border-gray-700 rounded" value={compareModels.right || ''} onChange={(e) => setCompareModels(s => ({ ...s, right: e.target.value }))} />
+                    </div>
+                    <div className="text-[10px] text-gray-400">Paths should be public GLB URLs</div>
+                  </div>
+                )}
 
                 {/* AR Button */}
                 {isARSupported && viewMode === 'ar' && (
