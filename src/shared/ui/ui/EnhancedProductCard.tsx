@@ -4,6 +4,7 @@ import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Eye, ShoppingCart, GitCompare } from "lucide-react";
 import { OptimizedImage } from "@/components/optimized/OptimizedImage";
+import { ProductHoverPreview } from '@/components/shop/ProductHoverPreview';
 import type { Machine } from "@/constants/yilmazMachines";
 
 interface EnhancedProductCardProps {
@@ -144,18 +145,22 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
   };
 
   return (
-    <motion.div
-      variants={cardVariants}
-      initial="initial"
-      animate="animate"
-      whileHover="hover"
-      whileTap="tap"
-      className={`group relative bg-gradient-to-br from-gray-900 to-black rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${
-        isSelected 
-          ? 'border-orange-500 shadow-lg shadow-orange-500/20' 
-          : 'border-gray-700 hover:border-orange-400/50'
-      }`}
+    <ProductHoverPreview 
+      product={machine} 
+      onQuickPreview={onQuickPreview}
     >
+      <motion.div
+        variants={cardVariants}
+        initial="initial"
+        animate="animate"
+        whileHover="hover"
+        whileTap="tap"
+        className={`group relative bg-gradient-to-br from-gray-900 to-black rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${
+          isSelected 
+            ? 'border-orange-500 shadow-lg shadow-orange-500/20' 
+            : 'border-gray-700 hover:border-orange-400/50'
+        }`}
+      >
       {/* 3D Model Badge */}
       <AnimatePresence>
         {show3DBadge && machine.has3DModel && (
@@ -370,6 +375,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         </div>
       </motion.div>
     </motion.div>
+    </ProductHoverPreview>
   );
 };
 
