@@ -120,8 +120,8 @@ export const RegionAwareLayout: React.FC<RegionAwareLayoutProps> = ({
           {renderRegionalLayout()}
         </Suspense>
 
-        {/* Regional features overlay */}
-        {showRegionalFeatures && (
+        {/* Regional features overlay - disabled */}
+        {false && showRegionalFeatures && (
           <Suspense fallback={null}>
             <RegionalFeaturesOverlay region={regionState.region} config={config} />
           </Suspense>
