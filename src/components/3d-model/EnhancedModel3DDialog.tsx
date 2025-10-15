@@ -77,6 +77,8 @@ export function EnhancedModel3DDialog({
   const [isMuted, setIsMuted] = useState(false);
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'ar' | 'compare'>('desktop');
   const [compareModels, setCompareModels] = useState<{left?: string; right?: string}>({});
+  const [leftCamera, setLeftCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
+  const [rightCamera, setRightCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
   
   const viewerRef = useRef<any>(null);
   const { toast } = useToast();
@@ -328,6 +330,8 @@ export function EnhancedModel3DDialog({
                         onLoaded={handleLoad}
                         onError={handleError}
                         autoPlayAnimations={false}
+                        cameraState={rightCamera}
+                        onCameraChange={setLeftCamera}
                       />
                     </div>
                     <div className="relative">
@@ -337,6 +341,8 @@ export function EnhancedModel3DDialog({
                         onLoaded={handleLoad}
                         onError={handleError}
                         autoPlayAnimations={false}
+                        cameraState={leftCamera}
+                        onCameraChange={setRightCamera}
                       />
                     </div>
                   </div>

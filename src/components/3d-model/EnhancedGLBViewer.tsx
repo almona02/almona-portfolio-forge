@@ -15,6 +15,8 @@ interface EnhancedGLBViewerProps {
   webXRHitTest?: boolean;      // request hit-test feature when entering WebXR
   autoPlayAnimations?: boolean;// if true, play all GLTF animations on load
   webXRScaleFactor?: number;   // scale factor to apply in AR session (e.g., 0.5)
+  cameraState?: { position: [number, number, number]; target: [number, number, number] };
+  onCameraChange?: (state: { position: [number, number, number]; target: [number, number, number] }) => void;
 }
 
 interface CanvasErrorState { hasError: boolean; error: Error | null }
@@ -110,6 +112,36 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const modelGroupRef = useRef<THREE.Group | null>(null);
   const controlsRef = useRef<any>(null);
+  // Propagate camera changes for synchronization
+  React.useEffect(() => {
+    if (!controlsRef.current || !onCameraChange) return;
+    const controls = controlsRef.current;
+    const handler = () => {
+      try {
+        const cam = controls.object;
+        const pos: [number, number, number] = [cam.position.x, cam.position.y, cam.position.z];
+        const tgt = controls.target;
+        const target: [number, number, number] = [tgt.x, tgt.y, tgt.z];
+        onCameraChange({ position: pos, target });
+      } catch {}
+    };
+    controls.addEventListener('change', handler);
+    return () => { try { controls.removeEventListener('change', handler); } catch {} };
+  }, [onCameraChange]);
+
+  // Apply external camera state
+  React.useEffect(() => {
+    if (!controlsRef.current || !cameraState) return;
+    const controls = controlsRef.current;
+    try {
+      const cam = controls.object;
+      const [px, py, pz] = cameraState.position;
+      const [tx, ty, tz] = cameraState.target;
+      cam.position.set(px, py, pz);
+      controls.target.set(tx, ty, tz);
+      controls.update();
+    } catch {}
+  }, [cameraState]);
 
   // Expose methods via ref
   useImperativeHandle(ref, () => ({
