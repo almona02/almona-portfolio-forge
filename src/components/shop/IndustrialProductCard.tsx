@@ -77,11 +77,11 @@ export const IndustrialProductCard = ({
     >
       <Card className="bg-almona-darker border-almona-light/20 hover:border-almona-light/40 transition-colors h-full flex flex-col">
       <CardHeader className="p-0 relative">
-        <div className="aspect-video relative">
+        <div className="aspect-video relative overflow-hidden">
           <EnhancedImage 
             src={imageUrl} 
             alt={title} 
-            className="w-full h-48 object-cover" 
+            className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105" 
             aspectRatio="video"
             loading="lazy"
             loadingMessage="Loading product image..."

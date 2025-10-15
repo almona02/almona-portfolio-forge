@@ -120,12 +120,13 @@ export const EnhancedImage: React.FC<EnhancedImageProps> = ({
           src={hasError ? '/placeholder.svg' : src}
           alt={alt}
           className={cn(
-            'w-full h-full object-cover transition-opacity duration-300',
+            'w-full h-full object-cover object-center transition-opacity duration-300',
             isLoading ? 'opacity-0' : 'opacity-100'
           )}
           onLoad={handleLoad}
           onError={handleError}
           loading={loading}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       )}
     </div>
