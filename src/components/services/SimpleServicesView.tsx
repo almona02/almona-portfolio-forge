@@ -5,6 +5,7 @@ import { ServicePackageGrid } from './ServicePackageGrid';
 import { PackageComparisonTable } from './PackageComparisonTable';
 import { PackageCalculator } from './PackageCalculator';
 import { CustomerStories } from './CustomerStories';
+import ServiceCoverageMap from './ServiceCoverageMap';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Factory, Users, Zap, CheckCircle2, Clock, Shield, TrendingUp } from 'lucide-react';
@@ -117,6 +118,19 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <PackageComparisonTable />
+        </div>
+      </section>
+
+      {/* Service Coverage Map (Egypt/Turkey) */}
+      <section className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-bold text-white">
+              Regional <span className="text-orange-400">Service Coverage</span>
+            </h2>
+            <p className="text-xl text-gray-400">Technician locations, response times, and capacity</p>
+          </div>
+          <ServiceCoverageMap />
         </div>
       </section>
 

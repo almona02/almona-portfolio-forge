@@ -6,6 +6,7 @@
 import React, { Suspense, useRef, useEffect, useState, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useGLTF, Environment, OrbitControls, Bounds, useBounds, useAnimations, Text, Html } from '@react-three/drei';
+import { initCompressedModelDecoders } from '@/lib/three-optimized';
 import { useRegionDetection, useRegionUtils } from '@/hooks/useRegionDetection';
 import { useTranslation } from 'react-i18next';
 import * as THREE from 'three';
@@ -502,6 +503,8 @@ export function InteractiveGLBViewer({
             }
           }}
         >
+          {/* Initialize Draco/KTX2 decoders */}
+          <DecoderInitializer />
           <ambientLight intensity={1.15} />
           <directionalLight position={[5, 5, 5]} intensity={1.6} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
           <directionalLight position={[-5, -3, -5]} intensity={0.45} />
@@ -581,3 +584,13 @@ export function InteractiveGLBViewer({
 }
 
 export default InteractiveGLBViewer;
+
+const DecoderInitializer: React.FC = () => {
+  const initializedRef = React.useRef(false);
+  React.useEffect(() => {
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+    initCompressedModelDecoders('/').catch(() => {});
+  }, []);
+  return null;
+};
