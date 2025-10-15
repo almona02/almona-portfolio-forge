@@ -9,6 +9,7 @@ import { AlertCircle, Clock, CheckCircle2, AlertTriangle, HardHat } from "lucide
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
+import MachineHealthTrends from './MachineHealthTrends';
 
 interface MaintenanceEvent {
   id: string;
@@ -144,8 +145,9 @@ export const MaintenanceDashboard = withErrorBoundary(() => {
       {/* ... existing code ... */}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="health">Health</TabsTrigger>
+          <TabsTrigger value="trends">Trends</TabsTrigger>
           <TabsTrigger value="history">Service History</TabsTrigger>
           <TabsTrigger value="docs">Documentation</TabsTrigger>
         </TabsList>
@@ -195,6 +197,10 @@ export const MaintenanceDashboard = withErrorBoundary(() => {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="trends">
+          <MachineHealthTrends />
         </TabsContent>
 
         <TabsContent value="history">
