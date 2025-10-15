@@ -45,6 +45,54 @@ export {
   Loader
 } from '@react-three/drei';
 
+// Runtime loaders for compressed assets
+let dracoInitialized = false;
+let ktx2Initialized = false;
+
+/**
+ * Initialize Draco and KTX2 decoders for GLTF at runtime.
+ * Call once at app start or before first model load.
+ */
+export const initCompressedModelDecoders = async (basePath: string = '/'): Promise<void> => {
+  if (typeof window === 'undefined') return;
+  // Dynamically import to keep bundle lean
+  const [THREE, { DRACOLoader }, { KTX2Loader }] = await Promise.all([
+    import('three'),
+    import('three/examples/jsm/loaders/DRACOLoader.js'),
+    import('three/examples/jsm/loaders/KTX2Loader.js')
+  ]);
+
+  const { useGLTF } = await import('@react-three/drei');
+
+  // Draco
+  if (!dracoInitialized) {
+    try {
+      const dracoLoader = new DRACOLoader();
+      dracoLoader.setDecoderPath(basePath + 'draco/'); // expects decoder files under public/draco
+      // drei's useGLTF exposes a global DRACOLoader setter via 'preload' side-effects in runtime
+      // @ts-ignore setDRACOLoader is available in drei's internal GLTFLoader
+      useGLTF.setDRACOLoader?.(dracoLoader);
+      dracoInitialized = true;
+    } catch (e) {
+      console.warn('[3D] Draco init failed', e);
+    }
+  }
+
+  // KTX2
+  if (!ktx2Initialized) {
+    try {
+      const ktx2Loader = new KTX2Loader()
+        .setTranscoderPath(basePath + 'basis/') // expects /public/basis/ with basis wasm
+        .detectSupport(new THREE.WebGLRenderer());
+      // @ts-ignore setKTX2Loader is available in drei's internal GLTFLoader
+      useGLTF.setKTX2Loader?.(ktx2Loader);
+      ktx2Initialized = true;
+    } catch (e) {
+      console.warn('[3D] KTX2 init failed', e);
+    }
+  }
+};
+
 // Three.js standard library - only GLTF types
 export type { GLTF } from 'three-stdlib';
 
@@ -82,12 +130,25 @@ export const preloadModels = (urls: string[]) => {
 // Optimized Canvas component with default settings
 export const getOptimizedCanvasProps = () => ({
   camera: { position: [0, 0, 5], fov: 50 },
-  gl: { 
-    antialias: true, 
+  gl: {
+    antialias: true,
     alpha: true,
-    powerPreference: "high-performance" as const
+    powerPreference: ((): WebGLPowerPreference => {
+      // Network-aware quality: lower power on poor networks
+      const n = (navigator as any).connection as { effectiveType?: string } | undefined;
+      const type = n?.effectiveType || '';
+      if (type.includes('2g') || type.includes('slow-2g')) return 'low-power';
+      return 'high-performance';
+    })()
   },
-  dpr: [1, 2] as [number, number], // Limit device pixel ratio for better performance
+  dpr: ((): [number, number] => {
+    const n = (navigator as any).connection as { effectiveType?: string } | undefined;
+    const type = n?.effectiveType || '';
+    // Cap DPR more aggressively on slow networks
+    if (type.includes('2g') || type.includes('slow-2g')) return [1, 1];
+    if (type.includes('3g')) return [1, 1.5] as unknown as [number, number];
+    return [1, 2] as [number, number];
+  })(),
   performance: { min: 0.5 } // Lower performance threshold
 });
 
