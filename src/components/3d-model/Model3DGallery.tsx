@@ -21,6 +21,7 @@ import {
 import { Input } from '@/shared/ui/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { LazyOptimizedGLBViewer } from './LazyGLBViewer';
+import { EnhancedGLBViewer } from './EnhancedGLBViewer';
 import { useToast } from '@/hooks/useToast';
 
 interface Model3D {
@@ -60,8 +61,10 @@ export function Model3DGallery({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedModel, setSelectedModel] = useState<Model3D | null>(null);
-  const [autoPlay, setAutoPlay] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  const [failedModels, setFailedModels] = useState<Set<string>>(new Set());
+  const [loadedModels, setLoadedModels] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   // Get unique categories
@@ -123,8 +126,7 @@ export function Model3DGallery({
       y: 0,
       scale: 1,
       transition: {
-        duration: 0.4,
-        ease: [0.25, 0.46, 0.45, 0.94]
+        duration: 0.4
       }
     }
   };
@@ -245,14 +247,39 @@ export function Model3DGallery({
                 >
                   <CardHeader className="p-0">
                     <div className="relative aspect-square overflow-hidden">
-                      {/* 3D Preview */}
-                      <div className="w-full h-full">
-                        <LazyOptimizedGLBViewer
-                          modelPath={model.modelPath}
-                          quality="low"
-                          autoPlay={autoPlay}
-                          className="w-full h-full"
-                        />
+                      {/* Thumbnail Preview with 3D Overlay */}
+                      <div className="w-full h-full relative overflow-hidden">
+                        {autoPlay && !failedModels.has(model.id) ? (
+                          <EnhancedGLBViewer
+                            modelPath={model.modelPath}
+                            backgroundColor="transparent"
+                            enableAR={false}
+                            enableWebXR={false}
+                            autoRotate={true}
+                            autoPlayAnimations={false}
+                            onLoaded={() => {
+                              console.log(`Successfully loaded 3D model ${model.id}`);
+                            }}
+                            onError={(error) => {
+                              console.warn(`Failed to load 3D model ${model.id}:`, error);
+                              setFailedModels(prev => new Set(prev).add(model.id));
+                            }}
+                          />
+                        ) : (
+                          <img
+                            src={model.thumbnail}
+                            alt={model.name}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-2 backdrop-blur-sm">
+                              <Eye className="w-6 h-6 text-white" />
+                            </div>
+                            <p className="text-white text-sm font-medium">View 3D Model</p>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Overlay */}
@@ -343,13 +370,33 @@ export function Model3DGallery({
                   <CardContent className="p-4">
                     <div className="flex gap-4">
                       {/* Thumbnail */}
-                      <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
-                        <LazyOptimizedGLBViewer
-                          modelPath={model.modelPath}
-                          quality="low"
-                          autoPlay={autoPlay}
-                          className="w-full h-full"
-                        />
+                      <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0 relative">
+                        {autoPlay && !failedModels.has(model.id) ? (
+                          <EnhancedGLBViewer
+                            modelPath={model.modelPath}
+                            backgroundColor="transparent"
+                            enableAR={false}
+                            enableWebXR={false}
+                            autoRotate={true}
+                            autoPlayAnimations={false}
+                            onLoaded={() => {
+                              console.log(`Successfully loaded 3D model ${model.id}`);
+                            }}
+                            onError={(error) => {
+                              console.warn(`Failed to load 3D model ${model.id}:`, error);
+                              setFailedModels(prev => new Set(prev).add(model.id));
+                            }}
+                          />
+                        ) : (
+                          <img
+                            src={model.thumbnail}
+                            alt={model.name}
+                            className="w-full h-full object-cover"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent flex items-center justify-center">
+                          <Eye className="w-4 h-4 text-white opacity-80" />
+                        </div>
                       </div>
 
                       {/* Content */}
@@ -462,12 +509,17 @@ export function Model3DGallery({
 
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <div className="bg-gray-800 rounded-xl p-4 aspect-square">
-                      <LazyOptimizedGLBViewer
+                    <div className="bg-gray-800 rounded-xl p-4 aspect-square relative overflow-hidden">
+                      <EnhancedGLBViewer
                         modelPath={selectedModel.modelPath}
-                        quality="high"
-                        autoPlay={true}
-                        className="w-full h-full"
+                        backgroundColor="#374151"
+                        enableAR={true}
+                        enableWebXR={true}
+                        autoRotate={true}
+                        autoPlayAnimations={true}
+                        onLoaded={() => {}}
+                        onError={() => {}}
+                        title={selectedModel.name}
                       />
                     </div>
                   </div>
