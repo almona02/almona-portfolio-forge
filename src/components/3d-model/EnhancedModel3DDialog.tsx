@@ -21,10 +21,12 @@ import {
   Play,
   Pause,
   Volume2,
-  VolumeX
+  VolumeX,
+  Users
 } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 import { ModelMeasurementTool } from './ModelMeasurementTool';
+import { Collaborative3DViewer } from './Collaborative3DViewer';
 
 interface EnhancedModel3DDialogProps {
   isOpen: boolean;
@@ -75,7 +77,7 @@ export function EnhancedModel3DDialog({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [autoRotate, setAutoRotate] = useState(autoRotateEnabled);
   const [isMuted, setIsMuted] = useState(false);
-  const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'ar' | 'compare'>('desktop');
+  const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'ar' | 'compare' | 'collaborate'>('desktop');
   const [compareModels, setCompareModels] = useState<{left?: string; right?: string}>({});
   const [leftCamera, setLeftCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
   const [rightCamera, setRightCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
@@ -276,6 +278,14 @@ export function EnhancedModel3DDialog({
                 >
                   <Settings className="w-4 h-4" />
                 </Button>
+                <Button
+                  size="sm"
+                  variant={viewMode === 'collaborate' ? 'default' : 'ghost'}
+                  onClick={() => setViewMode('collaborate')}
+                  className="text-white"
+                >
+                  <Users className="w-4 h-4" />
+                </Button>
               </div>
 
               {/* Action Buttons */}
@@ -313,7 +323,12 @@ export function EnhancedModel3DDialog({
             {/* 3D Viewer */}
             <div className="flex-1 relative">
               <div className={`${isFullscreen ? 'h-[calc(100vh-120px)]' : 'h-[60vh]'} min-h-[480px] relative`}>
-                {viewMode !== 'compare' ? (
+                {viewMode === 'collaborate' ? (
+                  <Collaborative3DViewer
+                    modelPath={modelPath || ''}
+                    onClose={onClose}
+                  />
+                ) : viewMode !== 'compare' ? (
                   <LazyEnhancedGLBViewer
                     ref={viewerRef}
                     modelPath={modelPath}

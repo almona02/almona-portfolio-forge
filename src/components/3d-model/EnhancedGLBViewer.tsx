@@ -14,6 +14,7 @@ interface EnhancedGLBViewerProps {
   enableWebXR?: boolean;       // enable in-browser WebXR immersive-ar (desktop or supported mobile)
   webXRHitTest?: boolean;      // request hit-test feature when entering WebXR
   autoPlayAnimations?: boolean;// if true, play all GLTF animations on load
+  autoRotate?: boolean;        // enable auto-rotation of the model
   webXRScaleFactor?: number;   // scale factor to apply in AR session (e.g., 0.5)
   cameraState?: { position: [number, number, number]; target: [number, number, number] };
   onCameraChange?: (state: { position: [number, number, number]; target: [number, number, number] }) => void;
@@ -29,36 +30,27 @@ class CanvasErrorBoundary extends React.Component<React.PropsWithChildren, Canva
 
 function FittedModel({ modelPath, onLoaded, onError, autoPlayAnimations = true }: { modelPath: string; onLoaded?: () => void; onError?: (error: Error) => void; autoPlayAnimations?: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
-  
-  // Safe GLTF loading with error handling
-  let gltf, scene, actions = {};
-  try {
-    gltf = useGLTF(modelPath) as unknown as { scene?: THREE.Object3D; animations?: THREE.AnimationClip[] };
-    scene = gltf.scene;
-    
-    // Safe animations setup
-    if (scene && gltf.animations && gltf.animations.length > 0) {
-      try {
-        const animationResult = useAnimations(gltf.animations, scene as unknown as THREE.Object3D);
-        actions = animationResult?.actions || {};
-      } catch (error) {
-        console.warn('Failed to setup animations:', error);
-      }
-    }
-  } catch (error) {
-    console.error('Failed to load GLTF model:', error);
-    onError?.(error as Error);
-    return null;
-  }
-  
-  const bounds = useBounds();
   const fired = useRef(false);
+
+  // Always call hooks in the same order
+  const gltf = useGLTF(modelPath) as unknown as { scene?: THREE.Object3D; animations?: THREE.AnimationClip[] };
+  const scene = gltf.scene;
+
+  // Always call useAnimations, even if there are no animations
+  const { actions } = useAnimations(gltf.animations || [], scene as unknown as THREE.Object3D);
+
+  const bounds = useBounds();
+
   useEffect(() => {
     if (groupRef.current && scene) {
       bounds.refresh(groupRef.current).fit();
-      if (!fired.current) { fired.current = true; onLoaded?.(); }
+      if (!fired.current) {
+        fired.current = true;
+        onLoaded?.();
+      }
     }
   }, [scene, bounds, onLoaded]);
+
   useEffect(() => {
     if (autoPlayAnimations && actions && Object.keys(actions).length > 0) {
       try {
@@ -85,6 +77,7 @@ function FittedModel({ modelPath, onLoaded, onError, autoPlayAnimations = true }
       }
     };
   }, [actions, autoPlayAnimations]);
+
   if (!scene) return null;
   return <group ref={groupRef}><primitive object={scene} /></group>;
 }
@@ -100,7 +93,10 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
   enableWebXR = true,
   webXRHitTest = true,
   autoPlayAnimations = true,
-  webXRScaleFactor = 0.6
+  autoRotate = false,
+  webXRScaleFactor = 0.6,
+  cameraState,
+  onCameraChange
 }, ref) => {
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   const isIOS = /iPad|iPhone|iPod/i.test(ua);
@@ -288,7 +284,15 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
             <Environment preset="warehouse" />
           </Suspense>
           {!isXRSession && (
-            <OrbitControls ref={controlsRef} makeDefault enableDamping dampingFactor={0.08} rotateSpeed={0.7} />
+            <OrbitControls 
+              ref={controlsRef} 
+              makeDefault 
+              enableDamping 
+              dampingFactor={0.08} 
+              rotateSpeed={0.7}
+              autoRotate={autoRotate}
+              autoRotateSpeed={1.0}
+            />
           )}
         </Canvas>
       </div>
