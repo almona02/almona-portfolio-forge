@@ -20,6 +20,11 @@ const MaintenanceDashboard = lazy(() =>
 const PredictiveMaintenanceEngine = lazy(() =>
   import("@/components/services/PredictiveMaintenanceEngine")
 );
+const ServiceROIAnalytics = lazy(() =>
+  import("@/components/services/ServiceROIAnalytics").then((module) => ({
+    default: module.ServiceROIAnalytics,
+  }))
+);
 
 import { OperatorTrainingIncentiveDialog } from "@/components/services/OperatorTrainingIncentiveDialog";
 import {
@@ -60,6 +65,7 @@ import {
   Camera,
   Vibrate,
   Thermometer,
+  Calculator,
 } from "lucide-react";
 
 // AI-Powered Maintenance Data Types
@@ -444,7 +450,7 @@ const Services = () => {
 
         {/* Main Services Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-5 max-w-6xl mx-auto mb-12 bg-gradient-to-r from-gray-900 to-black backdrop-blur-sm border border-orange-500/20 p-2 rounded-xl">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-6 max-w-6xl mx-auto mb-12 bg-gradient-to-r from-gray-900 to-black backdrop-blur-sm border border-orange-500/20 p-2 rounded-xl">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
               {t('services.ai_overview')}
@@ -464,6 +470,10 @@ const Services = () => {
             <TabsTrigger value="service-kpis" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
               {t('services.service_kpis')}
+            </TabsTrigger>
+            <TabsTrigger value="roi-analytics" className="flex items-center gap-2">
+              <Calculator className="h-4 w-4" />
+              ROI Analytics
             </TabsTrigger>
           </TabsList>
 
@@ -774,6 +784,23 @@ const Services = () => {
               {/* Full BI Dashboard */}
               <div className="bg-gradient-to-br from-gray-900 to-black border border-orange-500/20 rounded-xl p-4">
                 <BusinessKPIDashboard />
+              </div>
+            </motion.div>
+          </TabsContent>
+
+          {/* ROI Analytics */}
+          <TabsContent value="roi-analytics">
+            <motion.div
+              key="roi-analytics"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-8"
+            >
+              <div className="bg-gradient-to-br from-gray-900 to-black border border-orange-500/20 rounded-xl p-6">
+                <Suspense fallback={<FormSkeleton />}>
+                  <ServiceROIAnalytics />
+                </Suspense>
               </div>
             </motion.div>
           </TabsContent>

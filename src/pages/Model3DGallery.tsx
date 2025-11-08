@@ -18,87 +18,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 
-// Demo 3D models data
-const demoModels = [
-  {
-    id: '1',
-    name: 'CDC 600 - Double Head Cutting Machine',
-    description: 'Full automatic double head compound cutting machine with precision cutting capabilities for aluminum profiles.',
-    modelPath: '/models/AR-Code-Object-Capture-app-1752786892 (1).glb',
-    thumbnail: '/images/machines/CDC-600.jpg',
-    category: 'Cutting Machines',
-    tags: ['Precision', 'Double Head', 'Compound cuts', 'Automatic'],
-    featured: true,
-    dimensions: { length: '3500mm', width: '1500mm', height: '1500mm' },
-    fileSize: '2.4 MB',
-    lastUpdated: '2024-01-15'
-  },
-  {
-    id: '2',
-    name: 'FR 221 S - Copy Router Machine',
-    description: 'High-quality copy router machine for aluminum profiles with advanced routing capabilities.',
-    modelPath: '/models/AR-Code-Object-Capture-app-1752786892 (1).glb',
-    thumbnail: '/images/machines/FR-221-S.jpg',
-    category: 'Processing Centers',
-    tags: ['New', 'Reliable', 'High Quality'],
-    featured: true,
-    dimensions: { length: '2000mm', width: '1200mm', height: '1800mm' },
-    fileSize: '1.8 MB',
-    lastUpdated: '2024-01-10'
-  },
-  {
-    id: '3',
-    name: 'NCR 300 - NC Router Machine',
-    description: '4 Axis Numerical Controlled NC Router Machine for complex aluminum processing operations.',
-    modelPath: '/models/AR-Code-Object-Capture-app-1752786892 (1).glb',
-    thumbnail: '/images/machines/NCR-300.jpg',
-    category: 'Processing Centers',
-    tags: ['CNC', '4-Axis', 'Numerical Control'],
-    featured: false,
-    dimensions: { length: '2500mm', width: '1500mm', height: '2000mm' },
-    fileSize: '3.2 MB',
-    lastUpdated: '2024-01-08'
-  },
-  {
-    id: '4',
-    name: 'KM 212 - End Milling Machine',
-    description: 'Portable end milling machine for aluminum profiles with precision milling capabilities.',
-    modelPath: '/models/AR-Code-Object-Capture-app-1752786892 (1).glb',
-    thumbnail: '/images/machines/KM-212.jpg',
-    category: 'Milling Machines',
-    tags: ['Portable', 'Precision', 'End Milling'],
-    featured: false,
-    dimensions: { length: '1200mm', width: '800mm', height: '1400mm' },
-    fileSize: '1.5 MB',
-    lastUpdated: '2024-01-05'
-  },
-  {
-    id: '5',
-    name: 'DK502 - Welding Machine',
-    description: 'High-quality double head welding machine for UPVC profiles with advanced welding technology.',
-    modelPath: '/models/AR-Code-Object-Capture-app-1752786892 (1).glb',
-    thumbnail: '/images/machines/DK502.jpg',
-    category: 'Welding Machines',
-    tags: ['New', 'Best Sales', 'Double Head'],
-    featured: true,
-    dimensions: { length: '1800mm', width: '1000mm', height: '1600mm' },
-    fileSize: '2.1 MB',
-    lastUpdated: '2024-01-12'
-  },
-  {
-    id: '6',
-    name: 'DC 421 PBS - Cutting Machine',
-    description: 'High-precision double head cutting machine for aluminum profiles with advanced cutting technology.',
-    modelPath: '/models/AR-Code-Object-Capture-app-1752786892 (1).glb',
-    thumbnail: '/images/machines/DC-421-PBS.jpg',
-    category: 'Cutting Machines',
-    tags: ['High Precision', 'Double Head', 'Aluminum'],
-    featured: false,
-    dimensions: { length: '3000mm', width: '1400mm', height: '1700mm' },
-    fileSize: '2.8 MB',
-    lastUpdated: '2024-01-03'
-  }
-];
+import modelsData from '@/data/models.json';
 
 export default function Model3DGalleryPage() {
   const [selectedModel, setSelectedModel] = useState<any>(null);
@@ -246,10 +166,10 @@ export default function Model3DGalleryPage() {
           <div className="flex items-center gap-4">
             <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0">
               <Star className="w-3 h-3 mr-1" />
-              {demoModels.filter(m => m.featured).length} Featured Models
+              {modelsData.filter(m => m.featured).length} Featured Models
             </Badge>
             <Badge variant="secondary" className="bg-gray-800 text-gray-300">
-              {demoModels.length} Total Models
+              {modelsData.length} Total Models
             </Badge>
           </div>
 
@@ -281,7 +201,7 @@ export default function Model3DGalleryPage() {
           transition={{ delay: 0.6 }}
         >
           <Model3DGallery
-            models={demoModels}
+            models={modelsData}
             onModelSelect={handleModelSelect}
             onModelDownload={handleModelDownload}
             onModelShare={handleModelShare}
