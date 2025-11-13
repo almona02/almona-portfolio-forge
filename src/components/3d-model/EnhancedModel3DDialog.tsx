@@ -27,6 +27,8 @@ import {
 import { useToast } from '@/hooks/useToast';
 import { ModelMeasurementTool } from './ModelMeasurementTool';
 import { Collaborative3DViewer } from './Collaborative3DViewer';
+import { SwiftXRIframe } from '@/components/swiftxr/SwiftXRIframe';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 
 interface EnhancedModel3DDialogProps {
   isOpen: boolean;
@@ -77,7 +79,13 @@ export function EnhancedModel3DDialog({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [autoRotate, setAutoRotate] = useState(autoRotateEnabled);
   const [isMuted, setIsMuted] = useState(false);
-  const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'ar' | 'compare' | 'collaborate'>('desktop');
+  const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'ar' | 'compare' | 'collaborate' | 'swiftxr'>('desktop');
+  
+  // Check if this is FR222 to show SwiftXR option
+  const isFR222 = machineName?.toLowerCase().includes('fr 222') || 
+                   machineName?.toLowerCase().includes('fr222') ||
+                   modelPath?.toLowerCase().includes('fr-222') ||
+                   modelPath?.toLowerCase().includes('fr222');
   const [compareModels, setCompareModels] = useState<{left?: string; right?: string}>({});
   const [leftCamera, setLeftCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
   const [rightCamera, setRightCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
@@ -260,6 +268,12 @@ export function EnhancedModel3DDialog({
                   AR Ready
                 </Badge>
               )}
+              {isFR222 && (
+                <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 ml-2">
+                  <Move3D className="w-3 h-3 mr-1" />
+                  SwiftXR Available
+                </Badge>
+              )}
             </div>
             
             <div className="flex items-center gap-2">
@@ -307,6 +321,17 @@ export function EnhancedModel3DDialog({
                 >
                   <Users className="w-4 h-4" />
                 </Button>
+                {isFR222 && (
+                  <Button
+                    size="sm"
+                    variant={viewMode === 'swiftxr' ? 'default' : 'ghost'}
+                    onClick={() => setViewMode('swiftxr')}
+                    className="text-white"
+                    title="SwiftXR Interactive Experience"
+                  >
+                    <Move3D className="w-4 h-4" />
+                  </Button>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -344,7 +369,16 @@ export function EnhancedModel3DDialog({
             {/* 3D Viewer */}
             <div className="flex-1 relative">
               <div className={`${isFullscreen ? 'h-[calc(100vh-120px)]' : 'h-[60vh]'} min-h-[480px] relative`}>
-                {viewMode === 'collaborate' ? (
+                {viewMode === 'swiftxr' && isFR222 ? (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-900 rounded-lg overflow-hidden">
+                    <SwiftXRIframe
+                      title="Almona"
+                      projectUrl="https://almona.swiftxr.site/almona"
+                      height="100%"
+                      className="w-full"
+                    />
+                  </div>
+                ) : viewMode === 'collaborate' ? (
                   <Collaborative3DViewer
                     modelPath={modelPath || ''}
                     onClose={onClose}

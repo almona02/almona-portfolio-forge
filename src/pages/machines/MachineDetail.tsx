@@ -9,6 +9,8 @@ import { yilmazMachines, Machine } from "@/constants/productsData";
 import { Button } from "@/shared/ui/ui/button";
 import { Download, Eye } from "lucide-react";
 import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
+import { SwiftXRIframe } from "@/components/swiftxr/SwiftXRIframe";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { toast } from "sonner";
 
@@ -91,6 +93,11 @@ const MachineDetail: React.FC = () => {
                   machine.id === "ym-030" || 
                   machine.name.toLowerCase().includes("fr 223") ||
                   machine.name.toLowerCase().includes("fr223");
+
+  // Check if this is FR222 (has 3D model)
+  const isFR222 = machine.id === "ym-030" || 
+                   machine.name.toLowerCase().includes("fr 222") ||
+                   machine.name.toLowerCase().includes("fr222");
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -175,6 +182,27 @@ const MachineDetail: React.FC = () => {
           Back to Machines
         </Link>
       </div>
+
+      {/* SwiftXR Iframe for FR222 */}
+      {isFR222 && (
+        <div className="mt-8 mb-8">
+          <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-white">
+                <Eye className="w-5 h-5 text-orange-500" />
+                SwiftXR Interactive Experience
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <SwiftXRIframe
+                title="Almona"
+                projectUrl="https://almona.swiftxr.site/almona"
+                height="480px"
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* 3D Model Dialog */}
       {isFR223 && (

@@ -507,7 +507,10 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   <Scale className="w-4 h-4 mr-2" />
                   Compare
                 </Button>
-                {(product as any).has3DModel || (product as any).modelPath ? (
+                {((product as any).has3DModel || (product as any).modelPath || 
+                  product.name?.toLowerCase().includes('fr 222') || 
+                  product.name?.toLowerCase().includes('fr222') ||
+                  product.id === 'ym-030') ? (
                   <Button
                     onClick={handle3DView}
                     variant="outline"
