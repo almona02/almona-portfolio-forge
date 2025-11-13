@@ -126,8 +126,8 @@ const Hero = () => {
           }`}
           aria-hidden={activeSlide !== index}
         >
-          {/* Enhanced gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-almona-dark-dark/95 via-almona-dark-dark/70 to-almona-dark-dark/40 z-10"></div>
+          {/* Enhanced gradient overlay - Better opacity for mobile */}
+          <div className="absolute inset-0 bg-gradient-to-r from-almona-dark-dark/98 sm:from-almona-dark-dark/95 via-almona-dark-dark/80 sm:via-almona-dark-dark/70 to-almona-dark-dark/50 sm:to-almona-dark-dark/40 z-10"></div>
           
           {/* Optimized image with lazy loading */}
           <img
@@ -140,98 +140,101 @@ const Hero = () => {
         </div>
       ))}
 
-      {/* Content */}
-      <div className="relative z-20 flex flex-col justify-center h-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 container mx-auto py-16 sm:py-20">
-        {slides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`transition-all duration-700 ${
-              activeSlide === index
-                ? "opacity-100 transform translate-y-0"
-                : "opacity-0 transform -translate-y-8 absolute pointer-events-none"
-            }`}
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            {activeSlide === index && (
-              <div className="max-w-3xl">
-                {/* Badge/Description */}
-                <span 
-                  className="inline-block text-almona-yellow mb-3 text-sm font-medium uppercase tracking-wider animate-fade-in"
-                  role="doc-subtitle"
-                >
-                  {slide.description}
-                </span>
-                
-                {/* Main Title */}
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold mb-3 sm:mb-4 text-white animate-slide-in leading-tight">
-                  <span className="text-gradient-orange bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
-                    {slide.title}
+      {/* Content - Optimized for mobile with proper spacing */}
+      <div className="relative z-20 flex flex-col h-full">
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col justify-center px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 container mx-auto py-12 sm:py-16 md:py-20">
+          {slides.map((slide, index) => (
+            <div
+              key={slide.id}
+              className={`transition-all duration-700 ${
+                activeSlide === index
+                  ? "opacity-100 transform translate-y-0"
+                  : "opacity-0 transform -translate-y-8 absolute pointer-events-none"
+              }`}
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {activeSlide === index && (
+                <div className="max-w-3xl">
+                  {/* Badge/Description - Optimized for mobile */}
+                  <span 
+                    className="inline-block text-almona-yellow mb-2 sm:mb-3 text-xs sm:text-sm font-medium uppercase tracking-wider animate-fade-in opacity-90 sm:opacity-100"
+                    role="doc-subtitle"
+                  >
+                    {slide.description}
                   </span>
-                </h1>
-                
-                {/* Subtitle */}
-                <h2
-                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl text-gray-200 mb-4 sm:mb-6 animate-slide-in leading-tight"
-                  style={{ animationDelay: "0.1s" }}
-                >
-                  {slide.subtitle}
-                </h2>
-                
-                {/* Action Buttons */}
-                <div
-                  className="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-fade-in"
-                  style={{ animationDelay: "0.3s" }}
-                >
-                  <NeonButton
-                    variant="industrial"
-                    glow="industrialGlow"
-                    size="lg"
-                    className="px-5 py-3 sm:px-6 sm:py-4 md:py-6 text-sm sm:text-base"
-                  >
-                    <Link 
-                      to={slide.link} 
-                      className="flex items-center gap-2"
-                    >
-                      Explore {slide.title}
-                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                    </Link>
-                  </NeonButton>
                   
-                  <NeonButton
-                    variant="outline"
-                    glow="subtle"
-                    size="lg"
-                    className="border-white/20 text-white hover:bg-white/10 transition-colors"
+                  {/* Main Title - Better mobile scaling */}
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-2 sm:mb-3 md:mb-4 text-white animate-slide-in leading-[1.1] sm:leading-tight">
+                    <span className="text-gradient-orange bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
+                      {slide.title}
+                    </span>
+                  </h1>
+                  
+                  {/* Subtitle - Better mobile scaling */}
+                  <h2
+                    className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-gray-200/90 sm:text-gray-200 mb-3 sm:mb-4 md:mb-6 animate-slide-in leading-[1.2] sm:leading-tight"
+                    style={{ animationDelay: "0.1s" }}
                   >
-                    <Link 
-                      to="/contact" 
-                      className="flex items-center gap-2"
+                    {slide.subtitle}
+                  </h2>
+                  
+                  {/* Action Buttons - Optimized for mobile */}
+                  <div
+                    className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 animate-fade-in"
+                    style={{ animationDelay: "0.3s" }}
+                  >
+                    <NeonButton
+                      variant="industrial"
+                      glow="industrialGlow"
+                      size="lg"
+                      className="px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-4 text-xs sm:text-sm md:text-base w-full sm:w-auto"
                     >
-                      <Phone className="h-5 w-5" />
-                      Contact Us
-                    </Link>
-                  </NeonButton>
+                      <Link 
+                        to={slide.link} 
+                        className="flex items-center justify-center gap-2"
+                      >
+                        Explore {slide.title}
+                        <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    </NeonButton>
+                    
+                    <NeonButton
+                      variant="outline"
+                      glow="subtle"
+                      size="lg"
+                      className="border-white/20 text-white hover:bg-white/10 transition-colors px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-4 text-xs sm:text-sm md:text-base w-full sm:w-auto"
+                    >
+                      <Link 
+                        to="/contact" 
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <Phone className="h-4 w-4 sm:h-5 sm:w-5" />
+                        Contact Us
+                      </Link>
+                    </NeonButton>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          ))}
+        </div>
 
-        {/* Enhanced Slide Navigation */}
-        <div className="absolute bottom-4 sm:bottom-8 left-0 right-0">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-              {/* Navigation Dots */}
-              <div className="flex flex-col items-start sm:items-center gap-3">
-                <div className="flex space-x-3" role="tablist" aria-label="Slide navigation">
+        {/* Enhanced Slide Navigation - Fixed at bottom, separate from content */}
+        <div className="relative z-30 pb-2 sm:pb-4 md:pb-6 lg:pb-8">
+          <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 md:gap-4">
+              {/* Navigation Dots - Optimized for mobile */}
+              <div className="flex flex-col items-start sm:items-center gap-2 sm:gap-3">
+                <div className="flex space-x-2 sm:space-x-3" role="tablist" aria-label="Slide navigation">
                   {slides.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => goToSlide(index)}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-gray-900 ${
+                      className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-gray-900 ${
                         activeSlide === index
-                          ? "bg-almona-orange w-8 shadow-lg shadow-orange-500/25"
+                          ? "bg-almona-orange w-6 sm:w-8 shadow-lg shadow-orange-500/25"
                           : "bg-white/30 hover:bg-white/50"
                       }`}
                       aria-label={`Go to slide ${index + 1}`}
@@ -241,8 +244,8 @@ const Hero = () => {
                   ))}
                 </div>
                 
-                {/* Progress Indicator */}
-                <div className="w-full sm:w-32 bg-white/20 h-0.5 rounded-full overflow-hidden">
+                {/* Progress Indicator - Optimized for mobile */}
+                <div className="w-full sm:w-32 bg-white/15 sm:bg-white/20 h-0.5 rounded-full overflow-hidden">
                   <div 
                     className="bg-almona-orange h-full rounded-full"
                     style={{ 
@@ -255,29 +258,29 @@ const Hero = () => {
                 </div>
               </div>
 
-              {/* Slide Counter */}
-              <div className="text-white/70 text-sm font-medium">
+              {/* Slide Counter - Optimized for mobile */}
+              <div className="text-white/70 text-xs sm:text-sm font-medium">
                 <span className="sr-only">Slide</span>
                 {activeSlide + 1} / {slides.length}
               </div>
 
-              {/* Navigation Arrows */}
-              <div className="flex space-x-2">
+              {/* Navigation Arrows - Optimized for mobile */}
+              <div className="flex space-x-1.5 sm:space-x-2">
                 <button
                   onClick={() => goToSlide(activeSlide === 0 ? slides.length - 1 : activeSlide - 1)}
-                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
                   aria-label="Previous slide"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
                 <button
                   onClick={() => goToSlide(activeSlide === slides.length - 1 ? 0 : activeSlide + 1)}
-                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
                   aria-label="Next slide"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
