@@ -64,24 +64,24 @@ const FeaturedProducts = () => {
 
   return (
     <section className="py-12 sm:py-16 md:py-20 bg-almona-dark">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
-          <span className="text-almona-orange font-medium text-sm sm:text-base">{t('common.navigation.products')}</span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-2 mb-3 sm:mb-4">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6">
+        <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 md:mb-12">
+          <span className="text-almona-orange font-medium text-xs sm:text-sm md:text-base opacity-90 sm:opacity-100">{t('common.navigation.products')}</span>
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mt-2 mb-2 sm:mb-3 md:mb-4 leading-tight px-2">
             Featured <span className="text-gradient-orange">Products</span>
           </h2>
-          <p className="text-gray-400 text-sm sm:text-base px-4">
+          <p className="text-gray-400/90 sm:text-gray-400 text-xs sm:text-sm md:text-base px-3 sm:px-4">
             Discover our selection of premium YILMAZ machines, 
             designed to elevate your aluminum and UPVC fabrication projects.
           </p>
         </div>
 
         <Tabs defaultValue="machines" className="w-full" onValueChange={handleTabChange}>
-          <div className="flex justify-center mb-10">
+          <div className="flex justify-center mb-6 sm:mb-8 md:mb-10">
             <TabsList className="bg-almona-dark-lighter">
               <TabsTrigger 
                 value="machines" 
-                className={`${activeTab === "machines" ? "text-white" : "text-gray-400"} px-6`}
+                className={`${activeTab === "machines" ? "text-white" : "text-gray-400"} px-4 sm:px-5 md:px-6 text-xs sm:text-sm md:text-base`}
               >
                 YILMAZ Machines
               </TabsTrigger>
@@ -89,16 +89,16 @@ const FeaturedProducts = () => {
           </div>
 
           <TabsContent value="machines" className="mt-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
               {machineProducts.map((product) => (
                 <ProductCard key={product.id} {...product} />
               ))}
             </div>
-            <div className="mt-12 text-center">
-              <Button asChild className="bg-gradient-orange hover:bg-almona-orange-dark text-white">
-                <Link to="/shop">
+            <div className="mt-8 sm:mt-10 md:mt-12 text-center">
+              <Button asChild className="bg-gradient-orange hover:bg-almona-orange-dark text-white text-xs sm:text-sm md:text-base px-4 py-2 sm:px-5 sm:py-2.5">
+                <Link to="/shop" className="flex items-center gap-2 justify-center">
                   {t('common.actions.viewMore')} Machines
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Link>
               </Button>
             </div>

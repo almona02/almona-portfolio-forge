@@ -98,47 +98,47 @@ const ServicesSection = () => {
   ];
 
   return (
-    <section className="py-12 sm:py-16 md:py-20 bg-gradient-dark">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-16">
-          <span className="text-almona-orange font-medium text-sm sm:text-base">What We Offer</span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-2 mb-3 sm:mb-4">
+    <section className="py-10 sm:py-12 md:py-16 lg:py-20 bg-gradient-dark">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6">
+        <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 md:mb-12 lg:mb-16">
+          <span className="text-almona-orange font-medium text-xs sm:text-sm md:text-base opacity-90 sm:opacity-100">What We Offer</span>
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mt-2 mb-2 sm:mb-3 md:mb-4 leading-tight px-2">
             Comprehensive <span className="text-gradient-orange">Services</span> for Your Business
           </h2>
-          <p className="text-gray-400 text-sm sm:text-base px-4">
+          <p className="text-gray-400/90 sm:text-gray-400 text-xs sm:text-sm md:text-base px-3 sm:px-4">
             From sales and maintenance to training and customization, we provide end-to-end solutions for aluminum and UPVC fabricators.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
           {services.map((service, index) => (
             <Link 
               to={service.path} 
               key={index} 
-              className="bg-almona-dark-lighter p-4 sm:p-6 rounded-lg border border-gray-800 hover:border-almona-orange/30 transition-all hover:shadow-lg hover:shadow-almona-orange/5 group"
+              className="bg-almona-dark-lighter p-3 sm:p-4 md:p-6 rounded-lg border border-gray-800/80 sm:border-gray-800 hover:border-almona-orange/30 transition-all hover:shadow-lg hover:shadow-almona-orange/5 group opacity-95 sm:opacity-100"
             >
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-almona-orange/10 flex items-center justify-center rounded-lg mb-3 sm:mb-4 group-hover:bg-almona-orange/20 transition-colors">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-almona-orange/10 flex items-center justify-center rounded-lg mb-2 sm:mb-3 md:mb-4 group-hover:bg-almona-orange/20 transition-colors">
                 {service.icon}
               </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-white mb-2 group-hover:text-almona-orange transition-colors">
+              <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white mb-1.5 sm:mb-2 group-hover:text-almona-orange transition-colors leading-tight">
                 {service.title}
               </h3>
-              <p className="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">
+              <p className="text-gray-400/90 sm:text-gray-400 mb-2 sm:mb-3 md:mb-4 text-xs sm:text-sm md:text-base leading-relaxed">
                 {service.description}
               </p>
-              <div className="flex items-center text-almona-orange font-medium">
+              <div className="flex items-center text-almona-orange font-medium text-xs sm:text-sm">
                 <span>Learn More</span>
-                <ArrowRight className="ml-2 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-2 h-3 w-3 sm:h-4 sm:w-4 transform group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
           ))}
         </div>
 
-        <div className="mt-12 text-center">
-          <Button asChild className="bg-gradient-orange hover:bg-almona-orange-dark text-white">
-            <Link to="/services">
+        <div className="mt-8 sm:mt-10 md:mt-12 text-center">
+          <Button asChild className="bg-gradient-orange hover:bg-almona-orange-dark text-white text-xs sm:text-sm md:text-base px-4 py-2 sm:px-5 sm:py-2.5">
+            <Link to="/services" className="flex items-center gap-2 justify-center">
               View All Services
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
             </Link>
           </Button>
         </div>
