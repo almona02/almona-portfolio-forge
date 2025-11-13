@@ -3,22 +3,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const teamMembers = [
   {
-    name: "John Doe",
-    role: "CEO & Founder",
+    name: "MONA GOMAA",
+    role: "GM & Founder",
     avatar: "/images/profiles/john-doe.jpg",
-    bio: "John has over 20 years of experience in the industrial equipment industry. He founded Almona with the vision of providing world-class machinery to Egyptian manufacturers.",
+    bio: "MONA has over 40 years of experience in the industrial equipment industry and trading globally . she founded Almona with the vision of providing world-class machinery to Egyptian manufacturers.",
   },
   {
-    name: "Jane Smith",
-    role: "Chief Operating Officer",
+    name: "AHMED HASSAN",
+    role: "Chief Operating EXECUTIVE",
     avatar: "/images/profiles/jane-smith.jpg",
-    bio: "Jane is an expert in operations and logistics. She ensures that our customers receive their orders on time and in perfect condition.",
+    bio: "AHMED is an expert in operations and logistics. HE ensures that our customers receive their orders on time and in perfect condition.",
   },
   {
-    name: "Peter Jones",
+    name: "RANIA HASSAN",
     role: "Head of Sales",
     avatar: "/images/profiles/peter-jones.jpg",
-    bio: "Peter is a master negotiator and a trusted advisor to our clients. He helps them find the right equipment for their needs and budget.",
+    bio: "RANIA is a master negotiator and a trusted advisor to our clients. SHE helps them find the right equipment for their needs and budget.",
   },
 ];
 

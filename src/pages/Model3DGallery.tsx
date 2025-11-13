@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Model3DGallery } from '@/components/3d-model/Model3DGallery';
 import { EnhancedModel3DDialog } from '@/components/3d-model/EnhancedModel3DDialog';
 import { ModelMeasurementTool } from '@/components/3d-model/ModelMeasurementTool';
+import { SwiftXRIframe } from '@/components/swiftxr/SwiftXRIframe';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
@@ -247,6 +248,34 @@ export default function Model3DGalleryPage() {
           onAutoRotateToggle={setAutoRotateEnabled}
           autoRotateEnabled={autoRotateEnabled}
         />
+
+        {/* SwiftXR Iframe Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mt-12 mb-8"
+        >
+          <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-white">
+                <Move3D className="w-5 h-5 text-orange-500" />
+                SwiftXR Interactive Experience
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-400 mb-4 text-sm">
+                Experience our 3D models in an immersive SwiftXR environment with advanced AR capabilities.
+              </p>
+              <SwiftXRIframe
+                title="Almona"
+                projectUrl="https://almona.swiftxr.site/almona"
+                height="480px"
+              />
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </main>
   );
