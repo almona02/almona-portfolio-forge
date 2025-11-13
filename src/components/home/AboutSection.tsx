@@ -5,35 +5,35 @@ import { Button } from "@/components/ui/button";
 
 const AboutSection = () => {
   return (
-    <section className="py-20 bg-almona-dark-lighter">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <section className="py-12 sm:py-16 md:py-20 bg-almona-dark-lighter">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-bold mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
               <span className="text-gradient-orange">ALMONA Co.</span> - Your Trusted Partner Since 1991
             </h2>
-            <p className="text-gray-300 mb-6">
+            <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base">
               With over three decades of experience in the machinery and profile industry, ALMONA has established itself as a leading provider of high-quality equipment and materials for aluminum and UPVC fabrication in Egypt.
             </p>
-            <p className="text-gray-300 mb-6">
+            <p className="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base">
               As the first and authorized dealer of YILMAZ machines since 2000, we&apos;ve built a reputation for excellence in both products and services. Our commitment to quality ensures our clients receive only the best materials for their projects.
             </p>
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <div className="bg-almona-dark p-4 rounded-lg border border-gray-800">
-                <div className="text-almona-orange text-2xl font-bold">30+</div>
-                <div className="text-gray-400">Years of Experience</div>
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
+              <div className="bg-almona-dark p-3 sm:p-4 rounded-lg border border-gray-800">
+                <div className="text-almona-orange text-xl sm:text-2xl font-bold">30+</div>
+                <div className="text-gray-400 text-xs sm:text-sm">Years of Experience</div>
               </div>
-              <div className="bg-almona-dark p-4 rounded-lg border border-gray-800">
-                <div className="text-almona-orange text-2xl font-bold">1000+</div>
-                <div className="text-gray-400">Projects Completed</div>
+              <div className="bg-almona-dark p-3 sm:p-4 rounded-lg border border-gray-800">
+                <div className="text-almona-orange text-xl sm:text-2xl font-bold">1000+</div>
+                <div className="text-gray-400 text-xs sm:text-sm">Projects Completed</div>
               </div>
-              <div className="bg-almona-dark p-4 rounded-lg border border-gray-800">
-                <div className="text-almona-orange text-2xl font-bold">500+</div>
-                <div className="text-gray-400">Satisfied Clients</div>
+              <div className="bg-almona-dark p-3 sm:p-4 rounded-lg border border-gray-800">
+                <div className="text-almona-orange text-xl sm:text-2xl font-bold">500+</div>
+                <div className="text-gray-400 text-xs sm:text-sm">Satisfied Clients</div>
               </div>
-              <div className="bg-almona-dark p-4 rounded-lg border border-gray-800">
-                <div className="text-almona-orange text-2xl font-bold">24/7</div>
-                <div className="text-gray-400">Customer Support</div>
+              <div className="bg-almona-dark p-3 sm:p-4 rounded-lg border border-gray-800">
+                <div className="text-almona-orange text-xl sm:text-2xl font-bold">24/7</div>
+                <div className="text-gray-400 text-xs sm:text-sm">Customer Support</div>
               </div>
             </div>
             <Button asChild className="bg-gradient-orange hover:bg-almona-orange-dark text-white">

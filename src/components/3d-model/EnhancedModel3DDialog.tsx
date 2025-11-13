@@ -117,12 +117,33 @@ export function EnhancedModel3DDialog({
     });
     setError(null);
     
-    // Check AR support
-    if ('xr' in navigator) {
-      navigator.xr?.isSessionSupported('immersive-ar').then((supported) => {
-        setIsARSupported(supported);
-      });
-    }
+    // Check AR support - WebXR, iOS Quick Look, Android Scene Viewer
+    const checkARSupport = async () => {
+      let supported = false;
+      
+      // Check WebXR
+      if ('xr' in navigator) {
+        try {
+          const xrSupported = await navigator.xr?.isSessionSupported('immersive-ar');
+          if (xrSupported) supported = true;
+        } catch (e) {
+          console.warn('WebXR check failed:', e);
+        }
+      }
+      
+      // Check iOS Quick Look
+      const ua = navigator.userAgent;
+      const isIOS = /iPad|iPhone|iPod/.test(ua);
+      if (isIOS) supported = true;
+      
+      // Check Android Scene Viewer
+      const isAndroid = /Android/.test(ua);
+      if (isAndroid && ua.includes('Chrome')) supported = true;
+      
+      setIsARSupported(supported);
+    };
+    
+    checkARSupport();
   }, []);
 
   const handleError = useCallback((error: Error) => {
@@ -332,10 +353,12 @@ export function EnhancedModel3DDialog({
                   <LazyEnhancedGLBViewer
                     ref={viewerRef}
                     modelPath={modelPath}
-                    enableAR={isARSupported}
+                    enableAR={true}
+                    enableWebXR={true}
                     onLoaded={handleLoad}
                     onError={handleError}
                     autoPlayAnimations={autoRotate}
+                    title={machineName}
                   />
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 h-full">

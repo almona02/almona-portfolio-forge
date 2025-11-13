@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import type { Group } from 'three'
+import './SwiftXR.css'
 
 // Props extended to support AR, scaling, positioning, and animation auto‑play
 export interface GLBViewerProps {
@@ -138,34 +139,18 @@ export function GLBViewer({
             <button
               type="button"
               onClick={enterAR}
-              style={{
-                padding: '10px 20px',
-                background: '#FF5F1F',
-                color: '#fff',
-                fontWeight: 600,
-                border: 'none',
-                borderRadius: 8,
-                cursor: 'pointer',
-                boxShadow: '0 4px 10px rgba(0,0,0,.25)'
-              }}
+              className="swiftxr-ar-button"
             >
-              View in AR
+              SwiftXR AR
             </button>
           ) : (
             <button
               type="button"
               onClick={exitAR}
-              style={{
-                padding: '10px 20px',
-                background: '#333',
-                color: '#fff',
-                fontWeight: 500,
-                border: 'none',
-                borderRadius: 8,
-                cursor: 'pointer'
-              }}
+              className="swiftxr-ar-button"
+              style={{ background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)' }}
             >
-              Exit AR
+              Exit SwiftXR
             </button>
           )}
         </div>

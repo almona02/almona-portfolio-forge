@@ -2,6 +2,9 @@ import React, { Suspense, useRef, useEffect, useState, forwardRef, useImperative
 import { Canvas } from '@react-three/fiber';
 import { useGLTF, Environment, OrbitControls, Bounds, useBounds, useAnimations } from '@react-three/drei';
 import { initCompressedModelDecoders } from '@/lib/three-optimized';
+import { launchSwiftXR, detectSwiftXR } from '@/utils/swiftXRIntegration';
+import { useToast } from '@/hooks/useToast';
+import './SwiftXR.css';
 
 interface EnhancedGLBViewerProps {
   modelPath: string;           // .glb path (public served)
@@ -101,10 +104,12 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   const isIOS = /iPad|iPhone|iPod/i.test(ua);
   const isAndroid = /Android/i.test(ua);
+  const { toast } = useToast();
 
   // WebXR AR support state
   const [xrSupported, setXrSupported] = useState(false);
   const [isXRSession, setIsXRSession] = useState(false);
+  const [swiftXRInstalled, setSwiftXRInstalled] = useState<boolean | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const modelGroupRef = useRef<THREE.Group | null>(null);
   const controlsRef = useRef<any>(null);
@@ -162,8 +167,16 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
         }
       })();
     }
+    
+    // Check for SwiftXR app on iOS
+    if (isIOS) {
+      detectSwiftXR().then(result => {
+        if (!cancelled) setSwiftXRInstalled(result.isInstalled);
+      });
+    }
+    
     return () => { cancelled = true; };
-  }, [enableWebXR]);
+  }, [enableWebXR, isIOS]);
 
   const handleAndroidAR = () => {
     try {
@@ -221,41 +234,84 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
           <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
             <div className="flex gap-2">
               {isIOS && (
-                <a
-                  href={usdzPath}
-                  rel="ar"
-                  className="px-3 py-1.5 rounded-md bg-emerald-600 text-white text-xs font-medium shadow hover:bg-emerald-500 transition"
-                >Quick Look</a>
+                <button
+                  onClick={async () => {
+                    // Try native SwiftXR first if installed
+                    if (swiftXRInstalled) {
+                      const modelName = modelPath.split('/').pop()?.replace(/\.(glb|gltf)$/i, '') || title;
+                      const fullModelUrl = modelPath.startsWith('http') 
+                        ? modelPath 
+                        : `${window.location.origin}${modelPath}`;
+                      
+                      const success = await launchSwiftXR({
+                        modelName,
+                        modelUrl: fullModelUrl,
+                        fallbackToWebXR: true,
+                        onSuccess: () => {
+                          toast({
+                            title: "SwiftXR Launched",
+                            description: "Opening native AR experience",
+                          });
+                        },
+                        onFallback: () => {
+                          // Fallback to Quick Look
+                          const link = document.createElement('a');
+                          link.href = usdzPath;
+                          link.rel = 'ar';
+                          link.style.display = 'none';
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                        }
+                      });
+                      
+                      if (success) return;
+                    }
+                    
+                    // Fallback to Quick Look
+                    const link = document.createElement('a');
+                    link.href = usdzPath;
+                    link.rel = 'ar';
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                  className="swiftxr-ar-button"
+                >
+                  {swiftXRInstalled ? 'SwiftXR Native' : 'SwiftXR Quick Look'}
+                </button>
               )}
               {isAndroid && (
                 <button
                   onClick={handleAndroidAR}
-                  className="px-3 py-1.5 rounded-md bg-emerald-600 text-white text-xs font-medium shadow hover:bg-emerald-500 transition"
-                >SceneViewer</button>
+                  className="swiftxr-ar-button"
+                >SwiftXR SceneViewer</button>
               )}
               {enableWebXR && xrSupported && (
                 !isXRSession ? (
                   <button
                     onClick={enterWebXR}
-                    className="px-3 py-1.5 rounded-md bg-indigo-600 text-white text-xs font-medium shadow hover:bg-indigo-500 transition"
-                  >WebXR AR</button>
+                    className="swiftxr-ar-button"
+                  >SwiftXR AR</button>
                 ) : (
                   <button
                     onClick={exitWebXR}
-                    className="px-3 py-1.5 rounded-md bg-rose-600 text-white text-xs font-medium shadow hover:bg-rose-500 transition"
-                  >Exit AR</button>
+                    className="swiftxr-ar-button"
+                    style={{ background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)' }}
+                  >Exit SwiftXR</button>
                 )
               )}
               {!isIOS && !isAndroid && !(enableWebXR && xrSupported) && (
                 <button
                   disabled
-                  title="AR not supported on this device/browser"
-                  className="px-3 py-1.5 rounded-md bg-gray-500 text-white text-xs font-medium cursor-not-allowed"
-                >AR</button>
+                  title="SwiftXR AR not supported on this device/browser"
+                  className="px-3 py-1.5 rounded-md bg-gray-500 text-white text-xs font-medium cursor-not-allowed opacity-50"
+                >SwiftXR Unavailable</button>
               )}
             </div>
             {enableWebXR && !xrSupported && (
-              <span className="text-[10px] text-gray-400">WebXR AR not supported</span>
+              <span className="text-[10px] text-gray-400">SwiftXR WebXR not supported</span>
             )}
           </div>
         )}

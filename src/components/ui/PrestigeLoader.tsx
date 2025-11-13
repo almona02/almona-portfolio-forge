@@ -90,7 +90,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.6), 0 0 60px rgba(249, 115, 22, 0.4); }
           }
         `}</style>
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden" style={{ minHeight: '-webkit-fill-available' }}>
           {/* Industry 4.0 Background Grid */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0" style={{
@@ -142,8 +142,8 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
         </div>
 
         {/* Main content container */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center space-y-8 px-8">
-          {/* Enhanced Logo with Industry 4.0 Elements */}
+        <div className="relative z-10 flex flex-col items-center justify-center text-center space-y-4 sm:space-y-8 px-4 sm:px-8">
+            {/* Enhanced Logo with Industry 4.0 Elements */}
           <motion.div 
             className="relative"
             initial={{ scale: 0.8, opacity: 0 }}
@@ -151,10 +151,10 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             {/* Main logo container with animated logo */}
-            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 flex items-center justify-center shadow-2xl relative overflow-hidden">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 flex items-center justify-center shadow-2xl relative overflow-hidden">
               {/* Animated Logo - Same as Navbar */}
               <motion.div
-                className="w-20 h-20"
+                className="w-16 h-16 sm:w-20 sm:h-20"
                 initial={{ rotate: 0, scale: 0.5 }}
                 animate={{ rotate: 360, scale: 1 }}
                 transition={{ 
@@ -294,13 +294,13 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             </motion.h1>
             
             <motion.div 
-              className="text-xl md:text-2xl text-slate-200 font-semibold relative"
+              className="text-base sm:text-xl md:text-2xl text-slate-200 font-semibold relative px-4"
               key={loadingMessage}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <span className="relative z-10">{loadingMessage}</span>
+              <span className="relative z-10 text-center block">{loadingMessage}</span>
               {/* Text glow effect */}
               <div className="absolute inset-0 text-amber-400/30 blur-sm">
                 {loadingMessage}
@@ -361,7 +361,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
 
           {/* Industry 4.0 Progress Bar */}
           <motion.div 
-            className="w-full max-w-lg space-y-6"
+            className="w-full max-w-lg space-y-4 sm:space-y-6 px-4"
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from './button';
+import '../../components/3d-model/SwiftXR.css';
 
 interface ArButtonProps {
   productId: string;
@@ -44,7 +45,7 @@ export const ArButton = ({ productId, onClick }: ArButtonProps) => {
   if (!isMobile) {
     return (
       <Button disabled className="opacity-50 cursor-not-allowed">
-        AR Not Supported on Desktop
+        SwiftXR Not Supported on Desktop
       </Button>
     );
   }
@@ -52,14 +53,14 @@ export const ArButton = ({ productId, onClick }: ArButtonProps) => {
   if (!isArSupported) {
     return (
       <Button disabled className="opacity-50 cursor-not-allowed">
-        AR Not Supported on Device
+        SwiftXR Not Supported on Device
       </Button>
     );
   }
 
   return (
-    <Button onClick={handleClick} className="bg-orange-600 hover:bg-orange-700">
-      View in Your Space
+    <Button onClick={handleClick} className="swiftxr-launch-button">
+      <span className="swiftxr-text-gradient">SwiftXR</span> - View in Your Space
     </Button>
   );
 };

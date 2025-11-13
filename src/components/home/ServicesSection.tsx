@@ -98,32 +98,32 @@ const ServicesSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-dark">
-      <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-almona-orange font-medium">What We Offer</span>
-          <h2 className="text-3xl font-bold mt-2 mb-4">
+    <section className="py-12 sm:py-16 md:py-20 bg-gradient-dark">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12 md:mb-16">
+          <span className="text-almona-orange font-medium text-sm sm:text-base">What We Offer</span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-2 mb-3 sm:mb-4">
             Comprehensive <span className="text-gradient-orange">Services</span> for Your Business
           </h2>
-          <p className="text-gray-400">
+          <p className="text-gray-400 text-sm sm:text-base px-4">
             From sales and maintenance to training and customization, we provide end-to-end solutions for aluminum and UPVC fabricators.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {services.map((service, index) => (
             <Link 
               to={service.path} 
               key={index} 
-              className="bg-almona-dark-lighter p-6 rounded-lg border border-gray-800 hover:border-almona-orange/30 transition-all hover:shadow-lg hover:shadow-almona-orange/5 group"
+              className="bg-almona-dark-lighter p-4 sm:p-6 rounded-lg border border-gray-800 hover:border-almona-orange/30 transition-all hover:shadow-lg hover:shadow-almona-orange/5 group"
             >
-              <div className="w-12 h-12 bg-almona-orange/10 flex items-center justify-center rounded-lg mb-4 group-hover:bg-almona-orange/20 transition-colors">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-almona-orange/10 flex items-center justify-center rounded-lg mb-3 sm:mb-4 group-hover:bg-almona-orange/20 transition-colors">
                 {service.icon}
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-almona-orange transition-colors">
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-2 group-hover:text-almona-orange transition-colors">
                 {service.title}
               </h3>
-              <p className="text-gray-400 mb-4">
+              <p className="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">
                 {service.description}
               </p>
               <div className="flex items-center text-almona-orange font-medium">

@@ -120,8 +120,8 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between mb-6">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:items-center md:justify-between mb-4 sm:mb-6">
         <div className="relative">
           <div className="flex gap-2 flex-wrap overflow-x-auto sm:overflow-visible" role="tablist" aria-label="Quote steps">
             {steps.map((step, index) => {
@@ -167,9 +167,9 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
         </div>
       </div>
 
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4 sm:space-y-6">
         {currentStep === 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div>
               <label className="block text-sm font-medium mb-2">Full Name</label>
               <Input {...form.register("name", { required: true })} placeholder="Your name" />
@@ -190,7 +190,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
         )}
 
         {currentStep === 1 && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div>
               <h3 className="text-lg font-medium mb-4">Selected Items</h3>
               {selectedProducts.length === 0 && selectedServices.length === 0 ? (
@@ -235,7 +235,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
         )}
 
         {currentStep === 2 && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div>
               <label className="block text-sm font-medium mb-2">Urgency</label>
               <Select onValueChange={(value) => form.setValue("urgency", value)} defaultValue="standard">

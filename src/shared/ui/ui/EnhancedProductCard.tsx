@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
-import { Eye, ShoppingCart, GitCompare } from "lucide-react";
+import { Eye, ShoppingCart, GitCompare, Play, Download } from "lucide-react";
 import { OptimizedImage } from "@/components/optimized/OptimizedImage";
 import { ProductHoverPreview } from '@/components/shop/ProductHoverPreview';
 import type { Machine } from "@/constants/yilmazMachines";
@@ -24,8 +24,8 @@ const cardVariants = {
     y: 20,
     scale: 0.95
   },
-  animate: { 
-    opacity: 1, 
+  animate: {
+    opacity: 1,
     y: 0,
     scale: 1,
     transition: {
@@ -38,7 +38,7 @@ const cardVariants = {
     y: -4,
     transition: {
       duration: 0.2,
-      ease: "easeOut"
+      ease: "easeInOut"
     }
   },
   tap: {
@@ -54,12 +54,12 @@ const imageVariants = {
     opacity: 0,
     scale: 1.1
   },
-  animate: { 
+  animate: {
     opacity: 1,
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: "easeOut"
+      ease: "easeInOut"
     }
   }
 };
@@ -69,12 +69,12 @@ const overlayVariants = {
     opacity: 0,
     scale: 0.8
   },
-  animate: { 
+  animate: {
     opacity: 1,
     scale: 1,
     transition: {
       duration: 0.2,
-      ease: "easeOut"
+      ease: "easeInOut"
     }
   },
   exit: {
@@ -92,13 +92,13 @@ const badgeVariants = {
     scale: 0.8,
     y: -10
   },
-  animate: { 
+  animate: {
     opacity: 1,
     scale: 1,
     y: 0,
     transition: {
       duration: 0.3,
-      ease: "easeOut"
+      ease: "easeInOut"
     }
   }
 };
@@ -108,12 +108,12 @@ const contentVariants = {
     opacity: 0,
     y: 10
   },
-  animate: { 
+  animate: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.4,
-      ease: "easeOut",
+      ease: "easeInOut",
       delay: 0.1
     }
   }
@@ -179,22 +179,41 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Featured Badge */}
-      <AnimatePresence>
-        {machine.featured && (
-          <motion.div 
-            className="absolute top-3 right-3 z-10"
-            variants={badgeVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-          >
-            <Badge variant="secondary" className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 shadow-lg">
-              Featured
-            </Badge>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Video and Featured Badges - Stacked when both exist */}
+      <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 items-end">
+        <AnimatePresence>
+          {machine.youtubeUrl && (
+            <motion.div
+              variants={badgeVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <a href={machine.youtubeUrl} target="_blank" rel="noopener noreferrer">
+                <Badge className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0 shadow-lg cursor-pointer">
+                  <Play className="w-3 h-3 mr-1" />
+                  Video
+                </Badge>
+              </a>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {machine.featured && (
+            <motion.div
+              variants={badgeVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <Badge variant="secondary" className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 shadow-lg">
+                Featured
+              </Badge>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Image Container with Fixed Aspect Ratio - KEY CHANGE: object-contain */}
       <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-gradient-to-br from-gray-800 to-gray-900">
@@ -334,6 +353,25 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
 
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2">
+          {machine.specPdf && (
+            <motion.div
+              className="flex-1"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <a href={machine.specPdf} target="_blank" rel="noopener noreferrer" className="block">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300"
+                >
+                  <Download className="w-4 h-4 mr-1" />
+                  Specs
+                </Button>
+              </a>
+            </motion.div>
+          )}
+
           {onSelect && (
             <motion.div
               className="flex-1"
@@ -354,7 +392,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
               </Button>
             </motion.div>
           )}
-          
+
           {onQuoteRequest && (
             <motion.div
               className="flex-1"

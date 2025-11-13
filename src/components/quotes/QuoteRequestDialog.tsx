@@ -108,12 +108,12 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl w-full bg-almona-darker border-almona-light max-h-[90vh] overflow-y-auto p-6">
+      <DialogContent className="max-w-5xl w-full bg-almona-darker border-almona-light max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle className="text-2xl text-gradient-orange">
+            <DialogTitle className="text-xl sm:text-2xl text-gradient-orange">
               Request a Quote
             </DialogTitle>
-            <DialogDescription className="text-sm text-muted-foreground">
+            <DialogDescription className="text-xs sm:text-sm text-muted-foreground">
               Get a personalized quote for your selected products and services. Fill out the form below and we'll get back to you with pricing and availability.
             </DialogDescription>
           </DialogHeader>

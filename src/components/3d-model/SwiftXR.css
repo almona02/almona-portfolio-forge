@@ -1,0 +1,280 @@
+/* SwiftXR Professional Branding Styles */
+
+:root {
+  --swiftxr-primary: #FF5F1F;
+  --swiftxr-primary-dark: #E04A0F;
+  --swiftxr-primary-light: #FF8C42;
+  --swiftxr-gradient-start: #FF5F1F;
+  --swiftxr-gradient-end: #FF8C42;
+  --swiftxr-glow: rgba(255, 95, 31, 0.4);
+  --swiftxr-shadow: rgba(255, 95, 31, 0.3);
+}
+
+/* SwiftXR Container */
+.swiftxr-container {
+  position: relative;
+  width: 100%;
+}
+
+/* SwiftXR Card Styling */
+.swiftxr-card {
+  background: linear-gradient(135deg, rgba(17, 17, 17, 0.95) 0%, rgba(10, 10, 10, 0.98) 100%);
+  border: 1px solid rgba(255, 95, 31, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+              0 0 0 1px rgba(255, 95, 31, 0.1) inset;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.swiftxr-card:hover {
+  border-color: rgba(255, 95, 31, 0.4);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4),
+              0 0 20px var(--swiftxr-glow),
+              0 0 0 1px rgba(255, 95, 31, 0.2) inset;
+  transform: translateY(-2px);
+}
+
+/* SwiftXR Title */
+.swiftxr-title {
+  background: linear-gradient(135deg, var(--swiftxr-gradient-start) 0%, var(--swiftxr-gradient-end) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 20px var(--swiftxr-glow);
+}
+
+/* SwiftXR Badge */
+.swiftxr-badge {
+  background: linear-gradient(135deg, rgba(255, 95, 31, 0.15) 0%, rgba(255, 140, 66, 0.15) 100%);
+  border: 1px solid rgba(255, 95, 31, 0.3);
+  color: var(--swiftxr-primary);
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  backdrop-filter: blur(10px);
+}
+
+/* SwiftXR Method Badge */
+.swiftxr-method-badge {
+  background: linear-gradient(135deg, rgba(255, 95, 31, 0.1) 0%, rgba(255, 140, 66, 0.1) 100%);
+  border: 1px solid rgba(255, 95, 31, 0.2);
+  color: var(--swiftxr-primary-light);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+}
+
+/* SwiftXR Launch Button */
+.swiftxr-launch-button {
+  background: linear-gradient(135deg, var(--swiftxr-gradient-start) 0%, var(--swiftxr-gradient-end) 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px var(--swiftxr-shadow),
+              0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.swiftxr-launch-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.swiftxr-launch-button:hover::before {
+  left: 100%;
+}
+
+.swiftxr-launch-button:hover {
+  background: linear-gradient(135deg, var(--swiftxr-primary-dark) 0%, var(--swiftxr-gradient-start) 100%);
+  box-shadow: 0 6px 24px var(--swiftxr-shadow),
+              0 0 30px var(--swiftxr-glow),
+              0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+  transform: translateY(-2px);
+}
+
+.swiftxr-launch-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px var(--swiftxr-shadow),
+              0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.swiftxr-launch-button:disabled {
+  background: linear-gradient(135deg, #666 0%, #555 100%);
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* SwiftXR Session Card */
+.swiftxr-session-card {
+  background: linear-gradient(135deg, rgba(255, 95, 31, 0.1) 0%, rgba(255, 140, 66, 0.05) 100%);
+  border: 2px solid var(--swiftxr-primary);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+              0 0 20px var(--swiftxr-glow);
+  animation: swiftxr-pulse 2s ease-in-out infinite;
+}
+
+@keyframes swiftxr-pulse {
+  0%, 100% {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 20px var(--swiftxr-glow);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 30px var(--swiftxr-glow),
+                0 0 40px rgba(255, 95, 31, 0.2);
+  }
+}
+
+/* SwiftXR End Button */
+.swiftxr-end-button {
+  border-color: var(--swiftxr-primary);
+  color: var(--swiftxr-primary);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.swiftxr-end-button:hover {
+  background: var(--swiftxr-primary);
+  color: white;
+  border-color: var(--swiftxr-primary-dark);
+  box-shadow: 0 4px 12px var(--swiftxr-shadow);
+}
+
+/* SwiftXR AR Button Overlay (for 3D viewers) */
+.swiftxr-ar-button {
+  background: linear-gradient(135deg, var(--swiftxr-gradient-start) 0%, var(--swiftxr-gradient-end) 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px var(--swiftxr-shadow),
+              0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.swiftxr-ar-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.swiftxr-ar-button:hover::before {
+  left: 100%;
+}
+
+.swiftxr-ar-button:hover {
+  background: linear-gradient(135deg, var(--swiftxr-primary-dark) 0%, var(--swiftxr-gradient-start) 100%);
+  box-shadow: 0 6px 24px var(--swiftxr-shadow),
+              0 0 30px var(--swiftxr-glow),
+              0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+  transform: translateY(-2px) scale(1.02);
+}
+
+.swiftxr-ar-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* SwiftXR Loading Animation */
+.swiftxr-loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 95, 31, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--swiftxr-primary);
+  animation: swiftxr-spin 1s ease-in-out infinite;
+}
+
+@keyframes swiftxr-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* SwiftXR Glow Effect */
+.swiftxr-glow {
+  filter: drop-shadow(0 0 8px var(--swiftxr-glow));
+}
+
+/* SwiftXR Text Gradient */
+.swiftxr-text-gradient {
+  background: linear-gradient(135deg, var(--swiftxr-gradient-start) 0%, var(--swiftxr-gradient-end) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* SwiftXR Badge Variants */
+.swiftxr-badge-success {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.15) 100%);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.swiftxr-badge-error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .swiftxr-title {
+    font-size: 1.25rem;
+  }
+  
+  .swiftxr-launch-button {
+    font-size: 0.875rem;
+    padding: 0.75rem 1.25rem;
+  }
+  
+  .swiftxr-card {
+    border-radius: 10px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .swiftxr-card {
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.98) 0%, rgba(5, 5, 5, 1) 100%);
+  }
+}
+
+/* Print styles - hide AR elements */
+@media print {
+  .swiftxr-container,
+  .swiftxr-card,
+  .swiftxr-ar-button {
+    display: none !important;
+  }
+}
+
