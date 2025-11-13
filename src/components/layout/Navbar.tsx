@@ -211,7 +211,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
   const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery("");
       closeAllDropdowns();
     }

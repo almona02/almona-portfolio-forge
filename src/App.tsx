@@ -21,7 +21,7 @@ import RegionAwareLayout from "./components/layout/RegionAwareLayout";
 import { useRoutePrefetching } from "./hooks/useRoutePrefetching";
 
 // Core pages (essential) - loaded immediately
-const Index = lazy(() => import("./pages/Index"));
+const Index = lazy(() => import("./pages/Index.tsx"));
 const Products = lazy(() => import("./pages/Products.tsx"));
 const Services = lazy(() => import("./pages/Services.tsx"));
 const Contact = lazy(() => import("./pages/Contact.tsx"));
@@ -37,7 +37,7 @@ const LocalizationTest = lazy(() => import("./components/test/LocalizationTest.t
 
 // Shop and e-commerce - lazy loaded with prefetch
 const Shop = lazy(() => import("./pages/Shop"));
-const UsedMachines = lazy(() => import("./pages/UsedMachines"));
+const UsedMachines = lazy(() => import("./pages/UsedMachines.tsx"));
 const UsedMachineDetailPage = lazy(() => import("./pages/UsedMachineDetail.tsx"));
 const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine.tsx"));
 const SpareParts = lazy(() => import("./pages/SpareParts.tsx"));
@@ -47,7 +47,7 @@ const MachineDetail = lazy(() => import("./pages/machines/MachineDetail.tsx"));
 const ProfileDetail = lazy(() => import("./pages/profiles/ProfileDetail.tsx"));
 
 // Workflow and fabrication - lazy loaded
-const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail"));
+const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail.tsx"));
 const FabricationWorkflowDetail = lazy(() => import("./pages/FabricationWorkflowDetail.tsx"));
 const FabricationServices = lazy(() => import("./pages/FabricationServices.tsx"));
 const FabricatorWorkflow = lazy(() => import("./pages/FabricatorWorkflow.tsx"));

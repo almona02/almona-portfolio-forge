@@ -45,6 +45,7 @@ interface SourceMachineLike {
 import { Eye } from "lucide-react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import React, { useEffect, useState, Suspense, useCallback, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { debounce } from "@/lib/utils";
 
@@ -75,13 +76,25 @@ const mapToUiMachine = (m: SourceMachineLike): UiMachine => ({
 const Products = function ProductsPage() {
   const { toast } = useToast();
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // SINGLE SOURCE OF TRUTH for filters
   const [filters, setFilters] = useState({
-    searchTerm: "",
+    searchTerm: searchParams.get('search') || "",
     category: "all",
     sortOption: "featured"
   });
+
+  // Update search term when URL param changes
+  useEffect(() => {
+    const urlSearch = searchParams.get('search') || '';
+    setFilters(prev => {
+      if (prev.searchTerm !== urlSearch) {
+        return { ...prev, searchTerm: urlSearch };
+      }
+      return prev;
+    });
+  }, [searchParams]);
 
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
   const [showCompareDialog, setShowCompareDialog] = useState(false);
