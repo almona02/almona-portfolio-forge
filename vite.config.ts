@@ -62,7 +62,9 @@ export default defineConfig(({ mode }) => {
           skipWaiting: true,
           clientsClaim: true,
           // Fix for crypto.hash compatibility
-          runtimeCaching: []
+          runtimeCaching: [],
+          // Increase file size limit to accommodate large hero background image (9.99 MB)
+          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024 // 10 MB
         },
         includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg"],
         manifest: {
