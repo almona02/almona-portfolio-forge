@@ -792,7 +792,11 @@ const Products = function ProductsPage() {
       {selectedMachineFor3D && (
         <EnhancedModel3DDialog
           isOpen={show3DModel}
-          onClose={() => setShow3DModel(false)}
+          onClose={() => {
+            setShow3DModel(false);
+            // Clear selection after a brief delay to allow animation
+            setTimeout(() => setSelectedMachineFor3D(null), 300);
+          }}
           machineName={selectedMachineFor3D.name}
           modelPath={
             selectedMachineFor3D.modelPath ||

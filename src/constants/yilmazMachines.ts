@@ -1135,7 +1135,7 @@ export const yilmazMachines: Machine[] = [
   imageUrl: "/images/machines/FR-222.jpg",
   specPdf: "/documents/specs/FR-222.pdf",
   youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
-  modelPath: "/models/AR-Code-Object-Capture-app-1752786892 (1).glb",
+  modelPath: "/models/FR-222.glb",
   category: "processing-centers",
   featured: false,
   releaseDate: "2020-01-01",

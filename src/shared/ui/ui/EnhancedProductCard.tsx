@@ -161,7 +161,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
             : 'border-gray-700 hover:border-orange-400/50'
         }`}
       >
-      {/* 3D Model Badge */}
+      {/* 3D Model Badge - Clickable */}
       <AnimatePresence>
         {show3DBadge && machine.has3DModel && (
           <motion.div 
@@ -170,8 +170,16 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
             initial="initial"
             animate="animate"
             exit="exit"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (on3DView) {
+                handle3DView();
+              }
+            }}
           >
-            <Badge className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white border-0 shadow-lg">
+            <Badge 
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white border-0 shadow-lg cursor-pointer transition-all"
+            >
               <Eye className="w-3 h-3 mr-1" />
               3D View
             </Badge>

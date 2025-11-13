@@ -110,11 +110,28 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
       const blob = new Blob([bytes], { type: 'application/pdf' });
       setGeneratedPdfBlob(blob);
       
+      // Auto-download the PDF immediately when ready
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const ts = new Date().toISOString().replace(/[:T]/g,'-').split('.')[0];
+      a.download = `almona-comparison-${ts}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      // Reset state after a brief delay to show completion
+      setTimeout(() => {
+        setGeneratedPdfBlob(null);
+        setPdfProgress(0);
+        setIsGeneratingPDF(false);
+      }, 1000);
+      
     } catch (err) {
       clearInterval(progressInterval);
       console.error('PDF export failed', err);
       setPdfError(err instanceof Error ? err.message : 'Failed to generate PDF');
-    } finally {
       setIsGeneratingPDF(false);
     }
   };
