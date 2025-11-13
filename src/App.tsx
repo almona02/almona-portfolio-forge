@@ -30,6 +30,7 @@ const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // 3D Gallery - lazy loaded
 const Model3DGallery = lazy(() => import("./pages/Model3DGallery.tsx"));
+const AdvancedModelViewer = lazy(() => import("./pages/AdvancedModelViewer.tsx"));
 
 // Test components - lazy loaded
 const LocalizationTest = lazy(() => import("./components/test/LocalizationTest.tsx"));
@@ -59,6 +60,7 @@ const QuoteConfirmationPage = lazy(() => import("./pages/QuoteConfirmationPage.t
 // 3D model viewers - lazy loaded (heavy components)
 const ModelViewerDemo = lazy(() => import("./pages/ModelViewerDemo.tsx"));
 const ModelViewerTest = lazy(() => import("./pages/ModelViewerTest.tsx"));
+const SwiftXRTest = lazy(() => import("./pages/SwiftXRTest.tsx"));
 
 // Authentication - lazy loaded
 const Login = lazy(() => import("./pages/Login.tsx"));
@@ -146,6 +148,7 @@ const App = () => (
                   
                   {/* Test routes */}
                   <Route path="/test/localization" element={<Suspense fallback={getLoadingComponent('/test/localization')}><LocalizationTest /></Suspense>} />
+                  <Route path="/test/swiftxr" element={<Suspense fallback={getLoadingComponent('/test/swiftxr')}><SwiftXRTest /></Suspense>} />
                   
                   {/* Products specific routes first - 3D gallery before general */}
                   <Route path="/products/3d-gallery" element={<Suspense fallback={getLoadingComponent('/products/3d-gallery')}><Model3DGallery /></Suspense>} />
@@ -193,6 +196,7 @@ const App = () => (
                   {/* 3D Model Viewers */}
                   <Route path="/3d-demo" element={<Suspense fallback={getLoadingComponent('/3d')}><ModelViewerDemo /></Suspense>} />
                   <Route path="/3d-test" element={<Suspense fallback={getLoadingComponent('/3d')}><ModelViewerTest /></Suspense>} />
+                  <Route path="/3d-viewer" element={<Suspense fallback={getLoadingComponent('/3d')}><AdvancedModelViewer /></Suspense>} />
                   
                   {/* Authentication */}
                   <Route path="/login" element={<Suspense fallback={getLoadingComponent('/login')}><Login /></Suspense>} />

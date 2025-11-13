@@ -3,12 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { 
-  Grid3X3, 
-  List, 
-  Eye, 
-  Download, 
-  Share2, 
+import {
+  Grid3X3,
+  List,
+  Eye,
+  Download,
+  Share2,
   Star,
   Filter,
   Search,
@@ -22,7 +22,10 @@ import { Input } from '@/shared/ui/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { LazyOptimizedGLBViewer } from './LazyGLBViewer';
 import { EnhancedGLBViewer } from './EnhancedGLBViewer';
+import { UnifiedARManager } from './UnifiedARManager';
+import { SwiftXRManager } from './SwiftXRManager';
 import { useToast } from '@/hooks/useToast';
+import './SwiftXR.css';
 
 interface Model3D {
   id: string;
@@ -250,21 +253,12 @@ export function Model3DGallery({
                       {/* Thumbnail Preview with 3D Overlay */}
                       <div className="w-full h-full relative overflow-hidden">
                         {autoPlay && !failedModels.has(model.id) ? (
-                          <EnhancedGLBViewer
-                            modelPath={model.modelPath}
-                            backgroundColor="transparent"
-                            enableAR={false}
-                            enableWebXR={false}
-                            autoRotate={true}
-                            autoPlayAnimations={false}
-                            onLoaded={() => {
-                              console.log(`Successfully loaded 3D model ${model.id}`);
-                            }}
-                            onError={(error) => {
-                              console.warn(`Failed to load 3D model ${model.id}:`, error);
-                              setFailedModels(prev => new Set(prev).add(model.id));
-                            }}
-                          />
+                          <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                            <div className="text-center text-gray-400">
+                              <Eye className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                              <p className="text-xs">3D Preview</p>
+                            </div>
+                          </div>
                         ) : (
                           <img
                             src={model.thumbnail}
@@ -372,21 +366,12 @@ export function Model3DGallery({
                       {/* Thumbnail */}
                       <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0 relative">
                         {autoPlay && !failedModels.has(model.id) ? (
-                          <EnhancedGLBViewer
-                            modelPath={model.modelPath}
-                            backgroundColor="transparent"
-                            enableAR={false}
-                            enableWebXR={false}
-                            autoRotate={true}
-                            autoPlayAnimations={false}
-                            onLoaded={() => {
-                              console.log(`Successfully loaded 3D model ${model.id}`);
-                            }}
-                            onError={(error) => {
-                              console.warn(`Failed to load 3D model ${model.id}:`, error);
-                              setFailedModels(prev => new Set(prev).add(model.id));
-                            }}
-                          />
+                          <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                            <div className="text-center text-gray-400">
+                              <Eye className="w-6 h-6 mx-auto mb-1 opacity-50" />
+                              <p className="text-xs">3D</p>
+                            </div>
+                          </div>
                         ) : (
                           <img
                             src={model.thumbnail}

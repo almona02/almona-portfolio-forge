@@ -106,7 +106,8 @@ const Hero = () => {
 
   return (
     <section 
-      className="relative h-screen overflow-hidden -mt-16 pt-16"
+      className="relative min-h-screen h-screen overflow-hidden -mt-16 pt-16"
+      style={{ minHeight: '-webkit-fill-available' }}
       aria-label="Hero carousel"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -140,7 +141,7 @@ const Hero = () => {
       ))}
 
       {/* Content */}
-      <div className="relative z-20 flex flex-col justify-center h-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 container mx-auto">
+      <div className="relative z-20 flex flex-col justify-center h-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 container mx-auto py-16 sm:py-20">
         {slides.map((slide, index) => (
           <div
             key={slide.id}
@@ -163,7 +164,7 @@ const Hero = () => {
                 </span>
                 
                 {/* Main Title */}
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold mb-4 text-white animate-slide-in">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold mb-3 sm:mb-4 text-white animate-slide-in leading-tight">
                   <span className="text-gradient-orange bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
                     {slide.title}
                   </span>
@@ -171,7 +172,7 @@ const Hero = () => {
                 
                 {/* Subtitle */}
                 <h2
-                  className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl text-gray-200 mb-6 animate-slide-in"
+                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl text-gray-200 mb-4 sm:mb-6 animate-slide-in leading-tight"
                   style={{ animationDelay: "0.1s" }}
                 >
                   {slide.subtitle}
@@ -179,14 +180,14 @@ const Hero = () => {
                 
                 {/* Action Buttons */}
                 <div
-                  className="flex flex-col sm:flex-row gap-4 animate-fade-in"
+                  className="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-fade-in"
                   style={{ animationDelay: "0.3s" }}
                 >
                   <NeonButton
                     variant="industrial"
                     glow="industrialGlow"
                     size="lg"
-                    className="px-6 py-4 sm:py-6"
+                    className="px-5 py-3 sm:px-6 sm:py-4 md:py-6 text-sm sm:text-base"
                   >
                     <Link 
                       to={slide.link} 
@@ -218,9 +219,9 @@ const Hero = () => {
         ))}
 
         {/* Enhanced Slide Navigation */}
-        <div className="absolute bottom-8 left-0 right-0">
+        <div className="absolute bottom-4 sm:bottom-8 left-0 right-0">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
               {/* Navigation Dots */}
               <div className="flex flex-col items-start sm:items-center gap-3">
                 <div className="flex space-x-3" role="tablist" aria-label="Slide navigation">

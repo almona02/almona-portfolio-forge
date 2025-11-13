@@ -1,0 +1,100 @@
+/* Mobile Scaling Fixes */
+
+/* Prevent unwanted zoom on input focus (iOS) */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+}
+
+/* Smooth scrolling for mobile */
+@media screen and (max-width: 768px) {
+  html {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+}
+
+/* Fix for mobile viewport units */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari */
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+  
+  .h-screen {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Prevent horizontal scroll on mobile */
+@media screen and (max-width: 768px) {
+  body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+  }
+  
+  * {
+    max-width: 100%;
+  }
+}
+
+/* Better touch targets for mobile */
+@media screen and (max-width: 768px) {
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Fix dialog/modal scaling on mobile */
+@media screen and (max-width: 768px) {
+  [role="dialog"],
+  [data-radix-dialog-content] {
+    max-width: calc(100vw - 2rem) !important;
+    margin: 1rem !important;
+  }
+}
+
+/* Fix product card scaling */
+@media screen and (max-width: 640px) {
+  .product-card,
+  [class*="ProductCard"] {
+    transform: scale(1);
+    transition: transform 0.2s ease;
+  }
+}
+
+/* Prevent text selection issues on mobile */
+@media screen and (max-width: 768px) {
+  .no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Fix for iOS safe area */
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
