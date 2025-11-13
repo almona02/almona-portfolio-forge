@@ -27,8 +27,6 @@ const FeaturedProducts = () => {
     imageUrl: machine.imageUrl,
     features: machine.specifications.slice(0, 3),
     tags: machine.tags,
-    ctaText: t('common.actions.learnMore'),
-    ctaLink: `/machines/${machine.id}`,
     badge: machine.certifications?.includes('CE') ? 'CE Certified' : undefined,
     specPdf: machine.specPdf,
     youtubeUrl: machine.youtubeUrl,
@@ -53,8 +51,6 @@ const FeaturedProducts = () => {
       `Applications: ${profile.applications.join(', ')}`
     ],
     tags: [profile.material],
-    ctaText: t('common.actions.learnMore'),
-    ctaLink: `/profiles/${profile.id}`,
     badge: profile.thermalProperties?.thermalBreak ? 'Thermal Break' : undefined,
     // Additional profile-specific data
     material: profile.material,

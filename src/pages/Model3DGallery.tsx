@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Model3DGallery } from '@/components/3d-model/Model3DGallery';
+import { Model3DGallery as Model3DGalleryComponent } from '@/components/3d-model/Model3DGallery';
 import { EnhancedModel3DDialog } from '@/components/3d-model/EnhancedModel3DDialog';
 import { ModelMeasurementTool } from '@/components/3d-model/ModelMeasurementTool';
 import { SwiftXRIframe } from '@/components/swiftxr/SwiftXRIframe';
@@ -201,7 +201,7 @@ export default function Model3DGalleryPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <Model3DGallery
+          <Model3DGalleryComponent
             models={modelsData}
             onModelSelect={handleModelSelect}
             onModelDownload={handleModelDownload}
