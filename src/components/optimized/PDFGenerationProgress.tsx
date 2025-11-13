@@ -29,8 +29,8 @@ export const PDFGenerationProgress = memo<PDFGenerationProgressProps>(({
     if (isGenerating) {
       setShowProgress(true);
     } else if (!isGenerating && progress === 100) {
-      // Keep showing for a moment after completion
-      setTimeout(() => setShowProgress(false), 2000);
+      // Auto-close faster after completion (especially important for mobile)
+      setTimeout(() => setShowProgress(false), 800);
     }
   }, [isGenerating, progress]);
 
@@ -63,8 +63,8 @@ export const PDFGenerationProgress = memo<PDFGenerationProgressProps>(({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
+      <Card className="w-full max-w-md sm:max-w-md">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
@@ -128,13 +128,9 @@ export const PDFGenerationProgress = memo<PDFGenerationProgressProps>(({
               )}
               
               {progress === 100 && onDownload && (
-                <Button
-                  onClick={onDownload}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download PDF
-                </Button>
+                <div className="text-center text-sm text-green-600 font-medium">
+                  PDF downloaded successfully!
+                </div>
               )}
             </>
           )}
