@@ -438,7 +438,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute top-full left-0 mt-3 w-80 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-2xl shadow-2xl overflow-hidden z-50"
+                className="absolute top-full left-0 mt-3 w-80 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-2xl shadow-2xl overflow-hidden z-[210]"
               >
                 <div className="p-3 space-y-1">
                   {item.items?.map((subItem) => (
@@ -470,7 +470,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
   return (
     <nav 
       ref={navbarRef}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-xl ${
+      className={`fixed top-0 left-0 right-0 z-[200] transition-all duration-300 backdrop-blur-xl ${
         isScrolled 
           ? "bg-black/95 border-b border-orange-500/30 shadow-2xl" 
           : "bg-gradient-to-b from-black/95 to-black/80"
@@ -540,7 +540,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="absolute right-0 top-full mt-2 w-80 bg-almona-dark border border-almona-light/20 rounded-xl shadow-2xl z-50 overflow-hidden"
+                    className="absolute right-0 top-full mt-2 w-80 bg-almona-dark border border-almona-light/20 rounded-xl shadow-2xl z-[210] overflow-hidden"
                   >
                     <div className="p-4">
                       <h3 className="text-lg font-semibold text-white mb-3">Select Your Region</h3>
@@ -607,7 +607,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute top-full right-0 mt-3 w-64 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-2xl shadow-2xl overflow-hidden z-50"
+                      className="absolute top-full right-0 mt-3 w-64 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-2xl shadow-2xl overflow-hidden z-[210]"
                     >
                       <div className="p-3 border-b border-orange-500/20">
                         <div className="font-medium text-white">{user.name}</div>
@@ -688,7 +688,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden border-t border-orange-500/30 bg-black/95 backdrop-blur-xl"
+              className="lg:hidden border-t border-orange-500/30 bg-black/95 backdrop-blur-xl relative z-[210]"
             >
               <div className="py-4 space-y-1">
                 

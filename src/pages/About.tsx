@@ -10,8 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { Factory, Globe, Award, Target } from 'lucide-react';
 import Footer from '@/components/layout/Footer';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const About = () => {
+  const isMobile = useIsMobile();
+  
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -32,21 +35,161 @@ const About = () => {
   return (
     <>
       <main className="pt-24">
+        {/* Epic Hero Section with Egyptian-Ottoman Industrial Background */}
+        <section className="relative min-h-[60vh] sm:min-h-[70vh] lg:min-h-[80vh] overflow-hidden -mt-24 pt-24 mb-12 sm:mb-16">
+          {/* Background Image */}
+          <motion.div 
+            className="absolute inset-0 z-0"
+            style={{
+              backgroundImage: 'url(/images/egyptian-industrial-hero-bg.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              opacity: isMobile ? 0.4 : 0.5,
+              willChange: 'opacity'
+            }}
+            animate={{
+              opacity: isMobile ? [0.4, 0.45, 0.4] : [0.5, 0.55, 0.5]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          
+          {/* Dark overlay for text readability */}
+          <div 
+            className="absolute inset-0 z-[5]"
+            style={{
+              background: `
+                radial-gradient(ellipse at center, rgba(10, 10, 10, 0.85) 0%, rgba(10, 10, 10, 0.70) 50%, rgba(10, 10, 10, 0.90) 100%),
+                linear-gradient(
+                  to bottom,
+                  rgba(10, 10, 10, 0.95) 0%,
+                  rgba(10, 10, 10, 0.80) 50%,
+                  rgba(10, 10, 10, 0.95) 100%
+                )
+              `
+            }}
+          />
+
+          {/* Content */}
+          <div className="relative z-[100] flex flex-col justify-center items-center min-h-[60vh] sm:min-h-[70vh] lg:min-h-[80vh] container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              className="text-center max-w-4xl mx-auto"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              >
+                <Badge 
+                  variant="secondary" 
+                  className="mb-4 sm:mb-6 text-xs sm:text-sm md:text-base lg:text-lg py-2 px-4 sm:py-3 sm:px-6 bg-almona-orange/20 text-almona-yellow border-almona-orange/40 backdrop-blur-sm"
+                  style={{
+                    textShadow: '0 2px 8px rgba(0, 0, 0, 0.95), 0 0 20px rgba(255, 193, 7, 0.5)',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  Since 1991
+                </Badge>
+              </motion.div>
+              
+              <motion.h1 
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 text-white"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.7 }}
+                style={{
+                  textShadow: '0 4px 12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 95, 31, 0.4)'
+                }}
+              >
+                <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent drop-shadow-[0_3px_8px_rgba(255,95,31,0.6)]">
+                  About Almona
+                </span>
+              </motion.h1>
+              
+              <motion.p 
+                className="text-base sm:text-lg md:text-xl lg:text-2xl text-white max-w-3xl mx-auto px-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.7 }}
+                style={{
+                  textShadow: '0 2px 8px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 1)'
+                }}
+              >
+                Pioneering industrial excellence in Egypt, Africa and the Middle East for over three decades
+              </motion.p>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Epic Egyptian-Ottoman Industrial Image Display */}
+        <motion.section
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mb-12 sm:mb-16 lg:mb-20"
+        >
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative rounded-2xl overflow-hidden shadow-2xl border border-almona-orange/20"
+            >
+              {/* Image with elegant frame - Full image visible, no cropping */}
+              <div className="relative w-full overflow-hidden bg-almona-dark" style={{ aspectRatio: '1536/2720' }}>
+                <img
+                  src="/images/egyptian-industrial-hero-bg.png"
+                  alt="Cross-Empire Innovation: Egyptian Pharaoh and Ottoman Pasha overseeing YILMAZ industrial machinery"
+                  className="w-full h-full object-contain object-center"
+                  loading="lazy"
+                />
+                
+                {/* Subtle overlay gradient for depth */}
+                <div 
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: `
+                      linear-gradient(
+                        to bottom,
+                        rgba(10, 10, 10, 0.1) 0%,
+                        transparent 20%,
+                        transparent 80%,
+                        rgba(10, 10, 10, 0.1) 100%
+                      )
+                    `
+                  }}
+                />
+              </div>
+              
+              {/* Decorative border glow */}
+              <div className="absolute inset-0 pointer-events-none rounded-2xl" style={{
+                boxShadow: 'inset 0 0 40px rgba(255, 95, 31, 0.1), 0 0 60px rgba(255, 95, 31, 0.15)'
+              }} />
+            </motion.div>
+            
+            {/* Caption */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="text-center mt-4 sm:mt-6 text-sm sm:text-base text-gray-400 italic max-w-3xl mx-auto"
+            >
+              Cross-Empire Innovation: Bridging legendary craftsmanship from ancient Egypt and the Ottoman Empire with modern YILMAZ industrial technology
+            </motion.p>
+          </div>
+        </motion.section>
+
         <div className="container py-8 px-4 sm:py-12 sm:px-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="text-center mb-12 sm:mb-16"
-      >
-        <Badge variant="secondary" className="mb-4 text-sm sm:text-lg py-1 px-3 sm:py-2 sm:px-4 bg-almona-orange/10 text-almona-orange border-almona-orange/30">
-          Since 1991
-        </Badge>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 text-gradient-orange">About Almona</h1>
-        <p className="text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto px-4">
-          Pioneering industrial excellence in Egypt, Africa and the Middle East for over three decades
-        </p>
-      </motion.div>
 
       <motion.div 
         className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12 sm:mb-16 items-center"

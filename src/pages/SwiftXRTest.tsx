@@ -20,6 +20,7 @@ import {
 import { SwiftXRManager } from '@/components/3d-model/SwiftXRManager';
 import { EnhancedGLBViewer } from '@/components/3d-model/EnhancedGLBViewer';
 import { UnifiedARManager } from '@/components/3d-model/UnifiedARManager';
+import { SwiftXRIframe } from '@/components/swiftxr/SwiftXRIframe';
 import { detectSwiftXR, launchSwiftXR, launchARWithFallback } from '@/utils/swiftXRIntegration';
 import { useToast } from '@/hooks/useToast';
 
@@ -321,6 +322,23 @@ export default function SwiftXRTestPage() {
                 backgroundColor="#111"
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* SwiftXR Iframe App */}
+        <Card className="mt-6 bg-gradient-to-br from-gray-900 to-black border-gray-700">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-orange-500" />
+              SwiftXR Web App
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SwiftXRIframe
+              title="Almona"
+              projectUrl="https://almona.swiftxr.site/almona"
+              height="480px"
+            />
           </CardContent>
         </Card>
       </div>

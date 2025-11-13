@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Phone } from "lucide-react";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
+import { EgyptianIndustrialHero } from "./EgyptianIndustrialHero";
 
 const Hero = () => {
   const [activeSlide, setActiveSlide] = useState(0);
@@ -15,18 +16,14 @@ const Hero = () => {
       title: "YILMAZ Machines",
       subtitle: "Premium Quality Aluminium & PVC Processing Machines",
       description: "Authorized dealer in Egypt since 2000",
-      image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
       link: "/products/machines",
-      imageAlt: "Industrial machinery for aluminium and PVC processing",
     },
     {
       id: 2,
       title: "ALMONA Co.",
       subtitle: "Your Trusted Partner Since 1991",
       description: "Expert consultation, sales and service",
-      image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1200&q=80",
       link: "/about",
-      imageAlt: "Almona company building and team",
     },
   ], []);
 
@@ -52,14 +49,6 @@ const Hero = () => {
     return () => clearInterval(interval);
   }, [activeSlide, slides.length, isTransitioning, goToSlide, isPaused]);
 
-  // Preload next image for smoother transitions
-  useEffect(() => {
-    const nextIndex = activeSlide === slides.length - 1 ? 0 : activeSlide + 1;
-    const nextSlide = slides[nextIndex];
-    
-    const img = new Image();
-    img.src = nextSlide.image;
-  }, [activeSlide, slides]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -115,35 +104,31 @@ const Hero = () => {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Background Slides */}
-      {slides.map((slide, index) => (
-        <div
-          key={slide.id}
-          className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-            activeSlide === index 
-              ? "opacity-100 z-10" 
-              : "opacity-0 z-0"
-          }`}
-          aria-hidden={activeSlide !== index}
-        >
-          {/* Enhanced gradient overlay - Better opacity for mobile */}
-          <div className="absolute inset-0 bg-gradient-to-r from-almona-dark-dark/98 sm:from-almona-dark-dark/95 via-almona-dark-dark/80 sm:via-almona-dark-dark/70 to-almona-dark-dark/50 sm:to-almona-dark-dark/40 z-10"></div>
-          
-          {/* Optimized image with lazy loading */}
-          <img
-            src={slide.image}
-            alt={slide.imageAlt}
-            className="w-full h-full object-cover"
-            loading={index === 0 ? "eager" : "lazy"}
-            decoding="async"
-          />
-        </div>
-      ))}
+      {/* Epic Egyptian Industrial Background - Default for all */}
+      <EgyptianIndustrialHero>
+        {/* Enhanced gradient overlay - Egyptian desert gold + industrial dark - Enhanced opacity for text area */}
+        <div 
+          className="absolute inset-0 z-[5]"
+          style={{
+            background: `
+              radial-gradient(ellipse at 20% 50%, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.85) 40%, transparent 70%),
+              linear-gradient(
+                to right,
+                rgba(10, 10, 10, 0.97) 0%,
+                rgba(26, 26, 26, 0.88) 25%,
+                rgba(26, 26, 26, 0.75) 40%,
+                rgba(26, 26, 26, 0.60) 55%,
+                rgba(26, 26, 26, 0.45) 70%,
+                rgba(10, 10, 10, 0.35) 100%
+              )
+            `
+          }}
+        />
 
-      {/* Content - Optimized for mobile with proper spacing */}
-      <div className="relative z-20 flex flex-col h-full">
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col justify-center px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16 container mx-auto py-12 sm:py-16 md:py-20">
+        {/* Content - Optimized for mobile with proper spacing - Must be above background */}
+        <div className="relative z-[100] flex flex-col h-full">
+        {/* Main Content Area - Enhanced positioning for large screens */}
+        <div className="flex-1 flex flex-col justify-center px-3 sm:px-4 md:px-6 lg:px-12 xl:px-20 2xl:px-32 container mx-auto py-12 sm:py-16 md:py-20 lg:py-24">
           {slides.map((slide, index) => (
             <div
               key={slide.id}
@@ -156,33 +141,38 @@ const Hero = () => {
               aria-atomic="true"
             >
               {activeSlide === index && (
-                <div className="max-w-3xl">
-                  {/* Badge/Description - Optimized for mobile */}
+                <div className="max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+                  {/* Badge/Description - Optimized for mobile - Enhanced visibility with better contrast */}
                   <span 
-                    className="inline-block text-almona-yellow mb-2 sm:mb-3 text-xs sm:text-sm font-medium uppercase tracking-wider animate-fade-in opacity-90 sm:opacity-100"
+                    className="inline-block mb-3 sm:mb-4 md:mb-5 text-xs sm:text-sm md:text-base lg:text-lg font-bold uppercase tracking-wider animate-fade-in opacity-100 sm:opacity-100"
+                    style={{
+                      color: '#FFC107',
+                      textShadow: '0 2px 8px rgba(0, 0, 0, 0.95), 0 0 20px rgba(255, 193, 7, 0.5), 0 1px 3px rgba(0, 0, 0, 1)',
+                      WebkitTextStroke: '0.5px rgba(0, 0, 0, 0.8)'
+                    }}
                     role="doc-subtitle"
                   >
                     {slide.description}
                   </span>
                   
-                  {/* Main Title - Better mobile scaling */}
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-2 sm:mb-3 md:mb-4 text-white animate-slide-in leading-[1.1] sm:leading-tight">
-                    <span className="text-gradient-orange bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
+                  {/* Main Title - Better mobile scaling - Enhanced visibility with better positioning */}
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-white animate-slide-in leading-[1.1] sm:leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
+                    <span className="text-gradient-orange bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent drop-shadow-[0_3px_8px_rgba(255,95,31,0.6)]">
                       {slide.title}
                     </span>
                   </h1>
                   
-                  {/* Subtitle - Better mobile scaling */}
+                  {/* Subtitle - Better mobile scaling - Enhanced visibility */}
                   <h2
-                    className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-gray-200/90 sm:text-gray-200 mb-3 sm:mb-4 md:mb-6 animate-slide-in leading-[1.2] sm:leading-tight"
+                    className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-white sm:text-white mb-4 sm:mb-5 md:mb-6 lg:mb-8 animate-slide-in leading-[1.2] sm:leading-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]"
                     style={{ animationDelay: "0.1s" }}
                   >
                     {slide.subtitle}
                   </h2>
                   
-                  {/* Action Buttons - Optimized for mobile */}
+                  {/* Action Buttons - Optimized for mobile - Better spacing on large screens */}
                   <div
-                    className="flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4 animate-fade-in"
+                    className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-5 lg:gap-6 animate-fade-in mt-2 sm:mt-3 md:mt-4"
                     style={{ animationDelay: "0.3s" }}
                   >
                     <NeonButton
@@ -222,7 +212,7 @@ const Hero = () => {
         </div>
 
         {/* Enhanced Slide Navigation - Fixed at bottom, separate from content */}
-        <div className="relative z-30 pb-2 sm:pb-4 md:pb-6 lg:pb-8">
+        <div className="relative z-[100] pb-2 sm:pb-4 md:pb-6 lg:pb-8">
           <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 md:gap-4">
               {/* Navigation Dots - Optimized for mobile */}
@@ -292,10 +282,11 @@ const Hero = () => {
 
       {/* Loading indicator for transition states */}
       {isTransitioning && (
-        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/20">
+        <div className="absolute inset-0 z-[110] flex items-center justify-center bg-black/20">
           <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
+      </EgyptianIndustrialHero>
     </section>
   );
 };
