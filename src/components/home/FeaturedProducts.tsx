@@ -63,14 +63,14 @@ const FeaturedProducts = () => {
   }));
 
   return (
-    <section className="py-20 bg-almona-dark">
-      <div className="container mx-auto px-4">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-almona-orange font-medium">{t('common.navigation.products')}</span>
-          <h2 className="text-3xl font-bold mt-2 mb-4">
+    <section className="py-12 sm:py-16 md:py-20 bg-almona-dark">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-12">
+          <span className="text-almona-orange font-medium text-sm sm:text-base">{t('common.navigation.products')}</span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mt-2 mb-3 sm:mb-4">
             Featured <span className="text-gradient-orange">Products</span>
           </h2>
-          <p className="text-gray-400">
+          <p className="text-gray-400 text-sm sm:text-base px-4">
             Discover our selection of premium YILMAZ machines, 
             designed to elevate your aluminum and UPVC fabrication projects.
           </p>
@@ -89,7 +89,7 @@ const FeaturedProducts = () => {
           </div>
 
           <TabsContent value="machines" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
               {machineProducts.map((product) => (
                 <ProductCard key={product.id} {...product} />
               ))}

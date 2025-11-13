@@ -6,6 +6,7 @@ import { registerServiceWorker, unregisterServiceWorker } from "./lib/serviceWor
 import { initializePerformanceMonitoring } from "./lib/performance";
 import { initializePolyfills } from "./lib/polyfills";
 import "./index.css";
+import "./styles/mobile-scaling.css";
 
 // Initialize i18n BEFORE any component uses useTranslation
 import "@/lib/i18n";
