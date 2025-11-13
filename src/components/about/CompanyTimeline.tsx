@@ -160,13 +160,13 @@ export const CompanyTimeline = () => {
   return (
     <div 
       ref={ref}
-      className="flex flex-col lg:flex-row gap-8"
+      className="flex flex-col lg:flex-row gap-4 sm:gap-6 md:gap-8"
       style={{
         opacity: isInView ? 1 : 0,
         transition: 'opacity 0.5s ease'
       }}
     >
-      <div className="flex-1 h-[500px] bg-almona-dark rounded-xl overflow-hidden">
+      <div className="flex-1 h-[300px] sm:h-[400px] md:h-[450px] lg:h-[500px] bg-almona-dark rounded-lg sm:rounded-xl overflow-hidden">
         <Canvas camera={{ position: [0, 5, 10], fov: 50 }}>
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 10, 10]} />
@@ -189,10 +189,10 @@ export const CompanyTimeline = () => {
       </div>
 
       <div className="flex-1">
-        <ScrollArea className="h-[500px] pr-4">
-          <div className="space-y-4">
-            <h3 className="text-2xl font-bold">{activeMilestone.title}</h3>
-            <p className="text-gray-400">{activeMilestone.description}</p>
+        <ScrollArea className="h-[300px] sm:h-[400px] md:h-[450px] lg:h-[500px] pr-2 sm:pr-4">
+          <div className="space-y-3 sm:space-y-4">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white leading-tight">{activeMilestone.title}</h3>
+            <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">{activeMilestone.description}</p>
             
             {activeMilestone.comparison && (
               <ComparisonSlider 
@@ -203,18 +203,18 @@ export const CompanyTimeline = () => {
 
             {activeMilestone.media && <MediaGallery media={activeMilestone.media} />}
 
-            <Tabs value="details" onValueChange={() => {}} className="mt-6">
-              <TabsList className="grid w-full grid-cols-2 bg-almona-darker">
-                <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="impact">Impact</TabsTrigger>
+            <Tabs value="details" onValueChange={() => {}} className="mt-4 sm:mt-6">
+              <TabsList className="grid w-full grid-cols-2 bg-almona-darker h-9 sm:h-10">
+                <TabsTrigger value="details" className="text-xs sm:text-sm">Details</TabsTrigger>
+                <TabsTrigger value="impact" className="text-xs sm:text-sm">Impact</TabsTrigger>
               </TabsList>
-              <TabsContent value="details" className="mt-4">
-                <p className="text-gray-400">
+              <TabsContent value="details" className="mt-3 sm:mt-4">
+                <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
                   Additional details about this milestone would appear here.
                 </p>
               </TabsContent>
-              <TabsContent value="impact" className="mt-4">
-                <p className="text-gray-400">
+              <TabsContent value="impact" className="mt-3 sm:mt-4">
+                <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
                   Impact metrics and statistics would appear here.
                 </p>
               </TabsContent>

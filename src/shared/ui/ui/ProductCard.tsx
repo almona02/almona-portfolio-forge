@@ -11,7 +11,7 @@ interface ProductCardProps {
   imageUrl: string;
   features?: string[];
   tags?: string[];
-  ctaText: string;
+  ctaText?: string;
   ctaLink?: string;
   onCtaClick?: () => void;
   badge?: string;
@@ -104,23 +104,25 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </CardContent>
       
       <CardFooter className="px-4 py-4 border-t border-gray-800 flex flex-col gap-2">
-        {onCtaClick ? (
-          <Button 
-            variant="default" 
-            size="sm" 
-            className="bg-gradient-orange hover:bg-almona-orange-dark text-white w-full"
-            onClick={onCtaClick}
-          >
-            {ctaText}
-            <ArrowRight className="ml-1 h-3 w-3" />
-          </Button>
-        ) : (
-          <Button asChild variant="default" size="sm" className="bg-gradient-orange hover:bg-almona-orange-dark text-white w-full">
-            <Link to={ctaLink || '#'}>
+        {ctaText && (
+          onCtaClick ? (
+            <Button 
+              variant="default" 
+              size="sm" 
+              className="bg-gradient-orange hover:bg-almona-orange-dark text-white w-full"
+              onClick={onCtaClick}
+            >
               {ctaText}
               <ArrowRight className="ml-1 h-3 w-3" />
-            </Link>
-          </Button>
+            </Button>
+          ) : (
+            <Button asChild variant="default" size="sm" className="bg-gradient-orange hover:bg-almona-orange-dark text-white w-full">
+              <Link to={ctaLink || '#'}>
+                {ctaText}
+                <ArrowRight className="ml-1 h-3 w-3" />
+              </Link>
+            </Button>
+          )
         )}
         {specPdf && (
           <Button asChild variant="outline" size="sm" className="w-full">
