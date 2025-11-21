@@ -325,7 +325,7 @@ Portal integration flow:
 3. Display returned quotes with badges: status, twin code, portal reference
 4. (Optional) Link back to the originating service ticket using `related_service_ticket_id`
 
-Recommended UI elements:
+Recommended UI elements:  newnew
 * Single search bar with helper text: “Search by Quote #, Twin Code, or Reference”
 * Filters: status (draft/sent/accepted), date range
 * Column set: Quote # | Twin Code | Amount | Status | Created | Reference
