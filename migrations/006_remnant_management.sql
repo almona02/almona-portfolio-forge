@@ -16,7 +16,7 @@ DO $$
 DECLARE
   v_table_exists BOOLEAN;
   v_column_exists BOOLEAN;
-  v_test_query TEXT;
+  v_test_result UUID;
 BEGIN
   -- Check if table exists
   SELECT EXISTS (
@@ -42,9 +42,9 @@ BEGIN
   END IF;
   
   -- Test that we can actually query the column (this will fail if there's a permission or schema issue)
-  -- Use a simple SELECT to verify the column exists and is accessible
+  -- Use a direct SELECT (not EXECUTE) to verify the column exists and is accessible
   BEGIN
-    EXECUTE 'SELECT user_id FROM public.fabricator_profiles LIMIT 1';
+    SELECT user_id INTO v_test_result FROM public.fabricator_profiles LIMIT 1;
   EXCEPTION
     WHEN undefined_column THEN
       RAISE EXCEPTION 'The user_id column does not exist in fabricator_profiles table. Error code: %. Please ensure migration 004 completed successfully. You may need to re-run migration 004.', SQLSTATE;
