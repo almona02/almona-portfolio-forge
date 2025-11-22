@@ -390,7 +390,20 @@ DECLARE
   v_alert_type TEXT;
   v_severity TEXT;
   v_reorder_qty DECIMAL;
+  v_column_exists BOOLEAN;
 BEGIN
+  -- Verify that user_id column exists in fabricator_profiles
+  SELECT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'fabricator_profiles' 
+    AND column_name = 'user_id'
+  ) INTO v_column_exists;
+  
+  IF NOT v_column_exists THEN
+    RAISE EXCEPTION 'The user_id column does not exist in fabricator_profiles table. Please ensure migration 004 completed successfully.';
+  END IF;
+  
   -- Check all profiles for this user
   FOR v_profile IN
     SELECT 
@@ -473,7 +486,21 @@ RETURNS TABLE (
   suggested_action TEXT,
   estimated_savings DECIMAL
 ) AS $$
+DECLARE
+  v_column_exists BOOLEAN;
 BEGIN
+  -- Verify that user_id column exists in fabricator_profiles
+  SELECT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'fabricator_profiles' 
+    AND column_name = 'user_id'
+  ) INTO v_column_exists;
+  
+  IF NOT v_column_exists THEN
+    RAISE EXCEPTION 'The user_id column does not exist in fabricator_profiles table. Please ensure migration 004 completed successfully.';
+  END IF;
+  
   RETURN QUERY
   SELECT 
     fp.id,
