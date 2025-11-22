@@ -88,11 +88,11 @@ try {
   // Initialize Web Vitals monitoring
   if (import.meta.env.PROD) {
     import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }) => {
-      onCLS(console.log);
-      onINP(console.log);
-      onFCP(console.log);
+      onCLS(() => {});
+      onINP(() => {});
+      onFCP(() => {});
       onLCP(console.log);
-      onTTFB(console.log);
+      onTTFB(() => {});
     });
   }
 } catch (error) {

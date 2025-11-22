@@ -783,7 +783,9 @@ const Services = () => {
 
               {/* Full BI Dashboard */}
               <div className="bg-gradient-to-br from-gray-900 to-black border border-orange-500/20 rounded-xl p-4">
-                <BusinessKPIDashboard />
+                <Suspense fallback={<FormSkeleton />}>
+                  <BusinessKPIDashboard />
+                </Suspense>
               </div>
             </motion.div>
           </TabsContent>

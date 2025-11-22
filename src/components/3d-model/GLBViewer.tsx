@@ -1,12 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import type { Group } from 'three'
+import { Window3DModel, WindowMeasurementOverlay } from '@/components/fabricator/Window3DGenerator'
+import { WindowUnit } from '@/types/fabricator'
+import * as THREE from 'three'
 import './SwiftXR.css'
 
-// Props extended to support AR, scaling, positioning, and animation auto‑play
+// Props extended to support AR, scaling, positioning, animation auto‑play, and window models
 export interface GLBViewerProps {
-  modelPath: string
+  // Model source - either GLB path or WindowUnit
+  modelPath?: string
+  windowUnit?: WindowUnit
+  
   scale?: number
   position?: [number, number, number]
   enableAR?: boolean
@@ -14,27 +20,52 @@ export interface GLBViewerProps {
   onReady?: () => void
   /** Scale factor applied only while in AR (defaults to 0.5 * scale) */
   arScaleMultiplier?: number
+  
+  // Window-specific features
+  enableWindowControls?: boolean
+  windowAnimationSpeed?: number
+  showMeasurements?: boolean
+  isWindowAnimating?: boolean
+  windowAnimationProgress?: number
+  onWindowModelUpdate?: (model: THREE.Group) => void
 }
 
 /**
  * GLBViewer
- * - Loads a GLB/GLTF model
+ * - Loads a GLB/GLTF model or WindowUnit
  * - Plays included animations automatically
  * - Provides an optional WebXR (AR) session toggle button if device supports immersive-ar
  * - Does NOT create its own <Canvas>; embed this inside an existing <Canvas>.
+ * - Supports window-specific controls and animations
  */
 export function GLBViewer({
   modelPath,
+  windowUnit,
   scale = 1,
   position = [0, 0, 0],
   enableAR = true,
   onReady,
-  arScaleMultiplier = 0.5
+  arScaleMultiplier = 0.5,
+  enableWindowControls = true,
+  windowAnimationSpeed = 1,
+  showMeasurements = true,
+  isWindowAnimating = false,
+  windowAnimationProgress = 0,
+  onWindowModelUpdate
 }: GLBViewerProps) {
   const groupRef = useRef<Group>(null)
+  const windowModelRef = useRef<THREE.Group | null>(null)
   const { gl, camera } = useThree()
-  const { scene, animations } = useGLTF(modelPath)
-  const { actions } = useAnimations(animations, scene)
+  
+  // Determine viewer mode
+  const isWindowMode = !!windowUnit
+  const isGLBMode = !!modelPath && !windowUnit
+  
+  // GLB mode: Load GLTF model
+  const gltfResult = isGLBMode && modelPath ? useGLTF(modelPath) : { scene: null, animations: [] }
+  const scene = isGLBMode ? gltfResult.scene : null
+  const animations = isGLBMode ? gltfResult.animations : []
+  const { actions } = useAnimations(animations, scene || ({} as any))
 
   const [arSupported, setArSupported] = useState(false)
   const [isARSession, setIsARSession] = useState(false)
@@ -58,13 +89,23 @@ export function GLBViewer({
     })()
   }, [])
 
-  // Autoplay any animations
+  // Autoplay any animations (GLB mode only)
   useEffect(() => {
-    if (animations?.length) {
+    if (isGLBMode && animations?.length) {
       Object.values(actions).forEach(a => a?.play())
     }
-    onReady?.()
-  }, [actions, animations, onReady])
+    if ((isGLBMode && scene) || (isWindowMode && windowUnit)) {
+      onReady?.()
+    }
+  }, [actions, animations, onReady, isGLBMode, isWindowMode, scene, windowUnit])
+  
+  // Handle window model update
+  const handleWindowModelUpdate = useCallback((model: THREE.Group) => {
+    windowModelRef.current = model
+    if (onWindowModelUpdate) {
+      onWindowModelUpdate(model)
+    }
+  }, [onWindowModelUpdate])
 
   // Frame loop placeholder (custom per‑frame logic could go here)
   useFrame(() => {
@@ -93,13 +134,18 @@ export function GLBViewer({
       setIsARSession(true)
       // Reset camera for AR (renderer/AR will control pose)
       camera.position.set(0, 0, 0)
+      // Scale down for AR
+      const arScale = scale * arScaleMultiplier
       if (groupRef.current) {
-        const s = scale * arScaleMultiplier
-        groupRef.current.scale.set(s, s, s)
+        groupRef.current.scale.set(arScale, arScale, arScale)
+      }
+      if (windowModelRef.current) {
+        windowModelRef.current.scale.set(arScale, arScale, arScale)
       }
       session.addEventListener('end', () => {
         setIsARSession(false)
         if (groupRef.current) groupRef.current.scale.set(scale, scale, scale)
+        if (windowModelRef.current) windowModelRef.current.scale.set(scale, scale, scale)
       })
     } catch (err) {
       console.error('[GLBViewer] Failed to start AR session', err)
@@ -116,11 +162,18 @@ export function GLBViewer({
     } finally {
       setIsARSession(false)
       if (groupRef.current) groupRef.current.scale.set(scale, scale, scale)
+      if (windowModelRef.current) windowModelRef.current.scale.set(scale, scale, scale)
     }
   }
 
   // Inline button; caller can also hide via enableAR
   const showButton = enableAR && arSupported
+
+  // Validate props
+  if (!modelPath && !windowUnit) {
+    console.warn('[GLBViewer] Either modelPath or windowUnit must be provided')
+    return null
+  }
 
   return (
     <>
@@ -155,9 +208,23 @@ export function GLBViewer({
           )}
         </div>
       )}
-      <group ref={groupRef} scale={[scale, scale, scale]} position={position}>
-        <primitive object={scene} />
-      </group>
+      {isWindowMode && windowUnit ? (
+        <group ref={windowModelRef as unknown as React.Ref<THREE.Group>} scale={[scale, scale, scale]} position={position}>
+          <Window3DModel
+            windowUnit={windowUnit}
+            isAnimating={isWindowAnimating}
+            animationProgress={windowAnimationProgress}
+            onModelReady={handleWindowModelUpdate}
+          />
+          {showMeasurements && (
+            <WindowMeasurementOverlay windowUnit={windowUnit} />
+          )}
+        </group>
+      ) : isGLBMode && scene ? (
+        <group ref={groupRef} scale={[scale, scale, scale]} position={position}>
+          <primitive object={scene} />
+        </group>
+      ) : null}
     </>
   )
 }

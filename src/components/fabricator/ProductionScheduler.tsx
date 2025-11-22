@@ -3,9 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Factory, Play, Pause, RotateCw } from 'lucide-react';
+import { WindowUnit, Profile, OptimizationResult, WindowComponent } from '@/types/fabricator';
 
 interface ProductionSchedulerProps {
-  project: any;
+  project: WindowUnit | null;
   onProductionStart: () => void;
 }
 

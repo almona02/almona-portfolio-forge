@@ -130,7 +130,7 @@ const Annotation3D: React.FC<Annotation3DProps> = ({
   )
 }
 
-export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
+const Collaborative3DViewerComponent: React.FC<Collaborative3DViewerProps> = ({
   modelPath,
   onClose
 }) => {

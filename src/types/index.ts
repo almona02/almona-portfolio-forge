@@ -1,6 +1,7 @@
 export * from './product';
 export * from './certification';
 export * from './machine'; // existing simple Machine (maybe different context)
+export * from './fabricator';
 
 // Core types used by Yilmaz machines dataset
 export interface PowerSpecification {

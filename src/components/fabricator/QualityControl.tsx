@@ -3,12 +3,26 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Progress } from '@/shared/ui/ui/progress';
 import { Zap, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { WindowUnit, Profile, OptimizationResult, WindowComponent } from '@/types/fabricator';
 
 interface QualityControlProps {
-  project: any;
+  project: WindowUnit | null;
 }
 
 export const QualityControl: React.FC<QualityControlProps> = ({ project }) => {
+  if (!project) {
+    return (
+      <Card className="bg-gray-700/50 border-gray-600">
+        <CardContent className="p-8 text-center">
+          <Zap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No Project Available</h3>
+          <p className="text-gray-400">
+            Please complete the measurement and design phases first to enable quality control checks.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
   const qualityChecks = [
     { name: 'Dimensional Accuracy', status: 'passed', value: 98 },
     { name: 'Surface Finish', status: 'passed', value: 95 },

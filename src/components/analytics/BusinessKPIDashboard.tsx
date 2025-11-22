@@ -12,7 +12,7 @@ import {
   Target,
   Activity,
   BarChart3,
-  PieChart,
+  PieChart as PieChartIcon,
   Calendar,
   Clock,
   ArrowUpRight,
@@ -20,7 +20,21 @@ import {
 } from 'lucide-react';
 import { track } from '@/lib/analytics';
 import { useTranslation } from 'react-i18next';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
+import { lazy, Suspense } from 'react';
+
+// Lazy load recharts components
+const LineChart = lazy(() => import('recharts').then(module => ({ default: module.LineChart })));
+const Line = lazy(() => import('recharts').then(module => ({ default: module.Line })));
+const XAxis = lazy(() => import('recharts').then(module => ({ default: module.XAxis })));
+const YAxis = lazy(() => import('recharts').then(module => ({ default: module.YAxis })));
+const CartesianGrid = lazy(() => import('recharts').then(module => ({ default: module.CartesianGrid })));
+const Tooltip = lazy(() => import('recharts').then(module => ({ default: module.Tooltip })));
+const ResponsiveContainer = lazy(() => import('recharts').then(module => ({ default: module.ResponsiveContainer })));
+const BarChart = lazy(() => import('recharts').then(module => ({ default: module.BarChart })));
+const Bar = lazy(() => import('recharts').then(module => ({ default: module.Bar })));
+const RechartsPieChart = lazy(() => import('recharts').then(module => ({ default: module.PieChart })));
+const Pie = lazy(() => import('recharts').then(module => ({ default: module.Pie })));
+const Cell = lazy(() => import('recharts').then(module => ({ default: module.Cell })));
 
 // Business KPI Types
 interface BusinessMetrics {
@@ -102,7 +116,7 @@ const generateMockMetrics = (): BusinessMetrics => ({
 
 /**
  * Business KPI Dashboard Component
- * 
+ *
  * Advanced business intelligence dashboard extending existing analytics.
  * Features:
  * - Real-time revenue and growth tracking
@@ -112,7 +126,7 @@ const generateMockMetrics = (): BusinessMetrics => ({
  * - Product performance insights
  * - Integration with existing admin dashboard
  */
-export const BusinessKPIDashboard: React.FC = () => {
+export const BusinessKPIDashboard: React.FC = React.memo(() => {
   const { t } = useTranslation();
   const [metrics, setMetrics] = useState<BusinessMetrics>(generateMockMetrics());
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
@@ -168,15 +182,17 @@ export const BusinessKPIDashboard: React.FC = () => {
   );
 
   const ConversionFunnelChart = () => (
-    <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={metrics.conversion.funnel} layout="horizontal">
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis type="number" />
-        <YAxis dataKey="stage" type="category" width={80} />
-        <Tooltip formatter={(value, name) => [`${value}`, `${name}`]} />
-        <Bar dataKey="count" fill="#4ECDC4" />
-      </BarChart>
-    </ResponsiveContainer>
+    <Suspense fallback={<div className="h-[300px] flex items-center justify-center">Loading chart...</div>}>
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={metrics.conversion.funnel} layout="horizontal">
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis type="number" />
+          <YAxis dataKey="stage" type="category" width={80} />
+          <Tooltip formatter={(value, name) => [`${value}`, `${name}`]} />
+          <Bar dataKey="count" fill="#4ECDC4" />
+        </BarChart>
+      </ResponsiveContainer>
+    </Suspense>
   );
 
   const RegionalPerformanceChart = () => {
@@ -187,16 +203,18 @@ export const BusinessKPIDashboard: React.FC = () => {
     ];
 
     return (
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={regionalData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="region" />
-          <YAxis />
-          <Tooltip formatter={(value, name) => [`${value}`, `${name}`]} />
-          <Bar dataKey="revenue" fill="#FF6B6B" name="Revenue ($)" />
-          <Bar dataKey="customers" fill="#4ECDC4" name="Customers" />
-        </BarChart>
-      </ResponsiveContainer>
+      <Suspense fallback={<div className="h-[300px] flex items-center justify-center">Loading chart...</div>}>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={regionalData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="region" />
+            <YAxis />
+            <Tooltip formatter={(value, name) => [`${value}`, `${name}`]} />
+            <Bar dataKey="revenue" fill="#FF6B6B" name="Revenue ($)" />
+            <Bar dataKey="customers" fill="#4ECDC4" name="Customers" />
+          </BarChart>
+        </ResponsiveContainer>
+      </Suspense>
     );
   };
 
@@ -317,16 +335,18 @@ export const BusinessKPIDashboard: React.FC = () => {
               <CardTitle>Revenue Trend vs Target</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={metrics.revenue.monthly}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
-                  <Line type="monotone" dataKey="value" stroke="#4ECDC4" strokeWidth={3} name="Actual" />
-                  <Line type="monotone" dataKey="target" stroke="#FF6B6B" strokeDasharray="5 5" name="Target" />
-                </LineChart>
-              </ResponsiveContainer>
+              <Suspense fallback={<div className="h-[400px] flex items-center justify-center">Loading chart...</div>}>
+                <ResponsiveContainer width="100%" height={400}>
+                  <LineChart data={metrics.revenue.monthly}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
+                    <Line type="monotone" dataKey="value" stroke="#4ECDC4" strokeWidth={3} name="Actual" />
+                    <Line type="monotone" dataKey="target" stroke="#FF6B6B" strokeDasharray="5 5" name="Target" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Suspense>
             </CardContent>
           </Card>
         </TabsContent>

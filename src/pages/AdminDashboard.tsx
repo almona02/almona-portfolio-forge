@@ -45,7 +45,7 @@ import { RecentOrders } from '../components/admin/RecentOrders'
 import { TopProducts } from '../components/admin/TopProducts'
 import { LowStockAlerts } from '../components/admin/LowStockAlerts'
 import { CustomerActivity } from '../components/admin/CustomerActivity'
-import { SalesChart } from '../components/admin/SalesChart'
+const SalesChart = React.lazy(() => import('../components/admin/SalesChart'))
 const ProductsPanel = React.lazy(() => import('@/components/admin/panels/ProductsPanel'))
 const OrdersPanel = React.lazy(() => import('@/components/admin/panels/OrdersPanel'))
 const CustomersPanel = React.lazy(() => import('@/components/admin/panels/CustomersPanel'))
@@ -53,6 +53,7 @@ const InventoryPanel = React.lazy(() => import('@/components/admin/panels/Invent
 const FinancePanel = React.lazy(() => import('@/components/admin/panels/FinancePanel'))
 const ReportsPanel = React.lazy(() => import('@/components/admin/panels/ReportsPanel'))
 const SettingsPanel = React.lazy(() => import('@/components/admin/panels/SettingsPanel'))
+const BusinessKPIDashboard = React.lazy(() => import('../components/analytics/BusinessKPIDashboard'))
 
 type Notification = { id: string; title: string; message: string; created_at: string }
 
@@ -79,6 +80,7 @@ const AdminDashboard: React.FC = () => {
 
   const navigationItems: NavItem[] = useMemo(() => ([
     { id: 'overview', label: 'Overview', icon: BarChart3 },
+    { id: 'analytics', label: 'Business Analytics', icon: BarChart3 },
     { id: 'products', label: 'Products', icon: Package },
     { id: 'orders', label: 'Orders', icon: ShoppingCart },
     { id: 'customers', label: 'Customers', icon: Users },
@@ -179,7 +181,9 @@ const AdminDashboard: React.FC = () => {
           <div className="space-y-6">
             <DashboardStats stats={stats} />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <SalesChart />
+              <React.Suspense fallback={<div className="h-56 flex items-center justify-center text-sm text-muted-foreground">Loading chart...</div>}>
+                <SalesChart />
+              </React.Suspense>
               <TopProducts />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -230,6 +234,12 @@ const AdminDashboard: React.FC = () => {
         return (
           <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading reports…</div>}>
             <ReportsPanel />
+          </React.Suspense>
+        )
+      case 'analytics':
+        return (
+          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading analytics…</div>}>
+            <BusinessKPIDashboard />
           </React.Suspense>
         )
       case 'settings':
