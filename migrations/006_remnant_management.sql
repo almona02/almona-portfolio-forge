@@ -42,11 +42,16 @@ BEGIN
   END IF;
   
   -- Test that we can actually query the column (this will fail if there's a permission or schema issue)
+  -- Use a simple SELECT to verify the column exists and is accessible
   BEGIN
-    PERFORM user_id FROM public.fabricator_profiles LIMIT 1;
+    EXECUTE 'SELECT user_id FROM public.fabricator_profiles LIMIT 1';
   EXCEPTION
+    WHEN undefined_column THEN
+      RAISE EXCEPTION 'The user_id column does not exist in fabricator_profiles table. Error code: %. Please ensure migration 004 completed successfully. You may need to re-run migration 004.', SQLSTATE;
+    WHEN undefined_table THEN
+      RAISE EXCEPTION 'The fabricator_profiles table does not exist. Please run migration 004 first.';
     WHEN OTHERS THEN
-      RAISE EXCEPTION 'Cannot access user_id column in fabricator_profiles table. Error: %. Please verify migration 004 completed successfully.', SQLERRM;
+      RAISE EXCEPTION 'Cannot access user_id column in fabricator_profiles table. Error: % (Code: %). Please verify migration 004 completed successfully.', SQLERRM, SQLSTATE;
   END;
 END $$;
 
