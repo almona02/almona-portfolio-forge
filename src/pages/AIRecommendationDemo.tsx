@@ -150,7 +150,7 @@ export const AIRecommendationDemo: React.FC = () => {
   };
 
   const handlePartSelect = (part: { id: string; name: string; price: number }) => {
-    console.log('Selected part:', part);
+    // Part selection handled
   };
 
   return (

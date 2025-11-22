@@ -3,17 +3,32 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Progress } from '@/shared/ui/ui/progress';
 import { Package, AlertTriangle, CheckCircle } from 'lucide-react';
+import { WindowUnit, Profile, OptimizationResult, WindowComponent } from '@/types/fabricator';
 
 interface InventoryManagementProps {
-  inventory: any[];
-  project: any;
+  inventory: Profile[];
+  project: WindowUnit | null;
 }
 
 export const InventoryManagement: React.FC<InventoryManagementProps> = ({ 
   inventory, 
   project 
 }) => {
-  const getStockStatus = (profile: any) => {
+  if (!inventory || inventory.length === 0) {
+    return (
+      <Card className="bg-gray-700/50 border-gray-600">
+        <CardContent className="p-8 text-center">
+          <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No Inventory Data</h3>
+          <p className="text-gray-400">
+            Inventory data is not available. Please refresh the page or contact support.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const getStockStatus = (profile: Profile) => {
     const percentage = (profile.stockQuantity / (profile.minStockLevel * 2)) * 100;
     if (percentage < 50) return 'low';
     if (percentage < 80) return 'medium';

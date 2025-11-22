@@ -3,9 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Progress } from '@/shared/ui/ui/progress';
 import { Activity, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { WindowUnit } from '@/types/fabricator';
 
 interface RealTimeMonitoringProps {
-  projects: any[];
+  projects: WindowUnit[];
 }
 
 export const RealTimeMonitoring: React.FC<RealTimeMonitoringProps> = ({ projects }) => {
