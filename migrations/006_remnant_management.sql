@@ -13,23 +13,41 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- Pre-flight check: Verify that migration 004 has been applied
 -- This will fail with a clear error if the required table doesn't exist
 DO $$
+DECLARE
+  v_table_exists BOOLEAN;
+  v_column_exists BOOLEAN;
+  v_test_query TEXT;
 BEGIN
-  IF NOT EXISTS (
+  -- Check if table exists
+  SELECT EXISTS (
     SELECT 1 FROM information_schema.tables 
     WHERE table_schema = 'public' 
     AND table_name = 'fabricator_profiles'
-  ) THEN
+  ) INTO v_table_exists;
+  
+  IF NOT v_table_exists THEN
     RAISE EXCEPTION 'Migration 004 must be applied first. The fabricator_profiles table does not exist. Please run migrations/004_fabricator_profiles_accessories.sql first.';
   END IF;
   
-  IF NOT EXISTS (
+  -- Check if user_id column exists
+  SELECT EXISTS (
     SELECT 1 FROM information_schema.columns 
     WHERE table_schema = 'public' 
     AND table_name = 'fabricator_profiles' 
     AND column_name = 'user_id'
-  ) THEN
-    RAISE EXCEPTION 'The fabricator_profiles table exists but is missing the user_id column. Please ensure migration 004 completed successfully.';
+  ) INTO v_column_exists;
+  
+  IF NOT v_column_exists THEN
+    RAISE EXCEPTION 'The fabricator_profiles table exists but is missing the user_id column. Please ensure migration 004 completed successfully. You may need to re-run migration 004.';
   END IF;
+  
+  -- Test that we can actually query the column (this will fail if there's a permission or schema issue)
+  BEGIN
+    PERFORM user_id FROM public.fabricator_profiles LIMIT 1;
+  EXCEPTION
+    WHEN OTHERS THEN
+      RAISE EXCEPTION 'Cannot access user_id column in fabricator_profiles table. Error: %. Please verify migration 004 completed successfully.', SQLERRM;
+  END;
 END $$;
 
 -- 1. Inventory Locations Table (Multi-location support)
