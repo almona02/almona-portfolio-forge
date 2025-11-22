@@ -1,6 +1,11 @@
 -- Migration 006: Remnant Management & Enhanced Inventory System
 -- Creates comprehensive remnant tracking, stock movements, multi-location inventory,
 -- and advanced inventory analytics with barcode support
+--
+-- DEPENDENCIES: This migration REQUIRES migration 004 (fabricator_profiles_accessories.sql)
+-- to be applied first, as it references the fabricator_profiles table.
+--
+-- Apply migrations in this order: 004 → 005 → 006 → 007
 
 -- Enable UUID extension if not already enabled
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -345,7 +350,6 @@ BEGIN
   FOR v_profile IN
     SELECT 
       fp.id,
-      fp.user_id,
       fp.stock_quantity,
       fp.min_stock_level,
       COUNT(DISTINCT mr.id) FILTER (WHERE mr.status = 'available') as remnant_count,
@@ -353,7 +357,7 @@ BEGIN
     FROM public.fabricator_profiles fp
     LEFT JOIN public.material_remnants mr ON mr.profile_id = fp.id AND mr.user_id = fp.user_id
     WHERE fp.user_id = p_user_id
-    GROUP BY fp.id, fp.user_id, fp.stock_quantity, fp.min_stock_level
+    GROUP BY fp.id, fp.stock_quantity, fp.min_stock_level
   LOOP
     -- Check stock level
     IF v_profile.stock_quantity <= 0 THEN
