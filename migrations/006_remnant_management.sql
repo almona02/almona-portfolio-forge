@@ -247,12 +247,7 @@ CREATE INDEX IF NOT EXISTS idx_remnant_analytics_user_id ON public.remnant_utili
 CREATE INDEX IF NOT EXISTS idx_remnant_analytics_period ON public.remnant_utilization_analytics(period_start, period_end);
 CREATE INDEX IF NOT EXISTS idx_remnant_analytics_type ON public.remnant_utilization_analytics(period_type, period_start);
 
--- 7. Temporarily disable function body validation to avoid timing issues
--- This allows functions to be created even if referenced tables/columns
--- are being validated at creation time
-SET LOCAL check_function_bodies = false;
-
--- Update trigger function (if not exists)
+-- 7. Update trigger function (if not exists)
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -387,6 +382,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- 11. Function to check and create stock alerts
+-- Note: Uses dynamic SQL to avoid validation issues during function creation
 CREATE OR REPLACE FUNCTION check_stock_levels(p_user_id UUID)
 RETURNS INTEGER AS $$
 DECLARE
@@ -395,32 +391,24 @@ DECLARE
   v_alert_type TEXT;
   v_severity TEXT;
   v_reorder_qty DECIMAL;
-  v_column_exists BOOLEAN;
+  v_query TEXT;
 BEGIN
-  -- Verify that user_id column exists in fabricator_profiles
-  SELECT EXISTS (
-    SELECT 1 FROM information_schema.columns 
-    WHERE table_schema = 'public' 
-    AND table_name = 'fabricator_profiles' 
-    AND column_name = 'user_id'
-  ) INTO v_column_exists;
-  
-  IF NOT v_column_exists THEN
-    RAISE EXCEPTION 'The user_id column does not exist in fabricator_profiles table. Please ensure migration 004 completed successfully.';
-  END IF;
-  
-  -- Check all profiles for this user
-  FOR v_profile IN
+  -- Build dynamic query to avoid validation at function creation time
+  v_query := '
     SELECT 
       fp.id,
       fp.stock_quantity,
       fp.min_stock_level,
-      COUNT(DISTINCT mr.id) FILTER (WHERE mr.status = 'available') as remnant_count,
-      COALESCE(SUM(mr.length) FILTER (WHERE mr.status = 'available'), 0) as remnant_length
+      COUNT(DISTINCT mr.id) FILTER (WHERE mr.status = ''available'') as remnant_count,
+      COALESCE(SUM(mr.length) FILTER (WHERE mr.status = ''available''), 0) as remnant_length
     FROM public.fabricator_profiles fp
     LEFT JOIN public.material_remnants mr ON mr.profile_id = fp.id AND mr.user_id = fp.user_id
-    WHERE fp.user_id = p_user_id
+    WHERE fp.user_id = $1
     GROUP BY fp.id, fp.stock_quantity, fp.min_stock_level
+  ';
+  
+  -- Check all profiles for this user
+  FOR v_profile IN EXECUTE v_query USING p_user_id
   LOOP
     -- Check stock level
     IF v_profile.stock_quantity <= 0 THEN
@@ -482,6 +470,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- 12. Function to get remnant consolidation suggestions
+-- Note: Uses dynamic SQL to avoid validation issues during function creation
 CREATE OR REPLACE FUNCTION get_remnant_consolidation_suggestions(p_user_id UUID, p_profile_id UUID DEFAULT NULL)
 RETURNS TABLE (
   profile_id UUID,
@@ -492,46 +481,38 @@ RETURNS TABLE (
   estimated_savings DECIMAL
 ) AS $$
 DECLARE
-  v_column_exists BOOLEAN;
+  v_query TEXT;
 BEGIN
-  -- Verify that user_id column exists in fabricator_profiles
-  SELECT EXISTS (
-    SELECT 1 FROM information_schema.columns 
-    WHERE table_schema = 'public' 
-    AND table_name = 'fabricator_profiles' 
-    AND column_name = 'user_id'
-  ) INTO v_column_exists;
+  -- Build dynamic query to avoid validation at function creation time
+  v_query := '
+    SELECT 
+      fp.id,
+      fp.name,
+      COUNT(mr.id)::INTEGER as small_remnants_count,
+      COALESCE(SUM(mr.length), 0) as total_length,
+      CASE
+        WHEN COUNT(mr.id) >= 5 AND COALESCE(SUM(mr.length), 0) >= 1000 THEN
+          ''Consider consolidating '' || COUNT(mr.id) || '' small remnants into usable stock''
+        WHEN COUNT(mr.id) >= 3 AND COALESCE(SUM(mr.length), 0) >= 500 THEN
+          ''Multiple small remnants available - consider combining''
+        ELSE
+          ''Monitor for consolidation opportunities''
+      END as suggested_action,
+      (COALESCE(SUM(mr.length), 0) / 1000) * fp.cost_per_meter * 0.3 as estimated_savings
+    FROM public.fabricator_profiles fp
+    LEFT JOIN public.material_remnants mr ON 
+      mr.profile_id = fp.id 
+      AND mr.user_id = fp.user_id
+      AND mr.status = ''available''
+      AND mr.length < 500
+    WHERE fp.user_id = $1
+      AND ($2 IS NULL OR fp.id = $2)
+    GROUP BY fp.id, fp.name, fp.cost_per_meter
+    HAVING COUNT(mr.id) >= 2
+    ORDER BY small_remnants_count DESC, total_length DESC
+  ';
   
-  IF NOT v_column_exists THEN
-    RAISE EXCEPTION 'The user_id column does not exist in fabricator_profiles table. Please ensure migration 004 completed successfully.';
-  END IF;
-  
-  RETURN QUERY
-  SELECT 
-    fp.id,
-    fp.name,
-    COUNT(mr.id)::INTEGER as small_remnants_count,
-    COALESCE(SUM(mr.length), 0) as total_length,
-    CASE
-      WHEN COUNT(mr.id) >= 5 AND COALESCE(SUM(mr.length), 0) >= 1000 THEN
-        'Consider consolidating ' || COUNT(mr.id) || ' small remnants into usable stock'
-      WHEN COUNT(mr.id) >= 3 AND COALESCE(SUM(mr.length), 0) >= 500 THEN
-        'Multiple small remnants available - consider combining'
-      ELSE
-        'Monitor for consolidation opportunities'
-    END as suggested_action,
-    (COALESCE(SUM(mr.length), 0) / 1000) * fp.cost_per_meter * 0.3 as estimated_savings
-  FROM public.fabricator_profiles fp
-  LEFT JOIN public.material_remnants mr ON 
-    mr.profile_id = fp.id 
-    AND mr.user_id = fp.user_id
-    AND mr.status = 'available'
-    AND mr.length < 500 -- Small remnants
-  WHERE fp.user_id = p_user_id
-    AND (p_profile_id IS NULL OR fp.id = p_profile_id)
-  GROUP BY fp.id, fp.name, fp.cost_per_meter
-  HAVING COUNT(mr.id) >= 2
-  ORDER BY small_remnants_count DESC, total_length DESC;
+  RETURN QUERY EXECUTE v_query USING p_user_id, p_profile_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -614,6 +595,3 @@ COMMENT ON FUNCTION create_remnant_from_cut IS 'Automatically creates a remnant 
 COMMENT ON FUNCTION use_remnant IS 'Marks a remnant as used and updates its status, creating stock movement log';
 COMMENT ON FUNCTION check_stock_levels IS 'Checks all profiles for a user and creates/updates stock alerts as needed';
 COMMENT ON FUNCTION get_remnant_consolidation_suggestions IS 'Suggests consolidation opportunities for small remnants that could be combined';
-
--- Re-enable function body validation
-SET LOCAL check_function_bodies = true;
