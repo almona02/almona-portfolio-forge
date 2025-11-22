@@ -343,13 +343,17 @@ DECLARE
 BEGIN
   -- Check all profiles for this user
   FOR v_profile IN
-    SELECT fp.*, 
-           COUNT(DISTINCT mr.id) FILTER (WHERE mr.status = 'available') as remnant_count,
-           COALESCE(SUM(mr.length) FILTER (WHERE mr.status = 'available'), 0) as remnant_length
+    SELECT 
+      fp.id,
+      fp.user_id,
+      fp.stock_quantity,
+      fp.min_stock_level,
+      COUNT(DISTINCT mr.id) FILTER (WHERE mr.status = 'available') as remnant_count,
+      COALESCE(SUM(mr.length) FILTER (WHERE mr.status = 'available'), 0) as remnant_length
     FROM public.fabricator_profiles fp
     LEFT JOIN public.material_remnants mr ON mr.profile_id = fp.id AND mr.user_id = fp.user_id
     WHERE fp.user_id = p_user_id
-    GROUP BY fp.id
+    GROUP BY fp.id, fp.user_id, fp.stock_quantity, fp.min_stock_level
   LOOP
     -- Check stock level
     IF v_profile.stock_quantity <= 0 THEN
