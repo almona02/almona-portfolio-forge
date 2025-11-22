@@ -247,7 +247,12 @@ CREATE INDEX IF NOT EXISTS idx_remnant_analytics_user_id ON public.remnant_utili
 CREATE INDEX IF NOT EXISTS idx_remnant_analytics_period ON public.remnant_utilization_analytics(period_start, period_end);
 CREATE INDEX IF NOT EXISTS idx_remnant_analytics_type ON public.remnant_utilization_analytics(period_type, period_start);
 
--- 7. Update trigger function (if not exists)
+-- 7. Temporarily disable function body validation to avoid timing issues
+-- This allows functions to be created even if referenced tables/columns
+-- are being validated at creation time
+SET LOCAL check_function_bodies = false;
+
+-- Update trigger function (if not exists)
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -610,3 +615,5 @@ COMMENT ON FUNCTION use_remnant IS 'Marks a remnant as used and updates its stat
 COMMENT ON FUNCTION check_stock_levels IS 'Checks all profiles for a user and creates/updates stock alerts as needed';
 COMMENT ON FUNCTION get_remnant_consolidation_suggestions IS 'Suggests consolidation opportunities for small remnants that could be combined';
 
+-- Re-enable function body validation
+SET LOCAL check_function_bodies = true;
