@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+    <title>Almona Portfolio Forge - Industrial Machinery Solutions</title>
+    <meta name="description" content="Almona Portfolio Forge - Leading provider of industrial machinery, fabrication services, and technical solutions in Egypt and the Middle East." />
+    <meta name="author" content="Almona" />
+
+    <meta property="og:title" content="Almona Portfolio Forge - Industrial Machinery Solutions" />
+    <meta property="og:description" content="Leading provider of industrial machinery, fabrication services, and technical solutions in Egypt and the Middle East." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/logo.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@almona" />
+    <meta name="twitter:image" content="/logo.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Almona">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0d0f12">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/pwa-512x512.png">
+    <style>body,html{background:#0d0f12;color:#fff}body{font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;margin:0}#root{min-height:100vh}.app-fade-enter{opacity:0;transition:opacity .25s ease-in}.app-fade-enter.app-fade-enter-active{opacity:1}.hero{align-items:center;background:linear-gradient(180deg,#0d0f12,#0b0d10);display:flex;justify-content:center;min-height:70vh}.hero-title{font-size:clamp(28px,5vw,48px);font-weight:800;letter-spacing:-.02em}.hero-sub{margin-top:8px;max-width:720px;opacity:.8}.loading-screen{align-items:center;background:#0d0f12;display:flex;flex-direction:column;height:100%;justify-content:center;left:0;position:fixed;top:0;width:100%;z-index:9999}.loading-spinner{animation:spin 1s linear infinite;border:3px solid #333;border-radius:50%;border-top-color:#3b82f6;height:40px;margin-bottom:20px;width:40px}@keyframes spin{0%{transform:rotate(0deg)}to{transform:rotate(1turn)}}.loading-text{color:#fff;font-size:16px;margin-bottom:10px}.loading-progress{background:#333;border-radius:2px;height:4px;overflow:hidden;width:200px}.loading-progress-bar{background:#3b82f6;height:100%;transition:width .3s ease;width:0}</style>
+    
+    <!-- Critical resource preloading -->
+    <!-- NOTE: Preload hints are removed in dev; Vite injects correct assets at build time. -->
+    <!-- <link rel="preload" href="/assets/index-*.css" as="style" crossorigin> -->
+    <!-- <link rel="modulepreload" href="/assets/index-*.js" crossorigin> -->
+    <!-- Preconnect to Supabase and CDNs to reduce handshake latency -->
+    <link rel="preconnect" href="https://shfsebdncjnncqqnewfj.supabase.co" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <!-- Route-level prefetch hints -->
+    <link rel="prefetch" href="/products" as="document">
+    <link rel="prefetch" href="/shop" as="document">
+    <!-- Preload system font to avoid FOUT for Inter-like stack (optional) -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <script type="module" crossorigin src="/assets/index-Crh1AiTg.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/react-vendor-BiOXnlgk.js">
+    <link rel="modulepreload" crossorigin href="/assets/ui-vendor-BCYsofLS.js">
+    <link rel="modulepreload" crossorigin href="/assets/three-vendor-C5fTdsBK.js">
+    <link rel="modulepreload" crossorigin href="/assets/utils-vendor-B4OsNqDg.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-BO-KN8QH.css">
+  <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
+
+  <body>
+    <div id="root" class="app-fade-enter"></div>
+  </body>
+  <script>
+    // Defer Facebook SDK load until after load event
+    window.addEventListener('load', function() {
+      setTimeout(function(){
+        try {
+          var s = document.createElement('script');
+          s.src = 'https://connect.facebook.net/en_US/sdk.js';
+          s.async = true; s.defer = true;
+          document.head.appendChild(s);
+        } catch(e) {}
+      }, 1000);
+    });
+  </script>
+</html>

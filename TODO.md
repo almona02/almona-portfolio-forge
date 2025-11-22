@@ -11,6 +11,7 @@
 - [ ] Implement dynamic imports for three.js, recharts, xlsx libraries
 
 ### 2. Code Cleanup
+- [x] Fix naming conflict in BusinessKPIDashboard.tsx (PieChart vs PieChartIcon)
 - [ ] Remove all console.log statements from production code
 - [ ] Add proper cleanup in useEffect hooks across components
 - [ ] Implement React.memo for expensive components
