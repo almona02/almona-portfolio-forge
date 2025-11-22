@@ -421,7 +421,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE FUNCTION restore_fabricator_backup(
   p_user_id UUID,
   p_snapshot_id UUID,
-  p_restore_mode TEXT DEFAULT 'merge' CHECK (p_restore_mode IN ('replace', 'merge', 'append'))
+  p_restore_mode TEXT DEFAULT 'merge'
 )
 RETURNS INTEGER AS $$
 DECLARE
@@ -431,6 +431,11 @@ DECLARE
   v_records_restored INTEGER := 0;
   v_operation_id UUID;
 BEGIN
+  -- Validate restore_mode parameter
+  IF p_restore_mode NOT IN ('replace', 'merge', 'append') THEN
+    RAISE EXCEPTION 'Invalid restore_mode: %. Must be one of: replace, merge, append', p_restore_mode;
+  END IF;
+  
   -- Get snapshot data
   SELECT snapshot_data INTO v_snapshot_data
   FROM public.fabricator_backup_snapshots
