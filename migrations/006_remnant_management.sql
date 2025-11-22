@@ -10,6 +10,28 @@
 -- Enable UUID extension if not already enabled
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- Pre-flight check: Verify that migration 004 has been applied
+-- This will fail with a clear error if the required table doesn't exist
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' 
+    AND table_name = 'fabricator_profiles'
+  ) THEN
+    RAISE EXCEPTION 'Migration 004 must be applied first. The fabricator_profiles table does not exist. Please run migrations/004_fabricator_profiles_accessories.sql first.';
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'fabricator_profiles' 
+    AND column_name = 'user_id'
+  ) THEN
+    RAISE EXCEPTION 'The fabricator_profiles table exists but is missing the user_id column. Please ensure migration 004 completed successfully.';
+  END IF;
+END $$;
+
 -- 1. Inventory Locations Table (Multi-location support)
 CREATE TABLE IF NOT EXISTS public.inventory_locations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
