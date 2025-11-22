@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS public.exchange_rate_cache (
   timestamp TIMESTAMPTZ DEFAULT NOW(),
   expires_at TIMESTAMPTZ,
   
-  PRIMARY KEY (from_currency, to_currency),
+  CONSTRAINT unique_currency_pair UNIQUE (from_currency, to_currency),
   CONSTRAINT valid_rate CHECK (rate > 0),
   CONSTRAINT different_currencies CHECK (from_currency != to_currency)
 );
