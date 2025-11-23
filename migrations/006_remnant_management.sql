@@ -407,7 +407,7 @@ DECLARE
   v_query TEXT;
 BEGIN
   -- Build dynamic query to avoid validation at function creation time
-  -- Use table aliases and explicit column references
+  -- Use format() to properly quote identifiers
   v_query := format('
     SELECT 
       fp.id,
@@ -415,11 +415,11 @@ BEGIN
       fp.min_stock_level,
       COUNT(DISTINCT mr.id) FILTER (WHERE mr.status = %L) as remnant_count,
       COALESCE(SUM(mr.length) FILTER (WHERE mr.status = %L), 0) as remnant_length
-    FROM %I.fabricator_profiles fp
-    LEFT JOIN %I.material_remnants mr ON mr.profile_id = fp.id AND mr.user_id = fp.user_id
+    FROM %I.%I fp
+    LEFT JOIN %I.%I mr ON mr.profile_id = fp.id AND mr.user_id = fp.user_id
     WHERE fp.user_id = $1
     GROUP BY fp.id, fp.stock_quantity, fp.min_stock_level
-  ', 'available', 'available', 'public', 'public');
+  ', 'available', 'available', 'public', 'fabricator_profiles', 'public', 'material_remnants');
   
   -- Check all profiles for this user
   FOR v_profile IN EXECUTE v_query USING p_user_id
@@ -498,7 +498,7 @@ DECLARE
   v_query TEXT;
 BEGIN
   -- Build dynamic query to avoid validation at function creation time
-  -- Use format() with %I for identifiers to ensure proper quoting
+  -- Use format() to properly quote identifiers
   v_query := format('
     SELECT 
       fp.id,
@@ -514,8 +514,8 @@ BEGIN
           ''Monitor for consolidation opportunities''
       END as suggested_action,
       (COALESCE(SUM(mr.length), 0) / 1000) * fp.cost_per_meter * 0.3 as estimated_savings
-    FROM %I.fabricator_profiles fp
-    LEFT JOIN %I.material_remnants mr ON 
+    FROM %I.%I fp
+    LEFT JOIN %I.%I mr ON 
       mr.profile_id = fp.id 
       AND mr.user_id = fp.user_id
       AND mr.status = %L
@@ -525,7 +525,7 @@ BEGIN
     GROUP BY fp.id, fp.name, fp.cost_per_meter
     HAVING COUNT(mr.id) >= 2
     ORDER BY small_remnants_count DESC, total_length DESC
-  ', 'public', 'public', 'available');
+  ', 'public', 'fabricator_profiles', 'public', 'material_remnants', 'available');
   
   RETURN QUERY EXECUTE v_query USING p_user_id, p_profile_id;
 END;
