@@ -815,21 +815,51 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
                               exit={{ opacity: 0, height: 0 }}
                               className="ml-6 mt-1 space-y-1 overflow-hidden"
                             >
-                              {item.items?.map((subItem) => (
-                                <Link
-                                  key={subItem.name}
-                                  to={subItem.path}
-                                  className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-orange-500/10 rounded-xl transition-all duration-300"
-                                  onClick={closeAllDropdowns}
-                                >
-                                  <div className="font-medium">{subItem.name}</div>
-                                  {subItem.description && (
-                                    <div className="text-sm text-gray-400 mt-1">
-                                      {subItem.description}
+                              {item.items?.map((subItem) => {
+                                const IconComponent = subItem.icon === "Workflow" ? Workflow : 
+                                                     subItem.icon === "Factory" ? Factory : null;
+                                const isFeatured = subItem.featured;
+                                
+                                return (
+                                  <Link
+                                    key={subItem.name}
+                                    to={subItem.path}
+                                    className={`block px-4 py-3 rounded-xl transition-all duration-300 ${
+                                      isFeatured 
+                                        ? "bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 hover:from-orange-500/30 hover:to-red-500/30" 
+                                        : "text-gray-300 hover:text-white hover:bg-orange-500/10"
+                                    }`}
+                                    onClick={closeAllDropdowns}
+                                  >
+                                    <div className="flex items-start space-x-3">
+                                      {IconComponent && (
+                                        <IconComponent className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
+                                          isFeatured ? "text-orange-400" : "text-gray-400"
+                                        }`} />
+                                      )}
+                                      <div className="flex-1 min-w-0">
+                                        <div className={`font-medium ${
+                                          isFeatured ? "text-white" : ""
+                                        }`}>
+                                          {subItem.name}
+                                          {isFeatured && (
+                                            <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold">
+                                              PRO
+                                            </span>
+                                          )}
+                                        </div>
+                                        {subItem.description && (
+                                          <div className={`text-sm mt-1 ${
+                                            isFeatured ? "text-gray-300" : "text-gray-400"
+                                          }`}>
+                                            {subItem.description}
+                                          </div>
+                                        )}
+                                      </div>
                                     </div>
-                                  )}
-                                </Link>
-                              ))}
+                                  </Link>
+                                );
+                              })}
                             </motion.div>
                           )}
                         </AnimatePresence>
