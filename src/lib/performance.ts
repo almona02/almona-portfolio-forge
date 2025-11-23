@@ -1,7 +1,8 @@
 
 // Performance monitoring setup
-// Note: web-vitals v3+ uses onCLS, onFID, etc. instead of getCLS, getFID
-import { onCLS, onFID, onFCP, onLCP, onTTFB } from 'web-vitals';
+// Note: web-vitals v3+ uses onCLS, onINP, etc. instead of getCLS, getFID
+// FID was deprecated and replaced with INP (Interaction to Next Paint) in v3+
+import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals';
 
 function sendToAnalytics(metric: any) {
   // Send to your analytics service
@@ -22,7 +23,7 @@ function sendToAnalytics(metric: any) {
 const performanceBudget: Record<string, number> = {
   FCP: 1800, // 1.8s
   LCP: 2500, // 2.5s
-  FID: 100,  // 100ms
+  INP: 200,  // 200ms (replaces FID)
   CLS: 0.1,  // 0.1
   TTFB: 800  // 800ms
 };
@@ -35,13 +36,13 @@ function checkPerformanceBudget(metric: any) {
 }
 
 // Monitor Core Web Vitals
-// web-vitals v3+ API: onCLS, onFID, etc. instead of getCLS, getFID
+// web-vitals v3+ API: onCLS, onINP, etc. instead of getCLS, getFID
 onCLS((metric) => {
   sendToAnalytics(metric);
   checkPerformanceBudget(metric);
 });
 
-onFID((metric) => {
+onINP((metric) => {
   sendToAnalytics(metric);
   checkPerformanceBudget(metric);
 });
