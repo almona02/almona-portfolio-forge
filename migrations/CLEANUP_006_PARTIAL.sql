@@ -8,32 +8,76 @@ DROP FUNCTION IF EXISTS public.use_remnant(UUID, DECIMAL, UUID, UUID) CASCADE;
 DROP FUNCTION IF EXISTS public.check_stock_levels(UUID) CASCADE;
 DROP FUNCTION IF EXISTS public.get_remnant_consolidation_suggestions(UUID, UUID) CASCADE;
 
--- Drop triggers
-DROP TRIGGER IF EXISTS update_inventory_locations_updated_at ON public.inventory_locations;
-DROP TRIGGER IF EXISTS update_material_remnants_updated_at ON public.material_remnants;
-DROP TRIGGER IF EXISTS update_stock_movements_updated_at ON public.stock_movements;
-DROP TRIGGER IF EXISTS update_stock_alerts_updated_at ON public.stock_alerts;
-DROP TRIGGER IF EXISTS update_remnant_analytics_updated_at ON public.remnant_utilization_analytics;
+-- Drop triggers (use IF EXISTS to avoid errors if tables don't exist)
+DO $$
+BEGIN
+  DROP TRIGGER IF EXISTS update_inventory_locations_updated_at ON public.inventory_locations;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
--- Drop RLS policies
-DROP POLICY IF EXISTS "Users can view their own locations" ON public.inventory_locations;
-DROP POLICY IF EXISTS "Users can insert their own locations" ON public.inventory_locations;
-DROP POLICY IF EXISTS "Users can update their own locations" ON public.inventory_locations;
-DROP POLICY IF EXISTS "Users can delete their own locations" ON public.inventory_locations;
+DO $$
+BEGIN
+  DROP TRIGGER IF EXISTS update_material_remnants_updated_at ON public.material_remnants;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
-DROP POLICY IF EXISTS "Users can view their own remnants" ON public.material_remnants;
-DROP POLICY IF EXISTS "Users can insert their own remnants" ON public.material_remnants;
-DROP POLICY IF EXISTS "Users can update their own remnants" ON public.material_remnants;
-DROP POLICY IF EXISTS "Users can delete their own remnants" ON public.material_remnants;
+DO $$
+BEGIN
+  DROP TRIGGER IF EXISTS update_stock_movements_updated_at ON public.stock_movements;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
-DROP POLICY IF EXISTS "Users can view their own stock movements" ON public.stock_movements;
-DROP POLICY IF EXISTS "Users can insert their own stock movements" ON public.stock_movements;
+DO $$
+BEGIN
+  DROP TRIGGER IF EXISTS update_stock_alerts_updated_at ON public.stock_alerts;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
-DROP POLICY IF EXISTS "Users can view their own stock alerts" ON public.stock_alerts;
-DROP POLICY IF EXISTS "Users can update their own stock alerts" ON public.stock_alerts;
+DO $$
+BEGIN
+  DROP TRIGGER IF EXISTS update_remnant_analytics_updated_at ON public.remnant_utilization_analytics;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
-DROP POLICY IF EXISTS "Users can view their own analytics" ON public.remnant_utilization_analytics;
-DROP POLICY IF EXISTS "Users can insert their own analytics" ON public.remnant_utilization_analytics;
+-- Drop RLS policies (wrapped in DO blocks to handle missing tables gracefully)
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Users can view their own locations" ON public.inventory_locations;
+  DROP POLICY IF EXISTS "Users can insert their own locations" ON public.inventory_locations;
+  DROP POLICY IF EXISTS "Users can update their own locations" ON public.inventory_locations;
+  DROP POLICY IF EXISTS "Users can delete their own locations" ON public.inventory_locations;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
+
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Users can view their own remnants" ON public.material_remnants;
+  DROP POLICY IF EXISTS "Users can insert their own remnants" ON public.material_remnants;
+  DROP POLICY IF EXISTS "Users can update their own remnants" ON public.material_remnants;
+  DROP POLICY IF EXISTS "Users can delete their own remnants" ON public.material_remnants;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
+
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Users can view their own stock movements" ON public.stock_movements;
+  DROP POLICY IF EXISTS "Users can insert their own stock movements" ON public.stock_movements;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
+
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Users can view their own stock alerts" ON public.stock_alerts;
+  DROP POLICY IF EXISTS "Users can update their own stock alerts" ON public.stock_alerts;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
+
+DO $$
+BEGIN
+  DROP POLICY IF EXISTS "Users can view their own analytics" ON public.remnant_utilization_analytics;
+  DROP POLICY IF EXISTS "Users can insert their own analytics" ON public.remnant_utilization_analytics;
+EXCEPTION WHEN undefined_table THEN NULL;
+END $$;
 
 -- Drop tables (in reverse dependency order)
 DROP TABLE IF EXISTS public.remnant_utilization_analytics CASCADE;
