@@ -227,6 +227,7 @@ CREATE TABLE IF NOT EXISTS public.remnant_utilization_analytics (
 );
 
 -- 6. Indexes for Performance
+-- Note: Creating indexes on newly created tables - ensure tables are fully created first
 CREATE INDEX IF NOT EXISTS idx_inventory_locations_user_id ON public.inventory_locations(user_id);
 CREATE INDEX IF NOT EXISTS idx_inventory_locations_code ON public.inventory_locations(code);
 CREATE INDEX IF NOT EXISTS idx_inventory_locations_default ON public.inventory_locations(user_id, is_default) WHERE is_default = TRUE;
@@ -406,18 +407,19 @@ DECLARE
   v_query TEXT;
 BEGIN
   -- Build dynamic query to avoid validation at function creation time
-  v_query := '
+  -- Use table aliases and explicit column references
+  v_query := format('
     SELECT 
       fp.id,
       fp.stock_quantity,
       fp.min_stock_level,
-      COUNT(DISTINCT mr.id) FILTER (WHERE mr.status = ''available'') as remnant_count,
-      COALESCE(SUM(mr.length) FILTER (WHERE mr.status = ''available''), 0) as remnant_length
-    FROM public.fabricator_profiles fp
-    LEFT JOIN public.material_remnants mr ON mr.profile_id = fp.id AND mr.user_id = fp.user_id
+      COUNT(DISTINCT mr.id) FILTER (WHERE mr.status = %L) as remnant_count,
+      COALESCE(SUM(mr.length) FILTER (WHERE mr.status = %L), 0) as remnant_length
+    FROM %I.fabricator_profiles fp
+    LEFT JOIN %I.material_remnants mr ON mr.profile_id = fp.id AND mr.user_id = fp.user_id
     WHERE fp.user_id = $1
     GROUP BY fp.id, fp.stock_quantity, fp.min_stock_level
-  ';
+  ', 'available', 'available', 'public', 'public');
   
   -- Check all profiles for this user
   FOR v_profile IN EXECUTE v_query USING p_user_id
@@ -496,7 +498,8 @@ DECLARE
   v_query TEXT;
 BEGIN
   -- Build dynamic query to avoid validation at function creation time
-  v_query := '
+  -- Use format() with %I for identifiers to ensure proper quoting
+  v_query := format('
     SELECT 
       fp.id,
       fp.name,
@@ -511,18 +514,18 @@ BEGIN
           ''Monitor for consolidation opportunities''
       END as suggested_action,
       (COALESCE(SUM(mr.length), 0) / 1000) * fp.cost_per_meter * 0.3 as estimated_savings
-    FROM public.fabricator_profiles fp
-    LEFT JOIN public.material_remnants mr ON 
+    FROM %I.fabricator_profiles fp
+    LEFT JOIN %I.material_remnants mr ON 
       mr.profile_id = fp.id 
       AND mr.user_id = fp.user_id
-      AND mr.status = ''available''
+      AND mr.status = %L
       AND mr.length < 500
     WHERE fp.user_id = $1
       AND ($2 IS NULL OR fp.id = $2)
     GROUP BY fp.id, fp.name, fp.cost_per_meter
     HAVING COUNT(mr.id) >= 2
     ORDER BY small_remnants_count DESC, total_length DESC
-  ';
+  ', 'public', 'public', 'available');
   
   RETURN QUERY EXECUTE v_query USING p_user_id, p_profile_id;
 END;
