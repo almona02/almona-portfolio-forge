@@ -17,6 +17,7 @@ DECLARE
   v_table_exists BOOLEAN;
   v_column_exists BOOLEAN;
   v_test_result UUID;
+  v_columns TEXT;
 BEGIN
   -- Check if table exists
   SELECT EXISTS (
@@ -38,16 +39,27 @@ BEGIN
   ) INTO v_column_exists;
   
   IF NOT v_column_exists THEN
-    RAISE EXCEPTION 'The fabricator_profiles table exists but is missing the user_id column. Please ensure migration 004 completed successfully. You may need to re-run migration 004.';
+    -- Get all column names to help debug
+    SELECT string_agg(column_name, ', ') INTO v_columns
+    FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'fabricator_profiles';
+    RAISE EXCEPTION 'The fabricator_profiles table exists but is missing the user_id column. Existing columns: %. Please ensure migration 004 completed successfully. You may need to re-run migration 004.', v_columns;
   END IF;
   
   -- Test that we can actually query the column (this will fail if there's a permission or schema issue)
   -- Use a direct SELECT (not EXECUTE) to verify the column exists and is accessible
   BEGIN
-    SELECT user_id INTO v_test_result FROM public.fabricator_profiles LIMIT 1;
+    -- Try to select the column - if table is empty, that's OK, we just need to verify column exists
+    SELECT public.fabricator_profiles.user_id INTO v_test_result FROM public.fabricator_profiles LIMIT 1;
   EXCEPTION
     WHEN undefined_column THEN
-      RAISE EXCEPTION 'The user_id column does not exist in fabricator_profiles table. Error code: %. Please ensure migration 004 completed successfully. You may need to re-run migration 004.', SQLSTATE;
+      -- Get all column names to help debug
+      SELECT string_agg(column_name, ', ') INTO v_columns
+      FROM information_schema.columns 
+      WHERE table_schema = 'public' 
+      AND table_name = 'fabricator_profiles';
+      RAISE EXCEPTION 'The user_id column does not exist in fabricator_profiles table. Existing columns: %. Error code: %. Please ensure migration 004 completed successfully. You may need to re-run migration 004.', v_columns, SQLSTATE;
     WHEN undefined_table THEN
       RAISE EXCEPTION 'The fabricator_profiles table does not exist. Please run migration 004 first.';
     WHEN OTHERS THEN
