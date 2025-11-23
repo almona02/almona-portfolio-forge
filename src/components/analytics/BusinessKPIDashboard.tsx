@@ -523,6 +523,6 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
       </Card>
     </div>
   );
-};
+});
 
 export default BusinessKPIDashboard;
