@@ -11,7 +11,9 @@ import {
   Shield,
   Search,
   Sparkles,
-  Globe
+  Globe,
+  Workflow,
+  Factory
 } from "lucide-react";
 
 interface User {
@@ -30,7 +32,7 @@ interface NavItem {
   name: string;
   path: string;
   type: "link" | "dropdown";
-  items?: { name: string; path: string; description?: string }[];
+  items?: { name: string; path: string; description?: string; icon?: string; featured?: boolean }[];
   badge?: "NEW" | "AI" | "PRO";
 }
 
@@ -115,7 +117,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
         { 
           name: "Fabricator Workflow Pro", 
           path: "/fabricator-workflow", 
-          description: "Streamline operations" 
+          description: "Complete workflow: Measuring → Design → Optimization → Production",
+          icon: "Workflow",
+          featured: true
         },
       ]
     },
@@ -441,23 +445,55 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
                 className="absolute top-full left-0 mt-3 w-80 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-2xl shadow-2xl overflow-hidden z-[210]"
               >
                 <div className="p-3 space-y-1">
-                  {item.items?.map((subItem) => (
-                    <Link
-                      key={subItem.name}
-                      to={subItem.path}
-                      className="block p-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10 rounded-xl transition-all duration-300 group"
-                      onClick={closeAllDropdowns}
-                    >
-                      <div className="font-medium text-white group-hover:text-orange-300 transition-colors">
-                        {subItem.name}
-                      </div>
-                      {subItem.description && (
-                        <div className="text-sm text-gray-400 mt-1 group-hover:text-gray-300">
-                          {subItem.description}
+                  {item.items?.map((subItem) => {
+                    const IconComponent = subItem.icon === "Workflow" ? Workflow : 
+                                         subItem.icon === "Factory" ? Factory : null;
+                    const isFeatured = subItem.featured;
+                    
+                    return (
+                      <Link
+                        key={subItem.name}
+                        to={subItem.path}
+                        className={`block p-3 rounded-xl transition-all duration-300 group ${
+                          isFeatured 
+                            ? "bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 hover:from-orange-500/30 hover:to-red-500/30 hover:border-orange-500/50" 
+                            : "text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10"
+                        }`}
+                        onClick={closeAllDropdowns}
+                      >
+                        <div className="flex items-start space-x-3">
+                          {IconComponent && (
+                            <IconComponent className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
+                              isFeatured ? "text-orange-400" : "text-gray-400 group-hover:text-orange-400"
+                            } transition-colors`} />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className={`font-medium transition-colors ${
+                              isFeatured 
+                                ? "text-white group-hover:text-orange-300" 
+                                : "text-white group-hover:text-orange-300"
+                            }`}>
+                              {subItem.name}
+                              {isFeatured && (
+                                <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold">
+                                  PRO
+                                </span>
+                              )}
+                            </div>
+                            {subItem.description && (
+                              <div className={`text-sm mt-1 ${
+                                isFeatured 
+                                  ? "text-gray-300 group-hover:text-gray-200" 
+                                  : "text-gray-400 group-hover:text-gray-300"
+                              }`}>
+                                {subItem.description}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      )}
-                    </Link>
-                  ))}
+                      </Link>
+                    );
+                  })}
                 </div>
               </motion.div>
             )}
