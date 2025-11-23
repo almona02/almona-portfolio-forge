@@ -24,6 +24,7 @@ import { SmartMeasuringInterface } from '@/components/fabricator/SmartMeasuringI
 import { TechnicalCalculator } from '@/components/fabricator/TechnicalCalculator';
 import { CuttingOptimizationEngine } from '@/components/fabricator/CuttingOptimizationEngine';
 import { InventoryDashboard } from '@/components/fabricator/InventoryDashboard';
+import { ProfileManagement } from '@/components/fabricator/ProfileManagement';
 import { supabase } from '@/lib/supabase';
 import { ProductionScheduler } from '@/components/fabricator/ProductionScheduler';
 import { QualityControl } from '@/components/fabricator/QualityControl';
@@ -544,6 +545,31 @@ export const FabricatorWorkflow: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="inventory" className="space-y-6">
+            {/* Profile Management Section - Add/Edit Material Profiles */}
+            <Card className="bg-gray-800/50 border-gray-700">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-6 w-6 text-orange-400" />
+                  Profile Management
+                </CardTitle>
+                <CardDescription>
+                  Add, edit, and manage your material profiles (aluminum, UPVC, wood). Profiles are used for cutting optimization and inventory tracking.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ErrorBoundary level="component">
+                  <ProfileManagement 
+                    userId={userId}
+                    onProfilesUpdate={(updatedProfiles) => {
+                      // Update inventory when profiles are updated
+                      setInventory(updatedProfiles);
+                    }}
+                  />
+                </ErrorBoundary>
+              </CardContent>
+            </Card>
+
+            {/* Inventory Dashboard Section */}
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -551,7 +577,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   Inventory Management & Stock Control
                 </CardTitle>
                 <CardDescription>
-                  Real-time inventory tracking and automatic reordering
+                  Real-time inventory tracking, stock alerts, and automatic reordering
                 </CardDescription>
               </CardHeader>
               <CardContent>
