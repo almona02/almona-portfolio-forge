@@ -35,29 +35,37 @@ function checkPerformanceBudget(metric: any) {
   }
 }
 
-// Monitor Core Web Vitals
-// web-vitals v3+ API: onCLS, onINP, etc. instead of getCLS, getFID
-onCLS((metric) => {
-  sendToAnalytics(metric);
-  checkPerformanceBudget(metric);
-});
+// Initialize performance monitoring
+export function initializePerformanceMonitoring() {
+  // Monitor Core Web Vitals
+  // web-vitals v3+ API: onCLS, onINP, etc. instead of getCLS, getFID
+  onCLS((metric) => {
+    sendToAnalytics(metric);
+    checkPerformanceBudget(metric);
+  });
 
-onINP((metric) => {
-  sendToAnalytics(metric);
-  checkPerformanceBudget(metric);
-});
+  onINP((metric) => {
+    sendToAnalytics(metric);
+    checkPerformanceBudget(metric);
+  });
 
-onFCP((metric) => {
-  sendToAnalytics(metric);
-  checkPerformanceBudget(metric);
-});
+  onFCP((metric) => {
+    sendToAnalytics(metric);
+    checkPerformanceBudget(metric);
+  });
 
-onLCP((metric) => {
-  sendToAnalytics(metric);
-  checkPerformanceBudget(metric);
-});
+  onLCP((metric) => {
+    sendToAnalytics(metric);
+    checkPerformanceBudget(metric);
+  });
 
-onTTFB((metric) => {
-  sendToAnalytics(metric);
-  checkPerformanceBudget(metric);
-});
+  onTTFB((metric) => {
+    sendToAnalytics(metric);
+    checkPerformanceBudget(metric);
+  });
+}
+
+// Auto-initialize in production
+if (typeof window !== 'undefined' && import.meta.env.PROD) {
+  initializePerformanceMonitoring();
+}
