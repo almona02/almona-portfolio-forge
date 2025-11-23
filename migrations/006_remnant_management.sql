@@ -299,10 +299,10 @@ BEGIN
     RETURN NULL;
   END IF;
 
-  -- Get profile cost for value calculation
-  SELECT cost_per_meter INTO v_profile_cost
-  FROM public.fabricator_profiles
-  WHERE id = p_profile_id;
+  -- Get profile cost for value calculation (using dynamic SQL to avoid validation issues)
+  EXECUTE format('SELECT cost_per_meter FROM %I.%I WHERE id = $1', 'public', 'fabricator_profiles')
+    USING p_profile_id
+    INTO v_profile_cost;
 
   -- Calculate estimated value (50% of original cost for remnants)
   v_estimated_value := (p_length / 1000) * COALESCE(v_profile_cost, 0) * 0.5;
@@ -346,6 +346,7 @@ DECLARE
   v_remnant RECORD;
   v_remaining_length DECIMAL;
   v_min_remnant_length DECIMAL := 200;
+  v_profile_cost DECIMAL;
 BEGIN
   -- Get remnant details
   SELECT * INTO v_remnant
@@ -369,13 +370,17 @@ BEGIN
     WHERE id = p_remnant_id;
   ELSE
     -- Update remnant with remaining length
+    -- Get profile cost using dynamic SQL to avoid validation issues
+    EXECUTE format('SELECT cost_per_meter FROM %I.%I WHERE id = $1', 'public', 'fabricator_profiles')
+      USING v_remnant.profile_id
+      INTO v_profile_cost;
+    
     UPDATE public.material_remnants
     SET length = v_remaining_length,
         used_at = NOW(),
         used_in_project_id = p_project_id,
         usage_count = usage_count + 1,
-        estimated_value = (v_remaining_length / 1000) * 
-          (SELECT cost_per_meter FROM public.fabricator_profiles WHERE id = v_remnant.profile_id) * 0.5
+        estimated_value = (v_remaining_length / 1000) * COALESCE(v_profile_cost, 0) * 0.5
     WHERE id = p_remnant_id;
   END IF;
 
