@@ -18,7 +18,19 @@ DECLARE
   v_column_exists BOOLEAN;
   v_test_result UUID;
   v_columns TEXT;
+  v_partial_migration BOOLEAN := FALSE;
 BEGIN
+  -- Check if migration 006 tables already exist (partial migration)
+  SELECT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' 
+    AND table_name IN ('material_remnants', 'inventory_locations', 'stock_movements')
+  ) INTO v_partial_migration;
+  
+  IF v_partial_migration THEN
+    RAISE WARNING 'Some tables from migration 006 already exist. If you encounter errors, run migrations/CLEANUP_006_PARTIAL.sql first to clean up and start fresh.';
+  END IF;
+  
   -- Check if table exists
   SELECT EXISTS (
     SELECT 1 FROM information_schema.tables 
@@ -47,14 +59,11 @@ BEGIN
     RAISE EXCEPTION 'The fabricator_profiles table exists but is missing the user_id column. Existing columns: %. Please ensure migration 004 completed successfully. You may need to re-run migration 004.', v_columns;
   END IF;
   
-  -- Test that we can actually query the column (this will fail if there's a permission or schema issue)
-  -- Use a direct SELECT (not EXECUTE) to verify the column exists and is accessible
+  -- Test that we can actually query the column using dynamic SQL to avoid validation issues
   BEGIN
-    -- Try to select the column - if table is empty, that's OK, we just need to verify column exists
-    SELECT public.fabricator_profiles.user_id INTO v_test_result FROM public.fabricator_profiles LIMIT 1;
+    EXECUTE format('SELECT user_id FROM %I.%I LIMIT 1', 'public', 'fabricator_profiles') INTO v_test_result;
   EXCEPTION
     WHEN undefined_column THEN
-      -- Get all column names to help debug
       SELECT string_agg(column_name, ', ') INTO v_columns
       FROM information_schema.columns 
       WHERE table_schema = 'public' 
