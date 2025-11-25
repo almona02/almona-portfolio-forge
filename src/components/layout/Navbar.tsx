@@ -113,15 +113,14 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
           name: "Fabrication Services", 
           path: "/fabrication-services", 
           description: "Precision engineering" 
-        },
-        { 
-          name: "Fabricator Workflow Pro", 
-          path: "/fabricator-workflow", 
-          description: "Complete workflow: Measuring → Design → Optimization → Production",
-          icon: "Workflow",
-          featured: true
-        },
+        }
       ]
+    },
+    {
+      name: "Fabricator Pro",
+      path: "/fabricator",
+      type: "link",
+      badge: "PRO"
     },
     { 
       name: "Smart Shop", 
@@ -366,17 +365,27 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
   );
 
   // Navigation Item Component
-  const NavItemComponent: React.FC<{ item: NavItem }> = ({ item }) => (
-    <div
-      className="relative"
-      onMouseEnter={() => item.type === "dropdown" && handleDropdownEnter(item.name)}
-      onMouseLeave={handleDropdownLeave}
-    >
-      {item.type === "link" ? (
+  const NavItemComponent: React.FC<{ item: NavItem }> = ({ item }) => {
+    const isDropdownActive =
+      item.type === "dropdown" &&
+      (isActivePath(item.path) ||
+        item.items?.some((sub) => isActivePath(sub.path)));
+
+    const isItemActive = item.type === "link"
+      ? isActivePath(item.path)
+      : isDropdownActive || activeDropdown === item.name;
+
+    return (
+      <div
+        className="relative"
+        onMouseEnter={() => item.type === "dropdown" && handleDropdownEnter(item.name)}
+        onMouseLeave={handleDropdownLeave}
+      >
+        {item.type === "link" ? (
         <Link
           to={item.path}
           className={`relative inline-flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-semibold group overflow-hidden ${
-            isActivePath(item.path)
+            isItemActive
               ? "text-orange-400 shadow-xl shadow-orange-500/20 border border-orange-500/30 scale-105"
               : "text-gray-300 hover:text-white hover:shadow-xl hover:shadow-orange-500/15 hover:border hover:border-orange-500/25 hover:scale-105"
           }`}
@@ -401,13 +410,13 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
           
           {/* Animated underline */}
           <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-0.5 bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-300 ${
-            isActivePath(item.path) 
+            isItemActive 
               ? "w-3/4 shadow-lg shadow-orange-500/50" 
               : "w-0 group-hover:w-3/4 group-hover:shadow-lg group-hover:shadow-orange-500/50"
           }`} />
           
           {/* Top highlight for active items */}
-          {isActivePath(item.path) && (
+          {isItemActive && (
             <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1/2 h-0.5 bg-gradient-to-r from-orange-400 to-red-400 rounded-full shadow-lg shadow-orange-500/50" />
           )}
         </Link>
@@ -415,7 +424,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
         <>
           <button
             className={`relative px-4 py-3 rounded-xl transition-all duration-300 font-semibold flex items-center space-x-2 group ${
-              isActivePath(item.path) || activeDropdown === item.name
+              isItemActive
                 ? "text-orange-400 bg-gradient-to-r from-orange-500/10 to-red-500/10 shadow-lg shadow-orange-500/10"
                 : "text-gray-300 hover:text-white hover:bg-white/5 hover:shadow-lg"
             }`}
@@ -432,7 +441,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
               activeDropdown === item.name ? "rotate-180 text-orange-400" : "text-gray-400"
             }`} />
             <div className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-300 group-hover:w-3/4 ${
-              isActivePath(item.path) || activeDropdown === item.name ? "w-3/4" : ""
+              isItemActive ? "w-3/4" : ""
             }`} />
           </button>
 
@@ -502,6 +511,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
       )}
     </div>
   );
+  };
 
   return (
     <nav 
