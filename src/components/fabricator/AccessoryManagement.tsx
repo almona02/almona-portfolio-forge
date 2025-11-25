@@ -61,6 +61,70 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
   const [selectedProfileForCompatibility, setSelectedProfileForCompatibility] = useState<string | null>(null);
   const [subscription, setSubscription] = useState<any>(null);
 
+  // Default ROCK 60 accessories template to seed for all users
+  const ROCK60_ACCESSORIES_TEMPLATE = [
+    {
+      accessory_number: '0253',
+      quantity: 2,
+      description: 'Hinges',
+    },
+    {
+      accessory_number: '1130',
+      quantity: 4,
+      description: 'Corner Joint',
+    },
+    {
+      accessory_number: '1110',
+      quantity: 4,
+      description: 'Corner Joint',
+    },
+    {
+      accessory_number: '0707',
+      quantity: 1,
+      description: 'Commons Handle',
+    },
+    {
+      accessory_number: 'KIT 10451',
+      quantity: 1,
+      description: 'Locking Kit',
+    },
+    {
+      accessory_number: 'GT 0122',
+      quantity: '21.4H',
+      description: 'Glass Gasket',
+    },
+    {
+      accessory_number: 'GT 0118',
+      quantity: '21.4H',
+      description: 'Glass Gasket',
+    },
+    {
+      accessory_number: 'GT 0137',
+      quantity: '21.4H',
+      description: 'Central Gasket',
+    },
+    {
+      accessory_number: 'GT 0146',
+      quantity: '21.4H',
+      description: 'Stash Striker Gasket',
+    },
+    {
+      accessory_number: 'GT 0152',
+      quantity: '21.4H',
+      description: 'Frame Gasket',
+    },
+  ];
+
+  const mapAccessoryType = (description: string): FabricatorAccessory['type'] => {
+    const text = description.toLowerCase();
+    if (text.includes('hinge')) return 'hinge';
+    if (text.includes('lock')) return 'lock';
+    if (text.includes('handle')) return 'handle';
+    if (text.includes('gasket') || text.includes('seal')) return 'seal';
+    if (text.includes('corner')) return 'corner';
+    return 'other';
+  };
+
   // Form state
   const [formData, setFormData] = useState<Partial<FabricatorAccessory>>({
     name: '',
@@ -89,7 +153,61 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
       if (fetchError) throw fetchError;
 
-      const mappedAccessories: FabricatorAccessory[] = (data || []).map((a: any) => ({
+      let rows = data || [];
+
+      // Seed ROCK 60 accessories once per user if they do not exist yet
+      if (userId) {
+        const hasRock60Accessories = rows.some(
+          (a: any) => a.specifications?.window_system === 'ROCK 60'
+        );
+
+        if (!hasRock60Accessories) {
+          const accessoriesToInsert = ROCK60_ACCESSORIES_TEMPLATE.map((item) => ({
+            user_id: userId,
+            name: `${item.accessory_number} - ${item.description}`,
+            type: mapAccessoryType(item.description),
+            category: mapAccessoryType(item.description),
+            unit_price: 0,
+            base_cost: 0,
+            markup_percentage: 0,
+            supplier: 'Global Template',
+            sku: item.accessory_number,
+            description: item.description,
+            compatible_materials: ['aluminum', 'upvc', 'wood'],
+            region: ['global'],
+            image_url: null,
+            specifications: {
+              window_system: 'ROCK 60',
+              accessory_number: item.accessory_number,
+              default_quantity: item.quantity,
+              template: true,
+              template_type: 'window_system',
+            },
+          }));
+
+          const { error: seedError } = await supabase
+            .from('fabricator_accessories')
+            .insert(accessoriesToInsert);
+
+          if (seedError) {
+            console.error('Error seeding ROCK 60 accessories:', seedError);
+          } else {
+            const { data: reloaded, error: reloadError } = await supabase
+              .from('fabricator_accessories')
+              .select('*')
+              .eq('user_id', userId || '')
+              .order('created_at', { ascending: false });
+
+            if (reloadError) {
+              console.error('Error reloading accessories after seeding:', reloadError);
+            } else if (reloaded) {
+              rows = reloaded;
+            }
+          }
+        }
+      }
+
+      const mappedAccessories: FabricatorAccessory[] = rows.map((a: any) => ({
         id: a.id,
         name: a.name,
         type: a.type as FabricatorAccessory['type'],

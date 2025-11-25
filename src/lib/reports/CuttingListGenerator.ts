@@ -99,7 +99,12 @@ export class CuttingListGenerator {
    * Infer component type from cut data
    */
   private inferComponentType(cut: any): string {
-    // This would be enhanced with actual component type detection
+    // Prefer explicit component type when provided (e.g. frame / sash / glazing_bead)
+    if (cut.componentType && typeof cut.componentType === 'string') {
+      return cut.componentType;
+    }
+
+    // Fallback: infer from angle
     if (cut.angle && cut.angle !== 0 && cut.angle !== 90) {
       return 'mitered';
     }

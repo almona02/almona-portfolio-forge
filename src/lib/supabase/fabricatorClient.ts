@@ -802,6 +802,8 @@ export class FabricatorClient {
   // ============================================================================
 
   private mapProfileFromDB(data: any): Profile {
+    const specs = data.specifications || {};
+
     return {
       id: data.id,
       name: data.name,
@@ -817,7 +819,11 @@ export class FabricatorClient {
       maxStockLevel: data.max_stock_level ? parseFloat(data.max_stock_level) : undefined,
       supplier: data.supplier,
       systemBrand: data.system_brand,
-      specifications: data.specifications || {},
+      weightPerMeter:
+        typeof specs.weightPerMeterKg === 'number'
+          ? specs.weightPerMeterKg
+          : undefined,
+      specifications: specs,
       grainDirection: data.grain_direction || null,
       userId: data.user_id,
       createdAt: new Date(data.created_at),

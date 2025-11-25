@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
+import { Textarea } from '@/shared/ui/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
@@ -33,12 +34,13 @@ import {
   Upload,
   RefreshCw,
   Search,
-  Filter,
-  X
+  FileText,
 } from 'lucide-react';
 import { Profile } from '@/types/fabricator';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
+import { ElsherifImportWizard } from '@/components/fabricator/ElsherifImportWizard';
 
 // Material-specific color presets
 const MATERIAL_COLORS: Record<string, string[]> = {
@@ -81,6 +83,298 @@ const REGIONAL_BRANDS = {
   global: ['Standard', 'Custom'],
 };
 
+// Default ROCK 60 window system template to seed for all users
+// Updated with full 45° miter configuration and 2D cutting list
+const ROCK60_WINDOW_SYSTEM_TEMPLATE = {
+  window_system: 'ROCK 60',
+  drawing_reference: 'Page 24 - Draft Shop Drawing',
+  // Legacy flat list used by earlier phases (kept for backward compatibility)
+  profiles_cutting_list: [
+    {
+      profile_number: 'RC 6111-8',
+      quantity: 2,
+      cutting_length: 'L + 60',
+      description: 'Frame profile - length direction',
+    },
+    {
+      profile_number: 'RC 6111-8',
+      quantity: 2,
+      cutting_length: 'H + 60',
+      description: 'Frame profile - height direction',
+    },
+    {
+      profile_number: 'RC 6122',
+      quantity: 2,
+      cutting_length: 'L - 44',
+      description: 'Sash profile - length direction',
+    },
+    {
+      profile_number: 'RC 6122',
+      quantity: 2,
+      cutting_length: 'H - 44',
+      description: 'Sash profile - height direction',
+    },
+    {
+      profile_number: 'RC 6166',
+      quantity: 2,
+      cutting_length: 'L - 167',
+      description: 'Glazing bead - length direction',
+    },
+    {
+      profile_number: 'RC 6166',
+      quantity: 2,
+      cutting_length: 'H - 205',
+      description: 'Glazing bead - height direction',
+    },
+  ],
+  glass_cutting: {
+    type: 'Double Glass 24mm',
+    quantity: 1,
+    dimensions: {
+      length: 'L - 167',
+      height: 'H - 167',
+    },
+    notes: 'Final glass size after deductions',
+  },
+  weight_calculation: {
+    length_weight: 'L (m) × 6.67 kg',
+    height_weight: 'H1 (m) × 6.64 kg',
+    total_weight_formula: 'TOTAL = (L × 6.67) + (H1 × 6.64) kg',
+  },
+  accessories_list: [
+    {
+      accessory_number: '0253',
+      quantity: 2,
+      description: 'Hinges',
+    },
+    {
+      accessory_number: '1130',
+      quantity: 4,
+      description: 'Corner Joint – pressure plate',
+    },
+    {
+      accessory_number: '1110',
+      quantity: 4,
+      description: 'Corner Joint – cleat',
+    },
+    {
+      accessory_number: '0707',
+      quantity: 1,
+      description: 'Common Handle',
+    },
+    {
+      accessory_number: 'KIT 10451',
+      quantity: 1,
+      description: 'Locking Kit',
+    },
+    {
+      accessory_number: 'GT 0122',
+      quantity: '21.4H',
+      description: 'Glass Gasket',
+    },
+    {
+      accessory_number: 'GT 0118',
+      quantity: '21.4H',
+      description: 'Glass Gasket',
+    },
+    {
+      accessory_number: 'GT 0137',
+      quantity: '21.4H',
+      description: 'Central Gasket',
+    },
+    {
+      accessory_number: 'GT 0146',
+      quantity: '21.4H',
+      description: 'Sash Striker Gasket',
+    },
+    {
+      accessory_number: 'GT 0152',
+      quantity: '21.4H',
+      description: 'Frame Gasket',
+    },
+  ],
+  notes: {
+    dimensions_unit: 'mm',
+    variables: {
+      L: 'Overall length of window opening',
+      H: 'Overall height of window opening',
+      H1: 'Alternative height measurement',
+    },
+    gasket_quantities: '21.4H indicates gasket length requirement relative to height H',
+  },
+  // Full 45° miter configuration used by ROCK 60 2D cutting list & optimization helpers
+  rock60_45_degree_config: {
+    window_system: 'ROCK 60',
+    cut_angle: '45°',
+    frame_profiles: {
+      main_frame: {
+        profile_code: 'RC 6111-8',
+        new_code: '1 061 1138',
+        weight_kg_m: 1.315,
+        cuts: [
+          {
+            purpose: 'horizontal_frame',
+            quantity: 2,
+            calculation: 'L + 60',
+            cut_angle: '45° left',
+            notes: 'Add 60mm for miter joints',
+          },
+          {
+            purpose: 'vertical_frame',
+            quantity: 2,
+            calculation: 'H + 60',
+            cut_angle: '45° left',
+            notes: 'Add 60mm for miter joints',
+          },
+        ],
+      },
+    },
+    sash_profiles: {
+      main_sash: {
+        profile_code: 'RC 6122',
+        new_code: '1 061 1300',
+        weight_kg_m: 1.342,
+        cuts: [
+          {
+            purpose: 'horizontal_sash',
+            quantity: 2,
+            calculation: 'L - 44',
+            cut_angle: '45° right',
+            notes: 'Deduct 44mm for frame clearance',
+          },
+          {
+            purpose: 'vertical_sash',
+            quantity: 2,
+            calculation: 'H - 44',
+            cut_angle: '45° right',
+            notes: 'Deduct 44mm for frame clearance',
+          },
+        ],
+      },
+    },
+    glazing_beads: {
+      bead_profile: {
+        profile_code: 'RC 6166',
+        new_code: '1 061 6180',
+        weight_kg_m: 0.324,
+        cuts: [
+          {
+            purpose: 'horizontal_bead',
+            quantity: 2,
+            calculation: 'L - 167',
+            cut_angle: '45°',
+            notes: 'Miter cut both ends',
+          },
+          {
+            purpose: 'vertical_bead',
+            quantity: 2,
+            calculation: 'H - 205',
+            cut_angle: '45°',
+            notes: 'Miter cut both ends',
+          },
+        ],
+      },
+    },
+    glass: {
+      type: 'Double Glass 24mm',
+      dimensions: {
+        width: 'L - 167',
+        height: 'H - 167',
+      },
+      quantity: 1,
+    },
+    hardware_45_degree_setup: {
+      hinges: {
+        code: '0253',
+        quantity: 2,
+        position: '45° miter joints',
+        installation: 'Mount on 45° cut faces',
+      },
+      corner_connectors: {
+        pressure_plates: {
+          code: '1130',
+          quantity: 4,
+          purpose: '45° corner reinforcement',
+        },
+        cleats: {
+          code: '1110',
+          quantity: 4,
+          purpose: '45° corner locking',
+        },
+      },
+      handle: {
+        code: '0707',
+        quantity: 1,
+        type: 'Common Handle',
+      },
+      locking_system: {
+        code: 'KIT 10451',
+        quantity: 1,
+      },
+    },
+    gaskets_45_degree: {
+      glass_gaskets: [
+        {
+          code: 'GT 0122',
+          quantity: '21.4H',
+          purpose: '45° corner glass sealing',
+        },
+        {
+          code: 'GT 0118',
+          quantity: '21.4H',
+          purpose: '45° corner glass sealing',
+        },
+      ],
+      central_gasket: {
+        code: 'GT 0137',
+        quantity: '21.4H',
+        purpose: 'Meeting stile 45° seal',
+      },
+      striker_gasket: {
+        code: 'GT 0146',
+        quantity: '21.4H',
+        purpose: '45° sash striker seal',
+      },
+      frame_gasket: {
+        code: 'GT 0152',
+        quantity: '21.4H',
+        purpose: '45° frame perimeter seal',
+      },
+    },
+    weight_calculation: {
+      frame_weight: 'L (m) × 6.67 kg',
+      sash_weight: 'H1 (m) × 6.64 kg',
+      total_formula: '(L × 6.67) + (H1 × 6.64) kg',
+    },
+    cutting_instructions: {
+      frame_cuts: 'Cut all frame profiles at 45° - add 60mm for miter overlap',
+      sash_cuts: 'Cut all sash profiles at 45° - deduct 44mm for frame fit',
+      bead_cuts: 'Cut glazing beads at 45° for clean corner joints',
+      tool_setup: 'Use 45° saw blade setting for all aluminum cuts',
+      details: {
+        frame_profiles: {
+          rc_6111_8: {
+            horizontal: '2 × (L + 60mm) – both ends 45°',
+            vertical: '2 × (H + 60mm) – both ends 45°',
+          },
+        },
+        sash_profiles: {
+          rc_6122: {
+            horizontal: '2 × (L - 44mm) – both ends 45°',
+            vertical: '2 × (H - 44mm) – both ends 45°',
+          },
+        },
+        glazing_beads: {
+          rc_6166: {
+            horizontal: '2 × (L - 167mm) – both ends 45°',
+            vertical: '2 × (H - 205mm) – both ends 45°',
+          },
+        },
+      },
+    },
+  },
+};
+
 interface ProfileManagementProps {
   onProfilesUpdate?: (profiles: Profile[]) => void;
   userId?: string;
@@ -92,6 +386,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 }) => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [filteredProfiles, setFilteredProfiles] = useState<Profile[]>([]);
+  const [activeImportTab, setActiveImportTab] = useState('manual');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -101,6 +396,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [materialFilter, setMaterialFilter] = useState<string>('all');
   const [regionFilter, setRegionFilter] = useState<string>('all');
   const [subscription, setSubscription] = useState<any>(null);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+  const [isUploadingPreview, setIsUploadingPreview] = useState<string | null>(null);
 
   // Form state
   const [formData, setFormData] = useState<Partial<Profile>>({
@@ -118,48 +415,152 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     supplier: '',
     systemBrand: 'Standard',
     grainDirection: null,
+    weightPerMeter: undefined,
     specifications: {},
   });
 
+  const handleImportDXF = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const parsed = await parseProfileFromDXF(file);
+
+      setFormData((prev) => ({
+        ...prev,
+        name: prev.name || parsed.name,
+        material: prev.material || parsed.material || 'aluminum',
+        width: prev.width || parsed.width || 50,
+        height: prev.height || parsed.height || 25,
+        thickness: prev.thickness || parsed.thickness || 1.4,
+        specifications: {
+          ...(prev.specifications || {}),
+          ...(parsed.specifications || {}),
+        },
+      }));
+
+      toast.success('DXF imported. Please review the detected values before saving.');
+    } catch (err) {
+      console.error('Error importing DXF profile:', err);
+      toast.error('Failed to import profile from DXF');
+    } finally {
+      // Reset input so the same file can be re-selected if needed
+      event.target.value = '';
+    }
+  };
+
   // Load profiles from Supabase
   const loadProfiles = useCallback(async () => {
+    // If we don't have a user yet, don't hit Supabase – just clear state and stop loading
+    if (!userId) {
+      setLoading(false);
+      setProfiles([]);
+      setFilteredProfiles([]);
+      return;
+    }
+
     try {
       setLoading(true);
-      const { data, error: fetchError } = await supabase
+      // Use untyped Supabase client here to avoid friction with generated types
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+      const { data, error: fetchError } = await db
         .from('fabricator_profiles')
         .select('*')
-        .eq('user_id', userId || '')
+        .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-      if (fetchError) throw fetchError;
+      if (fetchError) {
+        throw fetchError;
+      }
 
-      const mappedProfiles: Profile[] = (data || []).map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        material: p.material as 'aluminum' | 'upvc' | 'wood',
-        width: p.width,
-        height: p.height,
-        thickness: p.thickness,
-        color: p.color || '#C0C0C0',
-        costPerMeter: p.cost_per_meter,
-        cuttingAllowance: p.cutting_allowance,
-        stockQuantity: p.stock_quantity,
-        minStockLevel: p.min_stock_level,
-        maxStockLevel: p.max_stock_level,
-        supplier: p.supplier || '',
-        systemBrand: p.system_brand,
-        grainDirection: p.grain_direction,
-        specifications: p.specifications || {},
-        userId: p.user_id,
-        createdAt: p.created_at ? new Date(p.created_at) : undefined,
-        updatedAt: p.updated_at ? new Date(p.updated_at) : undefined,
-      }));
+      let rows = data || [];
+
+      // Seed ROCK 60 template profile once per user if it does not exist yet
+      const hasRock60Template = rows.some(
+        (p: any) => p.specifications?.window_system === 'ROCK 60'
+      );
+
+      if (!hasRock60Template) {
+        const seedProfile = {
+          user_id: userId,
+          name: 'ROCK 60 System Template',
+          material: 'aluminum',
+          width: 60,
+          height: 60,
+          thickness: 1.8,
+          color: '#C0C0C0',
+          cost_per_meter: 0,
+          cutting_allowance: 3,
+          stock_quantity: 0,
+          min_stock_level: 0,
+          max_stock_level: 1000,
+          supplier: 'Global Template',
+          system_brand: 'ROCK 60',
+          grain_direction: null,
+          specifications: {
+            ...ROCK60_WINDOW_SYSTEM_TEMPLATE,
+            template: true,
+            template_type: 'window_system',
+          },
+        };
+
+        const { error: seedError } = await db
+          .from('fabricator_profiles')
+          .insert(seedProfile);
+
+        if (seedError) {
+          console.error('Error seeding ROCK 60 template profile:', seedError);
+        } else {
+          const { data: reloaded, error: reloadError } = await db
+            .from('fabricator_profiles')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
+
+          if (reloadError) {
+            console.error('Error reloading profiles after seeding:', reloadError);
+          } else if (reloaded) {
+            rows = reloaded;
+          }
+        }
+      }
+
+      const mappedProfiles: Profile[] = rows.map((p: any) => {
+        const specs = p.specifications || {};
+        return {
+          id: p.id,
+          name: p.name,
+          material: p.material as 'aluminum' | 'upvc' | 'wood',
+          width: p.width,
+          height: p.height,
+          thickness: p.thickness,
+          color: p.color || '#C0C0C0',
+          costPerMeter: p.cost_per_meter,
+          cuttingAllowance: p.cutting_allowance,
+          stockQuantity: p.stock_quantity,
+          minStockLevel: p.min_stock_level,
+          maxStockLevel: p.max_stock_level,
+          supplier: p.supplier || '',
+          systemBrand: p.system_brand,
+          grainDirection: p.grain_direction,
+          weightPerMeter:
+            typeof specs.weightPerMeterKg === 'number'
+              ? specs.weightPerMeterKg
+              : undefined,
+          specifications: specs,
+          userId: p.user_id,
+          createdAt: p.created_at ? new Date(p.created_at) : undefined,
+          updatedAt: p.updated_at ? new Date(p.updated_at) : undefined,
+        };
+      });
 
       setProfiles(mappedProfiles);
       setFilteredProfiles(mappedProfiles);
       if (onProfilesUpdate) {
         onProfilesUpdate(mappedProfiles);
       }
+      setHasLoadedOnce(true);
     } catch (err) {
       console.error('Error loading profiles:', err);
       setError(err instanceof Error ? err.message : 'Failed to load profiles');
@@ -173,7 +574,9 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   useEffect(() => {
     if (!userId) return;
 
-    const channel = supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const db = supabase as any;
+    const channel = db
       .channel('fabricator_profiles_changes')
       .on(
         'postgres_changes',
@@ -194,7 +597,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
     return () => {
       if (subscription) {
-        supabase.removeChannel(subscription);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (supabase as any).removeChannel(subscription);
       }
     };
   }, [userId, loadProfiles]);
@@ -237,6 +641,46 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     setFilteredProfiles(filtered);
   }, [profiles, searchTerm, materialFilter, regionFilter]);
 
+  const handleUploadPreviewImage = async (event: React.ChangeEvent<HTMLInputElement>, profile: Profile) => {
+    const file = event.target.files?.[0];
+    if (!file || !userId) return;
+
+    try {
+      setIsUploadingPreview(profile.id);
+      const path = `${userId}/${profile.id}/${Date.now()}-${file.name}`;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const storage = (supabase as unknown as { storage: any }).storage.from('profile-previews');
+      const { error } = await storage.upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data: pub } = storage.getPublicUrl(path);
+      const url = (pub.publicUrl || (pub as any).publicURL) as string;
+
+      const nextSpecs = {
+        ...(profile.specifications || {}),
+        previewImageUrl: url,
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+      const { error: updateError } = await db
+        .from('fabricator_profiles')
+        .update({ specifications: nextSpecs })
+        .eq('id', profile.id)
+        .eq('user_id', userId);
+
+      if (updateError) throw updateError;
+
+      await loadProfiles();
+      toast.success('Profile preview image uploaded');
+    } catch (err) {
+      console.error('Error uploading profile preview image:', err);
+      toast.error('Failed to upload profile preview image');
+    } finally {
+      setIsUploadingPreview(null);
+      event.target.value = '';
+    }
+  };
+
   const handleAddProfile = async () => {
     if (!formData.name || !formData.material) {
       setError('Name and material are required');
@@ -252,7 +696,26 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       setSaving(true);
       setError(null);
 
-      const { data, error: insertError } = await supabase
+      const specs = {
+        ...(formData.specifications || {}),
+        ...(formData.weightPerMeter !== undefined
+          ? { weightPerMeterKg: formData.weightPerMeter }
+          : {}),
+      };
+
+      // Derive cost per meter for aluminum from kg, otherwise use entered per‑meter price
+      let effectiveCostPerMeter = formData.costPerMeter || 0;
+      if (
+        formData.material === 'aluminum' &&
+        typeof (specs as any).costPerKg === 'number' &&
+        typeof formData.weightPerMeter === 'number'
+      ) {
+        effectiveCostPerMeter = (specs as any).costPerKg * formData.weightPerMeter;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+      const { data, error: insertError } = await db
         .from('fabricator_profiles')
         .insert({
           user_id: userId,
@@ -262,7 +725,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           height: formData.height,
           thickness: formData.thickness,
           color: formData.color,
-          cost_per_meter: formData.costPerMeter,
+          cost_per_meter: effectiveCostPerMeter,
           cutting_allowance: formData.cuttingAllowance,
           stock_quantity: formData.stockQuantity || 0,
           min_stock_level: formData.minStockLevel || 0,
@@ -270,7 +733,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           supplier: formData.supplier || '',
           system_brand: formData.systemBrand || 'Standard',
           grain_direction: formData.grainDirection,
-          specifications: formData.specifications || {},
+          specifications: specs,
         })
         .select()
         .single();
@@ -298,7 +761,25 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       setSaving(true);
       setError(null);
 
-      const { error: updateError } = await supabase
+      const specs = {
+        ...(formData.specifications || {}),
+        ...(formData.weightPerMeter !== undefined
+          ? { weightPerMeterKg: formData.weightPerMeter }
+          : {}),
+      };
+
+      let effectiveCostPerMeter = formData.costPerMeter || 0;
+      if (
+        formData.material === 'aluminum' &&
+        typeof (specs as any).costPerKg === 'number' &&
+        typeof formData.weightPerMeter === 'number'
+      ) {
+        effectiveCostPerMeter = (specs as any).costPerKg * formData.weightPerMeter;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+      const { error: updateError } = await db
         .from('fabricator_profiles')
         .update({
           name: formData.name,
@@ -307,7 +788,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           height: formData.height,
           thickness: formData.thickness,
           color: formData.color,
-          cost_per_meter: formData.costPerMeter,
+          cost_per_meter: effectiveCostPerMeter,
           cutting_allowance: formData.cuttingAllowance,
           stock_quantity: formData.stockQuantity,
           min_stock_level: formData.minStockLevel,
@@ -315,7 +796,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           supplier: formData.supplier,
           system_brand: formData.systemBrand,
           grain_direction: formData.grainDirection,
-          specifications: formData.specifications,
+          specifications: specs,
           updated_at: new Date().toISOString(),
         })
         .eq('id', editingId)
@@ -342,7 +823,9 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     if (!userId) return;
 
     try {
-      const { error: deleteError } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+      const { error: deleteError } = await db
         .from('fabricator_profiles')
         .delete()
         .eq('id', id)
@@ -375,6 +858,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       supplier: profile.supplier,
       systemBrand: profile.systemBrand || 'Standard',
       grainDirection: profile.grainDirection,
+      weightPerMeter: profile.weightPerMeter,
       specifications: profile.specifications || {},
     });
   };
@@ -396,6 +880,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       supplier: '',
       systemBrand: 'Standard',
       grainDirection: null,
+      weightPerMeter: undefined,
       specifications: {},
     });
   };
@@ -460,10 +945,19 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
     try {
       const text = await file.text();
-      const imported: Profile[] = JSON.parse(text);
+      const raw = JSON.parse(text);
+
+      // Support both a raw array and an object wrapper like { profiles: [...] }
+      const imported: Profile[] = Array.isArray(raw)
+        ? raw
+        : Array.isArray((raw as any)?.profiles)
+        ? (raw as any).profiles
+        : (() => {
+            throw new Error('Invalid JSON format. Expected an array of profiles or { "profiles": [...] }.');
+          })();
       
       if (!Array.isArray(imported)) {
-        throw new Error('Invalid JSON format');
+        throw new Error('Invalid JSON format. Expected an array of profiles.');
       }
 
       // Validate and import profiles
@@ -471,6 +965,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       
       if (validProfiles.length === 0) {
         throw new Error('No valid profiles found in file');
+      }
+
+      if (!userId) {
+        throw new Error('User ID is required to import profiles');
       }
 
       // Insert profiles
@@ -490,10 +988,17 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         supplier: p.supplier || '',
         system_brand: p.systemBrand || 'Standard',
         grain_direction: p.grainDirection,
-        specifications: p.specifications || {},
+        specifications: {
+          ...(p.specifications || {}),
+          ...(p.weightPerMeter !== undefined
+            ? { weightPerMeterKg: p.weightPerMeter }
+            : {}),
+        },
       }));
 
-      const { error: insertError } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+      const { error: insertError } = await db
         .from('fabricator_profiles')
         .insert(profilesToInsert);
 
@@ -503,7 +1008,12 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       toast.success(`Imported ${validProfiles.length} profiles`);
     } catch (err) {
       console.error('Error importing profiles:', err);
-      toast.error('Failed to import profiles');
+      const message =
+        err instanceof Error ? err.message : 'Failed to import profiles';
+      toast.error(message);
+    } finally {
+      // Allow re‑selecting the same file
+      event.target.value = '';
     }
   };
 
@@ -519,7 +1029,9 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       }));
 
       for (const update of updates) {
-        const { error } = await supabase
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = supabase as any;
+        const { error } = await db
           .from('fabricator_profiles')
           .update({ [field === 'costPerMeter' ? 'cost_per_meter' : 'stock_quantity']: update[field === 'costPerMeter' ? 'cost_per_meter' : 'stock_quantity'] })
           .eq('id', update.id)
@@ -562,7 +1074,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     return MATERIAL_COLORS[formData.material || 'aluminum'] || MATERIAL_COLORS.aluminum;
   };
 
-  if (loading) {
+  // Show full-page loader only on the first load
+  if (loading && !hasLoadedOnce) {
     return (
       <Card className="bg-gray-700/50 border-gray-600">
         <CardContent className="p-8 text-center">
@@ -721,6 +1234,26 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-gray-400">
+              You can also start a new profile from a DXF file exported from your CAD system.
+            </p>
+            <label>
+              <Button variant="outline" size="sm" asChild>
+                <span>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Import from DXF
+                </span>
+              </Button>
+              <input
+                type="file"
+                accept=".dxf"
+                onChange={handleImportDXF}
+                className="hidden"
+              />
+            </label>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Profile Name *</Label>
@@ -753,7 +1286,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               </Select>
             </div>
             <div>
-              <Label>Width (mm)</Label>
+              <Label>Face Width (mm)</Label>
               <Input
                 type="number"
                 step="0.1"
@@ -762,7 +1295,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Height (mm)</Label>
+              <Label>Depth / Section Height (mm)</Label>
               <Input
                 type="number"
                 step="0.1"
@@ -811,6 +1344,41 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 onChange={(e) => setFormData({ ...formData, costPerMeter: parseFloat(e.target.value) || 0 })}
               />
             </div>
+            {formData.material === 'aluminum' && (
+              <div>
+                <Label>Cost per Kg (Aluminum)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={(formData.specifications as any)?.costPerKg ?? ''}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      specifications: {
+                        ...(formData.specifications || {}),
+                        costPerKg: e.target.value ? parseFloat(e.target.value) : undefined,
+                      },
+                    })
+                  }
+                  placeholder="e.g., 6.50"
+                />
+              </div>
+            )}
+            <div>
+              <Label>Weight per Meter (kg/m) – Aluminum</Label>
+              <Input
+                type="number"
+                step="0.001"
+                value={formData.weightPerMeter ?? ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    weightPerMeter: e.target.value ? parseFloat(e.target.value) : undefined,
+                  })
+                }
+                placeholder="e.g., 1.250"
+              />
+            </div>
             <div>
               <Label>Cutting Allowance (mm)</Label>
               <Input
@@ -853,6 +1421,65 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 value={formData.supplier || ''}
                 onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
                 placeholder="Supplier name"
+              />
+            </div>
+            <div>
+              <Label>Profile Role in System</Label>
+              <Select
+                value={(formData.specifications as any)?.profileRole || 'frame'}
+                onValueChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    specifications: {
+                      ...(formData.specifications || {}),
+                      profileRole: value,
+                    },
+                  })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="frame">Frame</SelectItem>
+                  <SelectItem value="sash">Sash</SelectItem>
+                  <SelectItem value="mullion">Mullion / Transom</SelectItem>
+                  <SelectItem value="glazing_bead">Glazing Bead</SelectItem>
+                  <SelectItem value="interlock">Interlock</SelectItem>
+                  <SelectItem value="accessory">Accessory Profile</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Supplier Code</Label>
+              <Input
+                value={(formData.specifications as any)?.supplierCode || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    specifications: {
+                      ...(formData.specifications || {}),
+                      supplierCode: e.target.value,
+                    },
+                  })
+                }
+                placeholder="e.g., ALS-PS-50"
+              />
+            </div>
+            <div>
+              <Label>Internal Code</Label>
+              <Input
+                value={(formData.specifications as any)?.internalCode || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    specifications: {
+                      ...(formData.specifications || {}),
+                      internalCode: e.target.value,
+                    },
+                  })
+                }
+                placeholder="Factory code (ERP)"
               />
             </div>
             <div>
@@ -899,6 +1526,218 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 </Select>
               </div>
             )}
+            <div>
+              <Label>Series</Label>
+              <Input
+                value={(formData.specifications as any)?.series || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    specifications: {
+                      ...(formData.specifications || {}),
+                      series: e.target.value,
+                    },
+                  })
+                }
+                placeholder="e.g., PS Jumbo, 70 Series"
+              />
+            </div>
+            <div>
+              <Label>Year</Label>
+              <Input
+                type="number"
+                value={(formData.specifications as any)?.year || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    specifications: {
+                      ...(formData.specifications || {}),
+                      year: e.target.value,
+                    },
+                  })
+                }
+                placeholder="e.g., 2025"
+              />
+            </div>
+            <div>
+              <Label>Glazing Thickness Min (mm)</Label>
+              <Input
+                type="number"
+                step="0.1"
+                value={(formData.specifications as any)?.glazingMinMm || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    specifications: {
+                      ...(formData.specifications || {}),
+                      glazingMinMm: e.target.value ? parseFloat(e.target.value) : undefined,
+                    },
+                  })
+                }
+                placeholder="e.g., 18"
+              />
+            </div>
+            <div>
+              <Label>Glazing Thickness Max (mm)</Label>
+              <Input
+                type="number"
+                step="0.1"
+                value={(formData.specifications as any)?.glazingMaxMm || ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    specifications: {
+                      ...(formData.specifications || {}),
+                      glazingMaxMm: e.target.value ? parseFloat(e.target.value) : undefined,
+                    },
+                  })
+                }
+                placeholder="e.g., 32"
+              />
+            </div>
+            <div>
+              <Label>Extra Cutting Allowance for Border Frames (mm)</Label>
+              <Input
+                type="number"
+                step="0.1"
+                value={(formData.specifications as any)?.borderExtraAllowanceMm ?? ''}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    specifications: {
+                      ...(formData.specifications || {}),
+                      borderExtraAllowanceMm: e.target.value ? parseFloat(e.target.value) : undefined,
+                    },
+                  })
+                }
+                placeholder="Default 5mm when frame has 5 cm border"
+              />
+            </div>
+
+            {/* Egyptian market specific details (optional) */}
+            <div className="col-span-2 border-t border-gray-700 pt-4 mt-2">
+              <Label>Egyptian Sliding / Casement Details (optional)</Label>
+              <p className="text-xs text-gray-400 mb-2">
+                Use this to describe Egyptian sliding and casement frames with liners / borders
+                (flat or décor), such as Alsalam PS small / big / jumbo series with 5 cm frame
+                border included or without.
+              </p>
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                <div>
+                  <Label>Frame Type</Label>
+                  <Select
+                    value={(formData.specifications as any)?.egyptFrameType || 'sliding'}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        specifications: {
+                          ...(formData.specifications || {}),
+                          egyptFrameType: value,
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select frame type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="sliding">Sliding Frame</SelectItem>
+                      <SelectItem value="casement">Casement Frame</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Border / Liner Style</Label>
+                  <Select
+                    value={(formData.specifications as any)?.egyptBorderStyle || 'flat'}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        specifications: {
+                          ...(formData.specifications || {}),
+                          egyptBorderStyle: value,
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select style" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="flat">Flat Liner</SelectItem>
+                      <SelectItem value="decor">Décor Liner</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Alsalam PS Series</Label>
+                  <Select
+                    value={(formData.specifications as any)?.egyptSeries || 'ps_small'}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        specifications: {
+                          ...(formData.specifications || {}),
+                          egyptSeries: value,
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select series" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ps_small">Alsalam PS – Small</SelectItem>
+                      <SelectItem value="ps_big">Alsalam PS – Big</SelectItem>
+                      <SelectItem value="ps_jumbo">
+                        Alsalam PS – Jumbo (with 5 cm frame border)
+                      </SelectItem>
+                      <SelectItem value="custom">Other / Custom</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>5 cm Frame Border</Label>
+                  <Select
+                    value={(formData.specifications as any)?.egyptBorderIncluded ?? 'with'}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        specifications: {
+                          ...(formData.specifications || {}),
+                          egyptBorderIncluded: value,
+                        },
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Border option" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="with">Included (5 cm border)</SelectItem>
+                      <SelectItem value="without">Without border</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="mt-3">
+                <Label>Profile Notes / Regional Description</Label>
+                <Textarea
+                  className="mt-1"
+                  placeholder="Example: Egyptian sliding frame, Alsalam PS Jumbo with integrated 5 cm décor liner border."
+                  value={(formData.specifications as any)?.description || ''}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      specifications: {
+                        ...(formData.specifications || {}),
+                        description: e.target.value,
+                      },
+                    })
+                  }
+                />
+              </div>
+            </div>
           </div>
 
           <div className="flex gap-2">
@@ -930,6 +1769,29 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         </CardContent>
       </Card>
 
+      {/* ELSHERIF Catalog Import */}
+      <Card className="bg-gray-800/50 border-gray-700">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-blue-400" />
+            ELSHERIF Catalog Import
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ElsherifImportWizard
+            onProfilesImported={(importedProfiles) => {
+              setProfiles((prev) => [...prev, ...importedProfiles]);
+              setFilteredProfiles((prev) => [...prev, ...importedProfiles]);
+              if (onProfilesUpdate) {
+                onProfilesUpdate([...profiles, ...importedProfiles]);
+              }
+              toast.success(`Successfully imported ${importedProfiles.length} ELSHERIF profiles`);
+            }}
+            userId={userId}
+          />
+        </CardContent>
+      </Card>
+
       {/* Profiles List */}
       <Card className="bg-gray-800/50 border-gray-700">
         <CardHeader>
@@ -949,6 +1811,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                   profile.minStockLevel > 0
                     ? Math.min((profile.stockQuantity / profile.minStockLevel) * 100, 100)
                     : 100;
+                const specs = profile.specifications || {};
 
                 return (
                   <div key={profile.id} className="p-4 bg-gray-700 rounded-lg">
@@ -977,6 +1840,23 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                           <div>Stock: {profile.stockQuantity}m</div>
                           <div>Supplier: {profile.supplier || 'N/A'}</div>
                         </div>
+                        <div className="grid grid-cols-4 gap-4 text-xs text-gray-400 mt-2">
+                          <div>
+                            TwinCode:
+                            <span className="ml-1 font-mono">
+                              {(specs.internalCode as string) || profile.id.slice(0, 8)}/
+                              {(specs.supplierCode as string) || '—'}
+                            </span>
+                          </div>
+                          <div>Series: {(specs.series as string) || '—'}</div>
+                          <div>Year: {(specs.year as string) || '—'}</div>
+                          <div>
+                            DXF:
+                            <span className="ml-1">
+                              {specs.dxfImported ? 'Imported' : '—'}
+                            </span>
+                          </div>
+                        </div>
                         <div className="mt-2">
                           <div className="flex justify-between text-xs mb-1">
                             <span>Stock Level</span>
@@ -985,22 +1865,50 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                           <Progress value={stockPercentage} className="h-2" />
                         </div>
                       </div>
-                      <div className="flex gap-2 ml-4">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditProfile(profile)}
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteProfile(profile.id)}
-                          className="text-red-400 hover:text-red-300"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                      <div className="flex flex-col items-end gap-2 ml-4">
+                        {specs.previewImageUrl && (
+                          <img
+                            src={specs.previewImageUrl as string}
+                            alt={profile.name}
+                            className="w-24 h-24 rounded border border-gray-600 object-cover"
+                          />
+                        )}
+                        <div className="flex gap-2">
+                          <label>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={isUploadingPreview === profile.id}
+                              asChild
+                            >
+                              <span>
+                                <Upload className="h-4 w-4 mr-1" />
+                                {isUploadingPreview === profile.id ? 'Uploading...' : '2D Preview'}
+                              </span>
+                            </Button>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleUploadPreviewImage(e, profile)}
+                              className="hidden"
+                            />
+                          </label>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditProfile(profile)}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteProfile(profile.id)}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>

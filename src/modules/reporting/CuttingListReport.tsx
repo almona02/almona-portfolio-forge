@@ -421,8 +421,19 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
                         <tr key={cutIndex} className="border-b">
                           <td className={`p-2 ${getTextAlign(language, 'left')}`}>{cut.sequence}</td>
                           <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.length, language, 2)}</td>
-                          <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatNumber(cut.angle, language, 1)}°</td>
-                          <td className={`p-2 ${getTextAlign(language, 'left')}`}>{cut.componentId}</td>
+                          <td className={`p-2 ${getTextAlign(language, 'left')}`}>
+                            {cut.angle === 45
+                              ? `${formatNumber(cut.angle, language, 1)}° miter`
+                              : `${formatNumber(cut.angle, language, 1)}°`}
+                          </td>
+                          <td className={`p-2 ${getTextAlign(language, 'left')}`}>
+                            {cut.componentId}
+                            {cut.componentType && (
+                              <span className="ml-1 text-[10px] text-muted-foreground">
+                                ({cut.componentType})
+                              </span>
+                            )}
+                          </td>
                           <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.position, language, 2)}</td>
                           <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.waste, language, 2)}</td>
                         </tr>

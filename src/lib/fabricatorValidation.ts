@@ -41,11 +41,15 @@ export function validateMeasurements(data: MeasurementData): ValidationResult {
   }
 
   // Validate window type
-  const validWindowTypes = ['sliding_window', 'casement', 'tilt_turn', 'sliding_door', 'fixed_window'];
+  const validWindowTypePrefixes = ['sliding_window', 'casement', 'tilt_turn', 'sliding_door', 'fixed_window', 'fixed'];
   if (!data.windowType) {
     errors.push({ field: 'windowType', message: 'Window type is required' });
-  } else if (!validWindowTypes.includes(data.windowType)) {
-    errors.push({ field: 'windowType', message: 'Invalid window type selected' });
+  } else {
+    const type = data.windowType.toLowerCase();
+    const isValidType = validWindowTypePrefixes.some(prefix => type === prefix || type.startsWith(prefix));
+    if (!isValidType) {
+      errors.push({ field: 'windowType', message: 'Invalid window type selected' });
+    }
   }
 
   // Validate color (optional but if provided should be valid)
@@ -119,8 +123,10 @@ export function validateWindowComponent(component: WindowComponent, profiles: Pr
 
 /**
  * Validates project data completeness
+ * @param project - The project to validate
+ * @param requireComponents - Whether to require components (default: true)
  */
-export function validateProject(project: WindowUnit | null): ValidationResult {
+export function validateProject(project: WindowUnit | null, requireComponents: boolean = true): ValidationResult {
   const errors: ValidationError[] = [];
 
   if (!project) {
@@ -144,7 +150,8 @@ export function validateProject(project: WindowUnit | null): ValidationResult {
     errors.push({ field: 'overallHeight', message: 'Overall height must be greater than 0' });
   }
 
-  if (!project.components || project.components.length === 0) {
+  // Only require components if explicitly requested (e.g., after design phase)
+  if (requireComponents && (!project.components || project.components.length === 0)) {
     errors.push({ field: 'components', message: 'At least one component is required' });
   }
 

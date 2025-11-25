@@ -173,17 +173,49 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           </div>
           
           <div>
-            <Label htmlFor="windowType">Window Type</Label>
+            <Label htmlFor="windowType">Window Type & Layout</Label>
             <Select value={measurements.windowType} onValueChange={(value) => handleInputChange('windowType', value)}>
               <SelectTrigger className={`bg-gray-800 border-gray-600 ${getFieldError('windowType') ? 'border-red-500' : ''}`}>
-                <SelectValue placeholder="Select window type" />
+                <SelectValue placeholder="Select window or door layout" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sliding_window">Sliding Window</SelectItem>
-                <SelectItem value="casement">Casement</SelectItem>
-                <SelectItem value="tilt_turn">Tilt & Turn</SelectItem>
-                <SelectItem value="sliding_door">Sliding Door</SelectItem>
-                <SelectItem value="fixed_window">Fixed Window</SelectItem>
+              <SelectContent className="bg-gray-800 border-gray-600 text-white z-50 space-y-1">
+                <div className="px-2 pt-1 text-xs uppercase tracking-wide text-gray-400">Sliding Windows</div>
+                <SelectItem value="sliding_window_2sash" className="bg-gray-800 hover:bg-gray-700 text-white">
+                  Sliding Window – 2 Sash
+                </SelectItem>
+                <SelectItem value="sliding_window_4sash" className="bg-gray-800 hover:bg-gray-700 text-white">
+                  Sliding Window – 4 Sash
+                </SelectItem>
+                <SelectItem value="sliding_window_3sash_center_fixed" className="bg-gray-800 hover:bg-gray-700 text-white">
+                  Sliding Window – 3 Sash (Center Fixed)
+                </SelectItem>
+
+                <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Casement / Tilt & Turn</div>
+                <SelectItem value="casement" className="bg-gray-800 hover:bg-gray-700 text-white">
+                  Casement – Single
+                </SelectItem>
+                <SelectItem value="casement_double" className="bg-gray-800 hover:bg-gray-700 text-white">
+                  Casement – Double (Left / Right)
+                </SelectItem>
+                <SelectItem value="tilt_turn" className="bg-gray-800 hover:bg-gray-700 text-white">
+                  Tilt &amp; Turn
+                </SelectItem>
+
+                <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Doors</div>
+                <SelectItem value="sliding_door_2panel" className="bg-gray-800 hover:bg-gray-700 text-white">
+                  Sliding Door – 2 Panel
+                </SelectItem>
+                <SelectItem value="casement_door" className="bg-gray-800 hover:bg-gray-700 text-white">
+                  Casement Door (Single / Double)
+                </SelectItem>
+
+                <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Fixed & Combinations</div>
+                <SelectItem value="fixed_window" className="bg-gray-800 hover:bg-gray-700 text-white">
+                  Fixed Window
+                </SelectItem>
+                <SelectItem value="fixed_with_side_casements" className="bg-gray-800 hover:bg-gray-700 text-white">
+                  Fixed + Side Casements
+                </SelectItem>
               </SelectContent>
             </Select>
             {getFieldError('windowType') && (
@@ -197,11 +229,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               <SelectTrigger className="bg-gray-800 border-gray-600">
                 <SelectValue placeholder="Select color" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Silver">Silver</SelectItem>
-                <SelectItem value="White">White</SelectItem>
-                <SelectItem value="Black">Black</SelectItem>
-                <SelectItem value="Bronze">Bronze</SelectItem>
+              <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
+                <SelectItem value="Silver" className="bg-gray-800 hover:bg-gray-700 text-white">Silver</SelectItem>
+                <SelectItem value="White" className="bg-gray-800 hover:bg-gray-700 text-white">White</SelectItem>
+                <SelectItem value="Black" className="bg-gray-800 hover:bg-gray-700 text-white">Black</SelectItem>
+                <SelectItem value="Bronze" className="bg-gray-800 hover:bg-gray-700 text-white">Bronze</SelectItem>
               </SelectContent>
             </Select>
           </div>

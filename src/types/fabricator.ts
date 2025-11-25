@@ -1,3 +1,11 @@
+export type WindowUnitStatus =
+  | 'measuring'
+  | 'design'
+  | 'optimized'
+  | 'production'
+  | 'quality'
+  | 'delivered';
+
 export interface WindowUnit {
   id: string;
   orderNumber: string;
@@ -9,10 +17,12 @@ export interface WindowUnit {
   color: string;
   glazing: any;
   hardware: any[];
-  status: string;
+  status: WindowUnitStatus;
   optimization: OptimizationResult | null;
   createdAt: Date;
   updatedAt: Date;
+  dueDate?: Date;
+  customer?: string;
 }
 
 export interface WindowComponent {
@@ -49,7 +59,14 @@ export interface Profile {
   systemBrand?: string; // 'Yilmaz', 'Local Brand', etc.
   weightPerMeter?: number;
   grainDirection?: 'horizontal' | 'vertical' | null;
-  specifications?: Record<string, any>;
+  specifications?: {
+    originalWeight?: number;
+    aluminumPricePerKg?: number;
+    markupPercentage?: number;
+    cuttingType?: string;
+    optimizedFor45Degree?: boolean;
+    [key: string]: any; // ... other specifications
+  };
   userId?: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -107,6 +124,7 @@ export interface Cut {
   length: number;
   angle: number;
   componentId: string;
+  componentType?: string;
   waste: number;
 }
 

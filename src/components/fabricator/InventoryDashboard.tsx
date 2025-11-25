@@ -54,6 +54,7 @@ import { toast } from 'sonner';
 import { WindowUnit, Profile } from '@/types/fabricator';
 import { remnantManager, type Remnant, type RemnantStatistics, type RemnantConsolidationSuggestion } from '@/lib/inventory/RemnantManager';
 import { supabase } from '@/lib/supabase';
+import { Rock60PricingSetup } from '@/components/fabricator/Rock60PricingSetup';
 
 interface InventoryDashboardProps {
   inventory: Profile[];
@@ -381,14 +382,30 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     });
   }, [remnants, searchQuery, filterMaterial, filterStatus]);
 
+  // Project-specific/customer inventory view
+  const projectProfiles = useMemo(() => {
+    if (!project || !project.components || project.components.length === 0) {
+      return [];
+    }
+
+    const ids = project.components.map((c) => c.profile.id);
+    return inventory
+      .filter((p) => ids.includes(p.id))
+      .map((p) => ({
+        profile: p,
+        status: getStockStatus(p),
+      }));
+  }, [project, inventory]);
+
   if (!inventory || inventory.length === 0) {
     return (
       <Card className="bg-gray-700/50 border-gray-600">
         <CardContent className="p-8 text-center">
           <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No Inventory Data</h3>
+          <h3 className="text-lg font-semibold mb-2">No Inventory Data Yet</h3>
           <p className="text-gray-400">
-            Inventory data is not available. Please refresh the page or contact support.
+            Inventory is empty. Add or import profiles in the Profile Management section above to
+            see stock levels and alerts here.
           </p>
         </CardContent>
       </Card>
@@ -453,7 +470,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         </Alert>
       )}
 
-      {/* Overview Stats */}
+        {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-gray-700/50 border-gray-600">
           <CardContent className="p-4">
@@ -609,97 +626,166 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             </CardContent>
           </Card>
 
-          {/* Search and Filters */}
-          <Card className="bg-gray-700/50 border-gray-600">
-            <CardContent className="p-4">
-              <div className="flex flex-wrap gap-4">
-                <div className="flex-1 min-w-[200px]">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      placeholder="Search profiles..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-                <Select value={filterMaterial} onValueChange={setFilterMaterial}>
-                  <SelectTrigger className="w-[150px]">
-                    <SelectValue placeholder="Material" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Materials</SelectItem>
-                    <SelectItem value="aluminum">Aluminum</SelectItem>
-                    <SelectItem value="upvc">UPVC</SelectItem>
-                    <SelectItem value="wood">Wood</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Inventory List */}
-          <Card className="bg-gray-700/50 border-gray-600">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Package className="h-5 w-5 text-orange-400" />
-                Profile Inventory
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {filteredInventory.map((profile) => {
-                  const status = getStockStatus(profile);
-                  const stockPercentage = profile.minStockLevel
-                    ? Math.min((profile.stockQuantity / (profile.minStockLevel * 2)) * 100, 100)
-                    : 0;
-
-                  return (
-                    <div
-                      key={profile.id}
-                      className={`p-4 rounded-lg border ${getStatusColor(status)} ${getStatusBgColor(status)}`}
-                    >
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-semibold">{profile.name}</h4>
-                            <Badge variant="outline" className={getStatusColor(status)}>
-                              <div className="flex items-center gap-1">
-                                {getStatusIcon(status)}
-                                {status.toUpperCase().replace('_', ' ')}
-                              </div>
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-gray-400">
-                            {profile.material} • {profile.width}mm • {profile.color}
-                          </p>
-                        </div>
-                        {profile.userId && locations.length > 0 && (
-                          <div className="flex items-center gap-2 text-sm text-gray-400">
-                            <MapPin className="h-4 w-4" />
-                            {locations.find(l => l.isDefault)?.name || 'Default'}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Stock: {profile.stockQuantity}m</span>
-                          <span>Min Level: {profile.minStockLevel}m</span>
-                        </div>
-                        <Progress value={stockPercentage} className="h-2" />
-                        <div className="flex justify-between text-sm text-gray-400">
-                          <span>Cost: ${profile.costPerMeter}/m</span>
-                          <span>Supplier: {profile.supplier || 'N/A'}</span>
-                        </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Main inventory list and filters */}
+            <div className="lg:col-span-2 space-y-4">
+              {/* Search and Filters */}
+              <Card className="bg-gray-700/50 border-gray-600">
+                <CardContent className="p-4">
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex-1 min-w-[200px]">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          placeholder="Search profiles..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-10"
+                        />
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
+                    <Select value={filterMaterial} onValueChange={setFilterMaterial}>
+                      <SelectTrigger className="w-[150px]">
+                        <SelectValue placeholder="Material" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Materials</SelectItem>
+                        <SelectItem value="aluminum">Aluminum</SelectItem>
+                        <SelectItem value="upvc">UPVC</SelectItem>
+                        <SelectItem value="wood">Wood</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Inventory List */}
+              <Card className="bg-gray-700/50 border-gray-600">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Package className="h-5 w-5 text-orange-400" />
+                    Profile Inventory
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {filteredInventory.map((profile) => {
+                      const status = getStockStatus(profile);
+                      const stockPercentage = profile.minStockLevel
+                        ? Math.min((profile.stockQuantity / (profile.minStockLevel * 2)) * 100, 100)
+                        : 0;
+
+                      return (
+                        <div
+                          key={profile.id}
+                          className={`p-4 rounded-lg border ${getStatusColor(status)} ${getStatusBgColor(status)}`}
+                        >
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-semibold">{profile.name}</h4>
+                                <Badge variant="outline" className={getStatusColor(status)}>
+                                  <div className="flex items-center gap-1">
+                                    {getStatusIcon(status)}
+                                    {status.toUpperCase().replace('_', ' ')}
+                                  </div>
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-gray-400">
+                                {profile.material} • {profile.width}mm • {profile.color}
+                              </p>
+                            </div>
+                            {profile.userId && locations.length > 0 && (
+                              <div className="flex items-center gap-2 text-sm text-gray-400">
+                                <MapPin className="h-4 w-4" />
+                                {locations.find(l => l.isDefault)?.name || 'Default'}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span>Stock: {profile.stockQuantity}m</span>
+                              <span>Min Level: {profile.minStockLevel}m</span>
+                            </div>
+                            <Progress value={stockPercentage} className="h-2" />
+                            <div className="flex justify-between text-sm text-gray-400">
+                              <span>Cost: ${profile.costPerMeter}/m</span>
+                              <span>Supplier: {profile.supplier || 'N/A'}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Customer / project inventory & ROCK 60 pricing side panel */}
+            <div className="space-y-4">
+              <Card className="bg-gray-700/50 border-gray-600">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Warehouse className="h-4 w-4 text-blue-400" />
+                    Customer Inventory
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3 text-xs">
+                  {!project ? (
+                    <p className="text-gray-400">
+                      No active project selected. Customer inventory will appear here when a job is
+                      loaded.
+                    </p>
+                  ) : projectProfiles.length === 0 ? (
+                    <p className="text-gray-400">
+                      Project has no linked profiles yet. Once components are defined, their stock
+                      status will be shown here.
+                    </p>
+                  ) : (
+                    <>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-gray-400">Customer</span>
+                        <Badge variant="outline" className="text-[10px] max-w-[140px] truncate">
+                          {project.customer || 'Unnamed customer'}
+                        </Badge>
+                      </div>
+                      <div className="space-y-2 max-h-72 overflow-y-auto">
+                        {projectProfiles.map(({ profile, status }) => (
+                          <div
+                            key={profile.id}
+                            className="flex justify-between items-center gap-2 border-b border-gray-700 pb-1 last:border-b-0"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="truncate">{profile.name}</p>
+                              <p className="text-[10px] text-gray-400">
+                                Stock {profile.stockQuantity}m • Min {profile.minStockLevel}m
+                              </p>
+                            </div>
+                            <Badge
+                              variant="outline"
+                              className={`text-[10px] ${getStatusColor(status)}`}
+                            >
+                              {status === 'out_of_stock'
+                                ? 'Out'
+                                : status === 'low'
+                                ? 'Low'
+                                : status === 'high'
+                                ? 'OK'
+                                : '—'}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* ROCK 60 pricing setup (per-element) */}
+              <Rock60PricingSetup profiles={inventory} userId={userId} />
+            </div>
+          </div>
         </TabsContent>
 
         {/* Remnants Tab */}
