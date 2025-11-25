@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
-import { FileText, Calendar, User, DollarSign } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 interface OrderManagementProps {
   orders?: any[];

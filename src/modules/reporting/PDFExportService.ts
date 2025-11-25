@@ -206,12 +206,13 @@ export class PDFExportService {
 
   private async addHeader() {
     // Company Name
+    const primaryColor = this.hexToRgb(this.branding.primaryColor || '#FF6B35');
     this.currentPage.drawText(this.branding.companyName, {
       x: this.margin,
       y: this.pageHeight - this.currentY,
       size: 18,
       font: this.boldFont,
-      color: this.hexToRgb(this.branding.primaryColor || '#FF6B35'),
+      color: rgb(primaryColor[0] / 255, primaryColor[1] / 255, primaryColor[2] / 255),
     });
     this.currentY += 20;
 
@@ -264,17 +265,18 @@ export class PDFExportService {
       this.pageNumber++;
     }
 
+    const sectionColor = this.hexToRgb(this.branding.primaryColor || '#FF6B35');
     this.currentPage.drawText(title, {
       x: this.margin,
       y: this.pageHeight - this.currentY,
       size: 16,
       font: this.boldFont,
-      color: this.hexToRgb(this.branding.primaryColor || '#FF6B35'),
+      color: rgb(sectionColor[0] / 255, sectionColor[1] / 255, sectionColor[2] / 255),
     });
     this.currentY += 20;
 
     // Underline
-    const color = this.hexToRgb(this.branding.primaryColor || '#FF6B35');
+    const color = sectionColor;
     this.currentPage.drawLine({
       start: { x: this.margin, y: this.pageHeight - this.currentY },
       end: { x: this.pageWidth - this.margin, y: this.pageHeight - this.currentY },
@@ -445,19 +447,20 @@ export class PDFExportService {
       this.currentY += 15;
     }
 
+    const totalColor = this.hexToRgb(this.branding.primaryColor || '#FF6B35');
     this.currentPage.drawText('Total:', {
       x: this.pageWidth - this.margin - 150,
       y: this.pageHeight - this.currentY,
       size: 14,
       font: this.boldFont,
-      color: this.hexToRgb(this.branding.primaryColor || '#FF6B35'),
+      color: rgb(totalColor[0] / 255, totalColor[1] / 255, totalColor[2] / 255),
     });
     this.currentPage.drawText(`$${quote.total.toFixed(2)}`, {
       x: this.pageWidth - this.margin,
       y: this.pageHeight - this.currentY,
       size: 14,
       font: this.boldFont,
-      color: this.hexToRgb(this.branding.primaryColor || '#FF6B35'),
+      color: rgb(totalColor[0] / 255, totalColor[1] / 255, totalColor[2] / 255),
     });
     this.currentY += 20;
   }
@@ -499,8 +502,11 @@ export class PDFExportService {
     this.currentY += 12;
 
     plan.cuts.forEach((cut, cutIndex) => {
+      const isMiter45 = cut.angle === 45;
+      const angleLabel = isMiter45 ? `${cut.angle}° miter` : `${cut.angle}°`;
+
       this.currentPage.drawText(
-        `  ${cutIndex + 1}. Length: ${cut.length}mm, Angle: ${cut.angle}°`,
+        `  ${cutIndex + 1}. Length: ${cut.length}mm, Angle: ${angleLabel}`,
         {
           x: this.margin + 10,
           y: this.pageHeight - this.currentY,
@@ -592,10 +598,14 @@ export class PDFExportService {
   private async addAssemblyGuide(project: WindowUnit) {
     const steps = [
       '1. Prepare all components according to cutting list',
-      '2. Assemble frame components with proper corner connections',
-      '3. Install hardware (hinges, locks, handles)',
-      '4. Insert glazing unit',
-      '5. Install weather seals',
+      '2. For ROCK 60 / 45° systems:',
+      '   • Cut all frame profiles at 45° – add 60mm for miter overlap (RC 6111-8).',
+      '   • Cut all sash profiles at 45° – deduct 44mm for frame fit (RC 6122).',
+      '   • Cut glazing beads at 45° – L - 167mm / H - 205mm (RC 6166).',
+      '   • Use corner connectors 1130 (pressure plates) and 1110 (cleats) for all 45° corners.',
+      '3. Assemble frame components with proper corner connections',
+      '4. Install hardware (hinges 0253, locks, handles 0707, KIT 10451)',
+      '5. Insert glazing unit and install weather seals (GT 0122 / GT 0118 / GT 0137 / GT 0146 / GT 0152)',
       '6. Quality check and final adjustments',
     ];
 

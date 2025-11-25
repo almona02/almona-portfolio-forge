@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Progress } from '@/shared/ui/ui/progress';
 import { Zap, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
-import { WindowUnit, Profile, OptimizationResult, WindowComponent } from '@/types/fabricator';
+import { WindowUnit } from '@/types/fabricator';
 
 interface QualityControlProps {
   project: WindowUnit | null;

@@ -82,6 +82,10 @@ export const TechnicalCalculator: React.FC<TechnicalCalculatorProps> = ({
 
     setError(null);
 
+    const specs = profile.specifications || {};
+    const isMiter45 =
+      specs.cuttingType === 'miter_45' || specs.optimizedFor45Degree === true;
+
     const newComponent: WindowComponent = {
       id: `comp_${Date.now()}`,
       type: 'frame',
@@ -90,13 +94,116 @@ export const TechnicalCalculator: React.FC<TechnicalCalculatorProps> = ({
       height: project?.overallHeight || 1500,
       quantity: 1,
       cuttingLengths: [project?.overallWidth || 1200, project?.overallHeight || 1500],
-      angles: [90, 90],
+      // For ROCK 60 / ELSHERIF 45°-optimized profiles, default to 45° miter cuts
+      angles: isMiter45 ? [45, 45] : [90, 90],
       machiningOperations: [],
       glazingType: 'double',
       hardware: []
     };
 
     setComponents(prev => [...prev, newComponent]);
+  };
+
+  const applyRock60Template = () => {
+    if (!project) {
+      setError('Project data is missing. Please complete the measuring step first.');
+      return;
+    }
+
+    if (!profiles || profiles.length === 0) {
+      setError('No profiles available in inventory to apply ROCK 60 template.');
+      return;
+    }
+
+    const baseRockProfile =
+      profiles.find((p) => p.specifications && (p.specifications as any).rock60_45_degree_config) ||
+      profiles.find(
+        (p) =>
+          p.systemBrand === 'ROCK 60' ||
+          (p.specifications && (p.specifications as any).window_system === 'ROCK 60')
+      );
+
+    if (!baseRockProfile) {
+      setError('ROCK 60 template profile not found in inventory.');
+      return;
+    }
+
+    const L = project.overallWidth;
+    const H = project.overallHeight;
+
+    const frameProfile: Profile = {
+      ...baseRockProfile,
+      specifications: {
+        ...(baseRockProfile.specifications || {}),
+        profileRole: 'frame',
+      },
+    };
+
+    const sashProfile: Profile = {
+      ...baseRockProfile,
+      specifications: {
+        ...(baseRockProfile.specifications || {}),
+        profileRole: 'sash',
+      },
+    };
+
+    const beadProfile: Profile = {
+      ...baseRockProfile,
+      specifications: {
+        ...(baseRockProfile.specifications || {}),
+        profileRole: 'glazing_bead',
+      },
+    };
+
+    const now = Date.now();
+
+    const templateComponents: WindowComponent[] = [
+      {
+        id: `rock60_frame_${now}`,
+        type: 'frame',
+        profile: frameProfile,
+        width: L,
+        height: H,
+        quantity: 1,
+        // 2 × (L + 60), 2 × (H + 60)
+        cuttingLengths: [L + 60, L + 60, H + 60, H + 60],
+        angles: [45, 45, 45, 45],
+        machiningOperations: [],
+        glazingType: 'double',
+        hardware: [],
+      },
+      {
+        id: `rock60_sash_${now}`,
+        type: 'sash',
+        profile: sashProfile,
+        width: L,
+        height: H,
+        quantity: 1,
+        // 2 × (L - 44), 2 × (H - 44)
+        cuttingLengths: [L - 44, L - 44, H - 44, H - 44],
+        angles: [45, 45, 45, 45],
+        machiningOperations: [],
+        glazingType: 'double',
+        hardware: [],
+      },
+      {
+        id: `rock60_bead_${now}`,
+        type: 'glazing_bead',
+        profile: beadProfile,
+        width: L,
+        height: H,
+        quantity: 1,
+        // 2 × (L - 167), 2 × (H - 205)
+        cuttingLengths: [L - 167, L - 167, H - 205, H - 205],
+        angles: [45, 45, 45, 45],
+        machiningOperations: [],
+        glazingType: 'double',
+        hardware: [],
+      },
+    ];
+
+    setError(null);
+    setComponents(templateComponents);
   };
 
   const removeComponent = (id: string) => {
@@ -195,7 +302,7 @@ export const TechnicalCalculator: React.FC<TechnicalCalculatorProps> = ({
             </Alert>
           )}
           
-          <div className="flex gap-4 items-end">
+          <div className="flex flex-col md:flex-row md:items-end gap-3 md:gap-4">
             <div className="flex-1">
               <label className="text-sm font-medium mb-2 block">Select Profile</label>
               <select 
@@ -211,10 +318,20 @@ export const TechnicalCalculator: React.FC<TechnicalCalculatorProps> = ({
                 ))}
               </select>
             </div>
-            <Button onClick={addComponent} disabled={!selectedProfile}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Component
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={addComponent} disabled={!selectedProfile}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Component
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="text-xs"
+                onClick={applyRock60Template}
+              >
+                Apply ROCK 60 45° Template
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
