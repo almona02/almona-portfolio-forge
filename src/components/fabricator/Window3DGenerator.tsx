@@ -40,7 +40,7 @@ import {
   Maximize2
 } from 'lucide-react';
 import { track } from '@/lib/analytics';
-import { validateProject } from '@/lib/fabricatorValidation';
+import { validateProject, validateProjectWithConstraints, deriveSystemConstraintsFromProfiles } from '@/lib/fabricatorValidation';
 import { Progress } from '@/shared/ui/ui/progress';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/ui/tooltip';
@@ -823,7 +823,8 @@ export function WindowErrorOverlay({
   windowUnit: WindowUnit;
   profiles?: Profile[];
 }) {
-  const validation = validateProject(windowUnit, false);
+  const constraints = profiles ? deriveSystemConstraintsFromProfiles(profiles) : null;
+  const validation = validateProjectWithConstraints(windowUnit, constraints);
   const errors = validation.errors;
   const width = windowUnit.overallWidth / 1000;
   const height = windowUnit.overallHeight / 1000;
@@ -1241,8 +1242,8 @@ export const Window3DGenerator: React.FC<Window3DGeneratorProps> = ({
   
   const modelRef = useRef<THREE.Group | null>(null);
   const controlsRef = useRef<any>(null);
-  
-  const validation = validateProject(windowUnit, false);
+  const constraints = deriveSystemConstraintsFromProfiles(profiles || []);
+  const validation = validateProjectWithConstraints(windowUnit, constraints);
   const hasErrors = validation.errors.length > 0;
 
   const handleModelReady = useCallback((model: THREE.Group) => {

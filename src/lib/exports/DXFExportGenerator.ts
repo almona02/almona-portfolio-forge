@@ -10,6 +10,7 @@ import { DXFExportOptions, QRCodeData } from './types';
 import { WindowUnit, OptimizationResult, CuttingPlan } from '@/types/fabricator';
 import { cuttingListGenerator } from '../reports/CuttingListGenerator';
 import { qrBarcodeGenerator } from './QRBarcodeGenerator';
+import { getMachineProfile } from './machineProfiles';
 
 // Lazy import dxf-writer
 let DxfWriter: any;
@@ -39,7 +40,12 @@ export class DXFExportGenerator {
 
     const units = options.units || 'mm';
     const scale = options.scale || 1;
-    const layerName = options.layerName || 'CUTTING_PLAN';
+
+    const machineProfile = getMachineProfile(options.machineProfileId);
+    const layerName =
+      options.layerName ||
+      machineProfile?.dxfLayout?.cuttingLayer ||
+      'CUTTING_PLAN';
 
     // Generate report data
     const reportData = cuttingListGenerator.generateReportData(project, optimization);
@@ -69,8 +75,8 @@ export class DXFExportGenerator {
 
     // Add QR code and barcode data if requested
     if (options.includeQRCode) {
-      this.addQRCodeData(dxf, project, options);
-      this.addBarcodeData(dxf, reportData, options);
+      this.addQRCodeData(dxf, project, options, machineProfile?.dxfLayout?.qrLayer);
+      this.addBarcodeData(dxf, reportData, options, machineProfile?.dxfLayout?.barcodeLayer);
     }
 
     // Generate DXF content
@@ -83,8 +89,8 @@ export class DXFExportGenerator {
   /**
    * Add QR code data as annotation
    */
-  private addQRCodeData(dxf: any, project: WindowUnit, options: DXFExportOptions): void {
-    const qrLayer = 'QR_CODE';
+  private addQRCodeData(dxf: any, project: WindowUnit, options: DXFExportOptions, overrideLayer?: string): void {
+    const qrLayer = overrideLayer || 'QR_CODE';
     const qrData: QRCodeData = {
       projectId: project.id,
       orderNumber: project.orderNumber,
@@ -125,8 +131,8 @@ export class DXFExportGenerator {
   /**
    * Add barcode data for components
    */
-  private addBarcodeData(dxf: any, reportData: any, options: DXFExportOptions): void {
-    const barcodeLayer = 'BARCODES';
+  private addBarcodeData(dxf: any, reportData: any, options: DXFExportOptions, overrideLayer?: string): void {
+    const barcodeLayer = overrideLayer || 'BARCODES';
     let yOffset = -130;
 
     dxf.drawText(

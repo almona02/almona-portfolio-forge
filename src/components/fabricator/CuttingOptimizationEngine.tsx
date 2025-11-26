@@ -24,7 +24,8 @@ import { YilmazGCodeGenerator, YilmazMachineModel } from '@/integrations/yilmaz/
 import { MachineValidator } from '@/integrations/yilmaz/MachineValidator';
 import { YilmazCNC } from '@/integrations/yilmaz/YilmazCNC';
 import { ReportEngine } from '@/modules/reporting';
-import { PDFExportService, CompanyBranding } from '@/modules/reporting';
+import { PDFExportService } from '@/modules/reporting';
+import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 
 interface CuttingOptimizationEngineProps {
   project: WindowUnit | null;
@@ -65,6 +66,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
   const [exportSuccess, setExportSuccess] = useState(false);
   const [showReportGenerator, setShowReportGenerator] = useState(false);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const { branding } = useCompanyBranding();
 
   const availableMachines: YilmazMachineModel[] = [
     'AIM-3410',
@@ -137,12 +139,6 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
     setExportError(null);
 
     try {
-      // Default branding - in production, this would come from user settings
-      const branding: CompanyBranding = {
-        companyName: 'Almona',
-        primaryColor: '#FF6B35',
-      };
-
       const pdfService = new PDFExportService(branding);
       const blob = await pdfService.generateCuttingListPDF(project, optimization, { branding });
 

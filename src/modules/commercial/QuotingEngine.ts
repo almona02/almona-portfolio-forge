@@ -3,7 +3,7 @@
  * Calculates pricing with profit margins and cost analysis
  */
 
-import { WindowUnit, OptimizationResult, Profile } from '@/types/fabricator';
+import { WindowUnit, OptimizationResult } from '@/types/fabricator';
 
 export interface QuoteLineItem {
   id: string;
@@ -14,6 +14,73 @@ export interface QuoteLineItem {
   category: 'material' | 'labor' | 'hardware' | 'glazing' | 'installation' | 'other';
   cost: number;
   margin: number;
+}
+
+/**
+ * Commercial / contractual sections for a professional aluminium windows offer.
+ * These are optional on the Quote and can be progressively filled from UI
+ * or regional defaults.
+ */
+export interface OfferPartyInfo {
+  companyName: string;
+  contactName?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  taxId?: string;
+  vatNumber?: string;
+  registrationNumber?: string;
+  branchName?: string;
+}
+
+export interface ProjectScopeSummary {
+  projectName?: string;
+  siteAddress?: string;
+  scopeOfSupply: string;
+  exclusions?: string[];
+  buildingType?: string; // villa, tower, compound, mall, etc.
+  notes?: string;
+}
+
+export interface TechnicalSummary {
+  systems: string[]; // e.g. ['ROCK 60', 'JUMBO100']
+  glazingSummary?: string;
+  finishSummary?: string;
+  hardwareSummary?: string;
+  performanceSummary?: string; // U-values, air/water/wind, etc.
+}
+
+export interface PaymentMilestone {
+  label: string; // e.g. 'On order', 'Before delivery', 'After installation'
+  percentage?: number;
+  fixedAmount?: number;
+}
+
+export interface PaymentTerms {
+  currency: string;
+  depositPercentage?: number;
+  milestones?: PaymentMilestone[];
+  paymentMethods?: string[]; // bank transfer, cheque, LC...
+  validityDays?: number;
+  latePaymentPolicy?: string;
+  bankDetails?: string;
+}
+
+export interface WarrantyInfo {
+  profilesYears?: number;
+  hardwareYears?: number;
+  glazingYears?: number;
+  workmanshipYears?: number;
+  notes?: string;
+}
+
+export interface GeneralTerms {
+  validityDays?: number;
+  cancellationPolicy?: string;
+  priceAdjustmentClause?: string;
+  forceMajeureClause?: string;
+  jurisdiction?: string;
+  disputeResolution?: string;
 }
 
 export interface Quote {
@@ -35,6 +102,16 @@ export interface Quote {
   estimatedProductionTime: number;
   deliveryDate?: Date;
   notes?: string;
+  // Advanced commercial sections
+  parties?: {
+    seller: OfferPartyInfo;
+    buyer?: OfferPartyInfo;
+  };
+  projectScope?: ProjectScopeSummary;
+  technicalSummary?: TechnicalSummary;
+  paymentTerms?: PaymentTerms;
+  warranty?: WarrantyInfo;
+  generalTerms?: GeneralTerms;
 }
 
 export interface PricingConfig {
@@ -175,6 +252,61 @@ export class QuotingEngine {
       profitMargin,
       estimatedProductionTime: optimization.estimatedProductionTime,
       deliveryDate: this.calculateDeliveryDate(optimization.estimatedProductionTime),
+      // Minimal defaults for advanced commercial sections – these can be
+      // enriched by UI or regional presets later.
+      parties: {
+        seller: {
+          companyName: '', // to be populated from branding / settings
+        },
+        buyer: customerName
+          ? {
+              companyName: customerName,
+            }
+          : undefined,
+      },
+      projectScope: {
+        projectName: project.orderNumber,
+        siteAddress: undefined,
+        scopeOfSupply: 'Supply and/or installation of aluminium/UPVC windows and doors as per attached schedule.',
+        exclusions: [
+          'Civil works (masonry, plaster, concrete)',
+          'Electrical and low-current works',
+          'Curtains, blinds, and interior finishing items',
+        ],
+        buildingType: undefined,
+      },
+      technicalSummary: {
+        systems: [project.type],
+        glazingSummary: project.glazing
+          ? `${project.glazing.type} glazing`
+          : undefined,
+        finishSummary: project.color ? `Profiles finished in ${project.color}` : undefined,
+      },
+      paymentTerms: {
+        currency: 'USD',
+        depositPercentage: 30,
+        milestones: [
+          { label: 'On order confirmation', percentage: 30 },
+          { label: 'Before delivery', percentage: 60 },
+          { label: 'After installation completion', percentage: 10 },
+        ],
+        validityDays: 30,
+      },
+      warranty: {
+        profilesYears: 10,
+        hardwareYears: 2,
+        glazingYears: 5,
+        workmanshipYears: 2,
+      },
+      generalTerms: {
+        validityDays: 30,
+        cancellationPolicy:
+          'Orders cancelled after fabrication start may incur restocking or fabrication charges.',
+        priceAdjustmentClause:
+          'Prices are based on current aluminium and glass costs and may be adjusted in case of significant market fluctuations.',
+        forceMajeureClause:
+          'Delays caused by events beyond the control of the supplier (force majeure) shall extend the delivery timeline without penalty.',
+      },
     };
 
     return quote;

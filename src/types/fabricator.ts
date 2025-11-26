@@ -23,6 +23,33 @@ export interface WindowUnit {
   updatedAt: Date;
   dueDate?: Date;
   customer?: string;
+  /** Optional short human-friendly project code (for labels, machine fields, etc.) */
+  projectCode?: string;
+   /** Optional customer twin code used inside Fabricator (label-friendly) */
+  customerCode?: string;
+  /** Optional position/pose twin code for machine labels & reports */
+  positionCode?: string;
+  /** Optional system pack (e.g. rock60, jumbo100) used for this position */
+  systemPackId?: string;
+  /**
+   * Number of identical positions/poses for this unit (e.g. same window
+   * repeated across many flats). Used for large-scale projects.
+   */
+  quantity?: number;
+  /**
+   * Optional positional metadata for big projects (up to tens of thousands
+   * of openings): flat, floor, zone, remarks, etc.
+   */
+  positionMeta?: {
+    flatNumber?: string;
+    buildingBlock?: string;
+    floor?: string;
+    unitOrApartment?: string;
+    elevation?: string;
+    roomOrZone?: string;
+    windowIndex?: string;
+    remarks?: string;
+  };
 }
 
 export interface WindowComponent {

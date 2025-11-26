@@ -19,7 +19,11 @@ import {
   User,
   Bell,
   Search,
-  Workflow
+  Workflow,
+  Users,
+  FileText,
+  Calculator,
+  Coins
 } from 'lucide-react';
 
 interface IndustrialNavbarProps {
@@ -58,7 +62,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
   const fabricationModules = [
     {
       name: "Cutting Optimization",
-      path: "/fabricator/cutting",
+      path: "/fabricator-workflow#optimization",
       icon: <Scissors className="h-4 w-4" />,
       status: "optimal",
       efficiency: "92.5%",
@@ -66,7 +70,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     },
     {
       name: "Machine Control",
-      path: "/fabricator/machine-control",
+      path: "/machines",
       icon: <Cpu className="h-4 w-4" />,
       status: "running",
       efficiency: "87.2%",
@@ -74,7 +78,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     },
     {
       name: "Production Scheduler",
-      path: "/fabricator/scheduler",
+      path: "/fabricator-workflow#production",
       icon: <Workflow className="h-4 w-4" />,
       status: "optimal",
       efficiency: "94.1%",
@@ -96,6 +100,20 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
       efficiency: "100%",
       description: "Live performance metrics"
     }
+  ];
+
+  // Business navigation: customers, projects, inventory, etc.
+  const businessNav = [
+    { name: "Customers", path: "/customers", icon: <Users className="h-4 w-4" /> },
+    { name: "Projects", path: "/projects", icon: <Factory className="h-4 w-4" /> },
+    { name: "Inventory", path: "/inventory", icon: <Package className="h-4 w-4" /> },
+    { name: "Profiles & Accessories", path: "/fabricator-workflow#inventory", icon: <Scissors className="h-4 w-4" /> },
+    { name: "Quick Reports", path: "/reports", icon: <FileText className="h-4 w-4" /> },
+    { name: "Machines", path: "/machines", icon: <Cpu className="h-4 w-4" /> },
+    { name: "Settings & Prices", path: "/pricing-settings", icon: <Settings className="h-4 w-4" /> },
+    { name: "Commercial Offers", path: "/offers", icon: <FileText className="h-4 w-4" /> },
+    { name: "Cost Reports", path: "/cost-reports", icon: <Calculator className="h-4 w-4" /> },
+    { name: "Accounting", path: "/accounting", icon: <Coins className="h-4 w-4" /> },
   ];
 
   // Quick actions for operators
@@ -293,6 +311,49 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                 </motion.div>
               )}
             </motion.button>
+
+            {/* Business Navigation Dropdown */}
+            <motion.div className="relative">
+              <IndustrialButton
+                variant="secondary"
+                onClick={() => setActiveMenu(activeMenu === 'business' ? null : 'business')}
+              >
+                <Workflow className="w-4 h-4" />
+                <span className="hidden lg:inline">Fabricator Menu</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${
+                  activeMenu === 'business' ? 'rotate-180' : ''
+                }`} />
+              </IndustrialButton>
+
+              <AnimatePresence>
+                {activeMenu === 'business' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full right-0 mt-2 w-[420px] bg-gray-800/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl shadow-orange-500/20 overflow-hidden z-50"
+                  >
+                    <div className="p-4 grid grid-cols-2 gap-2">
+                      {businessNav.map((item) => (
+                        <Link
+                          key={item.name}
+                          to={item.path}
+                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-orange-500/10 transition-all duration-200"
+                          onClick={() => setActiveMenu(null)}
+                        >
+                          <div className="text-orange-400">
+                            {item.icon}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-white truncate text-sm">{item.name}</div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
             {/* Fabrication Modules Dropdown */}
             <motion.div className="relative">
