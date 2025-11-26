@@ -33,6 +33,12 @@ export interface BaseExportOptions {
   includeQRCode?: boolean;
   includeDiagrams?: boolean;
   includeMetadata?: boolean;
+  /**
+   * Optional machine export profile identifier.
+   * When provided, generators can tailor column layouts / layers
+   * to a specific saw or machining center format.
+   */
+  machineProfileId?: string;
 }
 
 /**
@@ -67,6 +73,34 @@ export interface DXFExportOptions extends BaseExportOptions {
   scale?: number;
   includeDimensions?: boolean;
   includeAnnotations?: boolean;
+}
+
+/**
+ * Machine export profile definition – describes how cutting / machining
+ * data should be formatted for a specific target (e.g. generic saw CSV).
+ */
+export interface MachineExportProfile {
+  id: string;
+  label: string;
+  description?: string;
+  target: 'saw' | 'machining_center' | 'cnc_router';
+  format: ExportFormat;
+  /**
+   * For CSV exports, defines the column order and labels expected
+   * by the machine software.
+   */
+  csvLayout?: {
+    headers: string[];
+  };
+  /**
+   * For DXF exports, defines layer naming conventions or other hints.
+   */
+  dxfLayout?: {
+    cuttingLayer?: string;
+    annotationLayer?: string;
+    qrLayer?: string;
+    barcodeLayer?: string;
+  };
 }
 
 /**

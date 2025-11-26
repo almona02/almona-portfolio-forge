@@ -11,6 +11,7 @@ import { WindowUnit, OptimizationResult, CuttingPlan } from '@/types/fabricator'
 import { cuttingListGenerator } from '../reports/CuttingListGenerator';
 import { qrBarcodeGenerator } from './QRBarcodeGenerator';
 import { formatNumber, formatUnit, formatDate, getLocaleConfig, Locale } from '../localization/formatUtils';
+import { getMachineProfile } from './machineProfiles';
 
 /**
  * CSV export generator
@@ -41,56 +42,92 @@ export class CSVExportGenerator {
     // Build CSV content
     const rows: string[] = [];
 
-    // Headers
-    if (includeHeaders) {
-      rows.push(this.buildHeaderRow(delimiter, locale));
-    }
+    // If a machine profile is selected and it targets saw CSV, generate
+    // a flat machine-friendly cutting list instead of the richer human
+    // report layout.
+    const machineProfile = getMachineProfile(options.machineProfileId);
+    if (machineProfile && machineProfile.format === 'csv' && machineProfile.target === 'saw') {
+      const headers =
+        machineProfile.csvLayout?.headers || [
+          'BAR_INDEX',
+          'CUT_INDEX',
+          'PROFILE_NAME',
+          'COMPONENT_ID',
+          'COMPONENT_TYPE',
+          'LENGTH_MM',
+          'ANGLE_DEG',
+          'WASTE_MM',
+        ];
+      rows.push(headers);
 
-    // Project information
-    rows.push(this.buildProjectInfoRow(project, delimiter));
-    rows.push([]); // Empty row
-
-    // Summary row
-    rows.push(this.buildSummaryRow(reportData.summary, delimiter, decimalSeparator));
-    rows.push([]); // Empty row
-
-    // Cutting plans
-    reportData.cuttingPlans.forEach((plan, planIndex) => {
-      // Plan header
-      rows.push(this.buildPlanHeaderRow(plan, planIndex + 1, delimiter));
-      
-      // Cuts
-      plan.cuts.forEach((cut, cutIndex) => {
-        rows.push(this.buildCutRow(cut, cutIndex + 1, delimiter, decimalSeparator, locale));
-      });
-
-      // Plan summary
-      rows.push(this.buildPlanSummaryRow(plan, delimiter, decimalSeparator));
-      rows.push([]); // Empty row between plans
-    });
-
-    // Add QR code and barcode data if requested
-    if (options.includeQRCode) {
-      rows.push([]); // Empty row
-      rows.push(this.buildQRCodeRow(project, delimiter));
-    }
-
-    // Add barcode data for components
-    if (options.includeQRCode) {
-      rows.push([]); // Empty row
-      rows.push(['BARCODES']);
-      rows.push(['Component ID', 'SKU', 'Barcode']);
-      reportData.cuttingPlans.forEach((plan) => {
-        plan.cuts.forEach((cut) => {
-          const barcodeData = qrBarcodeGenerator.generateBarcodeData({
-            sku: `SKU-${cut.componentId}`,
-            componentId: cut.componentId,
-            partNumber: cut.componentType,
-            dimensions: `${cut.length}mm`
-          });
-          rows.push([cut.componentId, `SKU-${cut.componentId}`, barcodeData]);
+      reportData.cuttingPlans.forEach((plan, planIndex) => {
+        const barIndex = planIndex + 1;
+        plan.cuts.forEach((cut: any, cutIndex: number) => {
+          rows.push([
+            String(barIndex),
+            String(cutIndex + 1),
+            plan.profile.name,
+            cut.componentId,
+            cut.componentType || '',
+            this.formatNumberValue(cut.length, decimalSeparator, locale),
+            this.formatNumberValue(cut.angle, decimalSeparator, locale),
+            this.formatNumberValue(cut.waste, decimalSeparator, locale),
+          ]);
         });
       });
+    } else {
+      // Human-friendly report layout (existing behaviour)
+      // Headers
+      if (includeHeaders) {
+        rows.push(this.buildHeaderRow(delimiter, locale));
+      }
+
+      // Project information
+      rows.push(this.buildProjectInfoRow(project, delimiter));
+      rows.push([]); // Empty row
+
+      // Summary row
+      rows.push(this.buildSummaryRow(reportData.summary, delimiter, decimalSeparator, locale));
+      rows.push([]); // Empty row
+
+      // Cutting plans
+      reportData.cuttingPlans.forEach((plan, planIndex) => {
+        // Plan header
+        rows.push(this.buildPlanHeaderRow(plan, planIndex + 1, delimiter));
+        
+        // Cuts
+        plan.cuts.forEach((cut, cutIndex) => {
+          rows.push(this.buildCutRow(cut, cutIndex + 1, delimiter, decimalSeparator, locale));
+        });
+
+        // Plan summary
+        rows.push(this.buildPlanSummaryRow(plan, delimiter, decimalSeparator, locale));
+        rows.push([]); // Empty row between plans
+      });
+
+      // Add QR code and barcode data if requested
+      if (options.includeQRCode) {
+        rows.push([]); // Empty row
+        rows.push(this.buildQRCodeRow(project, delimiter));
+      }
+
+      // Add barcode data for components
+      if (options.includeQRCode) {
+        rows.push([]); // Empty row
+        rows.push(['BARCODES']);
+        rows.push(['Component ID', 'SKU', 'Barcode']);
+        reportData.cuttingPlans.forEach((plan) => {
+          plan.cuts.forEach((cut) => {
+            const barcodeData = qrBarcodeGenerator.generateBarcodeData({
+              sku: `SKU-${cut.componentId}`,
+              componentId: cut.componentId,
+              partNumber: cut.componentType,
+              dimensions: `${cut.length}mm`
+            });
+            rows.push([cut.componentId, `SKU-${cut.componentId}`, barcodeData]);
+          });
+        });
+      }
     }
 
     // Convert to CSV string

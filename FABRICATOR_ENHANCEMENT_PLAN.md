@@ -9,7 +9,136 @@
 
 ## 📋 Executive Summary
 
-This document outlines a comprehensive enhancement plan to transform the Almona fabricator platform into a powerful, user-empowered tool with advanced customization, robust reporting, and cutting-edge optimization algorithms. The plan focuses on competitive advantages for the Turkish and Egyptian markets.
+This document outlines a comprehensive enhancement plan to transform the Almona fabricator platform into a powerful, user-empowered tool with advanced customization, robust reporting, and cutting-edge optimization algorithms. The plan focuses on competitive advantages for the Turkish and Egyptian markets, and on reaching parity with, then surpassing, major aluminium design / cutting / reporting systems (Orgadata / Logikal, KLAES, ERCOM 2000, etc.) for fabricators across Egypt, Turkey, MENA, and the Gulf.
+
+---
+
+## 🧭 Competitive Roadmap Overview (A / B / C)
+
+This section condenses the competitive strategy into three pillars that map onto the detailed phases below.
+
+### A. Core Parity With Big Systems (Short–Mid Term)
+
+**Goal:** Match the core capabilities of leading aluminium fabrication systems.
+
+- **Deeper profile system libraries**
+  - Expand the existing ROCK 60 + ELSHERIF implementations into full system libraries for:
+    - Major Turkish systems (Yılmaz, Kale, Asas, Winsa, etc.).
+    - Key Egyptian systems (Alsalam PS small/big/jumbo, Alumil Egypt, others).
+    - Gulf‑popular curtain wall / façade systems.
+  - For each system:
+    - Complete cutting rules (L/H-based formulas, allowances, angle rules).
+    - Hardware kits and gaskets (codes, quantities, positions).
+    - Stock lengths per supplier (typically 6000–7500 mm, capped at 8000 mm).
+    - Finish options (powder coat, anodized, wood effect) and pricing per finish.
+    - Verified catalog IDs and references to original technical manuals.
+  - Extend the current `ROCK60_WINDOW_SYSTEM_TEMPLATE` into a **pluggable “system pack” architecture**:
+    - Each pack encapsulates: profiles, accessories, cutting rules, glass rules, constraints, pricing presets.
+    - Packs can be turned on/off per tenant/region.
+
+- **Machine‑ready cutting, not just lists**
+  - Move from human‑readable lists to **machine‑ready post‑processors**, similar to Logikal exports:
+    - DXF per profile/element with reference points for machining centers.
+    - CSV/XML/JSON outputs aligned with common saw / machining center formats (Elumatec, Fom, Emmegi, etc.).
+    - Per‑machine export profiles (column mapping, units, rounding, tolerances, file naming).
+  - Build on the existing `DXFExportGenerator`, `CSVExportGenerator`, `PDFExportGenerator`:
+    - Add a small “machine profile” registry describing required fields and layout for each supported machine type.
+    - Expose this through Fabricator Pro as “Export to [Machine XYZ]” options.
+
+- **Richer constraints & structural validity**
+  - Beyond the global 8000 mm max stock length (already enforced in the cutting engine), add per‑system rules:
+    - Min/max sash widths/heights.
+    - Max glass area/weight per hardware configuration.
+    - Min overlaps, clearances, rebates per profile system.
+    - Simple wind‑load/span presets per region (Egyptian codes, Turkish TSE, Gulf conditions).
+  - Evolve `validateProject` into a **configurable rules engine per profile system**:
+    - Rule sets live in `specifications` for each system pack.
+    - Validation messages explain violations in everyday shop‑floor language.
+
+- **Quoting & commercial layer**
+  - Build on:
+    - `OptimizationResult` cost breakdowns.
+    - ROCK 60 pricing setup (`rock60_pricing`).
+  - Extend to:
+    - Full offer/quote generator:
+      - Multi‑currency (EGP, TRY, SAR, AED, QAR, USD).
+      - Margins, discounts, payment terms.
+      - Option to lock offers to a metal price index/date.
+    - Customer templates in the client portal with revision history.
+    - “What‑if” pricing:
+      - Change aluminium price per kg and re‑price all open jobs.
+      - Sensitivity analysis (e.g. ±5 % aluminium, ±10 % glass).
+    - Export offers as branded PDFs and, optionally, push summarized data into accounting/ERP.
+
+### B. Regional Edge (Egypt / Turkey / MENA / Gulf)
+
+**Goal:** Be the most natural, localized, and efficient daily tool for regional fabricators.
+
+- **Regional defaults & UX**
+  - Make **Egypt/Turkey/MENA/Gulf presets first‑class**:
+    - Default currencies and VAT/tax handling per country.
+    - Default wind zones and common building types (villa, tower, compound, mall).
+    - Extend existing multi‑locale JSON to cover technical aluminium vocabulary in Arabic, Turkish, French, English.
+  - Pre‑configure **common “recipes”**:
+    - PS sliding (small/big/jumbo), tilt‑and‑turn, shopfront, curtain wall, sliding/folding doors.
+    - Recipes should match how users speak: e.g. “PS jumbo balcony door with 5 cm border”.
+
+- **Multi‑branch / multi‑workshop workflows**
+  - Many regional companies have:
+    - Head office (quoting/design).
+    - One or more factories/workshops.
+    - Site installation teams.
+  - Build on Supabase + existing audit/backup tables to support:
+    - Branch‑aware inventory (extend `inventory_locations` usage).
+    - Role‑based dashboards:
+      - Office: pipeline, quotations, approvals.
+      - Factory: cutting lists, remnant usage, machine queues.
+      - Site: installation status, punch lists, QA.
+    - Project hand‑off chain: `Design → Cutting → Assembly → Glazing → Installation → Handover`, with status tracking.
+
+- **Field‑friendly tools**
+  - You already have `SmartMeasuringInterface` and mobile/AR documentation.
+  - Next steps:
+    - Offline‑first tablet app for site measurements:
+      - Uses local storage / IndexedDB.
+      - Syncs back to Supabase when online.
+    - Simple site QA checklists integrated with `QualityControl`:
+      - Photo capture and mark‑up per element.
+      - Pin issues on a simple elevation drawing or 3D model.
+
+### C. High‑End Optimization & Reporting (To Surpass Competitors)
+
+**Goal:** Go beyond parity into optimization and insight that legacy tools struggle to provide.
+
+- **Strong optimization engine**
+  - Continue Phase 4 plan:
+    - Production‑ready GA for aluminium profiles (fast, robust, parameterized).
+    - CP / exact solvers for glass nesting (2D sheet cutting).
+    - Cross‑job “mass production” mode:
+      - Aggregate all suitable open jobs.
+      - Optimize cutting across them in one run.
+      - Especially valuable for high‑volume MENA/Gulf operations where scrap reduction is critical.
+
+- **Deep reporting & BI**
+  - Build on `fabricator_query_metrics`, audit logs, backup snapshots:
+    - Workshop KPIs:
+      - Waste percentage.
+      - Machine utilization.
+      - Remnant usage vs. scrap.
+      - Late jobs by branch or customer.
+    - Cost KPIs:
+      - Material vs hardware vs glass vs labor share.
+      - Margin per project / customer segment.
+    - Simple dashboards that factory managers can use daily (big numbers, clear trends).
+
+- **Addictive daily UX**
+  - Focus on:
+    - Very fast job creation (templates, system presets, cloning).
+    - One‑click: “Generate cutting, glass, accessories reports + export to machines”.
+    - Minimal clicks from `Measurement → Design → Optimization → Inventory → Production → Quality`.
+  - Make Fabricator Pro feel like a **cockpit, not a form**:
+    - Use the existing step ribbon + side panels, but keep performance polished
+      (code‑splitting, light initial bundle, responsive on mid‑range workshop PCs).
 
 ---
 
@@ -739,4 +868,47 @@ This document outlines a comprehensive enhancement plan to transform the Almona 
 **Document Owner:** Development Team  
 **Last Updated:** 2024  
 **Next Review:** After Phase 1 completion
+
+---
+
+## 🔁 Mapping Competitive Roadmap (A/B/C) to Phases
+
+To keep older phases and the new competitive plan aligned and to surface missing pieces clearly:
+
+- **A. Core parity with big systems**
+  - System libraries and system packs:
+    - Mapped to **Phase 1.1** (Profile/Accessory Management) and **Phase 3.1** (Profile System Library).
+    - Missing: more branded packs (Turkish/Egyptian/Gulf), full cutting and hardware rules, catalog validation.
+  - Machine‑ready exports:
+    - Mapped to **Phase 2.1 / 2.4** (Cutting List, Export System + DXF).
+    - Missing: per‑machine export profiles and field mapping for saws/machining centers.
+  - Rich constraints:
+    - Mapped to **Phase 4.3** (Improved Exact Algorithms) and existing `validateProject` usage.
+    - Missing: per‑system constraint configs and regional structural presets.
+  - Quoting & commercial:
+    - Mapped to **Phase 1.2** (pricing) and **Phase 2** (reporting).
+    - Missing: full quoting UX, offer PDFs, and ERP/accounting integration.
+
+- **B. Regional edge (Egypt/Turkey/MENA/Gulf)**
+  - Regional defaults & UX:
+    - Spread across **Phase 1** (data models), **Phase 3** (visualization), plus localization work.
+    - Missing: country presets, tax/VAT handling, and deep technical localization for all supported languages.
+  - Multi‑branch workflows:
+    - Mapped to **Phase 5.2** (Data Synchronization) and Supabase schema (locations, audit, backups).
+    - Missing: branch‑aware UI, role definitions, and explicit project lifecycle states across departments.
+  - Field tools:
+    - Touches **Phase 3** (visuals) and **Phase 5.2** (sync/offline).
+    - Missing: offline tablet app and richer `QualityControl` flows with photos/markup.
+
+- **C. High‑end optimization & reporting**
+  - Strong optimization engine:
+    - Directly mapped to **Phase 4** (GA, CP, exact algorithms, mass production).
+    - Missing: production‑grade implementations, parameter tuning, and operator‑friendly UIs for batch optimization.
+  - Deep reporting & BI:
+    - Built on **Phase 2** (reports) and **Phase 5.1/5.2** (Supabase schema, metrics, sync).
+    - Missing: interactive dashboards, KPI cards, and exportable BI views.
+  - Addictive UX:
+    - Cross‑cutting: depends on delivering the high‑priority flows in Phases 1–4 and then polishing UX iteratively.
+
+This combined plan is now the single source of truth for both the original phased roadmap and the updated competitive strategy for Egypt/Turkey/MENA/Gulf aluminium fabricators.
 

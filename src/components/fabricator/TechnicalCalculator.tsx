@@ -6,7 +6,8 @@ import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Settings, Calculator, Plus, Trash2, AlertCircle, Box, FileText } from 'lucide-react';
 import { WindowUnit, Profile, OptimizationResult, WindowComponent } from '@/types/fabricator';
 import { Window3DGenerator } from './Window3DGenerator';
-import { PDFExportService, CompanyBranding } from '@/modules/reporting';
+import { PDFExportService } from '@/modules/reporting';
+import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 
 interface TechnicalCalculatorProps {
   project: WindowUnit | null;
@@ -14,16 +15,17 @@ interface TechnicalCalculatorProps {
   profiles: Profile[];
 }
 
-export const TechnicalCalculator: React.FC<TechnicalCalculatorProps> = ({ 
-  project, 
-  onDesignComplete, 
-  profiles 
+export const TechnicalCalculator: React.FC<TechnicalCalculatorProps> = ({
+  project,
+  onDesignComplete,
+  profiles,
 }) => {
   const [components, setComponents] = useState<WindowComponent[]>([]);
   const [selectedProfile, setSelectedProfile] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [show3DPreview, setShow3DPreview] = useState(true);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const { branding } = useCompanyBranding();
 
   // Create updated project with current components for 3D preview
   const previewProject = useMemo<WindowUnit | null>(() => {
@@ -227,12 +229,6 @@ export const TechnicalCalculator: React.FC<TechnicalCalculatorProps> = ({
     setError(null);
 
     try {
-      // Default branding - in production, this would come from user settings
-      const branding: CompanyBranding = {
-        companyName: 'Almona',
-        primaryColor: '#FF6B35',
-      };
-
       const pdfService = new PDFExportService(branding);
       
       // Create a simple project summary PDF (without quote)

@@ -11,6 +11,19 @@ export interface ValidationResult {
 }
 
 /**
+ * Optional system-level constraints that can be attached to profile
+ * specifications (typically coming from a system pack such as ROCK 60
+ * or JUMBO100). Values are in mm / m².
+ */
+export interface SystemConstraints {
+  minWidthMm?: number;
+  maxWidthMm?: number;
+  minHeightMm?: number;
+  maxHeightMm?: number;
+  maxAreaM2?: number;
+}
+
+/**
  * Validates measurement inputs
  */
 export function validateMeasurements(data: MeasurementData): ValidationResult {
@@ -158,6 +171,90 @@ export function validateProject(project: WindowUnit | null, requireComponents: b
   return {
     isValid: errors.length === 0,
     errors
+  };
+}
+
+/**
+ * Try to derive system constraints from a list of profiles by looking for
+ * a `constraints` object on `profile.specifications`.
+ */
+export function deriveSystemConstraintsFromProfiles(profiles: Profile[]): SystemConstraints | null {
+  for (const profile of profiles) {
+    const specs = profile.specifications as any;
+    if (specs && typeof specs.constraints === 'object') {
+      const c = specs.constraints;
+      return {
+        minWidthMm: typeof c.minWidthMm === 'number' ? c.minWidthMm : undefined,
+        maxWidthMm: typeof c.maxWidthMm === 'number' ? c.maxWidthMm : undefined,
+        minHeightMm: typeof c.minHeightMm === 'number' ? c.minHeightMm : undefined,
+        maxHeightMm: typeof c.maxHeightMm === 'number' ? c.maxHeightMm : undefined,
+        maxAreaM2: typeof c.maxAreaM2 === 'number' ? c.maxAreaM2 : undefined,
+      };
+    }
+  }
+  return null;
+}
+
+/**
+ * Validate a project against optional system constraints derived from its
+ * profile system. This builds on top of `validateProject` and adds
+ * structural checks like max width/height/area.
+ */
+export function validateProjectWithConstraints(
+  project: WindowUnit | null,
+  constraints: SystemConstraints | null
+): ValidationResult {
+  const base = validateProject(project);
+
+  // If project missing or no constraints available, return base result
+  if (!project || !constraints) {
+    return base;
+  }
+
+  const errors = [...base.errors];
+
+  const width = project.overallWidth;
+  const height = project.overallHeight;
+  const areaM2 = (width * height) / 1_000_000;
+
+  if (constraints.minWidthMm !== undefined && width < constraints.minWidthMm) {
+    errors.push({
+      field: 'overallWidth',
+      message: `Width (${width}mm) is below minimum allowed for this system (${constraints.minWidthMm}mm)`,
+    });
+  }
+
+  if (constraints.maxWidthMm !== undefined && width > constraints.maxWidthMm) {
+    errors.push({
+      field: 'overallWidth',
+      message: `Width (${width}mm) exceeds maximum allowed for this system (${constraints.maxWidthMm}mm)`,
+    });
+  }
+
+  if (constraints.minHeightMm !== undefined && height < constraints.minHeightMm) {
+    errors.push({
+      field: 'overallHeight',
+      message: `Height (${height}mm) is below minimum allowed for this system (${constraints.minHeightMm}mm)`,
+    });
+  }
+
+  if (constraints.maxHeightMm !== undefined && height > constraints.maxHeightMm) {
+    errors.push({
+      field: 'overallHeight',
+      message: `Height (${height}mm) exceeds maximum allowed for this system (${constraints.maxHeightMm}mm)`,
+    });
+  }
+
+  if (constraints.maxAreaM2 !== undefined && areaM2 > constraints.maxAreaM2) {
+    errors.push({
+      field: 'area',
+      message: `Area (${areaM2.toFixed(2)} m²) exceeds maximum allowed for this system (${constraints.maxAreaM2} m²)`,
+    });
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
   };
 }
 

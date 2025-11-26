@@ -81,12 +81,22 @@ export class PDFExportService {
     await this.addSectionTitle('Project Quotation');
     await this.addProjectInfo(project, quote);
 
+    // Scope & Technical Summary
+    if (quote.projectScope || quote.technicalSummary) {
+      await this.addSectionTitle('Scope of Work & Technical Specifications');
+      await this.addScopeAndTechnicalSections(project, quote);
+    }
+
     // Quote Line Items
     await this.addSectionTitle('Quote Details');
     await this.addQuoteLineItems(quote);
 
-    // Summary
+    // Summary & Commercial Terms
     await this.addQuoteSummary(quote);
+    if (quote.paymentTerms || quote.warranty || quote.generalTerms) {
+      await this.addSectionTitle('Commercial Terms & Conditions');
+      await this.addCommercialSections(quote);
+    }
 
     // Footer
     await this.addFooter();
@@ -463,6 +473,214 @@ export class PDFExportService {
       color: rgb(totalColor[0] / 255, totalColor[1] / 255, totalColor[2] / 255),
     });
     this.currentY += 20;
+  }
+
+  /**
+   * Scope of work & technical summary section
+   */
+  private async addScopeAndTechnicalSections(project: WindowUnit, quote: Quote) {
+    const scope = quote.projectScope;
+    const tech = quote.technicalSummary;
+
+    if (scope) {
+      const scopeItems: string[] = [];
+      scopeItems.push(scope.scopeOfSupply);
+      if (scope.buildingType) {
+        scopeItems.push(`Building type: ${scope.buildingType}`);
+      }
+      if (scope.siteAddress) {
+        scopeItems.push(`Site: ${scope.siteAddress}`);
+      }
+      if (scope.exclusions && scope.exclusions.length > 0) {
+        scopeItems.push('Exclusions:');
+        scope.exclusions.forEach((ex) => scopeItems.push(`- ${ex}`));
+      }
+      if (scope.notes) {
+        scopeItems.push(scope.notes);
+      }
+
+      scopeItems.forEach((line) => {
+        if (this.currentY > this.pageHeight - 50) {
+          this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
+          this.currentY = this.margin;
+          this.pageNumber++;
+        }
+        this.currentPage.drawText(line, {
+          x: this.margin,
+          y: this.pageHeight - this.currentY,
+          size: 10,
+          font: this.font,
+          color: rgb(0, 0, 0),
+        });
+        this.currentY += 14;
+      });
+
+      this.currentY += 10;
+    }
+
+    if (tech) {
+      const systemsLabel =
+        tech.systems && tech.systems.length > 0
+          ? `Systems: ${tech.systems.join(', ')}`
+          : undefined;
+
+      const lines: string[] = [];
+      if (systemsLabel) lines.push(systemsLabel);
+      if (tech.glazingSummary) lines.push(`Glazing: ${tech.glazingSummary}`);
+      if (tech.finishSummary) lines.push(`Finish: ${tech.finishSummary}`);
+      if (tech.hardwareSummary) lines.push(`Hardware: ${tech.hardwareSummary}`);
+      if (tech.performanceSummary) lines.push(`Performance: ${tech.performanceSummary}`);
+
+      lines.forEach((line) => {
+        if (this.currentY > this.pageHeight - 50) {
+          this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
+          this.currentY = this.margin;
+          this.pageNumber++;
+        }
+        this.currentPage.drawText(line, {
+          x: this.margin,
+          y: this.pageHeight - this.currentY,
+          size: 10,
+          font: this.font,
+          color: rgb(0, 0, 0),
+        });
+        this.currentY += 14;
+      });
+
+      this.currentY += 10;
+    }
+  }
+
+  /**
+   * Payment terms, warranty and general terms
+   */
+  private async addCommercialSections(quote: Quote) {
+    const { paymentTerms, warranty, generalTerms } = quote;
+
+    if (paymentTerms) {
+      await this.addSubSectionTitle('Payment Terms');
+
+      const lines: string[] = [];
+      lines.push(`Currency: ${paymentTerms.currency}`);
+      if (paymentTerms.depositPercentage !== undefined) {
+        lines.push(`Deposit: ${paymentTerms.depositPercentage}% on order confirmation`);
+      }
+      if (paymentTerms.milestones && paymentTerms.milestones.length > 0) {
+        lines.push('Milestone payments:');
+        paymentTerms.milestones.forEach((m) => {
+          const detail =
+            m.percentage !== undefined
+              ? `${m.label}: ${m.percentage}%`
+              : m.fixedAmount !== undefined
+              ? `${m.label}: ${paymentTerms.currency} ${m.fixedAmount.toFixed(2)}`
+              : m.label;
+          lines.push(`- ${detail}`);
+        });
+      }
+      if (paymentTerms.paymentMethods && paymentTerms.paymentMethods.length > 0) {
+        lines.push(`Payment methods: ${paymentTerms.paymentMethods.join(', ')}`);
+      }
+      if (paymentTerms.latePaymentPolicy) {
+        lines.push(`Late payment: ${paymentTerms.latePaymentPolicy}`);
+      }
+      if (paymentTerms.validityDays !== undefined) {
+        lines.push(`Offer validity: ${paymentTerms.validityDays} days from issue date`);
+      }
+      if (paymentTerms.bankDetails) {
+        lines.push(`Bank details: ${paymentTerms.bankDetails}`);
+      }
+
+      this.renderBulletLines(lines);
+      this.currentY += 10;
+    }
+
+    if (warranty) {
+      await this.addSubSectionTitle('Warranty & After-Sales');
+
+      const lines: string[] = [];
+      if (warranty.profilesYears !== undefined) {
+        lines.push(`Profiles & finish: ${warranty.profilesYears} years`);
+      }
+      if (warranty.hardwareYears !== undefined) {
+        lines.push(`Hardware: ${warranty.hardwareYears} years`);
+      }
+      if (warranty.glazingYears !== undefined) {
+        lines.push(`Glazing: ${warranty.glazingYears} years`);
+      }
+      if (warranty.workmanshipYears !== undefined) {
+        lines.push(`Workmanship: ${warranty.workmanshipYears} years`);
+      }
+      if (warranty.notes) {
+        lines.push(warranty.notes);
+      }
+
+      this.renderBulletLines(lines);
+      this.currentY += 10;
+    }
+
+    if (generalTerms) {
+      await this.addSubSectionTitle('General Terms & Conditions');
+
+      const lines: string[] = [];
+      if (generalTerms.validityDays !== undefined) {
+        lines.push(`Offer validity: ${generalTerms.validityDays} days from issue date.`);
+      }
+      if (generalTerms.cancellationPolicy) {
+        lines.push(`Cancellation: ${generalTerms.cancellationPolicy}`);
+      }
+      if (generalTerms.priceAdjustmentClause) {
+        lines.push(`Price adjustment: ${generalTerms.priceAdjustmentClause}`);
+      }
+      if (generalTerms.forceMajeureClause) {
+        lines.push(`Force majeure: ${generalTerms.forceMajeureClause}`);
+      }
+      if (generalTerms.jurisdiction) {
+        lines.push(`Jurisdiction: ${generalTerms.jurisdiction}`);
+      }
+      if (generalTerms.disputeResolution) {
+        lines.push(`Dispute resolution: ${generalTerms.disputeResolution}`);
+      }
+
+      this.renderBulletLines(lines);
+      this.currentY += 10;
+    }
+  }
+
+  private renderBulletLines(lines: string[]) {
+    lines.forEach((line) => {
+      if (!line) return;
+      if (this.currentY > this.pageHeight - 50) {
+        this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
+        this.currentY = this.margin;
+        this.pageNumber++;
+      }
+      const text = line.startsWith('-') ? line : `• ${line}`;
+      this.currentPage.drawText(text, {
+        x: this.margin,
+        y: this.pageHeight - this.currentY,
+        size: 10,
+        font: this.font,
+        color: rgb(0, 0, 0),
+      });
+      this.currentY += 14;
+    });
+  }
+
+  private async addSubSectionTitle(title: string) {
+    if (this.currentY > this.pageHeight - 60) {
+      this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
+      this.currentY = this.margin;
+      this.pageNumber++;
+    }
+
+    this.currentPage.drawText(title, {
+      x: this.margin,
+      y: this.pageHeight - this.currentY,
+      size: 12,
+      font: this.boldFont,
+      color: rgb(0, 0, 0),
+    });
+    this.currentY += 16;
   }
 
   private async addCuttingPlan(plan: CuttingPlan, index: number) {

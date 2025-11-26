@@ -49,6 +49,7 @@ import {
   Warehouse,
   AlertCircle,
   Info,
+  FileText,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { WindowUnit, Profile } from '@/types/fabricator';
@@ -115,6 +116,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMaterial, setFilterMaterial] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [invoiceProfileId, setInvoiceProfileId] = useState<string>('');
+  const [invoiceQuantity, setInvoiceQuantity] = useState<number>(0);
+  const [invoiceNumber, setInvoiceNumber] = useState<string>('');
+  const [invoiceSupplier, setInvoiceSupplier] = useState<string>('');
+  const [isSavingInvoice, setIsSavingInvoice] = useState(false);
 
   // Load data on mount
   useEffect(() => {
@@ -124,39 +130,32 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   }, [userId, selectedLocation]);
 
   const loadDashboardData = useCallback(async () => {
-    if (!userId) return;
+    if (!userId || isLoading) return;
 
     setIsLoading(true);
     try {
-      // Load remnants
-      const availableRemnants = await remnantManager.getAvailableRemnants(userId, {
-        locationId: selectedLocation !== 'all' ? selectedLocation : undefined,
-      });
+      // Core remnant data (depends on selectedLocation)
+      const [availableRemnants, stats, suggestions] = await Promise.all([
+        remnantManager.getAvailableRemnants(userId, {
+          locationId: selectedLocation !== 'all' ? selectedLocation : undefined,
+        }),
+        remnantManager.getRemnantStatistics(userId),
+        remnantManager.getConsolidationSuggestions(userId),
+      ]);
+
       setRemnants(availableRemnants);
-
-      // Load statistics
-      const stats = await remnantManager.getRemnantStatistics(userId);
       setRemnantStats(stats);
-
-      // Load consolidation suggestions
-      const suggestions = await remnantManager.getConsolidationSuggestions(userId);
       setConsolidationSuggestions(suggestions);
 
-      // Load stock alerts
-      await loadStockAlerts();
-
-      // Load stock movements
-      await loadStockMovements();
-
-      // Load locations
-      await loadLocations();
+      // Run stock‑related queries in parallel; they only depend on userId
+      await Promise.all([loadStockAlerts(), loadStockMovements(), loadLocations()]);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
       toast.error('Failed to load inventory data');
     } finally {
       setIsLoading(false);
     }
-  }, [userId, selectedLocation]);
+  }, [userId, selectedLocation, isLoading, loadStockAlerts, loadStockMovements, loadLocations]);
 
   const loadStockAlerts = useCallback(async () => {
     if (!userId) return;
@@ -260,6 +259,41 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       console.error('Error loading locations:', error);
     }
   }, [userId]);
+
+  const handleInvoiceStockIntake = async () => {
+    if (!userId || !invoiceProfileId || invoiceQuantity <= 0) return;
+
+    try {
+      setIsSavingInvoice(true);
+      const { error } = await supabase.from('stock_movements').insert({
+        user_id: userId,
+        profile_id: invoiceProfileId,
+        movement_type: 'purchase',
+        quantity: invoiceQuantity,
+        unit: 'bar',
+        notes: invoiceNumber
+          ? `Invoice ${invoiceNumber}${invoiceSupplier ? ` – ${invoiceSupplier}` : ''}`
+          : invoiceSupplier || null,
+      });
+
+      if (error) throw error;
+
+      toast.success('Stock updated from purchase invoice');
+
+      // Reload movements and alerts to reflect new stock levels
+      await Promise.all([loadStockMovements(), loadStockAlerts()]);
+
+      setInvoiceProfileId('');
+      setInvoiceQuantity(0);
+      setInvoiceNumber('');
+      setInvoiceSupplier('');
+    } catch (error) {
+      console.error('Error saving stock intake invoice:', error);
+      toast.error('Failed to record stock intake');
+    } finally {
+      setIsSavingInvoice(false);
+    }
+  };
 
   const getStockStatus = (profile: Profile) => {
     if (!profile.minStockLevel) return 'unknown';
@@ -586,7 +620,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="remnants">Remnants</TabsTrigger>
           <TabsTrigger value="alerts">
@@ -599,6 +633,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           </TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="purchases">Purchases</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -914,6 +949,118 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   ))
                 )}
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Purchases / Stock Intake Tab */}
+        <TabsContent value="purchases" className="space-y-4">
+          <Card className="bg-gray-700/50 border-gray-600">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm md:text-base">
+                <FileText className="h-4 w-4 text-orange-400" />
+                Stock Intake by Invoice
+              </CardTitle>
+              <CardDescription className="text-xs text-gray-400">
+                Record purchase invoices and update stock levels for profiles. This feeds warehouse
+                inventory and stock alerts before cutting.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div className="md:col-span-2">
+                  <Label className="text-xs">Profile *</Label>
+                  <Select
+                    value={invoiceProfileId}
+                    onValueChange={(v) => setInvoiceProfileId(v)}
+                  >
+                    <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
+                      <SelectValue placeholder="Select profile" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-72">
+                      {inventory.map((p) => (
+                        <SelectItem key={p.id} value={p.id}>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="font-medium text-gray-100">{p.name}</span>
+                            <span className="text-[10px] text-gray-500">
+                              {p.material} • {p.width}mm • stock {p.stockQuantity}m
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-xs">Quantity (bars) *</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={invoiceQuantity || ''}
+                    onChange={(e) => setInvoiceQuantity(Number(e.target.value) || 0)}
+                    className="h-8 text-xs bg-gray-800 border-gray-700"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Invoice No.</Label>
+                  <Input
+                    value={invoiceNumber}
+                    onChange={(e) => setInvoiceNumber(e.target.value)}
+                    placeholder="e.g. INV-2025-0012"
+                    className="h-8 text-xs bg-gray-800 border-gray-700"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs">Supplier</Label>
+                  <Input
+                    value={invoiceSupplier}
+                    onChange={(e) => setInvoiceSupplier(e.target.value)}
+                    placeholder="e.g. ALSALAM, ELSHERIF"
+                    className="h-8 text-xs bg-gray-800 border-gray-700"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <Button
+                  size="sm"
+                  className="bg-orange-500 hover:bg-orange-600 text-xs"
+                  disabled={!userId || !invoiceProfileId || invoiceQuantity <= 0 || isSavingInvoice}
+                  onClick={handleInvoiceStockIntake}
+                >
+                  {isSavingInvoice ? 'Saving…' : 'Record Purchase & Update Stock'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-700/50 border-gray-600">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm md:text-base">
+                <History className="h-4 w-4 text-blue-400" />
+                Recent Stock Movements
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-xs text-gray-300">
+              {stockMovements.length === 0 && (
+                <p className="text-gray-400">No stock movements recorded yet.</p>
+              )}
+              {stockMovements.map((m) => (
+                <div
+                  key={m.id}
+                  className="flex items-center justify-between border-b border-gray-600 pb-1 last:border-b-0"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium truncate">{m.profileName}</div>
+                    <div className="text-[10px] text-gray-400 truncate">
+                      {m.movementType} • {m.quantity} {m.unit} •{' '}
+                      {m.createdAt.toLocaleDateString()}
+                    </div>
+                    {m.notes && (
+                      <div className="text-[10px] text-gray-500 truncate">Note: {m.notes}</div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
         </TabsContent>

@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { WindowUnit, OptimizationResult } from '@/types/fabricator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
-import { FileText, Scissors, Package, Zap, Loader2 } from 'lucide-react';
+import { FileText, Scissors, Package, Zap, Loader2, FileSpreadsheet, FileCode } from 'lucide-react';
 import { toast } from 'sonner';
 import { track } from '@/lib/analytics';
+import { ExportService } from '@/lib/exports';
 
 interface QuickReportsPanelProps {
   project: WindowUnit | null;
@@ -101,6 +102,67 @@ export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
     }
   };
 
+  const handleGenerateMachineCsv = async () => {
+    if (!project || !optimization || generatingReport) return;
+
+    setGeneratingReport('machine_csv');
+    try {
+      const exportService = new ExportService();
+      const result = await exportService.exportProject(project, optimization, 'csv', {
+        machineProfileId: 'generic_saw_csv_v1',
+        includeHeaders: true,
+        includeQRCode: false,
+      });
+
+      if (result.success) {
+        exportService.download(result);
+        toast.success('Machine CSV (saw) generated successfully');
+        track('fabricator_report_generated', {
+          type: 'machine_csv',
+          jobId: project.id,
+          orderNumber: project.orderNumber,
+        });
+      } else {
+        throw new Error(result.error || 'Machine CSV export failed');
+      }
+    } catch (error) {
+      console.error('Failed to generate machine CSV:', error);
+      toast.error('Failed to generate machine CSV');
+    } finally {
+      setGeneratingReport(null);
+    }
+  };
+
+  const handleGenerateMachineDxf = async () => {
+    if (!project || !optimization || generatingReport) return;
+
+    setGeneratingReport('machine_dxf');
+    try {
+      const exportService = new ExportService();
+      const result = await exportService.exportProject(project, optimization, 'dxf', {
+        machineProfileId: 'generic_saw_dxf_v1',
+        includeQRCode: true,
+      });
+
+      if (result.success) {
+        exportService.download(result);
+        toast.success('Machine DXF (saw) generated successfully');
+        track('fabricator_report_generated', {
+          type: 'machine_dxf',
+          jobId: project.id,
+          orderNumber: project.orderNumber,
+        });
+      } else {
+        throw new Error(result.error || 'Machine DXF export failed');
+      }
+    } catch (error) {
+      console.error('Failed to generate machine DXF:', error);
+      toast.error('Failed to generate machine DXF');
+    } finally {
+      setGeneratingReport(null);
+    }
+  };
+
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader className="pb-3">
@@ -127,6 +189,42 @@ export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
             <span className="ml-auto text-[10px] text-gray-500">Need optimization</span>
           )}
           {generatingReport === 'cutting' && (
+            <span className="ml-auto text-[10px] text-gray-500">Generating...</span>
+          )}
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full justify-start text-xs"
+          onClick={handleGenerateMachineCsv}
+          disabled={!optimization || generatingReport !== null}
+        >
+          {generatingReport === 'machine_csv' ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <FileSpreadsheet className="h-4 w-4 mr-2" />
+          )}
+          Machine CSV (Saw)
+          {generatingReport === 'machine_csv' && (
+            <span className="ml-auto text-[10px] text-gray-500">Generating...</span>
+          )}
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full justify-start text-xs"
+          onClick={handleGenerateMachineDxf}
+          disabled={!optimization || generatingReport !== null}
+        >
+          {generatingReport === 'machine_dxf' ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <FileCode className="h-4 w-4 mr-2" />
+          )}
+          Machine DXF (Saw)
+          {generatingReport === 'machine_dxf' && (
             <span className="ml-auto text-[10px] text-gray-500">Generating...</span>
           )}
         </Button>

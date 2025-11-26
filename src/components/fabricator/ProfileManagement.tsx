@@ -41,6 +41,12 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
 import { ElsherifImportWizard } from '@/components/fabricator/ElsherifImportWizard';
+import {
+  ROCK60_WINDOW_SYSTEM_TEMPLATE,
+  ROCK60_SYSTEM_PACK,
+  JUMBO100_WINDOW_SYSTEM_SPEC,
+  JUMBO100_SYSTEM_PACK,
+} from '@/data/systemPacks';
 
 // Material-specific color presets
 const MATERIAL_COLORS: Record<string, string[]> = {
@@ -83,297 +89,6 @@ const REGIONAL_BRANDS = {
   global: ['Standard', 'Custom'],
 };
 
-// Default ROCK 60 window system template to seed for all users
-// Updated with full 45° miter configuration and 2D cutting list
-const ROCK60_WINDOW_SYSTEM_TEMPLATE = {
-  window_system: 'ROCK 60',
-  drawing_reference: 'Page 24 - Draft Shop Drawing',
-  // Legacy flat list used by earlier phases (kept for backward compatibility)
-  profiles_cutting_list: [
-    {
-      profile_number: 'RC 6111-8',
-      quantity: 2,
-      cutting_length: 'L + 60',
-      description: 'Frame profile - length direction',
-    },
-    {
-      profile_number: 'RC 6111-8',
-      quantity: 2,
-      cutting_length: 'H + 60',
-      description: 'Frame profile - height direction',
-    },
-    {
-      profile_number: 'RC 6122',
-      quantity: 2,
-      cutting_length: 'L - 44',
-      description: 'Sash profile - length direction',
-    },
-    {
-      profile_number: 'RC 6122',
-      quantity: 2,
-      cutting_length: 'H - 44',
-      description: 'Sash profile - height direction',
-    },
-    {
-      profile_number: 'RC 6166',
-      quantity: 2,
-      cutting_length: 'L - 167',
-      description: 'Glazing bead - length direction',
-    },
-    {
-      profile_number: 'RC 6166',
-      quantity: 2,
-      cutting_length: 'H - 205',
-      description: 'Glazing bead - height direction',
-    },
-  ],
-  glass_cutting: {
-    type: 'Double Glass 24mm',
-    quantity: 1,
-    dimensions: {
-      length: 'L - 167',
-      height: 'H - 167',
-    },
-    notes: 'Final glass size after deductions',
-  },
-  weight_calculation: {
-    length_weight: 'L (m) × 6.67 kg',
-    height_weight: 'H1 (m) × 6.64 kg',
-    total_weight_formula: 'TOTAL = (L × 6.67) + (H1 × 6.64) kg',
-  },
-  accessories_list: [
-    {
-      accessory_number: '0253',
-      quantity: 2,
-      description: 'Hinges',
-    },
-    {
-      accessory_number: '1130',
-      quantity: 4,
-      description: 'Corner Joint – pressure plate',
-    },
-    {
-      accessory_number: '1110',
-      quantity: 4,
-      description: 'Corner Joint – cleat',
-    },
-    {
-      accessory_number: '0707',
-      quantity: 1,
-      description: 'Common Handle',
-    },
-    {
-      accessory_number: 'KIT 10451',
-      quantity: 1,
-      description: 'Locking Kit',
-    },
-    {
-      accessory_number: 'GT 0122',
-      quantity: '21.4H',
-      description: 'Glass Gasket',
-    },
-    {
-      accessory_number: 'GT 0118',
-      quantity: '21.4H',
-      description: 'Glass Gasket',
-    },
-    {
-      accessory_number: 'GT 0137',
-      quantity: '21.4H',
-      description: 'Central Gasket',
-    },
-    {
-      accessory_number: 'GT 0146',
-      quantity: '21.4H',
-      description: 'Sash Striker Gasket',
-    },
-    {
-      accessory_number: 'GT 0152',
-      quantity: '21.4H',
-      description: 'Frame Gasket',
-    },
-  ],
-  notes: {
-    dimensions_unit: 'mm',
-    variables: {
-      L: 'Overall length of window opening',
-      H: 'Overall height of window opening',
-      H1: 'Alternative height measurement',
-    },
-    gasket_quantities: '21.4H indicates gasket length requirement relative to height H',
-  },
-  // Full 45° miter configuration used by ROCK 60 2D cutting list & optimization helpers
-  rock60_45_degree_config: {
-    window_system: 'ROCK 60',
-    cut_angle: '45°',
-    frame_profiles: {
-      main_frame: {
-        profile_code: 'RC 6111-8',
-        new_code: '1 061 1138',
-        weight_kg_m: 1.315,
-        cuts: [
-          {
-            purpose: 'horizontal_frame',
-            quantity: 2,
-            calculation: 'L + 60',
-            cut_angle: '45° left',
-            notes: 'Add 60mm for miter joints',
-          },
-          {
-            purpose: 'vertical_frame',
-            quantity: 2,
-            calculation: 'H + 60',
-            cut_angle: '45° left',
-            notes: 'Add 60mm for miter joints',
-          },
-        ],
-      },
-    },
-    sash_profiles: {
-      main_sash: {
-        profile_code: 'RC 6122',
-        new_code: '1 061 1300',
-        weight_kg_m: 1.342,
-        cuts: [
-          {
-            purpose: 'horizontal_sash',
-            quantity: 2,
-            calculation: 'L - 44',
-            cut_angle: '45° right',
-            notes: 'Deduct 44mm for frame clearance',
-          },
-          {
-            purpose: 'vertical_sash',
-            quantity: 2,
-            calculation: 'H - 44',
-            cut_angle: '45° right',
-            notes: 'Deduct 44mm for frame clearance',
-          },
-        ],
-      },
-    },
-    glazing_beads: {
-      bead_profile: {
-        profile_code: 'RC 6166',
-        new_code: '1 061 6180',
-        weight_kg_m: 0.324,
-        cuts: [
-          {
-            purpose: 'horizontal_bead',
-            quantity: 2,
-            calculation: 'L - 167',
-            cut_angle: '45°',
-            notes: 'Miter cut both ends',
-          },
-          {
-            purpose: 'vertical_bead',
-            quantity: 2,
-            calculation: 'H - 205',
-            cut_angle: '45°',
-            notes: 'Miter cut both ends',
-          },
-        ],
-      },
-    },
-    glass: {
-      type: 'Double Glass 24mm',
-      dimensions: {
-        width: 'L - 167',
-        height: 'H - 167',
-      },
-      quantity: 1,
-    },
-    hardware_45_degree_setup: {
-      hinges: {
-        code: '0253',
-        quantity: 2,
-        position: '45° miter joints',
-        installation: 'Mount on 45° cut faces',
-      },
-      corner_connectors: {
-        pressure_plates: {
-          code: '1130',
-          quantity: 4,
-          purpose: '45° corner reinforcement',
-        },
-        cleats: {
-          code: '1110',
-          quantity: 4,
-          purpose: '45° corner locking',
-        },
-      },
-      handle: {
-        code: '0707',
-        quantity: 1,
-        type: 'Common Handle',
-      },
-      locking_system: {
-        code: 'KIT 10451',
-        quantity: 1,
-      },
-    },
-    gaskets_45_degree: {
-      glass_gaskets: [
-        {
-          code: 'GT 0122',
-          quantity: '21.4H',
-          purpose: '45° corner glass sealing',
-        },
-        {
-          code: 'GT 0118',
-          quantity: '21.4H',
-          purpose: '45° corner glass sealing',
-        },
-      ],
-      central_gasket: {
-        code: 'GT 0137',
-        quantity: '21.4H',
-        purpose: 'Meeting stile 45° seal',
-      },
-      striker_gasket: {
-        code: 'GT 0146',
-        quantity: '21.4H',
-        purpose: '45° sash striker seal',
-      },
-      frame_gasket: {
-        code: 'GT 0152',
-        quantity: '21.4H',
-        purpose: '45° frame perimeter seal',
-      },
-    },
-    weight_calculation: {
-      frame_weight: 'L (m) × 6.67 kg',
-      sash_weight: 'H1 (m) × 6.64 kg',
-      total_formula: '(L × 6.67) + (H1 × 6.64) kg',
-    },
-    cutting_instructions: {
-      frame_cuts: 'Cut all frame profiles at 45° - add 60mm for miter overlap',
-      sash_cuts: 'Cut all sash profiles at 45° - deduct 44mm for frame fit',
-      bead_cuts: 'Cut glazing beads at 45° for clean corner joints',
-      tool_setup: 'Use 45° saw blade setting for all aluminum cuts',
-      details: {
-        frame_profiles: {
-          rc_6111_8: {
-            horizontal: '2 × (L + 60mm) – both ends 45°',
-            vertical: '2 × (H + 60mm) – both ends 45°',
-          },
-        },
-        sash_profiles: {
-          rc_6122: {
-            horizontal: '2 × (L - 44mm) – both ends 45°',
-            vertical: '2 × (H - 44mm) – both ends 45°',
-          },
-        },
-        glazing_beads: {
-          rc_6166: {
-            horizontal: '2 × (L - 167mm) – both ends 45°',
-            vertical: '2 × (H - 205mm) – both ends 45°',
-          },
-        },
-      },
-    },
-  },
-};
 
 interface ProfileManagementProps {
   onProfilesUpdate?: (profiles: Profile[]) => void;
@@ -478,7 +193,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
       // Seed ROCK 60 template profile once per user if it does not exist yet
       const hasRock60Template = rows.some(
-        (p: any) => p.specifications?.window_system === 'ROCK 60'
+        (p: any) => p.specifications?.window_system === ROCK60_WINDOW_SYSTEM_TEMPLATE.window_system
       );
 
       if (!hasRock60Template) {
@@ -496,7 +211,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           min_stock_level: 0,
           max_stock_level: 1000,
           supplier: 'Global Template',
-          system_brand: 'ROCK 60',
+          system_brand: ROCK60_SYSTEM_PACK.meta.name,
           grain_direction: null,
           specifications: {
             ...ROCK60_WINDOW_SYSTEM_TEMPLATE,
@@ -520,6 +235,56 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
           if (reloadError) {
             console.error('Error reloading profiles after seeding:', reloadError);
+          } else if (reloaded) {
+            rows = reloaded;
+          }
+        }
+      }
+
+      // Seed ELSHERIF JUMBO 100 template profile once per user if it does not exist yet
+      const hasJumbo100Template = rows.some(
+        (p: any) => p.specifications?.window_system === JUMBO100_WINDOW_SYSTEM_SPEC.window_system
+      );
+
+      if (!hasJumbo100Template) {
+        const jumboSeedProfile = {
+          user_id: userId,
+          name: 'JUMBO 100 Sliding Template',
+          material: 'aluminum',
+          width: 100,
+          height: 32,
+          thickness: 1.8,
+          color: '#C0C0C0',
+          cost_per_meter: 0,
+          cutting_allowance: 3,
+          stock_quantity: 0,
+          min_stock_level: 0,
+          max_stock_level: 1000,
+          supplier: JUMBO100_WINDOW_SYSTEM_SPEC.catalog_metadata?.company ?? 'ELSHERIF',
+          system_brand: JUMBO100_SYSTEM_PACK.meta.name,
+          grain_direction: null,
+          specifications: {
+            ...JUMBO100_WINDOW_SYSTEM_SPEC,
+            template: true,
+            template_type: 'window_system',
+          },
+        };
+
+        const { error: jumboSeedError } = await db
+          .from('fabricator_profiles')
+          .insert(jumboSeedProfile);
+
+        if (jumboSeedError) {
+          console.error('Error seeding JUMBO 100 template profile:', jumboSeedError);
+        } else {
+          const { data: reloaded, error: reloadError } = await db
+            .from('fabricator_profiles')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
+
+          if (reloadError) {
+            console.error('Error reloading profiles after JUMBO 100 seeding:', reloadError);
           } else if (reloaded) {
             rows = reloaded;
           }
