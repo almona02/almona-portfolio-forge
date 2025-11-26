@@ -1,5 +1,5 @@
 // pages/FabricatorWorkflow.tsx
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent } from '@/shared/ui/ui/tabs';
@@ -25,30 +25,116 @@ import {
   Search,
 } from 'lucide-react';
 
-import { SmartMeasuringInterface } from '@/components/fabricator/SmartMeasuringInterface';
-import { TechnicalCalculator } from '@/components/fabricator/TechnicalCalculator';
-import { CuttingOptimizationEngine } from '@/components/fabricator/CuttingOptimizationEngine';
-import { InventoryDashboard } from '@/components/fabricator/InventoryDashboard';
-import { ProfileManagement } from '@/components/fabricator/ProfileManagement';
-import { ElsherifImportWizard } from '@/components/fabricator/ElsherifImportWizard';
+// NOTE: Heavy Fabricator Pro modules are lazy‑loaded per tab to keep
+// initial bundle size and TTI low for heavy‑duty usage.
+const SmartMeasuringInterface = React.lazy(() =>
+  import('@/components/fabricator/SmartMeasuringInterface').then((m) => ({
+    default: m.SmartMeasuringInterface,
+  })),
+);
+const TechnicalCalculator = React.lazy(() =>
+  import('@/components/fabricator/TechnicalCalculator').then((m) => ({
+    default: m.TechnicalCalculator,
+  })),
+);
+const CuttingOptimizationEngine = React.lazy(() =>
+  import('@/components/fabricator/CuttingOptimizationEngine').then((m) => ({
+    default: m.CuttingOptimizationEngine,
+  })),
+);
+const InventoryDashboard = React.lazy(() =>
+  import('@/components/fabricator/InventoryDashboard').then((m) => ({
+    default: m.InventoryDashboard,
+  })),
+);
+const ProfileManagement = React.lazy(() =>
+  import('@/components/fabricator/ProfileManagement').then((m) => ({
+    default: m.ProfileManagement,
+  })),
+);
+const ElsherifImportWizard = React.lazy(() =>
+  import('@/components/fabricator/ElsherifImportWizard').then((m) => ({
+    default: m.ElsherifImportWizard,
+  })),
+);
 import { supabase } from '@/lib/supabase';
-import { ProductionScheduler } from '@/components/fabricator/ProductionScheduler';
-import { QualityControl } from '@/components/fabricator/QualityControl';
-import { RealTimeMonitoring } from '@/components/fabricator/RealTimeMonitoring';
-import { Window3DGenerator } from '@/components/fabricator/Window3DGenerator';
-import { JobSummaryPanel } from '@/components/fabricator/JobSummaryPanel';
-import { InventoryStatusPanel } from '@/components/fabricator/InventoryStatusPanel';
-import { QuickReportsPanel } from '@/components/fabricator/QuickReportsPanel';
-import { WorkflowProgress } from '@/components/fabricator/WorkflowProgress';
-import { FeedbackButton } from '@/components/fabricator/FeedbackButton';
+const ProductionScheduler = React.lazy(() =>
+  import('@/components/fabricator/ProductionScheduler').then((m) => ({
+    default: m.ProductionScheduler,
+  })),
+);
+const QualityControl = React.lazy(() =>
+  import('@/components/fabricator/QualityControl').then((m) => ({
+    default: m.QualityControl,
+  })),
+);
+const RealTimeMonitoring = React.lazy(() =>
+  import('@/components/fabricator/RealTimeMonitoring').then((m) => ({
+    default: m.RealTimeMonitoring,
+  })),
+);
+const Window3DGenerator = React.lazy(() =>
+  import('@/components/fabricator/Window3DGenerator').then((m) => ({
+    default: m.Window3DGenerator,
+  })),
+);
+const JobSummaryPanel = React.lazy(() =>
+  import('@/components/fabricator/JobSummaryPanel').then((m) => ({
+    default: m.JobSummaryPanel,
+  })),
+);
+const InventoryStatusPanel = React.lazy(() =>
+  import('@/components/fabricator/InventoryStatusPanel').then((m) => ({
+    default: m.InventoryStatusPanel,
+  })),
+);
+const QuickReportsPanel = React.lazy(() =>
+  import('@/components/fabricator/QuickReportsPanel').then((m) => ({
+    default: m.QuickReportsPanel,
+  })),
+);
+const PositionsGrid = React.lazy(() =>
+  import('@/components/fabricator/PositionsGrid').then((m) => ({
+    default: m.PositionsGrid,
+  })),
+);
+const CommercialOfferPanel = React.lazy(() =>
+  import('@/components/fabricator/CommercialOfferPanel').then((m) => ({
+    default: m.CommercialOfferPanel,
+  })),
+);
+const WorkflowProgress = React.lazy(() =>
+  import('@/components/fabricator/WorkflowProgress').then((m) => ({
+    default: m.WorkflowProgress,
+  })),
+);
+const FeedbackButton = React.lazy(() =>
+  import('@/components/fabricator/FeedbackButton').then((m) => ({
+    default: m.FeedbackButton,
+  })),
+);
 import { track } from '@/lib/analytics';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { ClientPortalManager } from '@/modules/client-portal';
-import { Rock60CuttingSummary } from '@/components/fabricator/Rock60CuttingSummary';
+const ClientPortalManager = React.lazy(() =>
+  import('@/modules/client-portal').then((m) => ({
+    default: m.ClientPortalManager,
+  })),
+);
+const Rock60CuttingSummary = React.lazy(() =>
+  import('@/components/fabricator/Rock60CuttingSummary').then((m) => ({
+    default: m.Rock60CuttingSummary,
+  })),
+);
+const NewProjectWizard = React.lazy(() =>
+  import('@/components/fabricator/NewProjectWizard').then((m) => ({
+    default: m.NewProjectWizard,
+  })),
+);
 
 import { parseLegacyOrderData } from '@/lib/legacyDataParser';
+import { ROCK60_WINDOW_SYSTEM_TEMPLATE } from '@/data/systemPacks';
 import { WindowUnit, Profile, OptimizationResult, WindowComponent, CuttingPlan, Cut, MeasurementData } from '@/types/fabricator';
-import { validateProject } from '@/lib/fabricatorValidation';
+import { validateProject, deriveSystemConstraintsFromProfiles, validateProjectWithConstraints } from '@/lib/fabricatorValidation';
 import { useJobsStore } from '@/store/jobsStore';
 import { useLocation } from 'react-router-dom';
 
@@ -57,6 +143,8 @@ const sampleHardware = [
   { id: 'lock_1', name: 'Multi-point Lock', type: 'lock', quantity: 1, position: 'side' },
   { id: 'handle_1', name: 'Lever Handle', type: 'handle', quantity: 1, position: 'center' }
 ];
+
+import type { ProjectHeaderMeta } from '@/components/fabricator/NewProjectWizard';
 
 export const FabricatorWorkflow: React.FC = () => {
   const location = useLocation();
@@ -80,6 +168,8 @@ export const FabricatorWorkflow: React.FC = () => {
   const [showClientPortal, setShowClientPortal] = useState(false);
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const [showMobilePanel, setShowMobilePanel] = useState(false);
+  const [showProjectWizard, setShowProjectWizard] = useState(false);
+  const [projectMeta, setProjectMeta] = useState<ProjectHeaderMeta | null>(null);
 
   const workflowSteps = [
     { id: 'measuring', name: 'Smart Measuring', icon: Ruler, description: 'Digital measurement capture' },
@@ -113,6 +203,13 @@ export const FabricatorWorkflow: React.FC = () => {
     }
   }, [jobs, navState, selectedJobId, setSelectedJob]);
 
+  // If there's no active project and no header meta yet, prompt for a new project
+  useEffect(() => {
+    if (!currentProject && !projectMeta) {
+      setShowProjectWizard(true);
+    }
+  }, [currentProject, projectMeta]);
+
   // Get current user ID
   useEffect(() => {
     const getUser = async () => {
@@ -141,8 +238,47 @@ export const FabricatorWorkflow: React.FC = () => {
         if (!legacyData.profiles || legacyData.profiles.length === 0) {
           throw new Error('No profiles found in inventory data');
         }
-        
-        setInventory(legacyData.profiles);
+
+        const profiles = [...legacyData.profiles];
+
+        // Ensure at least one ROCK 60 template profile is available locally so that
+        // the ROCK 60 45° template button in the design flow always works, even
+        // before Supabase-backed profile seeding is wired here.
+        const hasRock60Template = profiles.some(
+          (p) =>
+            (p.systemBrand && p.systemBrand.toLowerCase().includes('rock 60')) ||
+            (p.specifications && (p.specifications as any).window_system === 'ROCK 60'),
+        );
+
+        if (!hasRock60Template) {
+          profiles.push({
+            id: 'rock60_template_local',
+            name: 'ROCK 60 System Template',
+            material: 'aluminum',
+            width: 60,
+            height: 60,
+            thickness: 1.8,
+            color: '#C0C0C0',
+            costPerMeter: 0,
+            cuttingAllowance: 3,
+            stockQuantity: 0,
+            minStockLevel: 0,
+            maxStockLevel: 1000,
+            supplier: 'Template',
+            systemBrand: 'ROCK 60',
+            weightPerMeter:
+              (ROCK60_WINDOW_SYSTEM_TEMPLATE.rock60_45_degree_config?.frame_profiles
+                ?.main_frame?.weight_kg_m as number | undefined) ?? 1.315,
+            grainDirection: null,
+            specifications: {
+              ...ROCK60_WINDOW_SYSTEM_TEMPLATE,
+              template: true,
+              template_type: 'window_system',
+            },
+          });
+        }
+
+        setInventory(profiles);
       } catch (error) {
         console.error('Error loading inventory:', error);
         setInventoryError(error instanceof Error ? error.message : 'Failed to load inventory data');
@@ -159,7 +295,12 @@ export const FabricatorWorkflow: React.FC = () => {
   const generateCuttingPlan = useCallback(
     async (components: WindowComponent[], profiles: Profile[]): Promise<OptimizationResult> => {
       setIsGeneratingCuttingPlan(true);
-      
+
+      // Global hard safety limit for profile stock length in mm.
+      // Many regional suppliers use 6–7.5m bars; we cap all cutting
+      // calculations at 8000mm to prevent impossible cuts from being generated.
+      const MAX_STOCK_LENGTH_MM = 8000;
+
       try {
         if (!components || components.length === 0) {
           throw new Error('No components provided for cutting plan generation');
@@ -171,107 +312,133 @@ export const FabricatorWorkflow: React.FC = () => {
 
         await new Promise((res) => setTimeout(res, 1000));
 
-      const cuttingPlan: CuttingPlan[] = [];
-      let totalMaterialCost = 0;
-      let totalWaste = 0;
+        const cuttingPlan: CuttingPlan[] = [];
+        let totalMaterialCost = 0;
+        let totalWaste = 0;
 
-      components.forEach((component) => {
-        const profile = profiles.find((p) => p.id === component.profile.id);
-        if (!profile) return;
+        components.forEach((component) => {
+          const profile = profiles.find((p) => p.id === component.profile.id);
+          if (!profile) return;
 
-        const cuts: Cut[] = [];
-        let profileWaste = 0;
+          const cuts: Cut[] = [];
+          let profileWaste = 0;
 
-        const specs = profile.specifications || {};
-        const isMiter45 =
-          specs.cuttingType === 'miter_45' || specs.optimizedFor45Degree === true;
+          const specs = profile.specifications || {};
+          const isMiter45 =
+            specs.cuttingType === 'miter_45' || specs.optimizedFor45Degree === true;
 
-        component.cuttingLengths.forEach((length, index) => {
-          const baseAngle = component.angles[index] || 90;
-          const angle = isMiter45 ? 45 : baseAngle;
+          component.cuttingLengths.forEach((length, index) => {
+            const baseAngle = component.angles[index] || 90;
+            const angle = isMiter45 ? 45 : baseAngle;
 
-          // Extra logic for frame profiles with decorative/border frames
-          const isBorderFrame =
-            (profile.type === 'frame' ||
-              specs.egyptFrameType === 'sliding' ||
-              specs.egyptFrameType === 'casement') &&
-            specs.egyptBorderIncluded === 'with';
+            // Extra logic for frame profiles with decorative/border frames
+            const isBorderFrame =
+              (profile.type === 'frame' ||
+                specs.egyptFrameType === 'sliding' ||
+                specs.egyptFrameType === 'casement') &&
+              specs.egyptBorderIncluded === 'with';
 
-          // Base allowance comes from profile.cuttingAllowance.
-          // If this is a frame with border, we add an extra, per-profile border allowance
-          // (stored in specifications.borderExtraAllowanceMm and falling back to 5mm).
-          const borderExtraAllowance = isBorderFrame
-            ? (specs.borderExtraAllowanceMm as number | undefined) ?? 5
-            : 0;
-          const allowance = profile.cuttingAllowance + borderExtraAllowance;
+            // Base allowance comes from profile.cuttingAllowance.
+            // If this is a frame with border, we add an extra, per-profile border allowance
+            // (stored in specifications.borderExtraAllowanceMm and falling back to 5mm).
+            const borderExtraAllowance = isBorderFrame
+              ? (specs.borderExtraAllowanceMm as number | undefined) ?? 5
+              : 0;
+            const allowance = profile.cuttingAllowance + borderExtraAllowance;
 
-          const cut: Cut = {
-            length: length + allowance,
-            angle,
-            componentId: component.id,
-            componentType: (specs.profileRole as string | undefined) || undefined,
-            waste: allowance,
-          };
-          cuts.push(cut);
-          profileWaste += allowance;
+            const rawLength = length + allowance;
+
+            // Hard safety check: no individual cut may exceed MAX_STOCK_LENGTH_MM.
+            // This protects against impossible jobs when measurements + allowances
+            // accidentally exceed available bar length (e.g. > 8m).
+            if (rawLength > MAX_STOCK_LENGTH_MM) {
+              throw new Error(
+                `Calculated cut length ${rawLength.toFixed(
+                  1,
+                )} mm exceeds maximum stock length ${MAX_STOCK_LENGTH_MM} mm for profile "${profile.name}". ` +
+                  'Please adjust dimensions or split this element into multiple parts.',
+              );
+            }
+
+            const cut: Cut = {
+              length: rawLength,
+              angle,
+              componentId: component.id,
+              componentType: (specs.profileRole as string | undefined) || undefined,
+              waste: allowance,
+            };
+            cuts.push(cut);
+            profileWaste += allowance;
+          });
+
+          // Use profile‑specific stock length when available, but never exceed the
+          // global MAX_STOCK_LENGTH_MM safety cap.
+          const profileStockLength =
+            typeof (profile.specifications as any)?.stockLengthMm === 'number'
+              ? (profile.specifications as any).stockLengthMm
+              : 6000;
+          const stockLength = Math.min(profileStockLength, MAX_STOCK_LENGTH_MM);
+
+          const totalCutLength = cuts.reduce((sum, cut) => sum + cut.length, 0);
+          const utilization = (totalCutLength / stockLength) * 100;
+
+          cuttingPlan.push({
+            profile,
+            stockLength,
+            cuts,
+            totalWaste: profileWaste,
+            utilization,
+          });
+
+          // Material cost:
+          // - Aluminum: price by kg → costPerKg * weightPerMeter(kg/m) * length(m)
+          // - UPVC/wood: price by meter → costPerMeter * length(m)
+          let effectiveCostPerMeter = profile.costPerMeter;
+
+          if (
+            profile.material === 'aluminum' &&
+            typeof specs.costPerKg === 'number' &&
+            typeof profile.weightPerMeter === 'number'
+          ) {
+            effectiveCostPerMeter = specs.costPerKg * profile.weightPerMeter;
+          }
+
+          totalMaterialCost += (totalCutLength / 1000) * effectiveCostPerMeter;
+          totalWaste += profileWaste;
         });
 
-        const stockLength = 6000;
-        const totalCutLength = cuts.reduce((sum, cut) => sum + cut.length, 0);
-        const utilization = (totalCutLength / stockLength) * 100;
+        const totalNetCutLength = cuttingPlan.reduce(
+          (sum, plan) =>
+            sum + plan.cuts.reduce((cutSum, cut) => cutSum + cut.length, 0),
+          0,
+        );
 
-        cuttingPlan.push({
-          profile,
-          stockLength,
-          cuts,
-          totalWaste: profileWaste,
-          utilization,
-        });
+        const result: OptimizationResult = {
+          materialUsage: totalMaterialCost,
+          wastePercentage:
+            totalNetCutLength + totalWaste === 0
+              ? 0
+              : (totalWaste / (totalWaste + totalNetCutLength)) * 100,
+          estimatedProductionTime: components.length * 2.5,
+          cuttingPlan,
+          nestingEfficiency: 92.5,
+          costBreakdown: {
+            materialCost: totalMaterialCost,
+            laborCost: totalMaterialCost * 0.3,
+            hardwareCost: components.reduce(
+              (sum, comp) => sum + comp.hardware.reduce((hSum, _h) => hSum + 5, 0),
+              0,
+            ),
+            glazingCost: totalMaterialCost * 0.4,
+            totalCost: 0,
+          },
+        };
 
-        // Material cost:
-        // - Aluminum: price by kg → costPerKg * weightPerMeter(kg/m) * length(m)
-        // - UPVC/wood: price by meter → costPerMeter * length(m)
-        let effectiveCostPerMeter = profile.costPerMeter;
-
-        if (
-          profile.material === 'aluminum' &&
-          typeof specs.costPerKg === 'number' &&
-          typeof profile.weightPerMeter === 'number'
-        ) {
-          effectiveCostPerMeter = specs.costPerKg * profile.weightPerMeter;
-        }
-
-        totalMaterialCost += (totalCutLength / 1000) * effectiveCostPerMeter;
-        totalWaste += profileWaste;
-      });
-
-      const result: OptimizationResult = {
-        materialUsage: totalMaterialCost,
-        wastePercentage:
-          (totalWaste /
-            (totalWaste +
-              cuttingPlan.reduce((sum, plan) => sum + plan.cuts.reduce((cutSum, cut) => cutSum + cut.length, 0), 0))) *
-          100,
-        estimatedProductionTime: components.length * 2.5,
-        cuttingPlan,
-        nestingEfficiency: 92.5,
-        costBreakdown: {
-          materialCost: totalMaterialCost,
-          laborCost: totalMaterialCost * 0.3,
-          hardwareCost: components.reduce(
-            (sum, comp) => sum + comp.hardware.reduce((hSum, _h) => hSum + 5, 0),
-            0
-          ),
-          glazingCost: totalMaterialCost * 0.4,
-          totalCost: 0,
-        },
-      };
-
-      result.costBreakdown.totalCost =
-        result.costBreakdown.materialCost +
-        result.costBreakdown.laborCost +
-        result.costBreakdown.hardwareCost +
-        result.costBreakdown.glazingCost;
+        result.costBreakdown.totalCost =
+          result.costBreakdown.materialCost +
+          result.costBreakdown.laborCost +
+          result.costBreakdown.hardwareCost +
+          result.costBreakdown.glazingCost;
 
         setIsGeneratingCuttingPlan(false);
         return result;
@@ -284,61 +451,76 @@ export const FabricatorWorkflow: React.FC = () => {
     []
   );
 
-  const handleMeasurementComplete = useCallback((data: MeasurementData) => {
-    try {
-      setProjectError(null);
-      
-      const width = Number(data.width);
-      const height = Number(data.height);
-      
-      if (isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
-        throw new Error('Invalid measurement data provided');
-      }
+  const handleMeasurementComplete = useCallback(
+    (data: MeasurementData) => {
+      try {
+        setProjectError(null);
 
-      const newProject: WindowUnit = {
-        id: `proj_${Date.now()}`,
-        orderNumber: `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-        posNumber: `POS-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
-        type: data.windowType || 'sliding_window',
-        components: [],
-        overallWidth: width,
-        overallHeight: height,
-        color: String(data.color) || 'Silver',
-        glazing: {
-          type: data.glazingType || 'double',
-          thickness: 24,
-          spacer: 12,
-          gasFill: 'argon'
-        },
-        hardware: sampleHardware,
-        status: 'design',
-        optimization: null,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
+        if (!projectMeta) {
+          throw new Error('Please create a project header before measuring.');
+        }
+        
+        const width = Number(data.width);
+        const height = Number(data.height);
+        
+        if (isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
+          throw new Error('Invalid measurement data provided');
+        }
 
-      // Don't require components at measurement stage - they'll be added in design phase
-      const validation = validateProject(newProject, false);
-      if (!validation.isValid) {
-        throw new Error(validation.errors.map(e => e.message).join(', '));
+        const newProject: WindowUnit = {
+          id: `proj_${Date.now()}`,
+          orderNumber: `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+          posNumber: `POS-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+          type: data.windowType || 'sliding_window',
+          components: [],
+          overallWidth: width,
+          overallHeight: height,
+          color: String(data.color) || 'Silver',
+          glazing: {
+            type: data.glazingType || 'double',
+            thickness: 24,
+            spacer: 12,
+            gasFill: 'argon'
+          },
+          hardware: sampleHardware,
+          status: 'design',
+          optimization: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          customer: projectMeta.clientName,
+          systemPackId: projectMeta.systemPackId,
+          projectCode: projectMeta.projectCode,
+          customerCode: projectMeta.customerCode,
+          positionCode: `FP-${projectMeta.projectCode || ''}-${Math.random()
+            .toString(36)
+            .toUpperCase()
+            .slice(-3)}`,
+        };
+
+        // Don't require components at measurement stage - they'll be added in design phase
+        const validation = validateProject(newProject, false);
+        if (!validation.isValid) {
+          throw new Error(validation.errors.map(e => e.message).join(', '));
+        }
+        
+        setCurrentProject(newProject);
+        addOrUpdateJob(newProject);
+        setSelectedJob(newProject.id);
+        setActiveTab('design');
+        track('fabricator_job_created', {
+          jobId: newProject.id,
+          orderNumber: newProject.orderNumber,
+          type: newProject.type,
+          width: newProject.overallWidth,
+          height: newProject.overallHeight,
+        });
+      } catch (error) {
+        console.error('Error creating project from measurements:', error);
+        setProjectError(error instanceof Error ? error.message : 'Failed to create project');
       }
-      
-      setCurrentProject(newProject);
-      addOrUpdateJob(newProject);
-      setSelectedJob(newProject.id);
-      setActiveTab('design');
-      track('fabricator_job_created', {
-        jobId: newProject.id,
-        orderNumber: newProject.orderNumber,
-        type: newProject.type,
-        width: newProject.overallWidth,
-        height: newProject.overallHeight,
-      });
-    } catch (error) {
-      console.error('Error creating project from measurements:', error);
-      setProjectError(error instanceof Error ? error.message : 'Failed to create project');
-    }
-  }, [addOrUpdateJob, setSelectedJob]);
+    },
+    [addOrUpdateJob, setSelectedJob, projectMeta, setActiveTab, setCurrentProject]
+  );
 
   const handleDesignComplete = useCallback(async (components: WindowComponent[]) => {
     if (!currentProject) {
@@ -387,13 +569,44 @@ export const FabricatorWorkflow: React.FC = () => {
 
     try {
       setProjectError(null);
-      
-      const validation = validateProject(currentProject);
+
+      // Apply base validation plus system-specific constraints derived from
+      // the profiles currently used in inventory.
+      const constraints = deriveSystemConstraintsFromProfiles(inventory);
+      const validation = validateProjectWithConstraints(currentProject, constraints);
       if (!validation.isValid) {
         throw new Error(validation.errors.map(e => e.message).join(', '));
       }
 
-      const updatedProject = {
+      // Heavy-duty stock check: ensure inventory has enough bars for the
+      // current optimization before allowing production.
+      if (currentProject.optimization) {
+        const shortages: string[] = [];
+
+        currentProject.optimization.cuttingPlan.forEach((plan) => {
+          const profile = plan.profile;
+          const availableBars = profile.stockQuantity ?? 0;
+          const requiredLength = plan.cuts.reduce((sum, cut) => sum + cut.length, 0);
+          const requiredBars = Math.ceil(requiredLength / plan.stockLength);
+
+          if (availableBars < requiredBars) {
+            shortages.push(
+              `${profile.name}: need ${requiredBars} bars (${Math.round(
+                requiredLength / 1000,
+              )} m), available ${availableBars}`,
+            );
+          }
+        });
+
+        if (shortages.length > 0) {
+          throw new Error(
+            `Insufficient stock for this order:\n` +
+              shortages.map((s) => `• ${s}`).join('\n'),
+          );
+        }
+      }
+
+      const updatedProject: WindowUnit = {
         ...currentProject,
         status: 'production',
         updatedAt: new Date()
@@ -550,6 +763,24 @@ export const FabricatorWorkflow: React.FC = () => {
                   />
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                 </div>
+                <div className="mt-3 flex justify-end">
+                  <Suspense fallback={null}>
+                    <Button
+                      size="sm"
+                      className="bg-orange-500 hover:bg-orange-600 text-xs"
+                      onClick={() => {
+                        // Reset current context and open a fresh project header wizard
+                        setCurrentProject(null);
+                        setOptimizationResults(null);
+                        setProjectMeta(null);
+                        setShowProjectWizard(true);
+                        setActiveTab('measuring');
+                      }}
+                    >
+                      New Project
+                    </Button>
+                  </Suspense>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -579,14 +810,25 @@ export const FabricatorWorkflow: React.FC = () => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 {currentProject && (
                   <>
-                    <div className="flex items-center gap-3">
-                      <Badge variant="outline" className="bg-orange-500/10 text-orange-300 border-orange-500/40 text-[11px]">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {currentProject.orderNumber}
-                      </Badge>
-                      <Badge variant="secondary" className="bg-green-500/10 text-green-300 border-green-500/40 text-[11px] capitalize">
-                        {currentProject.status}
-                      </Badge>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-3">
+                        <Badge variant="outline" className="bg-orange-500/10 text-orange-300 border-orange-500/40 text-[11px]">
+                          <Clock className="h-3 w-3 mr-1" />
+                          {currentProject.orderNumber}
+                        </Badge>
+                        {currentProject.projectCode && (
+                          <Badge variant="outline" className="text-[11px]">
+                            {currentProject.projectCode}
+                          </Badge>
+                        )}
+                        <Badge variant="secondary" className="bg-green-500/10 text-green-300 border-green-500/40 text-[11px] capitalize">
+                          {currentProject.status}
+                        </Badge>
+                      </div>
+                      <div className="text-[11px] text-gray-400">
+                        {projectMeta?.projectName || 'Untitled Project'} ·{' '}
+                        {projectMeta?.clientName || 'Unnamed Client'}
+                      </div>
                     </div>
                     <Button
                       onClick={() => setShowClientPortal(true)}
@@ -708,7 +950,13 @@ export const FabricatorWorkflow: React.FC = () => {
           {/* Status progress */}
           {currentProject && (
             <div className="mb-6">
-              <WorkflowProgress currentStatus={currentProject.status} />
+              <Suspense
+                fallback={
+                  <div className="h-10 w-full rounded-lg bg-gray-800/60 animate-pulse" />
+                }
+              >
+                <WorkflowProgress currentStatus={currentProject.status} />
+              </Suspense>
             </div>
           )}
 
@@ -727,12 +975,26 @@ export const FabricatorWorkflow: React.FC = () => {
           {/* Mobile context panel */}
           {showMobilePanel && (
             <div className="lg:hidden space-y-4 mb-6">
-              <JobSummaryPanel project={currentProject} />
-              <InventoryStatusPanel project={currentProject} />
-              <QuickReportsPanel
-                project={currentProject}
-                optimization={optimizationResults}
-              />
+              <Suspense
+                fallback={
+                  <div className="space-y-3">
+                    <div className="h-32 rounded-lg bg-gray-800/60 animate-pulse" />
+                    <div className="h-32 rounded-lg bg-gray-800/60 animate-pulse" />
+                    <div className="h-32 rounded-lg bg-gray-800/60 animate-pulse" />
+                  </div>
+                }
+              >
+                <JobSummaryPanel project={currentProject} />
+                <InventoryStatusPanel project={currentProject} />
+                <QuickReportsPanel
+                  project={currentProject}
+                  optimization={optimizationResults}
+                />
+                <CommercialOfferPanel
+                  project={currentProject}
+                  optimization={optimizationResults}
+                />
+              </Suspense>
             </div>
           )}
 
@@ -757,9 +1019,34 @@ export const FabricatorWorkflow: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4">
-                  <ErrorBoundary level="component">
-                    <SmartMeasuringInterface onMeasurementComplete={handleMeasurementComplete} />
-                  </ErrorBoundary>
+                  {!projectMeta ? (
+                    <div className="border border-dashed border-gray-700 rounded-lg p-6 text-center space-y-3">
+                      <p className="text-sm text-gray-300 font-medium">
+                        Project header required before measuring
+                      </p>
+                      <p className="text-xs text-gray-400 max-w-md mx-auto">
+                        In professional workflows, each project starts with a clear client, site,
+                        currency and system definition. Create the project header to continue.
+                      </p>
+                      <Button
+                        size="sm"
+                        className="bg-orange-500 hover:bg-orange-600 text-xs mt-2"
+                        onClick={() => setShowProjectWizard(true)}
+                      >
+                        Create Project Header
+                      </Button>
+                    </div>
+                  ) : (
+                    <ErrorBoundary level="component">
+                      <Suspense
+                        fallback={
+                          <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                        }
+                      >
+                        <SmartMeasuringInterface onMeasurementComplete={handleMeasurementComplete} />
+                      </Suspense>
+                    </ErrorBoundary>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -768,25 +1055,53 @@ export const FabricatorWorkflow: React.FC = () => {
             <TabsContent value="design" className="space-y-6">
               <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
                 <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center gap-3 text-2xl">
-                    <div className="p-2 bg-orange-500/20 rounded-lg">
-                      <Settings className="h-6 w-6 text-orange-400" />
-                    </div>
-                    <div>
-                      Technical Design & Component Specification
-                      <CardDescription className="text-lg text-gray-300 mt-1">
-                        Define window components, profiles, and manufacturing specifications with precision
-                      </CardDescription>
-                    </div>
-                  </CardTitle>
+                  <div className="flex items-center justify-between gap-3">
+                    <CardTitle className="flex items-center gap-3 text-2xl">
+                      <div className="p-2 bg-orange-500/20 rounded-lg">
+                        <Settings className="h-6 w-6 text-orange-400" />
+                      </div>
+                      <div>
+                        Technical Design & Component Specification
+                        <CardDescription className="text-lg text-gray-300 mt-1">
+                          Define window components, profiles, and manufacturing specifications with precision
+                        </CardDescription>
+                      </div>
+                    </CardTitle>
+                    {currentProject && (
+                      <div className="flex flex-col items-end gap-1">
+                        <label className="text-[11px] text-gray-400">Quantity (poses)</label>
+                        <input
+                          type="number"
+                          min={1}
+                          className="w-20 h-8 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-right"
+                          value={currentProject.quantity || 1}
+                          onChange={(e) => {
+                            const qty = Math.max(1, Number(e.target.value) || 1);
+                            const updated: WindowUnit = {
+                              ...currentProject,
+                              quantity: qty,
+                            };
+                            setCurrentProject(updated);
+                            addOrUpdateJob(updated);
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent className="pt-4">
                   <ErrorBoundary level="component">
-                    <TechnicalCalculator 
-                      project={currentProject} 
-                      onDesignComplete={handleDesignComplete} 
-                      profiles={inventory} 
-                    />
+                    <Suspense
+                      fallback={
+                        <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                      }
+                    >
+                      <TechnicalCalculator 
+                        project={currentProject} 
+                        onDesignComplete={handleDesignComplete} 
+                        profiles={inventory} 
+                      />
+                    </Suspense>
                   </ErrorBoundary>
                 </CardContent>
               </Card>
@@ -810,32 +1125,38 @@ export const FabricatorWorkflow: React.FC = () => {
                 </CardHeader>
                 <CardContent className="pt-4">
                   <ErrorBoundary level="component">
-                    {currentProject ? (
-                      <div className="w-full h-[600px] rounded-lg overflow-hidden border border-gray-700 shadow-2xl">
-                        <Window3DGenerator 
-                          windowUnit={currentProject}
-                          showControls={true}
-                          presentationMode={false}
-                          showErrorDetection={true}
-                          profiles={inventory}
-                        />
-                      </div>
-                    ) : (
-                      <div className="text-center py-16">
-                        <Box className="h-20 w-20 text-gray-600 mx-auto mb-4" />
-                        <h3 className="text-2xl font-semibold mb-3 text-gray-400">No Project Available</h3>
-                        <p className="text-gray-500 max-w-md mx-auto mb-6">
-                          Please complete the measurement and design phases first to generate a 3D preview of your window project.
-                        </p>
-                        <Button 
-                          onClick={() => setActiveTab('measuring')}
-                          className="bg-orange-500 hover:bg-orange-600"
-                        >
-                          <Ruler className="h-4 w-4 mr-2" />
-                          Start Measuring
-                        </Button>
-                      </div>
-                    )}
+                    <Suspense
+                      fallback={
+                        <div className="w-full h-[600px] rounded-lg bg-gray-800/60 animate-pulse" />
+                      }
+                    >
+                      {currentProject ? (
+                        <div className="w-full h-[600px] rounded-lg overflow-hidden border border-gray-700 shadow-2xl">
+                          <Window3DGenerator 
+                            windowUnit={currentProject}
+                            showControls={true}
+                            presentationMode={false}
+                            showErrorDetection={true}
+                            profiles={inventory}
+                          />
+                        </div>
+                      ) : (
+                        <div className="text-center py-16">
+                          <Box className="h-20 w-20 text-gray-600 mx-auto mb-4" />
+                          <h3 className="text-2xl font-semibold mb-3 text-gray-400">No Project Available</h3>
+                          <p className="text-gray-500 max-w-md mx-auto mb-6">
+                            Please complete the measurement and design phases first to generate a 3D preview of your window project.
+                          </p>
+                          <Button 
+                            onClick={() => setActiveTab('measuring')}
+                            className="bg-orange-500 hover:bg-orange-600"
+                          >
+                            <Ruler className="h-4 w-4 mr-2" />
+                            Start Measuring
+                          </Button>
+                        </div>
+                      )}
+                    </Suspense>
                   </ErrorBoundary>
                 </CardContent>
               </Card>
@@ -859,11 +1180,17 @@ export const FabricatorWorkflow: React.FC = () => {
                 </CardHeader>
                 <CardContent className="pt-4">
                   <ErrorBoundary level="component">
-                    <CuttingOptimizationEngine 
-                      project={currentProject}
-                      optimization={optimizationResults} 
-                      isGenerating={isGeneratingCuttingPlan} 
-                    />
+                    <Suspense
+                      fallback={
+                        <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                      }
+                    >
+                      <CuttingOptimizationEngine 
+                        project={currentProject}
+                        optimization={optimizationResults} 
+                        isGenerating={isGeneratingCuttingPlan} 
+                      />
+                    </Suspense>
                   </ErrorBoundary>
                 </CardContent>
               </Card>
@@ -888,29 +1215,47 @@ export const FabricatorWorkflow: React.FC = () => {
                 </CardHeader>
                 <CardContent className="pt-4 space-y-6">
                   <ErrorBoundary level="component">
-                    <ProfileManagement 
-                      userId={userId}
-                      onProfilesUpdate={(updatedProfiles) => {
-                        setInventory(updatedProfiles);
-                      }}
-                    />
+                    <Suspense
+                      fallback={
+                        <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                      }
+                    >
+                      <ProfileManagement 
+                        userId={userId}
+                        onProfilesUpdate={(updatedProfiles) => {
+                          setInventory(updatedProfiles);
+                        }}
+                      />
+                    </Suspense>
                   </ErrorBoundary>
 
                   {/* ELSHERIF Catalog Import – ROCK60 45° optimized profiles */}
                   <div className="mt-4">
-                    <ElsherifImportWizard
-                      userId={userId}
-                      onProfilesImported={(importedProfiles) => {
-                        // Merge into current inventory so optimization engine can use them immediately
-                        setInventory((prev) => [...prev, ...importedProfiles]);
-                      }}
-                    />
+                    <Suspense
+                      fallback={
+                        <div className="h-24 rounded-lg bg-gray-800/60 animate-pulse" />
+                      }
+                    >
+                      <ElsherifImportWizard
+                        userId={userId}
+                        onProfilesImported={(importedProfiles) => {
+                          // Merge into current inventory so optimization engine can use them immediately
+                          setInventory((prev) => [...prev, ...importedProfiles]);
+                        }}
+                      />
+                    </Suspense>
                   </div>
 
                   {/* ROCK 60 – 2D cutting list summary for 45° configuration */}
                   {inventory.length > 0 && (
                     <div className="mt-4">
-                      <Rock60CuttingSummary profiles={inventory} />
+                      <Suspense
+                        fallback={
+                          <div className="h-40 rounded-lg bg-gray-800/60 animate-pulse" />
+                        }
+                      >
+                        <Rock60CuttingSummary profiles={inventory} />
+                      </Suspense>
                     </div>
                   )}
                 </CardContent>
@@ -933,11 +1278,17 @@ export const FabricatorWorkflow: React.FC = () => {
                 </CardHeader>
                 <CardContent className="pt-4">
                   <ErrorBoundary level="component">
-                    <InventoryDashboard 
-                      inventory={inventory} 
-                      project={currentProject}
-                      userId={userId}
-                    />
+                    <Suspense
+                      fallback={
+                        <div className="h-80 rounded-lg bg-gray-800/60 animate-pulse" />
+                      }
+                    >
+                      <InventoryDashboard 
+                        inventory={inventory} 
+                        project={currentProject}
+                        userId={userId}
+                      />
+                    </Suspense>
                   </ErrorBoundary>
                 </CardContent>
               </Card>
@@ -961,10 +1312,16 @@ export const FabricatorWorkflow: React.FC = () => {
                 </CardHeader>
                 <CardContent className="pt-4">
                   <ErrorBoundary level="component">
-                    <ProductionScheduler 
-                      project={currentProject} 
-                      onProductionStart={handleProductionStart} 
-                    />
+                    <Suspense
+                      fallback={
+                        <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                      }
+                    >
+                      <ProductionScheduler 
+                        project={currentProject} 
+                        onProductionStart={handleProductionStart} 
+                      />
+                    </Suspense>
                   </ErrorBoundary>
                 </CardContent>
               </Card>
@@ -988,7 +1345,13 @@ export const FabricatorWorkflow: React.FC = () => {
                 </CardHeader>
                 <CardContent className="pt-4">
                   <ErrorBoundary level="component">
-                    <QualityControl project={currentProject} />
+                    <Suspense
+                      fallback={
+                        <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                      }
+                    >
+                      <QualityControl project={currentProject} />
+                    </Suspense>
                   </ErrorBoundary>
                 </CardContent>
               </Card>
@@ -998,12 +1361,26 @@ export const FabricatorWorkflow: React.FC = () => {
 
             {/* Desktop context panel */}
             <div className="hidden lg:block w-80 flex-shrink-0 space-y-4">
-              <JobSummaryPanel project={currentProject} />
-              <InventoryStatusPanel project={currentProject} />
-              <QuickReportsPanel
-                project={currentProject}
-                optimization={optimizationResults}
-              />
+              <Suspense
+                fallback={
+                  <>
+                    <div className="h-40 rounded-lg bg-gray-800/60 animate-pulse" />
+                    <div className="h-40 rounded-lg bg-gray-800/60 animate-pulse" />
+                    <div className="h-40 rounded-lg bg-gray-800/60 animate-pulse" />
+                  </>
+                }
+              >
+                <JobSummaryPanel project={currentProject} />
+                <InventoryStatusPanel project={currentProject} />
+                <QuickReportsPanel
+                  project={currentProject}
+                  optimization={optimizationResults}
+                />
+                <CommercialOfferPanel
+                  project={currentProject}
+                  optimization={optimizationResults}
+                />
+              </Suspense>
             </div>
           </div>
 
@@ -1015,20 +1392,71 @@ export const FabricatorWorkflow: React.FC = () => {
               transition={{ delay: 0.3 }}
               className="mt-12"
             >
-              <RealTimeMonitoring projects={projects} />
+              <Suspense
+                fallback={
+                  <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                }
+              >
+                <RealTimeMonitoring projects={projects} />
+              </Suspense>
             </motion.div>
           )}
 
+          {/* Positions & Flats Overview */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-8"
+          >
+            <Suspense
+              fallback={<div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />}
+            >
+              <PositionsGrid currentProject={currentProject} />
+            </Suspense>
+          </motion.div>
+
           {/* Client Portal Modal */}
           {showClientPortal && currentProject && (
-            <ClientPortalManager
-              project={currentProject}
-              onClose={() => setShowClientPortal(false)}
-            />
+            <Suspense
+              fallback={
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+                  <div className="w-80 h-40 rounded-xl bg-gray-900/80 border border-gray-700 animate-pulse" />
+                </div>
+              }
+            >
+              <ClientPortalManager
+                project={currentProject}
+                onClose={() => setShowClientPortal(false)}
+              />
+            </Suspense>
           )}
 
           {/* Feedback button for stabilization phase */}
-          <FeedbackButton jobId={currentProject?.id} />
+          <Suspense
+            fallback={null}
+          >
+            <FeedbackButton jobId={currentProject?.id} />
+          </Suspense>
+
+          {/* New Project Wizard – mandatory header before measuring */}
+          <Suspense fallback={null}>
+            <NewProjectWizard
+              open={showProjectWizard}
+              onOpenChange={setShowProjectWizard}
+              onSubmit={(meta) => {
+                const projectCode = `FP-${Date.now().toString(36).toUpperCase().slice(-6)}`;
+                const customerCode = `FC-${meta.clientName
+                  .replace(/\s+/g, '')
+                  .toUpperCase()
+                  .slice(0, 3)}-${Date.now().toString(36).toUpperCase().slice(-3)}`;
+                setProjectMeta({ ...meta, projectCode, customerCode });
+                setShowProjectWizard(false);
+                // Keep user on measuring tab ready to capture dimensions
+                setActiveTab('measuring');
+              }}
+            />
+          </Suspense>
         </div>
       </div>
     </ErrorBoundary>

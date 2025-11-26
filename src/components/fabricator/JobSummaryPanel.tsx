@@ -2,7 +2,8 @@ import React from 'react';
 import { WindowUnit } from '@/types/fabricator';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Ruler, Calendar, Palette, Factory } from 'lucide-react';
+import { Ruler, Calendar, Palette, Factory, MapPin } from 'lucide-react';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 
 interface JobSummaryPanelProps {
   project: WindowUnit | null;
@@ -20,6 +21,8 @@ export const JobSummaryPanel: React.FC<JobSummaryPanelProps> = ({ project }) => 
   }
 
   const status = project.status || 'design';
+  const systemPack =
+    project.systemPackId && SYSTEM_PACKS.find((p) => p.meta.id === project.systemPackId);
 
   return (
     <Card className="bg-gray-800 border-gray-700">
@@ -30,6 +33,24 @@ export const JobSummaryPanel: React.FC<JobSummaryPanelProps> = ({ project }) => 
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 text-xs">
+        {project.projectCode && (
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Project Code</span>
+            <Badge variant="outline" className="text-[10px]">
+              {project.projectCode}
+            </Badge>
+          </div>
+        )}
+
+        {project.customerCode && (
+          <div className="flex justify-between items-center">
+            <span className="text-gray-400">Customer Code</span>
+            <Badge variant="outline" className="text-[10px]">
+              {project.customerCode}
+            </Badge>
+          </div>
+        )}
+
         <div className="flex justify-between items-center">
           <span className="text-gray-400">Order #</span>
           <Badge variant="outline" className="text-[10px]">
@@ -48,6 +69,56 @@ export const JobSummaryPanel: React.FC<JobSummaryPanelProps> = ({ project }) => 
           <Palette className="h-4 w-4 text-green-400" />
           <span className="capitalize">{project.color}</span>
         </div>
+
+        {systemPack && (
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-gray-400">System</span>
+            <Badge variant="outline" className="text-[10px]">
+              {systemPack.meta.name}
+            </Badge>
+          </div>
+        )}
+
+        {/* Quantity & positional metadata for large projects */}
+        {(project.quantity || project.positionMeta) && (
+          <div className="space-y-1 pt-1 border-t border-gray-700">
+            {project.quantity && project.quantity > 1 && (
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Quantity (poses)</span>
+                <Badge variant="outline" className="text-[10px]">
+                  × {project.quantity}
+                </Badge>
+              </div>
+            )}
+            {project.positionMeta && (
+              <div className="flex items-start gap-2 text-[11px] text-gray-300">
+                <MapPin className="h-3 w-3 text-orange-400 mt-[2px]" />
+                <div className="space-y-0.5">
+                  {project.positionMeta.flatNumber && (
+                    <div>Flat: {project.positionMeta.flatNumber}</div>
+                  )}
+                  {project.positionMeta.floor && (
+                    <div>Floor: {project.positionMeta.floor}</div>
+                  )}
+                  {project.positionMeta.elevation && (
+                    <div>Elevation: {project.positionMeta.elevation}</div>
+                  )}
+                  {project.positionMeta.roomOrZone && (
+                    <div>Room/Zone: {project.positionMeta.roomOrZone}</div>
+                  )}
+                  {project.positionMeta.windowIndex && (
+                    <div>Window: {project.positionMeta.windowIndex}</div>
+                  )}
+                  {project.positionMeta.remarks && (
+                    <div className="text-gray-400">
+                      Remark: {project.positionMeta.remarks}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="flex items-center gap-2">
           <Calendar className="h-4 w-4 text-purple-400" />
