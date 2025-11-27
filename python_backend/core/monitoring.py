@@ -181,8 +181,42 @@ class TracingMiddleware(BaseHTTPMiddleware):
         
         # Add request ID to headers
         request.state.request_id = request_id
-        
-        # Create span for the request
+
+        # If OpenTelemetry is not available, gracefully skip span creation but
+        # still record basic Prometheus metrics so local/dev environments work
+        # without extra dependencies.
+        if self.tracer is None:
+            try:
+                response = await call_next(request)
+            except Exception as e:
+                ERROR_COUNT.labels(
+                    error_type=type(e).__name__,
+                    service='almona-api',
+                    severity='error'
+                ).inc()
+                raise
+            finally:
+                duration = time.time() - start_time
+                # Record metrics even on failure (if we have a response)
+                status_code = getattr(locals().get("response", None), "status_code", 500)
+                REQUEST_COUNT.labels(
+                    method=request.method,
+                    endpoint=request.url.path,
+                    status_code=status_code,
+                    service='almona-api'
+                ).inc()
+
+                REQUEST_DURATION.labels(
+                    method=request.method,
+                    endpoint=request.url.path,
+                    service='almona-api'
+                ).observe(duration)
+
+            # Add request ID header on successful response
+            response.headers['X-Request-ID'] = request_id
+            return response
+
+        # Create span for the request when tracing is available
         with self.tracer.start_as_current_span(
             f"{request.method} {request.url.path}",
             attributes={
@@ -195,7 +229,7 @@ class TracingMiddleware(BaseHTTPMiddleware):
         ) as span:
             try:
                 response = await call_next(request)
-                
+
                 # Record metrics
                 duration = time.time() - start_time
                 REQUEST_COUNT.labels(
@@ -204,24 +238,24 @@ class TracingMiddleware(BaseHTTPMiddleware):
                     status_code=response.status_code,
                     service='almona-api'
                 ).inc()
-                
+
                 REQUEST_DURATION.labels(
                     method=request.method,
                     endpoint=request.url.path,
                     service='almona-api'
                 ).observe(duration)
-                
+
                 # Add trace attributes
                 span.set_attributes({
                     'http.status_code': response.status_code,
                     'http.response_size': response.headers.get('content-length', 0),
                 })
-                
+
                 # Add request ID to response headers
                 response.headers['X-Request-ID'] = request_id
-                
+
                 return response
-                
+
             except Exception as e:
                 # Record error metrics
                 ERROR_COUNT.labels(
@@ -229,7 +263,7 @@ class TracingMiddleware(BaseHTTPMiddleware):
                     service='almona-api',
                     severity='error'
                 ).inc()
-                
+
                 span.record_exception(e)
                 span.set_status(trace.Status(trace.StatusCode.ERROR, str(e)))
                 raise

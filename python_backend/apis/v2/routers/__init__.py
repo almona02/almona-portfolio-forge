@@ -6,6 +6,7 @@ from apis.v2.tickets import router as tickets_router
 from apis.v2.quotes import router as quotes_router
 from apis.v2.auth_fastapi import router as auth_router
 from apis.v2.part_detection_fastapi import router as part_detection_router
+from apis.fabricator_profiles import router as fabricator_router
 
 # Import v2 error handlers
 from apis.v2.core.errors import (
@@ -17,7 +18,11 @@ from apis.v2.core.errors import (
 )
 
 
-router = APIRouter(prefix="/api/v2")
+# NOTE:
+# The main FastAPI app mounts `v2_app` under `/api/v2`, so this unified
+# router should NOT add an additional `/api/v2` prefix. Individual v2
+# routers use relative prefixes like `/tickets`, `/auth`, `/fabricator`, etc.
+router = APIRouter()
 
 # Note: Exception handlers are registered at the FastAPI app level in v2_app.
 # FastAPI's APIRouter does not support add_exception_handler; registering here
@@ -27,8 +32,9 @@ router = APIRouter(prefix="/api/v2")
 router.include_router(
     auth_router, prefix="/auth", tags=["Auth"]
 )  # token endpoints
-router.include_router(tickets_router)  # tickets already has /tickets prefix
-router.include_router(quotes_router)   # quotes already has /quotes prefix
+router.include_router(tickets_router)   # tickets already has /tickets prefix
+router.include_router(quotes_router)    # quotes already has /quotes prefix
 router.include_router(
     part_detection_router, prefix="/ai", tags=["AI"]
 )  # optional namespacing
+router.include_router(fabricator_router)  # fabricator uses /fabricator prefix

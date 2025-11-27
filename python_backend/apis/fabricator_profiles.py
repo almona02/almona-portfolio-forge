@@ -13,10 +13,13 @@ import logging
 from core.supabase_client import get_enhanced_supabase_client
 from apis.v2.deps import get_industrial_supabase, get_current_user
 from apis.v2.core.errors import SupabaseError, create_error_context
+from core.fabricator_validation import ProductionConstraints
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v2/fabricator", tags=["fabricator"])
+# This router is included in the v2 router, which is mounted under `/api/v2`.
+# Use a relative `/fabricator` prefix so final paths are `/api/v2/fabricator/*`.
+router = APIRouter(prefix="/fabricator", tags=["fabricator"])
 
 
 # ============================================================================
@@ -206,6 +209,15 @@ async def create_profile(
             if profile.material not in ["aluminum", "upvc", "wood"]:
                 raise HTTPException(status_code=400, detail="Invalid material type")
 
+            # Server-side guardrails for dimensions (mirror frontend constraints loosely)
+            try:
+                ProductionConstraints.validate_profile_dimensions(
+                    width_mm=profile.width,
+                    height_mm=profile.height,
+                )
+            except ValueError as ve:
+                raise HTTPException(status_code=400, detail=str(ve))
+
             profile_data = {
                 "user_id": user_id,
                 "name": profile.name,
@@ -280,6 +292,15 @@ async def update_profile(
             for field, value in profile_update.model_dump(exclude_unset=True).items():
                 if value is not None:
                     update_data[field] = value
+
+            # Server-side guardrails for updated dimensions if present
+            try:
+                ProductionConstraints.validate_profile_dimensions(
+                    width_mm=update_data.get("width"),
+                    height_mm=update_data.get("height"),
+                )
+            except ValueError as ve:
+                raise HTTPException(status_code=400, detail=str(ve))
 
             if not update_data:
                 raise HTTPException(status_code=400, detail="No fields to update")

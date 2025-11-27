@@ -32,9 +32,9 @@ const SmartMeasuringInterface = React.lazy(() =>
     default: m.SmartMeasuringInterface,
   })),
 );
-const TechnicalCalculator = React.lazy(() =>
-  import('@/components/fabricator/TechnicalCalculator').then((m) => ({
-    default: m.TechnicalCalculator,
+const DesignInterface = React.lazy(() =>
+  import('@/components/fabricator/DesignInterface').then((m) => ({
+    default: m.DesignInterface,
   })),
 );
 const CuttingOptimizationEngine = React.lazy(() =>
@@ -93,6 +93,11 @@ const QuickReportsPanel = React.lazy(() =>
     default: m.QuickReportsPanel,
   })),
 );
+const PricingPreview = React.lazy(() =>
+  import('@/components/fabricator/PricingPreview').then((m) => ({
+    default: m.PricingPreview,
+  })),
+);
 const PositionsGrid = React.lazy(() =>
   import('@/components/fabricator/PositionsGrid').then((m) => ({
     default: m.PositionsGrid,
@@ -133,10 +138,22 @@ const NewProjectWizard = React.lazy(() =>
 
 import { parseLegacyOrderData } from '@/lib/legacyDataParser';
 import { ROCK60_WINDOW_SYSTEM_TEMPLATE } from '@/data/systemPacks';
-import { WindowUnit, Profile, OptimizationResult, WindowComponent, CuttingPlan, Cut, MeasurementData } from '@/types/fabricator';
+import {
+  WindowUnit,
+  Profile,
+  OptimizationResult,
+  WindowComponent,
+  CuttingPlan,
+  Cut,
+  MeasurementData,
+} from '@/types/fabricator';
 import { validateProject, deriveSystemConstraintsFromProfiles, validateProjectWithConstraints } from '@/lib/fabricatorValidation';
 import { useJobsStore } from '@/store/jobsStore';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { AnatolianCockpit } from '@/components/fabricator/AnatolianCockpit';
+import { IstanbulSkylineFooter } from '@/components/fabricator/IstanbulSkylineFooter';
+import { BosphorusWorkflowRibbon } from '@/components/fabricator/BosphorusWorkflowRibbon';
+import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 
 const sampleHardware = [
   { id: 'hinge_1', name: 'Casement Hinge', type: 'hinge', quantity: 2, position: 'side' },
@@ -148,6 +165,7 @@ import type { ProjectHeaderMeta } from '@/components/fabricator/NewProjectWizard
 
 export const FabricatorWorkflow: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const navState = (location.state as { jobId?: string; startTab?: string } | null) || null;
   const {
     jobs,
@@ -155,12 +173,13 @@ export const FabricatorWorkflow: React.FC = () => {
     setSelectedJob,
     addOrUpdateJob,
   } = useJobsStore();
-
+  const { state: workspaceState, dispatch: workspaceDispatch } = useFabricatorWorkspace();
   const [activeTab, setActiveTab] = useState(navState?.startTab || 'measuring');
-  const [currentProject, setCurrentProject] = useState<WindowUnit | null>(null);
+  const currentProject = (workspaceState.currentProject as WindowUnit | null) || null;
   const [projects, setProjects] = useState<WindowUnit[]>([]);
   const [inventory, setInventory] = useState<Profile[]>([]);
-  const [optimizationResults, setOptimizationResults] = useState<OptimizationResult | null>(null);
+  const optimizationResults: OptimizationResult | null =
+    (currentProject?.optimization as OptimizationResult | null) || null;
   const [isGeneratingCuttingPlan, setIsGeneratingCuttingPlan] = useState(false);
   const [isLoadingInventory, setIsLoadingInventory] = useState(true);
   const [inventoryError, setInventoryError] = useState<string | null>(null);
@@ -197,11 +216,10 @@ export const FabricatorWorkflow: React.FC = () => {
     if (activeId) {
       const job = jobs.find((j) => j.id === activeId);
       if (job) {
-        setCurrentProject(job);
-        setOptimizationResults(job.optimization);
+        workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: job as WindowUnit });
       }
     }
-  }, [jobs, navState, selectedJobId, setSelectedJob]);
+  }, [jobs, navState, selectedJobId, setSelectedJob, workspaceDispatch]);
 
   // If there's no active project and no header meta yet, prompt for a new project
   useEffect(() => {
@@ -441,6 +459,7 @@ export const FabricatorWorkflow: React.FC = () => {
           result.costBreakdown.glazingCost;
 
         setIsGeneratingCuttingPlan(false);
+        workspaceDispatch({ type: 'SET_OPTIMIZATION_RESULT', payload: result });
         return result;
       } catch (error) {
         setIsGeneratingCuttingPlan(false);
@@ -448,7 +467,7 @@ export const FabricatorWorkflow: React.FC = () => {
         throw error;
       }
     },
-    []
+    [workspaceDispatch]
   );
 
   const handleMeasurementComplete = useCallback(
@@ -466,6 +485,8 @@ export const FabricatorWorkflow: React.FC = () => {
         if (isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
           throw new Error('Invalid measurement data provided');
         }
+
+        const resolvedSystemPackId = data.systemPackId || projectMeta.systemPackId;
 
         const newProject: WindowUnit = {
           id: `proj_${Date.now()}`,
@@ -488,7 +509,7 @@ export const FabricatorWorkflow: React.FC = () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           customer: projectMeta.clientName,
-          systemPackId: projectMeta.systemPackId,
+          systemPackId: resolvedSystemPackId,
           projectCode: projectMeta.projectCode,
           customerCode: projectMeta.customerCode,
           positionCode: `FP-${projectMeta.projectCode || ''}-${Math.random()
@@ -503,7 +524,8 @@ export const FabricatorWorkflow: React.FC = () => {
           throw new Error(validation.errors.map(e => e.message).join(', '));
         }
         
-        setCurrentProject(newProject);
+        workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: newProject });
+        workspaceDispatch({ type: 'SET_MEASUREMENT_DATA', payload: data });
         addOrUpdateJob(newProject);
         setSelectedJob(newProject.id);
         setActiveTab('design');
@@ -519,7 +541,7 @@ export const FabricatorWorkflow: React.FC = () => {
         setProjectError(error instanceof Error ? error.message : 'Failed to create project');
       }
     },
-    [addOrUpdateJob, setSelectedJob, projectMeta, setActiveTab, setCurrentProject]
+    [addOrUpdateJob, setSelectedJob, projectMeta, setActiveTab, workspaceDispatch]
   );
 
   const handleDesignComplete = useCallback(async (components: WindowComponent[]) => {
@@ -535,18 +557,16 @@ export const FabricatorWorkflow: React.FC = () => {
         throw new Error('No components provided. Please add at least one component.');
       }
 
+      const optimization = await generateCuttingPlan(components, inventory);
       const updatedProject: WindowUnit = {
         ...currentProject,
         components,
+        optimization,
         status: 'optimized',
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
-      const optimization = await generateCuttingPlan(components, inventory);
-      updatedProject.optimization = optimization;
-      
-      setCurrentProject(updatedProject);
-      setOptimizationResults(optimization);
+      workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: updatedProject });
       addOrUpdateJob(updatedProject);
       setSelectedJob(updatedProject.id);
       setActiveTab('optimization');
@@ -559,7 +579,7 @@ export const FabricatorWorkflow: React.FC = () => {
       console.error('Error completing design:', error);
       setProjectError(error instanceof Error ? error.message : 'Failed to generate cutting plan');
     }
-  }, [currentProject, inventory, generateCuttingPlan, addOrUpdateJob, setSelectedJob]);
+  }, [currentProject, inventory, generateCuttingPlan, addOrUpdateJob, setSelectedJob, workspaceDispatch]);
 
   const handleProductionStart = useCallback(() => {
     if (!currentProject) {
@@ -609,11 +629,11 @@ export const FabricatorWorkflow: React.FC = () => {
       const updatedProject: WindowUnit = {
         ...currentProject,
         status: 'production',
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
-      
-      setCurrentProject(updatedProject);
-      setProjects(prev => [...prev, updatedProject]);
+
+      workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: updatedProject });
+      setProjects((prev) => [...prev, updatedProject]);
       addOrUpdateJob(updatedProject);
       setSelectedJob(updatedProject.id);
       setActiveTab('production');
@@ -626,7 +646,7 @@ export const FabricatorWorkflow: React.FC = () => {
       console.error('Error starting production:', error);
       setProjectError(error instanceof Error ? error.message : 'Failed to start production');
     }
-  }, [currentProject, addOrUpdateJob, setSelectedJob]);
+  }, [currentProject, addOrUpdateJob, setSelectedJob, workspaceDispatch]);
 
   const getStepStatus = (stepId: string) => {
     const stepIndex = workflowSteps.findIndex(step => step.id === stepId);
@@ -763,15 +783,14 @@ export const FabricatorWorkflow: React.FC = () => {
                   />
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                 </div>
-                <div className="mt-3 flex justify-end">
+                <div className="mt-3 flex justify-end gap-2">
                   <Suspense fallback={null}>
                     <Button
                       size="sm"
                       className="bg-orange-500 hover:bg-orange-600 text-xs"
                       onClick={() => {
                         // Reset current context and open a fresh project header wizard
-                        setCurrentProject(null);
-                        setOptimizationResults(null);
+                        workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: null });
                         setProjectMeta(null);
                         setShowProjectWizard(true);
                         setActiveTab('measuring');
@@ -780,6 +799,15 @@ export const FabricatorWorkflow: React.FC = () => {
                       New Project
                     </Button>
                   </Suspense>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="border-orange-500 text-orange-300 bg-orange-500/10 text-xs"
+                    onClick={() => navigate('/fabricator-workflow/pro')}
+                  >
+                    <Factory className="h-3 w-3 mr-1" />
+                    Mass Production
+                  </Button>
                 </div>
               </div>
             </div>
@@ -844,108 +872,30 @@ export const FabricatorWorkflow: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Workflow Steps (acts as page-local navbar) */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
-          >
-            {/* Horizontal scroll on small screens, full grid with no horizontal scroll on md+ */}
-            <div className="mb-6">
-              <div className="flex gap-3 pb-2 overflow-x-auto md:grid md:grid-cols-4 lg:grid-cols-7 md:gap-3 md:pb-0 md:overflow-visible">
-                {workflowSteps.map((step, index) => {
-                  const status = getStepStatus(step.id);
-                  const isCompleted = status === 'completed';
-                  const isCurrent = status === 'current';
-                  
-                  return (
-                    <motion.button
-                      type="button"
-                      key={step.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`relative min-w-[160px] md:min-w-0 p-4 rounded-xl border-2 text-left cursor-pointer transition-all duration-300 ${
-                        isCurrent
-                          ? 'border-orange-500 bg-orange-500/10 shadow-lg shadow-orange-500/25'
-                          : isCompleted
-                          ? 'border-green-500 bg-green-500/10'
-                          : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
-                      }`}
-                      onClick={() => setActiveTab(step.id)}
-                    >
-                      {/* Connection Line (desktop only) */}
-                      {index < workflowSteps.length - 1 && (
-                        <div className="hidden lg:block absolute top-1/2 right-0 transform translate-x-1/2 -translate-y-1/2 w-4 h-0.5 bg-gray-600"></div>
-                      )}
-                      
-                      {/* Step Status Indicator */}
-                      <div className="absolute -top-2 -right-2">
-                        {isCompleted ? (
-                          <CheckCircle2 className="h-5 w-5 text-green-400" />
-                        ) : isCurrent ? (
-                          <div className="w-5 h-5 bg-orange-400 rounded-full animate-pulse"></div>
-                        ) : (
-                          <div className="w-5 h-5 bg-gray-600 rounded-full"></div>
-                        )}
-                      </div>
+          {/* Anatolian Fabricator Cockpit – market intelligence + KPI badges */}
+          <AnatolianCockpit
+            inventory={inventory}
+            currentProject={currentProject}
+            optimization={optimizationResults}
+            completedSteps={completedSteps}
+            totalSteps={workflowSteps.length}
+            projectMeta={projectMeta}
+          />
 
-                      <step.icon className={`h-8 w-8 mx-auto mb-3 ${
-                        isCurrent ? 'text-orange-400' : isCompleted ? 'text-green-400' : 'text-gray-500'
-                      }`} />
-                      <h3 className={`font-semibold text-xs md:text-sm mb-1 text-center ${
-                        isCurrent ? 'text-orange-300' : isCompleted ? 'text-green-300' : 'text-gray-400'
-                      }`}>
-                        {step.name}
-                      </h3>
-                      <p className="hidden md:block text-xs text-gray-500 text-center">{step.description}</p>
-                      
-                      {/* Step Number */}
-                      <div className={`absolute -bottom-2 -left-2 w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold ${
-                        isCurrent 
-                          ? 'bg-orange-500 text-white' 
-                          : isCompleted
-                          ? 'bg-green-500 text-white'
-                          : 'bg-gray-700 text-gray-300'
-                      }`}>
-                        {index + 1}
-                      </div>
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </div>
-            {/* Progress Bar */}
-            <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-lg font-semibold">Project Progress</span>
-                  {currentProject && (
-                    <Badge variant="outline" className="bg-blue-500/20 text-blue-400">
-                      {currentProject.type.replace('_', ' ')}
-                    </Badge>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-400">
-                    Step {currentStepIndex + 1} of {workflowSteps.length}
-                  </span>
-                  <span className="text-sm font-bold text-orange-400">
-                    {Math.round(((currentStepIndex + 1) / workflowSteps.length) * 100)}%
-                  </span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Progress 
-                  value={((currentStepIndex + 1) / workflowSteps.length) * 100} 
-                  className="h-3 bg-gray-700"
-                />
-                <div className="flex justify-between text-xs text-gray-400">
-                  <span>Measurement</span>
-                  <span>Quality Control</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+          {/* Advanced Bosphorus Workflow Ribbon – prestige step navigation */}
+          <BosphorusWorkflowRibbon
+            steps={workflowSteps.map((s) => ({
+              id: s.id,
+              name: s.name,
+              description: s.description,
+              icon: s.icon,
+            }))}
+            activeStepId={activeTab}
+            onStepChange={setActiveTab}
+            currentStepIndex={currentStepIndex}
+            totalSteps={workflowSteps.length}
+            currentTypeLabel={currentProject ? currentProject.type.replace('_', ' ') : undefined}
+          />
 
           {/* Status progress */}
           {currentProject && (
@@ -1043,7 +993,10 @@ export const FabricatorWorkflow: React.FC = () => {
                           <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
                         }
                       >
-                        <SmartMeasuringInterface onMeasurementComplete={handleMeasurementComplete} />
+                        <SmartMeasuringInterface
+                          onMeasurementComplete={handleMeasurementComplete}
+                          systemPackId={projectMeta.systemPackId}
+                        />
                       </Suspense>
                     </ErrorBoundary>
                   )}
@@ -1096,10 +1049,10 @@ export const FabricatorWorkflow: React.FC = () => {
                         <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
                       }
                     >
-                      <TechnicalCalculator 
-                        project={currentProject} 
-                        onDesignComplete={handleDesignComplete} 
-                        profiles={inventory} 
+                      <DesignInterface
+                        project={currentProject}
+                        profiles={inventory}
+                        onDesignComplete={handleDesignComplete}
                       />
                     </Suspense>
                   </ErrorBoundary>
@@ -1170,11 +1123,27 @@ export const FabricatorWorkflow: React.FC = () => {
                     <div className="p-2 bg-orange-500/20 rounded-lg">
                       <Scissors className="h-6 w-6 text-orange-400" />
                     </div>
-                    <div>
-                      AI-Powered Cutting Optimization
-                      <CardDescription className="text-lg text-gray-300 mt-1">
-                        Advanced algorithms for material optimization, waste reduction, and cost efficiency
-                      </CardDescription>
+                    <div className="flex-1">
+                      <div>
+                        AI-Powered Cutting Optimization
+                        <CardDescription className="text-lg text-gray-300 mt-1">
+                          Advanced algorithms for material optimization, waste reduction, and cost efficiency
+                        </CardDescription>
+                      </div>
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-orange-500 text-orange-300 bg-orange-500/10 text-xs"
+                          onClick={() => navigate('/fabricator-workflow/pro')}
+                        >
+                          <Factory className="h-3 w-3 mr-1" />
+                          Mass Production
+                        </Button>
+                        <span className="text-[11px] text-gray-400">
+                          Open Mass Production Cockpit to batch-optimize across all optimized jobs.
+                        </span>
+                      </div>
                     </div>
                   </CardTitle>
                 </CardHeader>
@@ -1380,6 +1349,12 @@ export const FabricatorWorkflow: React.FC = () => {
                   project={currentProject}
                   optimization={optimizationResults}
                 />
+                <PricingPreview
+                  project={currentProject}
+                  profiles={inventory}
+                  accessories={[]}
+                  region={(projectMeta?.region ?? 'global') as any}
+                />
               </Suspense>
             </div>
           </div>
@@ -1432,10 +1407,15 @@ export const FabricatorWorkflow: React.FC = () => {
             </Suspense>
           )}
 
+          {/* Istanbul Skyline – interactive ambient footer */}
+          <IstanbulSkylineFooter
+            completionRatio={
+              workflowSteps.length > 0 ? (currentStepIndex + 1) / workflowSteps.length : 0
+            }
+          />
+
           {/* Feedback button for stabilization phase */}
-          <Suspense
-            fallback={null}
-          >
+          <Suspense fallback={null}>
             <FeedbackButton jobId={currentProject?.id} />
           </Suspense>
 

@@ -105,7 +105,7 @@ export function formatNumber(
   const formatted = value.toFixed(decimals);
   
   // Replace decimal separator
-  let result = formatted.replace('.', config.decimalSeparator);
+  const result = formatted.replace('.', config.decimalSeparator);
   
   // Add thousands separator
   const parts = result.split(config.decimalSeparator);

@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Factory, 
@@ -23,7 +23,8 @@ import {
   Users,
   FileText,
   Calculator,
-  Coins
+  Coins,
+  Box
 } from 'lucide-react';
 
 interface IndustrialNavbarProps {
@@ -41,10 +42,12 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
   currentWorkflow = 'measuring',
   onWorkflowChange
 }) => {
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notifications, setNotifications] = useState(3);
+  const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const navbarRef = useRef<HTMLElement>(null);
 
@@ -104,9 +107,10 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
 
   // Business navigation: customers, projects, inventory, etc.
   const businessNav = [
-    { name: "Customers", path: "/customers", icon: <Users className="h-4 w-4" /> },
-    { name: "Projects", path: "/projects", icon: <Factory className="h-4 w-4" /> },
-    { name: "Inventory", path: "/inventory", icon: <Package className="h-4 w-4" /> },
+    // Prefer fabricator‑scoped aliases so operators stay inside the cockpit
+    { name: "Customers", path: "/fabricator/customers", icon: <Users className="h-4 w-4" /> },
+    { name: "Projects", path: "/fabricator/projects", icon: <Factory className="h-4 w-4" /> },
+    { name: "Inventory", path: "/fabricator/inventory", icon: <Package className="h-4 w-4" /> },
     { name: "Profiles & Accessories", path: "/fabricator-workflow#inventory", icon: <Scissors className="h-4 w-4" /> },
     { name: "Quick Reports", path: "/reports", icon: <FileText className="h-4 w-4" /> },
     { name: "Machines", path: "/machines", icon: <Cpu className="h-4 w-4" /> },
@@ -118,11 +122,113 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
 
   // Quick actions for operators
   const quickActions = [
-    { name: "New Project", action: () => window.location.href = '/fabricator-workflow?new=true', icon: Zap },
-    { name: "Machine Status", action: () => window.location.href = '/machine-status', icon: Factory },
-    { name: "Inventory Check", action: () => window.location.href = '/inventory', icon: Package },
-    { name: "Quality Reports", action: () => window.location.href = '/quality-reports', icon: Brain }
+    { name: "New Project", action: () => navigate('/fabricator-workflow?new=true'), icon: Zap },
+    { name: "Machine Status", action: () => navigate('/machine-status'), icon: Factory },
+    { name: "Inventory Check", action: () => navigate('/fabricator/inventory'), icon: Package },
+    { name: "Quality Reports", action: () => navigate('/quality-reports'), icon: Brain }
   ];
+
+  // Global fabricator nav model – used by the search overlay
+  type NavItem = {
+    id: string;
+    label: string;
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    path?: string;
+    description?: string;
+    badge?: string;
+    children?: NavItem[];
+  };
+
+  const fabricatorNavItems: NavItem[] = useMemo(() => [
+    {
+      id: 'workflow',
+      label: 'AI Workflow',
+      icon: Factory,
+      description: 'End‑to‑end fabrication pipeline',
+      children: [
+        { id: 'measuring', label: 'Smart Measuring', icon: Ruler, path: '/fabricator-workflow#measuring', badge: 'AI' },
+        { id: 'design', label: 'Technical Design', icon: Settings, path: '/fabricator-workflow#design', badge: 'PRO' },
+        { id: 'preview3d', label: '3D Preview', icon: Box, path: '/fabricator-workflow#preview3d', badge: '3D' },
+        { id: 'optimization', label: 'Cutting Optimization', icon: Scissors, path: '/fabricator-workflow#optimization', badge: 'AI' },
+        { id: 'inventory', label: 'Inventory Check', icon: Package, path: '/fabricator-workflow#inventory' },
+        { id: 'production', label: 'Production Planning', icon: Factory, path: '/fabricator-workflow#production' },
+        { id: 'quality', label: 'Quality Control', icon: Zap, path: '/fabricator-workflow#quality' }
+      ]
+    },
+    {
+      id: 'projects',
+      label: 'Projects',
+      icon: Factory,
+      path: '/fabricator/projects',
+      description: 'Manage all window units and positions'
+    },
+    {
+      id: 'customers',
+      label: 'Customers',
+      icon: Users,
+      path: '/fabricator/customers',
+      description: 'Client management and portals'
+    },
+    {
+      id: 'inventory',
+      label: 'Inventory',
+      icon: Package,
+      path: '/fabricator/inventory',
+      description: 'Stock management and remnants',
+      badge: 'LIVE'
+    },
+    {
+      id: 'commercial',
+      label: 'Commercial',
+      icon: Calculator,
+      description: 'Pricing and offers',
+      children: [
+        { id: 'offers', label: 'Commercial Offers', icon: FileText, path: '/offers' },
+        { id: 'pricing', label: 'Settings & Prices', icon: Calculator, path: '/pricing-settings' },
+        { id: 'cost-reports', label: 'Cost Reports', icon: BarChart3, path: '/cost-reports' }
+      ]
+    },
+    {
+      id: 'resources',
+      label: 'Resources',
+      icon: Package,
+      description: 'Production assets & machines',
+      children: [
+        { id: 'profiles', label: 'Profiles & Accessories', icon: Scissors, path: '/fabricator-workflow#inventory' },
+        { id: 'machines', label: 'Machines', icon: Cpu, path: '/machines' },
+        { id: 'accounting', label: 'Accounting', icon: Coins, path: '/accounting' }
+      ]
+    }
+  ], []);
+
+  const filteredNavItems = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase();
+
+    const matches: NavItem[] = [];
+
+    fabricatorNavItems.forEach((item) => {
+      const itemMatches =
+        item.label.toLowerCase().includes(q) ||
+        (item.description && item.description.toLowerCase().includes(q));
+
+      const matchingChildren = (item.children || []).filter(
+        (child) =>
+          child.label.toLowerCase().includes(q) ||
+          (child.description && child.description.toLowerCase().includes(q))
+      );
+
+      if (itemMatches || matchingChildren.length > 0) {
+        if (matchingChildren.length > 0) {
+          matches.push({ ...item, children: matchingChildren });
+        } else {
+          matches.push(item);
+        }
+      }
+    });
+
+    return matches;
+  }, [fabricatorNavItems, searchQuery]);
 
   // Scroll effect
   useEffect(() => {
@@ -206,91 +312,122 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
       ref={navbarRef}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 200, damping: 25 }}
-      className={`fixed top-0 left-0 right-0 z-[200] transition-all duration-500 ${
-        isScrolled 
-          ? 'bg-gray-900/95 backdrop-blur-xl border-b border-orange-500/30 shadow-2xl shadow-orange-500/10' 
-          : 'bg-gray-900/90 backdrop-blur-lg border-b border-gray-800'
+      transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+      className={`fixed top-0 left-0 right-0 z-[200] transition-all duration-500 relative ${
+        isScrolled
+          ? 'bg-slate-950/95 backdrop-blur-xl border-b border-orange-500/30 shadow-2xl shadow-orange-500/10'
+          : 'bg-slate-950/90 backdrop-blur-lg border-b border-slate-800'
       }`}
     >
       {/* Main Navbar Container */}
       <div className="container mx-auto px-4 xl:px-6">
-        <div className="flex items-center justify-between h-16">
-          
-          {/* Left Section - Brand & Workflow */}
-          <div className="flex items-center gap-6 flex-shrink-0">
-            {/* Brand Logo */}
+        <div className="flex items-center justify-between h-16 gap-4">
+          {/* Left Section – Brand + workflow access */}
+          <div className="flex items-center gap-4 flex-shrink-0">
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl rotate-45 group-hover:rotate-90 transition-transform duration-500" />
-                <Factory className="absolute inset-0 m-auto text-white w-5 h-5 -rotate-45" />
+              <div className="relative h-9 w-9 rounded-full bg-gradient-to-br from-orange-400 via-amber-300 to-sky-400 shadow-lg shadow-orange-500/40 flex items-center justify-center">
+                <Factory className="w-4 h-4 text-slate-950" />
+                <div className="absolute -inset-[1px] rounded-full border border-white/15" />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
-                  FABRICATOR PRO
+                <span className="text-sm font-semibold tracking-[0.18em] text-slate-300 uppercase">
+                  Almona
                 </span>
-                <span className="text-xs text-gray-400 tracking-widest">
-                  AI WORKFLOW v4.0
+                <span className="text-[11px] font-semibold text-slate-100">
+                  Fabricator Cockpit
                 </span>
               </div>
             </Link>
 
-            {/* Workflow Progress - Desktop */}
-            <div className="hidden lg:flex items-center gap-1">
-              {workflowStages.map((stage, index) => (
-                <React.Fragment key={stage.id}>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => onWorkflowChange?.(stage.id)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-300 ${
-                      currentWorkflow === stage.id
-                        ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                    }`}
+            {/* Workflow dropdown – easier to reach on wide screens */}
+            <motion.div className="relative hidden md:block">
+              <IndustrialButton
+                variant="secondary"
+                onClick={() => setActiveMenu(activeMenu === 'workflow' ? null : 'workflow')}
+                className="px-3 py-1.5 text-[11px] rounded-full"
+              >
+                <Ruler className="w-3.5 h-3.5" />
+                <span className="hidden lg:inline">
+                  {workflowStages.find((s) => s.id === currentWorkflow)?.name || 'Smart Measuring'}
+                </span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform ${
+                    activeMenu === 'workflow' ? 'rotate-180' : ''
+                  }`}
+                />
+              </IndustrialButton>
+
+              <AnimatePresence>
+                {activeMenu === 'workflow' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full left-0 mt-2 w-64 bg-gray-800/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl shadow-orange-500/20 overflow-hidden z-50"
                   >
-                    <stage.icon className="w-4 h-4" />
-                    <span className="text-sm font-medium whitespace-nowrap">{stage.name}</span>
-                  </motion.button>
-                  {index < workflowStages.length - 1 && (
-                    <div className="w-4 h-px bg-gray-600 mx-1" />
-                  )}
-                </React.Fragment>
-              ))}
+                    <div className="p-3 space-y-1">
+                      {workflowStages.map((stage) => {
+                        const isActive = currentWorkflow === stage.id;
+                        return (
+                          <button
+                            key={stage.id}
+                            type="button"
+                            onClick={() => {
+                              onWorkflowChange?.(stage.id);
+                              setActiveMenu(null);
+                            }}
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left text-[11px] transition-colors ${
+                              isActive
+                                ? 'bg-orange-500/90 text-slate-950'
+                                : 'text-slate-200 hover:bg-orange-500/10'
+                            }`}
+                          >
+                            <stage.icon className="w-3.5 h-3.5" />
+                            <span className="whitespace-nowrap">{stage.name}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+
+          {/* Center Section – status strip (visible on large screens) */}
+          <div className="hidden lg:flex items-center justify-center flex-1">
+            <div className="inline-flex items-center gap-4 rounded-full bg-slate-950/70 px-3 py-1.5 border border-slate-700/80 text-[11px]">
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-slate-300">System</span>
+                <span className="font-semibold text-emerald-300">Optimal</span>
+              </div>
+              <div className="h-4 w-px bg-slate-700" />
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+                <span className="text-slate-300">Efficiency</span>
+                <span className="font-semibold text-sky-300">92.5%</span>
+              </div>
+              <div className="h-4 w-px bg-slate-700" />
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                <span className="text-slate-300">Active Jobs</span>
+                <span className="font-semibold text-amber-300">12</span>
+              </div>
             </div>
           </div>
 
-          {/* Center Section - Quick Stats */}
-          <div className="hidden xl:flex items-center gap-6 flex-1 justify-center">
-            <div className="flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                <span className="text-gray-300">System:</span>
-                <span className="text-green-400 font-semibold">Optimal</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-                <span className="text-gray-300">Efficiency:</span>
-                <span className="text-blue-400 font-semibold">92.5%</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" />
-                <span className="text-gray-300">Active Jobs:</span>
-                <span className="text-orange-400 font-semibold">12</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Section - Actions & User */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            
-            {/* Search Bar */}
+          {/* Right Section – search, menus, user */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Search Bar with global fabricator search overlay */}
             <div className="hidden md:flex items-center relative">
-              <Search className="absolute left-3 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 w-4 h-4 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search machines, orders..."
-                className="pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors w-64"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 pr-3 py-2 rounded-full bg-slate-900/90 border border-slate-700 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400/60 w-60"
               />
             </div>
 
@@ -298,14 +435,14 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="relative p-2 rounded-lg bg-gray-800 hover:bg-orange-500/10 border border-gray-700 hover:border-orange-500/30 transition-all duration-300"
+              className="relative p-2 rounded-full bg-slate-900/90 border border-slate-700 text-slate-200 hover:border-orange-400/70 hover:text-white transition-all"
             >
-              <Bell className="w-5 h-5 text-gray-300" />
+              <Bell className="w-4 h-4" />
               {notifications > 0 && (
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
+                  className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center"
                 >
                   {notifications}
                 </motion.div>
@@ -317,12 +454,15 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
               <IndustrialButton
                 variant="secondary"
                 onClick={() => setActiveMenu(activeMenu === 'business' ? null : 'business')}
+                className="px-3 py-1.5 text-[11px] rounded-full"
               >
-                <Workflow className="w-4 h-4" />
+                <Workflow className="w-3.5 h-3.5" />
                 <span className="hidden lg:inline">Fabricator Menu</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${
-                  activeMenu === 'business' ? 'rotate-180' : ''
-                }`} />
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform ${
+                    activeMenu === 'business' ? 'rotate-180' : ''
+                  }`}
+                />
               </IndustrialButton>
 
               <AnimatePresence>
@@ -341,9 +481,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                           className="flex items-center gap-3 p-2 rounded-lg hover:bg-orange-500/10 transition-all duration-200"
                           onClick={() => setActiveMenu(null)}
                         >
-                          <div className="text-orange-400">
-                            {item.icon}
-                          </div>
+                          <div className="text-orange-400">{item.icon}</div>
                           <div className="flex-1 min-w-0">
                             <div className="font-medium text-white truncate text-sm">{item.name}</div>
                           </div>
@@ -359,12 +497,15 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
             <motion.div className="relative">
               <IndustrialButton
                 onClick={() => setActiveMenu(activeMenu === 'modules' ? null : 'modules')}
+                className="px-3 py-1.5 text-[11px] rounded-full"
               >
-                <CircuitBoard className="w-4 h-4" />
+                <CircuitBoard className="w-3.5 h-3.5" />
                 <span className="hidden lg:inline">Modules</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${
-                  activeMenu === 'modules' ? 'rotate-180' : ''
-                }`} />
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform ${
+                    activeMenu === 'modules' ? 'rotate-180' : ''
+                  }`}
+                />
               </IndustrialButton>
 
               <AnimatePresence>
@@ -412,8 +553,9 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
               <IndustrialButton
                 variant="secondary"
                 onClick={() => setActiveMenu(activeMenu === 'actions' ? null : 'actions')}
+                className="px-3 py-1.5 text-[11px] rounded-full"
               >
-                <Zap className="w-4 h-4" />
+                <Zap className="w-3.5 h-3.5" />
                 <span className="hidden lg:inline">Actions</span>
               </IndustrialButton>
 
@@ -450,9 +592,9 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
               <IndustrialButton
                 variant="secondary"
                 onClick={() => setActiveMenu(activeMenu === 'user' ? null : 'user')}
-                className="px-3"
+                className="px-3 py-1.5 text-[11px] rounded-full"
               >
-                <User className="w-4 h-4" />
+                <User className="w-3.5 h-3.5" />
                 <span className="hidden lg:inline">{user?.name || 'Operator'}</span>
               </IndustrialButton>
 
@@ -467,7 +609,9 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                     <div className="p-2">
                       <div className="px-3 py-2 border-b border-gray-700">
                         <div className="text-white font-medium">{user?.name || 'Operator'}</div>
-                        <div className="text-sm text-gray-400">{user?.email || 'operator@fabricator.com'}</div>
+                        <div className="text-sm text-gray-400">
+                          {user?.email || 'operator@fabricator.com'}
+                        </div>
                       </div>
                       <button className="flex items-center gap-2 w-full p-3 rounded-lg hover:bg-orange-500/10 transition-all duration-200">
                         <Settings className="w-4 h-4 text-orange-400" />
@@ -486,7 +630,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-2 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-300"
+              className="lg:hidden p-2 rounded-full bg-slate-900/90 border border-slate-700 text-slate-300 hover:text-white hover:border-orange-400/70 transition-all"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </motion.button>
@@ -501,7 +645,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-gray-900/95 backdrop-blur-xl border-t border-orange-500/30"
+            className="lg:hidden bg-slate-950/95 backdrop-blur-xl border-t border-orange-500/30"
           >
             <div className="container mx-auto px-4 py-4">
               {/* Mobile Workflow Navigation */}
@@ -556,9 +700,105 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
         transition={{
           duration: 3,
           repeat: Infinity,
-          ease: "easeInOut",
+          ease: 'easeInOut',
         }}
       />
+
+      {/* Global fabricator search results overlay */}
+      <AnimatePresence>
+        {searchQuery && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-full left-0 right-0 z-[190] mt-2 px-4 md:px-6"
+          >
+            <div className="mx-auto max-w-5xl bg-slate-950/98 border border-slate-800/80 rounded-2xl shadow-2xl shadow-black/60 overflow-hidden backdrop-blur-xl">
+              <div className="px-4 py-3 border-b border-slate-800 flex items-center gap-2">
+                <Search className="h-4 w-4 text-orange-400" />
+                <span className="text-sm font-semibold text-slate-100">
+                  Search Fabricator Pro
+                </span>
+                <span className="ml-auto text-[11px] text-slate-500">
+                  {filteredNavItems.length} matches
+                </span>
+              </div>
+              <div className="max-h-80 overflow-y-auto">
+                {filteredNavItems.length > 0 ? (
+                  filteredNavItems.map((item) => (
+                    <div
+                      key={item.id}
+                      className="border-b border-slate-800/60 last:border-b-0"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (item.path) {
+                            setSearchQuery('');
+                            navigate(item.path);
+                          }
+                        }}
+                        className="w-full text-left px-4 py-3 hover:bg-white/5 transition-colors flex items-center gap-3"
+                      >
+                        <item.icon className="h-4 w-4 text-orange-400" />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-semibold text-slate-100">
+                              {item.label}
+                            </span>
+                            {item.badge && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-orange-500/40 text-orange-300 bg-orange-500/10 uppercase font-semibold">
+                                {item.badge}
+                              </span>
+                            )}
+                          </div>
+                          {item.description && (
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              {item.description}
+                            </p>
+                          )}
+                        </div>
+                      </button>
+                      {item.children && item.children.length > 0 && (
+                        <div className="pb-2">
+                          {item.children.map((child) => (
+                            <button
+                              key={child.id}
+                              type="button"
+                              onClick={() => {
+                                if (child.path) {
+                                  setSearchQuery('');
+                                  navigate(child.path);
+                                }
+                              }}
+                              className="w-full text-left pl-12 pr-4 py-2 hover:bg-white/5 transition-colors flex items-center gap-3 text-xs"
+                            >
+                              <child.icon className="h-3 w-3 text-slate-400" />
+                              <span className="text-slate-200">
+                                {child.label}
+                              </span>
+                              {child.badge && (
+                                <span className="ml-2 text-[9px] px-1.5 py-0.5 rounded-full border border-slate-600 text-slate-300 bg-slate-800/60 uppercase">
+                                  {child.badge}
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-6 py-8 text-center text-slate-500 text-sm">
+                    No fabricator modules found for "
+                    <span className="text-slate-200">{searchQuery}</span>".
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 };

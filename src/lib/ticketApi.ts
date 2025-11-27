@@ -188,7 +188,7 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
   // Casting supabase to any to bypass strict table inference issues until generated types include custom columns
   // Select all columns including digital_twin_code and ticket_number
   const selectColumns = 'id, title, description, type, priority, status, preferred_contact_method, user_id, ticket_number, digital_twin_code, contact_phone, contact_email, site_location, machine_serial_number, machine_model, created_at, updated_at'
-  let { data, error } = await (supabase as any)
+  const { data, error } = await (supabase as any)
     .from('service_tickets')
     .insert([insertPayload])
     .select(selectColumns)
