@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Ruler, Settings, Scissors, Factory, Zap, CheckCircle2 } from 'lucide-react';
 import { useJobsStore } from '@/store/jobsStore';
 import { JobColumn } from './JobColumn';
+import { Link } from 'react-router-dom';
+import { Button } from '@/shared/ui/ui/button';
 
 const workflowSteps = [
   { id: 'measuring', name: 'Measuring', icon: Ruler },
@@ -21,10 +23,52 @@ export const JobBoardView: React.FC = () => {
     }
   }, [jobs.length, loadJobs]);
 
-  if (isLoading) {
+  if (isLoading && !jobs.length) {
     return (
       <div className="flex items-center justify-center py-10 text-sm text-gray-400">
         Loading jobs...
+      </div>
+    );
+  }
+
+  if (!isLoading && jobs.length === 0) {
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-gray-100">Job Board</h2>
+          <span className="text-xs text-gray-400">No projects yet</span>
+        </div>
+
+        <div className="rounded-xl border border-gray-700 bg-gray-900/80 p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-1 text-sm text-gray-300 max-w-md">
+            <div className="text-xs uppercase tracking-[0.18em] text-gray-500">
+              First time setup
+            </div>
+            <div className="font-medium text-gray-100">
+              You don&apos;t have any saved projects yet.
+            </div>
+            <div className="text-xs text-gray-400">
+              Start by creating your first fabrication project, or register a customer that you can
+              later pick from the New Project Wizard dropdown.
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 justify-start md:justify-end">
+            <Link to="/fabricator-workflow">
+              <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-xs">
+                Add first project
+              </Button>
+            </Link>
+            <Link to="/fabricator/customers">
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs border-gray-700 text-gray-200"
+              >
+                Add customer
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }

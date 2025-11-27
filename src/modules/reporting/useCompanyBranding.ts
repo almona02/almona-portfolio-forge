@@ -5,6 +5,8 @@ const STORAGE_KEY = 'fabricator_company_branding_v1';
 
 const defaultBranding: CompanyBranding = {
   companyName: 'Your Company Name',
+  // Optional workshop name shown in cockpit headers (e.g. "Downtown Workshop")
+  workshopName: '',
   primaryColor: '#FF6B35',
   secondaryColor: '#4A5568',
 };

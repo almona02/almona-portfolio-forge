@@ -3,11 +3,13 @@ import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Input } from '@/shared/ui/ui/input';
 import { Settings, Calculator, Plus, Trash2, AlertCircle, Box, FileText } from 'lucide-react';
-import { WindowUnit, Profile, OptimizationResult, WindowComponent } from '@/types/fabricator';
+import { WindowUnit, Profile, WindowComponent } from '@/types/fabricator';
 import { Window3DGenerator } from './Window3DGenerator';
 import { PDFExportService } from '@/modules/reporting';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
+import { validateWindowComponent } from '@/lib/fabricatorValidation';
 
 interface TechnicalCalculatorProps {
   project: WindowUnit | null;
@@ -26,6 +28,13 @@ export const TechnicalCalculator: React.FC<TechnicalCalculatorProps> = ({
   const [show3DPreview, setShow3DPreview] = useState(true);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const { branding } = useCompanyBranding();
+
+  useEffect(() => {
+    // When reopening a project that already has components, seed them into the editor
+    if (project && project.components && project.components.length > 0 && components.length === 0) {
+      setComponents(project.components);
+    }
+  }, [project, components.length]);
 
   // Create updated project with current components for 3D preview
   const previewProject = useMemo<WindowUnit | null>(() => {
@@ -218,6 +227,19 @@ export const TechnicalCalculator: React.FC<TechnicalCalculatorProps> = ({
       return;
     }
 
+    // Per-component validation with precise feedback
+    for (const comp of components) {
+      const validation = validateWindowComponent(comp, profiles);
+      if (!validation.isValid) {
+        setError(
+          `Component "${comp.profile.name}" is invalid: ${validation.errors
+            .map((e) => e.message)
+            .join(', ')}`,
+        );
+        return;
+      }
+    }
+
     setError(null);
     onDesignComplete(components);
   };
@@ -343,27 +365,104 @@ export const TechnicalCalculator: React.FC<TechnicalCalculatorProps> = ({
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {components.map((component, index) => (
-                <div key={component.id} className="flex items-center justify-between p-3 bg-gray-800 rounded">
-                  <div className="flex items-center gap-3">
-                    <Badge variant="outline">{index + 1}</Badge>
-                    <div>
-                      <div className="font-medium">{component.profile.name}</div>
-                      <div className="text-sm text-gray-400">
-                        {component.width}mm × {component.height}mm
+              {components.map((component, index) => {
+                const allowance = component.profile.cuttingAllowance ?? 0;
+                const cutPreview =
+                  component.cuttingLengths && component.cuttingLengths.length > 0
+                    ? component.cuttingLengths
+                        .map((len) => `${len.toFixed(0)} → ${(len + allowance).toFixed(0)} mm`)
+                        .join(' | ')
+                    : 'No cutting lengths defined';
+
+                return (
+                  <div
+                    key={component.id}
+                    className="p-3 bg-gray-800 rounded space-y-2 border border-gray-700"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <Badge variant="outline">{index + 1}</Badge>
+                        <div>
+                          <div className="font-medium text-sm">{component.profile.name}</div>
+                          <div className="text-[11px] text-gray-400">
+                            Role: {(component as any).type ?? 'frame'}
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeComponent(component.id)}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 text-[11px]">
+                      <div>
+                        <div className="text-gray-300 mb-1">Width (mm)</div>
+                        <Input
+                          type="number"
+                          value={component.width}
+                          onChange={(e) => {
+                            const value = Number(e.target.value) || 0;
+                            setComponents((prev) =>
+                              prev.map((c) =>
+                                c.id === component.id ? { ...c, width: value } : c,
+                              ),
+                            );
+                          }}
+                          className="h-7 bg-gray-900 border-gray-700 text-xs"
+                        />
+                      </div>
+                      <div>
+                        <div className="text-gray-300 mb-1">Height (mm)</div>
+                        <Input
+                          type="number"
+                          value={component.height}
+                          onChange={(e) => {
+                            const value = Number(e.target.value) || 0;
+                            setComponents((prev) =>
+                              prev.map((c) =>
+                                c.id === component.id ? { ...c, height: value } : c,
+                              ),
+                            );
+                          }}
+                          className="h-7 bg-gray-900 border-gray-700 text-xs"
+                        />
+                      </div>
+                      <div>
+                        <div className="text-gray-300 mb-1">Quantity</div>
+                        <Input
+                          type="number"
+                          min={1}
+                          value={component.quantity ?? 1}
+                          onChange={(e) => {
+                            const value = Math.max(1, Number(e.target.value) || 1);
+                            setComponents((prev) =>
+                              prev.map((c) =>
+                                c.id === component.id ? { ...c, quantity: value } : c,
+                              ),
+                            );
+                          }}
+                          className="h-7 bg-gray-900 border-gray-700 text-xs"
+                        />
                       </div>
                     </div>
+
+                    <div className="text-[11px] text-gray-300 mt-1">
+                      <span className="font-semibold">Cuts (design → saw length): </span>
+                      <span className="text-gray-200">{cutPreview}</span>
+                      {allowance !== 0 && (
+                        <span className="text-gray-500 ml-1">
+                          (allowance {allowance.toFixed(0)} mm per cut)
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => removeComponent(component.id)}
-                    className="text-red-400 hover:text-red-300"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>

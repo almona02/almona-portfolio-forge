@@ -7,10 +7,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Install system dependencies
+# Install system dependencies needed for building wheels and OpenCV
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
+    libgl1 \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Create and activate virtual environment
@@ -31,10 +33,12 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PATH="/opt/venv/bin:$PATH" \
     ENVIRONMENT=production
 
-# Install runtime dependencies
+# Install runtime dependencies (including OpenCV system libs)
 RUN apt-get update && apt-get install -y \
     libpq5 \
     curl \
+    libgl1 \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 

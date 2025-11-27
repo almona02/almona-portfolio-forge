@@ -154,6 +154,7 @@ import { AnatolianCockpit } from '@/components/fabricator/AnatolianCockpit';
 import { IstanbulSkylineFooter } from '@/components/fabricator/IstanbulSkylineFooter';
 import { BosphorusWorkflowRibbon } from '@/components/fabricator/BosphorusWorkflowRibbon';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 
 const sampleHardware = [
   { id: 'hinge_1', name: 'Casement Hinge', type: 'hinge', quantity: 2, position: 'side' },
@@ -166,12 +167,19 @@ import type { ProjectHeaderMeta } from '@/components/fabricator/NewProjectWizard
 export const FabricatorWorkflow: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const navState = (location.state as { jobId?: string; startTab?: string } | null) || null;
+  const navState = (location.state as { jobId?: string; startTab?: string; fromCustomer?: {
+    id: string;
+    name: string;
+    contactPerson?: string | null;
+    email?: string | null;
+    phone?: string | null;
+  } } | null) || null;
   const {
     jobs,
     selectedJobId,
     setSelectedJob,
     addOrUpdateJob,
+    loadJobs,
   } = useJobsStore();
   const { state: workspaceState, dispatch: workspaceDispatch } = useFabricatorWorkspace();
   const [activeTab, setActiveTab] = useState(navState?.startTab || 'measuring');
@@ -189,6 +197,85 @@ export const FabricatorWorkflow: React.FC = () => {
   const [showMobilePanel, setShowMobilePanel] = useState(false);
   const [showProjectWizard, setShowProjectWizard] = useState(false);
   const [projectMeta, setProjectMeta] = useState<ProjectHeaderMeta | null>(null);
+  const [projectCreatedMessage, setProjectCreatedMessage] = useState<string | null>(null);
+  const { branding } = useCompanyBranding();
+
+  const activeWorkshopLabel =
+    branding.workshopName?.trim() ||
+    branding.companyName?.trim() ||
+    undefined;
+
+  // Force-remount SmartMeasuringInterface when starting a fresh pose measuring session
+  const [measurementSessionId, setMeasurementSessionId] = useState(0);
+
+  // Measuring tab: existing project + pose selection
+  const [selectedExistingProjectKey, setSelectedExistingProjectKey] = useState<string>('');
+  const [selectedExistingPoseId, setSelectedExistingPoseId] = useState<string>('');
+
+  // After SmartDraw applies a layout, we treat the pose as "designed" and
+  // let the operator decide whether to add more poses or continue to optimisation.
+  const [pendingLayoutComponents, setPendingLayoutComponents] = useState<WindowComponent[] | null>(
+    null,
+  );
+  const [showLayoutNextStep, setShowLayoutNextStep] = useState(false);
+
+  const relatedPositions = React.useMemo(
+    () =>
+      currentProject
+        ? jobs.filter((job) => job.orderNumber === currentProject.orderNumber)
+        : jobs,
+    [jobs, currentProject],
+  );
+
+  // Group loaded jobs by project (projectCode or orderNumber) for project‑level selection
+  const existingProjectGroups = React.useMemo(
+    () => {
+      const map = new Map<
+        string,
+        {
+          key: string;
+          label: string;
+          jobs: WindowUnit[];
+        }
+      >();
+
+      jobs.forEach((job) => {
+        const key = job.projectCode || job.orderNumber || job.id;
+        const labelBase = job.projectCode || job.orderNumber || 'Project';
+        const label =
+          job.customer && job.customer.trim().length > 0
+            ? `${labelBase} · ${job.customer}`
+            : labelBase;
+
+        if (!map.has(key)) {
+          map.set(key, {
+            key,
+            label,
+            jobs: [job],
+          });
+        } else {
+          map.get(key)!.jobs.push(job);
+        }
+      });
+
+      return Array.from(map.values());
+    },
+    [jobs],
+  );
+
+  // Helper: derive a lightweight project header from an existing pose/job
+  const deriveProjectMetaFromJob = (job: WindowUnit): ProjectHeaderMeta => ({
+    clientName: job.customer || 'Fabricator Client',
+    projectName: job.projectCode || job.orderNumber || 'Project',
+    siteName: job.positionMeta?.elevation || '',
+    currency: 'EGP',
+    region: 'global',
+    projectCode: job.projectCode,
+    customerCode: job.customerCode,
+    orderNumber: job.orderNumber,
+    // We don't currently persist customerId / contactPhone / orderDate on WindowUnit;
+    // those can be filled if/when the types carry them.
+  });
 
   const workflowSteps = [
     { id: 'measuring', name: 'Smart Measuring', icon: Ruler, description: 'Digital measurement capture' },
@@ -203,6 +290,29 @@ export const FabricatorWorkflow: React.FC = () => {
   // Get current step index for progress tracking
   const currentStepIndex = workflowSteps.findIndex(step => step.id === activeTab);
   const completedSteps = currentStepIndex;
+
+  // If workflow is opened from Customers "New Order", pre-open the project wizard with that customer
+  useEffect(() => {
+    if (navState?.fromCustomer && !projectMeta) {
+      setProjectMeta({
+        clientName: navState.fromCustomer.name,
+        projectName: '',
+        siteName: '',
+        currency: 'EGP',
+        region: 'egypt',
+        customerId: navState.fromCustomer.id,
+      });
+      setShowProjectWizard(true);
+      setActiveTab('measuring');
+    }
+  }, [navState, projectMeta]);
+
+  // Ensure jobs are loaded when entering the workflow directly (for project selection in Measuring)
+  useEffect(() => {
+    if (!jobs.length) {
+      void loadJobs();
+    }
+  }, [jobs.length, loadJobs]);
 
   // Sync selected job from dashboard (if any)
   useEffect(() => {
@@ -223,10 +333,13 @@ export const FabricatorWorkflow: React.FC = () => {
 
   // If there's no active project and no header meta yet, prompt for a new project
   useEffect(() => {
-    if (!currentProject && !projectMeta) {
+    // Only force the project wizard when there are no saved jobs at all.
+    // If jobs exist, operators can instead select an existing project from
+    // the Smart Measuring "Open project" selector.
+    if (!currentProject && !projectMeta && jobs.length === 0) {
       setShowProjectWizard(true);
     }
-  }, [currentProject, projectMeta]);
+  }, [currentProject, projectMeta, jobs.length]);
 
   // Get current user ID
   useEffect(() => {
@@ -488,10 +601,27 @@ export const FabricatorWorkflow: React.FC = () => {
 
         const resolvedSystemPackId = data.systemPackId || projectMeta.systemPackId;
 
+        // Determine pose index and reuse order number per project so that
+        // when the operator adds a new pose, it becomes POS-002, POS-003, etc.
+        const existingForProject = jobs.filter(
+          (job) => job.projectCode && job.projectCode === projectMeta.projectCode,
+        );
+
+        const poseIndex = existingForProject.length + 1;
+
+        const baseOrderNumber =
+          projectMeta.orderNumber?.trim() ||
+          existingForProject[0]?.orderNumber ||
+          `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
+        const posNumber = `POS-${poseIndex.toString().padStart(3, '0')}`;
+        const positionCodeBase = projectMeta.projectCode || baseOrderNumber;
+        const positionCode = `${positionCodeBase}-P${poseIndex.toString().padStart(2, '0')}`;
+
         const newProject: WindowUnit = {
           id: `proj_${Date.now()}`,
-          orderNumber: `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-          posNumber: `POS-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+          orderNumber: baseOrderNumber,
+          posNumber,
           type: data.windowType || 'sliding_window',
           components: [],
           overallWidth: width,
@@ -499,23 +629,34 @@ export const FabricatorWorkflow: React.FC = () => {
           color: String(data.color) || 'Silver',
           glazing: {
             type: data.glazingType || 'double',
+            color: data.glassColor || 'clear',
             thickness: 24,
             spacer: 12,
             gasFill: 'argon'
           },
           hardware: sampleHardware,
+          quantity: 1,
           status: 'design',
           optimization: null,
           createdAt: new Date(),
           updatedAt: new Date(),
+          orderDate: projectMeta.orderDate ? new Date(projectMeta.orderDate) : undefined,
           customer: projectMeta.clientName,
           systemPackId: resolvedSystemPackId,
           projectCode: projectMeta.projectCode,
           customerCode: projectMeta.customerCode,
-          positionCode: `FP-${projectMeta.projectCode || ''}-${Math.random()
-            .toString(36)
-            .toUpperCase()
-            .slice(-3)}`,
+          positionCode,
+          positionMeta: {
+            flatNumber: data.flatNumber || undefined,
+            buildingBlock: data.buildingBlock || undefined,
+            floor: data.floor || undefined,
+            unitOrApartment: data.unitOrApartment || undefined,
+            elevation: data.elevation || undefined,
+            roomOrZone: data.roomOrZone || undefined,
+            windowIndex: data.windowIndex || undefined,
+            remarks: data.remarks || undefined,
+            flyScreenType: data.flyScreenType || undefined,
+          },
         };
 
         // Don't require components at measurement stage - they'll be added in design phase
@@ -541,7 +682,7 @@ export const FabricatorWorkflow: React.FC = () => {
         setProjectError(error instanceof Error ? error.message : 'Failed to create project');
       }
     },
-    [addOrUpdateJob, setSelectedJob, projectMeta, setActiveTab, workspaceDispatch]
+    [addOrUpdateJob, setSelectedJob, projectMeta, setActiveTab, workspaceDispatch, jobs]
   );
 
   const handleDesignComplete = useCallback(async (components: WindowComponent[]) => {
@@ -558,6 +699,30 @@ export const FabricatorWorkflow: React.FC = () => {
       }
 
       const optimization = await generateCuttingPlan(components, inventory);
+
+      // Lightweight consistency check between design components and generated optimisation
+      if (components.length > 0 && optimization.cuttingPlan.length > 0) {
+        const issues: string[] = [];
+
+        optimization.cuttingPlan.forEach((plan) => {
+          const totalCutLength = plan.cuts.reduce((sum, cut) => sum + cut.length, 0);
+          if (totalCutLength > plan.stockLength * 1.001) {
+            issues.push(
+              `${plan.profile.name}: total cut length ${totalCutLength.toFixed(
+                1,
+              )}mm exceeds stock length ${plan.stockLength.toFixed(1)}mm (per bar model).`,
+            );
+          }
+        });
+
+        if (issues.length > 0) {
+          setProjectError(
+            `Optimisation/check mismatch detected:\n${issues
+              .map((s) => `• ${s}`)
+              .join('\n')}\nPlease review components or stock lengths before sending to production.`,
+          );
+        }
+      }
       const updatedProject: WindowUnit = {
         ...currentProject,
         components,
@@ -580,6 +745,43 @@ export const FabricatorWorkflow: React.FC = () => {
       setProjectError(error instanceof Error ? error.message : 'Failed to generate cutting plan');
     }
   }, [currentProject, inventory, generateCuttingPlan, addOrUpdateJob, setSelectedJob, workspaceDispatch]);
+
+  const handleSmartDrawApply = useCallback(
+    (components: WindowComponent[]) => {
+      if (!currentProject) {
+        setProjectError('No project available. Please complete the measurement phase first.');
+        return;
+      }
+
+      try {
+        setProjectError(null);
+
+        if (!components || components.length === 0) {
+          throw new Error('No components provided from Smart Draw layout.');
+        }
+
+        const designedProject: WindowUnit = {
+          ...currentProject,
+          components,
+          status: 'design',
+          updatedAt: new Date(),
+        };
+
+        workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: designedProject });
+        addOrUpdateJob(designedProject);
+        setSelectedJob(designedProject.id);
+
+        setPendingLayoutComponents(components);
+        setShowLayoutNextStep(true);
+      } catch (error) {
+        console.error('Error applying SmartDraw layout:', error);
+        setProjectError(
+          error instanceof Error ? error.message : 'Failed to apply Smart Draw layout',
+        );
+      }
+    },
+    [currentProject, addOrUpdateJob, setSelectedJob, workspaceDispatch],
+  );
 
   const handleProductionStart = useCallback(() => {
     if (!currentProject) {
@@ -742,6 +944,17 @@ export const FabricatorWorkflow: React.FC = () => {
                   <span className="text-orange-300"> Production</span>, 
                   <span className="text-orange-300"> Quality Control</span>.
                 </p>
+                {activeWorkshopLabel && (
+                  <div className="inline-flex items-center gap-2 rounded-full bg-gray-900/80 border border-orange-500/40 px-3 py-1 text-[11px] text-orange-200">
+                    <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="uppercase tracking-[0.18em] text-orange-300/90">
+                      Workshop
+                    </span>
+                    <span className="font-medium text-orange-100 truncate max-w-[220px] md:max-w-xs">
+                      {activeWorkshopLabel}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Right: System status & search */}
@@ -799,6 +1012,24 @@ export const FabricatorWorkflow: React.FC = () => {
                       New Project
                     </Button>
                   </Suspense>
+                  {projectMeta && (
+                    <div className="hidden md:flex flex-col items-end text-[11px] text-gray-400 mr-2">
+                      <span className="text-gray-300">
+                        Active project:{' '}
+                        <span className="text-gray-100 font-semibold">
+                          {projectMeta.projectName || 'Untitled'}
+                        </span>
+                      </span>
+                      <span className="text-gray-500">
+                        {projectMeta.projectCode && (
+                          <>
+                            Code: <span className="font-mono">{projectMeta.projectCode}</span>{' '}
+                          </>
+                        )}
+                        for <span className="text-gray-200">{projectMeta.clientName}</span>
+                      </span>
+                    </div>
+                  )}
                   <Button
                     size="sm"
                     variant="outline"
@@ -836,6 +1067,18 @@ export const FabricatorWorkflow: React.FC = () => {
               </div>
               
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                {projectMeta && !currentProject && (
+                  <div className="px-3 py-2 rounded-lg bg-emerald-900/20 border border-emerald-500/50 text-[11px] text-emerald-100">
+                    Project{' '}
+                    {projectMeta.projectCode && (
+                      <span className="font-mono">{projectMeta.projectCode}</span>
+                    )}{' '}
+                    for <span className="font-semibold">{projectMeta.clientName}</span> created.
+                    <span className="ml-1 text-emerald-200">
+                      Start measuring to add poses to this project.
+                    </span>
+                  </div>
+                )}
                 {currentProject && (
                   <>
                     <div className="flex flex-col gap-1">
@@ -969,6 +1212,125 @@ export const FabricatorWorkflow: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4">
+                  {currentProject && currentProject.status !== 'measuring' && (
+                    <Alert className="mb-4 bg-yellow-900/30 border-yellow-500/60">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertTitle>Edit existing project measurements</AlertTitle>
+                      <AlertDescription className="text-xs">
+                        You are editing measurements for an existing project that may already have
+                        design, optimization, or production data. Changing dimensions can invalidate
+                        existing poses, cutting plans, and reports. Proceed carefully and coordinate
+                        with production if this order is already scheduled.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  {/* Existing project + pose selector so operators can reopen or extend a saved project */}
+                  {existingProjectGroups.length > 0 && (
+                    <div className="mb-4 space-y-3">
+                      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                        <p className="text-xs text-gray-400">
+                          Select an existing project to continue, then choose whether to edit a pose or add a new one.
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <label className="text-[11px] text-gray-300">Existing project</label>
+                          <select
+                            className="h-8 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-gray-100"
+                            value={selectedExistingProjectKey}
+                            onChange={(e) => {
+                              const key = e.target.value;
+                              setSelectedExistingProjectKey(key);
+                              setSelectedExistingPoseId('');
+                            }}
+                          >
+                            <option value="">Select…</option>
+                            {existingProjectGroups.map((group) => (
+                              <option key={group.key} value={group.key}>
+                                {group.label} ({group.jobs.length} poses)
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+
+                      {selectedExistingProjectKey && (
+                        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between rounded-lg border border-gray-700 bg-gray-900/40 p-3">
+                          <div className="flex flex-col gap-2">
+                            <label className="text-[11px] text-gray-300">Pose in selected project</label>
+                            <select
+                              className="h-8 w-full md:w-64 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-gray-100"
+                              value={selectedExistingPoseId}
+                              onChange={(e) => setSelectedExistingPoseId(e.target.value)}
+                            >
+                              <option value="">Select pose…</option>
+                              {existingProjectGroups
+                                .find((g) => g.key === selectedExistingProjectKey)
+                                ?.jobs.map((unit) => (
+                                  <option key={unit.id} value={unit.id}>
+                                    {unit.posNumber} · {unit.overallWidth.toFixed(0)} ×{' '}
+                                    {unit.overallHeight.toFixed(0)} mm
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={!selectedExistingPoseId}
+                              onClick={() => {
+                                if (!selectedExistingPoseId) return;
+                                const job = jobs.find((j) => j.id === selectedExistingPoseId);
+                                if (!job) return;
+
+                                // Ensure header meta is present for this project
+                                setProjectMeta(deriveProjectMetaFromJob(job));
+
+                                workspaceDispatch({
+                                  type: 'SET_CURRENT_PROJECT',
+                                  payload: job,
+                                });
+                                setSelectedJob(job.id);
+                                setActiveTab('design');
+                              }}
+                            >
+                              Edit selected pose
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="bg-orange-500 hover:bg-orange-600"
+                              onClick={() => {
+                                const group = existingProjectGroups.find(
+                                  (g) => g.key === selectedExistingProjectKey,
+                                );
+                                const baseJob = group?.jobs[0];
+                                if (!baseJob) return;
+
+                                // Use the first pose of the project to reconstruct the project header,
+                                // then start a fresh measuring session for a new pose.
+                                setProjectMeta(deriveProjectMetaFromJob(baseJob));
+                                workspaceDispatch({
+                                  type: 'SET_CURRENT_PROJECT',
+                                  payload: null,
+                                });
+                                workspaceDispatch({
+                                  type: 'SET_MEASUREMENT_DATA',
+                                  payload: null,
+                                });
+                                setShowLayoutNextStep(false);
+                                setPendingLayoutComponents(null);
+                                setMeasurementSessionId((prev) => prev + 1);
+                                setActiveTab('measuring');
+                              }}
+                            >
+                              Add new pose to this project
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {!projectMeta ? (
                     <div className="border border-dashed border-gray-700 rounded-lg p-6 text-center space-y-3">
                       <p className="text-sm text-gray-300 font-medium">
@@ -994,8 +1356,10 @@ export const FabricatorWorkflow: React.FC = () => {
                         }
                       >
                         <SmartMeasuringInterface
+                          key={measurementSessionId}
                           onMeasurementComplete={handleMeasurementComplete}
-                          systemPackId={projectMeta.systemPackId}
+                          systemPackId={undefined}
+                          region={projectMeta.region}
                         />
                       </Suspense>
                     </ErrorBoundary>
@@ -1021,23 +1385,55 @@ export const FabricatorWorkflow: React.FC = () => {
                       </div>
                     </CardTitle>
                     {currentProject && (
-                      <div className="flex flex-col items-end gap-1">
-                        <label className="text-[11px] text-gray-400">Quantity (poses)</label>
-                        <input
-                          type="number"
-                          min={1}
-                          className="w-20 h-8 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-right"
-                          value={currentProject.quantity || 1}
-                          onChange={(e) => {
-                            const qty = Math.max(1, Number(e.target.value) || 1);
-                            const updated: WindowUnit = {
-                              ...currentProject,
-                              quantity: qty,
-                            };
-                            setCurrentProject(updated);
-                            addOrUpdateJob(updated);
-                          }}
-                        />
+                      <div className="flex flex-col items-end gap-2">
+                        {/* Pose selector: choose which position/unit of the project to engage in design */}
+                        {relatedPositions.length > 0 && (
+                          <div className="flex items-center gap-2">
+                            <label className="text-[11px] text-gray-400">Active pose</label>
+                            <select
+                              className="h-8 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-gray-100"
+                              value={currentProject.id}
+                              onChange={(e) => {
+                                const id = e.target.value;
+                                const target = relatedPositions.find((u) => u.id === id);
+                                if (!target) return;
+                                workspaceDispatch({
+                                  type: 'SET_CURRENT_PROJECT',
+                                  payload: target,
+                                });
+                                setSelectedJob(target.id);
+                              }}
+                            >
+                              {relatedPositions.map((unit) => (
+                                <option key={unit.id} value={unit.id}>
+                                  {unit.posNumber} · {unit.overallWidth.toFixed(0)} ×{' '}
+                                  {unit.overallHeight.toFixed(0)} mm
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+                        <div className="flex flex-col items-end gap-1">
+                          <label className="text-[11px] text-gray-400">Quantity (poses)</label>
+                          <input
+                            type="number"
+                            min={1}
+                            className="w-20 h-8 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-right"
+                            value={currentProject.quantity || 1}
+                            onChange={(e) => {
+                              const qty = Math.max(1, Number(e.target.value) || 1);
+                              const updated: WindowUnit = {
+                                ...currentProject,
+                                quantity: qty,
+                              };
+                              workspaceDispatch({
+                                type: 'SET_CURRENT_PROJECT',
+                                payload: updated,
+                              });
+                              addOrUpdateJob(updated);
+                            }}
+                          />
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1049,11 +1445,73 @@ export const FabricatorWorkflow: React.FC = () => {
                         <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
                       }
                     >
-                      <DesignInterface
-                        project={currentProject}
-                        profiles={inventory}
-                        onDesignComplete={handleDesignComplete}
-                      />
+                      <>
+                        {showLayoutNextStep && currentProject && (
+                          <Alert className="mb-4 bg-blue-900/20 border-blue-500">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription className="space-y-1 text-xs md:text-sm">
+                              <div>
+                                Layout applied for pose{' '}
+                                <span className="font-mono">{currentProject.posNumber}</span> (
+                                qty {currentProject.quantity ?? 1}).
+                              </div>
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 text-xs"
+                                  onClick={() => {
+                                    // Start a fresh measuring session for the next pose
+                                    workspaceDispatch({
+                                      type: 'SET_CURRENT_PROJECT',
+                                      payload: null,
+                                    });
+                                    workspaceDispatch({
+                                      type: 'SET_MEASUREMENT_DATA',
+                                      payload: null,
+                                    });
+                                    setShowLayoutNextStep(false);
+                                    setPendingLayoutComponents(null);
+                                    setMeasurementSessionId((prev) => prev + 1);
+                                    setActiveTab('measuring');
+                                  }}
+                                >
+                                  Add another pose to this project
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  className="h-7 text-xs bg-orange-500 hover:bg-orange-600"
+                                  onClick={() => {
+                                    if (pendingLayoutComponents && pendingLayoutComponents.length) {
+                                      void handleDesignComplete(pendingLayoutComponents);
+                                    }
+                                    setShowLayoutNextStep(false);
+                                    setPendingLayoutComponents(null);
+                                  }}
+                                >
+                                  Proceed to cutting optimisation
+                                </Button>
+                              </div>
+                            </AlertDescription>
+                          </Alert>
+                        )}
+                        <DesignInterface
+                          project={currentProject}
+                          profiles={inventory}
+                          relatedPositions={relatedPositions}
+                          onSelectPosition={(id) => {
+                            const target = relatedPositions.find((u) => u.id === id);
+                            if (!target) return;
+                            workspaceDispatch({
+                              type: 'SET_CURRENT_PROJECT',
+                              payload: target,
+                            });
+                            setSelectedJob(target.id);
+                          }}
+                          onDesignComplete={handleDesignComplete}
+                          onSmartDrawApply={handleSmartDrawApply}
+                        />
+                      </>
                     </Suspense>
                   </ErrorBoundary>
                 </CardContent>
@@ -1424,6 +1882,7 @@ export const FabricatorWorkflow: React.FC = () => {
             <NewProjectWizard
               open={showProjectWizard}
               onOpenChange={setShowProjectWizard}
+              initialMeta={projectMeta || undefined}
               onSubmit={(meta) => {
                 const projectCode = `FP-${Date.now().toString(36).toUpperCase().slice(-6)}`;
                 const customerCode = `FC-${meta.clientName

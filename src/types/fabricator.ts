@@ -22,6 +22,8 @@ export interface WindowUnit {
   createdAt: Date;
   updatedAt: Date;
   dueDate?: Date;
+  /** Optional order date for this project/order */
+  orderDate?: Date;
   customer?: string;
   /** Optional short human-friendly project code (for labels, machine fields, etc.) */
   projectCode?: string;
@@ -211,6 +213,8 @@ export interface MeasurementData {
   windowType: string;
   color?: string;
   glazingType?: string;
+  glassColor?: string;
+  flyScreenType?: string;
   /** Optional override of the system pack for this specific position/unit. */
   systemPackId?: string;
   /**
@@ -218,6 +222,15 @@ export interface MeasurementData {
    * by the operator before design (e.g. frame vs sash profile numbers).
    */
   systemProfileSelections?: SystemProfileSelections;
+  // Optional positional metadata captured at measuring time for fast pose entry
+  flatNumber?: string;
+  buildingBlock?: string;
+  floor?: string;
+  unitOrApartment?: string;
+  elevation?: string;
+  roomOrZone?: string;
+  windowIndex?: string;
+  remarks?: string;
 }
 
 // Lightweight commercial draft types used by workspace context

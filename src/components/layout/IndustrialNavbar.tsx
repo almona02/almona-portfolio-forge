@@ -26,6 +26,7 @@ import {
   Coins,
   Box
 } from 'lucide-react';
+import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 
 interface IndustrialNavbarProps {
   user?: {
@@ -50,6 +51,12 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const navbarRef = useRef<HTMLElement>(null);
+  const { branding } = useCompanyBranding();
+
+  const cockpitOwner =
+    branding.workshopName?.trim() ||
+    branding.companyName?.trim() ||
+    'Fabricator';
 
   // Workflow stages for quick navigation
   const workflowStages = [
@@ -334,7 +341,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                   Almona
                 </span>
                 <span className="text-[11px] font-semibold text-slate-100">
-                  Fabricator Cockpit
+                  {cockpitOwner} Cockpit
                 </span>
               </div>
             </Link>
@@ -613,9 +620,15 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                           {user?.email || 'operator@fabricator.com'}
                         </div>
                       </div>
-                      <button className="flex items-center gap-2 w-full p-3 rounded-lg hover:bg-orange-500/10 transition-all duration-200">
+                      <button
+                        className="flex items-center gap-2 w-full p-3 rounded-lg hover:bg-orange-500/10 transition-all duration-200"
+                        onClick={() => {
+                          navigate('/fabricator/settings/branding');
+                          setActiveMenu(null);
+                        }}
+                      >
                         <Settings className="w-4 h-4 text-orange-400" />
-                        <span className="text-white">Settings</span>
+                        <span className="text-white">Branding & Settings</span>
                       </button>
                       <button className="flex items-center gap-2 w-full p-3 rounded-lg hover:bg-red-500/10 transition-all duration-200 text-red-400">
                         <span>Sign Out</span>

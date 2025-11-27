@@ -6,6 +6,7 @@ import { Badge } from '@/shared/ui/ui/badge';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { Users, Package, FileText, Calculator, Save } from 'lucide-react';
 import { WorkspaceSnapshotManager } from '@/components/fabricator/WorkspaceSnapshotManager';
+import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 
 const workspaceTabs = [
   { id: 'projects', label: 'Projects', icon: FileText, path: '/fabricator/projects' },
@@ -18,6 +19,12 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { state, dispatch } = useFabricatorWorkspace();
+  const { branding } = useCompanyBranding();
+
+  const workspaceOwner =
+    branding.workshopName?.trim() ||
+    branding.companyName?.trim() ||
+    'Fabricator';
 
   const activeTab =
     workspaceTabs.find((tab) => location.pathname.startsWith(tab.path))?.id || 'projects';
@@ -41,11 +48,11 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 py-4">
             <div className="space-y-1">
               <h1 className="text-xl md:text-2xl font-bold text-white">
-                Fabricator Production Workspace
+                {workspaceOwner} Production Workspace
               </h1>
               <p className="text-slate-400 text-xs md:text-sm">
-                Heavy-duty cockpit for projects, customers, inventory and commercial flows — state
-                preserved across tabs.
+                Heavy-duty Almona cockpit for projects, customers, inventory and commercial flows —
+                state preserved across tabs.
               </p>
             </div>
 

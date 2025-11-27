@@ -11,6 +11,8 @@ import { Quote } from '@/modules/commercial/QuotingEngine';
 export interface CompanyBranding {
   logo?: string; // Base64 or URL
   companyName: string;
+  // Optional workshop / production line name for cockpit & workspace headers
+  workshopName?: string;
   address?: string;
   phone?: string;
   email?: string;

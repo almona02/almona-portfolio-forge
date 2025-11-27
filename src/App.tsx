@@ -59,6 +59,7 @@ const FabricatorPricingConfiguration = lazy(() =>
     default: m.PricingConfiguration,
   })),
 );
+const FabricatorBrandingSettings = lazy(() => import("./pages/FabricatorBrandingSettings.tsx"));
 const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
 const InventoryPage = lazy(() => import("./pages/Inventory.tsx"));
 const ProjectsPage = lazy(() => import("./pages/Projects.tsx"));
@@ -254,6 +255,16 @@ const App = () => (
                         <Suspense fallback={getLoadingComponent('/fabricator/pricing')}>
                           <ProtectedRoute>
                             <FabricatorPricingConfiguration />
+                          </ProtectedRoute>
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="settings/branding"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/settings/branding')}>
+                          <ProtectedRoute>
+                            <FabricatorBrandingSettings />
                           </ProtectedRoute>
                         </Suspense>
                       }

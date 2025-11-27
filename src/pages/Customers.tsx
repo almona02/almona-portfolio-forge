@@ -1,10 +1,10 @@
 import React from 'react';
-import CustomersPanel from '@/components/admin/panels/CustomersPanel';
+import { FabricatorCustomersPanel } from '@/components/fabricator/FabricatorCustomersPanel';
 
 const CustomersPage: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
-      <CustomersPanel />
+      <FabricatorCustomersPanel />
     </div>
   );
 };
