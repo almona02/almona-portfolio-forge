@@ -29,9 +29,14 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
         </span>
       </div>
 
-      <p className="text-xs text-gray-400 mb-2">
+      <p className="text-xs text-gray-400 mb-1">
         {job.overallWidth} × {job.overallHeight} mm
       </p>
+      {job.customer && (
+        <p className="text-[11px] text-gray-300 mb-2 truncate">
+          Customer: <span className="font-medium">{job.customer}</span>
+        </p>
+      )}
 
       <div className="flex justify-between items-center text-[11px] text-gray-500">
         <span>{job.color}</span>

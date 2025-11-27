@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
@@ -12,8 +12,11 @@ import {
   DialogFooter,
 } from '@/shared/ui/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { Factory, MapPin, Users } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import type { Database, SectorType } from '@/types/database';
+
+type FabricatorCustomerRow = Database['public']['Tables']['fabricator_customers']['Row'];
 
 export interface ProjectHeaderMeta {
   clientName: string;
@@ -21,15 +24,19 @@ export interface ProjectHeaderMeta {
   siteName?: string;
   currency: string;
   region: 'egypt' | 'turkey' | 'mena' | 'gulf' | 'global';
-  systemPackId: string;
   projectCode?: string;
   customerCode?: string;
+  customerId?: string;
+  contactPhone?: string;
+  orderNumber?: string;
+  orderDate?: string;
 }
 
 interface NewProjectWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (meta: ProjectHeaderMeta) => void;
+  initialMeta?: Partial<ProjectHeaderMeta>;
 }
 
 /**
@@ -41,25 +48,56 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
   open,
   onOpenChange,
   onSubmit,
+  initialMeta,
 }) => {
-  const [clientName, setClientName] = useState('');
-  const [projectName, setProjectName] = useState('');
-  const [siteName, setSiteName] = useState('');
-  const [currency, setCurrency] = useState('EGP');
-  const [region, setRegion] = useState<ProjectHeaderMeta['region']>('egypt');
-  const [systemPackId, setSystemPackId] = useState<string>(() => {
-    // Region-aware default: Egypt → CALUMINIUM/ROCK60, Turkey → ANADOLU
-    const defaultByRegion: Record<ProjectHeaderMeta['region'], string> = {
-      egypt: 'caluminium-ps',
-      turkey: 'anadolu-w60',
-      mena: 'rock60',
-      gulf: 'jumbo100',
-      global: SYSTEM_PACKS[0]?.meta.id ?? 'rock60',
-    };
-    return defaultByRegion.egypt;
-  });
+  const [clientName, setClientName] = useState(initialMeta?.clientName ?? '');
+  const [projectName, setProjectName] = useState(initialMeta?.projectName ?? '');
+  const [siteName, setSiteName] = useState(initialMeta?.siteName ?? '');
+  const [currency, setCurrency] = useState(initialMeta?.currency ?? 'EGP');
+  const [region, setRegion] = useState<ProjectHeaderMeta['region']>(
+    initialMeta?.region ?? 'egypt',
+  );
+  const [customers, setCustomers] = useState<FabricatorCustomerRow[]>([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>(
+    initialMeta?.customerId ?? '',
+  );
+  const [contactPhone, setContactPhone] = useState(initialMeta?.contactPhone ?? '');
+  const [orderNumber, setOrderNumber] = useState(initialMeta?.orderNumber ?? '');
+  const [orderDate, setOrderDate] = useState(initialMeta?.orderDate ?? '');
 
-  const canSubmit = clientName.trim().length > 0 && projectName.trim().length > 0 && !!systemPackId;
+  // Load saved fabricator customers so they can be used from the dropdown
+  useEffect(() => {
+    const loadCustomers = async () => {
+      try {
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
+        if (authError || !user) return;
+
+        const { data, error } = await supabase
+          .from('fabricator_customers')
+          .select('*')
+          .eq('owner_user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          // eslint-disable-next-line no-console
+          console.warn('Failed to load fabricator customers for project wizard:', error);
+          return;
+        }
+
+        setCustomers((data as FabricatorCustomerRow[]) || []);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('Error loading fabricator customers for project wizard:', e);
+      }
+    };
+
+    void loadCustomers();
+  }, []);
+
+  const canSubmit = clientName.trim().length > 0 && projectName.trim().length > 0;
 
   const handleCreate = () => {
     if (!canSubmit) return;
@@ -69,7 +107,10 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
       siteName: siteName.trim() || undefined,
       currency,
       region,
-      systemPackId,
+      customerId: selectedCustomerId || undefined,
+      contactPhone: contactPhone.trim() || undefined,
+      orderNumber: orderNumber.trim() || undefined,
+      orderDate: orderDate || undefined,
     });
   };
 
@@ -94,6 +135,40 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                 <Users className="h-3 w-3 text-orange-400" />
                 Client / Company *
               </Label>
+              {customers.length > 0 && (
+                <div className="mb-1">
+                  <Label className="text-[10px] text-gray-400">
+                    Select from saved customers
+                  </Label>
+                  <Select
+                    value={selectedCustomerId}
+                    onValueChange={(id) => {
+                      setSelectedCustomerId(id);
+                      const customer = customers.find((c) => c.id === id);
+                      if (customer) {
+                        setClientName(customer.name);
+                        setContactPhone(customer.phone || '');
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="h-7 text-[11px] bg-gray-800 border-gray-700 mt-0.5">
+                      <SelectValue placeholder="Choose saved customer (optional)" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-64">
+                      {customers.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="font-medium text-gray-100">{c.name}</span>
+                            <span className="text-[10px] text-gray-500">
+                              {c.contact_person || c.email || c.phone || 'Fabricator customer'}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <Input
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
@@ -127,6 +202,37 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
+              <Label className="text-xs">Contact Phone</Label>
+              <Input
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
+                placeholder="+20..."
+                className="h-8 text-xs bg-gray-800 border-gray-700"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Order Number (optional)</Label>
+              <Input
+                value={orderNumber}
+                onChange={(e) => setOrderNumber(e.target.value)}
+                placeholder="Your internal order no."
+                className="h-8 text-xs bg-gray-800 border-gray-700"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-xs">Order Date</Label>
+            <Input
+              type="date"
+              value={orderDate}
+              onChange={(e) => setOrderDate(e.target.value)}
+              className="h-8 text-xs bg-gray-800 border-gray-700"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
               <Label className="text-xs">Currency</Label>
               <Select value={currency} onValueChange={(v) => setCurrency(v)}>
                 <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
@@ -149,12 +255,6 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                 onValueChange={(v) => {
                   const nextRegion = v as ProjectHeaderMeta['region'];
                   setRegion(nextRegion);
-                  // Auto-switch system pack when region changes, if current pack does not match
-                  if (nextRegion === 'turkey' && systemPackId !== 'anadolu-w60') {
-                    setSystemPackId('anadolu-w60');
-                  } else if (nextRegion === 'egypt' && systemPackId !== 'caluminium-ps' && systemPackId !== 'rock60') {
-                    setSystemPackId('caluminium-ps');
-                  }
                 }}
               >
                 <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
@@ -169,30 +269,6 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                 </SelectContent>
               </Select>
             </div>
-          </div>
-
-          <div>
-            <Label className="text-xs">System Pack *</Label>
-            <Select value={systemPackId} onValueChange={(v) => setSystemPackId(v)}>
-              <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
-                <SelectValue placeholder="Select system" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-64">
-                {SYSTEM_PACKS.map((pack) => (
-                  <SelectItem key={pack.meta.id} value={pack.meta.id}>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="font-medium text-gray-100">{pack.meta.name}</span>
-                      <span className="text-[10px] text-gray-500">
-                        {pack.meta.brands.join(', ')} · {pack.meta.regions.join('/')}
-                      </span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-[10px] text-gray-500 mt-1">
-              This controls cutting rules, constraints and reports (e.g. ROCK 60 vs JUMBO100).
-            </p>
           </div>
         </div>
 

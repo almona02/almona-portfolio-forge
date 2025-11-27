@@ -211,6 +211,22 @@ run_staging_tests() {
     else
         log_warning "API health check failed"
     fi
+
+    # Run Python-based backend smoke tests (v2 API, connection pool, Celery, etc.)
+    if command -v python >/dev/null 2>&1; then
+        log_info "Running comprehensive backend smoke tests..."
+        (
+          cd python_backend || exit 1
+          python smoke_test.py --url "$STAGING_URL"
+        )
+        if [ $? -eq 0 ]; then
+            log_success "Backend smoke tests passed"
+        else
+            handle_error "backend smoke tests"
+        fi
+    else
+        log_warning "Python not available; skipping backend smoke tests"
+    fi
     
     log_success "Staging tests completed"
 }

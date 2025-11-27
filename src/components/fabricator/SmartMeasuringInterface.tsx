@@ -9,18 +9,21 @@ import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Ruler, Camera, Scan, Smartphone, AlertCircle, Box } from 'lucide-react';
 import { MeasurementData, SystemProfileSelections, WindowUnit } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
-import { validateMeasurements, ValidationError } from '@/lib/fabricatorValidation';
+import { validateMeasurements, ValidationError, getConstraintsForSystemPack } from '@/lib/fabricatorValidation';
 import { Window3DGenerator, WindowMeasurementOverlay } from './Window3DGenerator';
 
 interface SmartMeasuringInterfaceProps {
   onMeasurementComplete: (data: MeasurementData) => void;
   /** Optional preselected system pack ID, typically from NewProjectWizard */
   systemPackId?: string;
+  /** Optional region hint from project header to filter system packs (e.g. 'egypt') */
+  region?: 'egypt' | 'turkey' | 'mena' | 'gulf' | 'global';
 }
 
 export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = ({
   onMeasurementComplete,
   systemPackId,
+  region,
 }) => {
   const [measurements, setMeasurements] = useState({
     // Default professional stub dimensions – can be refined per system later.
@@ -29,12 +32,26 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     windowType: '',
     color: '',
     glazingType: '',
+    glassColor: '',
+    flyScreenType: '',
+    flatNumber: '',
+    buildingBlock: '',
+    floor: '',
+    unitOrApartment: '',
+    elevation: '',
+    roomOrZone: '',
+    windowIndex: '',
+    remarks: '',
   });
 
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>(() => {
     if (systemPackId) return systemPackId;
-    // Default to first configured system pack (typically regional)
-    return SYSTEM_PACKS[0]?.meta.id || 'rock60';
+    // Default to first configured system pack filtered by region (if provided)
+    const packsForRegion =
+      region && region !== 'global'
+        ? SYSTEM_PACKS.filter((p) => p.meta.regions.includes(region) || p.meta.regions.includes('global'))
+        : SYSTEM_PACKS;
+    return packsForRegion[0]?.meta.id || SYSTEM_PACKS[0]?.meta.id || 'rock60';
   });
 
   const [systemProfileSelections, setSystemProfileSelections] = useState<SystemProfileSelections>(
@@ -95,8 +112,22 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     return fieldErrors[field];
   };
 
+  const availableSystemPacks = useMemo(() => {
+    if (region && region !== 'global') {
+      return SYSTEM_PACKS.filter(
+        (p) => p.meta.regions.includes(region) || p.meta.regions.includes('global'),
+      );
+    }
+    return SYSTEM_PACKS;
+  }, [region]);
+
   const activeSystemPack = useMemo(
-    () => SYSTEM_PACKS.find((p) => p.meta.id === selectedSystemPackId) ?? SYSTEM_PACKS[0],
+    () => availableSystemPacks.find((p) => p.meta.id === selectedSystemPackId) ?? availableSystemPacks[0] ?? SYSTEM_PACKS[0],
+    [availableSystemPacks, selectedSystemPackId],
+  );
+
+  const systemConstraints = useMemo(
+    () => getConstraintsForSystemPack(selectedSystemPackId),
     [selectedSystemPackId],
   );
 
@@ -192,7 +223,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   };
 
   const handleSubmit = () => {
-    const validation = validateMeasurements(measurements);
+    const validation = validateMeasurements(
+      { ...measurements, systemPackId: selectedSystemPackId } as any,
+      systemConstraints,
+    );
 
     const fieldErrorMap: Record<string, string> = {};
 
@@ -274,7 +308,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-60">
-                  {SYSTEM_PACKS.map((pack) => (
+                  {availableSystemPacks.map((pack) => (
                     <SelectItem key={pack.meta.id} value={pack.meta.id}>
                       <div className="flex flex-col gap-0.5">
                         <span className="text-gray-100">{pack.meta.name}</span>
@@ -373,8 +407,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 value={measurements.width}
                 onChange={(e) => handleInputChange('width', e.target.value)}
                 placeholder="1200"
-                min="300"
-                max="5000"
+                min={systemConstraints?.minWidthMm ?? 300}
+                max={systemConstraints?.maxWidthMm ?? 5000}
                 className={`bg-gray-800 border-gray-600 ${getFieldError('width') ? 'border-red-500' : ''}`}
               />
               {getFieldError('width') && (
@@ -389,13 +423,189 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 value={measurements.height}
                 onChange={(e) => handleInputChange('height', e.target.value)}
                 placeholder="1500"
-                min="300"
-                max="5000"
+                min={systemConstraints?.minHeightMm ?? 300}
+                max={systemConstraints?.maxHeightMm ?? 5000}
                 className={`bg-gray-800 border-gray-600 ${getFieldError('height') ? 'border-red-500' : ''}`}
               />
               {getFieldError('height') && (
                 <p className="text-sm text-red-400 mt-1">{getFieldError('height')}</p>
               )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="glazingType">Glazing Type</Label>
+              <Select
+                value={measurements.glazingType}
+                onValueChange={(value) => handleInputChange('glazingType', value)}
+              >
+                <SelectTrigger
+                  id="glazingType"
+                  className={`bg-gray-800 border-gray-600 ${
+                    getFieldError('glazingType') ? 'border-red-500' : ''
+                  }`}
+                >
+                  <SelectValue placeholder="Select glazing type" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
+                  <SelectItem value="single" className="bg-gray-800 hover:bg-gray-700 text-white">
+                    Single
+                  </SelectItem>
+                  <SelectItem value="double" className="bg-gray-800 hover:bg-gray-700 text-white">
+                    Double
+                  </SelectItem>
+                  <SelectItem value="triple" className="bg-gray-800 hover:bg-gray-700 text-white">
+                    Triple
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              {getFieldError('glazingType') && (
+                <p className="text-sm text-red-400 mt-1">{getFieldError('glazingType')}</p>
+              )}
+            </div>
+            <div>
+              <Label htmlFor="glassColor">Glass Color / Tint</Label>
+              <Select
+                value={measurements.glassColor}
+                onValueChange={(value) => handleInputChange('glassColor', value)}
+              >
+                <SelectTrigger
+                  id="glassColor"
+                  className={`bg-gray-800 border-gray-600 ${
+                    getFieldError('glassColor') ? 'border-red-500' : ''
+                  }`}
+                >
+                  <SelectValue placeholder="Clear, Green, Bronze..." />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
+                  <SelectItem value="clear" className="bg-gray-800 hover:bg-gray-700 text-white">
+                    Clear
+                  </SelectItem>
+                  <SelectItem value="green" className="bg-gray-800 hover:bg-gray-700 text-white">
+                    Green
+                  </SelectItem>
+                  <SelectItem value="blue" className="bg-gray-800 hover:bg-gray-700 text-white">
+                    Blue
+                  </SelectItem>
+                  <SelectItem value="bronze" className="bg-gray-800 hover:bg-gray-700 text-white">
+                    Bronze
+                  </SelectItem>
+                  <SelectItem value="grey" className="bg-gray-800 hover:bg-gray-700 text-white">
+                    Grey
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              {getFieldError('glassColor') && (
+                <p className="text-sm text-red-400 mt-1">{getFieldError('glassColor')}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="flyScreenType">Flyscreen Type</Label>
+              <Select
+                value={measurements.flyScreenType}
+                onValueChange={(value) => handleInputChange('flyScreenType', value)}
+              >
+                <SelectTrigger
+                  id="flyScreenType"
+                  className={`bg-gray-800 border-gray-600 ${
+                    getFieldError('flyScreenType') ? 'border-red-500' : ''
+                  }`}
+                >
+                  <SelectValue placeholder="Select flyscreen type" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
+                  <SelectItem value="none" className="bg-gray-800 hover:bg-gray-700 text-white">
+                    None
+                  </SelectItem>
+                  <SelectItem value="plisee" className="bg-gray-800 hover:bg-gray-700 text-white">
+                    Plisse
+                  </SelectItem>
+                  <SelectItem value="fixed" className="bg-gray-800 hover:bg-gray-700 text-white">
+                    Fixed
+                  </SelectItem>
+                  <SelectItem value="sliding" className="bg-gray-800 hover:bg-gray-700 text-white">
+                    Sliding
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              {getFieldError('flyScreenType') && (
+                <p className="text-sm text-red-400 mt-1">{getFieldError('flyScreenType')}</p>
+              )}
+            </div>
+          </div>
+          {/* Quick location / pose metadata for enterprise projects */}
+          <div className="mt-4 border-t border-gray-600 pt-4 space-y-3">
+            <p className="text-[11px] text-gray-400 uppercase tracking-wide">
+              Location / Pose details (optional)
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div>
+                <Label className="text-[11px]">Building / Block</Label>
+                <Input
+                  value={measurements.buildingBlock}
+                  onChange={(e) => handleInputChange('buildingBlock', e.target.value)}
+                  placeholder="Block A"
+                  className="h-8 bg-gray-800 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label className="text-[11px]">Flat / Unit</Label>
+                <Input
+                  value={measurements.unitOrApartment}
+                  onChange={(e) => handleInputChange('unitOrApartment', e.target.value)}
+                  placeholder="Flat 12"
+                  className="h-8 bg-gray-800 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label className="text-[11px]">Floor</Label>
+                <Input
+                  value={measurements.floor}
+                  onChange={(e) => handleInputChange('floor', e.target.value)}
+                  placeholder="3"
+                  className="h-8 bg-gray-800 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label className="text-[11px]">Room / Zone</Label>
+                <Input
+                  value={measurements.roomOrZone}
+                  onChange={(e) => handleInputChange('roomOrZone', e.target.value)}
+                  placeholder="Living, Bedroom..."
+                  className="h-8 bg-gray-800 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label className="text-[11px]">Elevation</Label>
+                <Input
+                  value={measurements.elevation}
+                  onChange={(e) => handleInputChange('elevation', e.target.value)}
+                  placeholder="North, Street, Garden..."
+                  className="h-8 bg-gray-800 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label className="text-[11px]">Window Index</Label>
+                <Input
+                  value={measurements.windowIndex}
+                  onChange={(e) => handleInputChange('windowIndex', e.target.value)}
+                  placeholder="W1, W2..."
+                  className="h-8 bg-gray-800 border-gray-600"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label className="text-[11px]">Remarks</Label>
+                <Input
+                  value={measurements.remarks}
+                  onChange={(e) => handleInputChange('remarks', e.target.value)}
+                  placeholder="Any special note for this pose"
+                  className="h-8 bg-gray-800 border-gray-600"
+                />
+              </div>
             </div>
           </div>
           

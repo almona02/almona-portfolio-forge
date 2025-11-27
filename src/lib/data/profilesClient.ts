@@ -42,29 +42,68 @@ type ProfileRow = Database['public']['Tables']['profiles']['Row'];
 
 type ProfileUpdateDB = Database['public']['Tables']['profiles']['Update'];
 
+// Lightweight in-memory cache + in-flight de-duplication for profile lookups
+const PROFILE_CACHE_TTL_MS = 60_000; // 60 seconds
+const profileCache = new Map<string, { data: ProfileRow | null; timestamp: number }>();
+const inFlightRequests = new Map<string, Promise<ProfileRow | null>>();
+
+// Public helpers for cache maintenance / debugging
+export function invalidateProfileCache(id: string) {
+  profileCache.delete(id);
+}
+
+export function getProfileCacheStats() {
+  return {
+    cachedProfiles: profileCache.size,
+    activeRequests: inFlightRequests.size,
+  };
+}
+
 export async function getProfileById(id: string): Promise<ProfileRow | null> {
-  const startTime = Date.now();
-  
-  try {
-    const { data, error } = await table('profiles')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
-    
-    // Monitor performance
-    monitorSupabasePerformance(`getProfileById(${id})`, startTime);
-    
-    if (error) {
-      console.error('Profile fetch error:', error);
-      throw error;
-    }
-    
-    return data;
-  } catch (error) {
-    // Log the error for debugging but don't throw to prevent app crashes
-    console.error('Failed to fetch profile:', id, error);
-    throw error;
+  const now = Date.now();
+
+  // Fast path: return from memory cache if still fresh
+  const cached = profileCache.get(id);
+  if (cached && now - cached.timestamp < PROFILE_CACHE_TTL_MS) {
+    return cached.data;
   }
+
+  // If there's already an in-flight request for this id, reuse it
+  const existingRequest = inFlightRequests.get(id);
+  if (existingRequest) {
+    return existingRequest;
+  }
+
+  const startTime = now;
+
+  const requestPromise = (async () => {
+    try {
+      const { data, error } = await table('profiles')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      // Monitor performance
+      monitorSupabasePerformance(`getProfileById(${id})`, startTime);
+
+      if (error) {
+        console.error('Profile fetch error:', error);
+        throw error;
+      }
+
+      // Cache successful result (including null) for a short period
+      profileCache.set(id, { data, timestamp: Date.now() });
+      return data;
+    } catch (error) {
+      console.error('Failed to fetch profile:', id, error);
+      throw error;
+    } finally {
+      inFlightRequests.delete(id);
+    }
+  })();
+
+  inFlightRequests.set(id, requestPromise);
+  return requestPromise;
 }
 
 export async function updateProfile(id: string, input: ProfileUpdateInput): Promise<ProfileRow> {
@@ -76,5 +115,12 @@ export async function updateProfile(id: string, input: ProfileUpdateInput): Prom
     .select('*')
     .single();
   if (error) throw error;
+
+  // Ensure subsequent reads don’t serve stale data
+  invalidateProfileCache(id);
+  if (data) {
+    profileCache.set(id, { data: data as ProfileRow, timestamp: Date.now() });
+  }
+
   return data as ProfileRow;
 }

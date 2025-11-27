@@ -10,6 +10,18 @@ interface DesignInterfaceProps {
   project: WindowUnit | null;
   profiles: Profile[];
   onDesignComplete: (components: WindowComponent[]) => void;
+  /**
+   * Optional list of related positions/poses (e.g. all units for the same order)
+   * to allow the designer to switch which pose is currently active.
+   */
+  relatedPositions?: WindowUnit[];
+  onSelectPosition?: (unitId: string) => void;
+  /**
+   * Optional callback fired when SmartDraw applies a layout. If provided,
+   * this is used instead of calling onDesignComplete directly so callers
+   * can drive multi‑pose flows (e.g. "add another pose or optimise").
+   */
+  onSmartDrawApply?: (components: WindowComponent[]) => void;
 }
 
 /**
@@ -27,14 +39,21 @@ export const DesignInterface: React.FC<DesignInterfaceProps> = ({
   project,
   profiles,
   onDesignComplete,
+  relatedPositions,
+  onSelectPosition,
+  onSmartDrawApply,
 }) => {
   const hasInventory = profiles && profiles.length > 0;
 
   const defaultProjectLabel = useMemo(() => {
     if (!project) return 'No active project – complete Smart Measuring first.';
+    const areaM2 =
+      project.overallWidth && project.overallHeight
+        ? (project.overallWidth * project.overallHeight) / 1_000_000
+        : 0;
     return `${project.orderNumber} · ${project.overallWidth.toFixed(0)} × ${project.overallHeight.toFixed(
       0,
-    )} mm`;
+    )} mm${areaM2 > 0 ? ` · ${areaM2.toFixed(2)} m²` : ''}`;
   }, [project]);
 
   return (
@@ -42,14 +61,33 @@ export const DesignInterface: React.FC<DesignInterfaceProps> = ({
       {/* Compact banner explaining the dual‑path design flow */}
       <Card className="bg-gray-900/60 border-gray-800">
         <CardHeader className="py-3">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold">
               <Sparkles className="h-4 w-4 text-orange-400" />
               Design Workspace – Calculator + Smart Draw
             </CardTitle>
-            <p className="text-[11px] text-gray-400 truncate max-w-xs">
-              {defaultProjectLabel}
-            </p>
+            <div className="flex flex-col md:items-end gap-1">
+              <p className="text-[11px] text-gray-400 truncate max-w-xs">
+                {defaultProjectLabel}
+              </p>
+              {project && relatedPositions && relatedPositions.length > 1 && onSelectPosition && (
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-gray-400">Pose in order</span>
+                  <select
+                    className="h-7 rounded-md bg-gray-900 border border-gray-700 text-[11px] px-2 text-gray-100"
+                    value={project.id}
+                    onChange={(e) => onSelectPosition(e.target.value)}
+                  >
+                    {relatedPositions.map((unit) => (
+                      <option key={unit.id} value={unit.id}>
+                        {unit.posNumber} · {unit.overallWidth.toFixed(0)} ×{' '}
+                        {unit.overallHeight.toFixed(0)} mm
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
           </div>
         </CardHeader>
       </Card>
@@ -100,7 +138,11 @@ export const DesignInterface: React.FC<DesignInterfaceProps> = ({
               if (!payload.components || payload.components.length === 0) {
                 return;
               }
-              onDesignComplete(payload.components);
+              if (onSmartDrawApply) {
+                onSmartDrawApply(payload.components);
+              } else {
+                onDesignComplete(payload.components);
+              }
             }}
           />
         </div>

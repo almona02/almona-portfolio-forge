@@ -5,6 +5,15 @@ import { Label } from '@/shared/ui/ui/label';
 import { Slider } from '@/shared/ui/ui/slider';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
+import { Checkbox } from '@/shared/ui/ui/checkbox';
+import { Input } from '@/shared/ui/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/ui/ui/select';
 import { AlertCircle, LayoutGrid, Ruler } from 'lucide-react';
 import type { WindowUnit, Profile, WindowComponent } from '@/types/fabricator';
 import type { ValidationError } from '@/lib/fabricatorValidation';
@@ -15,6 +24,7 @@ import {
   validateProjectLayoutWithConstraints,
   type SmartDrawLayout,
 } from '@/algorithms/smartDraw';
+import type { SystemConstraints } from '@/lib/fabricatorValidation';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 
 interface SmartDrawExportPayload {
@@ -77,6 +87,11 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
   const [firstMullionMm, setFirstMullionMm] = useState<number | null>(null);
   const [lastMullionMm, setLastMullionMm] = useState<number | null>(null);
 
+  // Optional fixed horizontal mullion (transom)
+  const [enableHorizontal, setEnableHorizontal] = useState(false);
+  const [horizontalPositionMm, setHorizontalPositionMm] = useState<number | null>(null);
+  const [horizontalLocation, setHorizontalLocation] = useState<'frame' | 'sash'>('frame');
+
   const constraints = useMemo(
     () => deriveConstraintsFromProfiles(profiles),
     [profiles],
@@ -89,7 +104,34 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
     return pack?.smartDrawPreset ?? null;
   }, [project?.systemPackId]);
 
+  /**
+   * Professional-grade effective constraints that prioritise system-pack
+   * presets (Smart Draw preset) when available and fall back to inventory-
+   * derived limits otherwise.
+   */
+  const effectiveConstraints: SystemConstraints | null = useMemo(() => {
+    if (!constraints && !activePackPreset) return constraints ?? null;
+
+    const base: SystemConstraints = {
+      minWidthMm: constraints?.minWidthMm,
+      maxWidthMm: constraints?.maxWidthMm,
+      minHeightMm: constraints?.minHeightMm,
+      maxHeightMm: constraints?.maxHeightMm,
+      maxAreaM2: constraints?.maxAreaM2,
+    };
+
+    if (activePackPreset?.minPanelWidthMm !== undefined) {
+      base.minWidthMm = activePackPreset.minPanelWidthMm;
+    }
+    if (activePackPreset?.maxPanelWidthMm !== undefined) {
+      base.maxWidthMm = activePackPreset.maxPanelWidthMm;
+    }
+
+    return base;
+  }, [constraints, activePackPreset]);
+
   const overallWidth = project?.overallWidth ?? 0;
+  const overallHeight = project?.overallHeight ?? 0;
 
   // Initialise / clamp mullion positions when project changes
   useEffect(() => {
@@ -101,8 +143,8 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
 
     const defaultFirst = overallWidth * 0.25;
     const defaultLast = overallWidth * 0.75;
-    const minEdge = constraints?.minWidthMm ?? 80;
-    const maxEdge = overallWidth - (constraints?.minWidthMm ?? 80);
+    const minEdge = effectiveConstraints?.minWidthMm ?? 80;
+    const maxEdge = overallWidth - (effectiveConstraints?.minWidthMm ?? 80);
 
     setFirstMullionMm((prev) => {
       if (prev == null || prev <= 0 || prev >= overallWidth) return defaultFirst;
@@ -116,6 +158,21 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
       return clamped;
     });
   }, [overallWidth, constraints?.minWidthMm]);
+
+  // Initialise / clamp horizontal mullion position when project changes
+  useEffect(() => {
+    if (!overallHeight) {
+      setHorizontalPositionMm(null);
+      return;
+    }
+
+    setHorizontalPositionMm((prev) => {
+      if (prev == null || prev <= 0 || prev >= overallHeight) {
+        return overallHeight / 2;
+      }
+      return Math.max(0, Math.min(prev, overallHeight));
+    });
+  }, [overallHeight]);
 
   const spanAndSpacing = useMemo(() => {
     if (
@@ -137,8 +194,8 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
     const segmentCount = totalMullions - 1;
 
     const equal = calculateEqualSpacing(spanMm, segmentCount, {
-      minSpacingMm: constraints?.minWidthMm,
-      maxSpacingMm: constraints?.maxWidthMm,
+      minSpacingMm: effectiveConstraints?.minWidthMm,
+      maxSpacingMm: effectiveConstraints?.maxWidthMm,
     });
 
     return {
@@ -146,7 +203,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
       spacingMm: equal.spacingMm,
       errors: equal.errors,
     };
-  }, [overallWidth, firstMullionMm, lastMullionMm, totalMullions, constraints]);
+  }, [overallWidth, firstMullionMm, lastMullionMm, totalMullions, effectiveConstraints]);
 
   // Absolute mullion positions (mm) across the opening.
   const mullionsMm: number[] = useMemo(() => {
@@ -190,8 +247,99 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
       };
     }
 
-    return validateProjectLayoutWithConstraints(project, constraints, mullionsMm);
-  }, [project, constraints, mullionsMm]);
+    return validateProjectLayoutWithConstraints(project, effectiveConstraints, mullionsMm);
+  }, [project, effectiveConstraints, mullionsMm]);
+
+  // Derive a simple tolerance status for spacing based on system-pack "typical" widths.
+  const spacingToleranceStatus: 'ok' | 'warning' | 'error' | 'idle' = useMemo(() => {
+    if (!project || !overallWidth || mullionsMm.length === 0 || spanAndSpacing.spacingMm <= 0) {
+      return 'idle';
+    }
+
+    if (spanAndSpacing.errors.length > 0 || !validation.isValid) {
+      return 'error';
+    }
+
+    if (!activePackPreset || !activePackPreset.typicalPanelWidthsMm?.length) {
+      return 'ok';
+    }
+
+    const spacing = spanAndSpacing.spacingMm;
+    const nearestTypical = activePackPreset.typicalPanelWidthsMm.reduce((best, v) => {
+      const bestDiff = Math.abs(best - spacing);
+      const diff = Math.abs(v - spacing);
+      return diff < bestDiff ? v : best;
+    }, activePackPreset.typicalPanelWidthsMm[0]);
+
+    const toleranceMm = 10; // ±10mm comfort band around typical catalogue widths
+    const diff = Math.abs(spacing - nearestTypical);
+
+    if (diff <= toleranceMm) return 'ok';
+    return 'warning';
+  }, [project, overallWidth, mullionsMm, spanAndSpacing, validation, activePackPreset]);
+
+  /**
+   * One-click helper: choose a sensible span and mullion count based on the
+   * active system pack preset (if available), so operators don't have to drag
+   * handles from scratch.
+   */
+  const applySystemDefaultLayout = useCallback(() => {
+    if (!project || !overallWidth) return;
+
+    const edgeMargin = effectiveConstraints?.minWidthMm ?? 80;
+    const maxInnerSpan = Math.max(overallWidth - edgeMargin * 2, 0);
+    let desiredSpan = overallWidth * 0.8;
+    if (desiredSpan > maxInnerSpan) desiredSpan = maxInnerSpan;
+
+    let recommendedCount = totalMullions;
+
+    if (activePackPreset && activePackPreset.recommendedMullionCounts.length > 0) {
+      // Pick a recommended count that keeps panel widths inside min/max where possible.
+      const candidates = activePackPreset.recommendedMullionCounts;
+      const minPanel = effectiveConstraints?.minWidthMm ?? activePackPreset.minPanelWidthMm;
+      const maxPanel = effectiveConstraints?.maxWidthMm ?? activePackPreset.maxPanelWidthMm;
+
+      let best: number | null = null;
+      let bestScore = Number.POSITIVE_INFINITY;
+
+      candidates.forEach((c) => {
+        if (c < 2) return;
+        const segments = c - 1;
+        if (segments <= 0) return;
+        const panelWidth = desiredSpan / segments;
+        if (panelWidth <= 0) return;
+
+        const inside =
+          (minPanel === undefined || panelWidth >= minPanel) &&
+          (maxPanel === undefined || panelWidth <= maxPanel);
+
+        // Prefer inside band, then closest to default spacing.
+        const spacingDiff = activePackPreset.defaultMullionSpacingMm
+          ? Math.abs(panelWidth - activePackPreset.defaultMullionSpacingMm)
+          : 0;
+        const score = inside ? spacingDiff : spacingDiff + 10_000;
+
+        if (score < bestScore) {
+          bestScore = score;
+          best = c;
+        }
+      });
+
+      if (best && best >= 2) {
+        recommendedCount = best;
+      }
+    } else if (recommendedCount < 2) {
+      recommendedCount = 3;
+    }
+
+    setTotalMullions(recommendedCount);
+
+    // Place span symmetrically inside the opening
+    const start = (overallWidth - desiredSpan) / 2;
+    const end = start + desiredSpan;
+    setFirstMullionMm(start);
+    setLastMullionMm(end);
+  }, [project, overallWidth, effectiveConstraints, activePackPreset, totalMullions]);
 
   // -------------------------------------------------------------------------
   // Canvas Drawing
@@ -243,19 +391,42 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
 
     // Panel shading between mullions and edges
     const allPositions = [0, ...mullionsMm, overallWidth];
+    const panelWidthsMm: number[] = [];
     ctx.save();
     for (let i = 0; i < allPositions.length - 1; i += 1) {
       const leftMm = allPositions[i];
       const rightMm = allPositions[i + 1];
+      const panelWidthMm = rightMm - leftMm;
+      panelWidthsMm.push(panelWidthMm);
+
       const x = padding + leftMm * scaleX;
-      const w = (rightMm - leftMm) * scaleX;
+      const w = panelWidthMm * scaleX;
 
       ctx.fillStyle = i % 2 === 0 ? '#0f172a' : '#020617';
       ctx.fillRect(x, padding, w, frameHeight);
     }
     ctx.restore();
 
-    // Draw mullions
+    // Panel width labels for professional feedback (kept subtle for readability)
+    if (panelWidthsMm.length <= 8) {
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '10px system-ui';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      for (let i = 0; i < panelWidthsMm.length; i += 1) {
+        const leftMm = allPositions[i];
+        const rightMm = allPositions[i + 1];
+        const centerX = padding + ((leftMm + rightMm) / 2) * scaleX;
+        ctx.fillText(
+          `${panelWidthsMm[i].toFixed(0)} mm`,
+          centerX,
+          padding + frameHeight / 2,
+        );
+      }
+    }
+
+    // Draw vertical mullions
     mullionsMm.forEach((posMm, index) => {
       const x = padding + posMm * scaleX;
       const isFirst = index === 0;
@@ -277,6 +448,21 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
       }
     });
 
+    // Optional horizontal mullion (transom)
+    if (enableHorizontal && horizontalPositionMm != null && overallHeight > 0) {
+      const clampedPos = Math.max(0, Math.min(horizontalPositionMm, overallHeight));
+      // 0mm = sill (bottom), overallHeight = head (top)
+      const yRatio = clampedPos / overallHeight;
+      const y = padding + frameHeight * (1 - yRatio);
+
+      ctx.beginPath();
+      ctx.moveTo(padding, y);
+      ctx.lineTo(padding + frameWidth, y);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#22c55e'; // green transom
+      ctx.stroke();
+    }
+
     // Dimension label
     ctx.fillStyle = '#9ca3af';
     ctx.font = '11px system-ui';
@@ -287,7 +473,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
       padding + frameWidth / 2,
       padding + frameHeight + 6,
     );
-  }, [project, overallWidth, mullionsMm]);
+  }, [project, overallWidth, overallHeight, mullionsMm, enableHorizontal, horizontalPositionMm]);
 
   // -------------------------------------------------------------------------
   // Pointer Interaction
@@ -303,7 +489,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
       const frameWidth = rect.width - padding * 2;
       const scaleX = frameWidth / overallWidth;
 
-      const thresholdPx = 16;
+      const thresholdPx = 28; // make picking the orange handles easier / less "weak"
       let closest: { target: DragTarget; distance: number } | null = null;
 
       mullionsMm.forEach((posMm, index) => {
@@ -342,11 +528,15 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
     const frameWidth = rect.width - padding * 2;
     const scaleX = frameWidth / overallWidth;
 
-    const minEdge = constraints?.minWidthMm ?? 80;
-    const maxEdge = overallWidth - (constraints?.minWidthMm ?? 80);
-    const minGap = constraints?.minWidthMm ?? 80;
+    const minEdge = effectiveConstraints?.minWidthMm ?? constraints?.minWidthMm ?? 80;
+    const maxEdge = overallWidth - (effectiveConstraints?.minWidthMm ?? constraints?.minWidthMm ?? 80);
+    const minGap = effectiveConstraints?.minWidthMm ?? constraints?.minWidthMm ?? 80;
 
     let mm = (x - padding) / scaleX;
+
+    // Snap to sensible increments (5mm) for professional but controllable layouts
+    const snapStepMm = 5;
+    mm = Math.round(mm / snapStepMm) * snapStepMm;
     mm = Math.max(minEdge, Math.min(maxEdge, mm));
 
     if (dragTarget === 'first') {
@@ -387,11 +577,47 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
       mullionProfile,
     );
 
+    let allComponents = [...components];
+
+    // Add a single fixed horizontal mullion (transom) if requested by the user
+    if (enableHorizontal && horizontalPositionMm != null && overallHeight > 0) {
+      const transomProfile = mullionProfile ?? profiles[0] ?? null;
+      if (transomProfile) {
+        const allowance = transomProfile.cuttingAllowance ?? 0;
+        const cutLength = overallWidth + allowance * 2;
+        const id = `transom_${project.id}_${Math.round(horizontalPositionMm)}`;
+
+        allComponents.push({
+          id,
+          type: 'transom',
+          profile: transomProfile,
+          width: overallWidth,
+          height: transomProfile.width,
+          quantity: 1,
+          cuttingLengths: [cutLength],
+          angles: [90],
+          machiningOperations: [
+            {
+              code: horizontalLocation === 'frame' ? 'TRANSOM_FRAME' : 'TRANSOM_SASH',
+              description:
+                horizontalLocation === 'frame'
+                  ? `Transom in frame at ${horizontalPositionMm.toFixed(0)} mm from sill`
+                  : `Transom inside sash at ${horizontalPositionMm.toFixed(
+                      0,
+                    )} mm from sill`,
+            } as any,
+          ],
+          glazingType: String((project as any).glazing?.type ?? 'double'),
+          hardware: [],
+        });
+      }
+    }
+
     const allErrors = [...spanAndSpacing.errors, ...validation.errors];
 
     onApplyLayout({
       layout,
-      components,
+        components: allComponents,
       isValid: allErrors.length === 0,
       errors: allErrors,
     });
@@ -434,8 +660,16 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
             </p>
           </div>
           <div>
-              <Label className="text-xs text-gray-300">Equal Spacing within Active Span</Label>
-            <p className="text-sm text-gray-100 mt-2">
+            <Label className="text-xs text-gray-300">Equal Spacing within Active Span</Label>
+            <p
+              className={`text-sm mt-2 ${
+                spacingToleranceStatus === 'error'
+                  ? 'text-red-400'
+                  : spacingToleranceStatus === 'warning'
+                  ? 'text-yellow-300'
+                  : 'text-gray-100'
+              }`}
+            >
               {spanAndSpacing.spacingMm > 0
                 ? `${spanAndSpacing.spacingMm.toFixed(0)} mm between mullions`
                 : 'Adjust mullions to compute spacing'}
@@ -446,7 +680,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
                     0,
                   )}–${activePackPreset.maxPanelWidthMm.toFixed(0)} mm, typical ${activePackPreset.typicalPanelWidthsMm
                     .map((v) => v.toFixed(0))
-                    .join(', ')} mm`}
+                    .join(', ')} mm (±10mm comfort band)`}
                 </p>
               ) : (
                 constraints?.minWidthMm && (
@@ -471,6 +705,75 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
               </p>
             )}
           </div>
+        </div>
+
+        {/* Horizontal mullion controls */}
+        <div className="mt-3 space-y-2">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="enable-horizontal"
+              checked={enableHorizontal}
+              onCheckedChange={(checked) => setEnableHorizontal(checked === true)}
+            />
+            <Label htmlFor="enable-horizontal" className="text-xs text-gray-300">
+              Add fixed horizontal mullion (transom)
+            </Label>
+          </div>
+          {enableHorizontal && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px]">
+              <div>
+                <Label className="text-[11px] text-gray-300">Position from sill (mm)</Label>
+                <Input
+                  type="number"
+                  value={horizontalPositionMm ?? ''}
+                  onChange={(e) => {
+                    const raw = Number(e.target.value) || 0;
+                    if (!overallHeight) {
+                      setHorizontalPositionMm(raw);
+                      return;
+                    }
+                    const clamped = Math.max(0, Math.min(raw, overallHeight));
+                    setHorizontalPositionMm(clamped);
+                  }}
+                  placeholder={overallHeight ? String(Math.round(overallHeight / 2)) : 'e.g. 900'}
+                  className="h-8 bg-gray-900 border-gray-700 text-xs"
+                />
+              </div>
+              <div>
+                <Label className="text-[11px] text-gray-300">Location</Label>
+                <Select
+                  value={horizontalLocation}
+                  onValueChange={(v) => setHorizontalLocation(v as 'frame' | 'sash')}
+                >
+                  <SelectTrigger className="h-8 bg-gray-900 border-gray-700 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                    <SelectItem value="frame">In frame (before sash)</SelectItem>
+                    <SelectItem value="sash">Inside sash (leaf)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Quick actions */}
+        <div className="flex items-center justify-between text-[11px] text-gray-400">
+          <span>
+            Use the slider or drag the{' '}
+            <span className="text-orange-400 font-semibold">orange mullions</span> for fine‑tuning.
+          </span>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="h-7 px-2 text-[11px] border-orange-500/60 text-orange-300"
+            onClick={applySystemDefaultLayout}
+            disabled={!project || !overallWidth}
+          >
+            Auto mullions (system)
+          </Button>
         </div>
 
         {/* Canvas */}

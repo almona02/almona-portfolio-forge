@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useJobsStore } from '@/store/jobsStore';
 import type { WindowUnit } from '@/types/fabricator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
@@ -17,6 +18,8 @@ import {
 } from '@/shared/ui/ui/table';
 import { ScrollArea } from '@/shared/ui/ui/scroll-area';
 import { MapPin, Search, ArrowLeft, ArrowRight, Layers } from 'lucide-react';
+import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 
 interface PositionsGridProps {
   currentProject: WindowUnit | null;
@@ -32,11 +35,21 @@ interface PositionsGridProps {
  * - Supports quick filtering by current project and text search
  */
 export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) => {
-  const { jobs, setSelectedJob } = useJobsStore();
+  const { jobs, setSelectedJob, deleteJob, addOrUpdateJob } = useJobsStore();
+  const { dispatch: workspaceDispatch } = useFabricatorWorkspace();
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [pageSize] = useState(100);
   const [searchTerm, setSearchTerm] = useState('');
   const [limitToCurrentProject, setLimitToCurrentProject] = useState(true);
+
+  const packLabelById = useMemo(() => {
+    const map = new Map<string, string>();
+    SYSTEM_PACKS.forEach((pack) => {
+      map.set(pack.meta.id, pack.meta.name);
+    });
+    return map;
+  }, []);
 
   const filteredJobs = useMemo(() => {
     let list = jobs;
@@ -155,8 +168,10 @@ export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) 
               <TableRow className="bg-gray-900/80">
                 <TableHead className="w-28">Order / POS</TableHead>
                 <TableHead className="w-24">Codes</TableHead>
+                <TableHead className="w-32">System Pack</TableHead>
                 <TableHead className="w-28">Type</TableHead>
                 <TableHead className="w-28">Size (mm)</TableHead>
+                <TableHead className="w-32">Glazing / Screen</TableHead>
                 <TableHead className="w-16 text-right">Qty</TableHead>
                 <TableHead className="w-48">
                   <div className="flex items-center gap-1">
@@ -171,6 +186,8 @@ export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) 
             <TableBody>
               {pageSlice.map((job) => {
                 const meta = job.positionMeta || {};
+                const packLabel =
+                  (job.systemPackId && packLabelById.get(job.systemPackId)) || job.systemPackId;
                 return (
                   <TableRow key={job.id}>
                     <TableCell>
@@ -195,9 +212,29 @@ export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) 
                         )}
                       </div>
                     </TableCell>
+                    <TableCell>
+                      {packLabel ? (
+                        <span className="text-[10px] text-gray-200 truncate">{packLabel}</span>
+                      ) : (
+                        <span className="text-[10px] text-gray-500 italic">—</span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-gray-200 truncate">{job.type}</TableCell>
                     <TableCell>
                       {job.overallWidth} × {job.overallHeight}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-[10px] text-gray-200">
+                          {String((job as any).glazing?.type || '—')} {String((job as any).glazing?.color || '')}
+                        </span>
+                        <span className="text-[10px] text-gray-400">
+                          Flyscreen:{' '}
+                          {meta.flyScreenType
+                            ? (meta.flyScreenType as string)
+                            : (job as any).flyScreenType || 'none'}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <span className="font-mono">{job.quantity || 1}</span>
@@ -208,6 +245,11 @@ export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) 
                           {meta.flatNumber && (
                             <Badge variant="outline" className="text-[9px]">
                               Flat {meta.flatNumber}
+                            </Badge>
+                          )}
+                          {meta.buildingBlock && (
+                            <Badge variant="outline" className="text-[9px]">
+                              Block {meta.buildingBlock}
                             </Badge>
                           )}
                           {meta.floor && (
@@ -244,14 +286,44 @@ export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) 
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        size="xs"
-                        variant="outline"
-                        className="h-6 px-2 text-[10px]"
-                        onClick={() => setSelectedJob(job.id)}
-                      >
-                        Focus
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          className="h-6 px-2 text-[10px]"
+                          onClick={() => {
+                            // Persist any active project changes before switching focus
+                            if (currentProject) {
+                              addOrUpdateJob(currentProject);
+                            }
+                            setSelectedJob(job.id);
+                            workspaceDispatch({
+                              type: 'SET_CURRENT_PROJECT',
+                              payload: job,
+                            });
+                            navigate('/fabricator-workflow', {
+                              state: { jobId: job.id, startTab: 'design' },
+                            });
+                          }}
+                        >
+                          Focus
+                        </Button>
+                        <Button
+                          size="xs"
+                          variant="outline"
+                          className="h-6 px-2 text-[10px] border-red-500/60 text-red-300 hover:bg-red-900/40"
+                          onClick={() => {
+                            const confirmed = window.confirm(
+                              `Delete position ${job.orderNumber} / ${job.posNumber}? This cannot be undone for this workspace session.`,
+                            );
+                            if (confirmed) {
+                              deleteJob(job.id);
+                            }
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );

@@ -130,6 +130,14 @@ export const CompanyBrandingManager: React.FC<CompanyBrandingManagerProps> = ({
               />
             </div>
             <div className="col-span-2">
+              <Label>Workshop / Production Name</Label>
+              <Input
+                value={branding.workshopName || ''}
+                onChange={(e) => setBranding({ ...branding, workshopName: e.target.value })}
+                placeholder="e.g. Downtown Workshop, Line 1"
+              />
+            </div>
+            <div className="col-span-2">
               <Label>Address</Label>
               <Input
                 value={branding.address || ''}
@@ -222,6 +230,11 @@ export const CompanyBrandingManager: React.FC<CompanyBrandingManagerProps> = ({
               >
                 {branding.companyName || 'Your Company Name'}
               </div>
+              {branding.workshopName && (
+                <div className="text-sm text-gray-300">
+                  {branding.workshopName}
+                </div>
+              )}
               {branding.address && (
                 <div className="text-sm text-gray-400">{branding.address}</div>
               )}
