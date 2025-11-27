@@ -25,10 +25,51 @@ export interface SystemConstraints {
 }
 
 /**
- * Validates measurement inputs
+ * Resolve canonical system constraints for a given system pack ID, based on
+ * its `windowSystemSpec.constraints` block. This is the single source of
+ * truth for min/max width, height and area across measuring, design and
+ * SmartDraw, with simple fallbacks when a pack has no explicit limits.
  */
-export function validateMeasurements(data: MeasurementData): ValidationResult {
+export function getConstraintsForSystemPack(systemPackId?: string | null): SystemConstraints | null {
+  if (!systemPackId) return null;
+  const pack = SYSTEM_PACKS.find((p) => p.meta.id === systemPackId);
+  if (!pack) return null;
+
+  const spec: any = pack.windowSystemSpec;
+  const constraints = spec?.constraints;
+  if (!constraints || typeof constraints !== 'object') {
+    return null;
+  }
+
+  const result: SystemConstraints = {};
+
+  if (typeof constraints.minWidthMm === 'number') result.minWidthMm = constraints.minWidthMm;
+  if (typeof constraints.maxWidthMm === 'number') result.maxWidthMm = constraints.maxWidthMm;
+  if (typeof constraints.minHeightMm === 'number') result.minHeightMm = constraints.minHeightMm;
+  if (typeof constraints.maxHeightMm === 'number') result.maxHeightMm = constraints.maxHeightMm;
+  if (typeof constraints.maxAreaM2 === 'number') result.maxAreaM2 = constraints.maxAreaM2;
+
+  return result;
+}
+
+/**
+ * Validates measurement inputs with optional system-pack constraints.
+ * Falls back to conservative defaults when no system constraints exist.
+ */
+export function validateMeasurements(
+  data: MeasurementData,
+  constraints?: SystemConstraints | null,
+): ValidationResult {
   const errors: ValidationError[] = [];
+
+  const effectiveConstraints =
+    constraints ?? getConstraintsForSystemPack((data as any).systemPackId) ?? null;
+
+  // Generic safety defaults when no system constraints are available
+  const fallbackMinWidth = 300;
+  const fallbackMaxWidth = 5000;
+  const fallbackMinHeight = 300;
+  const fallbackMaxHeight = 5000;
 
   // Validate width
   const width = Number(data.width);
@@ -36,10 +77,21 @@ export function validateMeasurements(data: MeasurementData): ValidationResult {
     errors.push({ field: 'width', message: 'Width is required and must be a valid number' });
   } else if (width <= 0) {
     errors.push({ field: 'width', message: 'Width must be greater than 0' });
-  } else if (width < 300) {
-    errors.push({ field: 'width', message: 'Width must be at least 300mm' });
-  } else if (width > 5000) {
-    errors.push({ field: 'width', message: 'Width cannot exceed 5000mm' });
+  } else {
+    const minWidth = effectiveConstraints?.minWidthMm ?? fallbackMinWidth;
+    const maxWidth = effectiveConstraints?.maxWidthMm ?? fallbackMaxWidth;
+
+    if (width < minWidth) {
+      errors.push({
+        field: 'width',
+        message: `Width must be at least ${minWidth}mm for this system`,
+      });
+    } else if (width > maxWidth) {
+      errors.push({
+        field: 'width',
+        message: `Width cannot exceed ${maxWidth}mm for this system`,
+      });
+    }
   }
 
   // Validate height
@@ -48,10 +100,34 @@ export function validateMeasurements(data: MeasurementData): ValidationResult {
     errors.push({ field: 'height', message: 'Height is required and must be a valid number' });
   } else if (height <= 0) {
     errors.push({ field: 'height', message: 'Height must be greater than 0' });
-  } else if (height < 300) {
-    errors.push({ field: 'height', message: 'Height must be at least 300mm' });
-  } else if (height > 5000) {
-    errors.push({ field: 'height', message: 'Height cannot exceed 5000mm' });
+  } else {
+    const minHeight = effectiveConstraints?.minHeightMm ?? fallbackMinHeight;
+    const maxHeight = effectiveConstraints?.maxHeightMm ?? fallbackMaxHeight;
+
+    if (height < minHeight) {
+      errors.push({
+        field: 'height',
+        message: `Height must be at least ${minHeight}mm for this system`,
+      });
+    } else if (height > maxHeight) {
+      errors.push({
+        field: 'height',
+        message: `Height cannot exceed ${maxHeight}mm for this system`,
+      });
+    }
+  }
+
+  // Optional area check when system defines a max area
+  if (effectiveConstraints?.maxAreaM2 !== undefined && width > 0 && height > 0) {
+    const areaM2 = (width * height) / 1_000_000;
+    if (areaM2 > effectiveConstraints.maxAreaM2) {
+      errors.push({
+        field: 'area',
+        message: `Area (${areaM2.toFixed(
+          2,
+        )} m²) exceeds maximum allowed for this system (${effectiveConstraints.maxAreaM2} m²)`,
+      });
+    }
   }
 
   // Validate window type
@@ -75,11 +151,11 @@ export function validateMeasurements(data: MeasurementData): ValidationResult {
   }
 
   // Validate glazing type (optional but if provided should be valid)
-  if (data.glazingType) {
-    const validGlazingTypes = ['single', 'double', 'triple'];
-    if (!validGlazingTypes.includes(data.glazingType)) {
-      errors.push({ field: 'glazingType', message: 'Invalid glazing type selected' });
-    }
+  const validGlazingTypes = ['single', 'double', 'triple'];
+  if (!data.glazingType) {
+    errors.push({ field: 'glazingType', message: 'Glazing type is required' });
+  } else if (!validGlazingTypes.includes(data.glazingType)) {
+    errors.push({ field: 'glazingType', message: 'Invalid glazing type selected' });
   }
 
   return {

@@ -76,7 +76,12 @@ export const handleAuthError = async (error: any) => {
 // Performance monitoring for Supabase calls
 export const monitorSupabasePerformance = (operation: string, startTime: number) => {
   const duration = Date.now() - startTime;
-  if (duration > 3000) { // Log slow operations (>3 seconds)
+  // Slightly stricter threshold for profile reads, looser for everything else
+  const isProfileRead = operation.includes('getProfile');
+  const thresholdMs = isProfileRead ? 2000 : 3000;
+
+  // Only log detailed performance warnings in development to avoid noisy production consoles
+  if (import.meta.env.DEV && duration > thresholdMs) {
     console.warn(`[Supabase] Slow operation detected: ${operation} took ${duration}ms`);
   }
 }

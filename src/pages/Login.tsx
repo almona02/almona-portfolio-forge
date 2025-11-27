@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Mail, Lock, Phone } from 'lucide-react';
@@ -18,12 +19,13 @@ import { SmsOtpModal } from '@/components/auth/SmsOtpModal';
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
 const Login = () => {
-  const [email, setEmail] = useState('almona02@yahoo.com');
-  const [password, setPassword] = useState('momo1234');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false); // kept for transition; will sync with actionLoading
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showSmsOtpModal, setShowSmsOtpModal] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const { signIn: login, signInWithGoogle, user, actionLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -34,12 +36,35 @@ const Login = () => {
     }
   }, [user, navigate]);
 
+  // Load remembered email from local storage (browser "remember me")
+  useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem('almona_login_email');
+      if (stored) {
+        setEmail(stored);
+        setRememberMe(true);
+      }
+    } catch {
+      // ignore storage issues
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  setLoading(true);
+    setLoading(true);
     setError(null);
     try {
       await login(email, password);
+      // Persist email for next time if remember me is checked
+      try {
+        if (rememberMe) {
+          window.localStorage.setItem('almona_login_email', email);
+        } else {
+          window.localStorage.removeItem('almona_login_email');
+        }
+      } catch {
+        // ignore storage issues
+      }
       // On some mobile browsers auth state propagation can be delayed; navigate optimistically.
       navigate('/', { replace: true });
     } catch (error: any) {
@@ -141,7 +166,17 @@ const Login = () => {
                     </div>
                   </div>
                 </motion.div>
-                <div className="flex items-center justify-end">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="remember-me"
+                      checked={rememberMe}
+                      onCheckedChange={(checked) => setRememberMe(checked === true)}
+                    />
+                    <Label htmlFor="remember-me" className="text-sm text-gray-300">
+                      Remember me on this browser
+                    </Label>
+                  </div>
                   <a href="#" className="text-sm text-almona-light hover:underline">
                     Forgot password?
                   </a>

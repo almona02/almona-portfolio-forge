@@ -983,6 +983,224 @@ export interface Database {
           updated_at?: string
         }
       }
+      fabricator_projects: {
+        Row: {
+          id: string
+          owner_user_id: string
+          project_code: string
+          project_name: string
+          client_name: string
+          site_name: string | null
+          currency: string
+          region: string
+          system_pack_id: string
+          status: string
+          meta: Record<string, unknown> | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_user_id: string
+          project_code: string
+          project_name: string
+          client_name: string
+          site_name?: string | null
+          currency?: string
+          region?: string
+          system_pack_id: string
+          status?: string
+          meta?: Record<string, unknown> | null
+        }
+        Update: {
+          project_code?: string
+          project_name?: string
+          client_name?: string
+          site_name?: string | null
+          currency?: string
+          region?: string
+          system_pack_id?: string
+          status?: string
+          meta?: Record<string, unknown> | null
+          updated_at?: string
+        }
+      }
+      fabricator_positions: {
+        Row: {
+          id: string
+          project_id: string
+          owner_user_id: string
+          order_number: string
+          pos_number: string
+          type: string
+          overall_width_mm: number
+          overall_height_mm: number
+          color: string
+          glazing: Record<string, unknown> | null
+          system_pack_id: string | null
+          status: string
+          quantity: number
+          position_meta: Record<string, unknown> | null
+          optimization: Record<string, unknown> | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          owner_user_id: string
+          order_number: string
+          pos_number: string
+          type: string
+          overall_width_mm: number
+          overall_height_mm: number
+          color: string
+          glazing?: Record<string, unknown> | null
+          system_pack_id?: string | null
+          status?: string
+          quantity?: number
+          position_meta?: Record<string, unknown> | null
+          optimization?: Record<string, unknown> | null
+        }
+        Update: {
+          project_id?: string
+          order_number?: string
+          pos_number?: string
+          type?: string
+          overall_width_mm?: number
+          overall_height_mm?: number
+          color?: string
+          glazing?: Record<string, unknown> | null
+          system_pack_id?: string | null
+          status?: string
+          quantity?: number
+          position_meta?: Record<string, unknown> | null
+          optimization?: Record<string, unknown> | null
+          updated_at?: string
+        }
+      }
+      fabricator_customers: {
+        Row: {
+          id: string
+          owner_user_id: string
+          name: string
+          contact_person: string | null
+          email: string | null
+          phone: string | null
+          sector: SectorType | null
+          billing_info: Record<string, unknown> | null
+          shipping_info: Record<string, unknown> | null
+          notes: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_user_id: string
+          name: string
+          contact_person?: string | null
+          email?: string | null
+          phone?: string | null
+          sector?: SectorType | null
+          billing_info?: Record<string, unknown> | null
+          shipping_info?: Record<string, unknown> | null
+          notes?: string | null
+        }
+        Update: {
+          name?: string
+          contact_person?: string | null
+          email?: string | null
+          phone?: string | null
+          sector?: SectorType | null
+          billing_info?: Record<string, unknown> | null
+          shipping_info?: Record<string, unknown> | null
+          notes?: string | null
+          updated_at?: string
+        }
+      }
+      fabricator_team_members: {
+        Row: {
+          id: string
+          owner_user_id: string
+          member_profile_id: string
+          role: string
+          is_active: boolean
+          permissions: Record<string, unknown> | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          owner_user_id: string
+          member_profile_id: string
+          role: string
+          is_active?: boolean
+          permissions?: Record<string, unknown> | null
+        }
+        Update: {
+          role?: string
+          is_active?: boolean
+          permissions?: Record<string, unknown> | null
+          updated_at?: string
+        }
+      }
+      fabricator_project_members: {
+        Row: {
+          id: string
+          project_id: string
+          member_profile_id: string
+          role: string
+          permissions: Record<string, unknown> | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          member_profile_id: string
+          role: string
+          permissions?: Record<string, unknown> | null
+        }
+        Update: {
+          role?: string
+          permissions?: Record<string, unknown> | null
+          updated_at?: string
+        }
+      }
+      fabricator_system_packs: {
+        Row: {
+          id: string
+          label: string
+          regions: string[] | null
+          brands: string[] | null
+          spec: Record<string, unknown>
+          is_active: boolean
+          created_at: string
+          updated_at: string
+          owner_user_id: string | null
+          scope: string
+        }
+        Insert: {
+          id: string
+          label: string
+          regions?: string[] | null
+          brands?: string[] | null
+          spec: Record<string, unknown>
+          is_active?: boolean
+          owner_user_id?: string | null
+          scope?: string
+        }
+        Update: {
+          label?: string
+          regions?: string[] | null
+          brands?: string[] | null
+          spec?: Record<string, unknown>
+          is_active?: boolean
+          owner_user_id?: string | null
+          scope?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

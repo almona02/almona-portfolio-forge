@@ -14,15 +14,16 @@ import {
   Workflow,
   Factory
 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
-interface User {
+interface NavbarUser {
   name: string;
   email: string;
   role: "user" | "admin";
 }
 
 interface NavbarProps {
-  user?: User;
+  user?: NavbarUser;
   quoteItems?: unknown[];
   onLogout?: () => void;
 }
@@ -35,7 +36,7 @@ interface NavItem {
   badge?: "NEW" | "AI" | "PRO";
 }
 
-const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
+const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -44,6 +45,28 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
   const navigate = useNavigate();
   const navbarRef = useRef<HTMLElement>(null);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout>();
+  const { user: authUser, signOut } = useAuth();
+
+  // Prefer explicit Navbar prop, else fall back to authenticated user from AuthContext
+  const user: NavbarUser | undefined = useMemo(() => {
+    if (propUser) return propUser;
+    if (!authUser) return undefined;
+
+    const displayName =
+      authUser.full_name ||
+      authUser.company_name ||
+      authUser.email ||
+      "User";
+
+    const displayEmail = authUser.email || authUser.username || "";
+    const role: NavbarUser["role"] = authUser.role === "admin" ? "admin" : "user";
+
+    return {
+      name: displayName,
+      email: displayEmail,
+      role,
+    };
+  }, [propUser, authUser]);
 
   // Navigation configuration
   const navItems = useMemo<NavItem[]>(() => [
@@ -861,9 +884,16 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
                         <span>My Portal</span>
                       </Link>
                       <button
-                        onClick={() => {
-                          onLogout?.();
-                          closeAllDropdowns();
+                        onClick={async () => {
+                          try {
+                            if (onLogout) {
+                              onLogout();
+                            } else {
+                              await signOut();
+                            }
+                          } finally {
+                            closeAllDropdowns();
+                          }
                         }}
                         className="w-full flex items-center space-x-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-300 text-left"
                       >
