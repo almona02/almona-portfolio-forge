@@ -47,7 +47,17 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
   const [siteName, setSiteName] = useState('');
   const [currency, setCurrency] = useState('EGP');
   const [region, setRegion] = useState<ProjectHeaderMeta['region']>('egypt');
-  const [systemPackId, setSystemPackId] = useState<string>(SYSTEM_PACKS[0]?.meta.id ?? 'rock60');
+  const [systemPackId, setSystemPackId] = useState<string>(() => {
+    // Region-aware default: Egypt → CALUMINIUM/ROCK60, Turkey → ANADOLU
+    const defaultByRegion: Record<ProjectHeaderMeta['region'], string> = {
+      egypt: 'caluminium-ps',
+      turkey: 'anadolu-w60',
+      mena: 'rock60',
+      gulf: 'jumbo100',
+      global: SYSTEM_PACKS[0]?.meta.id ?? 'rock60',
+    };
+    return defaultByRegion.egypt;
+  });
 
   const canSubmit = clientName.trim().length > 0 && projectName.trim().length > 0 && !!systemPackId;
 
@@ -134,7 +144,19 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
             </div>
             <div>
               <Label className="text-xs">Region</Label>
-              <Select value={region} onValueChange={(v) => setRegion(v as ProjectHeaderMeta['region'])}>
+              <Select
+                value={region}
+                onValueChange={(v) => {
+                  const nextRegion = v as ProjectHeaderMeta['region'];
+                  setRegion(nextRegion);
+                  // Auto-switch system pack when region changes, if current pack does not match
+                  if (nextRegion === 'turkey' && systemPackId !== 'anadolu-w60') {
+                    setSystemPackId('anadolu-w60');
+                  } else if (nextRegion === 'egypt' && systemPackId !== 'caluminium-ps' && systemPackId !== 'rock60') {
+                    setSystemPackId('caluminium-ps');
+                  }
+                }}
+              >
                 <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
                   <SelectValue />
                 </SelectTrigger>

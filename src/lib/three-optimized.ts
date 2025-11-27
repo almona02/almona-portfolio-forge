@@ -70,7 +70,8 @@ export const initCompressedModelDecoders = async (basePath: string = '/'): Promi
       const dracoLoader = new DRACOLoader();
       dracoLoader.setDecoderPath(basePath + 'draco/'); // expects decoder files under public/draco
       // drei's useGLTF exposes a global DRACOLoader setter via 'preload' side-effects in runtime
-      // @ts-ignore setDRACOLoader is available in drei's internal GLTFLoader
+      // setDRACOLoader is an internal helper not in the public types
+      // @ts-expect-error setDRACOLoader is provided by drei at runtime but not typed
       useGLTF.setDRACOLoader?.(dracoLoader);
       dracoInitialized = true;
     } catch (e) {
@@ -84,7 +85,8 @@ export const initCompressedModelDecoders = async (basePath: string = '/'): Promi
       const ktx2Loader = new KTX2Loader()
         .setTranscoderPath(basePath + 'basis/') // expects /public/basis/ with basis wasm
         .detectSupport(new THREE.WebGLRenderer());
-      // @ts-ignore setKTX2Loader is available in drei's internal GLTFLoader
+      // setKTX2Loader is an internal helper not in the public types
+      // @ts-expect-error setKTX2Loader is provided by drei at runtime but not typed
       useGLTF.setKTX2Loader?.(ktx2Loader);
       ktx2Initialized = true;
     } catch (e) {

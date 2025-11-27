@@ -7,22 +7,39 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Ruler, Camera, Scan, Smartphone, AlertCircle, Box } from 'lucide-react';
-import { MeasurementData, WindowUnit } from '@/types/fabricator';
+import { MeasurementData, SystemProfileSelections, WindowUnit } from '@/types/fabricator';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateMeasurements, ValidationError } from '@/lib/fabricatorValidation';
 import { Window3DGenerator, WindowMeasurementOverlay } from './Window3DGenerator';
 
 interface SmartMeasuringInterfaceProps {
   onMeasurementComplete: (data: MeasurementData) => void;
+  /** Optional preselected system pack ID, typically from NewProjectWizard */
+  systemPackId?: string;
 }
 
-export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = ({ onMeasurementComplete }) => {
+export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = ({
+  onMeasurementComplete,
+  systemPackId,
+}) => {
   const [measurements, setMeasurements] = useState({
-    width: '',
-    height: '',
+    // Default professional stub dimensions – can be refined per system later.
+    width: '1200',
+    height: '1200',
     windowType: '',
     color: '',
-    glazingType: ''
+    glazingType: '',
   });
+
+  const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>(() => {
+    if (systemPackId) return systemPackId;
+    // Default to first configured system pack (typically regional)
+    return SYSTEM_PACKS[0]?.meta.id || 'rock60';
+  });
+
+  const [systemProfileSelections, setSystemProfileSelections] = useState<SystemProfileSelections>(
+    {},
+  );
 
   const [isScanning, setIsScanning] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
@@ -78,17 +95,125 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     return fieldErrors[field];
   };
 
+  const activeSystemPack = useMemo(
+    () => SYSTEM_PACKS.find((p) => p.meta.id === selectedSystemPackId) ?? SYSTEM_PACKS[0],
+    [selectedSystemPackId],
+  );
+
+  /**
+   * Lightweight, UI-focused mapping of system-pack items to roles for
+   * Smart Measuring. This does not try to model the full catalog – it
+   * simply exposes the most common choices operators expect to pick
+   * before entering dimensions.
+   */
+  const systemPackRoleOptions: {
+    id: string;
+    label: string;
+    description: string;
+    options: { code: string; label: string }[];
+  }[] = useMemo(() => {
+    if (!activeSystemPack) return [];
+
+    if (activeSystemPack.meta.id === 'rock60') {
+      return [
+        {
+          id: 'frameProfileCode',
+          label: 'Frame profile',
+          description: 'Select the frame profile code you will use for this unit.',
+          options: [
+            { code: 'RC 6111-8', label: 'RC 6111-8 – Main frame (catalog default)' },
+          ],
+        },
+        {
+          id: 'sashProfileCode',
+          label: 'Sash profile',
+          description: 'Select the sash profile code for operable leaves.',
+          options: [{ code: 'RC 6122', label: 'RC 6122 – Main sash' }],
+        },
+        {
+          id: 'beadProfileCode',
+          label: 'Glazing bead',
+          description: 'Select the glazing bead profile used for this opening.',
+          options: [{ code: 'RC 6166', label: 'RC 6166 – Standard bead' }],
+        },
+      ];
+    }
+
+    if (activeSystemPack.meta.id === 'jumbo100') {
+      return [
+        {
+          id: 'frameProfileCode',
+          label: 'Outer frame profile',
+          description: 'Main perimeter frame profile for JUMBO100 sliding.',
+          options: [
+            { code: '2 100 1020', label: '2 100 1020 – Sliding frame (narrow)' },
+            { code: '2 100 1120', label: '2 100 1120 – Sliding frame (wide)' },
+          ],
+        },
+        {
+          id: 'sashProfileCode',
+          label: 'Sash / leaf profile',
+          description: 'Active sliding leaf profile code.',
+          options: [
+            { code: '2 100 1130', label: '2 100 1130 – Sliding sash A' },
+            { code: '2 100 1150', label: '2 100 1150 – Sliding sash B' },
+          ],
+        },
+        {
+          id: 'beadProfileCode',
+          label: 'Small / glazing profile',
+          description: 'Typical small profile used for beads or adapters.',
+          options: [
+            { code: '2 100 6120', label: '2 100 6120 – Small profile' },
+            { code: '2 100 6180', label: '2 100 6180 – Small profile' },
+          ],
+        },
+      ];
+    }
+
+    // Fallback: no specialised mapping – nothing to select.
+    return [];
+  }, [activeSystemPack]);
+
+  const handleSystemProfileChange = (roleId: keyof SystemProfileSelections, code: string) => {
+    setSystemProfileSelections((prev) => ({
+      ...prev,
+      [roleId]: code,
+    }));
+
+    const fieldKey = `systemProfile.${roleId}`;
+    if (fieldErrors[fieldKey]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[fieldKey];
+        return next;
+      });
+    }
+  };
+
   const handleSubmit = () => {
     const validation = validateMeasurements(measurements);
-    
+
+    const fieldErrorMap: Record<string, string> = {};
+
     if (!validation.isValid) {
-      setValidationErrors(validation.errors);
-      
-      // Map errors to field-specific errors for display
-      const fieldErrorMap: Record<string, string> = {};
-      validation.errors.forEach(error => {
+      validation.errors.forEach((error) => {
         fieldErrorMap[error.field] = error.message;
       });
+    }
+
+    // Require system-pack profile selections when options are defined for the active pack.
+    if (systemPackRoleOptions.length > 0) {
+      systemPackRoleOptions.forEach((role) => {
+        const value = (systemProfileSelections as any)[role.id];
+        if (!value) {
+          fieldErrorMap[`systemProfile.${role.id}`] = `Please select a profile code for "${role.label}".`;
+        }
+      });
+    }
+
+    if (Object.keys(fieldErrorMap).length > 0) {
+      setValidationErrors(validation.errors);
       setFieldErrors(fieldErrorMap);
       return;
     }
@@ -96,7 +221,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     // Clear errors on successful validation
     setValidationErrors([]);
     setFieldErrors({});
-    onMeasurementComplete(measurements);
+
+    const payload: MeasurementData = {
+      ...measurements,
+      systemPackId: selectedSystemPackId,
+      systemProfileSelections,
+    };
+
+    onMeasurementComplete(payload);
   };
 
   const startARScan = () => {
@@ -106,7 +238,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       setMeasurements(prev => ({
         ...prev,
         width: '1200',
-        height: '1500',
+        height: '1200',
         windowType: 'sliding_window'
       }));
       setIsScanning(false);
@@ -115,6 +247,101 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
   return (
     <div className="space-y-6">
+      {/* System pack + profile selection */}
+      <Card className="bg-gray-800/60 border-gray-700">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center justify-between gap-2 text-sm">
+            <div className="flex items-center gap-2">
+              <FactoryIcon />
+              <span>System Pack & Profiles</span>
+            </div>
+            {activeSystemPack && (
+              <span className="text-[11px] text-gray-300">
+                {activeSystemPack.meta.name}
+              </span>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="md:col-span-1">
+              <Label className="text-[11px]">System Pack</Label>
+              <Select
+                value={selectedSystemPackId}
+                onValueChange={(value) => setSelectedSystemPackId(value)}
+              >
+                <SelectTrigger className="bg-gray-900 border-gray-700 h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-60">
+                  {SYSTEM_PACKS.map((pack) => (
+                    <SelectItem key={pack.meta.id} value={pack.meta.id}>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-gray-100">{pack.meta.name}</span>
+                        <span className="text-[10px] text-gray-500">
+                          {pack.meta.brands.join(', ')} · {pack.meta.regions.join('/')}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="mt-1 text-[10px] text-gray-500">
+                Controls which pack rules and profile codes apply to this unit (e.g. ROCK 60 vs
+                JUMBO100).
+              </p>
+            </div>
+
+            <div className="md:col-span-2 space-y-3">
+              {systemPackRoleOptions.length === 0 ? (
+                <p className="text-[11px] text-gray-400">
+                  This system does not yet expose detailed profile roles. You can still continue
+                  measuring and design as normal.
+                </p>
+              ) : (
+                systemPackRoleOptions.map((role) => {
+                  const fieldKey = `systemProfile.${role.id}`;
+                  const error = getFieldError(fieldKey);
+                  const value = (systemProfileSelections as any)[role.id] || '';
+
+                  return (
+                    <div key={role.id} className="space-y-1.5">
+                      <Label className="text-[11px]">{role.label}</Label>
+                      <Select
+                        value={value}
+                        onValueChange={(code) =>
+                          handleSystemProfileChange(role.id as keyof SystemProfileSelections, code)
+                        }
+                      >
+                        <SelectTrigger
+                          className={`bg-gray-900 border-gray-700 h-8 text-xs ${
+                            error ? 'border-red-500' : ''
+                          }`}
+                        >
+                          <SelectValue placeholder="Select profile code" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-56">
+                          {role.options.map((opt) => (
+                            <SelectItem key={opt.code} value={opt.code}>
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-gray-100">{opt.code}</span>
+                                <span className="text-[10px] text-gray-500">{opt.label}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-[10px] text-gray-500">{role.description}</p>
+                      {error && <p className="text-[10px] text-red-400">{error}</p>}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Manual Input */}
       <Card className="bg-gray-700/50 border-gray-600">
         <CardHeader>
@@ -326,7 +553,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       <div className="flex justify-end">
         <Button 
           onClick={handleSubmit}
-          disabled={!measurements.width || !measurements.height || !measurements.windowType || isScanning}
+          disabled={
+            !measurements.width || !measurements.height || !measurements.windowType || isScanning
+          }
           className="bg-orange-500 hover:bg-orange-600"
         >
           Continue to Design
@@ -335,3 +564,22 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     </div>
   );
 };
+
+/**
+ * Small inline icon component for the system pack header so we don't
+ * pull additional imports into the top of the file.
+ */
+const FactoryIcon: React.FC = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    className="h-4 w-4 text-orange-400"
+    aria-hidden="true"
+  >
+    <path
+      fill="currentColor"
+      d="M4 3a1 1 0 0 1 1 1v6.382l4-2.309l.008-.004A1 1 0 0 1 10 8a1 1 0 0 1 .553.169L15 11.382V8a1 1 0 1 1 2 0v4.618l.553-.32l.008-.004L21 11.382V8a1 1 0 1 1 2 0v12a1 1 0 0 1-1 1H2.999A1 1 0 0 1 2 20.999V4a1 1 0 0 1 1-1Zm0 10v7h18v-6.382l-4 2.309l-.008.004A1 1 0 0 1 17 16a1 1 0 0 1-.553-.169L11 12.618l-4 2.309l-.008.004A1 1 0 0 1 6 15a1 1 0 0 1-.553-.169Zm3 3h2v3H7Zm4 0h2v3h-2Zm4 0h2v3h-2Z"
+    />
+  </svg>
+);
+

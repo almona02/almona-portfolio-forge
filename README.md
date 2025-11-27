@@ -1,9 +1,15 @@
 # Almona Portfolio Forge
 
 A comprehensive, modern industrial machinery portfolio and e-commerce platform built for Almona, featuring advanced 3D/AR visualization, AI-powered services, and a complete customer support system.
-sd
+
 ## 🚀 Overview
 Almona Portfolio Forge is a full-stack industrial machinery platform that combines a React frontend with a Python FastAPI backend, offering everything from product showcases to complete service management. The platform serves industrial clients across Egypt and the Middle East with specialized features for aluminum, UPVC, and steel fabrication industries.
+
+### 🧩 Core Domains
+- **Products**: Rich machinery catalog with specifications, videos, and immersive 3D/AR galleries for preview, comparison, and interactive exploration.
+- **Maintenance**: Unified ticketing system, machine passport records, and customer/technician portals for managing machines, service history, and support flows.
+- **Fabricator**: Full-stack Fabricator Workflow Pro and CRM/optimization suite for aluminium/UPVC workshops (see `FABRICATOR_ENHANCEMENT_PLAN.md`), including profiles/accessories, pricing configuration, remnant-aware inventory, optimization algorithms, reporting, and CNC/machine export profiles.
+- **Sales**: Smart industrial shop, B2B used-machines marketplace, quote workflows, and spare-parts sales for both new and used equipment.
 
 The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, realtime sales charts, top products, and customer activity, powered by Supabase live queries and channels.
 
@@ -63,6 +69,21 @@ The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, re
 - **Unified Ticketing System**: Consolidated support, maintenance, and emergency tickets
 - **Digital Twin Integration**: Machine lifecycle tracking with unique identifiers
 - **Quote Twin Search Panel**: Customer portal quote tracking system
+
+### 🧱 **Fabricator Platform & Workflow Pro**
+- **Fabricator Workflow Pro Cockpit**: End-to-end aluminium/UPVC fabricator workspace covering design, optimization, cutting, reporting, and production hand-off.
+- **Profile & Accessory Management**: Supabase-backed profile and accessory libraries with pricing configurations, stock levels, remnants, and stock movement tracking (see `FABRICATOR_ENHANCEMENT_PLAN.md` and `FABRICATOR_ENHANCEMENT_QUICK_REFERENCE.md`).
+- **Optimization & Reporting**: Genetic/linear optimization, remnant-aware cutting, and multi-format cutting/accessories/glass reports (PDF, CSV, DXF) localized for Turkish and Egyptian markets.
+- **CNC & Machine Integrations**: DXF and G-code exports, Yilmaz and multi-brand CNC connectors, barcode/QR-based cut lists, and machine-ready export profiles for shop-floor use.
+- **Fabricator Workspace Cockpit**: Shared `/fabricator/*` workspace layout with tabs for Projects, Customers, Inventory, and Commercial, backed by a persistent `FabricatorWorkspaceContext` that preserves drafts and state across navigation and refresh.
+- **Cross-Empire Workflow Ribbon**: `BosphorusWorkflowRibbon` UI that visually bridges Ottoman/Egyptian craftsmanship with modern YILMAZ technology, driving the measuring → design → optimization → inventory → production → quality pipeline.
+- **Inventory Intelligence & Stock Intake**: Enhanced `InventoryDashboard` with remnant analytics, multi-location support, and a **Stock Intake by Invoice** flow that understands system packs (ROCK 60, JUMBO 100), roles (frame/sash/bead), weight-per-meter, painted finishes, and CSV invoice import.
+- **Conflict-Aware Profile Editing**: Workspace-backed draft edits and conflict-aware saving in `/fabricator/inventory`, using Supabase `updated_at` checks to avoid silent overwrites when multiple operators edit the same profiles.
+- **Commercial Workspace Drafts**: `/fabricator/commercial` cockpit for managing `DraftQuote` and `DraftInvoice` objects at workspace level, including quote → invoice conversion and persistent commercial drafts tied to active projects/customers.
+- **Branded System Packs & Smart Draw Presets**: Regional system packs for ROCK 60, JUMBO 100, YILMAZ W60, and CALUMINIUM PS with embedded structural constraints and Smart Draw presets, plus region-aware defaults in `NewProjectWizard` and `SmartMeasuringInterface`.
+- **Inventory Branded Tree**: Brand/system-pack aware inventory dashboard with filters and analytics grouped by system packs (YILMAZ, CALUMINIUM, ROCK 60, JUMBO 100), including remnants.
+- **Mass Production Cockpit**: `FabricatorWorkflowPro` and `MassProductionDashboard` on top of `MassProductionOptimizer` for cross-project, remnant-aware cutting optimization and unified waste KPIs.
+- **Pricing Engine with Metal Indexing**: Extended `PricingEngine` with metal price indices (LME/LOCAL stubs) and a `PricingPreview` hook in the fabricator workflow, including live material estimates and metal‑price deviation alerts for region-aware, metal-indexed pricing and quoting.
 
 ### 🤖 **AI-Powered Features**
 - **Equipment Advisor**: AI recommendations based on requirements
@@ -137,6 +158,7 @@ The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, re
 - **Forms**: React Hook Form + Zod validation
 - **Internationalization**: i18next with RTL support
 - **Testing**: Vitest + React Testing Library + Playwright
+- **Reporting & Exports**: Modular export system for PDF/CSV/DXF cutting, accessories, and glass reports with QR/barcode support and localization (EN/TR/AR)
 
 ### **Backend**
 - **Framework**: FastAPI (Python 3.9+)

@@ -181,7 +181,10 @@ class ErrorHandlingMiddleware(BaseHTTPMiddleware):
                 status_code=e.status_code,
                 content={
                     "error_code": "HTTP_ERROR",
-                    "message": e.detail
+                    "message": e.detail,
+                    # Preserve FastAPI's conventional `detail` field so existing
+                    # clients and tests that rely on it keep working.
+                    "detail": e.detail,
                 }
             )
         except Exception as e:

@@ -12,6 +12,7 @@ import { PrestigeLoader } from "./components/ui/PrestigeLoader";
 import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 import { ChunkLoadingErrorBoundary } from "./components/ui/ChunkLoadingErrorBoundary";
 import { QuoteProvider } from "./context/QuoteContext.tsx";
+import { FabricatorWorkspaceProvider } from "./context/FabricatorWorkspaceContext";
 import { AuthProvider } from "./context/AuthContext.tsx";
 import { LoadingProvider } from "./context/LoadingContext.tsx";
 import { LanguageProvider } from "./context/LanguageContext.tsx";
@@ -51,7 +52,22 @@ const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail.tsx")
 const FabricationWorkflowDetail = lazy(() => import("./pages/FabricationWorkflowDetail.tsx"));
 const FabricationServices = lazy(() => import("./pages/FabricationServices.tsx"));
 const FabricatorWorkflow = lazy(() => import("./pages/FabricatorWorkflow.tsx"));
+const FabricatorWorkflowPro = lazy(() => import("./components/fabricator/FabricatorWorkflowPro.tsx"));
 const FabricatorDashboard = lazy(() => import("./pages/FabricatorDashboard.tsx"));
+const FabricatorPricingConfiguration = lazy(() =>
+  import("./components/fabricator/PricingConfiguration.tsx").then((m) => ({
+    default: m.PricingConfiguration,
+  })),
+);
+const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
+const InventoryPage = lazy(() => import("./pages/Inventory.tsx"));
+const ProjectsPage = lazy(() => import("./pages/Projects.tsx"));
+const FabricatorWorkspaceLayout = lazy(
+  () => import("./components/fabricator/FabricatorWorkspaceLayout.tsx"),
+);
+const CommercialPage = lazy(() => import("./pages/CommercialPage.tsx").catch(() => ({
+  default: () => null,
+})));
 const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
 
 // Quote system - lazy loaded
@@ -129,6 +145,7 @@ const App = () => (
                   <ABTestProvider>
                     <LanguageProvider>
                       <QuoteProvider>
+                        <FabricatorWorkspaceProvider>
                     <BrowserRouter
                       future={{
                         v7_startTransition: true,
@@ -182,7 +199,66 @@ const App = () => (
                   <Route path="/workflows/fabrication-detail" element={<Suspense fallback={getLoadingComponent('/workflows')}><FabricationWorkflowDetail /></Suspense>} />
                   <Route path="/fabrication-services" element={<Suspense fallback={getLoadingComponent('/fabrication')}><FabricationServices /></Suspense>} />
                   <Route path="/fabricator-workflow" element={<Suspense fallback={getLoadingComponent('/fabricator')}><FabricatorWorkflow /></Suspense>} />
+                  <Route path="/fabricator-workflow/pro" element={<Suspense fallback={getLoadingComponent('/fabricator-workflow/pro')}><FabricatorWorkflowPro /></Suspense>} />
                   <Route path="/fabricator" element={<Suspense fallback={getLoadingComponent('/fabricator')}><FabricatorDashboard /></Suspense>} />
+
+                  {/* Fabricator production workspace – shared context across cockpit tabs */}
+                  <Route
+                    path="/fabricator/*"
+                    element={
+                      <Suspense fallback={getLoadingComponent('/fabricator')}>
+                        <FabricatorWorkspaceLayout />
+                      </Suspense>
+                    }
+                  >
+                    <Route index element={<Navigate to="/fabricator/projects" replace />} />
+                    <Route
+                      path="projects"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/projects')}>
+                          <ProjectsPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="customers"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/customers')}>
+                          <ProtectedRoute>
+                            <CustomersPage />
+                          </ProtectedRoute>
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="inventory"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/inventory')}>
+                          <ProtectedRoute>
+                            <InventoryPage />
+                          </ProtectedRoute>
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="commercial"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/commercial')}>
+                          <CommercialPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="pricing"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/pricing')}>
+                          <ProtectedRoute>
+                            <FabricatorPricingConfiguration />
+                          </ProtectedRoute>
+                        </Suspense>
+                      }
+                    />
+                  </Route>
                   
                   {/* Shop & E-commerce */}
                   <Route path="/shop" element={<Suspense fallback={getLoadingComponent('/shop')}><Shop /></Suspense>} />
@@ -190,6 +266,24 @@ const App = () => (
                   <Route path="/usedmachines/:id" element={<Suspense fallback={getLoadingComponent('/usedmachines')}><UsedMachineDetailPage /></Suspense>} />
                   <Route path="/usedmachines/sell" element={<Suspense fallback={getLoadingComponent('/usedmachines')}><ProtectedRoute><SellUsedMachine /></ProtectedRoute></Suspense>} />
                   <Route path="/spare-parts" element={<Suspense fallback={getLoadingComponent('/spare-parts')}><SpareParts /></Suspense>} />
+                  <Route
+                    path="/inventory"
+                    element={
+                      <Suspense fallback={getLoadingComponent('/inventory')}>
+                        <ProtectedRoute>
+                          <InventoryPage />
+                        </ProtectedRoute>
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/projects"
+                    element={
+                      <Suspense fallback={getLoadingComponent('/projects')}>
+                        <ProjectsPage />
+                      </Suspense>
+                    }
+                  />
                   
                   {/* Quote System */}
                   <Route path="/quote" element={<Suspense fallback={getLoadingComponent('/quote')}><QuotePage /></Suspense>} />
@@ -228,6 +322,7 @@ const App = () => (
                         </Routes>
                       </RegionAwareLayout>
                     </BrowserRouter>
+                        </FabricatorWorkspaceProvider>
                       </QuoteProvider>
                     </LanguageProvider>
                   </ABTestProvider>

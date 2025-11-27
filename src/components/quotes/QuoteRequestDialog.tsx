@@ -52,23 +52,31 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
   interface SubmitPayloadProduct { id: string; price?: number }
   interface SubmitPayloadService { id?: string; price?: number }
   interface SubmitQuoteData {
-    products: SubmitPayloadProduct[];
-    services: SubmitPayloadService[];
-    contactInfo?: { name?: string; email?: string; phone?: string; company?: string };
+    // Flattened fields coming from QuoteRequestStepper
+    name: string;
+    email: string;
+    phone: string;
+    company?: string;
     projectDescription: string;
     urgency: string;
+    deliveryLocation: string;
+    specialRequirements: string;
+    products: SubmitPayloadProduct[];
+    services: SubmitPayloadService[];
   }
 
   const handleSubmit = async (quoteData: SubmitQuoteData) => {
     setSubmitting(true);
     try {
       const payload = {
-        contact_name: quoteData.contactInfo?.name || quoteData.contactInfo?.email || 'Customer',
-        contact_email: quoteData.contactInfo?.email,
-        contact_phone: quoteData.contactInfo?.phone,
-        company: quoteData.contactInfo?.company,
+        contact_name: quoteData.name || quoteData.email || 'Customer',
+        contact_email: quoteData.email,
+        contact_phone: quoteData.phone,
+        company: quoteData.company,
         project_description: quoteData.projectDescription,
         urgency: quoteData.urgency,
+        delivery_location: quoteData.deliveryLocation,
+        special_requirements: quoteData.specialRequirements,
         // For now we map product/service arrays into minimal line items list (only price & product_id if present)
         products: (quoteData.products || []).map(p => ({ product_id: p.id, quantity: 1, unit_price: p.price })),
         services: (quoteData.services || []).map(s => ({ service_id: s.id, quantity: 1, unit_price: s.price })),

@@ -142,6 +142,86 @@ This section condenses the competitive strategy into three pillars that map onto
 
 ---
 
+## ✅ Recent Implementation Status (Q4 2025 – Fabricator Workspace & Inventory)
+
+This section captures the latest implemented features so the roadmap can be updated and future upgrades can build on a clear baseline.
+
+- **Fabricator Workspace Cockpit (aligns with Phase 1.1 / Phase 5.2 / “Addictive daily UX”)**
+  - Implemented `FabricatorWorkspaceContext` (`src/context/FabricatorWorkspaceContext.tsx`) as a persistent, app-wide workspace state:
+    - Tracks `currentProject`, `currentCustomer`, `currentMeasurement`, `DraftQuote` / `DraftInvoice`, `profileEdits`, and `inventoryEdits`.
+    - Auto-persists to `localStorage` (`fabricator-workspace-v1`) and hydrates on reload.
+  - Added `FabricatorWorkspaceLayout` (`src/components/fabricator/FabricatorWorkspaceLayout.tsx`) and `/fabricator/*` routes in `src/App.tsx`:
+    - Unified cockpit with tabs for **Projects**, **Customers**, **Inventory**, and **Commercial**.
+    - Workspace state is shared across all tabs and is not lost during navigation.
+
+- **Inventory Intelligence & Stock Intake (aligns with Phase 1.3 Visual Stock Management)**
+  - Enhanced `InventoryDashboard` (`src/components/fabricator/InventoryDashboard.tsx`):
+    - Remnant analytics via `RemnantManager` (available length, value, expiring stock, usage counts).
+    - Stock alerts (`stock_alerts` via Supabase RPC), stock movement history, and multi‑location inventory selection (`inventory_locations`).
+  - Implemented **Stock Intake by Invoice** in `InventoryDashboard`:
+    - System pack and role‑aware selection (ROCK 60 / JUMBO 100, frame/sash/bead).
+    - Auto‑derives default bar length and weight‑per‑meter from system packs (`ROCK60_WINDOW_SYSTEM_TEMPLATE`, `JUMBO100_WINDOW_SYSTEM_SPEC`) when not present on the profile.
+    - “Painted” toggle with pack‑specific color dropdowns (RAL / JUMBO colors) and notes persisted into `stock_movements`.
+    - CSV invoice import (`profile_code, quantity, unit, bar_length_m, invoice_no, supplier`) with mapping to existing profiles (by supplier/internal codes, profile numbers, or names).
+
+- **Conflict‑Aware Profile Saving (aligns with Phase 5.2 Data Synchronization – “Conflict resolution UI”)**
+  - Added profile draft edits to workspace state (`profileEdits` in `FabricatorWorkspaceContext`) and wired them into `InventoryPage` (`src/pages/Inventory.tsx`):
+    - `inventoryWithEdits` merges workspace edits over live Supabase data.
+    - “X unsaved profile change(s)” banner shows pending edits and offers **Save All** / **Discard** controls.
+  - Implemented **conditional, conflict‑aware saving** for profile edits:
+    - `handleSaveAllEdits` checks Supabase `updated_at` before writing; if no rows are updated, the profile is flagged as a conflict.
+    - Conflicted profiles are listed in a dedicated warning card so operators know which items were not saved and can review/decide whether to retry or adjust.
+  - This is the first concrete step toward the full conflict‑resolution UX described in Phase 5.2; next evolution will extend the same pattern to accessories, stock movements, and commercial drafts.
+
+- **Commercial Workspace Drafts (aligns with Phase 1.2 Pricing/Quoting + “Quoting & commercial layer”)**
+  - Introduced `DraftQuote` and `DraftInvoice` types in `src/types/fabricator.ts` and wired them into the workspace context.
+  - Implemented `CommercialPage` (`src/pages/CommercialPage.tsx`):
+    - Shows all workspace-level draft quotes and invoices with counts and quick actions.
+    - Supports **quote → invoice conversion** (copying core commercial fields, generating an invoice number, and moving the item into `draftInvoices`).
+    - Provides a dedicated commercial cockpit under `/fabricator/commercial` that shares context with the rest of the fabricator workflow.
+
+- **Cross‑Empire Workflow UX (aligns with “Addictive daily UX” & regional positioning)**
+  - Upgraded `BosphorusWorkflowRibbon` (`src/components/fabricator/BosphorusWorkflowRibbon.tsx`) to a **Cross‑Empire Innovation** ribbon:
+    - Visual towers and bridge deck themed around Ottoman craft, Egyptian precision, and YILMAZ technology.
+    - Empire‑aware step metadata (`empire`, `innovation`) and dynamic efficiency/waste/innovation metrics.
+  - This becomes the visual “brand spine” for the Fabricator Workflow Pro experience and supports the homepage slogan:  
+    **“Where Ancient Craft Meets YILMAZ Precision. Built on Empires. Tuned for Industry.”**
+
+- **Branded System Packs & Smart Draw Presets (aligns with Phase 1.1 / 3.1 / Roadmap A – Core Parity)**
+  - Introduced strongly-typed `SystemPack` and `SystemPackSmartDrawPreset` in `src/data/systemPacks.ts` and wired them into:
+    - `SmartMeasuringInterface` (system-pack aware profile role selection).
+    - `SmartDrawTool` (pack-specific min/max panel widths and typical panel presets).
+  - Implemented concrete, region-aware packs:
+    - `ROCK60_SYSTEM_PACK` and `JUMBO100_SYSTEM_PACK` with constraints and Smart Draw presets.
+    - `YILMAZ_W60_PACK` (Turkish) and `CALUMINIUM_PS_PACK` (Egyptian) as first TR/EG system stubs with constraints and Smart Draw hints.
+  - Updated `NewProjectWizard` and `SmartMeasuringInterface` to select system packs by region (Turkey → YILMAZ W60, Egypt → CALUMINIUM PS / ROCK 60).
+
+- **Inventory Branded Tree (aligns with Phase 1.3 Visual Stock Management & Regional Edge)**
+  - Extended `InventoryDashboard` to derive `inventoryBrandTrees` from `SYSTEM_PACKS`, `profile.systemBrand`, and `profile.specifications.window_system`.
+  - Added system-pack aware filters and quick buttons for ROCK 60, JUMBO100, YILMAZ W60, CALUMINIUM PS, applied consistently to:
+    - Main inventory listing.
+    - Remnant lists and analytics.
+  - This effectively delivers the “branded tree” UX for inventory, letting operators browse stock and remnants by familiar system packs.
+
+- **Mass Production Mode Foundation (aligns with Phase 4.4 Mass Production Mode)**
+  - Implemented `MassProductionOptimizer` (`src/algorithms/massProductionOptimizer.ts`) with:
+    - Cross-project aggregation, GA-based optimisation, and remnant-aware cutting via `RemnantManager`.
+    - `UnifiedCuttingPlan` output capturing baseline vs mass-mode waste, remnant usage, and timing/options metadata.
+  - Added an operator-facing `MassProductionDashboard` and wrapped it in `FabricatorWorkflowPro` (`/fabricator-workflow/pro` route) to:
+    - Select optimised jobs from the shared jobs store.
+    - Run cross-project optimisation and visualise waste improvements.
+  - Extended `WindowUnit` with `massProductionMeta` (in `src/types/fabricator.ts`) for tracking which units were included in mass-production runs and which cross-project remnants were used.
+
+- **Pricing Engine Metal Indexing & Preview (aligns with Phase 1.2 Pricing/Quoting & Phase 2 Reporting)**
+  - Extended the existing `PricingEngine` (`src/lib/pricing/PricingEngine.ts`) to support a `MetalPriceIndex`:
+    - Allows aluminium base costs to be adjusted by LME or local metal indices before applying markups/discounts.
+    - Added `applyMetalIndex` helper, stub indices for Turkey (`LME_TURKEY`) and Egypt (`LOCAL_EGYPT`), and a `checkMetalPriceAlert` helper for surfacing metal-price deviation alerts.
+  - Introduced a `PricingPreview` component (`src/components/fabricator/PricingPreview.tsx`) and wired it into the right-hand context panel of `FabricatorWorkflow`:
+    - Uses `PricingEngine` with region-aware defaults to compute a live, metal-indexed material estimate for the active project and show metal price alerts (info/medium/high) when volatility crosses configured thresholds.
+  - This delivers the technical core for dynamic, metal-indexed pricing and on-screen profitability awareness, while deferring the full admin-facing Pricing Configuration UI to a later iteration.
+
+---
+
 ## 🎯 Phase 1: User-Centric Customization & Data Management
 
 ### 1.1 Dynamic Profile & Accessory Management
@@ -912,3 +992,196 @@ To keep older phases and the new competitive plan aligned and to surface missing
 
 This combined plan is now the single source of truth for both the original phased roadmap and the updated competitive strategy for Egypt/Turkey/MENA/Gulf aluminium fabricators.
 
+---
+
+## 🏆 Almona Fabricator Platform: Ultimate Competitive Domination Plan
+
+This addendum refines the competitive positioning of the existing phases into a **6‑month, execution‑ready roadmap** focused on beating both **European benchmarks** (Orgadata/Logikal, Klaes, ERCOM 2000) and **regional players** (Technosoft/Herofis, ECOTAL, Fenestra+).
+
+### 🎯 Competitive Intelligence Summary
+
+- **High‑End European Systems (Benchmarks)**
+  - Orgadata/Logikal: 18,000+ users, 400+ supplier integrations, strong ERP connectivity.
+  - Klaes: Mature constraint engines, extensive European system libraries.
+  - ERCOM 2000: Legacy desktop systems with 20+ years of profile data.
+  - **Weakness:** Slow to adapt to regional needs, expensive for local fabricators, desktop UX.
+
+- **Regional Players (Targets)**
+  - Technosoft / Herofis: Local market knowledge but weak optimization.
+  - ECOTAL: Regional presence but limited cloud capabilities.
+  - Fenestra+: PVC focus, different product category.
+
+- **Your Unbeatable Advantages (From This Repo)**
+  - Multi‑algorithm optimization: GA + LP + simulated annealing (`src/algorithms/*`).
+  - Cloud‑native architecture: Supabase + FastAPI + React.
+  - Regional system intelligence: Turkish/Egyptian profiles and localization.
+  - Machine‑ready exports: DXF/CSV/PDF with QR/Barcode (`src/lib/exports/*`).
+  - Real‑time 3D visualization: WebGL/Three.js‑based fabricator views.
+
+---
+
+### 🚀 6‑Month Domination Roadmap (Overlay on Phases 3–5)
+
+#### Quarter 1 (Months 1–3): Optimization Supremacy
+
+- **Priority 1 – Mass Production Optimizer (Phase 4.4 fast‑track)**
+  - **Location:** `src/algorithms/massProductionOptimizer.ts` (already defined in Phase 4.4 as new).
+  - **Goal:** Cross‑project optimization over multiple `WindowUnit[]` / project IDs using **remnant‑first** strategy.
+  - **Requirements:**
+    - Aggregate multiple projects for batch optimization.
+    - Integrate with `GeneticOptimizer` and `RemnantManager` (`src/lib/inventory/RemnantManager.ts`).
+    - Core method: `optimizeAcrossProjects(projectIds: string[], options: OptimizationOptions)`.
+    - Output: unified cutting plan with cross‑project remnant usage tracking.
+  - **KPI:** 12–15 % waste reduction vs single‑job optimization.
+
+- **Priority 2 – Smart Draw Tool for Facades (Phase 3.2 delivery)**
+  - **Location:**
+    - `src/components/fabricator/SmartDrawTool.tsx` (new, already planned in Phase 3.2.1).
+    - `src/algorithms/smartDraw.ts` (new, Phase 3.2.2).
+  - **Features:**
+    - Place first/last mullion/transom and auto‑calculate intermediates with equal spacing.
+    - Grid snapping with profile‑system constraints.
+    - Real‑time validation via `validateProject` / future `validateProjectWithConstraints`.
+    - Canvas/WebGL‑based visual feedback, undo/redo, alignment guides.
+  - **KPI:** 60 % faster façade design vs manual placement (Klaes/ERCOM baseline).
+
+- **Priority 3 – Enhanced Turkish System Packs (Phase 3.1 + 6.3)**
+  - **Location:** `src/data/profileSystems/turkish/` (new directory from Phase 3.1.1).
+  - **Immediate targets:**
+    - YILMAZ Window 60 series: complete cutting rules, hardware kits, structural limits.
+    - KALE aluminium systems: commercial/window/facade systems with TRY pricing presets.
+    - ASAS commercial series: curtain wall focus.
+  - **Deliverable:** Each pack includes profiles, gaskets, cutting rules, hardware, constraints, and presets.
+
+#### Quarter 2 (Months 4–6): Regional Market Domination
+
+- **Priority 4 – Egyptian System Intelligence (Phase 3.1 + 6.3 for Egypt)**
+  - **Location:** `src/data/profileSystems/egyptian/` (complements `src/data/marketProfiles/`).
+  - **Target systems:**
+    - CALUMINIUM PS profiles (sliding) – complete pack.
+    - CALUMINIUM NC profiles (sliding + hinged).
+  - **Extras:**
+    - Egyptian wind‑load presets and span rules (see structural codes below).
+    - Local supplier pricing (CALUMINIUM, Alumetalo) in EGP with FX helpers.
+
+- **Priority 5 – Production Scheduling MVP (Phase 5.2 extension)**
+  - **Location:**
+    - `src/components/fabricator/ProductionScheduler.tsx` (new).
+    - `src/lib/production/SchedulingEngine.ts` (new).
+  - **Features:**
+    - Machine queue optimization from cutting plans.
+    - Installation team calendar and project hand‑off states.
+    - Workshop KPI dashboard: idle time, queue length, due jobs.
+  - **Goal:** Move workshops from Excel into optimized, visual scheduling.
+
+- **Priority 6 – Enhanced Quoting with Metal Indexing (Phase 1.2 + Phase 2)**
+  - **Location:**
+    - `src/lib/pricing/PricingEngine.ts` (new in Phase 1.2.2).
+    - `src/components/fabricator/PricingConfiguration.tsx` (Phase 1.2.1).
+  - **New features:**
+    - LME aluminium price integration and caching.
+    - TRY/EGP volatility hedging helpers and customer‑specific tiers.
+    - Ability to lock offers to a metal price index/date (already mentioned in Phase 1.2).
+
+---
+
+### 🛠 Execution‑Level Implementation Commands
+
+These commands **map directly** onto existing phases and should be treated as concrete Cursor/IDE tasks.
+
+#### Phase 1 (Week 1–2): Immediate Execution
+
+- **Mass Production Optimizer Foundation**
+  - **Create/implement:** `src/algorithms/massProductionOptimizer.ts`
+  - **Spec:**
+    - Class: `MassProductionOptimizer` (can extend existing `BaseOptimizer` / GA utilities).
+    - Core method: `async optimizeAcrossProjects(projectIds: string[], options: OptimizationOptions)`.
+    - Integration: call `RemnantManager.optimizeWithRemnants()` where applicable.
+    - Output: `UnifiedCuttingPlan` with waste % vs single‑project baseline.
+
+- **Smart Draw Core Algorithm**
+  - **Create:** `src/algorithms/smartDraw.ts`
+  - **Export functions:**
+    - `calculateEqualSpacing(startPos: number, endPos: number, elementCount: number): number[]`
+    - `validateGridConstraints(positions: number[], systemConstraints: ProfileSystem): ValidationResult`
+    - `generateMullionTransomLayout(boundary: Rectangle, system: ProfileSystem): MullionTransomLayout`
+
+- **Smart Draw UI**
+  - **Create:** `src/components/fabricator/SmartDrawTool.tsx`
+  - **Features:** canvas‑based UI, drag first/last elements, equal spacing preview, integration with `smartDraw.ts` and `validateProject`, export into existing `WindowUnit` / project model.
+
+#### Phase 2 (Week 3–4): Turkish System Expansion
+
+- **Expand YILMAZ System Pack**
+  - **Update:** `src/data/profileSystems/turkish/yilmaz.ts`
+  - **Add:**
+    - YILMAZ W60 Window system.
+    - YILMAZ CW100 curtain wall.
+    - YILMAZ D80 door system.
+  - Each with cutting rules, hardware kits, structural limits, and pricing presets.
+
+- **Add KALE Aluminium Systems**
+  - **Create:** `src/data/profileSystems/turkish/kale.ts`
+  - Include commercial window/facade systems with TRY‑based pricing and supplier metadata.
+
+#### Phase 3 (Week 5–6): Egyptian Market Focus
+
+- **Implement CALUMINIUM Systems**
+  - **Create:** `src/data/profileSystems/egyptian/caluminium.ts` (or subfolder).
+  - Implement:
+    - CALUMINIUM PS profiles (complete implementation).
+    - CALUMINIUM NC sliding systems.
+  - Include Egyptian wind‑load calculations and EGP pricing with local suppliers.
+
+---
+
+### 💡 Competitive Differentiators to Accelerate
+
+1. **Intelligent Remnant Banking**
+   - **Enhance:** `src/lib/inventory/RemnantManager.ts`
+   - **Add methods:**
+     - `findCrossProjectRemnantMatches(projectIds: string[]): RemnantMatch[]`
+     - `automaticRemnantAllocation(plan: CuttingPlan): CuttingPlanWithRemnants`
+     - `remnantUtilizationAnalytics(): RemnantStats`
+
+2. **Machine‑Aware Export Profiles**
+   - **Enhance:** `src/lib/exports/DXFExportGenerator.ts`
+   - **Add machine profiles for:**
+     - Elumatec SQ series saws.
+     - FOM / Emmegi machining centers.
+     - Local Turkish/Egyptian CNC brands where specs are available.
+   - Each profile defines layers, units, reference points, naming, and QR/Barcode linkage.
+
+3. **Regional Structural Intelligence**
+   - **Create:** `src/data/regional/structuralCodes.ts`
+   - Include:
+     - Turkish TSE wind‑load/span presets.
+     - Egyptian building code façade/opening requirements.
+     - Gulf region façade specs for future expansion.
+   - Integrate into `validateProject` / future rules engine (Phase 4.3).
+
+---
+
+### 📊 Success Metrics & Validation Targets
+
+- **Quarter 1 (Months 1–3)**
+  - Mass Production Mode: 12–15 % waste reduction vs single‑project optimization.
+  - Smart Draw Tool: 60 % faster façade design completion.
+  - Turkish Systems: At least 3 major brand implementations (YILMAZ, KALE, ASAS) live.
+  - Adoption: 25 % of existing fabricator users using new optimization features.
+
+- **Quarter 2 (Months 4–6)**
+  - Egyptian Systems: Complete PS/NC implementation for CALUMINIUM.
+  - Production Scheduling: 30 % reduction in machine idle time for pilot workshops.
+  - Metal Indexing: Demonstrated price stability during TRY/EGP volatility.
+  - Market Share: 15 % new customer acquisition in target regions.
+
+---
+
+### 🔥 Immediate 90‑Day Execution Priorities
+
+- **Weeks 1–2:** Implement `MassProductionOptimizer` + `SmartDrawTool` (algorithms + UI + integration).
+- **Weeks 3–4:** Expand Turkish system packs (YILMAZ + KALE + ASAS) with full rules and presets.
+- **Weeks 5–6:** Implement CALUMINIUM Egyptian systems and structural presets.
+- **Weeks 7–8:** Ship Production Scheduling MVP.
+- **Weeks 9–12:** Enhance quoting/pricing with metal price integration and volatility tooling.

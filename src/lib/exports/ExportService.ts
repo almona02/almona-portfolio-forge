@@ -206,7 +206,7 @@ export class ExportService {
     const errors: string[] = [];
     let successCount = checkpoint?.completedItems || 0;
     let failedCount = checkpoint?.failedItems || 0;
-    let processedCount = results.length;
+    const processedCount = results.length;
     const totalCount = projects.length;
 
     // Calculate starting index for resume
