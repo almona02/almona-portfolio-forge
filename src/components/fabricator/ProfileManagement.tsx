@@ -93,14 +93,17 @@ const REGIONAL_BRANDS = {
 interface ProfileManagementProps {
   onProfilesUpdate?: (profiles: Profile[]) => void;
   userId?: string;
+  /** Optional initial list of profiles from a higher-level page shell. */
+  initialProfiles?: Profile[];
 }
 
 export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   onProfilesUpdate,
   userId,
+  initialProfiles,
 }) => {
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [filteredProfiles, setFilteredProfiles] = useState<Profile[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>(initialProfiles || []);
+  const [filteredProfiles, setFilteredProfiles] = useState<Profile[]>(initialProfiles || []);
   const [activeImportTab, setActiveImportTab] = useState('manual');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

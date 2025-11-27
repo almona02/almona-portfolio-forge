@@ -1,4 +1,6 @@
 import type { Profile } from '@/types/fabricator';
+import { ANADOLU_W60_PACK } from '@/data/profileSystems/turkish/anadolu/w60';
+import { CALUMINIUM_PS_PACK } from '@/data/profileSystems/egyptian/caluminium/ps';
 
 /**
  * System pack metadata – describes a branded window/door system
@@ -25,10 +27,46 @@ export interface SystemPackMeta {
  * on full typing; existing components (e.g. Rock60CuttingSummary)
  * already expect this shape.
  */
+export interface SystemPackSmartDrawPreset {
+  /** Recommended default mullion-to-mullion spacing in mm for typical elevations */
+  defaultMullionSpacingMm: number;
+  /** Max span in mm that can be left without an intermediate mullion */
+  maxSpanWithoutIntermediateMm: number;
+  /** Recommended min panel width in mm for Smart Draw */
+  minPanelWidthMm: number;
+  /** Recommended max panel width in mm for Smart Draw */
+  maxPanelWidthMm: number;
+  /** Common panel widths in mm used in catalog examples */
+  typicalPanelWidthsMm: number[];
+  /** Recommended mullion counts for typical openings (e.g. villas vs façades) */
+  recommendedMullionCounts: number[];
+  /** Spacing strategy hint for the UI */
+  spacingStrategy: 'equal' | 'golden-ratio' | 'center-heavy';
+}
+
+export interface GlassAllowanceSpec {
+  /** Clearance between frame pocket and glass edge per side (mm). */
+  edgeClearanceMm: number;
+  /** Minimum glass bite into the pocket per side (mm). */
+  minBiteMm: number;
+  /** Whether panes may be rotated by 90° during optimisation. */
+  allowRotation90: boolean;
+  /** Optional global max pane width in mm. */
+  maxWidthMm?: number;
+  /** Optional global max pane height in mm. */
+  maxHeightMm?: number;
+  /** Optional global max pane area in m². */
+  maxAreaM2?: number;
+}
+
 export interface SystemPack {
   meta: SystemPackMeta;
   /** Raw specification object that will be embedded into profile.specifications */
   windowSystemSpec: Record<string, any>;
+  /** Optional Smart Draw presets used by facade tools */
+  smartDrawPreset?: SystemPackSmartDrawPreset;
+  /** Optional glass sizing rules used for glazing and 2D glass optimisation. */
+  glassAllowances?: GlassAllowanceSpec;
 }
 
 // ----------------------------------------------------------------------------
@@ -348,6 +386,23 @@ export const ROCK60_SYSTEM_PACK: SystemPack = {
     defaultStockLengthMm: 6000,
   },
   windowSystemSpec: ROCK60_WINDOW_SYSTEM_TEMPLATE,
+  smartDrawPreset: {
+    defaultMullionSpacingMm: 800,
+    maxSpanWithoutIntermediateMm: 1600,
+    minPanelWidthMm: 600,
+    maxPanelWidthMm: 1200,
+    typicalPanelWidthsMm: [600, 800, 1000, 1200],
+    recommendedMullionCounts: [2, 3, 4],
+    spacingStrategy: 'equal',
+  },
+  glassAllowances: {
+    edgeClearanceMm: 3, // 3mm per side inside pocket
+    minBiteMm: 12,
+    allowRotation90: false,
+    maxWidthMm: 1500,
+    maxHeightMm: 2400,
+    maxAreaM2: 4.5,
+  },
 };
 
 // ----------------------------------------------------------------------------
@@ -894,8 +949,36 @@ export const JUMBO100_SYSTEM_PACK: SystemPack = {
     defaultStockLengthMm: 6000,
   },
   windowSystemSpec: JUMBO100_WINDOW_SYSTEM_SPEC,
+  smartDrawPreset: {
+    defaultMullionSpacingMm: 1200,
+    maxSpanWithoutIntermediateMm: 2400,
+    minPanelWidthMm: 900,
+    maxPanelWidthMm: 1800,
+    typicalPanelWidthsMm: [1000, 1200, 1500, 1800],
+    recommendedMullionCounts: [2, 3, 4],
+    spacingStrategy: 'center-heavy',
+  },
+  glassAllowances: {
+    edgeClearanceMm: 4,
+    minBiteMm: 15,
+    allowRotation90: true,
+    maxWidthMm: 2200,
+    maxHeightMm: 2800,
+    maxAreaM2: 6.5,
+  },
 };
 
-export const SYSTEM_PACKS: SystemPack[] = [ROCK60_SYSTEM_PACK, JUMBO100_SYSTEM_PACK];
+export const SYSTEM_PACKS: SystemPack[] = [
+  ROCK60_SYSTEM_PACK,
+  JUMBO100_SYSTEM_PACK,
+  ANADOLU_W60_PACK,
+  CALUMINIUM_PS_PACK,
+  // Coming Soon – Turkish & Egyptian branded packs
+  // KALE_KAS_70_PACK,
+  // ASAS_CW_120_PACK,
+  // Winsa_PACK,
+  // ALUMIL_EGYPT_NC_PACK,
+  // ALSALAM_PS_PACK,
+];
 
 

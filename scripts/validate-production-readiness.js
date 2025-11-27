@@ -25,6 +25,34 @@ const validations = {
   business: []
 };
 
+// Environment validation
+function validateEnvironment() {
+  console.log('🌍 Environment Validation:');
+
+  const requiredEnvVars = [
+    'SUPABASE_URL',
+    'SUPABASE_ANON_KEY',
+    'SUPABASE_SERVICE_KEY',
+    'ALLOWED_ORIGINS',
+    'DATABASE_URL'
+  ];
+
+  const missing = requiredEnvVars.filter((env) => !process.env[env]);
+
+  if (missing.length > 0) {
+    missing.forEach((env) => {
+      console.log(`  ❌ ${env} - MISSING`);
+    });
+    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+  }
+
+  requiredEnvVars.forEach((env) => {
+    console.log(`  ✅ ${env}`);
+  });
+
+  console.log('');
+}
+
 // Infrastructure validation
 function validateInfrastructure() {
   console.log('🏗️  Infrastructure Validation:');
@@ -302,6 +330,7 @@ function runPerformanceBenchmark() {
 // Main execution
 async function main() {
   try {
+    validateEnvironment();
     validateInfrastructure();
     validateFeatures();
     validateCompliance();

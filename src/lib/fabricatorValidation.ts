@@ -1,4 +1,5 @@
 import { MeasurementData, WindowComponent, Profile, WindowUnit } from '@/types/fabricator';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 
 export interface ValidationError {
   field: string;
@@ -179,6 +180,7 @@ export function validateProject(project: WindowUnit | null, requireComponents: b
  * a `constraints` object on `profile.specifications`.
  */
 export function deriveSystemConstraintsFromProfiles(profiles: Profile[]): SystemConstraints | null {
+  // 1) Prefer explicit constraints from profile.specifications (existing behaviour)
   for (const profile of profiles) {
     const specs = profile.specifications as any;
     if (specs && typeof specs.constraints === 'object') {
@@ -192,6 +194,22 @@ export function deriveSystemConstraintsFromProfiles(profiles: Profile[]): System
       };
     }
   }
+
+  // 2) Fall back to constraints bundled in known system packs (ROCK 60, JUMBO 100, etc.)
+  for (const pack of SYSTEM_PACKS) {
+    const spec: any = pack.windowSystemSpec;
+    if (spec && typeof spec.constraints === 'object') {
+      const c = spec.constraints;
+      return {
+        minWidthMm: typeof c.minWidthMm === 'number' ? c.minWidthMm : undefined,
+        maxWidthMm: typeof c.maxWidthMm === 'number' ? c.maxWidthMm : undefined,
+        minHeightMm: typeof c.minHeightMm === 'number' ? c.minHeightMm : undefined,
+        maxHeightMm: typeof c.maxHeightMm === 'number' ? c.maxHeightMm : undefined,
+        maxAreaM2: typeof c.maxAreaM2 === 'number' ? c.maxAreaM2 : undefined,
+      };
+    }
+  }
+
   return null;
 }
 

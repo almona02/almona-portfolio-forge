@@ -60,6 +60,11 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
   const [compatibilityMode, setCompatibilityMode] = useState(false);
   const [selectedProfileForCompatibility, setSelectedProfileForCompatibility] = useState<string | null>(null);
   const [subscription, setSubscription] = useState<any>(null);
+  const [editingBaselineUpdatedAt, setEditingBaselineUpdatedAt] = useState<string | null>(null);
+  const [conflictInfo, setConflictInfo] = useState<{
+    name: string;
+    serverUpdatedAt?: string | null;
+  } | null>(null);
 
   // Default ROCK 60 accessories template to seed for all users
   const ROCK60_ACCESSORIES_TEMPLATE = [
@@ -363,7 +368,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
       const finalPrice = calculatePrice(formData.baseCost || 0, formData.markupPercentage || 30);
 
-      const { error: updateError } = await supabase
+      let query = supabase
         .from('fabricator_accessories')
         .update({
           name: formData.name,
@@ -384,13 +389,35 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
         .eq('id', editingId)
         .eq('user_id', userId);
 
+      if (editingBaselineUpdatedAt) {
+        query = query.eq('updated_at', editingBaselineUpdatedAt);
+      }
+
+      const { data, error: updateError } = await query.select('id, updated_at');
+
       if (updateError) throw updateError;
 
-      await loadAccessories();
-      resetForm();
-      setSuccess(true);
-      toast.success('Accessory updated successfully');
-      setTimeout(() => setSuccess(false), 3000);
+      if (!data || data.length === 0) {
+        // Conflict: row was changed by someone else
+        const { data: serverRow } = await supabase
+          .from('fabricator_accessories')
+          .select('name, updated_at')
+          .eq('id', editingId)
+          .single();
+
+        setConflictInfo({
+          name: (serverRow as any)?.name || (formData.name as string) || 'Accessory',
+          serverUpdatedAt: (serverRow as any)?.updated_at || null,
+        });
+        toast.error('Accessory was modified by another user. Your changes were not saved.');
+      } else {
+        await loadAccessories();
+        resetForm();
+        setConflictInfo(null);
+        setSuccess(true);
+        toast.success('Accessory updated successfully');
+        setTimeout(() => setSuccess(false), 3000);
+      }
     } catch (err) {
       console.error('Error updating accessory:', err);
       setError(err instanceof Error ? err.message : 'Failed to update accessory');
@@ -430,6 +457,8 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
   const handleEditAccessory = (accessory: FabricatorAccessory) => {
     setEditingId(accessory.id);
+    setEditingBaselineUpdatedAt(accessory.updatedAt ? accessory.updatedAt.toISOString() : null);
+    setConflictInfo(null);
     setFormData({
       name: accessory.name,
       type: accessory.type,
@@ -449,6 +478,8 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
   const resetForm = () => {
     setEditingId(null);
+    setEditingBaselineUpdatedAt(null);
+    setConflictInfo(null);
     setFormData({
       name: '',
       type: 'other',
@@ -641,6 +672,24 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
         <Alert className="bg-green-900/20 border-green-500">
           <CheckCircle className="h-4 w-4" />
           <AlertDescription>Operation completed successfully!</AlertDescription>
+        </Alert>
+      )}
+
+      {conflictInfo && (
+        <Alert className="bg-yellow-900/20 border-yellow-500">
+          <AlertCircle className="h-4 w-4 text-yellow-300" />
+          <AlertTitle>Accessory Update Conflict</AlertTitle>
+          <AlertDescription>
+            <span className="font-semibold">{conflictInfo.name}</span> was modified by another user
+            or process while you were editing. Please reload accessories and review the latest
+            values before applying further changes.
+            {conflictInfo.serverUpdatedAt && (
+              <span className="block text-xs text-yellow-200 mt-1">
+                Server last updated at:{' '}
+                {new Date(conflictInfo.serverUpdatedAt).toLocaleString()}
+              </span>
+            )}
+          </AlertDescription>
         </Alert>
       )}
 

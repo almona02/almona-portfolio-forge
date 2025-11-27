@@ -56,11 +56,107 @@ import { WindowUnit, Profile } from '@/types/fabricator';
 import { remnantManager, type Remnant, type RemnantStatistics, type RemnantConsolidationSuggestion } from '@/lib/inventory/RemnantManager';
 import { supabase } from '@/lib/supabase';
 import { Rock60PricingSetup } from '@/components/fabricator/Rock60PricingSetup';
+import { ROCK60_WINDOW_SYSTEM_TEMPLATE, JUMBO100_WINDOW_SYSTEM_SPEC, SYSTEM_PACKS } from '@/data/systemPacks';
+
+// System-pack specific paint color options (can be expanded per catalog)
+const PACK_COLOR_OPTIONS: Record<
+  string,
+  { value: string; label: string; swatch: string }[]
+> = {
+  rock60: [
+    { value: 'RAL 9016', label: 'RAL 9016 – White', swatch: '#FFFFFF' },
+    { value: 'RAL 9005', label: 'RAL 9005 – Black', swatch: '#000000' },
+    { value: 'RAL 7016', label: 'RAL 7016 – Anthracite Grey', swatch: '#383E42' },
+    { value: 'RAL 9006', label: 'RAL 9006 – Silver', swatch: '#A5A5A5' },
+  ],
+  jumbo100: [
+    { value: 'JUMBO-WHITE', label: 'JUMBO – White', swatch: '#FFFFFF' },
+    { value: 'JUMBO-BLACK', label: 'JUMBO – Black', swatch: '#000000' },
+    { value: 'JUMBO-BRONZE', label: 'JUMBO – Bronze', swatch: '#8B4513' },
+    { value: 'JUMBO-SILVER', label: 'JUMBO – Silver', swatch: '#A5A5A5' },
+  ],
+  default: [
+    { value: 'RAL 9016', label: 'RAL 9016 – White', swatch: '#FFFFFF' },
+    { value: 'RAL 9005', label: 'RAL 9005 – Black', swatch: '#000000' },
+    { value: 'RAL 7016', label: 'RAL 7016 – Anthracite Grey', swatch: '#383E42' },
+    { value: 'RAL 8017', label: 'RAL 8017 – Chocolate Brown', swatch: '#4B3621' },
+    { value: 'RAL 9006', label: 'RAL 9006 – Silver', swatch: '#A5A5A5' },
+  ],
+};
+
+// Try to derive weight per meter directly from known system packs
+const getPackWeightPerMeter = (profile: Profile | null, role: string): number | undefined => {
+  if (!profile) return undefined;
+  const specs: any = profile.specifications || {};
+  const systemLabel: string =
+    (specs.window_system as string | undefined) ||
+    (profile.systemBrand as string | undefined) ||
+    '';
+
+  if (!systemLabel) return undefined;
+
+  const system = systemLabel.toLowerCase();
+  const roleLower = (role || specs.profileRole || '').toString().toLowerCase();
+
+  // ROCK 60 – use canonical 45° config weights
+  if (system.includes('rock 60') || system.includes('rock60')) {
+    const cfg: any = ROCK60_WINDOW_SYSTEM_TEMPLATE.rock60_45_degree_config;
+    if (!cfg) return undefined;
+
+    if (roleLower.includes('frame') && cfg.frame_profiles?.main_frame?.weight_kg_m) {
+      return cfg.frame_profiles.main_frame.weight_kg_m;
+    }
+    if (roleLower.includes('sash') && cfg.sash_profiles?.main_sash?.weight_kg_m) {
+      return cfg.sash_profiles.main_sash.weight_kg_m;
+    }
+    if (
+      (roleLower.includes('bead') || roleLower.includes('glazing')) &&
+      cfg.glazing_beads?.bead_profile?.weight_kg_m
+    ) {
+      return cfg.glazing_beads.bead_profile.weight_kg_m;
+    }
+  }
+
+  // JUMBO 100 – look up by profile code in aluminum/small profiles
+  if (system.includes('jumbo100') || system.includes('jumbo 100') || system.includes('jumbo')) {
+    const jumbo: any = JUMBO100_WINDOW_SYSTEM_SPEC;
+    const allProfiles: any[] = [
+      ...(jumbo.aluminum_profiles || []),
+      ...(jumbo.small_profiles || []),
+    ];
+
+    const codeCandidates = [
+      specs.supplierCode,
+      specs.internalCode,
+      profile.name,
+    ]
+      .filter(Boolean)
+      .map((v: any) => v.toString().toLowerCase());
+
+    const match = allProfiles.find((p) => {
+      const pn = p.profile_number?.toString().toLowerCase();
+      const old = p.old_profile_number?.toString().toLowerCase();
+      return codeCandidates.includes(pn) || (old && codeCandidates.includes(old));
+    });
+
+    if (match && typeof match.weight_kg_per_ml === 'number') {
+      return match.weight_kg_per_ml as number; // catalog is already kg per meter
+    }
+  }
+
+  return undefined;
+};
 
 interface InventoryDashboardProps {
   inventory: Profile[];
   project?: WindowUnit | null;
   userId?: string;
+  /**
+   * Optional view mode hint from higher-level pages (e.g. grid vs table).
+   * Current dashboard ignores this for layout but it is kept for future
+   * enterprise cockpit shells such as InventoryPage.
+   */
+  viewMode?: 'grid' | 'table';
 }
 
 interface StockAlert {
@@ -116,61 +212,37 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMaterial, setFilterMaterial] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterSystemPackId, setFilterSystemPackId] = useState<string>('all');
   const [invoiceProfileId, setInvoiceProfileId] = useState<string>('');
   const [invoiceQuantity, setInvoiceQuantity] = useState<number>(0);
   const [invoiceNumber, setInvoiceNumber] = useState<string>('');
   const [invoiceSupplier, setInvoiceSupplier] = useState<string>('');
   const [isSavingInvoice, setIsSavingInvoice] = useState(false);
-
-  // Load data on mount
-  useEffect(() => {
-    if (userId) {
-      loadDashboardData();
-    }
-  }, [userId, selectedLocation]);
-
-  const loadDashboardData = useCallback(async () => {
-    if (!userId || isLoading) return;
-
-    setIsLoading(true);
-    try {
-      // Core remnant data (depends on selectedLocation)
-      const [availableRemnants, stats, suggestions] = await Promise.all([
-        remnantManager.getAvailableRemnants(userId, {
-          locationId: selectedLocation !== 'all' ? selectedLocation : undefined,
-        }),
-        remnantManager.getRemnantStatistics(userId),
-        remnantManager.getConsolidationSuggestions(userId),
-      ]);
-
-      setRemnants(availableRemnants);
-      setRemnantStats(stats);
-      setConsolidationSuggestions(suggestions);
-
-      // Run stock‑related queries in parallel; they only depend on userId
-      await Promise.all([loadStockAlerts(), loadStockMovements(), loadLocations()]);
-    } catch (error) {
-      console.error('Error loading dashboard data:', error);
-      toast.error('Failed to load inventory data');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userId, selectedLocation, isLoading, loadStockAlerts, loadStockMovements, loadLocations]);
+  const [invoiceUnit, setInvoiceUnit] = useState<'bar' | 'meter'>('bar');
+  const [invoiceBarLengthM, setInvoiceBarLengthM] = useState<number | ''>('');
+  const [invoiceIsPainted, setInvoiceIsPainted] = useState<boolean>(false);
+  const [invoicePaintColor, setInvoicePaintColor] = useState<string>('');
+  const [invoiceSystemPackFilter, setInvoiceSystemPackFilter] = useState<string>('all');
+  const [invoiceRoleFilter, setInvoiceRoleFilter] = useState<string>('all');
 
   const loadStockAlerts = useCallback(async () => {
     if (!userId) return;
 
     try {
+      // Use untyped Supabase client here to avoid friction with generated types
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+
       // Check stock levels (this will create/update alerts)
-      await supabase.rpc('check_stock_levels', { p_user_id: userId });
+      await db.rpc('check_stock_levels', { p_user_id: userId });
 
       // Fetch alerts
-      const { data, error } = await supabase
+      const { data, error } = await (db
         .from('stock_alerts')
         .select(`
           *,
           fabricator_profiles (id, name)
-        `)
+        `) as any)
         .eq('user_id', userId)
         .eq('is_resolved', false)
         .order('severity', { ascending: false })
@@ -201,12 +273,15 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     if (!userId) return;
 
     try {
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+
+      const { data, error } = await (db
         .from('stock_movements')
         .select(`
           *,
           fabricator_profiles (id, name)
-        `)
+        `) as any)
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(50);
@@ -236,9 +311,12 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     if (!userId) return;
 
     try {
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+
+      const { data, error } = await (db
         .from('inventory_locations')
-        .select('*')
+        .select('*') as any)
         .eq('user_id', userId)
         .eq('is_active', true)
         .order('is_default', { ascending: false })
@@ -260,21 +338,224 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     }
   }, [userId]);
 
+  const loadDashboardData = useCallback(async () => {
+    if (!userId || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      // Core remnant data (depends on selectedLocation)
+      const [availableRemnants, stats, suggestions] = await Promise.all([
+        remnantManager.getAvailableRemnants(userId, {
+          locationId: selectedLocation !== 'all' ? selectedLocation : undefined,
+        }),
+        remnantManager.getRemnantStatistics(userId),
+        remnantManager.getConsolidationSuggestions(userId),
+      ]);
+
+      setRemnants(availableRemnants);
+      setRemnantStats(stats);
+      setConsolidationSuggestions(suggestions);
+
+      // Run stock‑related queries in parallel; they only depend on userId
+      await Promise.all([loadStockAlerts(), loadStockMovements(), loadLocations()]);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      toast.error('Failed to load inventory data');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId, selectedLocation, isLoading, loadStockAlerts, loadStockMovements, loadLocations]);
+
+  // Load data on mount / when user or location changes
+  useEffect(() => {
+    if (userId) {
+      loadDashboardData();
+    }
+  }, [userId, selectedLocation, loadDashboardData]);
+
+  const handleInvoiceCsvImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Allow re‑uploading the same file
+    event.target.value = '';
+
+    if (!userId) {
+      toast.error('You must be signed in to import invoices.');
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      try {
+        const text = String(e.target?.result || '');
+        const lines = text
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter(Boolean);
+
+        if (lines.length < 2) {
+          toast.error('CSV appears to be empty.');
+          return;
+        }
+
+        const headers = lines[0]
+          .split(',')
+          .map((h) => h.trim().toLowerCase());
+
+        const idxProfileCode = headers.indexOf('profile_code');
+        const idxQuantity = headers.indexOf('quantity');
+        const idxUnit = headers.indexOf('unit');
+        const idxBarLength = headers.indexOf('bar_length_m');
+        const idxInvoiceNo = headers.indexOf('invoice_no');
+        const idxSupplier = headers.indexOf('supplier');
+
+        if (idxProfileCode === -1 || idxQuantity === -1 || idxUnit === -1) {
+          toast.error(
+            'CSV must include at least: profile_code, quantity, unit (optional: bar_length_m, invoice_no, supplier).',
+          );
+          return;
+        }
+
+        const rows = lines.slice(1);
+        const inserts: any[] = [];
+        let skippedUnknownProfiles = 0;
+
+        for (const row of rows) {
+          const cols = row.split(',').map((c) => c.trim());
+          if (!cols[idxProfileCode] || !cols[idxQuantity]) continue;
+
+          const profileCode = cols[idxProfileCode];
+          const quantity = Number(cols[idxQuantity]) || 0;
+          if (quantity <= 0) continue;
+
+          const unitRaw = (cols[idxUnit] || '').toLowerCase();
+          const unit: 'bar' | 'meter' =
+            unitRaw === 'm' || unitRaw === 'meter' || unitRaw === 'meters' ? 'meter' : 'bar';
+
+          const barLengthM =
+            idxBarLength >= 0 && cols[idxBarLength]
+              ? Number(cols[idxBarLength]) || 0
+              : undefined;
+
+          const invoiceNo = idxInvoiceNo >= 0 ? cols[idxInvoiceNo] : '';
+          const supplier = idxSupplier >= 0 ? cols[idxSupplier] : '';
+
+          const profile = inventory.find((p) => {
+            const spec: any = p.specifications || {};
+            const candidateCodes = [
+              spec.supplierCode,
+              spec.internalCode,
+              p.name,
+              String(p.id),
+            ]
+              .filter(Boolean)
+              .map((v) => String(v).toLowerCase());
+
+            return candidateCodes.includes(profileCode.toLowerCase());
+          });
+
+          if (!profile) {
+            skippedUnknownProfiles += 1;
+            continue;
+          }
+
+          const effectiveUnit = unit === 'meter' ? 'm' : 'bar';
+          const defaultBarLenM =
+            typeof (profile.specifications as any)?.stockLengthMm === 'number'
+              ? ((profile.specifications as any).stockLengthMm as number) / 1000
+              : 6;
+
+          const effectiveBarLenM = unit === 'meter' ? 0 : barLengthM || defaultBarLenM;
+          const totalLengthM =
+            unit === 'meter' ? quantity : quantity * (effectiveBarLenM > 0 ? effectiveBarLenM : 0);
+
+          const movementQuantity = unit === 'meter' ? totalLengthM : quantity;
+
+          const metaParts: string[] = [];
+          if (invoiceNo) metaParts.push(`Invoice ${invoiceNo}`);
+          if (supplier) metaParts.push(supplier);
+          metaParts.push(`[CSV import • code=${profileCode}]`);
+          if (totalLengthM > 0) metaParts.push(`len=${totalLengthM.toFixed(2)}m`);
+
+          const notes = metaParts.join(' – ');
+
+          inserts.push({
+            user_id: userId,
+            profile_id: profile.id,
+            movement_type: 'purchase',
+            quantity: movementQuantity,
+            unit: effectiveUnit,
+            notes,
+          });
+        }
+
+        if (!inserts.length) {
+          toast.error('No valid rows found in CSV.');
+          return;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const db = supabase as any;
+        const { error } = await (db.from('stock_movements') as any).insert(inserts as any);
+        if (error) throw error;
+
+        await Promise.all([loadStockMovements(), loadStockAlerts()]);
+
+        toast.success(
+          `Imported ${inserts.length} invoice row(s)${
+            skippedUnknownProfiles ? ` (skipped ${skippedUnknownProfiles} unknown profile(s))` : ''
+          }.`,
+        );
+      } catch (err) {
+        console.error('Error importing invoice CSV:', err);
+        toast.error('Failed to import invoice CSV.');
+      }
+    };
+
+    reader.readAsText(file);
+  };
+
   const handleInvoiceStockIntake = async () => {
-    if (!userId || !invoiceProfileId || invoiceQuantity <= 0) return;
+    if (!userId || !invoiceProfileId || invoiceQuantity <= 0 || !invoiceSelectedProfile) return;
 
     try {
       setIsSavingInvoice(true);
-      const { error } = await supabase.from('stock_movements').insert({
+      const lengthM = totalInvoiceLengthM;
+      const effectiveUnit = invoiceUnit === 'meter' ? 'm' : 'bar';
+      const movementQuantity = invoiceUnit === 'meter' ? lengthM : invoiceQuantity;
+
+      const metaParts: string[] = [];
+      if (invoiceNumber) metaParts.push(`Invoice ${invoiceNumber}`);
+      if (invoiceSupplier) metaParts.push(invoiceSupplier);
+      if (invoiceProfileCode) {
+        metaParts.push(
+          `[${invoiceProfileSystemPack} • ${invoiceProfileCode} • role=${invoiceProfileRole}]`,
+        );
+      }
+      if (invoiceIsPainted) {
+        metaParts.push('painted');
+        if (invoicePaintColor) {
+          metaParts.push(`color=${invoicePaintColor}`);
+        }
+      }
+      if (lengthM > 0) metaParts.push(`len=${lengthM.toFixed(2)}m`);
+      if (totalInvoiceWeightKg > 0) metaParts.push(`wt=${totalInvoiceWeightKg.toFixed(2)}kg`);
+
+      const notes = metaParts.length ? metaParts.join(' – ') : null;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+
+      const { error } = await (db.from('stock_movements') as any).insert({
         user_id: userId,
         profile_id: invoiceProfileId,
         movement_type: 'purchase',
-        quantity: invoiceQuantity,
-        unit: 'bar',
-        notes: invoiceNumber
-          ? `Invoice ${invoiceNumber}${invoiceSupplier ? ` – ${invoiceSupplier}` : ''}`
-          : invoiceSupplier || null,
-      });
+        quantity: movementQuantity,
+        unit: effectiveUnit,
+        notes,
+      } as any);
 
       if (error) throw error;
 
@@ -287,6 +568,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       setInvoiceQuantity(0);
       setInvoiceNumber('');
       setInvoiceSupplier('');
+      setInvoiceBarLengthM('');
+      setInvoiceUnit('bar');
+      setInvoiceIsPainted(false);
+      setInvoicePaintColor('');
     } catch (error) {
       console.error('Error saving stock intake invoice:', error);
       toast.error('Failed to record stock intake');
@@ -369,13 +654,16 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     if (!userId) return;
 
     try {
-      const { error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+
+      const { error } = await (db
         .from('stock_alerts')
         .update({
           is_resolved: true,
           resolved_at: new Date().toISOString(),
           resolved_by: userId,
-        })
+        }) as any)
         .eq('id', alertId);
 
       if (error) throw error;
@@ -387,6 +675,50 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     }
   };
 
+  // Derive branded system-pack grouping for filters and summary
+  const inventoryBrandTrees = useMemo(() => {
+    return SYSTEM_PACKS.map((pack) => {
+      const packId = pack.meta.id;
+      const brand = pack.meta.brands[0] || pack.meta.name;
+      const specSystem = (pack.windowSystemSpec as any)?.window_system as string | undefined;
+
+      const profiles = inventory.filter((profile) => {
+        const specs: any = profile.specifications || {};
+        const systemLabel =
+          (specs.window_system as string | undefined) ||
+          (profile.systemBrand as string | undefined) ||
+          '';
+
+        if (!systemLabel) return false;
+        const label = systemLabel.toLowerCase();
+        const brandMatch = profile.systemBrand === brand;
+        const specMatch =
+          !!specSystem && systemLabel.toLowerCase().includes(specSystem.toLowerCase());
+
+        return brandMatch || specMatch || label.includes(packId.toLowerCase());
+      });
+
+      const stockCount = profiles.reduce(
+        (sum, p) => sum + (typeof p.stockQuantity === 'number' ? p.stockQuantity : 0),
+        0,
+      );
+      const totalValue = profiles.reduce((sum, p) => {
+        const qty = typeof p.stockQuantity === 'number' ? p.stockQuantity : 0;
+        const cost = typeof p.costPerMeter === 'number' ? p.costPerMeter : 0;
+        return sum + qty * cost;
+      }, 0);
+
+      return {
+        systemPackId: packId,
+        brand,
+        displayName: pack.meta.name,
+        profiles,
+        stockCount,
+        totalValue,
+      };
+    });
+  }, [inventory]);
+
   // Filtered inventory
   const filteredInventory = useMemo(() => {
     return inventory.filter((profile) => {
@@ -396,9 +728,20 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       if (filterMaterial !== 'all' && profile.material !== filterMaterial) {
         return false;
       }
+      if (filterSystemPackId !== 'all') {
+        const specs: any = profile.specifications || {};
+        const systemLabel =
+          (specs.window_system as string | undefined) ||
+          (profile.systemBrand as string | undefined) ||
+          '';
+        const label = systemLabel.toLowerCase();
+        if (!label.includes(filterSystemPackId.toLowerCase())) {
+          return false;
+        }
+      }
       return true;
     });
-  }, [inventory, searchQuery, filterMaterial]);
+  }, [inventory, searchQuery, filterMaterial, filterSystemPackId]);
 
   // Filtered remnants
   const filteredRemnants = useMemo(() => {
@@ -412,9 +755,20 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       if (searchQuery && !remnant.profile?.name.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
       }
+      if (filterSystemPackId !== 'all') {
+        const specs: any = remnant.profile?.specifications || {};
+        const systemLabel =
+          (specs.window_system as string | undefined) ||
+          (remnant.profile?.systemBrand as string | undefined) ||
+          '';
+        const label = systemLabel.toLowerCase();
+        if (!label.includes(filterSystemPackId.toLowerCase())) {
+          return false;
+        }
+      }
       return true;
     });
-  }, [remnants, searchQuery, filterMaterial, filterStatus]);
+  }, [remnants, searchQuery, filterMaterial, filterStatus, filterSystemPackId]);
 
   // Project-specific/customer inventory view
   const projectProfiles = useMemo(() => {
@@ -430,6 +784,118 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         status: getStockStatus(p),
       }));
   }, [project, inventory]);
+
+  // Derived metadata for the currently selected profile in the invoice form
+  const invoiceSelectedProfile = useMemo(
+    () => inventory.find((p) => p.id === invoiceProfileId) || null,
+    [inventory, invoiceProfileId],
+  );
+
+  const invoiceProfileSystemPack =
+    (invoiceSelectedProfile?.systemBrand as string | undefined) ||
+    ((invoiceSelectedProfile?.specifications as any)?.window_system as string | undefined) ||
+    'Standard';
+
+  const invoiceProfileCode =
+    ((invoiceSelectedProfile?.specifications as any)?.supplierCode as string | undefined) ||
+    ((invoiceSelectedProfile?.specifications as any)?.internalCode as string | undefined) ||
+    invoiceSelectedProfile?.name ||
+    '';
+
+  const invoiceProfileRole =
+    ((invoiceSelectedProfile?.specifications as any)?.profileRole as string | undefined) ||
+    'frame';
+
+  const invoiceDefaultBarLengthM =
+    typeof (invoiceSelectedProfile?.specifications as any)?.stockLengthMm === 'number'
+      ? ((invoiceSelectedProfile?.specifications as any).stockLengthMm as number) / 1000
+      : 6;
+
+  const packWeightPerMeter = getPackWeightPerMeter(invoiceSelectedProfile, invoiceProfileRole);
+
+  const invoiceWeightPerMeter =
+    typeof invoiceSelectedProfile?.weightPerMeter === 'number'
+      ? (invoiceSelectedProfile.weightPerMeter as number)
+      : typeof (invoiceSelectedProfile?.specifications as any)?.weightPerMeterKg === 'number'
+        ? ((invoiceSelectedProfile?.specifications as any).weightPerMeterKg as number)
+        : typeof packWeightPerMeter === 'number'
+          ? packWeightPerMeter
+          : undefined;
+
+  // Derive paint color options from the active system pack / brand
+  const normalizedPackId = (() => {
+    const label = invoiceProfileSystemPack.toLowerCase();
+    if (label.includes('rock 60') || label.includes('rock60')) return 'rock60';
+    if (label.includes('jumbo100') || label.includes('jumbo 100') || label.includes('jumbo')) {
+      return 'jumbo100';
+    }
+    return 'default';
+  })();
+
+  const invoiceColorOptions = PACK_COLOR_OPTIONS[normalizedPackId] || PACK_COLOR_OPTIONS.default;
+
+  const invoiceProfileOptions = useMemo(() => {
+    return inventory.filter((p) => {
+      const specs: any = p.specifications || {};
+      const packLabel: string =
+        (p.systemBrand as string | undefined) ||
+        (specs.window_system as string | undefined) ||
+        '';
+
+      if (invoiceSystemPackFilter !== 'all') {
+        const label = packLabel.toLowerCase();
+        if (
+          invoiceSystemPackFilter === 'rock60' &&
+          !label.includes('rock 60') &&
+          !label.includes('rock60')
+        ) {
+          return false;
+        }
+        if (
+          invoiceSystemPackFilter === 'jumbo100' &&
+          !label.includes('jumbo100') &&
+          !label.includes('jumbo 100') &&
+          !label.includes('jumbo')
+        ) {
+          return false;
+        }
+        if (
+          invoiceSystemPackFilter === 'other' &&
+          (label.includes('rock') || label.includes('jumbo'))
+        ) {
+          return false;
+        }
+      }
+
+      if (invoiceRoleFilter !== 'all') {
+        const role = (specs.profileRole as string | undefined) || '';
+        if (!role.toLowerCase().includes(invoiceRoleFilter)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [inventory, invoiceSystemPackFilter, invoiceRoleFilter]);
+
+  const effectiveInvoiceBarLengthM =
+    invoiceUnit === 'meter'
+      ? 0
+      : typeof invoiceBarLengthM === 'number'
+        ? invoiceBarLengthM
+        : Number(invoiceBarLengthM) || invoiceDefaultBarLengthM;
+
+  const totalInvoiceLengthM =
+    !invoiceSelectedProfile || invoiceQuantity <= 0
+      ? 0
+      : invoiceUnit === 'meter'
+        ? invoiceQuantity
+        : invoiceQuantity * (effectiveInvoiceBarLengthM > 0 ? effectiveInvoiceBarLengthM : 0);
+
+  const totalInvoiceWeightKg =
+    invoiceWeightPerMeter && totalInvoiceLengthM > 0
+      ? totalInvoiceLengthM * invoiceWeightPerMeter
+      : 0;
 
   if (!inventory || inventory.length === 0) {
     return (
@@ -666,7 +1132,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             <div className="lg:col-span-2 space-y-4">
               {/* Search and Filters */}
               <Card className="bg-gray-700/50 border-gray-600">
-                <CardContent className="p-4">
+                <CardContent className="p-4 space-y-3">
                   <div className="flex flex-wrap gap-4">
                     <div className="flex-1 min-w-[200px]">
                       <div className="relative">
@@ -690,6 +1156,37 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         <SelectItem value="wood">Wood</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  {/* Brand / system-pack filter */}
+                  <div className="flex flex-wrap gap-2 text-[11px]">
+                    <span className="text-gray-400">Systems:</span>
+                    <Button
+                      type="button"
+                      size="xs"
+                      variant={filterSystemPackId === 'all' ? 'default' : 'outline'}
+                      className="h-6 px-2"
+                      onClick={() => setFilterSystemPackId('all')}
+                    >
+                      All
+                    </Button>
+                    {inventoryBrandTrees.map((tree) =>
+                      tree.profiles.length > 0 ? (
+                        <Button
+                          key={tree.systemPackId}
+                          type="button"
+                          size="xs"
+                          variant={filterSystemPackId === tree.systemPackId ? 'default' : 'outline'}
+                          className="h-6 px-2"
+                          onClick={() => setFilterSystemPackId(tree.systemPackId)}
+                        >
+                          {tree.displayName}
+                          <span className="ml-1 text-[10px] text-gray-300">
+                            {tree.profiles.length}
+                          </span>
+                        </Button>
+                      ) : null,
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -968,36 +1465,154 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <div className="md:col-span-2">
-                  <Label className="text-xs">Profile *</Label>
+                <div className="md:col-span-2 space-y-2">
+                  <Label className="text-xs">Profile / Series / Pack</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label className="text-[10px] text-gray-400">Series / Pack</Label>
+                      <Select
+                        value={invoiceSystemPackFilter}
+                        onValueChange={setInvoiceSystemPackFilter}
+                      >
+                        <SelectTrigger className="h-7 text-[11px] bg-gray-800 border-gray-700">
+                          <SelectValue placeholder="All packs" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                          <SelectItem value="all">All packs</SelectItem>
+                          <SelectItem value="rock60">ROCK 60</SelectItem>
+                          <SelectItem value="jumbo100">JUMBO 100</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-[10px] text-gray-400">Role</Label>
+                      <Select
+                        value={invoiceRoleFilter}
+                        onValueChange={setInvoiceRoleFilter}
+                      >
+                        <SelectTrigger className="h-7 text-[11px] bg-gray-800 border-gray-700">
+                          <SelectValue placeholder="All roles" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                          <SelectItem value="all">All roles</SelectItem>
+                          <SelectItem value="frame">Frame</SelectItem>
+                          <SelectItem value="sash">Sash</SelectItem>
+                          <SelectItem value="bead">Glazing bead</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                   <Select
                     value={invoiceProfileId}
-                    onValueChange={(v) => setInvoiceProfileId(v)}
+                    onValueChange={(v) => {
+                      setInvoiceProfileId(v);
+                      setInvoiceBarLengthM('');
+                    }}
                   >
-                    <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
-                      <SelectValue placeholder="Select profile" />
+                    <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700 mt-1">
+                      <SelectValue placeholder="Select profile by ID in chosen series" />
                     </SelectTrigger>
                     <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-72">
-                      {inventory.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          <div className="flex flex-col gap-0.5">
-                            <span className="font-medium text-gray-100">{p.name}</span>
-                            <span className="text-[10px] text-gray-500">
-                              {p.material} • {p.width}mm • stock {p.stockQuantity}m
-                            </span>
-                          </div>
-                        </SelectItem>
-                      ))}
+                      {invoiceProfileOptions.map((p) => {
+                        const specs: any = p.specifications || {};
+                        const packLabel: string =
+                          (p.systemBrand as string | undefined) ||
+                          (specs.window_system as string | undefined) ||
+                          'Standard';
+                        const roleLabel: string =
+                          (specs.profileRole as string | undefined) || '—';
+                        const codeLabel: string =
+                          (specs.supplierCode as string | undefined) ||
+                          (specs.internalCode as string | undefined) ||
+                          p.name;
+
+                        return (
+                          <SelectItem key={p.id} value={p.id}>
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-medium text-gray-100">{p.name}</span>
+                              <span className="text-[10px] text-gray-500">
+                                {packLabel} • role {roleLabel} • code {codeLabel}
+                              </span>
+                              <span className="text-[10px] text-gray-500">
+                                {p.material} • {p.width}mm • stock {p.stockQuantity}m
+                              </span>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
+              {invoiceSelectedProfile && (
+                <div className="mt-1 grid grid-cols-2 gap-2 text-[11px] text-gray-400">
+                  <div>
+                    <span className="text-gray-500">System / Pack:</span>{' '}
+                    <span className="text-gray-200">{invoiceProfileSystemPack}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Profile item code:</span>{' '}
+                    <span className="font-mono text-gray-200">{invoiceProfileCode}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Role:</span>{' '}
+                    <span className="text-gray-200 capitalize">{invoiceProfileRole}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Default bar length:</span>{' '}
+                    <span className="text-gray-200">
+                      {invoiceDefaultBarLengthM.toFixed(2)} m
+                    </span>
+                  </div>
+                  {invoiceWeightPerMeter && (
+                    <div>
+                      <span className="text-gray-500">Weight per meter:</span>{' '}
+                      <span className="text-gray-200">
+                        {invoiceWeightPerMeter.toFixed(3)} kg/m
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Quantity *</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      min={0}
+                      value={invoiceQuantity || ''}
+                      onChange={(e) => setInvoiceQuantity(Number(e.target.value) || 0)}
+                      className="h-8 text-xs bg-gray-800 border-gray-700 flex-1"
+                    />
+                    <Select
+                      value={invoiceUnit}
+                      onValueChange={(v) => setInvoiceUnit(v as 'bar' | 'meter')}
+                    >
+                      <SelectTrigger className="h-8 w-20 text-xs bg-gray-800 border-gray-700">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                        <SelectItem value="bar">Bars</SelectItem>
+                        <SelectItem value="meter">Meters</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <div>
-                  <Label className="text-xs">Quantity (bars) *</Label>
+                  <Label className="text-xs">Bar length (m)</Label>
                   <Input
                     type="number"
                     min={0}
-                    value={invoiceQuantity || ''}
-                    onChange={(e) => setInvoiceQuantity(Number(e.target.value) || 0)}
+                    step="0.01"
+                    disabled={invoiceUnit === 'meter'}
+                    value={invoiceUnit === 'meter' ? '' : invoiceBarLengthM}
+                    onChange={(e) =>
+                      setInvoiceBarLengthM(
+                        e.target.value ? Number(e.target.value) || invoiceDefaultBarLengthM : '',
+                      )
+                    }
+                    placeholder={invoiceDefaultBarLengthM.toFixed(2)}
                     className="h-8 text-xs bg-gray-800 border-gray-700"
                   />
                 </div>
@@ -1019,16 +1634,109 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     className="h-8 text-xs bg-gray-800 border-gray-700"
                   />
                 </div>
+                <div className="flex flex-col gap-1">
+                  <Label className="text-xs">Painted</Label>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={invoiceIsPainted}
+                      onCheckedChange={(v) => setInvoiceIsPainted(!!v)}
+                    />
+                    <span className="text-[11px] text-gray-400">
+                      {invoiceIsPainted ? 'Yes – specify color' : 'No (mill finish)'}
+                    </span>
+                  </div>
+                  {invoiceIsPainted && (
+                    <div className="mt-1">
+                      <Label className="text-[11px]">Paint color</Label>
+                      <Select
+                        value={invoicePaintColor}
+                        onValueChange={setInvoicePaintColor}
+                      >
+                        <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
+                          <SelectValue placeholder="Select color from pack" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                          {invoiceColorOptions.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              <div className="flex items-center gap-2">
+                                <span
+                                  className="inline-block h-3 w-3 rounded-sm border border-gray-600"
+                                  style={{ backgroundColor: opt.swatch }}
+                                />
+                                <span>{opt.label}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="flex justify-end">
-                <Button
-                  size="sm"
-                  className="bg-orange-500 hover:bg-orange-600 text-xs"
-                  disabled={!userId || !invoiceProfileId || invoiceQuantity <= 0 || isSavingInvoice}
-                  onClick={handleInvoiceStockIntake}
-                >
-                  {isSavingInvoice ? 'Saving…' : 'Record Purchase & Update Stock'}
-                </Button>
+
+              {totalInvoiceLengthM > 0 && (
+                <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-2 rounded-lg bg-gray-800/60 border border-gray-700 text-[11px] text-gray-300">
+                  <div>
+                    <span className="text-gray-400">Total length:</span>{' '}
+                    <span className="font-semibold text-gray-100">
+                      {totalInvoiceLengthM.toFixed(2)} m
+                    </span>
+                  </div>
+                  {totalInvoiceWeightKg > 0 && (
+                    <div>
+                      <span className="text-gray-400">Estimated weight:</span>{' '}
+                      <span className="font-semibold text-gray-100">
+                        {totalInvoiceWeightKg.toFixed(2)} kg
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                <div className="text-[11px] text-gray-400 max-w-md">
+                  Import full invoices from your purchasing system as CSV (columns:{' '}
+                  <span className="font-mono text-gray-200">
+                    profile_code, quantity, unit, bar_length_m, invoice_no, supplier
+                  </span>
+                  ).
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-[11px]">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="border-gray-600 text-xs"
+                      asChild
+                    >
+                      <span>
+                        <Download className="h-3 w-3 mr-1" />
+                        Import CSV
+                      </span>
+                    </Button>
+                    <input
+                      type="file"
+                      accept=".csv,text/csv"
+                      className="hidden"
+                      onChange={handleInvoiceCsvImport}
+                    />
+                  </label>
+                  <Button
+                    size="sm"
+                    className="bg-orange-500 hover:bg-orange-600 text-xs"
+                    disabled={
+                      !userId ||
+                      !invoiceProfileId ||
+                      invoiceQuantity <= 0 ||
+                      isSavingInvoice ||
+                      !invoiceSelectedProfile
+                    }
+                    onClick={handleInvoiceStockIntake}
+                  >
+                    {isSavingInvoice ? 'Saving…' : 'Record Purchase & Update Stock'}
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

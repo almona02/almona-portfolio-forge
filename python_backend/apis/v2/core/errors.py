@@ -563,10 +563,13 @@ async def v2_http_exception_handler(
         "error": {
             "code": "HTTP_ERROR",
             "message": exc.detail,
+            # Expose a `detail` field for compatibility with FastAPI's default
+            # HTTPException schema and existing tests/clients.
+            "detail": exc.detail,
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "path": str(request.url.path),
             "method": request.method,
-            "status_code": exc.status_code
+            "status_code": exc.status_code,
         }
     }
 

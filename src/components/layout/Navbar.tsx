@@ -9,7 +9,6 @@ import {
   User, 
   LogOut,
   Shield,
-  Search,
   Sparkles,
   Globe,
   Workflow,
@@ -40,13 +39,11 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   
   const location = useLocation();
   const navigate = useNavigate();
   const navbarRef = useRef<HTMLElement>(null);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout>();
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Navigation configuration
   const navItems = useMemo<NavItem[]>(() => [
@@ -209,16 +206,6 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [closeAllDropdowns]);
-
-  // Search functionality
-  const handleSearch = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery("");
-      closeAllDropdowns();
-    }
-  }, [searchQuery, navigate, closeAllDropdowns]);
 
   // Active path detection
   const isActivePath = useCallback((path: string) => {
@@ -548,22 +535,6 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
 
           {/* Right Side Actions */}
           <div className="hidden lg:flex items-center gap-3 xl:gap-4">
-            
-            {/* Search */}
-            <form onSubmit={handleSearch} className="relative">
-              <div className="relative">
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-64 xl:w-80 pl-10 pr-4 py-3 bg-white/5 border border-orange-500/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30 transition-all duration-300"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              </div>
-            </form>
-
             {/* Region Selector */}
             <div 
               className="relative"
@@ -737,21 +708,6 @@ const Navbar: React.FC<NavbarProps> = ({ user, quoteItems = [], onLogout }) => {
               className="lg:hidden border-t border-orange-500/30 bg-black/95 backdrop-blur-xl relative z-[210]"
             >
               <div className="py-4 space-y-1">
-                
-                {/* Mobile Search */}
-                <form onSubmit={handleSearch} className="px-4 pb-3">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-white/5 border border-orange-500/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/30"
-                    />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  </div>
-                </form>
-
                 {/* Mobile Navigation Items */}
                 {navItems.map((item) => (
                   <div key={item.name} className="px-1">

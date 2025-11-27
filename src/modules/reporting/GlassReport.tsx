@@ -36,6 +36,8 @@ import { WindowUnit, WindowComponent } from '@/types/fabricator';
 import { CompanyBranding } from './PDFExportService';
 import { ExportService, ExportFormat, PDFExportOptions, ExportProgress } from '@/lib/exports';
 import { useTranslation } from 'react-i18next';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { deriveGlassSize } from '@/lib/glass/glassSizing';
 
 interface GlassReportProps {
   project: WindowUnit;
@@ -49,6 +51,7 @@ interface GlassSpecification {
   componentType: string;
   width: number;
   height: number;
+  allowRotation90: boolean;
   glazingType: 'single' | 'double' | 'triple';
   paneCount: number;
   totalArea: number; // m²
@@ -126,14 +129,31 @@ export const GlassReport: React.FC<GlassReportProps> = ({
     let totalPanes = 0;
     let totalWeight = 0;
 
+    // Resolve system pack glass allowances (if available)
+    const systemPack =
+      project.systemPackId && SYSTEM_PACKS.find((p) => p.meta.id === project.systemPackId);
+    const glassAllowances = systemPack?.glassAllowances;
+
     // Process each component
     project.components.forEach((component: WindowComponent) => {
       const glazingType = (component.glazingType || project.glazing?.type || 'double') as 'single' | 'double' | 'triple';
       const paneCount = glazingType === 'single' ? 1 : glazingType === 'double' ? 2 : 3;
       
-      // Calculate glass dimensions (accounting for frame clearance)
-      const glassWidth = component.width - 20; // 10mm clearance on each side
-      const glassHeight = component.height - 20; // 10mm clearance on each side
+      // Calculate glass dimensions (accounting for system-pack edge clearance when configured)
+      let glassWidth = component.width;
+      let glassHeight = component.height;
+
+      if (glassAllowances) {
+        const derived = deriveGlassSize(component.width, component.height, glassAllowances);
+        glassWidth = derived.size.widthMm;
+        glassHeight = derived.size.heightMm;
+        // If invalid, we still proceed but this could be surfaced in UI later via derived.errors
+      } else {
+        // Fallback: fixed 10mm clearance each side
+        glassWidth = component.width - 20;
+        glassHeight = component.height - 20;
+      }
+
       const area = (glassWidth * glassHeight) / 1_000_000; // Convert to m²
       const totalComponentArea = area * paneCount;
       
@@ -166,6 +186,7 @@ export const GlassReport: React.FC<GlassReportProps> = ({
         componentType: component.type,
         width: glassWidth,
         height: glassHeight,
+        allowRotation90: glassAllowances?.allowRotation90 ?? true,
         glazingType,
         paneCount,
         totalArea: totalComponentArea,
@@ -603,18 +624,38 @@ function optimizeGlassCutting(specifications: GlassSpecification[]): {
   let totalSheetArea = 0;
   let totalUsedArea = 0;
 
-  // Simple first-fit algorithm
-  const remainingPanes = [...specifications];
+  // Simple largest-first, bottom-left style guillotine-friendly packing.
+  const remainingPanes = [...specifications].sort((a, b) => {
+    const areaA = a.width * a.height * a.paneCount;
+    const areaB = b.width * b.height * b.paneCount;
+    return areaB - areaA;
+  });
   let currentSheet: CuttingSheet | null = null;
 
   remainingPanes.forEach((spec) => {
     for (let pane = 0; pane < spec.paneCount; pane++) {
-      if (!currentSheet || !canFitInSheet(spec, currentSheet, STANDARD_SHEET_WIDTH, STANDARD_SHEET_HEIGHT)) {
-        if (currentSheet) {
-          sheets.push(currentSheet);
-          totalSheetArea += currentSheet.width * currentSheet.height;
-          totalUsedArea += calculateUsedArea(currentSheet);
-        }
+      if (!currentSheet) {
+        currentSheet = {
+          id: `sheet_${sheets.length + 1}`,
+          width: STANDARD_SHEET_WIDTH,
+          height: STANDARD_SHEET_HEIGHT,
+          panes: [],
+          waste: 0,
+          utilization: 0,
+        };
+      }
+
+      // If it doesn't fit in the current sheet (even with rotation), start a new one.
+      const canFit = canFitInSheet(
+        spec,
+        currentSheet,
+        STANDARD_SHEET_WIDTH,
+        STANDARD_SHEET_HEIGHT,
+      );
+      if (!canFit) {
+        sheets.push(currentSheet);
+        totalSheetArea += currentSheet.width * currentSheet.height;
+        totalUsedArea += calculateUsedArea(currentSheet);
         currentSheet = {
           id: `sheet_${sheets.length + 1}`,
           width: STANDARD_SHEET_WIDTH,
@@ -626,14 +667,37 @@ function optimizeGlassCutting(specifications: GlassSpecification[]): {
       }
 
       if (currentSheet) {
-        const position = findBestPosition(spec, currentSheet, STANDARD_SHEET_WIDTH, STANDARD_SHEET_HEIGHT);
-        currentSheet.panes.push({
-          componentId: spec.componentId,
-          x: position.x,
-          y: position.y,
-          width: spec.width,
-          height: spec.height,
-        });
+        const placement = findBestPositionWithRotation(
+          spec,
+          currentSheet,
+          STANDARD_SHEET_WIDTH,
+          STANDARD_SHEET_HEIGHT,
+        );
+        if (!placement) {
+          // Should be rare given canFitInSheet check; if it happens, start a new sheet.
+          sheets.push(currentSheet);
+          totalSheetArea += currentSheet.width * currentSheet.height;
+          totalUsedArea += calculateUsedArea(currentSheet);
+          currentSheet = {
+            id: `sheet_${sheets.length + 1}`,
+            width: STANDARD_SHEET_WIDTH,
+            height: STANDARD_SHEET_HEIGHT,
+            panes: [],
+            waste: 0,
+            utilization: 0,
+          };
+        }
+
+        if (currentSheet && placement) {
+          currentSheet.panes.push({
+            componentId: spec.componentId,
+            x: placement.x,
+            y: placement.y,
+            width: placement.rotated ? spec.height : spec.width,
+            height: placement.rotated ? spec.width : spec.height,
+            rotation: placement.rotated ? 90 : 0,
+          });
+        }
       }
     }
   });
@@ -668,34 +732,38 @@ function canFitInSheet(
   spec: GlassSpecification,
   sheet: CuttingSheet,
   maxWidth: number,
-  maxHeight: number
+  maxHeight: number,
 ): boolean {
-  // Simple check - can be enhanced with actual nesting algorithm
-  const usedWidth = Math.max(...sheet.panes.map((p) => p.x + p.width), 0);
-  const usedHeight = Math.max(...sheet.panes.map((p) => p.y + p.height), 0);
-  return usedWidth + spec.width <= maxWidth && usedHeight + spec.height <= maxHeight;
+  // Try to find any feasible placement with or without rotation.
+  const placement = findBestPositionWithRotation(spec, sheet, maxWidth, maxHeight);
+  return placement !== null;
 }
 
-function findBestPosition(
+function findBestPositionWithRotation(
   spec: GlassSpecification,
   sheet: CuttingSheet,
   maxWidth: number,
-  maxHeight: number
-): { x: number; y: number } {
-  // Simple bottom-left fill algorithm
-  let x = 0;
-  let y = 0;
+  maxHeight: number,
+): { x: number; y: number; rotated: boolean } | null {
+  const candidates = spec.allowRotation90
+    ? [
+        { w: spec.width, h: spec.height, rotated: false },
+        { w: spec.height, h: spec.width, rotated: true },
+      ]
+    : [{ w: spec.width, h: spec.height, rotated: false }];
 
-  // Find first available position
-  for (let testY = 0; testY <= maxHeight - spec.height; testY += 10) {
-    for (let testX = 0; testX <= maxWidth - spec.width; testX += 10) {
-      if (!overlapsWithExisting(sheet.panes, testX, testY, spec.width, spec.height)) {
-        return { x: testX, y: testY };
+  // Bottom-left style scan; step size is coarse (10mm) for performance.
+  for (const c of candidates) {
+    for (let testY = 0; testY <= maxHeight - c.h; testY += 10) {
+      for (let testX = 0; testX <= maxWidth - c.w; testX += 10) {
+        if (!overlapsWithExisting(sheet.panes, testX, testY, c.w, c.h)) {
+          return { x: testX, y: testY, rotated: c.rotated };
+        }
       }
     }
   }
 
-  return { x, y };
+  return null;
 }
 
 function overlapsWithExisting(

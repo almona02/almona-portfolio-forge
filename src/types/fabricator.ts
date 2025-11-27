@@ -50,6 +50,18 @@ export interface WindowUnit {
     windowIndex?: string;
     remarks?: string;
   };
+  /**
+   * Optional metadata for mass‑production optimisation runs. This is
+   * populated when a WindowUnit participates in cross‑project batches.
+   */
+  massProductionMeta?: {
+    /** IDs of mass‑production batches this unit has been included in */
+    includedInBatchIds?: string[];
+    /** Whether this unit has already been re‑optimised in mass mode */
+    batchOptimized?: boolean;
+    /** Remnant IDs that were sourced from other projects for this unit */
+    crossProjectRemnantsUsed?: string[];
+  };
 }
 
 export interface WindowComponent {
@@ -139,6 +151,32 @@ export interface OptimizationResult {
   };
 }
 
+/**
+ * High‑level request descriptor for mass‑production optimisation across
+ * multiple projects / positions. Passed down into orchestration layers
+ * (e.g. MassProductionOptimizer) rather than individual 1D solvers.
+ */
+export interface MassProductionOptimizationRequest {
+  projectIds: string[];
+  systemPackId: string;
+  optimizationStrategy: 'remnant-first' | 'waste-minimization' | 'throughput-maximization';
+  crossProjectRemnantPool: boolean;
+  constraints: {
+    maxStockLengthMm: number;
+    minRemnantUsageMm: number;
+    machineConstraints?: MachineConstraints[];
+  };
+}
+
+export interface MachineConstraints {
+  machineId: string;
+  name: string;
+  maxCutsPerBar?: number;
+  minOffcutLengthMm?: number;
+  maxOffcutLengthMm?: number;
+  notes?: string;
+}
+
 export interface CuttingPlan {
   profile: Profile;
   stockLength: number;
@@ -155,12 +193,64 @@ export interface Cut {
   waste: number;
 }
 
+/**
+ * Optional, lightweight mapping between a system pack and the exact
+ * profile codes chosen for different roles (frame, sash, bead, etc.)
+ * when capturing measurements for a single window unit.
+ */
+export interface SystemProfileSelections {
+  frameProfileCode?: string;
+  sashProfileCode?: string;
+  beadProfileCode?: string;
+  // Future roles can be added here without breaking existing data.
+}
+
 export interface MeasurementData {
   width: string;
   height: string;
   windowType: string;
   color?: string;
   glazingType?: string;
+  /** Optional override of the system pack for this specific position/unit. */
+  systemPackId?: string;
+  /**
+   * Optional mapping of system-pack roles to concrete profile codes selected
+   * by the operator before design (e.g. frame vs sash profile numbers).
+   */
+  systemProfileSelections?: SystemProfileSelections;
+}
+
+// Lightweight commercial draft types used by workspace context
+export interface DraftQuote {
+  id: string;
+  projectId?: string;
+  customerId?: string;
+  status?: 'draft' | 'sent' | 'accepted' | 'rejected';
+  customerName?: string;
+  projectTitle?: string;
+  amount?: number;
+  currency?: string;
+  items?: any[];
+  validUntil?: Date;
+  payload: Record<string, any>;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface DraftInvoice {
+  id: string;
+  supplierId?: string;
+  projectId?: string;
+  status?: 'draft' | 'booked' | 'cancelled';
+  customerName?: string;
+  invoiceNumber?: string;
+  amount?: number;
+  currency?: string;
+  dueDate?: Date;
+  type?: string;
+  payload: Record<string, any>;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // ============================================================================

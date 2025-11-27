@@ -17,6 +17,18 @@ export type RoundingMethod = 'standard' | 'up' | 'down' | 'nearest';
 export type AlertType = 'low_profit_margin' | 'negative_price' | 'excessive_markup' | 'currency_mismatch' | 'expired_price' | 'missing_configuration';
 export type AlertSeverity = 'info' | 'warning' | 'error' | 'critical';
 
+/**
+ * Simple metal price index model used to adjust aluminium costs over time.
+ * This is intentionally minimal and can be backed by LME or local indices.
+ */
+export interface MetalPriceIndex {
+  basePricePerKg: number;
+  currentPricePerKg: number;
+  currency: Currency;
+  lastUpdated: Date;
+  source: 'LME' | 'LOCAL' | 'CUSTOM';
+}
+
 export interface MaterialPricingRule {
   id?: string;
   profileId?: string;
@@ -74,6 +86,12 @@ export interface PricingConfiguration {
   roundingMethod: RoundingMethod;
   roundingPrecision: number;
   settings?: Record<string, any>;
+  /**
+   * Optional metal price index used to adjust aluminium base costs.
+   * When present, base aluminium prices are scaled by the index ratio
+   * before applying markups and discounts.
+   */
+  metalIndex?: MetalPriceIndex;
 }
 
 export interface PriceHistoryEntry {
@@ -171,6 +189,7 @@ export class PricingEngine {
       roundingMethod: config.roundingMethod ?? 'standard',
       roundingPrecision: config.roundingPrecision ?? 2,
       settings: config.settings ?? {},
+      metalIndex: config.metalIndex,
     };
   }
 
@@ -227,7 +246,14 @@ export class PricingEngine {
     targetCurrency?: Currency
   ): Promise<CalculatedPrice> {
     const currency = targetCurrency || this.config.currency;
-    const baseCost = profile.costPerMeter || 0;
+    const rawBaseCost = profile.costPerMeter || 0;
+
+    // Optionally adjust base cost using a metal price index when configured.
+    const indexedBaseCost = this.config.metalIndex
+      ? applyMetalIndex(rawBaseCost, this.config.metalIndex)
+      : rawBaseCost;
+
+    const baseCost = indexedBaseCost;
 
     // Get material-specific markup if available
     const materialMarkup = this.getMaterialMarkup(profile.material);
@@ -260,7 +286,8 @@ export class PricingEngine {
         total: converted.amount,
         currency,
         exchangeRate,
-        profitMargin: ((subtotal - baseCost) / subtotal) * 100,
+        // Profit margin still referenced against the original (pre-index) cost.
+        profitMargin: subtotal > 0 ? ((subtotal - rawBaseCost) / subtotal) * 100 : 0,
       };
     }
 
@@ -272,7 +299,7 @@ export class PricingEngine {
       taxAmount,
       total: this.roundPrice(total),
       currency,
-      profitMargin: ((subtotal - baseCost) / subtotal) * 100,
+      profitMargin: subtotal > 0 ? ((subtotal - rawBaseCost) / subtotal) * 100 : 0,
     };
   }
 
@@ -688,5 +715,82 @@ export class PricingEngine {
     this.config = { ...this.config, ...updates };
     this.quotingEngine = new QuotingEngine(this.toQuotingEngineConfig());
   }
+}
+
+/**
+ * Apply a metal price index to a base aluminium price.
+ * Scales the cost by current/base price ratio.
+ */
+export function applyMetalIndex(baseAluminumPricePerKg: number, index: MetalPriceIndex): number {
+  if (!index.basePricePerKg || index.basePricePerKg <= 0) return baseAluminumPricePerKg;
+  const ratio = index.currentPricePerKg / index.basePricePerKg;
+  return baseAluminumPricePerKg * ratio;
+}
+
+/**
+ * Simple stub indices for testing and internal validation.
+ * In production these would be hydrated from an external service or admin UI.
+ */
+export const STUB_METAL_INDICES: Record<string, MetalPriceIndex> = {
+  LME_TURKEY: {
+    basePricePerKg: 2.5,
+    currentPricePerKg: 2.8,
+    currency: 'USD',
+    lastUpdated: new Date('2024-01-15'),
+    source: 'LME',
+  },
+  LOCAL_EGYPT: {
+    basePricePerKg: 45,
+    currentPricePerKg: 52,
+    currency: 'EGP',
+    lastUpdated: new Date('2024-01-15'),
+    source: 'LOCAL',
+  },
+};
+
+export interface MetalAlert {
+  severity: 'info' | 'medium' | 'high';
+  message: string;
+  deviationPercentage: number;
+}
+
+export function checkMetalPriceAlert(index?: MetalPriceIndex | null): MetalAlert | null {
+  if (!index) return null;
+  if (!index.basePricePerKg || index.basePricePerKg <= 0) return null;
+
+  const deviation = ((index.currentPricePerKg - index.basePricePerKg) / index.basePricePerKg) * 100;
+  const absolute = Math.abs(deviation);
+
+  if (absolute > 15) {
+    return {
+      severity: 'high',
+      message: `Metal prices ${deviation > 0 ? 'increased' : 'decreased'} by ${absolute.toFixed(
+        1,
+      )}% from baseline.`,
+      deviationPercentage: deviation,
+    };
+  }
+
+  if (absolute > 8) {
+    return {
+      severity: 'medium',
+      message: `Metal prices ${deviation > 0 ? 'up' : 'down'} ${absolute.toFixed(
+        1,
+      )}% – review open quotes.`,
+      deviationPercentage: deviation,
+    };
+  }
+
+  if (absolute > 3) {
+    return {
+      severity: 'info',
+      message: `Metal prices ${deviation > 0 ? 'increased' : 'decreased'} by ${absolute.toFixed(
+        1,
+      )}%.`,
+      deviationPercentage: deviation,
+    };
+  }
+
+  return null;
 }
 
