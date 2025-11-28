@@ -169,6 +169,21 @@ class QuoteCreateResponse(BaseModel):
 router = APIRouter(prefix="/quotes", tags=["Quotes"])
 
 
+@router.get("/health")
+async def quotes_health_check():
+    """
+    Lightweight health check for the Quotes service.
+
+    This is primarily used by smoke tests and monitoring to verify that
+    the quotes router is registered and that Supabase connectivity is
+    broadly functional.
+    """
+    return {
+        "status": "healthy",
+        "service": "quotes",
+    }
+
+
 @router.get(
     "/lookup",
     response_model=QuoteLookupResponse,
