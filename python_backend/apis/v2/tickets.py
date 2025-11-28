@@ -46,6 +46,18 @@ def _user_uuid(current_user: Dict[str, Any]) -> UUID:
 router = APIRouter(prefix="/tickets", tags=["Tickets"])
 
 
+@router.get("/health")
+async def tickets_health_check() -> Dict[str, str]:
+    """
+    Lightweight health check for the Tickets service.
+
+    This endpoint does not require authentication and is intended for
+    smoke tests and uptime monitoring. It does not expose any sensitive
+    data or ticket contents.
+    """
+    return {"status": "healthy"}
+
+
 def _service(supabase: Client) -> TicketService:
     return TicketService(supabase)
 
