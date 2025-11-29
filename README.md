@@ -1,9 +1,9 @@
 # Almona Portfolio Forge
 
-A comprehensive, modern industrial machinery portfolio and e-commerce platform built for Almona, featuring advanced 3D/AR visualization, AI-powered services, and a complete customer support system.
+A comprehensive industrial machinery platform centered around **Fabricator Pro** - a complete aluminium/UPVC fabrication workflow system with AI optimization, CNC integration, and real-time analytics. Features advanced 3D/AR visualization, AI-powered services, e-commerce capabilities, and unified customer support for industrial clients across Egypt and the Middle East.
 
 ## 🚀 Overview
-Almona Portfolio Forge is a full-stack industrial machinery platform that combines a React frontend with a Python FastAPI backend, offering everything from product showcases to complete service management. The platform serves industrial clients across Egypt and the Middle East with specialized features for aluminum, UPVC, and steel fabrication industries.
+Almona Portfolio Forge is a full-stack industrial machinery platform centered around **Fabricator Pro** - a comprehensive aluminium/UPVC fabrication management system. The platform combines a React frontend with a Python FastAPI backend, offering end-to-end fabrication workflows, AI-powered optimization, CNC machine integration, and complete service management for industrial clients across Egypt and the Middle East.
 
 ### 🧩 Core Domains
 - **Products**: Rich machinery catalog with specifications, videos, and immersive 3D/AR galleries for preview, comparison, and interactive exploration.
@@ -14,6 +14,23 @@ Almona Portfolio Forge is a full-stack industrial machinery platform that combin
 The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, realtime sales charts, top products, and customer activity, powered by Supabase live queries and channels.
 
 ## ✨ Key Features
+
+### 🏭 **Fabricator Pro Platform**
+- **AI Workflow Cockpit**: End-to-end aluminium/UPVC fabrication pipeline with smart measuring, technical design, AI optimization, inventory check, production planning, and quality control
+- **Profile & Accessory Management**: Supabase-backed profile libraries with pricing configurations, stock levels, remnants, and stock movement tracking
+- **Advanced Cutting Optimization**: Genetic/linear algorithms with remnant-aware cutting, constraint programming, and exact optimization for guaranteed optimal solutions
+- **Mass Production Mode**: Cross-project optimization with unified waste KPIs and production scheduling
+- **CNC & Machine Integration**: DXF and G-code exports, Yilmaz and multi-brand CNC connectors, barcode/QR-based cut lists, and machine-ready export profiles
+- **Fabricator Workspace**: Shared `/fabricator/*` workspace layout with persistent state across Projects, Customers, Inventory, and Commercial tabs
+- **Bosphorus Workflow Ribbon**: Visual bridge between Ottoman/Egyptian craftsmanship and modern YILMAZ technology
+- **Inventory Intelligence**: Enhanced dashboard with remnant analytics, multi-location support, and Stock Intake by Invoice flow for system packs (ROCK 60, JUMBO 100)
+- **Conflict-Aware Profile Editing**: Workspace-backed draft edits with Supabase conflict resolution and stock movement tracking
+- **Commercial Workspace**: `/fabricator/commercial` cockpit for managing DraftQuote and DraftInvoice objects with quote-to-invoice conversion
+- **Branded System Packs**: Regional system packs for ROCK 60, JUMBO 100, YILMAZ W60, and CALUMINIUM PS with embedded structural constraints
+- **Pricing Engine with Metal Indexing**: Extended pricing with LME/LOCAL metal indices, live material estimates, and metal-price deviation alerts
+- **Multi-Format Reporting**: PDF, CSV, DXF cutting reports with QR/barcode support, localized for Turkish and Egyptian markets
+- **Real-Time Analytics Dashboard**: Live performance metrics, efficiency tracking, and production monitoring
+- **Quality Control AI**: Computer vision inspection with automated defect detection and reporting
 
 ### 🛒 **E-Commerce & Shop**
 - **Product Catalog**: Comprehensive industrial machinery, spare parts, and raw materials
@@ -70,20 +87,7 @@ The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, re
 - **Digital Twin Integration**: Machine lifecycle tracking with unique identifiers
 - **Quote Twin Search Panel**: Customer portal quote tracking system
 
-### 🧱 **Fabricator Platform & Workflow Pro**
-- **Fabricator Workflow Pro Cockpit**: End-to-end aluminium/UPVC fabricator workspace covering design, optimization, cutting, reporting, and production hand-off.
-- **Profile & Accessory Management**: Supabase-backed profile and accessory libraries with pricing configurations, stock levels, remnants, and stock movement tracking (see `FABRICATOR_ENHANCEMENT_PLAN.md` and `FABRICATOR_ENHANCEMENT_QUICK_REFERENCE.md`).
-- **Optimization & Reporting**: Genetic/linear optimization, remnant-aware cutting, and multi-format cutting/accessories/glass reports (PDF, CSV, DXF) localized for Turkish and Egyptian markets.
-- **CNC & Machine Integrations**: DXF and G-code exports, Yilmaz and multi-brand CNC connectors, barcode/QR-based cut lists, and machine-ready export profiles for shop-floor use.
-- **Fabricator Workspace Cockpit**: Shared `/fabricator/*` workspace layout with tabs for Projects, Customers, Inventory, and Commercial, backed by a persistent `FabricatorWorkspaceContext` that preserves drafts and state across navigation and refresh.
-- **Cross-Empire Workflow Ribbon**: `BosphorusWorkflowRibbon` UI that visually bridges Ottoman/Egyptian craftsmanship with modern YILMAZ technology, driving the measuring → design → optimization → inventory → production → quality pipeline.
-- **Inventory Intelligence & Stock Intake**: Enhanced `InventoryDashboard` with remnant analytics, multi-location support, and a **Stock Intake by Invoice** flow that understands system packs (ROCK 60, JUMBO 100), roles (frame/sash/bead), weight-per-meter, painted finishes, and CSV invoice import.
-- **Conflict-Aware Profile Editing**: Workspace-backed draft edits and conflict-aware saving in `/fabricator/inventory`, using Supabase `updated_at` checks to avoid silent overwrites when multiple operators edit the same profiles.
-- **Commercial Workspace Drafts**: `/fabricator/commercial` cockpit for managing `DraftQuote` and `DraftInvoice` objects at workspace level, including quote → invoice conversion and persistent commercial drafts tied to active projects/customers.
-- **Branded System Packs & Smart Draw Presets**: Regional system packs for ROCK 60, JUMBO 100, YILMAZ W60, and CALUMINIUM PS with embedded structural constraints and Smart Draw presets, plus region-aware defaults in `NewProjectWizard` and `SmartMeasuringInterface`.
-- **Inventory Branded Tree**: Brand/system-pack aware inventory dashboard with filters and analytics grouped by system packs (YILMAZ, CALUMINIUM, ROCK 60, JUMBO 100), including remnants.
-- **Mass Production Cockpit**: `FabricatorWorkflowPro` and `MassProductionDashboard` on top of `MassProductionOptimizer` for cross-project, remnant-aware cutting optimization and unified waste KPIs.
-- **Pricing Engine with Metal Indexing**: Extended `PricingEngine` with metal price indices (LME/LOCAL stubs) and a `PricingPreview` hook in the fabricator workflow, including live material estimates and metal‑price deviation alerts for region-aware, metal-indexed pricing and quoting.
+
 
 ### 🤖 **AI-Powered Features**
 - **Equipment Advisor**: AI recommendations based on requirements
@@ -151,24 +155,30 @@ The Admin Dashboard now features a polished glass/opacity UI, live KPI cards, re
 - **Framework**: React 18 with TypeScript
 - **Build Tool**: Vite with optimized bundling
 - **Styling**: Tailwind CSS + shadcn/ui components
-- **3D Graphics**: Three.js + @react-three/fiber
+- **3D Graphics**: Three.js + @react-three/fiber + SwiftXR
 - **AR/VR**: @react-three/xr for WebXR support
-- **State Management**: React Context + Zustand
+- **State Management**: React Context + Zustand + FabricatorWorkspaceContext
 - **Routing**: React Router v6 with lazy loading
 - **Forms**: React Hook Form + Zod validation
 - **Internationalization**: i18next with RTL support
 - **Testing**: Vitest + React Testing Library + Playwright
 - **Reporting & Exports**: Modular export system for PDF/CSV/DXF cutting, accessories, and glass reports with QR/barcode support and localization (EN/TR/AR)
+- **Fabricator Algorithms**: Custom genetic algorithms, constraint programming, and exact optimization for cutting optimization
+- **CNC Integration**: DXF/G-code export, Yilmaz CNC connectors, barcode/QR generation
+- **Real-time Analytics**: Supabase live queries and channels for dashboard KPIs
 
 ### **Backend**
 - **Framework**: FastAPI (Python 3.9+)
-- **Database**: Supabase (PostgreSQL) with real-time subscriptions
-- **Authentication**: Supabase Auth with custom policies
-- **AI Services**: TensorFlow.js + Hugging Face Transformers
-- **Task Queue**: Celery with Redis
-- **Email Service**: SendGrid with custom templates
-- **File Storage**: Supabase Storage with CDN
-- **Monitoring**: Custom dashboard with performance metrics
+- **Database**: Supabase (PostgreSQL) with real-time subscriptions and Row-Level Security
+- **Authentication**: Supabase Auth with custom policies and multi-factor authentication
+- **AI Services**: TensorFlow.js + Hugging Face Transformers for predictive maintenance
+- **Fabricator Algorithms**: Custom genetic algorithms, constraint programming, and exact optimization
+- **CNC Integration**: DXF/G-code generation, Yilmaz CNC connectors, barcode/QR code generation
+- **Task Queue**: Celery with Redis for background processing
+- **Email Service**: SendGrid with custom templates and localization
+- **File Storage**: Supabase Storage with CDN and secure file handling
+- **Monitoring**: Custom dashboard with performance metrics and real-time analytics
+- **Reporting Engine**: Multi-format export system (PDF/CSV/DXF) with QR/barcode support
 
 ### **Infrastructure**
 - **Deployment**: Vercel (Frontend) + Docker (Backend)
@@ -188,16 +198,54 @@ src/
 │   │   ├── EnhancedModel3DDialog.tsx
 │   │   ├── Model3DGallery.tsx
 │   │   └── ModelMeasurementTool.tsx
+│   ├── fabricator/      # Fabricator Pro components
+│   │   ├── AccessoryManagement.tsx
+│   │   ├── AnatolianCockpit.tsx
+│   │   ├── BosphorusWorkflowRibbon.tsx
+│   │   ├── CommercialOfferPanel.tsx
+│   │   ├── CuttingOptimizationEngine.tsx
+│   │   ├── DesignInterface.tsx
+│   │   ├── FabricatorWorkflowPro.tsx
+│   │   ├── FabricatorWorkspaceLayout.tsx
+│   │   ├── InventoryDashboard.tsx
+│   │   ├── InventoryManagement.tsx
+│   │   ├── MassProductionDashboard.tsx
+│   │   ├── NewProjectWizard.tsx
+│   │   ├── PricingConfiguration.tsx
+│   │   ├── PricingPreview.tsx
+│   │   ├── ProductionScheduler.tsx
+│   │   ├── ProfileManagement.tsx
+│   │   ├── QualityControl.tsx
+│   │   ├── QuickReportsPanel.tsx
+│   │   ├── RealTimeMonitoring.tsx
+│   │   ├── SmartDrawTool.tsx
+│   │   ├── SmartMeasuringInterface.tsx
+│   │   ├── TechnicalCalculator.tsx
+│   │   ├── Window3DGenerator.tsx
+│   │   └── WorkflowProgress.tsx
 │   ├── about/           # Company information components
+│   ├── admin/           # Admin dashboard components
+│   ├── ai/              # AI-powered components
+│   ├── analytics/       # Analytics and reporting
 │   ├── auth/            # Authentication components
 │   ├── comparison/      # Product comparison tools
 │   │   ├── CompareBar.tsx
 │   │   └── CompareDialog.tsx
+│   ├── compliance/      # Compliance and standards
 │   ├── contact/         # Contact and support forms
+│   ├── currency/        # Multi-currency support
+│   ├── dashboard/       # Dashboard components
+│   ├── enterprise/      # Enterprise features
 │   ├── home/            # Homepage sections
+│   ├── iot/             # IoT and monitoring
 │   ├── layout/          # Navigation and layout components
+│   │   ├── IndustrialNavbar.tsx
+│   │   ├── Footer.tsx
+│   │   └── RegionAwareLayout.tsx
+│   ├── marketplace/     # Marketplace components
 │   ├── mobile/          # Mobile-optimized components
 │   │   └── MobileTicketCreator.tsx
+│   ├── monitoring/      # System monitoring
 │   ├── optimized/       # Performance-optimized components
 │   │   ├── VirtualizedMachineGrid.tsx
 │   │   ├── MobileOptimizedGrid.tsx
@@ -210,6 +258,10 @@ src/
 │   ├── quotes/          # Quote management components
 │   │   ├── QuoteRequestDialog.tsx
 │   │   └── QuoteTwinSearchPanel.tsx
+│   ├── regional/        # Region-specific components
+│   ├── reports/         # Reporting components
+│   ├── sales/           # Sales and CRM
+│   ├── search/          # Search functionality
 │   ├── services/        # Service-related components
 │   │   ├── ServiceCard.tsx
 │   │   ├── EmergencyServiceDialog.tsx
@@ -219,6 +271,8 @@ src/
 │   │   ├── MaintenanceDashboard.tsx
 │   │   ├── PredictiveMaintenanceEngine.tsx
 │   │   └── OperatorTrainingIncentiveDialog.tsx
+│   ├── settings/        # Settings and configuration
+│   ├── shared/          # Shared components
 │   ├── shop/            # E-commerce components
 │   │   ├── IndustrialProductCard.tsx
 │   │   ├── ProductQuickView.tsx
@@ -231,19 +285,38 @@ src/
 │   ├── support/         # Customer support components
 │   │   ├── TicketWizardDialog.tsx
 │   │   └── AITechnicalChatbot.tsx
+│   ├── swiftxr/         # SwiftXR AR integration
+│   ├── training/        # Training components
 │   ├── ui/              # Base UI components (shadcn/ui)
 │   │   ├── FormSkeleton.tsx
 │   │   └── Progress.tsx
-│   └── used-machines/   # Used machinery marketplace
-│       └── SellUsedMachineForm.tsx
+│   ├── used-machines/   # Used machinery marketplace
+│   │   └── SellUsedMachineForm.tsx
+│   └── workflows/       # Workflow components
 ├── pages/               # Route components
-│   ├── Products.tsx     # YILMAZ machines showcase
-│   ├── Shop.tsx         # Industrial equipment hub
-│   ├── Services.tsx     # AI-powered services
-│   ├── UsedMachines.tsx # Used machinery marketplace
+│   ├── About.tsx        # Company information
+│   ├── AdminDashboard.tsx # Admin management
 │   ├── CustomerPortal.tsx # Customer dashboard
+│   ├── FabricatorDashboard.tsx # Fabricator workspace
+│   ├── FabricatorWorkflow.tsx # Main fabricator workflow
+│   ├── FabricationServices.tsx # Fabrication services
+│   ├── FabricationWorkflowDetail.tsx # Workflow details
+│   ├── FabricatorBrandingSettings.tsx # Branding settings
+│   ├── Index.tsx        # Homepage
+│   ├── Login.tsx        # Authentication
 │   ├── Model3DGallery.tsx # 3D model gallery
-│   └── AdminDashboard.tsx # Admin management
+│   ├── ModelViewerDemo.tsx # Model viewer demo
+│   ├── Products.tsx     # YILMAZ machines showcase
+│   ├── Projects.tsx     # Project management
+│   ├── QuotePage.tsx    # Quote management
+│   ├── Register.tsx     # User registration
+│   ├── Services.tsx     # AI-powered services
+│   ├── Shop.tsx         # Industrial equipment hub
+│   ├── UsedMachines.tsx # Used machinery marketplace
+│   ├── machines/        # Machine-specific pages
+│   ├── profiles/        # Profile management pages
+│   ├── Services/        # Service sub-pages
+│   └── workflows/       # Workflow sub-pages
 ├── hooks/               # Custom React hooks
 │   ├── useVirtualizedMachines.ts
 │   ├── useScrollThreshold.ts
@@ -256,9 +329,11 @@ src/
 │   ├── i18n.ts         # Internationalization
 │   ├── performance.ts  # Performance monitoring
 │   ├── imageOptimization.ts # Image optimization
+│   ├── pricing/        # Pricing utilities
 │   └── ticketing/      # Unified ticketing system
 ├── context/            # React context providers
 │   ├── AuthContext.tsx
+│   ├── FabricatorWorkspaceContext.tsx
 │   └── QuoteContext.tsx
 ├── constants/          # Static data and configurations
 │   ├── yilmazMachines.ts
@@ -269,9 +344,26 @@ src/
 │   ├── inventory.ts
 │   └── usedMachines.ts
 ├── types/              # TypeScript type definitions
+│   ├── fabricator.ts   # Fabricator-specific types
+│   └── index.ts        # Main type definitions
 ├── shared/             # Shared UI components
 │   └── ui/            # shadcn/ui components
-└── assets/             # Static assets and images
+├── assets/             # Static assets and images
+├── algorithms/         # Optimization algorithms
+├── cloud/              # Cloud integration
+├── config/             # Configuration files
+├── hocs/               # Higher-order components
+├── integrations/       # Third-party integrations
+├── localization/       # Localization utilities
+├── machine-connectors/ # CNC machine connectors
+├── modules/            # Feature modules
+├── optimization/       # Cutting optimization
+├── routes/             # Routing configuration
+├── services/           # Service layer
+├── store/              # State management
+├── stories/            # Storybook stories
+├── styles/             # Styling utilities
+└── utils/              # Utility functions
 ```
 
 ### **Backend Structure**
@@ -536,6 +628,25 @@ Notes
 
 ## 🔧 Key Components
 
+### **Fabricator Pro Platform**
+- `FabricatorWorkflowPro` - Main workflow cockpit with AI optimization pipeline
+- `FabricatorWorkspaceLayout` - Shared workspace layout with persistent state
+- `BosphorusWorkflowRibbon` - Visual workflow bridge between craftsmanship and technology
+- `CuttingOptimizationEngine` - Advanced genetic/constraint programming algorithms
+- `MassProductionDashboard` - Cross-project optimization with waste KPIs
+- `InventoryDashboard` - Enhanced inventory with remnant analytics and stock intake
+- `ProfileManagement` - User-defined profile libraries with pricing configurations
+- `AccessoryManagement` - Hardware catalog management with stock tracking
+- `PricingConfiguration` - Dynamic pricing with metal indexing and LME tracking
+- `CommercialOfferPanel` - Quote and invoice management with conversion workflows
+- `NewProjectWizard` - Smart project creation with branded system packs
+- `SmartMeasuringInterface` - AI-powered measurement and design interface
+- `SmartDrawTool` - Intelligent mullion/transom placement with constraints
+- `QualityControl` - Computer vision inspection and defect detection
+- `ProductionScheduler` - CNC job sequencing and machine-ready exports
+- `RealTimeMonitoring` - Live performance metrics and efficiency tracking
+- `QuickReportsPanel` - Multi-format export (PDF/CSV/DXF) with QR/barcode support
+
 ### **Shop & E-Commerce**
 - `IndustrialProductCard` - Specialized industrial product display
 - `ProductQuickView` - Modal-based product preview
@@ -738,7 +849,20 @@ For technical support or questions:
 
 ## 🔄 Recent Updates
 
-### **Version 3.0.0** (Latest)
+### **Version 3.1.0** (Latest)
+- ✅ **Fabricator Pro Platform**: Complete aluminium/UPVC workflow with AI optimization
+- ✅ **Advanced Cutting Algorithms**: Genetic, constraint programming, and exact optimization
+- ✅ **CNC Machine Integration**: DXF/G-code exports with Yilmaz and multi-brand connectors
+- ✅ **Mass Production Mode**: Cross-project optimization with unified waste KPIs
+- ✅ **Profile & Accessory Management**: Supabase-backed libraries with pricing and stock tracking
+- ✅ **Bosphorus Workflow Ribbon**: Ottoman/Egyptian craftsmanship meets modern technology
+- ✅ **Real-Time Analytics Dashboard**: Live performance metrics and efficiency monitoring
+- ✅ **Quality Control AI**: Computer vision inspection with automated defect detection
+- ✅ **Commercial Workspace**: Quote-to-invoice conversion with persistent drafts
+- ✅ **Branded System Packs**: ROCK 60, JUMBO 100, YILMAZ W60, CALUMINIUM PS support
+- ✅ **Metal Price Indexing**: LME/LOCAL indices with live material cost tracking
+- ✅ **Multi-Format Reporting**: PDF/CSV/DXF exports with QR/barcode localization
+- ✅ **SwiftXR AR Integration**: Advanced 3D model viewing and measurement
 - ✅ **Comprehensive Product Showcase**: YILMAZ machines with 3D integration
 - ✅ **Advanced Shop Experience**: Industrial equipment hub with AI advisor
 - ✅ **AI-Powered Services**: Predictive maintenance with 94% accuracy

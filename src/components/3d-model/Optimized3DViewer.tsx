@@ -71,28 +71,13 @@ const OptimizedModel = ({
   const [isWindowAnimating, setIsWindowAnimating] = useState(false);
   const [windowAnimationProgress, setWindowAnimationProgress] = useState(0);
   
-  // Safe GLTF loading with error handling (for GLB mode)
-  let scene, animations;
-  if (isGLBMode && modelPath) {
-    try {
-      const gltfResult = threeJS.useGLTF(modelPath);
-      scene = gltfResult.scene;
-      animations = gltfResult.animations || [];
-    } catch (error) {
-      console.error('Failed to load GLTF model:', error);
-      return null;
-    }
-  }
-  
-  // Safe animations setup
-  let actions = {};
-  if (isGLBMode && scene && animations && animations.length > 0) {
-    try {
-      actions = threeJS.useAnimations(animations, scene)?.actions || {};
-    } catch (error) {
-      console.warn('Failed to setup animations:', error);
-    }
-  }
+  // GLB mode: Load GLTF model (always call hooks, conditionally use)
+  const gltfResult = threeJS.useGLTF(isGLBMode && modelPath ? modelPath : '');
+  const scene = isGLBMode ? gltfResult.scene : null;
+  const animations = isGLBMode ? gltfResult.animations || [] : [];
+
+  // Animations setup (always call hook)
+  const { actions } = threeJS.useAnimations(animations, scene || groupRef.current || ({} as any));
 
   const [arSupported, setArSupported] = useState(false);
   const [isARSession, setIsARSession] = useState(false);

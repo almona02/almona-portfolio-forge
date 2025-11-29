@@ -27,155 +27,195 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    // Defer canvas initialization to avoid blocking LCP
+    let cleanup: (() => void) | null = null;
+    let idleCallbackId: number | null = null;
+    let timeoutId: NodeJS.Timeout | null = null;
 
-    // Mobile optimization: Reduce animation complexity
-    const isMobileDevice = window.innerWidth < 768;
+    const initCanvas = () => {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
 
-    // Set canvas size - Ensure proper initialization on mobile
-    const resizeCanvas = () => {
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width;
-      canvas.height = rect.height;
-      canvas.style.width = rect.width + 'px';
-      canvas.style.height = rect.height + 'px';
-    };
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    
-    // Force initial render on mobile
-    if (isMobileDevice) {
-      setTimeout(() => resizeCanvas(), 100);
-    }
-    
-    const particleCount = isMobileDevice ? 8 : 20; // Fewer particles on mobile
-    const hieroglyphCount = isMobileDevice ? 2 : 3; // Fewer hieroglyphs on mobile
-    const arabesqueCount = isMobileDevice ? 1 : 3; // Fewer arabesque patterns on mobile
-    const animationSpeed = isMobileDevice ? 0.015 : 0.02; // Slower animation on mobile
+      // Mobile optimization: Reduce animation complexity
+      const isMobileDevice = window.innerWidth < 768;
 
-    // Holographic UI elements animation
-    let animationFrame: number;
-    let time = 0;
-    let frameCount = 0;
-
-    const drawHolographicElements = () => {
-      frameCount++;
+      // Set canvas size - Ensure proper initialization on mobile
+      const resizeCanvas = () => {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = rect.height + 'px';
+      };
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
       
-      // Mobile: Skip frames for better performance (render every 2nd frame)
-      // But ensure we always render at least something
-      if (isMobileDevice && frameCount % 2 !== 0 && frameCount > 2) {
-        animationFrame = requestAnimationFrame(drawHolographicElements);
-        return;
+      // Force initial render on mobile
+      if (isMobileDevice) {
+        setTimeout(() => resizeCanvas(), 100);
       }
+      
+      const particleCount = isMobileDevice ? 8 : 20; // Fewer particles on mobile
+      const hieroglyphCount = isMobileDevice ? 2 : 3; // Fewer hieroglyphs on mobile
+      const arabesqueCount = isMobileDevice ? 1 : 3; // Fewer arabesque patterns on mobile
+      const animationSpeed = isMobileDevice ? 0.015 : 0.02; // Slower animation on mobile
 
-      // Ensure canvas is properly sized before drawing
-      if (canvas.width === 0 || canvas.height === 0) {
-        resizeCanvas();
-      }
+      // Holographic UI elements animation
+      let animationFrame: number | undefined;
+      let time = 0;
+      let frameCount = 0;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      time += animationSpeed;
+      const drawHolographicElements = () => {
+        frameCount++;
+      
+        // Mobile: Skip frames for better performance (render every 2nd frame)
+        // But ensure we always render at least something
+        if (isMobileDevice && frameCount % 2 !== 0 && frameCount > 2) {
+          animationFrame = requestAnimationFrame(drawHolographicElements);
+          return;
+        }
 
-      // Draw glowing hieroglyphs on Egyptian pillars (left side) - Reduced on mobile
-      ctx.save();
-      ctx.globalAlpha = isMobileDevice ? 0.2 : 0.3;
-      ctx.fillStyle = '#FFC107'; // Egyptian gold
-      for (let i = 0; i < hieroglyphCount; i++) {
-        const x = (canvas.width / (hieroglyphCount + 2)) * (i + 1);
-        const y = canvas.height * 0.3;
-        const size = isMobileDevice ? 15 : 20;
-        ctx.beginPath();
-        ctx.arc(x, y, size + Math.sin(time + i) * (isMobileDevice ? 3 : 5), 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
+        // Ensure canvas is properly sized before drawing
+        if (canvas.width === 0 || canvas.height === 0) {
+          resizeCanvas();
+        }
 
-      // Draw Ottoman arabesque patterns (right side) - Simplified on mobile
-      if (!isMobileDevice) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        time += animationSpeed;
+
+        // Draw glowing hieroglyphs on Egyptian pillars (left side) - Reduced on mobile
         ctx.save();
-        ctx.globalAlpha = 0.25;
-        ctx.strokeStyle = '#1E90FF'; // Ottoman blue
-        ctx.lineWidth = isMobileDevice ? 1 : 2;
-        for (let i = 0; i < arabesqueCount; i++) {
-          const x = canvas.width * 0.75 + (i * (isMobileDevice ? 50 : 100));
-          const y = canvas.height * 0.35;
+        ctx.globalAlpha = isMobileDevice ? 0.2 : 0.3;
+        ctx.fillStyle = '#FFC107'; // Egyptian gold
+        for (let i = 0; i < hieroglyphCount; i++) {
+          const x = (canvas.width / (hieroglyphCount + 2)) * (i + 1);
+          const y = canvas.height * 0.3;
+          const size = isMobileDevice ? 15 : 20;
           ctx.beginPath();
-          // Draw arabesque-inspired pattern (simplified geometric flower)
-          const petalCount = isMobileDevice ? 6 : 8;
-          for (let j = 0; j < petalCount; j++) {
-            const angle = (j * Math.PI * 2) / petalCount + time;
-            const radius = (isMobileDevice ? 10 : 15) + Math.sin(time * 2 + i) * (isMobileDevice ? 2 : 3);
-            const px = x + Math.cos(angle) * radius;
-            const py = y + Math.sin(angle) * radius;
-            if (j === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
-          }
-          ctx.closePath();
-          ctx.stroke();
+          ctx.arc(x, y, size + Math.sin(time + i) * (isMobileDevice ? 3 : 5), 0, Math.PI * 2);
+          ctx.fill();
         }
         ctx.restore();
-      }
 
-      // Draw holographic network nodes (PLC/Sensor visualization) - Simplified on mobile
-      ctx.save();
-      ctx.strokeStyle = '#00BCD4'; // Egyptian blue
-      ctx.lineWidth = isMobileDevice ? 1 : 2;
-      ctx.globalAlpha = isMobileDevice ? 0.3 : (0.4 + Math.sin(time) * 0.2);
-      
-      const nodeCount = isMobileDevice ? 3 : 4;
-      const nodes = [];
-      for (let i = 0; i < nodeCount; i++) {
-        nodes.push({
-          x: canvas.width * (0.2 + (i * 0.2)),
-          y: canvas.height * (0.6 - (i % 2) * 0.1)
-        });
-      }
-
-      // Draw connections - Simplified on mobile
-      if (!isMobileDevice) {
-        nodes.forEach((node, i) => {
-          if (i < nodes.length - 1) {
+        // Draw Ottoman arabesque patterns (right side) - Simplified on mobile
+        if (!isMobileDevice) {
+          ctx.save();
+          ctx.globalAlpha = 0.25;
+          ctx.strokeStyle = '#1E90FF'; // Ottoman blue
+          ctx.lineWidth = isMobileDevice ? 1 : 2;
+          for (let i = 0; i < arabesqueCount; i++) {
+            const x = canvas.width * 0.75 + (i * (isMobileDevice ? 50 : 100));
+            const y = canvas.height * 0.35;
             ctx.beginPath();
-            ctx.moveTo(node.x, node.y);
-            ctx.lineTo(nodes[i + 1].x, nodes[i + 1].y);
+            // Draw arabesque-inspired pattern (simplified geometric flower)
+            const petalCount = isMobileDevice ? 6 : 8;
+            for (let j = 0; j < petalCount; j++) {
+              const angle = (j * Math.PI * 2) / petalCount + time;
+              const radius = (isMobileDevice ? 10 : 15) + Math.sin(time * 2 + i) * (isMobileDevice ? 2 : 3);
+              const px = x + Math.cos(angle) * radius;
+              const py = y + Math.sin(angle) * radius;
+              if (j === 0) ctx.moveTo(px, py);
+              else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
             ctx.stroke();
           }
+          ctx.restore();
+        }
+
+        // Draw holographic network nodes (PLC/Sensor visualization) - Simplified on mobile
+        ctx.save();
+        ctx.strokeStyle = '#00BCD4'; // Egyptian blue
+        ctx.lineWidth = isMobileDevice ? 1 : 2;
+        ctx.globalAlpha = isMobileDevice ? 0.3 : (0.4 + Math.sin(time) * 0.2);
+        
+        const nodeCount = isMobileDevice ? 3 : 4;
+        const nodes = [];
+        for (let i = 0; i < nodeCount; i++) {
+          nodes.push({
+            x: canvas.width * (0.2 + (i * 0.2)),
+            y: canvas.height * (0.6 - (i % 2) * 0.1)
+          });
+        }
+
+        // Draw connections - Simplified on mobile
+        if (!isMobileDevice) {
+          nodes.forEach((node, i) => {
+            if (i < nodes.length - 1) {
+              ctx.beginPath();
+              ctx.moveTo(node.x, node.y);
+              ctx.lineTo(nodes[i + 1].x, nodes[i + 1].y);
+              ctx.stroke();
+            }
+          });
+        }
+
+        // Draw pulsing nodes - Smaller on mobile
+        nodes.forEach((node, i) => {
+          const pulse = Math.sin(time * 2 + i) * 0.3 + 0.7;
+          ctx.fillStyle = `rgba(255, 140, 0, ${pulse})`; // Orange/amber
+          ctx.beginPath();
+          const nodeSize = isMobileDevice ? 6 : 8;
+          ctx.arc(node.x, node.y, nodeSize * pulse, 0, Math.PI * 2);
+          ctx.fill();
         });
+        ctx.restore();
+
+        // Draw sparks effect (from cutting machine) - Reduced on mobile
+        ctx.save();
+        for (let i = 0; i < particleCount; i++) {
+          const sparkX = canvas.width * 0.7 + Math.random() * (isMobileDevice ? 50 : 100);
+          const sparkY = canvas.height * 0.8 + Math.sin(time * 5 + i) * (isMobileDevice ? 20 : 30);
+          const sparkSize = Math.random() * (isMobileDevice ? 2 : 3);
+          ctx.fillStyle = `rgba(255, ${200 + Math.random() * 55}, 0, ${isMobileDevice ? 0.6 : 0.8})`;
+          ctx.beginPath();
+          ctx.arc(sparkX, sparkY, sparkSize, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+
+        animationFrame = requestAnimationFrame(drawHolographicElements);
+      };
+
+      // Start animation after a small delay to ensure content is rendered first
+      const startAnimation = () => {
+        drawHolographicElements();
+      };
+
+      // Defer animation start to avoid blocking LCP
+      // Use requestIdleCallback with timeout fallback
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(startAnimation, { timeout: 1000 });
+      } else {
+        setTimeout(startAnimation, 100);
       }
 
-      // Draw pulsing nodes - Smaller on mobile
-      nodes.forEach((node, i) => {
-        const pulse = Math.sin(time * 2 + i) * 0.3 + 0.7;
-        ctx.fillStyle = `rgba(255, 140, 0, ${pulse})`; // Orange/amber
-        ctx.beginPath();
-        const nodeSize = isMobileDevice ? 6 : 8;
-        ctx.arc(node.x, node.y, nodeSize * pulse, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      ctx.restore();
-
-      // Draw sparks effect (from cutting machine) - Reduced on mobile
-      ctx.save();
-      for (let i = 0; i < particleCount; i++) {
-        const sparkX = canvas.width * 0.7 + Math.random() * (isMobileDevice ? 50 : 100);
-        const sparkY = canvas.height * 0.8 + Math.sin(time * 5 + i) * (isMobileDevice ? 20 : 30);
-        const sparkSize = Math.random() * (isMobileDevice ? 2 : 3);
-        ctx.fillStyle = `rgba(255, ${200 + Math.random() * 55}, 0, ${isMobileDevice ? 0.6 : 0.8})`;
-        ctx.beginPath();
-        ctx.arc(sparkX, sparkY, sparkSize, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-
-      animationFrame = requestAnimationFrame(drawHolographicElements);
+      cleanup = () => {
+        window.removeEventListener('resize', resizeCanvas);
+        if (animationFrame !== undefined) {
+          cancelAnimationFrame(animationFrame);
+        }
+      };
     };
 
-    drawHolographicElements();
+    // Defer canvas initialization to improve LCP
+    if ('requestIdleCallback' in window) {
+      idleCallbackId = (window as any).requestIdleCallback(initCanvas, { timeout: 2000 });
+    } else {
+      // Fallback for browsers without requestIdleCallback
+      timeoutId = setTimeout(initCanvas, 200);
+    }
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      cancelAnimationFrame(animationFrame);
+      if (idleCallbackId !== null && 'cancelIdleCallback' in window) {
+        (window as any).cancelIdleCallback(idleCallbackId);
+      }
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+      }
+      if (cleanup) {
+        cleanup();
+      }
     };
   }, [isMobile]);
 
@@ -202,13 +242,14 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
         }}
       />
       
-      {/* Fallback img element for better browser compatibility */}
+      {/* Fallback img element for better browser compatibility - Lazy loaded to improve LCP */}
       <img 
         src="/images/egyptian-industrial-hero-bg.png"
         alt="Egyptian-Ottoman Industrial Scene"
         className="absolute inset-0 z-0 w-full h-full object-cover object-right opacity-0 pointer-events-none"
         style={{ display: 'none' }}
-        loading="eager"
+        loading="lazy"
+        decoding="async"
         onError={(e) => {
           console.error('Failed to load hero background image:', e);
         }}

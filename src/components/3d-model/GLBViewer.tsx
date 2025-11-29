@@ -60,12 +60,12 @@ export function GLBViewer({
   // Determine viewer mode
   const isWindowMode = !!windowUnit
   const isGLBMode = !!modelPath && !windowUnit
-  
-  // GLB mode: Load GLTF model
-  const gltfResult = isGLBMode && modelPath ? useGLTF(modelPath) : { scene: null, animations: [] }
+
+  // GLB mode: Load GLTF model (always call hooks, conditionally use)
+  const gltfResult = useGLTF(isGLBMode && modelPath ? modelPath : '')
   const scene = isGLBMode ? gltfResult.scene : null
   const animations = isGLBMode ? gltfResult.animations : []
-  const { actions } = useAnimations(animations, scene || ({} as any))
+  const { actions } = useAnimations(animations, scene || groupRef.current || ({} as any))
 
   const [arSupported, setArSupported] = useState(false)
   const [isARSession, setIsARSession] = useState(false)

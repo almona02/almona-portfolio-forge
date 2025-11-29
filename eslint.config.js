@@ -1,6 +1,7 @@
 // ESLint flat config for TypeScript + React project: lint src while ignoring heavy/generated content
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
+import react from "eslint-plugin-react";
 
 export default tseslint.config(
   {
@@ -15,6 +16,7 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     plugins: {
+      "react": react,
       "react-hooks": reactHooks
     },
     rules: {

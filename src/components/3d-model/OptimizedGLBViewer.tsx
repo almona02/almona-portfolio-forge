@@ -19,10 +19,10 @@ export interface OptimizedGLBViewerProps {
 }
 
 // Optimized model component
-const OptimizedModel = ({ 
-  modelPath, 
-  scale = 1, 
-  position = [0, 0, 0], 
+const OptimizedModel = ({
+  modelPath,
+  scale = 1,
+  position = [0, 0, 0],
   enableAR = true,
   onReady,
   arScaleMultiplier = 0.5,
@@ -32,27 +32,14 @@ const OptimizedModel = ({
 }: OptimizedGLBViewerProps & { threeJS: any }) => {
   const groupRef = useRef<any>(null)
   const { gl, camera } = threeJS.useThree()
-  
-  // Safe GLTF loading with error handling
-  let scene, animations;
-  try {
-    const gltfResult = threeJS.useGLTF(modelPath);
-    scene = gltfResult.scene;
-    animations = gltfResult.animations || [];
-  } catch (error) {
-    console.error('Failed to load GLTF model:', error);
-    return null;
-  }
-  
-  // Safe animations setup
-  let actions = {};
-  try {
-    if (scene && animations.length > 0) {
-      actions = threeJS.useAnimations(animations, scene)?.actions || {};
-    }
-  } catch (error) {
-    console.warn('Failed to setup animations:', error);
-  }
+
+  // Always call hooks in the same order
+  const gltfResult = threeJS.useGLTF(modelPath)
+  const scene = gltfResult.scene
+  const animations = gltfResult.animations || []
+
+  // Always call useAnimations hook
+  const { actions } = threeJS.useAnimations(animations, scene)
 
   const [arSupported, setArSupported] = useState(false)
   const [isARSession, setIsARSession] = useState(false)

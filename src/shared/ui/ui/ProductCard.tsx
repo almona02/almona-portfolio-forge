@@ -3,6 +3,7 @@ import { Button } from "@/shared/ui/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/ui/card";
 import { ArrowRight, Download, PlayCircle } from "lucide-react";
 import { Badge } from "@/shared/ui/ui/badge";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 
 interface ProductCardProps {
@@ -54,12 +55,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </span>
         )}
         <div className="relative w-full aspect-[4/3] overflow-hidden">
-          <img 
-            src={imageUrl} 
+          <OptimizedImage
+            src={imageUrl}
             alt={title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
-            decoding="async"
+            quality={85}
+            format="auto"
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-almona-dark-default to-transparent opacity-50"></div>

@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Badge } from '@/shared/ui/ui/badge';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
-import { Users, Package, FileText, Calculator, Save } from 'lucide-react';
+import { Users, Package, FileText, Calculator } from 'lucide-react';
 import { WorkspaceSnapshotManager } from '@/components/fabricator/WorkspaceSnapshotManager';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
+import { AutoSaveIndicator } from '@/components/fabricator/AutoSaveIndicator';
+import { useAutoSave } from '@/hooks/useAutoSave';
+import { WorkspaceSyncService } from '@/lib/workspace/WorkspaceSyncService';
 
 const workspaceTabs = [
   { id: 'projects', label: 'Projects', icon: FileText, path: '/fabricator/projects' },
@@ -36,9 +39,33 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
     navigate(tab.path);
   };
 
-  const lastSavedLabel = state.lastSaved
-    ? `Saved ${new Date(state.lastSaved).toLocaleTimeString()}`
-    : 'Workspace active';
+  // Create save function for useAutoSave hook
+  // Note: useAutoSave handles debouncing, so we use saveWithRecovery
+  // (which uses the regular save method, not the debounced one)
+  const saveFunction = useCallback(
+    async (workspaceData: typeof state) => {
+      const service = new WorkspaceSyncService('fabricator-workspace-v1');
+      // Use saveWithRecovery for error handling and timestamp tracking
+      // It calls saveWorkspaceSnapshot (non-debounced) internally
+      return await service.saveWithRecovery(workspaceData);
+    },
+    []
+  );
+
+  // Use auto-save hook for status tracking
+  const { isSaving, lastSaved, hasUnsavedChanges, manualSave } = useAutoSave(
+    state,
+    saveFunction,
+    {
+      delay: 3000,
+      enabled: true,
+      onSave: (result) => {
+        if (result.success && result.timestamp) {
+          dispatch({ type: 'MARK_SAVED', payload: result.timestamp });
+        }
+      }
+    }
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
@@ -57,14 +84,13 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
             </div>
 
             <div className="flex flex-col md:items-end gap-2 text-xs md:text-sm">
-              <div className="flex items-center gap-2 text-slate-300">
-                <span className="inline-flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>{lastSavedLabel}</span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-500">
-                <Save className="h-3 w-3" />
-                <span>Auto-save to browser workspace enabled</span>
-              </div>
+              <AutoSaveIndicator
+                isSaving={isSaving}
+                lastSaved={lastSaved}
+                hasUnsavedChanges={hasUnsavedChanges}
+                onManualSave={manualSave}
+                className="text-xs"
+              />
               <div className="mt-1">
                 <WorkspaceSnapshotManager />
               </div>

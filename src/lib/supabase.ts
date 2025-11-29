@@ -4,15 +4,29 @@ import { createClient } from '@supabase/supabase-js'
 import { Database } from '@/types/database'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string
-const supabaseKey = (import.meta.env.VITE_SUPABASE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY) as string
+// IMPORTANT: Only use ANON_KEY in browser - never use service role key (VITE_SUPABASE_KEY)
+// Service role keys are secret and will cause "Forbidden use of secret API key in browser" error
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string
 
 // Provide fallback values for development/production to prevent black screen
 const fallbackUrl = 'https://placeholder.supabase.co'
 const fallbackKey = 'placeholder-key'
 
 if (!supabaseUrl || !supabaseKey) {
-  console.warn('⚠️ Missing Supabase environment variables. Using fallback configuration.')
-  console.warn('Some features may not work correctly. Please check your .env file.')
+  console.error('❌ Missing Supabase environment variables!')
+  console.error('Required variables:')
+  console.error('  - VITE_SUPABASE_URL (your Supabase project URL)')
+  console.error('  - VITE_SUPABASE_ANON_KEY (the anon/public key from Supabase Settings > API)')
+  console.error('')
+  console.error('⚠️ Using fallback configuration. Some features may not work correctly.')
+  console.error('Please check your .env file and ensure VITE_SUPABASE_ANON_KEY is set to the PUBLIC anon key.')
+}
+
+// Validate key format (anon keys are JWTs that start with 'eyJ')
+if (supabaseKey && !supabaseKey.startsWith('eyJ') && supabaseKey !== fallbackKey) {
+  console.warn('⚠️ Warning: VITE_SUPABASE_ANON_KEY does not appear to be a valid anon key.')
+  console.warn('Anon keys are JWT tokens that start with "eyJ".')
+  console.warn('Make sure you are using the "anon" "public" key from Supabase Settings > API, not the service_role key.')
 }
 
 // Enhanced Supabase client configuration for e-commerce
@@ -40,7 +54,7 @@ const supabaseOptions = {
     },
   },
   db: {
-    schema: 'public',
+    schema: 'public' as const,
   },
   // Add connection pooling and timeout settings
   fetch: (url: string, options: RequestInit = {}) => {

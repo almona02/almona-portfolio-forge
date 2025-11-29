@@ -8,6 +8,9 @@ import {
 } from '@/shared/ui/ui/dialog';
 import { QuoteRequestStepper } from './QuoteRequestStepper';
 import { useToast } from '@/hooks/useToast';
+import { useClipboard } from '@/hooks/useClipboard';
+import { Copy, Check } from 'lucide-react';
+import { Button } from '@/shared/ui/ui/button';
 
 import { Machine } from '../../types/index';
 
@@ -39,6 +42,8 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
   relatedServiceTicketId,
 }) => {
   const { toast } = useToast();
+  const quoteClipboard = useClipboard({ label: 'quote number' });
+  const twinClipboard = useClipboard({ label: 'digital twin code' });
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<null | {
     quote_number: string;
@@ -139,9 +144,42 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
               <div className="p-4 rounded border border-almona-light/30 bg-almona-dark">
                 <h3 className="text-lg font-semibold mb-2">Quote Submitted</h3>
                 <p className="text-sm text-gray-300 mb-2">Your quote was created successfully.</p>
-                <ul className="text-sm text-gray-400 space-y-1 mb-4">
-                  <li><span className="text-gray-500">Quote #:</span> {result.quote_number}</li>
-                  <li><span className="text-gray-500">Digital Twin:</span> {result.digital_twin_code || 'Pending assignment'}</li>
+                <ul className="text-sm text-gray-400 space-y-2 mb-4">
+                  <li className="flex items-center justify-between">
+                    <span><span className="text-gray-500">Quote #:</span> {result.quote_number}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 p-0"
+                      onClick={() => quoteClipboard.copyToClipboard(result.quote_number, 'quote number')}
+                    >
+                      {quoteClipboard.copiedText === result.quote_number ? (
+                        <Check className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span>
+                      <span className="text-gray-500">Digital Twin:</span>{' '}
+                      {result.digital_twin_code || 'Pending assignment'}
+                    </span>
+                    {result.digital_twin_code && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0"
+                        onClick={() => twinClipboard.copyToClipboard(result.digital_twin_code!, 'digital twin code')}
+                      >
+                        {twinClipboard.copiedText === result.digital_twin_code ? (
+                          <Check className="h-4 w-4 text-green-500" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                    )}
+                  </li>
                   <li><span className="text-gray-500">Portal Reference:</span> {result.portal_reference || 'N/A'}</li>
                   {relatedServiceTicketId && (
                     <li>

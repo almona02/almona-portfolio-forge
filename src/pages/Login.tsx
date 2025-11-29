@@ -1,6 +1,6 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, startTransition } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import Footer from '@/components/layout/Footer';
@@ -31,8 +31,14 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      toast.success('Logged in successfully!');
-      navigate('/');
+      // Defer toast and navigation to avoid blocking the login interaction
+      requestAnimationFrame(() => {
+        toast.success('Logged in successfully!');
+        // Use startTransition for navigation to improve INP
+        startTransition(() => {
+          navigate('/');
+        });
+      });
     }
   }, [user, navigate]);
 

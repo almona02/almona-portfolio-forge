@@ -48,7 +48,8 @@ class OfflineSyncService {
 
   private initializeService() {
     // Register service worker for background sync and push notifications
-    if ('serviceWorker' in navigator) {
+    // Only register in production - Vite dev server doesn't support service workers
+    if ('serviceWorker' in navigator && import.meta.env.PROD) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
           this.registration = registration;
@@ -57,6 +58,8 @@ class OfflineSyncService {
         .catch((error) => {
           console.error('SW registration failed:', error);
         });
+    } else if (import.meta.env.DEV) {
+      console.info('[OfflineSync] Service worker registration skipped in development mode');
     }
 
     // Start sync interval

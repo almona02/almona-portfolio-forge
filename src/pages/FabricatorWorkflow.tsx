@@ -155,6 +155,12 @@ import { IstanbulSkylineFooter } from '@/components/fabricator/IstanbulSkylineFo
 import { BosphorusWorkflowRibbon } from '@/components/fabricator/BosphorusWorkflowRibbon';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
+import { 
+  trackFabricatorLoadTime, 
+  markFabricatorReady, 
+  trackInventoryLoad,
+  trackOptimization 
+} from '@/lib/performance';
 
 const sampleHardware = [
   { id: 'hinge_1', name: 'Casement Hinge', type: 'hinge', quantity: 2, position: 'side' },
@@ -207,6 +213,23 @@ export const FabricatorWorkflow: React.FC = () => {
 
   // Force-remount SmartMeasuringInterface when starting a fresh pose measuring session
   const [measurementSessionId, setMeasurementSessionId] = useState(0);
+
+  // Performance tracking: Track component mount
+  useEffect(() => {
+    trackFabricatorLoadTime();
+    
+    // Mark as ready when workspace is fully loaded (inventory + initial project state)
+    const checkReady = () => {
+      if (!isLoadingInventory && (inventory.length > 0 || inventoryError)) {
+        // Small delay to ensure UI is rendered
+        setTimeout(() => {
+          markFabricatorReady();
+        }, 100);
+      }
+    };
+    
+    checkReady();
+  }, [isLoadingInventory, inventory.length, inventoryError]);
 
   // Measuring tab: existing project + pose selection
   const [selectedExistingProjectKey, setSelectedExistingProjectKey] = useState<string>('');
@@ -361,6 +384,9 @@ export const FabricatorWorkflow: React.FC = () => {
       setIsLoadingInventory(true);
       setInventoryError(null);
       
+      // Track inventory load performance
+      const inventoryTracker = trackInventoryLoad();
+      
       try {
         // Simulate async loading
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -417,6 +443,8 @@ export const FabricatorWorkflow: React.FC = () => {
         setInventory([]);
       } finally {
         setIsLoadingInventory(false);
+        // End inventory load tracking
+        inventoryTracker.end();
       }
     };
 
@@ -426,6 +454,9 @@ export const FabricatorWorkflow: React.FC = () => {
   const generateCuttingPlan = useCallback(
     async (components: WindowComponent[], profiles: Profile[]): Promise<OptimizationResult> => {
       setIsGeneratingCuttingPlan(true);
+
+      // Track optimization performance
+      const optimizationTracker = trackOptimization();
 
       // Global hard safety limit for profile stock length in mm.
       // Many regional suppliers use 6–7.5m bars; we cap all cutting
@@ -573,10 +604,14 @@ export const FabricatorWorkflow: React.FC = () => {
 
         setIsGeneratingCuttingPlan(false);
         workspaceDispatch({ type: 'SET_OPTIMIZATION_RESULT', payload: result });
+        // End optimization tracking
+        optimizationTracker.end();
         return result;
       } catch (error) {
         setIsGeneratingCuttingPlan(false);
         console.error('Error generating cutting plan:', error);
+        // End tracking even on error
+        optimizationTracker.end();
         throw error;
       }
     },

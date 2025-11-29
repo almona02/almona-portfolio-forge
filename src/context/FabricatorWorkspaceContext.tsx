@@ -264,25 +264,38 @@ export const FabricatorWorkspaceProvider: React.FC<{ children: ReactNode }> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Persist workspace to Supabase (with localStorage fallback) whenever state changes
+  // Persist workspace to Supabase (with localStorage fallback) using debounced save
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
+    let serviceInstance: any = null;
+
     void import('@/lib/workspace/WorkspaceSyncService')
       .then(({ WorkspaceSyncService }) => {
-        const service = new WorkspaceSyncService(STORAGE_KEY);
-        return service.saveWorkspaceSnapshot(state);
-      })
-      .then((result) => {
-        // Optional: could surface sync status in UI later; for now just log failures.
-        if (!result?.success) {
-          // eslint-disable-next-line no-console
-          console.warn('Workspace sync reported failure status', result);
-        }
+        serviceInstance = new WorkspaceSyncService(STORAGE_KEY);
+        
+        // Use debounced save method (3-second delay built-in)
+        serviceInstance.saveWorkspaceSnapshotDebounced(state, 3000)
+          .then((result: any) => {
+            // Optional: could surface sync status in UI later; for now just log failures.
+            if (!result?.success) {
+              console.warn('[WorkspaceContext] Workspace sync reported failure status', result);
+            }
+          })
+          .catch((error: any) => {
+            console.warn('[WorkspaceContext] Failed to persist fabricator workspace via sync service:', error);
+          });
       })
       .catch((error) => {
-        console.warn('Failed to persist fabricator workspace via sync service:', error);
+        console.warn('[WorkspaceContext] Failed to load WorkspaceSyncService:', error);
       });
+
+    // Cleanup: cancel pending debounced save on unmount or state change
+    return () => {
+      if (serviceInstance?.cancelDebouncedSave) {
+        serviceInstance.cancelDebouncedSave();
+      }
+    };
   }, [state]);
 
   return (

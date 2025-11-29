@@ -577,7 +577,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
       mullionProfile,
     );
 
-    let allComponents = [...components];
+    const allComponents = [...components];
 
     // Add a single fixed horizontal mullion (transom) if requested by the user
     if (enableHorizontal && horizontalPositionMm != null && overallHeight > 0) {
@@ -617,7 +617,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
 
     onApplyLayout({
       layout,
-        components: allComponents,
+      components: allComponents,
       isValid: allErrors.length === 0,
       errors: allErrors,
     });

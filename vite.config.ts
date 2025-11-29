@@ -127,11 +127,11 @@ export default defineConfig(({ mode }) => {
       ...(isProduction && process.env.ANALYZE === 'true'
         ? [
             visualizer({
-              filename: "dist/stats.json",
+              filename: "dist/bundle-analysis.html",
               open: false,
               gzipSize: true,
               brotliSize: true,
-              template: "raw-data",
+              template: "treemap", // Use treemap for visual HTML output
               sourcemap: false,
             }),
           ]
@@ -226,13 +226,67 @@ export default defineConfig(({ mode }) => {
           chunkFileNames: `assets/[name]-[hash].js`,
           assetFileNames: `assets/[name]-[hash].[ext]`,
           // Optimize chunk splitting for better caching
-          manualChunks: {
-            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs'],
-            'chart-vendor': ['chart.js', 'react-chartjs-2'],
-            'pdf-vendor': ['pdf-lib'],
-            'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
-            'utils-vendor': ['date-fns', 'clsx', 'tailwind-merge']
+          manualChunks: (id) => {
+            // Vendor chunks - keep these separate for better caching
+            if (id.includes('node_modules')) {
+              // React and React DOM
+              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+                return 'react-vendor';
+              }
+              // UI libraries
+              if (id.includes('@radix-ui') || id.includes('@radix')) {
+                return 'ui-vendor';
+              }
+              // Chart libraries
+              if (id.includes('chart.js') || id.includes('react-chartjs')) {
+                return 'chart-vendor';
+              }
+              // PDF libraries
+              if (id.includes('pdf-lib') || id.includes('pdfjs')) {
+                return 'pdf-vendor';
+              }
+              // Three.js and 3D libraries
+              if (id.includes('three') || id.includes('@react-three')) {
+                return 'three-vendor';
+              }
+              // Utility libraries
+              if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
+                return 'utils-vendor';
+              }
+              // Other large vendor libraries go into a common vendor chunk
+              return 'vendor';
+            }
+            
+            // Fabricator-specific chunks
+            if (id.includes('components/fabricator')) {
+              // Core Fabricator components
+              if (
+                id.includes('FabricatorWorkflowPro') ||
+                id.includes('FabricatorWorkspaceLayout') ||
+                id.includes('FabricatorWorkspaceContext')
+              ) {
+                return 'fabricator-core';
+              }
+              // Optimization engine
+              if (id.includes('CuttingOptimizationEngine')) {
+                return 'fabricator-algorithms';
+              }
+              // Other Fabricator components
+              return 'fabricator-components';
+            }
+            
+            // Algorithms directory
+            if (id.includes('algorithms/')) {
+              return 'fabricator-algorithms';
+            }
+            
+            // Fabricator context
+            if (id.includes('context/FabricatorWorkspaceContext')) {
+              return 'fabricator-core';
+            }
+            
+            // Default: no manual chunk (let Vite decide)
+            return undefined;
           }
         },
       },

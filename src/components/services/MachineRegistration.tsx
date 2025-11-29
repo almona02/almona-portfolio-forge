@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { QrCodeIcon, CheckCircle2, AlertCircle, ChevronRight, Camera, Upload, FileText } from "lucide-react";
+import { QrCodeIcon, CheckCircle2, AlertCircle, ChevronRight, Camera, Upload, FileText, Copy, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
@@ -12,6 +12,7 @@ import { EnhancedOperatorTrainingDialog } from './EnhancedOperatorTrainingDialog
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/lib/api';
 import { useQueryClient } from '@tanstack/react-query';
+import { useClipboard } from '@/hooks/useClipboard';
 
 interface MachineData {
   serialNumber: string;
@@ -32,6 +33,7 @@ interface WarrantyExtension {
 export const MachineRegistrationEnhanced = withErrorBoundary(() => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const twinClipboard = useClipboard({ label: 'digital twin code' });
   const [machine, setMachine] = useState<MachineData>({
     serialNumber: "",
     model: "",
@@ -331,7 +333,26 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                         <div><p className="text-sm text-gray-400">Serial Number</p><p className="font-mono text-orange-500">{machine.serialNumber}</p></div>
                         <div><p className="text-sm text-gray-400">Model</p><p className="font-bold">{machine.model}</p></div>
                         <div><p className="text-sm text-gray-400">Installation Date</p><p>{machine.installationDate ? new Date(machine.installationDate).toLocaleDateString() : 'N/A'}</p></div>
-                        <div><p className="text-sm text-gray-400">Digital Twin ID</p><p className="font-mono text-green-500">{machine.digitalTwinId}</p></div>
+                        {machine.digitalTwinId && (
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm text-gray-400">Digital Twin ID</p>
+                              <p className="font-mono text-green-500">{machine.digitalTwinId}</p>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => twinClipboard.copyToClipboard(machine.digitalTwinId!, 'digital twin code')}
+                            >
+                              {twinClipboard.copiedText === machine.digitalTwinId ? (
+                                <Check className="h-4 w-4 text-green-500" />
+                              ) : (
+                                <Copy className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
