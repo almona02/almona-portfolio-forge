@@ -40,3 +40,6 @@ venv/
 # Generated reports
 duplicates-report.json
 duplicates-report.md
+
+# Windows reserved device names (can cause git issues)
+nul

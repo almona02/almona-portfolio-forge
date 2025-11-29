@@ -99,21 +99,112 @@ try {
   console.error('Failed to initialize polyfills or performance monitoring:', error);
 }
 
-// Global error handler for unhandled Supabase auth errors
+// Global error handler for unhandled Supabase auth errors and browser extension errors
 window.addEventListener('unhandledrejection', (event) => {
   const error = event.reason;
-  if (error?.message?.includes('refresh_token') || 
-      error?.message?.includes('Invalid Refresh Token') ||
-      error?.message?.includes('Refresh Token Not Found')) {
-    console.warn('[Global] Supabase auth error detected:', error.message);
+  const errorMessage = error?.message || String(error || '');
+  
+  // Suppress Supabase auth errors
+  if (errorMessage.includes('refresh_token') || 
+      errorMessage.includes('Invalid Refresh Token') ||
+      errorMessage.includes('Refresh Token Not Found')) {
+    console.warn('[Global] Supabase auth error detected:', errorMessage);
     event.preventDefault();
+    return;
+  }
+  
+  // Suppress browser extension communication errors
+  if (errorMessage.includes('Could not establish connection') ||
+      errorMessage.includes('Receiving end does not exist') ||
+      errorMessage.includes('Extension context invalidated') ||
+      errorMessage.includes('content-script') ||
+      errorMessage.includes('chrome-extension://') ||
+      errorMessage.includes('moz-extension://')) {
+    // These are harmless browser extension errors - suppress them
+    if (import.meta.env.DEV) {
+      console.debug('[Suppressed] Browser extension error:', errorMessage);
+    }
+    event.preventDefault();
+    return;
   }
 });
+
+// Global error handler to suppress external resource loading errors
+// (e.g., from browser extensions, third-party scripts, or analytics services)
+const externalDomains = [
+  'reasonlabsapi.com',
+  'ab.reasonlabsapi.com',
+  'connect.facebook.net',
+  'www.googletagmanager.com',
+  'www.google-analytics.com',
+];
+
+window.addEventListener('error', (event) => {
+  const target = event.target as HTMLElement;
+  const isExternalResource = target && (
+    (target.tagName === 'SCRIPT' && (target as HTMLScriptElement).src) ||
+    (target.tagName === 'LINK' && (target as HTMLLinkElement).href) ||
+    (target.tagName === 'IMG' && (target as HTMLImageElement).src)
+  );
+  
+  if (isExternalResource) {
+    let url = '';
+    if (target.tagName === 'SCRIPT') {
+      url = (target as HTMLScriptElement).src || '';
+    } else if (target.tagName === 'LINK') {
+      url = (target as HTMLLinkElement).href || '';
+    } else if (target.tagName === 'IMG') {
+      url = (target as HTMLImageElement).src || '';
+    }
+    
+    const isExternalDomain = externalDomains.some(domain => url.includes(domain));
+    
+    if (isExternalDomain) {
+      // Suppress the error - it's from an external service and not critical
+      event.preventDefault();
+      if (import.meta.env.DEV) {
+        // Only log in development for debugging
+        console.debug('[Suppressed] External resource error:', url, event.message);
+      }
+      return false;
+    }
+  }
+  
+  // Check for HTTP2 protocol errors from external resources
+  if (event.message && (
+    event.message.includes('ERR_HTTP2_PROTOCOL_ERROR') ||
+    event.message.includes('Failed to load resource')
+  )) {
+    const errorSource = (event.filename || event.message || '').toLowerCase();
+    const isExternalError = externalDomains.some(domain => errorSource.includes(domain));
+    
+    if (isExternalError) {
+      event.preventDefault();
+      if (import.meta.env.DEV) {
+        console.debug('[Suppressed] External HTTP2 error:', errorSource);
+      }
+      return false;
+    }
+  }
+  
+  // Suppress browser extension content script errors
+  if (event.filename && (
+    event.filename.includes('content-script') ||
+    event.filename.includes('chrome-extension://') ||
+    event.filename.includes('moz-extension://')
+  )) {
+    event.preventDefault();
+    if (import.meta.env.DEV) {
+      console.debug('[Suppressed] Browser extension error:', event.filename, event.message);
+    }
+    return false;
+  }
+}, true); // Use capture phase to catch errors early
 
 // Environment validation
 if (import.meta.env.DEV) {
   console.log("🔧 Development mode active");
-  const requiredEnvVars = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_KEY'];
+  const requiredEnvVars = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
   const missingEnvVars = requiredEnvVars.filter(envVar => !import.meta.env[envVar]);
   if (missingEnvVars.length > 0) {
     console.warn('⚠️ Missing environment variables:', missingEnvVars);

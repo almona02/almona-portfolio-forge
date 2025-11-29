@@ -1,0 +1,1243 @@
+
+> vite_react_shadcn_ts@0.0.5 lint
+> eslint "src" --ext ts,tsx
+
+
+C:\projects\almona-portfolio-forge\src\algorithms\massProductionOptimizer.ts
+   31:8   warning  'Remnant' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+   32:8   warning  'RemnantMatch' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   51:37  warning  'TOptions' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  401:7   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+C:\projects\almona-portfolio-forge\src\algorithms\smartDraw.ts
+  270:14  warning  'position' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\cloud\BackupManager.ts
+   71:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  147:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\cloud\DataReplication.ts
+  110:9  warning  'synced' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\cloud\LocationSync.ts
+  162:5  warning  'priority' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\compliance\ASTME1300.ts
+  154:11  warning  'area' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\compliance\EN14351.ts
+  219:11  warning  'area' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\compliance\QualityAudit.ts
+   20:18  error    Unsafe declaration merging between classes and interfaces                  @typescript-eslint/no-unsafe-declaration-merging
+   42:14  error    Unsafe declaration merging between classes and interfaces                  @typescript-eslint/no-unsafe-declaration-merging
+  177:34  warning  'project' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  185:31  warning  'project' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  193:31  warning  'project' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  201:37  warning  'project' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\Collaborative3DViewer.tsx
+    3:25  warning  'Text' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+    4:19  warning  'Color' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+  160:15  warning  'channel' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\Enhanced3DViewer.tsx
+   13:18  warning  'useThree' is defined but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+   14:81  warning  'Html' is defined but never used. Allowed unused vars must match /^_/u                            @typescript-eslint/no-unused-vars
+   14:87  warning  'Text' is defined but never used. Allowed unused vars must match /^_/u                            @typescript-eslint/no-unused-vars
+   78:3   warning  'onError' is defined but never used. Allowed unused args must match /^_/u                         @typescript-eslint/no-unused-vars
+  162:3   warning  'enableMeasurementTool' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\EnhancedGLBViewer.tsx
+  34:45  warning  'onError' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\EnhancedModel3DDialog.tsx
+   6:10  warning  'Progress' is defined but never used. Allowed unused vars must match /^_/u                          @typescript-eslint/no-unused-vars
+  23:3   warning  'Volume2' is defined but never used. Allowed unused vars must match /^_/u                           @typescript-eslint/no-unused-vars
+  24:3   warning  'VolumeX' is defined but never used. Allowed unused vars must match /^_/u                           @typescript-eslint/no-unused-vars
+  31:10  warning  'Tabs' is defined but never used. Allowed unused vars must match /^_/u                              @typescript-eslint/no-unused-vars
+  31:16  warning  'TabsContent' is defined but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+  31:29  warning  'TabsList' is defined but never used. Allowed unused vars must match /^_/u                          @typescript-eslint/no-unused-vars
+  31:39  warning  'TabsTrigger' is defined but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+  81:10  warning  'isMuted' is assigned a value but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+  81:19  warning  'setIsMuted' is assigned a value but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+  98:9   warning  'simulateLoadingProgress' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\GLBViewer.tsx
+  49:3   warning  'enableWindowControls' is assigned a value but never used. Allowed unused args must match /^_/u                                                                                                  @typescript-eslint/no-unused-vars
+  50:3   warning  'windowAnimationSpeed' is assigned a value but never used. Allowed unused args must match /^_/u                                                                                                  @typescript-eslint/no-unused-vars
+  65:47  error    React Hook "useGLTF" is called conditionally. React Hooks must be called in the exact same order in every component render                                                                       react-hooks/rules-of-hooks
+  67:9   warning  The 'animations' conditional could make the dependencies of useEffect Hook (at line 100) change on every render. To fix this, wrap the initialization of 'animations' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\Interactive3DViewer.tsx
+   15:87  warning  'Text' is defined but never used. Allowed unused vars must match /^_/u                            @typescript-eslint/no-unused-vars
+   21:10  warning  'useRegionDetection' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  111:3   warning  'onError' is defined but never used. Allowed unused args must match /^_/u                         @typescript-eslint/no-unused-vars
+  293:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u                      @typescript-eslint/no-unused-vars
+  346:3   warning  'usdzPath' is assigned a value but never used. Allowed unused args must match /^_/u               @typescript-eslint/no-unused-vars
+  368:3   warning  'enableMeasurementTool' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  370:3   warning  'cameraState' is defined but never used. Allowed unused args must match /^_/u                     @typescript-eslint/no-unused-vars
+  371:3   warning  'onCameraChange' is defined but never used. Allowed unused args must match /^_/u                  @typescript-eslint/no-unused-vars
+  489:13  warning  'taxAmount' is assigned a value but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\InteractiveGLBViewer.tsx
+    8:81  warning  'Text' is defined but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+  244:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+  245:11  warning  'regionState' is assigned a value but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  305:3   warning  'webXRScaleFactor' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  323:10  warning  'hoveredPart' is assigned a value but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\InteractiveModelDemo.tsx
+  92:10  warning  'totalPricing' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\InteractivePricingCalculator.tsx
+   9:26  warning  'PricingCalculation' is defined but never used. Allowed unused vars must match /^_/u                               @typescript-eslint/no-unused-vars
+  66:6   warning  React Hook useEffect has a missing dependency: 'partQuantities'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\Model3DDialog.tsx
+   3:10  warning  'Button' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+  27:9   warning  'handleError' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\Model3DGallery.tsx
+  13:3   warning  'Filter' is defined but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+  18:3   warning  'Volume2' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+  19:3   warning  'VolumeX' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+  23:10  warning  'LazyOptimizedGLBViewer' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  25:10  warning  'UnifiedARManager' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  26:10  warning  'SwiftXRManager' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+  68:10  warning  'isMuted' is assigned a value but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  68:19  warning  'setIsMuted' is assigned a value but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  69:24  warning  'setFailedModels' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  70:10  warning  'loadedModels' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  70:24  warning  'setLoadedModels' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\ModelMeasurementTool.tsx
+  12:3   warning  'Info' is defined but never used. Allowed unused vars must match /^_/u                                            @typescript-eslint/no-unused-vars
+  72:10  warning  'labelColor' is assigned a value but never used. Allowed unused vars must match /^_/u                             @typescript-eslint/no-unused-vars
+  72:22  warning  'setLabelColor' is assigned a value but never used. Allowed unused vars must match /^_/u                          @typescript-eslint/no-unused-vars
+  76:9   warning  'canvasRef' is assigned a value but never used. Allowed unused vars must match /^_/u                              @typescript-eslint/no-unused-vars
+  92:6   warning  React Hook useCallback has a missing dependency: 'unitFactors'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  94:9   warning  'addMeasurement' is assigned a value but never used. Allowed unused vars must match /^_/u                         @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\Optimized3DViewer.tsx
+   56:3   warning  'enableWindowControls' is assigned a value but never used. Allowed unused args must match /^_/u                                                                                  @typescript-eslint/no-unused-vars
+   64:15  warning  'camera' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                @typescript-eslint/no-unused-vars
+   88:7   warning  The 'actions' object makes the dependencies of useEffect Hook (at line 131) change on every render. To fix this, wrap the initialization of 'actions' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   97:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render                                                      react-hooks/rules-of-hooks
+   98:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render                                                      react-hooks/rules-of-hooks
+   99:23  error    React Hook "useRef" is called conditionally. React Hooks must be called in the exact same order in every component render                                                        react-hooks/rules-of-hooks
+  102:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render                                                     react-hooks/rules-of-hooks
+  119:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render                                                     react-hooks/rules-of-hooks
+  134:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render                                                     react-hooks/rules-of-hooks
+  187:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render                                                     react-hooks/rules-of-hooks
+  194:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render                                                     react-hooks/rules-of-hooks
+  209:35  error    React Hook "useCallback" is called conditionally. React Hooks must be called in the exact same order in every component render                                                   react-hooks/rules-of-hooks
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\OptimizedGLBViewer.tsx
+   34:15  warning  'camera' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                            @typescript-eslint/no-unused-vars
+   48:7   warning  The 'actions' object makes the dependencies of useEffect Hook (at line 91) change on every render. To fix this, wrap the initialization of 'actions' in its own useMemo() Hook               react-hooks/exhaustive-deps
+   57:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?   react-hooks/rules-of-hooks
+   58:41  error    React Hook "useState" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?   react-hooks/rules-of-hooks
+   59:23  error    React Hook "useRef" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?     react-hooks/rules-of-hooks
+   62:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+   79:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  114:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+  121:3   error    React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render. Did you accidentally call a React Hook after an early return?  react-hooks/rules-of-hooks
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\SwiftXRManager.tsx
+   18:10  warning  'launchSwiftXR' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   18:62  warning  'getRecommendedARMethod' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  112:26  warning  'e' is defined but never used                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  186:42  warning  The ref value 'detectionTimeoutRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'detectionTimeoutRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\components\3d-model\UnifiedARManager.tsx
+   10:3   warning  'AlertTriangle' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   15:3   warning  'RotateCcw' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   16:3   warning  'Maximize2' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   22:63  warning  'launchARWithFallback' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   76:3   warning  'fallbackMode' is assigned a value but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  207:42  warning  The ref value 'detectionTimeoutRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'detectionTimeoutRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+  339:6   warning  React Hook useCallback has missing dependencies: 'launchQuickLook', 'launchSceneViewer', 'launchWebXR', and 'modelPath'. Either include them or remove the dependency array                                                                                                            react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\components\NotFound3DComponents.tsx
+  1:1  error  Definition for rule 'react/no-unknown-property' was not found  react/no-unknown-property
+
+C:\projects\almona-portfolio-forge\src\components\about\CompanyTimeline.tsx
+  6:10  warning  'Button' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\admin\AdminDashboard.tsx
+  11:3  warning  'BarChart3' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  12:3  warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\ai\SalesAcceleration.tsx
+    4:10  warning  'Input' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+    9:10  warning  'Select' is defined but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+    9:18  warning  'SelectContent' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+    9:33  warning  'SelectItem' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+    9:45  warning  'SelectTrigger' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+    9:60  warning  'SelectValue' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+   10:10  warning  'Progress' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+   17:3   warning  'MessageCircle' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+   18:3   warning  'FileText' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+   23:3   warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+   28:3   warning  'Download' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+   30:3   warning  'Settings' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+   31:3   warning  'ArrowRight' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+   35:3   warning  'Award' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+  211:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  212:17  warning  'setLeads' is assigned a value but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  213:22  warning  'setAIInsights' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  290:14  warning  'error' is defined but never used                                                         @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\analytics\ABTestProvider.tsx
+  8:3  warning  'Experiment' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  9:3  warning  'ExperimentVariant' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\analytics\BusinessKPIDashboard.tsx
+    8:3   warning  'TrendingDown' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   11:3   warning  'ShoppingCart' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   15:15  warning  'PieChartIcon' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   16:3   warning  'Calendar' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+   17:3   warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  130:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\analytics\PredictiveInsights.tsx
+   12:3   warning  'BarChart3' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+   13:3   warning  'PieChart' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+   20:3   warning  'DollarSign' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   21:3   warning  'Users' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+   22:3   warning  'Globe' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+   23:3   warning  'Calendar' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+   25:3   warning  'ArrowUp' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+   26:3   warning  'ArrowDown' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+   34:10  warning  'LineChart' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+   34:21  warning  'Line' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+   34:86  warning  'BarChart' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+   34:96  warning  'Bar' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  261:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\analytics\QuickViewAnalyticsDashboard.tsx
+   9:3  warning  'Users' is defined but never used. Allowed unused vars must match /^_/u                                                @typescript-eslint/no-unused-vars
+  48:6  warning  React Hook useEffect has a missing dependency: 'fetchAnalyticsData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\components\contact\WhatsAppContact.tsx
+  31:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\enterprise\EnterpriseClientActivation.tsx
+    6:10  warning  'Select' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+    6:18  warning  'SelectContent' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+    6:33  warning  'SelectItem' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+    6:45  warning  'SelectTrigger' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+    6:60  warning  'SelectValue' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+    9:10  warning  'Separator' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+   16:3   warning  'Zap' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+   19:3   warning  'BarChart3' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+   20:3   warning  'Settings' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+   21:3   warning  'Globe' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+   22:3   warning  'Shield' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+   25:3   warning  'ArrowRight' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+   28:3   warning  'Award' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  224:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\enterprise\WhiteLabelPortal.tsx
+   10:10  warning  'Separator' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+   17:3   warning  'Settings' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+   19:3   warning  'Users' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+   27:12  warning  'ImageIcon' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+   28:3   warning  'Type' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  125:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\AccessoryManagement.tsx
+   34:3   warning  'X' is defined but never used. Allowed unused vars must match /^_/u                                                               @typescript-eslint/no-unused-vars
+  247:6   warning  React Hook useCallback has a missing dependency: 'ROCK60_ACCESSORIES_TEMPLATE'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  277:6   warning  React Hook useEffect has a missing dependency: 'subscription'. Either include it or remove the dependency array                   react-hooks/exhaustive-deps
+  325:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_/u                                                   @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\BosphorusWorkflowRibbon.tsx
+  28:3  warning  'activeStepId' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\CuttingOptimizationEngine.tsx
+   22:22  warning  'Profile' is defined but never used. Allowed unused vars must match /^_/u                          @typescript-eslint/no-unused-vars
+   22:51  warning  'WindowComponent' is defined but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+   25:10  warning  'YilmazCNC' is defined but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+   26:10  warning  'ReportEngine' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+   67:10  warning  'showReportGenerator' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+   67:31  warning  'setShowReportGenerator' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  173:13  warning  'networkConfig' is assigned a value but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\FabricatorCustomersPanel.tsx
+   75:9  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  163:7  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\FabricatorWorkflowPro.tsx
+  46:9  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\InventoryDashboard.tsx
+   35:3   warning  'TrendingDown' is defined but never used. Allowed unused vars must match /^_/u                         @typescript-eslint/no-unused-vars
+   42:3   warning  'Filter' is defined but never used. Allowed unused vars must match /^_/u                               @typescript-eslint/no-unused-vars
+   45:3   warning  'Plus' is defined but never used. Allowed unused vars must match /^_/u                                 @typescript-eslint/no-unused-vars
+  233:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  276:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  314:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  499:9   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  548:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  648:14  warning  'error' is defined but never used                                                                      @typescript-eslint/no-unused-vars
+  657:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  673:14  warning  'error' is defined but never used                                                                      @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\InventoryManagement.tsx
+   6:31  warning  'OptimizationResult' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   6:51  warning  'WindowComponent' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  15:3   warning  'project' is defined but never used. Allowed unused args must match /^_/u             @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\MachineMonitoringDashboard.tsx
+  29:10  warning  'YilmazNetworkProtocol' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\MassProductionDashboard.tsx
+  110:7  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\NewProjectWizard.tsx
+   5:10  warning  'Badge' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  17:25  warning  'SectorType' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  85:11  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  92:9   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\OrderManagement.tsx
+   3:10  warning  'Badge' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+  10:67  warning  'orders' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\PricingConfiguration.tsx
+   26:3   warning  'Settings' is defined but never used. Allowed unused vars must match /^_/u                                        @typescript-eslint/no-unused-vars
+   31:3   warning  'DollarSign' is defined but never used. Allowed unused vars must match /^_/u                                      @typescript-eslint/no-unused-vars
+   34:3   warning  'History' is defined but never used. Allowed unused vars must match /^_/u                                         @typescript-eslint/no-unused-vars
+   38:3   warning  'Calculator' is defined but never used. Allowed unused vars must match /^_/u                                      @typescript-eslint/no-unused-vars
+   40:3   warning  'X' is defined but never used. Allowed unused vars must match /^_/u                                               @typescript-eslint/no-unused-vars
+   42:3   warning  'Trash2' is defined but never used. Allowed unused vars must match /^_/u                                          @typescript-eslint/no-unused-vars
+   43:3   warning  'Edit2' is defined but never used. Allowed unused vars must match /^_/u                                           @typescript-eslint/no-unused-vars
+   84:25  warning  'setMaterialRules' is assigned a value but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+   85:10  warning  'editingMaterialRule' is assigned a value but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+   85:31  warning  'setEditingMaterialRule' is assigned a value but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+   88:24  warning  'setLaborConfigs' is assigned a value but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+   89:10  warning  'editingLaborConfig' is assigned a value but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+   89:30  warning  'setEditingLaborConfig' is assigned a value but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+  133:6   warning  React Hook useEffect has a missing dependency: 'config'. Either include it or remove the dependency array         react-hooks/exhaustive-deps
+  152:6   warning  React Hook useEffect has a missing dependency: 'config.region'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\PricingPreview.tsx
+  46:3  warning  'accessories' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  92:9  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\ProductionScheduler.tsx
+  6:22  warning  'Profile' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+  6:31  warning  'OptimizationResult' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  6:51  warning  'WindowComponent' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\ProfileManagement.tsx
+  107:10  warning  'activeImportTab' is assigned a value but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+  107:27  warning  'setActiveImportTab' is assigned a value but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+  183:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  345:5   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  368:9   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  372:6   warning  React Hook useEffect has a missing dependency: 'subscription'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  419:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  431:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  484:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  486:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_/u                                  @typescript-eslint/no-unused-vars
+  548:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  594:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  767:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  800:9   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\RealTimeMonitoring.tsx
+  5:40  warning  'AlertCircle' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\SmartDrawTool.tsx
+  160:6  warning  React Hook useEffect has a missing dependency: 'effectiveConstraints?.minWidthMm'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  580:9  error    'allComponents' is never reassigned. Use 'const' instead                                                                             prefer-const
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\SmartMeasuringInterface.tsx
+   2:10  warning  'motion' is defined but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+  13:29  warning  'WindowMeasurementOverlay' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\Window3DGenerator.tsx
+    43:10  warning  'validateProject' is defined but never used. Allowed unused vars must match /^_/u                                    @typescript-eslint/no-unused-vars
+   380:5   error    Use "@ts-expect-error" instead of "@ts-ignore", as "@ts-ignore" will do nothing if the following line is error-free  @typescript-eslint/ban-ts-comment
+   391:3   warning  'windowType' is defined but never used. Allowed unused args must match /^_/u                                         @typescript-eslint/no-unused-vars
+   447:3   warning  'windowType' is defined but never used. Allowed unused args must match /^_/u                                         @typescript-eslint/no-unused-vars
+   577:11  warning  'scene' is assigned a value but never used. Allowed unused vars must match /^_/u                                     @typescript-eslint/no-unused-vars
+   581:9   warning  'lodSettings' is assigned a value but never used. Allowed unused vars must match /^_/u                               @typescript-eslint/no-unused-vars
+  1237:10  warning  'isFullscreen' is assigned a value but never used. Allowed unused vars must match /^_/u                              @typescript-eslint/no-unused-vars
+  1512:3   warning  'modelRef' is defined but never used. Allowed unused args must match /^_/u                                           @typescript-eslint/no-unused-vars
+  1535:9   warning  'bounds' is assigned a value but never used. Allowed unused vars must match /^_/u                                    @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\WorkflowProgress.tsx
+  26:15  warning  'isUpcoming' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\home\FeaturedProducts.tsx
+  43:9  warning  'profileProducts' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\iot\SensorDataDashboard.tsx
+   7:10  warning  'motion' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+  18:3   warning  'AlertTriangle' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  24:3   warning  'Bell' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+  28:3   warning  'DigitalTwinData' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\layout\IndustrialNavbar.tsx
+  50:25  warning  'setNotifications' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  52:9   warning  'location' is assigned a value but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\layout\Navbar.tsx
+  12:3  warning  'Sparkles' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+  45:9  warning  'navigate' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\layout\OriginalNavbar.tsx
+   1:20  warning  'useCallback' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  11:3   warning  'Phone' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  12:3   warning  'Mail' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+  31:9   warning  'navigate' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\layout\RegionAwareLayout.tsx
+  162:6  warning  React Hook React.useEffect has a missing dependency: 'autoHideTimer'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\components\marketplace\PartnerOnboarding.tsx
+   18:3   warning  'Shield' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+   21:3   warning  'BarChart3' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+   27:3   warning  'Settings' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+   30:3   warning  'Zap' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+   31:3   warning  'Target' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+   36:3   warning  'Calendar' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  133:7   warning  'mockPartner' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  179:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+  181:19  warning  'setPartner' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\mobile\MobileTicketCreator.tsx
+   2:29  warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   2:41  warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  13:3   warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  21:3   warning  'Plus' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  22:3   warning  'Zap' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  23:3   warning  'Settings' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  24:3   warning  'Phone' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  26:3   warning  'Upload' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  27:3   warning  'Save' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\monitoring\ProductionDashboard.tsx
+  13:3   warning  'CheckCircle' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  15:3   warning  'Globe' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  16:3   warning  'Server' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  17:3   warning  'Database' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  18:3   warning  'Zap' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+  23:3   warning  'MessageSquare' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  54:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\optimized\MobileFilterPanel.tsx
+  6:29  warning  'SortAsc' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\optimized\OptimizedImage.tsx
+  191:9  warning  'responsiveSrcSet' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  195:9  warning  'responsiveSizes' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\optimized\OptimizedProductCard.tsx
+  5:25  warning  'ExternalLink' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\products\CategoryBreadcrumb.tsx
+  4:33  warning  'findCategoryById' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\products\CategoryFilter.tsx
+   3:31  warning  'X' is defined but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+  14:3   warning  'categoryHierarchy' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  16:3   warning  'getSubcategories' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  18:3   warning  'machineCategoryMapping' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  68:9   warning  'clearFilter' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\products\IndustrialCategoryFilter.tsx
+   3:31  warning  'X' is defined but never used. Allowed unused vars must match /^_/u                            @typescript-eslint/no-unused-vars
+  14:3   warning  'industrialCategoryHierarchy' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  15:3   warning  'IndustrialCategoryNode' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  18:3   warning  'industrialMachineMapping' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  76:9   warning  'clearFilter' is assigned a value but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\products\IndustrialCategoryNavigation.tsx
+   5:3   warning  'ChevronDown' is defined but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+  18:10  warning  'Card' is defined but never used. Allowed unused vars must match /^_/u                         @typescript-eslint/no-unused-vars
+  18:16  warning  'CardContent' is defined but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+  18:29  warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+  18:41  warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+  20:3   warning  'industrialCategoryHierarchy' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  23:3   warning  'findIndustrialCategoryById' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\products\ProgressiveCategoryNavigation.tsx
+   3:24  warning  'ChevronDown' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+   4:10  warning  'Button' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+   7:3   warning  'categoryHierarchy' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  10:3   warning  'getSubcategories' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  11:3   warning  'getCategoryBreadcrumb' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\products\ProgressiveDisclosureDemo.tsx
+  3:10  warning  'ChevronRight' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\products\SmartCategoryNavigation.tsx
+   3:72  warning  'Zap' is defined but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+   7:10  warning  'Card' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+   7:16  warning  'CardContent' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+   7:29  warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+   7:41  warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  11:3   warning  'getMachinesByCategory' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  54:10  warning  'isAiThinking' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\quotes\EnhancedQuoteRequestDialog.tsx
+   17:10  warning  'Badge' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+  147:9   warning  'addProduct' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  163:9   warning  'addService' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\quotes\QuoteConfirmationPage.tsx
+  3:10  warning  'Card' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  3:16  warning  'CardContent' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  3:29  warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  3:41  warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\quotes\QuoteRequestPage.tsx
+  62:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\regional\EUIndustrialStandards.tsx
+    4:10  warning  'Input' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+   22:3   warning  'Factory' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+   25:3   warning  'Lock' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+   27:3   warning  'Star' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+   28:3   warning  'Calendar' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  231:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\regional\turkish\ComplianceDocumentGenerator.tsx
+  14:3  warning  'customerInfo' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\regional\turkish\TurkishChatSupport.tsx
+   12:10  warning  'Textarea' is defined but never used. Allowed unused vars must match /^_/u                                                                          @typescript-eslint/no-unused-vars
+   37:9   warning  'utils' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                    @typescript-eslint/no-unused-vars
+   43:10  warning  'userInfo' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                 @typescript-eslint/no-unused-vars
+   43:20  warning  'setUserInfo' is assigned a value but never used. Allowed unused vars must match /^_/u                                                              @typescript-eslint/no-unused-vars
+  148:6   warning  React Hook useCallback has missing dependencies: 'getRandomResponse' and 'getResponseCategory'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  169:6   warning  React Hook useCallback has a missing dependency: 'turkishResponses.greeting'. Either include it or remove the dependency array                      react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\components\regional\turkish\TurkishComplianceDocs.tsx
+   14:10  warning  'Badge' is defined but never used. Allowed unused vars must match /^_/u                                                       @typescript-eslint/no-unused-vars
+  160:6   warning  React Hook useCallback has a missing dependency: 'generateDocumentContent'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\components\reports\ExportProgressDashboard.tsx
+   33:3   warning  'RefreshCw' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+   36:3   warning  'Cpu' is defined but never used. Allowed unused vars must match /^_/u                      @typescript-eslint/no-unused-vars
+   39:3   warning  'CheckCircle' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+   40:3   warning  'AlertCircle' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+   44:27  warning  'ExportProgress' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+   53:22  warning  'setQueueItems' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  103:9   warning  'formatFileSize' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  111:9   warning  'formatDuration' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\reports\TemplateGallery.tsx
+   19:10  warning  'Tabs' is defined but never used. Allowed unused vars must match /^_/u                                            @typescript-eslint/no-unused-vars
+   19:16  warning  'TabsContent' is defined but never used. Allowed unused vars must match /^_/u                                     @typescript-eslint/no-unused-vars
+   19:29  warning  'TabsList' is defined but never used. Allowed unused vars must match /^_/u                                        @typescript-eslint/no-unused-vars
+   19:39  warning  'TabsTrigger' is defined but never used. Allowed unused vars must match /^_/u                                     @typescript-eslint/no-unused-vars
+   27:3   warning  'DialogTrigger' is defined but never used. Allowed unused vars must match /^_/u                                   @typescript-eslint/no-unused-vars
+   45:3   warning  'Download' is defined but never used. Allowed unused vars must match /^_/u                                        @typescript-eslint/no-unused-vars
+   46:3   warning  'Upload' is defined but never used. Allowed unused vars must match /^_/u                                          @typescript-eslint/no-unused-vars
+   72:6   warning  React Hook useEffect has a missing dependency: 'loadTemplates'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  104:6   warning  React Hook useEffect has a missing dependency: 'loadTemplates'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  153:26  warning  'format' is defined but never used. Allowed unused args must match /^_/u                                          @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\sales\PhotoMatchViewer.tsx
+   88:13  warning  'idx' is assigned a value but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+  136:10  warning  'calculatePerspectiveMatrix' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  170:3   warning  'overlayMode' is defined but never used. Allowed unused args must match /^_/u                    @typescript-eslint/no-unused-vars
+  186:26  warning  'gl' is assigned a value but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+  189:23  warning  'setIsAnimating' is assigned a value but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  190:29  warning  'setAnimationProgress' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  237:11  warning  'fov' is assigned a value but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+  324:10  warning  'isFullscreen' is assigned a value but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  555:20  warning  'clipboardError' is defined but never used                                                       @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\search\RelatedMachinesSection.tsx
+  75:36  warning  'index' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\search\SmartSearchBox.tsx
+  36:10  warning  'currentSearchEventId' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\CustomerStories.tsx
+    2:18  warning  'AnimatePresence' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+   11:3   warning  'Users' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+  196:14  warning  'language' is assigned a value but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  198:10  warning  'selectedStory' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  264:34  warning  'index' is defined but never used. Allowed unused args must match /^_/u                   @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\EmergencyServiceDialog.tsx
+  16:25  warning  'Phone' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  16:39  warning  'MapPin' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\FabricationStageCard.tsx
+  2:10  warning  'Card' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\MachineHealthCheck.tsx
+  54:10  warning  'predictiveMaintenance' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  54:33  warning  'setPredictiveMaintenance' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\MachineHealthTrends.tsx
+  48:18  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\MachineRegistration.tsx
+    7:79  warning  'FileText' is defined but never used. Allowed unused vars must match /^_/u                             @typescript-eslint/no-unused-vars
+  117:11  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  142:13  warning  'hadExistingQuery' is assigned a value but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\MaintenanceDashboard.tsx
+   3:10  warning  'MachineHealthCheck' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   5:52  warning  'CardFooter' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+   6:13  warning  'Progress' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+   8:10  warning  'AlertCircle' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+   8:59  warning  'HardHat' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+  10:10  warning  'Separator' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+  57:18  warning  'setEvents' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\OperatorTrainingSection.tsx
+  20:10  warning  'selectedLevel' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\PackageCalculator.tsx
+   1:27  warning  'useEffect' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+   7:10  warning  'Input' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+  12:10  warning  'calculateTieredPrice' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  41:20  warning  'designVariant' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  61:9   error    'score' is never reassigned. Use 'const' instead                                          prefer-const
+
+C:\projects\almona-portfolio-forge\src\components\services\PackageComparisonTable.tsx
+  15:14  warning  'language' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\PredictiveMaintenanceEngine.tsx
+  10:3  warning  'Thermometer' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  11:3  warning  'Vibrate' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  12:3  warning  'Camera' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\PreventiveMaintenanceDialog.tsx
+    8:3   warning  'DialogFooter' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+   16:20  warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+   16:41  warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+   16:53  warning  'FileText' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+   16:63  warning  'Package' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+   16:72  warning  'AlertCircle' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+   20:10  warning  'Progress' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+   22:10  warning  'RadioGroup' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+   22:22  warning  'RadioGroupItem' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  186:9   warning  'serviceType' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  187:9   warning  'frequency' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  196:27  warning  'data' is defined but never used. Allowed unused args must match /^_/u                  @typescript-eslint/no-unused-vars
+  205:13  warning  'contractId' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\ScheduleMaintenance.tsx
+    8:3    warning  'DialogFooter' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+   16:10   warning  'Calendar' is defined but never used. Allowed unused vars must match /^_/u                         @typescript-eslint/no-unused-vars
+   16:20   warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u                            @typescript-eslint/no-unused-vars
+   16:41   warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+   16:53   warning  'FileText' is defined but never used. Allowed unused vars must match /^_/u                         @typescript-eslint/no-unused-vars
+   16:63   warning  'Package' is defined but never used. Allowed unused vars must match /^_/u                          @typescript-eslint/no-unused-vars
+   16:85   warning  'MapPin' is defined but never used. Allowed unused vars must match /^_/u                           @typescript-eslint/no-unused-vars
+   16:123  warning  'Tool' is defined but never used. Allowed unused vars must match /^_/u                             @typescript-eslint/no-unused-vars
+   20:10   warning  'Progress' is defined but never used. Allowed unused vars must match /^_/u                         @typescript-eslint/no-unused-vars
+  287:10   warning  'selectedGovernorate' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  287:31   warning  'setSelectedGovernorate' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  351:27   warning  'data' is defined but never used. Allowed unused args must match /^_/u                             @typescript-eslint/no-unused-vars
+  359:13   warning  'serviceId' is assigned a value but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+  388:9    warning  'getPriorityColor' is assigned a value but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\ServiceCoverageMap.tsx
+  24:11  warning  'regionState' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  25:9   warning  'utils' is assigned a value but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\ServiceROIAnalytics.tsx
+   3:10  warning  'Badge' is defined but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+   9:3   warning  'DollarSign' is defined but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+  10:3   warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+  11:3   warning  'Wrench' is defined but never used. Allowed unused vars must match /^_/u                      @typescript-eslint/no-unused-vars
+  12:3   warning  'AlertTriangle' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+  20:86  warning  'BarChart' is defined but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+  20:96  warning  'Bar' is defined but never used. Allowed unused vars must match /^_/u                         @typescript-eslint/no-unused-vars
+  70:10  warning  'selectedMetric' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  70:26  warning  'setSelectedMetric' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\ServiceViewToggle.tsx
+  17:11  warning  't' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\SimpleServicesView.tsx
+   9:29  warning  'CardDescription' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  11:52  warning  'Shield' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+  11:60  warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  22:14  warning  'language' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\TrainingLevelCard.tsx
+  18:3  warning  'level' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\services\YilmazMachineRegistration.tsx
+  27:18  warning  'setRegion' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  44:14  warning  '_err' is defined but never used                                                      @typescript-eslint/no-unused-vars
+  77:14  warning  '_err' is defined but never used                                                      @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\shop\EgyptianStandardsGuide.tsx
+  12:3  warning  'Download' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\shop\EgyptianTechnicalSupportHub.tsx
+  24:3  warning  'Building2' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\shop\FreightCalculator.tsx
+  10:3  warning  'MapPin' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  17:3  warning  'Train' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  21:3  warning  'AlertCircle' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\shop\IndustrialProductCard.tsx
+  6:18  warning  'AnimatePresence' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\shop\ProductHoverPreview.tsx
+  55:11  warning  'viewportHeight' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\shop\ProductQuickView.tsx
+    4:80  warning  'Heart' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   80:18  warning  The ref value 'panelRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'panelRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+  115:9   warning  'handleVideoPlay' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  120:9   warning  'handleSpecsView' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  125:9   warning  'handleDownloadBrochure' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\shop\ar\WorkspaceChecker.tsx
+  24:11  warning  'scene' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\shop\machine-recommendation\MachineRecommendationWizard.tsx
+   10:8   warning  'ProductCard' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+   17:3   warning  'Zap' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+   18:3   warning  'Target' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+   24:3   warning  'Wrench' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+   32:3   warning  'Printer' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+  121:11  warning  'summaryData' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\support\AITechnicalChatbot.tsx
+   13:3   warning  'MessageSquare' is defined but never used. Allowed unused vars must match /^_/u                                     @typescript-eslint/no-unused-vars
+   14:3   warning  'HelpCircle' is defined but never used. Allowed unused vars must match /^_/u                                        @typescript-eslint/no-unused-vars
+   15:3   warning  'Wrench' is defined but never used. Allowed unused vars must match /^_/u                                            @typescript-eslint/no-unused-vars
+   16:3   warning  'FileText' is defined but never used. Allowed unused vars must match /^_/u                                          @typescript-eslint/no-unused-vars
+   17:3   warning  'Phone' is defined but never used. Allowed unused vars must match /^_/u                                             @typescript-eslint/no-unused-vars
+   19:3   warning  'PlusCircle' is defined but never used. Allowed unused vars must match /^_/u                                        @typescript-eslint/no-unused-vars
+   21:3   warning  'AlertCircle' is defined but never used. Allowed unused vars must match /^_/u                                       @typescript-eslint/no-unused-vars
+   22:3   warning  'CheckCircle' is defined but never used. Allowed unused vars must match /^_/u                                       @typescript-eslint/no-unused-vars
+   24:54  warning  'getDiagnosticGuidance' is defined but never used. Allowed unused vars must match /^_/u                             @typescript-eslint/no-unused-vars
+   24:77  warning  'getMaintenanceAdvice' is defined but never used. Allowed unused vars must match /^_/u                              @typescript-eslint/no-unused-vars
+  132:6   warning  React Hook useEffect has a missing dependency: 'messages.length'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  172:7   warning  'prompt' is assigned a value but never used. Allowed unused vars must match /^_/u                                   @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\support\TicketWizardDialog.tsx
+   64:14   warning  'language' is assigned a value but never used. Allowed unused vars must match /^_/u                                @typescript-eslint/no-unused-vars
+   78:159  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  403:6    warning  React Hook useCallback has a missing dependency: 'typeMeta'. Either include it or remove the dependency array      react-hooks/exhaustive-deps
+  433:6    warning  React Hook useCallback has a missing dependency: 'priorityMeta'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  721:1    warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+C:\projects\almona-portfolio-forge\src\components\training\InteractiveUserGuide.tsx
+    8:3   warning  'Play' is defined but never used. Allowed unused vars must match /^_/u                      @typescript-eslint/no-unused-vars
+    9:3   warning  'Pause' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+   10:3   warning  'SkipForward' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+   11:3   warning  'SkipBack' is defined but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+   16:3   warning  'Video' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+   17:3   warning  'MousePointer' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  248:10  warning  'isPlaying' is assigned a value but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  248:21  warning  'setIsPlaying' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  249:10  warning  'userProgress' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  249:24  warning  'setUserProgress' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  251:9   warning  'highlightRef' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  277:9   warning  'createSpotlight' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\ui\EnhancedImage.tsx
+  4:10  warning  'Image' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\ui\LazyWrapper.tsx
+  129:10  warning  'imageRef' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\ui\PrestigeLoader.tsx
+   7:3  warning  'Zap' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  11:3  warning  'Shield' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  12:3  warning  'Settings' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  14:3  warning  'Globe' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  15:3  warning  'Smartphone' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  16:3  warning  'Monitor' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\ui\RegionSelector.tsx
+  4:10  warning  'Badge' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\ui\alert-dialog.tsx
+  1:13  warning  'React' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\ui\loading\ImageLoading.tsx
+  4:10  warning  'Image' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\ui\loading\Model3DLoading.tsx
+  4:15  warning  'Loader2' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\ui\loading\PageLoading.tsx
+  3:10  warning  'LoadingSkeleton' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\used-machines\PriceRangeFilter.tsx
+  28:9  warning  'formatPrice' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\constants\productsData.ts
+  12:15  warning  'Profile' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\constants\yilmazMachines-corrected.ts
+   4:3  warning  'Certification' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+   5:3  warning  'SafetyStandard' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+   9:7  warning  'parseDimensions' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  19:7  warning  'createPowerSpec' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\constants\yilmazMachines-fixed.ts
+   4:3  warning  'Certification' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+   5:3  warning  'SafetyStandard' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+   9:7  warning  'parseDimensions' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  19:7  warning  'createPowerSpec' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\constants\yilmazMachines.ts
+  48:7  warning  'parseDimensions' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  58:7  warning  'createPowerSpec' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\context\AuthContext.tsx
+   74:9   warning  'circuitBreaker' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  132:18  warning  'parseError' is defined but never used                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  305:22  warning  The ref value 'ongoingFetches.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'ongoingFetches.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\context\FabricatorWorkspaceContext.tsx
+   91:3   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-empty-function')
+  264:5   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  279:11  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+C:\projects\almona-portfolio-forge\src\context\LoadingContext.tsx
+  62:6  warning  React Hook useCallback has a missing dependency: 'clearLoading'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\context\QuoteContext.tsx
+  282:6  warning  React Hook useCallback has a missing dependency: 'saveQuoteItemToDatabase'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  310:6  warning  React Hook useCallback has a missing dependency: 'removeFromQuote'. Either include it or remove the dependency array          react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\data\supplierProfiles\compatibilityEngine.ts
+  7:10  warning  'getProfileById' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  7:42  warning  'getProfilesByMaterial' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  8:10  warning  'getMaterialSpec' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  8:27  warning  'MaterialSpec' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\data\supplierProfiles\supplierAPI.ts
+    7:10  warning  'SupplierProfile' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  141:13  warning  'quantity' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  286:5   warning  'method' is assigned a value but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\data\systemPacks.ts
+  1:15  warning  'Profile' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\data\trainingPrograms.ts
+  1:10  warning  'ReactNode' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\hooks\use-toast.ts
+  18:7  warning  'actionTypes' is assigned a value but only used as a type. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\hooks\useImagePreloading.ts
+  24:3  warning  'priority' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\hooks\useRegionDetection.ts
+  195:9  warning  The 'opts' object makes the dependencies of useCallback Hook (at line 314) change on every render. To fix this, wrap the initialization of 'opts' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\hooks\useToast.ts
+  26:6  warning  React Hook useCallback has a missing dependency: 'dismissToast'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\integrations\cnc\BiesseCNC.ts
+  73:5  warning  'options' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\integrations\cnc\TrumpfCNC.ts
+   67:5   warning  'options' is defined but never used. Allowed unused args must match /^_/u   @typescript-eslint/no-unused-vars
+  344:33  warning  'material' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\integrations\yilmaz\BarcodeLabelGenerator.ts
+   39:9   warning  'labelIndex' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  255:25  warning  'index' is defined but never used. Allowed unused args must match /^_/u                @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\integrations\yilmaz\CNCCutListGenerator.ts
+  123:5   warning  'options' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  192:38  warning  'planIndex' is defined but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+  198:39  warning  'groupIndex' is defined but never used. Allowed unused args must match /^_/u   @typescript-eslint/no-unused-vars
+  273:5   warning  'stockLength' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\integrations\yilmaz\DCCutListGenerator.ts
+   7:28  warning  'Profile' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  89:5   warning  'options' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\integrations\yilmaz\MachineValidator.ts
+   87:11  warning  'thickness' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  257:33  warning  'planIndex' is defined but never used. Allowed unused args must match /^_/u           @typescript-eslint/no-unused-vars
+  311:48  warning  'profile' is defined but never used. Allowed unused args must match /^_/u             @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\integrations\yilmaz\YilmazCutListAdapter.ts
+  7:23  warning  'Cut' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  7:28  warning  'Profile' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\integrations\yilmaz\YilmazGCodeGenerator.ts
+  195:36  warning  'pathIndex' is defined but never used. Allowed unused args must match /^_/u              @typescript-eslint/no-unused-vars
+  397:11  warning  'profileWidth' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  419:32  warning  'profile' is defined but never used. Allowed unused args must match /^_/u                @typescript-eslint/no-unused-vars
+  493:57  warning  'profile' is defined but never used. Allowed unused args must match /^_/u                @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\3d\windowGeometry.ts
+   403:3   warning  'glassPocket' is defined but never used. Allowed unused args must match /^_/u              @typescript-eslint/no-unused-vars
+   543:40  warning  'index' is defined but never used. Allowed unused args must match /^_/u                    @typescript-eslint/no-unused-vars
+   609:54  warning  'profile' is defined but never used. Allowed unused args must match /^_/u                  @typescript-eslint/no-unused-vars
+  1014:9   warning  'glazingBead' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  1017:9   warning  'hardwareMounts' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\adminTicketApi.ts
+  9:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+C:\projects\almona-portfolio-forge\src\lib\ai\faultDetection.ts
+   5:5   warning  'modelVersion' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  83:14  warning  'error' is defined but never used                                                        @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\analytics\quickViewAnalytics.ts
+  58:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\api.ts
+    1:20  warning  'createQuote' is defined but never used. Allowed unused vars must match /^_/u                          @typescript-eslint/no-unused-vars
+    1:33  warning  'getProducts' is defined but never used. Allowed unused vars must match /^_/u                          @typescript-eslint/no-unused-vars
+    1:46  warning  'getUserQuotes' is defined but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+    2:10  warning  'buildNavigationState' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+    2:32  warning  'TicketContext' is defined but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+  154:3   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  168:5   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  192:5   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  217:5   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+C:\projects\almona-portfolio-forge\src\lib\confirmation.ts
+  3:15  warning  'Database' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\data\catalogClient.ts
+  2:25  warning  'ProductCategory' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\data\clientCore.ts
+  16:3  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+C:\projects\almona-portfolio-forge\src\lib\data\ordersClient.ts
+  46:11  warning  'items' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\data\profilesClient.ts
+  3:25  warning  'Address' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  3:56  warning  'UserPreferences' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\data\quotesClient.ts
+  44:11  warning  'items' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\database\performanceMonitoring.ts
+  135:13  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\exports\CSVExportGenerator.ts
+   10:42  warning  'CuttingPlan' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   13:24  warning  'formatUnit' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+   13:36  warning  'formatDate' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  151:47  warning  'delimiter' is defined but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+  191:52  warning  'delimiter' is defined but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+  221:61  warning  'delimiter' is defined but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\exports\DXFExportGenerator.ts
+   10:42  warning  'CuttingPlan' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  175:52  warning  'options' is defined but never used. Allowed unused args must match /^_/u              @typescript-eslint/no-unused-vars
+  268:34  warning  'index' is defined but never used. Allowed unused args must match /^_/u                @typescript-eslint/no-unused-vars
+  301:13  warning  'wasteLayer' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  309:53  warning  'options' is defined but never used. Allowed unused args must match /^_/u              @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\exports\ExportService.ts
+   25:3   warning  'ExportTemplate' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+  197:11  warning  'groupedProjects' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\exports\PDFExportGenerator.ts
+  66:5  warning  'options' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\exports\outputValidation.ts
+  261:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\imageOptimization.ts
+   1:10  warning  'supabase' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  37:11  warning  'width' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  37:18  warning  'height' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  37:26  warning  'quality' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  37:40  warning  'format' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\inventory.ts
+  130:3  warning  'reservationType' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\iot\sensorIntegration.ts
+  394:23  warning  'machineId' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  394:42  warning  'period' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  415:35  warning  'machineId' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\legacyDataParser.ts
+  1:10  warning  'WindowUnit' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  1:31  warning  'OptimizationResult' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\performance-monitoring.ts
+    5:10  warning  'toast' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  229:5   warning  'additionalContext' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  396:57  warning  'unit' is defined but never used. Allowed unused args must match /^_/u               @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\polyfills.ts
+  56:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+  75:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\polyfills\url.ts
+  16:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+  35:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\pricing\PricingEngine.ts
+    8:48  warning  'RegionCode' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  417:66  warning  'targetCurrency' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\reports\CuttingListGenerator.ts
+  74:36  warning  'stockLength' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\reports\pdfTemplate.ts
+  17:11  warning  'width' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\supabase\fabricatorClient.ts
+  20:3  warning  'ProfileAccessoryCompatibility' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\ticketApi.ts
+    1:1   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  132:12  warning  'err' is defined but never used                                                                        @typescript-eslint/no-unused-vars
+  156:11  warning  'user' is assigned a value but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\turkishTaxUtils.ts
+  6:10  warning  'RegionCode' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\workspace\WorkspaceSyncService.ts
+   52:11  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+   59:9   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+   87:9   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+   98:7   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  107:9   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  158:7   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  219:7   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+C:\projects\almona-portfolio-forge\src\lib\yilmazScraper.ts
+   1:11  warning  'YilmazMachineSpec' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  34:9   warning  'targetModels' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\localization\turkish\TRYCurrencyCalculator.ts
+  114:5  warning  'date' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\machine-connectors\RemoteSupportLauncher.ts
+   90:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  106:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\machine-connectors\YilmazUSBBridge.ts
+  223:37  warning  'path' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  235:20  warning  'deviceId' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+  235:38  warning  'filename' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\modules\client-portal\ClientFeedbackForm.tsx
+  36:3  warning  'projectId' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\modules\client-portal\ClientPortalManager.tsx
+   20:3   warning  'DialogTrigger' is defined but never used. Allowed unused vars must match /^_/u                                        @typescript-eslint/no-unused-vars
+   25:10  warning  'ClientFeedbackForm' is defined but never used. Allowed unused vars must match /^_/u                                   @typescript-eslint/no-unused-vars
+   26:10  warning  'Window3DGenerator' is defined but never used. Allowed unused vars must match /^_/u                                    @typescript-eslint/no-unused-vars
+   51:6   warning  React Hook useEffect has a missing dependency: 'loadSharedProjects'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  102:9   warning  'handleCommentSubmit' is assigned a value but never used. Allowed unused vars must match /^_/u                         @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\modules\customer-config\MaterialPricingManager.tsx
+  11:10  warning  'Badge' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  13:40  warning  'AlertCircle' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\modules\customer-config\RegionalProfileDatabase.tsx
+   6:27  warning  'useEffect' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  11:27  warning  'Upload' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\modules\manufacturing\LeanScheduler.ts
+  6:10  warning  'WindowUnit' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  6:22  warning  'OptimizationResult' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\modules\reporting\AccessoriesReport.tsx
+   21:10  warning  'Label' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                           @typescript-eslint/no-unused-vars
+   25:3   warning  'Download' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                        @typescript-eslint/no-unused-vars
+   32:3   warning  'Package' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                         @typescript-eslint/no-unused-vars
+   33:3   warning  'DollarSign' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                      @typescript-eslint/no-unused-vars
+   34:3   warning  'Building2' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                       @typescript-eslint/no-unused-vars
+  104:9   warning  The 'pricing' logical expression could make the dependencies of useMemo Hook (at line 199) change on every render. To fix this, wrap the initialization of 'pricing' in its own useMemo() Hook    react-hooks/exhaustive-deps
+  104:9   warning  The 'pricing' logical expression could make the dependencies of useEffect Hook (at line 243) change on every render. To fix this, wrap the initialization of 'pricing' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\modules\reporting\CuttingListReport.tsx
+  17:38  warning  'useRef' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  25:3   warning  'Download' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  33:3   warning  'BarChart3' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\modules\reporting\GlassReport.tsx
+  16:27  warning  'useEffect' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  23:3   warning  'Download' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  31:3   warning  'Ruler' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  33:3   warning  'Thermometer' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\modules\reporting\PDFExportService.ts
+   74:5   warning  'options' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  116:5   warning  'options' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  818:34  warning  'project' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\modules\reporting\ReportEngine.tsx
+  13:65  warning  'ShoppingCart' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  13:79  warning  'Square' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\optimization\yilmaz-specific\MultiMachineScheduler.ts
+    7:23  warning  'Cut' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+  361:47  warning  'profileId' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  372:5   warning  'totalDuration' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\optimization\yilmaz-specific\RemnantTracker.ts
+  204:11  warning  'totalOriginalWaste' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  298:35  warning  'reason' is defined but never used. Allowed unused args must match /^_/u                       @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\optimization\yilmaz-specific\TurkishProfileOptimizer.ts
+    7:28  warning  'Profile' is defined but never used. Allowed unused vars must match /^_/u               @typescript-eslint/no-unused-vars
+   65:36  warning  'supplierId' is defined but never used. Allowed unused args must match /^_/u            @typescript-eslint/no-unused-vars
+  150:5   warning  'options' is defined but never used. Allowed unused args must match /^_/u               @typescript-eslint/no-unused-vars
+  193:5   warning  'turkishProfile' is defined but never used. Allowed unused args must match /^_/u        @typescript-eslint/no-unused-vars
+  198:11  warning  'totalLength' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  323:46  warning  'cut' is defined but never used. Allowed unused args must match /^_/u                   @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\pages\AIRecommendationDemo.tsx
+  152:29  warning  'part' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\pages\AdvancedModelViewer.tsx
+  10:16  warning  'TabsContent' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+  20:3   warning  'ZoomIn' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+  21:3   warning  'ZoomOut' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+  26:3   warning  'Play' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+  27:3   warning  'Pause' is defined but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+  28:3   warning  'Volume2' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+  29:3   warning  'VolumeX' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+  30:3   warning  'Camera' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+  34:3   warning  'Layers' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+  35:3   warning  'Palette' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+  40:10  warning  'EnhancedModel3DDialog' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  42:10  warning  'SwiftXRManager' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\pages\FabricatorWorkflow.tsx
+    7:10  warning  'Progress' is defined but never used. Allowed unused vars must match /^_/u                                      @typescript-eslint/no-unused-vars
+   21:3   warning  'ChevronRight' is defined but never used. Allowed unused vars must match /^_/u                                  @typescript-eslint/no-unused-vars
+   22:3   warning  'Play' is defined but never used. Allowed unused vars must match /^_/u                                          @typescript-eslint/no-unused-vars
+   23:3   warning  'CheckCircle2' is defined but never used. Allowed unused vars must match /^_/u                                  @typescript-eslint/no-unused-vars
+  200:10  warning  'projectCreatedMessage' is assigned a value but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+  200:33  warning  'setProjectCreatedMessage' is assigned a value but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+  851:6   warning  React Hook useCallback has a missing dependency: 'inventory'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  853:9   warning  'getStepStatus' is assigned a value but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\pages\Inventory.tsx
+   9:16  warning  'TabsContent' is defined but never used. Allowed unused vars must match /^_/u                          @typescript-eslint/no-unused-vars
+  52:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+C:\projects\almona-portfolio-forge\src\pages\Login.tsx
+  2:1  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+C:\projects\almona-portfolio-forge\src\pages\Model3DGallery.tsx
+  11:3  warning  'Grid3X3' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  13:3  warning  'Download' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  14:3  warning  'Share2' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\pages\ModelViewerTest.tsx
+  21:9  warning  'handleError' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\pages\Portal.tsx
+  14:3  warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  15:3  warning  'CheckCircle' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  16:3  warning  'AlertCircle' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  18:3  warning  'Eye' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\pages\Products.tsx
+    1:18  warning  'AnimatePresence' is defined but never used. Allowed unused vars must match /^_/u                @typescript-eslint/no-unused-vars
+    2:10  warning  'Model3DDialog' is defined but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+   22:8   warning  'ProductCard' is defined but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+   24:3   warning  'Select' is defined but never used. Allowed unused vars must match /^_/u                         @typescript-eslint/no-unused-vars
+   25:3   warning  'SelectContent' is defined but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+   26:3   warning  'SelectItem' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+   27:3   warning  'SelectTrigger' is defined but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+   28:3   warning  'SelectValue' is defined but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+   45:10  warning  'Eye' is defined but never used. Allowed unused vars must match /^_/u                            @typescript-eslint/no-unused-vars
+   78:11  warning  'user' is assigned a value but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+   79:24  warning  'setSearchParams' is assigned a value but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  108:10  warning  'showNewsletter' is assigned a value but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  109:9   warning  'scrolled' is assigned a value but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  216:9   warning  'handleSaveComparison' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  279:9   warning  'testimonials' is assigned a value but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+  513:35  warning  'results' is defined but never used. Allowed unused args must match /^_/u                        @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\pages\Services.tsx
+  142:6  warning  React Hook useEffect has a missing dependency: 'loadPredictiveData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  309:9  warning  'getStatusText' is assigned a value but never used. Allowed unused vars must match /^_/u                               @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\pages\Shop.tsx
+   27:8   warning  'SmartCategoryFilter' is defined but never used. Allowed unused vars must match /^_/u                                     @typescript-eslint/no-unused-vars
+   43:10  warning  'Checkbox' is defined but never used. Allowed unused vars must match /^_/u                                                @typescript-eslint/no-unused-vars
+   44:10  warning  'Label' is defined but never used. Allowed unused vars must match /^_/u                                                   @typescript-eslint/no-unused-vars
+   45:10  warning  'Slider' is defined but never used. Allowed unused vars must match /^_/u                                                  @typescript-eslint/no-unused-vars
+  357:11  warning  'user' is assigned a value but never used. Allowed unused vars must match /^_/u                                           @typescript-eslint/no-unused-vars
+  560:6   warning  React Hook useMemo has a missing dependency: 'getLegacyCategoryFilter'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  578:9   warning  'categories' is assigned a value but never used. Allowed unused vars must match /^_/u                                     @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\pages\SpareParts.tsx
+  157:11  warning  'user' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\pages\SwiftXRTest.tsx
+   10:10  warning  'Progress' is defined but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+   24:40  warning  'launchARWithFallback' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   37:11  warning  'toast' is assigned a value but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  121:13  warning  'result' is assigned a value but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\pages\UsedMachines.tsx
+    2:10  warning  'Link' is defined but never used. Allowed unused vars must match /^_/u                           @typescript-eslint/no-unused-vars
+    5:10  warning  'Input' is defined but never used. Allowed unused vars must match /^_/u                          @typescript-eslint/no-unused-vars
+    8:10  warning  'Card' is defined but never used. Allowed unused vars must match /^_/u                           @typescript-eslint/no-unused-vars
+    8:16  warning  'CardContent' is defined but never used. Allowed unused vars must match /^_/u                    @typescript-eslint/no-unused-vars
+    8:29  warning  'CardFooter' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+    8:41  warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+    8:53  warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u                      @typescript-eslint/no-unused-vars
+    9:10  warning  'ChevronRight' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+    9:24  warning  'MapPin' is defined but never used. Allowed unused vars must match /^_/u                         @typescript-eslint/no-unused-vars
+    9:32  warning  'Factory' is defined but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+    9:41  warning  'Calendar' is defined but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+    9:51  warning  'Gauge' is defined but never used. Allowed unused vars must match /^_/u                          @typescript-eslint/no-unused-vars
+    9:73  warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+   14:8   warning  'OptimizedImage' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+   16:8   warning  'ConditionBadge' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+   21:25  warning  'isPriceInRange' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+   49:10  warning  'currentSearchEventId' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  113:9   warning  'machinesToShow' is assigned a value but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  288:47  warning  'index' is defined but never used. Allowed unused args must match /^_/u                          @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\routes\TrainingServicesPage.tsx
+  1:47  warning  'Suspense' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\services\NaturalLanguageProcessor.ts
+  126:11  warning  'pricePatterns' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\shared\ui\ui\ar-button.tsx
+  10:28  warning  'productId' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\shared\ui\ui\form.tsx
+  10:3  warning  'useFormContext' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  18:6  warning  'FormFieldContextValue' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\shared\ui\ui\navigation-menu.tsx
+  3:10  warning  'cva' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\store\jobsStore.ts
+   82:11  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  112:11  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  116:9   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  144:12  warning  'FabricatorPositionRow' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  161:9   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  165:9   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+
+C:\projects\almona-portfolio-forge\src\utils\excelImport.ts
+  245:9  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  251:9  warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+
+✖ 799 problems (23 errors, 776 warnings)
+  2 errors and 53 warnings potentially fixable with the `--fix` option.
+

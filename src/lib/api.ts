@@ -260,11 +260,17 @@ export const api = {
       const missingTable = msg.includes('relation') && msg.includes('user_documents');
       const undefinedTableCode = code === '42P01';
       const httpNotFound = status === 404 || msg.includes('404') || msg.includes('not found');
-      if (missingTable || undefinedTableCode || httpNotFound) {
-        console.warn('[api.fetchUserDocuments] user_documents not available; returning empty list.');
+      const permissionError = status === 403 || msg.includes('permission') || msg.includes('RLS');
+      if (missingTable || undefinedTableCode || httpNotFound || permissionError) {
+        // Silently return empty list for expected errors
+        if (process.env.NODE_ENV === 'development' && !permissionError) {
+          console.warn('[api.fetchUserDocuments] user_documents not available; returning empty list.');
+        }
         return [];
       }
-      console.error('Error fetching documents:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching documents:', error);
+      }
       throw new Error(error.message || 'Failed to fetch documents');
     }
     return data || [];

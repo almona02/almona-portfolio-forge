@@ -72,22 +72,88 @@ export const useJobsStore = create<JobsState>((set, get) => ({
           meta: {},
         };
 
-        const { data: upsertedProjects, error: projError } = await supabase
-          .from('fabricator_projects')
-          .upsert(baseProject, { onConflict: 'project_code' })
-          .select('*')
-          .eq('project_code', projectCode);
+        // Check if project exists first, then update or insert
+        const { data: existingProject } = await (supabase
+          .from('fabricator_projects') as any)
+          .select('id')
+          .eq('project_code', projectCode)
+          .eq('owner_user_id', user.id)
+          .maybeSingle();
+
+        let upsertedProjects = null;
+        let projError = null;
+
+        if (existingProject) {
+          // Update existing project
+          const { data, error } = await (supabase
+            .from('fabricator_projects') as any)
+            .update(baseProject)
+            .eq('id', existingProject.id)
+            .select('*')
+            .single();
+          upsertedProjects = data ? [data] : null;
+          projError = error;
+        } else {
+          // Insert new project
+          const { data, error } = await (supabase
+            .from('fabricator_projects') as any)
+            .insert(baseProject)
+            .select('*')
+            .single();
+          upsertedProjects = data ? [data] : null;
+          projError = error;
+        }
 
         if (projError || !upsertedProjects || upsertedProjects.length === 0) {
-          // eslint-disable-next-line no-console
-          console.warn('Failed to upsert fabricator project for job sync:', projError);
+          // Only log if it's not a permission/RLS error (403, 404 are expected)
+          const status = (projError as any)?.status || (projError as any)?.code;
+          const isExpectedError = status === 403 || status === 404 || 
+                                  (projError as any)?.code === 'PGRST116' ||
+                                  (projError as any)?.message?.includes('permission') ||
+                                  (projError as any)?.message?.includes('RLS');
+          if (!isExpectedError && process.env.NODE_ENV === 'development') {
+            // eslint-disable-next-line no-console
+            console.warn('Failed to upsert fabricator project for job sync:', projError);
+          }
           return;
         }
 
         const project = upsertedProjects[0];
+        
+        // Ensure project.id is a valid UUID (from database)
+        if (!project || !project.id || typeof project.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(project.id)) {
+          console.warn('Invalid project ID returned from database:', project);
+          return;
+        }
+
+        // Check if position already exists by id (if valid UUID) or by project/order/pos combination
+        const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(job.id);
+        
+        let existingPosition = null;
+        
+        if (isValidUUID) {
+          // Try to find by id first
+          const { data } = await supabase
+            .from('fabricator_positions')
+            .select('id')
+            .eq('id', job.id)
+            .maybeSingle();
+          existingPosition = data;
+        }
+        
+        // If not found by id, try to find by project/order/pos combination
+        if (!existingPosition) {
+          const { data } = await supabase
+            .from('fabricator_positions')
+            .select('id')
+            .eq('project_id', project.id)
+            .eq('order_number', job.orderNumber)
+            .eq('pos_number', job.posNumber)
+            .maybeSingle();
+          existingPosition = data;
+        }
 
         const positionPayload: FabricatorPositionInsert = {
-          id: job.id,
           project_id: project.id,
           owner_user_id: user.id,
           order_number: job.orderNumber,
@@ -104,13 +170,38 @@ export const useJobsStore = create<JobsState>((set, get) => ({
           optimization: (job.optimization as any) || null,
         };
 
-        const { error: posError } = await supabase
-          .from('fabricator_positions')
-          .upsert(positionPayload, { onConflict: 'id' });
+        let posError = null;
+
+        if (existingPosition) {
+          // Update existing position
+          const { error } = await (supabase
+            .from('fabricator_positions') as any)
+            .update(positionPayload)
+            .eq('id', existingPosition.id);
+          posError = error;
+        } else {
+          // Insert new position - include id only if it's a valid UUID
+          const insertPayload: FabricatorPositionInsert = {
+            ...positionPayload,
+            ...(isValidUUID ? { id: job.id } : {}),
+          };
+          const { error } = await (supabase
+            .from('fabricator_positions') as any)
+            .insert(insertPayload);
+          posError = error;
+        }
 
         if (posError) {
-          // eslint-disable-next-line no-console
-          console.warn('Failed to upsert fabricator position for job sync:', posError);
+          // Only log if it's not a permission/RLS error (403, 404 are expected)
+          const status = (posError as any)?.status || (posError as any)?.code;
+          const isExpectedError = status === 403 || status === 404 || 
+                                  (posError as any)?.code === 'PGRST116' ||
+                                  (posError as any)?.message?.includes('permission') ||
+                                  (posError as any)?.message?.includes('RLS');
+          if (!isExpectedError && process.env.NODE_ENV === 'development') {
+            // eslint-disable-next-line no-console
+            console.warn('Failed to upsert fabricator position for job sync:', posError);
+          }
         }
       } catch (err) {
         // eslint-disable-next-line no-console
@@ -145,13 +236,13 @@ export const useJobsStore = create<JobsState>((set, get) => ({
 
       const [{ data: projects, error: projError }, { data: positions, error: posError }] =
         await Promise.all([
-          supabase
-            .from('fabricator_projects')
+          (supabase
+            .from('fabricator_projects') as any)
             .select('*')
             .eq('owner_user_id', user.id)
             .order('created_at', { ascending: false }),
-          supabase
-            .from('fabricator_positions')
+          (supabase
+            .from('fabricator_positions') as any)
             .select('*')
             .eq('owner_user_id', user.id)
             .order('created_at', { ascending: false }),

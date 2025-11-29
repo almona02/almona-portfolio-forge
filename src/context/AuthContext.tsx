@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef, startTransition } from 'react';
 import { supabase, handleAuthError } from '@/lib/supabase';
 import { getProfileById, updateProfile as updateProfileDomain } from '@/lib/data/profilesClient';
 import { Database } from '@/types/database';
@@ -70,12 +70,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Track ongoing profile fetches to prevent duplicates
   const ongoingFetches = useRef<Set<string>>(new Set());
   
-  // Circuit breaker for failing profile fetches
-  const circuitBreaker = useRef<{
-    failures: number;
-    lastFailure: number;
-    isOpen: boolean;
-  }>({ failures: 0, lastFailure: 0, isOpen: false });
+  // Circuit breaker for failing profile fetches (reserved for future use)
+  // const circuitBreaker = useRef<{
+  //   failures: number;
+  //   lastFailure: number;
+  //   isOpen: boolean;
+  // }>({ failures: 0, lastFailure: 0, isOpen: false });
   
   // Fetch user profile data with improved caching and deduplication
   const fetchUserProfile = useCallback(async (userId: string) => {
@@ -129,7 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const cachedProfile = JSON.parse(cachedData);
           setUser(cachedProfile);
           return;
-        } catch (parseError) {
+        } catch {
           // Ignore parse errors
         }
       }
@@ -177,7 +177,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const getInitialSession = async () => {
       try {
         // Check if Supabase is properly configured
-        if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_KEY) {
+        if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
           console.warn('Supabase not configured, skipping authentication');
           if (isMounted) {
             setUser(null);
@@ -212,7 +212,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (session?.user && isMounted) {
           setSupabaseUser(session.user);
-          await fetchUserProfile(session.user.id);
+          // Defer profile fetch to avoid blocking UI - use startTransition for non-urgent update
+          startTransition(() => {
+            // Use requestIdleCallback if available, otherwise setTimeout
+            if ('requestIdleCallback' in window) {
+              requestIdleCallback(() => {
+                fetchUserProfile(session.user.id).catch(() => {
+                  // Silently fail - profile will be fetched on next interaction
+                });
+              }, { timeout: 2000 });
+            } else {
+              setTimeout(() => {
+                fetchUserProfile(session.user.id).catch(() => {
+                  // Silently fail - profile will be fetched on next interaction
+                });
+              }, 100);
+            }
+          });
         }
       } catch (error) {
         console.error('Error in getInitialSession:', error);
@@ -228,7 +244,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     getInitialSession();
 
-    if (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_KEY) {
+    if (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY) {
       const {
         data: { subscription: authSubscription },
       } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -262,36 +278,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
           
           if (session?.user) {
-            setSupabaseUser(session.user);
-            // Immediate optimistic placeholder if user object not yet built
-            setUser(prev => prev || {
-              id: session.user!.id,
-              email: session.user!.email || undefined,
-              username: null,
-              full_name: session.user!.user_metadata?.full_name || null,
-              avatar_url: session.user!.user_metadata?.avatar_url || null,
-              company_name: session.user!.user_metadata?.company_name || null,
-              phone: session.user!.user_metadata?.phone || null,
-              sector: null as unknown as User['sector'],
-              workshop_location: null,
-              governorate: null,
-              address: null as unknown as User['address'],
-              tax_number: null,
-              commercial_register: null,
-              role: 'customer' as User['role'],
-              is_verified: false,
-              preferences: {} as User['preferences'],
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
+            // Use startTransition for non-urgent updates to improve INP
+            startTransition(() => {
+              setSupabaseUser(session.user);
+              // Immediate optimistic placeholder if user object not yet built
+              setUser(prev => prev || {
+                id: session.user!.id,
+                email: session.user!.email || undefined,
+                username: null,
+                full_name: session.user!.user_metadata?.full_name || null,
+                avatar_url: session.user!.user_metadata?.avatar_url || null,
+                company_name: session.user!.user_metadata?.company_name || null,
+                phone: session.user!.user_metadata?.phone || null,
+                sector: null as unknown as User['sector'],
+                workshop_location: null,
+                governorate: null,
+                address: null as unknown as User['address'],
+                tax_number: null,
+                commercial_register: null,
+                role: 'customer' as User['role'],
+                is_verified: false,
+                preferences: {} as User['preferences'],
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              });
+              if (!stableEmailRef.current && session.user.email) stableEmailRef.current = session.user.email;
             });
-            if (!stableEmailRef.current && session.user.email) stableEmailRef.current = session.user.email;
-            fetchUserProfile(session.user.id); // fire & forget
+            
+            // Defer profile fetch to avoid blocking UI interaction
+            if ('requestIdleCallback' in window) {
+              requestIdleCallback(() => {
+                fetchUserProfile(session.user.id).catch(() => {
+                  // Silently fail - will retry on next interaction
+                });
+              }, { timeout: 2000 });
+            } else {
+              setTimeout(() => {
+                fetchUserProfile(session.user.id).catch(() => {
+                  // Silently fail - will retry on next interaction
+                });
+              }, 100);
+            }
           } else {
-            setSupabaseUser(null);
-            setUser(null);
+            startTransition(() => {
+              setSupabaseUser(null);
+              setUser(null);
+            });
           }
           setLoading(false);
-        }, 100); // 100ms debounce
+        }, 50); // 50ms debounce - reduced for better responsiveness
       });
       subscription = authSubscription;
     }
