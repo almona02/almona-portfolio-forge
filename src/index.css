@@ -199,3 +199,43 @@ html {
     font-size: 1.2rem;
   }
 }
+
+/* ============================================================================
+ * Mobile & Performance Optimizations
+ * ============================================================================ */
+
+/* Reduced Motion Support
+ * Automatically applied by useMobileOptimization hook for:
+ * - Low-end devices
+ * - Mobile devices
+ * - Users with prefers-reduced-motion preference
+ */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Animation Scale Custom Property
+ * Controlled by useMobileOptimization hook
+ * Allows components to scale animations based on device capabilities
+ */
+.animate-scale {
+  transform: scale(var(--animation-scale, 1));
+  transition-duration: var(--animation-duration, 0.3s);
+}
+
+/* Respect user's motion preferences even without reduce-motion class */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

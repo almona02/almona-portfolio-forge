@@ -44,8 +44,6 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react({
-        // Enable React Fast Refresh for better development experience
-        fastRefresh: true,
         // Optimize JSX runtime
         jsxRuntime: 'automatic'
       }),
@@ -58,11 +56,35 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+          // CRITICAL: Ensure index.html is precached
+          navigateFallback: '/index.html',
+          navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
+          // Explicitly add index.html to precache manifest
+          additionalManifestEntries: [
+            { url: '/index.html', revision: null }
+          ],
+          globIgnores: ['**/node_modules/**/*', '**/sw.js', '**/workbox-*.js', '**/registerSW.js'],
           cleanupOutdatedCaches: true,
           skipWaiting: true,
           clientsClaim: true,
+          // Disable globbing warnings and fix sync issue
+          dontCacheBustURLsMatching: /\.\w{8}\./,
+          // Use mode: 'production' to avoid globbing issues
+          mode: 'production',
           // Fix for crypto.hash compatibility
-          runtimeCaching: [],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                }
+              }
+            }
+          ],
           // Increase file size limit to accommodate large hero background image (9.99 MB)
           maximumFileSizeToCacheInBytes: 10 * 1024 * 1024 // 10 MB
         },
@@ -136,7 +158,7 @@ export default defineConfig(({ mode }) => {
             }),
           ]
         : []),
-    ] as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+          ],
 
     resolve: {
       alias: {
@@ -147,7 +169,9 @@ export default defineConfig(({ mode }) => {
         "url": path.resolve(__dirname, "./src/lib/polyfills/url.ts"),
         "zlib": path.resolve(__dirname, "./src/lib/polyfills/zlib.ts"),
       },
-      dedupe: ["react", "react-dom"]
+      // CRITICAL: Deduplicate React to prevent multiple instances
+      // This prevents "unstable_now" errors from duplicate React bundles
+      dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"]
     },
 
     css: {
@@ -172,10 +196,17 @@ export default defineConfig(({ mode }) => {
       target: "esnext",
       minify: isProduction ? "esbuild" : false,
       sourcemap: false, // Disable sourcemaps to speed up build
-      chunkSizeWarningLimit: 1000, // Reduced to 1000 kB for better performance
+      // Note: react-vendor is intentionally large (3.9MB) to prevent module loading errors
+      // This is acceptable as it contains React core and all React-dependent libraries
+      chunkSizeWarningLimit: 5000, // Increased to accommodate react-vendor chunk
       assetsInlineLimit: 2048, // Reduced to prevent large inline assets
       reportCompressedSize: false,
       cssCodeSplit: true, // Enable CSS code splitting to reduce main bundle size
+      // Ensure proper module resolution for React
+      commonjsOptions: {
+        include: [/node_modules/],
+        transformMixedEsModules: true
+      },
       // PERFORMANCE OPTIMIZATIONS
       rollupOptions: {
         maxParallelFileOps: 5,
@@ -223,43 +254,108 @@ export default defineConfig(({ mode }) => {
         ],
         output: {
           entryFileNames: `assets/[name]-[hash].js`,
-          chunkFileNames: `assets/[name]-[hash].js`,
+          chunkFileNames: (chunkInfo) => {
+            // Ensure react-vendor has proper naming and loads first
+            if (chunkInfo.name === 'react-vendor') {
+              return `assets/react-vendor-[hash].js`;
+            }
+            return `assets/[name]-[hash].js`;
+          },
           assetFileNames: `assets/[name]-[hash].[ext]`,
           // Optimize chunk splitting for better caching
+          // CRITICAL: React must load before chunks that depend on it
+          // FIX: Ensure React loads FIRST by checking it before any other logic
           manualChunks: (id) => {
-            // Vendor chunks - keep these separate for better caching
+            // CRITICAL: Check React FIRST - this ensures react-vendor is created first
+            // and loads before any other vendor chunks
             if (id.includes('node_modules')) {
-              // React and React DOM
-              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              // React core packages - MUST be first check
+              if (
+                id.includes('/react/') || 
+                id.includes('/react-dom/') || 
+                id.includes('react/jsx-runtime') ||
+                id.includes('react/jsx-dev-runtime')
+              ) {
                 return 'react-vendor';
               }
-              // UI libraries
+              // React-dependent packages - must be with React
+              // CRITICAL: Catch ALL packages that use React to prevent "forwardRef" and "createContext" errors
+              if (
+                id.includes('react-router') ||
+                id.includes('react-helmet') ||
+                id.includes('react-reconciler') ||
+                id.includes('@react-three') || // React Three Fiber
+                id.includes('react-') || // ALL react-* packages
+                id.includes('/react') || // Any package with /react in path
+                id.includes('react-chartjs') || // react-chartjs-2
+                id.includes('@tanstack/react') || // TanStack Query
+                id.includes('framer-motion') || // framer-motion
+                id.includes('next-themes') || // next-themes
+                id.includes('sonner') || // sonner
+                id.includes('zustand') || // zustand
+                id.includes('embla-carousel-react') || // embla-carousel-react
+                id.includes('react-content-loader') || // react-content-loader
+                id.includes('react-day-picker') || // react-day-picker
+                id.includes('react-hook-form') || // react-hook-form
+                id.includes('react-i18next') || // react-i18next
+                id.includes('react-media-recorder') || // react-media-recorder
+                id.includes('react-resizable-panels') || // react-resizable-panels
+                id.includes('react-window') || // react-window-infinite-loader
+                id.includes('recharts') || // recharts
+                id.includes('vaul') || // vaul
+                id.includes('lucide-react') || // lucide-react
+                id.includes('cmdk') || // cmdk (uses React)
+                id.includes('input-otp') || // input-otp (uses React)
+                id.includes('markdown-to-jsx') || // markdown-to-jsx (uses React)
+                id.includes('@vercel/analytics/react') // Vercel Analytics React
+              ) {
+                return 'react-vendor';
+              }
+              // UI libraries - ALL use React
               if (id.includes('@radix-ui') || id.includes('@radix')) {
-                return 'ui-vendor';
+                return 'react-vendor'; // Radix UI uses React
               }
               // Chart libraries
               if (id.includes('chart.js') || id.includes('react-chartjs')) {
-                return 'chart-vendor';
+                return 'react-vendor'; // react-chartjs uses React
               }
               // PDF libraries
               if (id.includes('pdf-lib') || id.includes('pdfjs')) {
                 return 'pdf-vendor';
               }
-              // Three.js and 3D libraries
-              if (id.includes('three') || id.includes('@react-three')) {
+              // Pure Three.js library (without React wrappers)
+              // @react-three packages are already in react-vendor above
+              if (id.includes('/three/') && !id.includes('@react-three')) {
                 return 'three-vendor';
               }
-              // Utility libraries
+              // Utility libraries (non-React)
               if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
                 return 'utils-vendor';
               }
-              // Other large vendor libraries go into a common vendor chunk
-              return 'vendor';
+              // FIX: Put ALL libraries in react-vendor to prevent module loading order issues
+              // The "Cannot set properties of undefined (setting 'exports')" error
+              // happens when vendor chunk executes before react-vendor is ready
+              // Solution: Put everything in react-vendor to ensure single execution order
+              // Only keep truly isolated, non-module libraries separate
+              if (
+                id.includes('axios') ||
+                id.includes('exceljs') ||
+                id.includes('qrcode') ||
+                id.includes('file-saver') ||
+                id.includes('dompurify') ||
+                id.includes('jwt-decode') ||
+                id.includes('zxcvbn')
+              ) {
+                // These are pure JS utilities with no module dependencies - safe for vendor
+                return 'vendor';
+              }
+              // Everything else goes to react-vendor to ensure proper loading order
+              return 'react-vendor';
             }
             
-            // Fabricator-specific chunks
+            // Fabricator-specific chunks - Enhanced splitting
             if (id.includes('components/fabricator')) {
-              // Core Fabricator components
+              // Core Fabricator components (most critical, loaded first)
               if (
                 id.includes('FabricatorWorkflowPro') ||
                 id.includes('FabricatorWorkspaceLayout') ||
@@ -267,22 +363,64 @@ export default defineConfig(({ mode }) => {
               ) {
                 return 'fabricator-core';
               }
-              // Optimization engine
-              if (id.includes('CuttingOptimizationEngine')) {
+              // Optimization engine and algorithms (heavy computation)
+              if (
+                id.includes('CuttingOptimizationEngine') ||
+                id.includes('MassProductionDashboard') ||
+                id.includes('OptimizationEngine')
+              ) {
                 return 'fabricator-algorithms';
+              }
+              // Reporting components (PDF/CSV/DXF generation)
+              if (
+                id.includes('CuttingListReport') ||
+                id.includes('AccessoriesReport') ||
+                id.includes('GlassReport') ||
+                id.includes('QuickReportsPanel')
+              ) {
+                return 'fabricator-reports';
+              }
+              // Inventory and profile management
+              if (
+                id.includes('InventoryDashboard') ||
+                id.includes('InventoryManagement') ||
+                id.includes('ProfileManagement') ||
+                id.includes('AccessoryManagement')
+              ) {
+                return 'fabricator-inventory';
               }
               // Other Fabricator components
               return 'fabricator-components';
             }
             
-            // Algorithms directory
+            // Algorithms directory (optimization algorithms)
             if (id.includes('algorithms/')) {
+              // Mass production optimizer
+              if (id.includes('massProductionOptimizer')) {
+                return 'fabricator-algorithms';
+              }
+              // Smart draw algorithms
+              if (id.includes('smartDraw')) {
+                return 'fabricator-algorithms';
+              }
+              // All other algorithms
               return 'fabricator-algorithms';
             }
             
-            // Fabricator context
-            if (id.includes('context/FabricatorWorkspaceContext')) {
+            // Fabricator context and workspace
+            if (
+              id.includes('context/FabricatorWorkspaceContext') ||
+              id.includes('lib/workspace/WorkspaceSyncService')
+            ) {
               return 'fabricator-core';
+            }
+            
+            // Export and reporting libraries
+            if (
+              id.includes('lib/exports/') ||
+              id.includes('lib/reports/')
+            ) {
+              return 'fabricator-reports';
             }
             
             // Default: no manual chunk (let Vite decide)
@@ -297,6 +435,8 @@ export default defineConfig(({ mode }) => {
         "react",
         "react-dom",
         "react-dom/client",
+        "react/jsx-runtime",
+        "react/jsx-dev-runtime",
         "react-router-dom",
         "exceljs"
       ],
@@ -306,7 +446,7 @@ export default defineConfig(({ mode }) => {
           global: "globalThis",
         },
         target: "es2020"
-      },
+      }
     },
 
     esbuild: {
