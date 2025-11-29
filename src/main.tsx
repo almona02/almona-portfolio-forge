@@ -1,5 +1,10 @@
+// CRITICAL: Import React FIRST to ensure it's available before any other code
 import React from "react";
 import ReactDOM from "react-dom/client";
+// Ensure React is fully loaded before importing anything else
+if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+  throw new Error('React or ReactDOM failed to load');
+}
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 import { registerServiceWorker, unregisterServiceWorker } from "./lib/serviceWorkerRegistration";
@@ -84,6 +89,19 @@ try {
   import('./lib/criticalCSS').then(({ initializeCriticalCSS }) => {
     initializeCriticalCSS();
   });
+  
+  // Preload critical Fabricator chunks for faster navigation
+  // This runs after initial render to avoid blocking
+  setTimeout(() => {
+    import('./lib/quickPerformance').then(({ quickPerformanceWins }) => {
+      quickPerformanceWins.preloadCriticalChunks();
+    }).catch((err) => {
+      // Non-critical, just log in dev
+      if (import.meta.env.DEV) {
+        console.debug('[Performance] Chunk preloading not available:', err);
+      }
+    });
+  }, 100);
   
   // Initialize Web Vitals monitoring
   if (import.meta.env.PROD) {
