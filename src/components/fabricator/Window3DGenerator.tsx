@@ -40,7 +40,7 @@ import {
   Maximize2
 } from 'lucide-react';
 import { track } from '@/lib/analytics';
-import { validateProject, validateProjectWithConstraints, deriveSystemConstraintsFromProfiles } from '@/lib/fabricatorValidation';
+import { validateProjectWithConstraints, deriveSystemConstraintsFromProfiles } from '@/lib/fabricatorValidation';
 import { Progress } from '@/shared/ui/ui/progress';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/ui/tooltip';
@@ -356,9 +356,13 @@ const createMaterial = (materialType: string, color: string): THREE.MeshStandard
   const baseColor = new THREE.Color(color);
   const materialProps = MATERIAL_DATABASE[materialType as keyof typeof MATERIAL_DATABASE] || MATERIAL_DATABASE.aluminum;
   
+  // Remove clearcoat properties as they're only available on MeshPhysicalMaterial
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { clearcoat, clearcoatRoughness, ...standardProps } = materialProps as any;
+  
   return new THREE.MeshStandardMaterial({
     color: baseColor,
-    ...materialProps,
+    ...standardProps,
   });
 };
 
@@ -377,7 +381,6 @@ const createGlassMaterial = (glazingType: string): THREE.MeshPhysicalMaterial =>
     ior: 1.52,
     clearcoat: 1.0,
     clearcoatRoughness: 0.0,
-    // @ts-ignore - specularIntensity not in older typings but supported at runtime
     specularIntensity: 1.0,
     envMapIntensity: 1.5,
   });
@@ -388,7 +391,7 @@ const generateFrameGeometry = (
   width: number,
   height: number,
   profile: Profile,
-  windowType: WindowType
+  _windowType: WindowType
 ): THREE.BufferGeometry => {
   const profileWidth = (profile.width || 50) / 1000;
   const profileDepth = (profile.height || 25) / 1000;
@@ -444,7 +447,7 @@ const generateSashGeometry = (
   width: number,
   height: number,
   profile: Profile,
-  windowType: WindowType
+  _windowType: WindowType
 ): THREE.BufferGeometry => {
   // Convert profile dimensions from mm to meters
   const profileWidth = (profile.width || 50) / 1000;
@@ -574,11 +577,11 @@ export function Window3DModel({
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const sashRefs = useRef<THREE.Group[]>([]);
-  const { scene } = useThree();
+  const { scene: _scene } = useThree();
 
   // LOD settings based on quality
   // (Currently not used to vary geometry segments, but ready for future use)
-  const lodSettings = useMemo(() => {
+  const _lodSettings = useMemo(() => {
     switch (quality) {
       case 'low':
         return { bevelSegments: 2, curveSegments: 8 };
@@ -1234,7 +1237,7 @@ export const Window3DGenerator: React.FC<Window3DGeneratorProps> = ({
   const [showMeasurements, setShowMeasurements] = useState(true);
   const [showErrors, setShowErrors] = useState(showErrorDetection);
   const [exportFormat, setExportFormat] = useState<'GLB' | 'STL' | 'OBJ'>('GLB');
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [_isFullscreen, setIsFullscreen] = useState(false);
   const [quality, setQuality] = useState<'low' | 'medium' | 'high' | 'ultra'>(initialQuality);
   const [enableShadows, setEnableShadows] = useState(initialShadows);
   const [isExporting, setIsExporting] = useState(false);
@@ -1509,7 +1512,7 @@ function SceneContent({
   showMeasurements,
   presentationMode,
   onModelReady,
-  modelRef,
+  modelRef: _modelRef,
   showErrors,
   showErrorDetection,
   profiles,
@@ -1532,7 +1535,7 @@ function SceneContent({
   onControlsReady?: (controls: any) => void;
 }) {
   const controlsRef = useRef<any>(null);
-  const bounds = useBounds();
+  const _bounds = useBounds();
 
   useEffect(() => {
     if (controlsRef.current && onControlsReady) {

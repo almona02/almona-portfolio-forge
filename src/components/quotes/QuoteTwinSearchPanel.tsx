@@ -2,6 +2,9 @@ import React from 'react';
 import { useQuoteLookup } from '@/hooks/useQuoteLookup';
 import { Input } from '@/shared/ui/ui/input';
 import { Badge } from '@/shared/ui/ui/badge';
+import { useClipboard } from '@/hooks/useClipboard';
+import { Copy, Check } from 'lucide-react';
+import { Button } from '@/shared/ui/ui/button';
 
 interface Props {
   onSelect?: (id: string) => void;
@@ -10,6 +13,8 @@ interface Props {
 
 export const QuoteTwinSearchPanel: React.FC<Props> = ({ onSelect, className }) => {
   const { query, setQuery, results, isLoading, error } = useQuoteLookup();
+  const quoteClipboard = useClipboard({ label: 'quote number' });
+  const twinClipboard = useClipboard({ label: 'digital twin code' });
 
   return (
     <div className={className}>      
@@ -29,15 +34,50 @@ export const QuoteTwinSearchPanel: React.FC<Props> = ({ onSelect, className }) =
         {results.map(r => (
           <li
             key={r.id}
-            className="p-3 rounded bg-almona-dark hover:bg-almona-darker cursor-pointer transition"
-            onClick={() => onSelect?.(r.id)}
+            className="p-3 rounded bg-almona-dark hover:bg-almona-darker transition"
           >
             <div className="flex justify-between items-center">
-              <div>
-                <p className="text-sm font-medium">Quote {r.quote_number}</p>
-                <p className="text-xs text-gray-400">
-                  {r.digital_twin_code || 'No twin'} • {r.portal_reference || 'No ref'}
-                </p>
+              <div className="flex-1 cursor-pointer" onClick={() => onSelect?.(r.id)}>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium">Quote {r.quote_number}</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      quoteClipboard.copyToClipboard(r.quote_number, 'quote number');
+                    }}
+                  >
+                    {quoteClipboard.copiedText === r.quote_number ? (
+                      <Check className="h-3 w-3 text-green-500" />
+                    ) : (
+                      <Copy className="h-3 w-3" />
+                    )}
+                  </Button>
+                </div>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-xs text-gray-400">
+                    {r.digital_twin_code || 'No twin'} • {r.portal_reference || 'No ref'}
+                  </p>
+                  {r.digital_twin_code && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-5 w-5 p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        twinClipboard.copyToClipboard(r.digital_twin_code!, 'digital twin code');
+                      }}
+                    >
+                      {twinClipboard.copiedText === r.digital_twin_code ? (
+                        <Check className="h-3 w-3 text-green-500" />
+                      ) : (
+                        <Copy className="h-3 w-3" />
+                      )}
+                    </Button>
+                  )}
+                </div>
               </div>
               <Badge variant="outline" className="border-orange-500 text-orange-400">
                 {r.status}

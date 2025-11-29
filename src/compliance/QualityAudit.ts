@@ -39,7 +39,7 @@ export interface AuditTrail {
   averageScore: number;
 }
 
-export class QualityAudit {
+export class QualityAuditService {
   private audits: Map<string, QualityAudit[]> = new Map();
 
   /**

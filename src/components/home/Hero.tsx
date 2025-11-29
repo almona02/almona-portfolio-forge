@@ -1,8 +1,37 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, lazy, Suspense, startTransition } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Phone } from "lucide-react";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
-import { EgyptianIndustrialHero } from "./EgyptianIndustrialHero";
+
+// Lazy load the heavy background component to improve LCP
+const EgyptianIndustrialHero = lazy(() => import("./EgyptianIndustrialHero").then(module => ({ default: module.EgyptianIndustrialHero })));
+
+// Component to handle lazy background loading with startTransition
+const LazyBackground = () => {
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    // Defer loading until after initial render to avoid blocking LCP
+    const timer = setTimeout(() => {
+      startTransition(() => {
+        setShouldLoad(true);
+      });
+    }, 200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!shouldLoad) return null;
+
+  return (
+    <div className="absolute inset-0 z-0">
+      <Suspense fallback={null}>
+        <EgyptianIndustrialHero>
+          {/* Empty - content already rendered above */}
+        </EgyptianIndustrialHero>
+      </Suspense>
+    </div>
+  );
+};
 
 const Hero = () => {
   const [activeSlide, setActiveSlide] = useState(0);
@@ -93,50 +122,44 @@ const Hero = () => {
     }
   };
 
-  return (
-    <section 
-      className="relative min-h-screen h-screen overflow-hidden -mt-16 pt-16"
-      style={{ minHeight: '-webkit-fill-available' }}
-      aria-label="Hero carousel"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-    >
-      {/* Epic Egyptian Industrial Background - Default for all */}
-      <EgyptianIndustrialHero>
-        {/* Enhanced gradient overlay - Egyptian desert gold + industrial dark - Enhanced opacity for text area */}
-        <div 
-          className="absolute inset-0 z-[5]"
-          style={{
-            background: `
-              radial-gradient(ellipse at 20% 50%, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.85) 40%, transparent 70%),
-              linear-gradient(
-                to right,
-                rgba(10, 10, 10, 0.97) 0%,
-                rgba(26, 26, 26, 0.88) 25%,
-                rgba(26, 26, 26, 0.75) 40%,
-                rgba(26, 26, 26, 0.60) 55%,
-                rgba(26, 26, 26, 0.45) 70%,
-                rgba(10, 10, 10, 0.35) 100%
-              )
-            `
-          }}
-        />
+  // Render hero content immediately for LCP
+  const heroContent = (
+    <>
+      {/* Enhanced gradient overlay - Egyptian desert gold + industrial dark - Enhanced opacity for text area */}
+      <div 
+        className="absolute inset-0 z-[5]"
+        style={{
+          background: `
+            radial-gradient(ellipse at 20% 50%, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.85) 40%, transparent 70%),
+            linear-gradient(
+              to right,
+              rgba(10, 10, 10, 0.97) 0%,
+              rgba(26, 26, 26, 0.88) 25%,
+              rgba(26, 26, 26, 0.75) 40%,
+              rgba(26, 26, 26, 0.60) 55%,
+              rgba(26, 26, 26, 0.45) 70%,
+              rgba(10, 10, 10, 0.35) 100%
+            )
+          `
+        }}
+      />
 
-        {/* Content - Optimized for mobile with proper spacing - Must be above background */}
-        <div className="relative z-[100] flex flex-col h-full">
+      {/* Content - Optimized for mobile with proper spacing - Must be above background */}
+      <div className="relative z-[100] flex flex-col h-full">
         {/* Main Content Area - Enhanced positioning for large screens */}
         <div className="flex-1 flex flex-col justify-center px-3 sm:px-4 md:px-6 lg:px-12 xl:px-20 2xl:px-32 container mx-auto py-12 sm:py-16 md:py-20 lg:py-24">
           {slides.map((slide, index) => (
             <div
               key={slide.id}
-              className={`transition-all duration-700 ${
+              className={`${
                 activeSlide === index
-                  ? "opacity-100 transform translate-y-0"
-                  : "opacity-0 transform -translate-y-8 absolute pointer-events-none"
+                  ? "opacity-100"
+                  : "opacity-0 absolute pointer-events-none"
               }`}
+              style={{
+                transition: activeSlide === index ? 'opacity 0.3s ease-out' : 'none',
+                transform: 'none'
+              }}
               aria-live="polite"
               aria-atomic="true"
             >
@@ -156,7 +179,8 @@ const Hero = () => {
                   </span>
                   
                   {/* Main Title - Better mobile scaling - Enhanced visibility with better positioning */}
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-white animate-slide-in leading-[1.1] sm:leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
+                  {/* Priority content - renders immediately for LCP - no animation delays */}
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-white leading-[1.1] sm:leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]" style={{ opacity: 1, transform: 'none' }}>
                     <span className="text-gradient-orange bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent drop-shadow-[0_3px_8px_rgba(255,95,31,0.6)]">
                       {slide.title}
                     </span>
@@ -164,16 +188,16 @@ const Hero = () => {
                   
                   {/* Subtitle - Better mobile scaling - Enhanced visibility */}
                   <h2
-                    className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-white sm:text-white mb-4 sm:mb-5 md:mb-6 lg:mb-8 animate-slide-in leading-[1.2] sm:leading-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]"
-                    style={{ animationDelay: "0.1s" }}
+                    className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-white sm:text-white mb-4 sm:mb-5 md:mb-6 lg:mb-8 leading-[1.2] sm:leading-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]"
+                    style={{ opacity: 1, transform: 'none' }}
                   >
                     {slide.subtitle}
                   </h2>
                   
                   {/* Action Buttons - Optimized for mobile - Better spacing on large screens */}
                   <div
-                    className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-5 lg:gap-6 animate-fade-in mt-2 sm:mt-3 md:mt-4"
-                    style={{ animationDelay: "0.3s" }}
+                    className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-5 lg:gap-6 mt-2 sm:mt-3 md:mt-4"
+                    style={{ opacity: 1 }}
                   >
                     <NeonButton
                       variant="industrial"
@@ -279,6 +303,25 @@ const Hero = () => {
           </div>
         </div>
       </div>
+    </>
+  );
+
+  return (
+    <section 
+      className="relative min-h-screen h-screen overflow-hidden -mt-16 pt-16 bg-[#1a1a1a]"
+      style={{ minHeight: '-webkit-fill-available' }}
+      aria-label="Hero carousel"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* Render hero content immediately for LCP - no background blocking */}
+      {heroContent}
+
+      {/* Lazy load heavy background component after initial render */}
+      <LazyBackground />
 
       {/* Loading indicator for transition states */}
       {isTransitioning && (
@@ -286,7 +329,6 @@ const Hero = () => {
           <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
-      </EgyptianIndustrialHero>
     </section>
   );
 };
