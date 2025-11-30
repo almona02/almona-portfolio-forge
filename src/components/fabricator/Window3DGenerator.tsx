@@ -441,6 +441,7 @@ function generateEnhancedHardware(
       metalness: 0.95,
       roughness: 0.1,
       envMapIntensity: 1.5,
+      // emissive: 0x000000,
     });
 
     const mesh = new THREE.Mesh(geometry, material);
@@ -506,6 +507,7 @@ export function Window3DModel({
       stockQuantity: 0,
       minStockLevel: 0,
       supplier: 'Default',
+      specifications: {}
     };
     
     // Use first component's profile if available, otherwise use default
@@ -521,130 +523,198 @@ export function Window3DModel({
     );
     const spacerMaterial = createSpacerMaterial();
 
-    // Generate layouts for sash logic (still used for positioning logic)
-    const layouts: SashLayout[] = computeSashLayout(windowUnit, width);
+    // ------------------------------------------------------------------------
+    // GRID MODE (PHASE 4)
+    // ------------------------------------------------------------------------
+    if (windowUnit.grid && windowUnit.grid.cells.length > 0) {
+        const { rows, cols, cells } = windowUnit.grid;
+        const cellWidth = width / cols;
+        const cellHeight = height / rows;
 
-    // We will loop through layouts and generate GEOMETRY for each "unit"
-    // NOTE: The original code generated 1 big frame and N sash groups.
-    // To maintain animation logic, we need to stick to that structure.
-    // However, generateFrameGeometry generates a FULL unit (frame + sash + glass).
-    // We need to adapt it. 
-    // For now, we will generate the OUTER frame once.
-    // And then for each sash layout, we generate a sash + glass.
-    
-    // 1. Generate Outer Frame
-    // We use generateFrameGeometry but we only extract the frame part.
-    const fullGeometry = generateFrameGeometry(
-        width, 
-        height, 
-        profile, 
-        windowType, 
-        (windowUnit.glazing?.type || 'single') as any
-    );
-    const threeJSGeo = frameGeometryToThreeJS(fullGeometry);
-    
-    // Create frame mesh
-    const frame = new THREE.Mesh(threeJSGeo.frame, frameMaterial);
-    frame.position.set(0, 0, 0);
-    frame.castShadow = enableShadows;
-    frame.receiveShadow = enableShadows;
-    frame.name = 'frame';
-    windowGroup.add(frame);
+        // 1. Draw Cells
+        cells.forEach(cell => {
+            // Calculate Bottom-Left Corner for this cell
+            // Top-Left of grid is (-W/2, H/2)
+            // Cell X: -W/2 + (col * cellWidth)
+            // Cell Y: H/2 - ((row + 1) * cellHeight)  (Since geom draws up from y=0)
+            
+            const startX = -width/2 + (cell.col * cellWidth);
+            const startY = height/2 - ((cell.row + 1) * cellHeight);
 
-    // 2. Create Sashes and Glass
-    layouts.forEach((layout) => {
-      const i = layout.index;
-      const sashGroup = new THREE.Group();
-      sashGroup.name = `sash_${i}`;
+            if (cell.type === 'empty') return;
 
-      const sashWidth = layout.width;
-      
-      // Generate geometry for THIS sash
-      // We reuse the generator but passing sash dimensions
-      // Note: generateFrameGeometry generates a FRAME + SASH. 
-      // We need just the SASH part for the sash group.
-      // But `generateFrameGeometry` logic for sash is coupled with frame.
-      // Let's use the `sash` part of the output if we treat the sashWidth/Height as the unit size? No.
-      // We need to generate just the sash geometry.
-      
-      // Let's assume we can call generateFrameGeometry for the SUB-UNIT 
-      // and use its 'sash' output if available, or 'frame' output if it's a fixed unit?
-      // Actually `frameGeometryToThreeJS` returns separated parts.
-      
-      // Let's generate a temporary geometry for this sash segment
-      const segmentGeo = generateFrameGeometry(
-          sashWidth,
-          height,
-          profile,
-          windowType, // This might be wrong if the sub-unit is just a fixed part?
-          (windowUnit.glazing?.type || 'single') as any,
-          undefined,
-          // Add muntin config if present in windowUnit (mocking for now)
-          (windowUnit as any).muntins
-      );
-      const segmentThreeJS = frameGeometryToThreeJS(segmentGeo);
-      
-      // If this segment has a sash (is openable), use sash geometry. 
-      // If it is fixed, it might just be glass in frame?
-      // The original logic used separate `generateSashGeometry` calls.
-      // `frameGeometryToThreeJS` uses `generateFrameGeometry` internally? No.
-      
-      // We need to use the `sash` geometry from the library if it exists.
-      // The library calculates sash based on frame size.
-      // If we pass sashWidth, it calculates sash relative to that.
-      
-      if (segmentThreeJS.sash) {
-          const sash = new THREE.Mesh(segmentThreeJS.sash, sashMaterial);
-          sash.castShadow = enableShadows;
-          sash.receiveShadow = enableShadows;
-          sash.name = `sash_mesh_${i}`;
-          sash.userData.role = layout.role;
-          sashGroup.add(sash);
-      }
-      
-      // Glass
-      segmentThreeJS.glass.forEach((g, idx) => {
-          const glass = new THREE.Mesh(g, glassMaterial);
-          glass.castShadow = false;
-          glass.receiveShadow = true;
-          glass.name = `glass_${i}_${idx}`;
-          sashGroup.add(glass);
-      });
-      
-      // Spacers
-      segmentThreeJS.spacers.forEach((s, idx) => {
-          const spacer = new THREE.Mesh(s, spacerMaterial);
-          spacer.castShadow = enableShadows;
-          spacer.receiveShadow = true;
-          spacer.name = `spacer_${i}_${idx}`;
-          sashGroup.add(spacer);
-      });
-      
-      // Muntins
-      if (segmentThreeJS.muntins) {
-          const muntins = new THREE.Mesh(segmentThreeJS.muntins, frameMaterial); // Use frame material for muntins
-          muntins.castShadow = enableShadows;
-          muntins.receiveShadow = true;
-          muntins.name = `muntins_${i}`;
-          sashGroup.add(muntins);
-      }
+            // Generate cell geometry
+            const cellGeo = generateFrameGeometry(
+                cellWidth,
+                cellHeight,
+                profile,
+                cell.type === 'fixed' || cell.type === 'panel' ? 'fixed_window' : 'casement',
+                (windowUnit.glazing?.type || 'double') as any
+            );
+            const cellThreeJS = frameGeometryToThreeJS(cellGeo);
 
-      // Horizontal placement based on layout centerX
-      sashGroup.position.x = layout.centerX;
+            const cellGroup = new THREE.Group();
+            
+            // Frame
+            const cellFrame = new THREE.Mesh(cellThreeJS.frame, frameMaterial);
+            cellFrame.castShadow = enableShadows;
+            cellFrame.receiveShadow = enableShadows;
+            cellGroup.add(cellFrame);
 
-      windowGroup.add(sashGroup);
-      sashGroups.push(sashGroup);
-    });
+            // Sash
+            if (cellThreeJS.sash && cell.type === 'sash') {
+                const sash = new THREE.Mesh(cellThreeJS.sash, sashMaterial);
+                sash.castShadow = enableShadows;
+                sash.receiveShadow = enableShadows;
+                cellGroup.add(sash);
+            }
 
-    // Use all sash groups for animation reference
-    sashRefs.current = sashGroups;
+            // Glass (only if not panel)
+            if (cell.type !== 'panel') {
+                cellThreeJS.glass.forEach(g => {
+                    const glass = new THREE.Mesh(g, glassMaterial);
+                    glass.receiveShadow = true;
+                    cellGroup.add(glass);
+                });
+                cellThreeJS.spacers.forEach(s => {
+                    const spacer = new THREE.Mesh(s, spacerMaterial);
+                    cellGroup.add(spacer);
+                });
+            } else {
+                // Panel placeholder (Solid Block)
+                const panelGeo = new THREE.BoxGeometry(cellWidth - 0.1, cellHeight - 0.1, 0.02);
+                const panelMesh = new THREE.Mesh(panelGeo, frameMaterial);
+                panelMesh.position.set(cellWidth/2, cellHeight/2, 0.025);
+                cellGroup.add(panelMesh);
+            }
 
-    // Generate enhanced hardware
-    if (windowUnit.hardware && windowUnit.hardware.length > 0) {
-      const hardwareGroup = generateEnhancedHardware(windowType, width, height, windowUnit.hardware);
-      hardwareGroup.name = 'hardware';
-      windowGroup.add(hardwareGroup);
-    }
+            cellGroup.position.set(startX, startY, 0);
+            windowGroup.add(cellGroup);
+        });
+
+        // 2. Intelligent Mullions (Between Columns)
+        // A simple box for now
+        const profileWidth = (profile.width || 50) / 1000;
+        for (let c = 1; c < cols; c++) {
+            const x = -width/2 + (c * cellWidth);
+            const mullionGeo = new THREE.BoxGeometry(profileWidth, height, profileWidth * 2);
+            const mullion = new THREE.Mesh(mullionGeo, frameMaterial);
+            mullion.position.set(x, 0, 0); // Centered vertically
+            windowGroup.add(mullion);
+        }
+
+        // 3. Intelligent Transoms (Between Rows)
+        for (let r = 1; r < rows; r++) {
+            const y = height/2 - (r * cellHeight);
+            const transomGeo = new THREE.BoxGeometry(width, profileWidth, profileWidth * 2);
+            const transom = new THREE.Mesh(transomGeo, frameMaterial);
+            transom.position.set(0, y, 0);
+            windowGroup.add(transom);
+        }
+
+        // Adjust camera fit scale
+        // (Scale logic reused below)
+
+    } else {
+        // ------------------------------------------------------------------------
+        // LEGACY PRESET MODE
+        // ------------------------------------------------------------------------
+        
+        // Generate layouts for sash logic (still used for positioning logic)
+        const layouts: SashLayout[] = computeSashLayout(windowUnit, width);
+
+        // 1. Generate Outer Frame
+        const fullGeometry = generateFrameGeometry(
+            width, 
+            height, 
+            profile, 
+            windowType, 
+            (windowUnit.glazing?.type || 'single') as any
+        );
+        const threeJSGeo = frameGeometryToThreeJS(fullGeometry);
+        
+        // Create frame mesh
+        const frame = new THREE.Mesh(threeJSGeo.frame, frameMaterial);
+        frame.position.set(0, 0, 0);
+        frame.castShadow = enableShadows;
+        frame.receiveShadow = enableShadows;
+        frame.name = 'frame';
+        windowGroup.add(frame);
+
+        // 2. Create Sashes and Glass
+        const sashGroups: THREE.Group[] = [];
+        layouts.forEach((layout) => {
+          const i = layout.index;
+          const sashGroup = new THREE.Group();
+          sashGroup.name = `sash_${i}`;
+
+          const sashWidth = layout.width;
+          
+          // Generate temporary geometry for this sash segment
+          const segmentGeo = generateFrameGeometry(
+              sashWidth,
+              height,
+              profile,
+              windowType,
+              (windowUnit.glazing?.type || 'single') as any,
+              undefined,
+              (windowUnit as any).muntins
+          );
+          const segmentThreeJS = frameGeometryToThreeJS(segmentGeo);
+          
+          if (segmentThreeJS.sash) {
+              const sash = new THREE.Mesh(segmentThreeJS.sash, sashMaterial);
+              sash.castShadow = enableShadows;
+              sash.receiveShadow = enableShadows;
+              sash.name = `sash_mesh_${i}`;
+              sash.userData.role = layout.role;
+              sashGroup.add(sash);
+          }
+          
+          // Glass
+          segmentThreeJS.glass.forEach((g, idx) => {
+              const glass = new THREE.Mesh(g, glassMaterial);
+              glass.castShadow = false;
+              glass.receiveShadow = true;
+              glass.name = `glass_${i}_${idx}`;
+              sashGroup.add(glass);
+          });
+          
+          // Spacers
+          segmentThreeJS.spacers.forEach((s, idx) => {
+              const spacer = new THREE.Mesh(s, spacerMaterial);
+              spacer.castShadow = enableShadows;
+              spacer.receiveShadow = true;
+              spacer.name = `spacer_${i}_${idx}`;
+              sashGroup.add(spacer);
+          });
+          
+          // Muntins
+          if (segmentThreeJS.muntins) {
+              const muntins = new THREE.Mesh(segmentThreeJS.muntins, frameMaterial); 
+              muntins.castShadow = enableShadows;
+              muntins.receiveShadow = true;
+              muntins.name = `muntins_${i}`;
+              sashGroup.add(muntins);
+          }
+
+          // Horizontal placement based on layout centerX
+          sashGroup.position.x = layout.centerX;
+
+          windowGroup.add(sashGroup);
+          sashGroups.push(sashGroup);
+        });
+
+        // Use all sash groups for animation reference
+        sashRefs.current = sashGroups;
+
+        // Generate enhanced hardware
+        if (windowUnit.hardware && windowUnit.hardware.length > 0) {
+          const hardwareGroup = generateEnhancedHardware(windowType, width, height, windowUnit.hardware);
+          hardwareGroup.name = 'hardware';
+          windowGroup.add(hardwareGroup);
+        }
+    } // End legacy mode
 
     // Center the model
     const box = new THREE.Box3().setFromObject(windowGroup);
@@ -676,7 +746,7 @@ export function Window3DModel({
     };
   }, [windowUnit, onModelReady, quality, enableShadows]);
 
-  // Enhanced animation system
+  // Enhanced animation system (Legacy Mode Only for now)
   useFrame(() => {
     if (!isAnimating || sashRefs.current.length === 0) return;
 
@@ -1449,24 +1519,18 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
           </Html>
         }>
           <Bounds fit margin={1.2}>
-            <SceneContent
+            <Window3DModel
               windowUnit={windowUnit}
               isAnimating={isAnimating}
               animationProgress={animationProgress}
               showMeasurements={showMeasurements}
               presentationMode={presentationMode}
               onModelReady={handleModelReady}
-              modelRef={modelRef}
               showErrors={showErrors}
               showErrorDetection={showErrorDetection}
               profiles={profiles}
               quality={quality}
               enableShadows={enableShadows}
-              explodedView={actualExplodedView}
-              highlightDimension={highlightDimension}
-              onControlsReady={(controls) => {
-                controlsRef.current = controls;
-              }}
             />
           </Bounds>
         </Suspense>
