@@ -91,10 +91,28 @@ export const InventoryPanel: React.FC = () => {
     const ch = supabase
       .channel('inventory-panel')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
-        fetchServerPage().then(({ rows, total }) => { setData(rows); setTotal(total) })
+        if (mounted) {
+          fetchServerPage().then(({ rows, total }) => { 
+            if (mounted) {
+              setData(rows); 
+              setTotal(total) 
+            }
+          })
+        }
       })
       .subscribe()
-    return () => { mounted = false; ch.unsubscribe() }
+
+    return () => { 
+      mounted = false
+      // Use removeChannel instead of unsubscribe for better cleanup
+      // This handles cases where the WebSocket connection hasn't been established yet
+      try {
+        supabase.removeChannel(ch)
+      } catch (error) {
+        // Silently handle cleanup errors - channel may not be fully established
+        console.debug('Channel cleanup error (expected if connection not established):', error)
+      }
+    }
   }, [fetchServerPage])
 
   // bulk helpers (similar to ProductsPanel)
