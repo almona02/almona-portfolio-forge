@@ -1,6 +1,6 @@
 {
-  "title": "طلبات العروض",
-  "subtitle": "احصل على عرض سعر مفصل لمشاريعك الصناعية",
+  "title": "طلبات عروض الأسعار",
+  "subtitle": "احصل على عروض أسعار مفصلة لمشاريعك الصناعية",
   "steps": {
     "project_details": "تفاصيل المشروع",
     "equipment_selection": "اختيار المعدات",
@@ -28,7 +28,7 @@
     "express": "تسليم سريع",
     "white_glove": "خدمة القفازات البيضاء",
     "installation_included": "التركيب مشمول",
-    "turnkey": "مفتاح في اليد"
+    "turnkey": "حل مفتاح في اليد"
   },
   "form": {
     "project_description": "وصف المشروع",
@@ -53,7 +53,7 @@
     "equipment_quantity": "كمية المعدات",
     "equipment_specifications": "مواصفات المعدات",
     "custom_requirements": "متطلبات مخصصة",
-    "accessories": "الملحقات",
+    "accessories": "ملحقات",
     "spare_parts": "قطع الغيار"
   },
   "services": {
@@ -61,7 +61,7 @@
     "training": "خدمة التدريب",
     "maintenance": "خدمة الصيانة",
     "support": "خدمة الدعم",
-    "consulting": "خدمة الاستشارة",
+    "consulting": "خدمة استشارية",
     "customization": "خدمة التخصيص",
     "warranty": "خدمة الضمان",
     "spare_parts": "خدمة قطع الغيار"
@@ -84,12 +84,12 @@
     "maintenance_terms": "شروط الصيانة",
     "cancellation_terms": "شروط الإلغاء",
     "force_majeure": "القوة القاهرة",
-    "governing_law": "القانون المطبق",
+    "governing_law": "القانون الحاكم",
     "dispute_resolution": "حل النزاعات"
   },
   "status": {
     "draft": "مسودة",
-    "submitted": "مُرسل",
+    "submitted": "تم الإرسال",
     "under_review": "قيد المراجعة",
     "quoted": "تم تقديم العرض",
     "accepted": "مقبول",
@@ -108,7 +108,7 @@
     "share_quote": "مشاركة العرض"
   },
   "notifications": {
-    "quote_submitted": "تم إرسال طلب العرض بنجاح",
+    "quote_submitted": "تم إرسال طلب عرض السعر بنجاح",
     "quote_updated": "تم تحديث العرض",
     "quote_expired": "انتهت صلاحية العرض",
     "quote_accepted": "تم قبول العرض",
@@ -116,13 +116,13 @@
   },
   "validation": {
     "required_field": "هذا الحقل مطلوب",
-    "invalid_email": "عنوان بريد إلكتروني غير صحيح",
-    "invalid_phone": "رقم هاتف غير صحيح",
-    "invalid_date": "تاريخ غير صحيح",
-    "invalid_number": "رقم غير صحيح",
-    "min_length": "الحد الأدنى {min} حرف مطلوب",
+    "invalid_email": "عنوان بريد إلكتروني غير صالح",
+    "invalid_phone": "رقم هاتف غير صالح",
+    "invalid_date": "تاريخ غير صالح",
+    "invalid_number": "رقم غير صالح",
+    "min_length": "الحد الأدنى {min} أحرف مطلوبة",
     "max_length": "الحد الأقصى {max} حرف مسموح",
-    "min_value": "الحد الأدنى للقيمة {min}",
-    "max_value": "الحد الأقصى للقيمة {max}"
+    "min_value": "الحد الأدنى للقيمة هو {min}",
+    "max_value": "الحد الأقصى للقيمة هو {max}"
   }
 }

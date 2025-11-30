@@ -1,111 +1,199 @@
 {
-  "title": "Industrial Regions",
-  "subtitle": "Major industrial regions and cities",
+  "title": "Turkey Industrial Regions",
+  "subtitle": "Leading industrial regions and cities in Turkey",
   "regions": {
-    "north_america": "North America",
-    "europe": "Europe",
-    "asia": "Asia",
-    "middle_east": "Middle East",
-    "africa": "Africa",
-    "oceania": "Oceania",
-    "south_america": "South America"
+    "marmara": "Marmara Region",
+    "ege": "Aegean Region",
+    "akdeniz": "Mediterranean Region",
+    "ic_anadolu": "Central Anatolia Region",
+    "karadeniz": "Black Sea Region",
+    "dogu_anadolu": "Eastern Anatolia Region",
+    "guneydogu_anadolu": "Southeastern Anatolia Region"
   },
   "cities": {
-    "new_york": {
-      "name": "New York",
-      "region": "North America",
-      "industrial_zones": [
-        "Brooklyn Navy Yard",
-        "Hunts Point Industrial Park",
-        "Long Island City Industrial Zone"
-      ],
-      "industries": [
-        "Manufacturing",
-        "Technology",
-        "Finance",
-        "Healthcare",
-        "Food Processing",
-        "Textiles"
-      ]
-    },
-    "london": {
-      "name": "London",
-      "region": "Europe",
-      "industrial_zones": [
-        "Thames Gateway",
-        "London Industrial Park",
-        "Docklands"
-      ],
-      "industries": [
-        "Financial Services",
-        "Technology",
-        "Manufacturing",
-        "Creative Industries",
-        "Healthcare",
-        "Logistics"
-      ]
-    },
-    "tokyo": {
-      "name": "Tokyo",
-      "region": "Asia",
-      "industrial_zones": [
-        "Keihin Industrial Zone",
-        "Tokyo Bay Area",
-        "Ota Industrial District"
-      ],
-      "industries": [
-        "Electronics",
-        "Automotive",
-        "Technology",
-        "Manufacturing",
-        "Finance",
-        "Robotics"
-      ]
-    },
     "istanbul": {
       "name": "Istanbul",
-      "region": "Europe",
+      "region": "Marmara",
       "industrial_zones": [
-        "Organize Sanayi Bölgesi",
-        "Tuzla Industrial Zone",
-        "Gebze Industrial Zone"
+        "Tuzla Organized Industrial Zone",
+        "Gebze Organized Industrial Zone",
+        "Çerkezköy Organized Industrial Zone",
+        "Hadımköy Organized Industrial Zone",
+        "Beylikdüzü Organized Industrial Zone"
       ],
       "industries": [
-        "Textiles",
         "Automotive",
+        "Textile",
+        "Chemical",
+        "Food",
+        "Metal Processing",
         "Electronics",
-        "Food Processing",
-        "Chemicals",
-        "Machinery"
+        "Machine Manufacturing"
       ]
     },
-    "cairo": {
-      "name": "Cairo",
-      "region": "Africa",
+    "ankara": {
+      "name": "Ankara",
+      "region": "Central Anatolia",
       "industrial_zones": [
-        "10th of Ramadan City",
-        "Badr City",
-        "Obour City"
+        "Sincan Organized Industrial Zone",
+        "Ostim Organized Industrial Zone",
+        "İvedik Organized Industrial Zone",
+        "Akyurt Organized Industrial Zone"
       ],
       "industries": [
-        "Textiles",
-        "Food Processing",
-        "Chemicals",
-        "Electronics",
+        "Defense Industry",
+        "Machine Manufacturing",
+        "Food",
+        "Textile",
+        "Chemical",
+        "Electronics"
+      ]
+    },
+    "izmir": {
+      "name": "Izmir",
+      "region": "Aegean",
+      "industrial_zones": [
+        "Atatürk Organized Industrial Zone",
+        "Kemalpaşa Organized Industrial Zone",
+        "Menemen Organized Industrial Zone",
+        "Torbalı Organized Industrial Zone"
+      ],
+      "industries": [
+        "Textile",
+        "Food",
+        "Chemical",
+        "Metal Processing",
+        "Machine Manufacturing",
+        "Automotive Sub-Industry"
+      ]
+    },
+    "bursa": {
+      "name": "Bursa",
+      "region": "Marmara",
+      "industrial_zones": [
+        "Bursa Organized Industrial Zone",
+        "Nilüfer Organized Industrial Zone",
+        "İnegöl Organized Industrial Zone",
+        "Gemlik Organized Industrial Zone"
+      ],
+      "industries": [
         "Automotive",
-        "Pharmaceuticals"
+        "Textile",
+        "Machine Manufacturing",
+        "Food",
+        "Chemical",
+        "Metal Processing"
+      ]
+    },
+    "kocaeli": {
+      "name": "Kocaeli",
+      "region": "Marmara",
+      "industrial_zones": [
+        "Gebze Organized Industrial Zone",
+        "Dilovası Organized Industrial Zone",
+        "Körfez Organized Industrial Zone",
+        "Derince Organized Industrial Zone"
+      ],
+      "industries": [
+        "Petrochemical",
+        "Automotive",
+        "Chemical",
+        "Metal Processing",
+        "Machine Manufacturing",
+        "Food"
+      ]
+    },
+    "adana": {
+      "name": "Adana",
+      "region": "Mediterranean",
+      "industrial_zones": [
+        "Adana Organized Industrial Zone",
+        "Ceyhan Organized Industrial Zone",
+        "Yumurtalık Organized Industrial Zone"
+      ],
+      "industries": [
+        "Textile",
+        "Food",
+        "Chemical",
+        "Metal Processing",
+        "Machine Manufacturing",
+        "Petrochemical"
+      ]
+    },
+    "gaziantep": {
+      "name": "Gaziantep",
+      "region": "Southeastern Anatolia",
+      "industrial_zones": [
+        "Gaziantep Organized Industrial Zone",
+        "Nizip Organized Industrial Zone",
+        "Oğuzeli Organized Industrial Zone"
+      ],
+      "industries": [
+        "Textile",
+        "Food",
+        "Machine Manufacturing",
+        "Metal Processing",
+        "Chemical",
+        "Plastic"
+      ]
+    },
+    "konya": {
+      "name": "Konya",
+      "region": "Central Anatolia",
+      "industrial_zones": [
+        "Konya Organized Industrial Zone",
+        "Selçuklu Organized Industrial Zone",
+        "Meram Organized Industrial Zone"
+      ],
+      "industries": [
+        "Food",
+        "Textile",
+        "Machine Manufacturing",
+        "Metal Processing",
+        "Chemical",
+        "Automotive Sub-Industry"
+      ]
+    },
+    "antalya": {
+      "name": "Antalya",
+      "region": "Mediterranean",
+      "industrial_zones": [
+        "Antalya Organized Industrial Zone",
+        "Serik Organized Industrial Zone",
+        "Manavgat Organized Industrial Zone"
+      ],
+      "industries": [
+        "Food",
+        "Textile",
+        "Chemical",
+        "Metal Processing",
+        "Machine Manufacturing",
+        "Tourism Equipment"
+      ]
+    },
+    "trabzon": {
+      "name": "Trabzon",
+      "region": "Black Sea",
+      "industrial_zones": [
+        "Trabzon Organized Industrial Zone",
+        "Akçaabat Organized Industrial Zone"
+      ],
+      "industries": [
+        "Food",
+        "Textile",
+        "Metal Processing",
+        "Machine Manufacturing",
+        "Chemical",
+        "Fish Processing"
       ]
     }
   },
   "industrial_zones": {
-    "industrial_zone": "Industrial Zone",
-    "free_zone": "Free Zone",
-    "special_zone": "Special Zone",
-    "technology_zone": "Technology Zone",
-    "logistics_zone": "Logistics Zone",
-    "export_zone": "Export Zone",
-    "investment_zone": "Investment Zone",
-    "development_zone": "Development Zone"
+    "organize_sanayi_bolgesi": "Organized Industrial Zone",
+    "teknoloji_gelistirme_bolgesi": "Technology Development Zone",
+    "serbest_bolge": "Free Zone",
+    "endustri_bolgesi": "Industrial Region",
+    "kucuk_sanayi_sitesi": "Small Industrial Site"
   },
   "industries": {
     "automotive": "Automotive",
@@ -122,7 +210,7 @@
     "mining": "Mining",
     "agriculture": "Agriculture",
     "tourism": "Tourism",
-    "defense": "Defense"
+    "defense": "Defense Industry"
   },
   "facilities": {
     "factory": "Factory",

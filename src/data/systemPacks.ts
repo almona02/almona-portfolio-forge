@@ -1,5 +1,13 @@
 import type { Profile } from '@/types/fabricator';
 import { ANADOLU_W60_PACK } from '@/data/profileSystems/turkish/anadolu/w60';
+import { KALE_70_SLIDING_PACK, KALE_COMMERCIAL_PACK } from '@/data/profileSystems/turkish/kale/kale70';
+import { 
+  ASAS_CW100_PACK, 
+  ASAS_COMMERCIAL_PACK,
+  ASAS_RESCARA_RWT75_PACK,
+  ASAS_RESCARA_R50_PACK,
+  ASAS_REFD77_PACK,
+} from '@/data/profileSystems/turkish/asas/asasCW100';
 import { CALUMINIUM_PS_PACK } from '@/data/profileSystems/egyptian/caluminium/ps';
 
 /**
@@ -948,7 +956,47 @@ export const JUMBO100_SYSTEM_PACK: SystemPack = {
     regions: ['egypt', 'mena', 'gulf'],
     defaultStockLengthMm: 6000,
   },
-  windowSystemSpec: JUMBO100_WINDOW_SYSTEM_SPEC,
+  windowSystemSpec: {
+    ...JUMBO100_WINDOW_SYSTEM_SPEC,
+    // Enhanced technical specifications for Jumbo 100
+    technical_specifications: {
+      frame_depth_mm: {
+        min: 74,
+        max: 134,
+        typical: 100,
+      },
+      sash_width_mm: 36,
+      max_glazing_thickness_mm: 26,
+      sealing: {
+        type: 'perimetrical',
+        rows: 2,
+        material: 'high_density_brushes',
+      },
+      performance_classes: {
+        air_permeability: {
+          class: 3,
+          max_pressure_pa: 600,
+        },
+        water_tightness: {
+          class: '8A',
+          max_pressure_pa: 450,
+        },
+        wind_load_resistance: {
+          class: 'B2',
+          max_pressure_pa: 800,
+        },
+      },
+      machining_notes: {
+        clamping: 'Critical - ensure proper clamping during cutting due to large profile size',
+        cnc_operations: [
+          'Large pockets for multi-point locking systems',
+          'Anti-lift blocks',
+          'Drainage slots',
+          'Hardware mounting points',
+        ],
+      },
+    },
+  },
   smartDrawPreset: {
     defaultMullionSpacingMm: 1200,
     maxSpanWithoutIntermediateMm: 2400,
@@ -965,6 +1013,7 @@ export const JUMBO100_SYSTEM_PACK: SystemPack = {
     maxWidthMm: 2200,
     maxHeightMm: 2800,
     maxAreaM2: 6.5,
+    maxGlazingThicknessMm: 26,
   },
 };
 
@@ -972,10 +1021,15 @@ export const SYSTEM_PACKS: SystemPack[] = [
   ROCK60_SYSTEM_PACK,
   JUMBO100_SYSTEM_PACK,
   ANADOLU_W60_PACK,
+  KALE_70_SLIDING_PACK,
+  KALE_COMMERCIAL_PACK,
+  ASAS_CW100_PACK,
+  ASAS_COMMERCIAL_PACK,
+  ASAS_RESCARA_RWT75_PACK,
+  ASAS_RESCARA_R50_PACK,
+  ASAS_REFD77_PACK,
   CALUMINIUM_PS_PACK,
-  // Coming Soon – Turkish & Egyptian branded packs
-  // KALE_KAS_70_PACK,
-  // ASAS_CW_120_PACK,
+  // Coming Soon – Additional Turkish & Egyptian branded packs
   // Winsa_PACK,
   // ALUMIL_EGYPT_NC_PACK,
   // ALSALAM_PS_PACK,

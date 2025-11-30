@@ -63,6 +63,7 @@ const FabricatorBrandingSettings = lazy(() => import("./pages/FabricatorBranding
 const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
 const InventoryPage = lazy(() => import("./pages/Inventory.tsx"));
 const ProjectsPage = lazy(() => import("./pages/Projects.tsx"));
+const PublicOptimizer = lazy(() => import("./pages/PublicOptimizer.tsx"));
 const FabricatorWorkspaceLayout = lazy(
   () => import("./components/fabricator/FabricatorWorkspaceLayout.tsx"),
 );
@@ -273,6 +274,7 @@ const App = () => (
                   
                   {/* Shop & E-commerce */}
                   <Route path="/shop" element={<Suspense fallback={getLoadingComponent('/shop')}><Shop /></Suspense>} />
+                  <Route path="/optimizer" element={<Suspense fallback={getLoadingComponent('/optimizer')}><PublicOptimizer /></Suspense>} />
                   <Route path="/usedmachines" element={<Suspense fallback={getLoadingComponent('/usedmachines')}><UsedMachines /></Suspense>} />
                   <Route path="/usedmachines/:id" element={<Suspense fallback={getLoadingComponent('/usedmachines')}><UsedMachineDetailPage /></Suspense>} />
                   <Route path="/usedmachines/sell" element={<Suspense fallback={getLoadingComponent('/usedmachines')}><ProtectedRoute><SellUsedMachine /></ProtectedRoute></Suspense>} />

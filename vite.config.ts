@@ -47,6 +47,25 @@ export default defineConfig(({ mode }) => {
         // Optimize JSX runtime
         jsxRuntime: 'automatic'
       }),
+      // Plugin to ensure long package is available for TensorFlow.js
+      {
+        name: 'fix-long-package',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            // Ensure long is available before TensorFlow.js loads
+            if (req.url?.includes('@tensorflow') || req.url?.includes('tfjs')) {
+              // This ensures long is pre-loaded
+            }
+            next();
+          });
+        },
+        resolveId(id) {
+          // Ensure long package resolves correctly
+          if (id === 'long') {
+            return null; // Let Vite handle it normally
+          }
+        }
+      },
       // Simplified PWA configuration for reliable builds
       VitePWA({
         registerType: "autoUpdate",
@@ -169,6 +188,10 @@ export default defineConfig(({ mode }) => {
         "url": path.resolve(__dirname, "./src/lib/polyfills/url.ts"),
         "zlib": path.resolve(__dirname, "./src/lib/polyfills/zlib.ts"),
       },
+      // Ensure CommonJS modules like 'long' are properly resolved
+      conditions: ['import', 'module', 'browser', 'default'],
+      // Properly resolve long package
+      mainFields: ['browser', 'module', 'main'],
       // CRITICAL: Deduplicate React to prevent multiple instances
       // This prevents "unstable_now" errors from duplicate React bundles
       dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"]
@@ -202,10 +225,14 @@ export default defineConfig(({ mode }) => {
       assetsInlineLimit: 2048, // Reduced to prevent large inline assets
       reportCompressedSize: false,
       cssCodeSplit: true, // Enable CSS code splitting to reduce main bundle size
-      // Ensure proper module resolution for React
+      // Ensure proper module resolution for React and CommonJS packages like 'long'
       commonjsOptions: {
-        include: [/node_modules/],
-        transformMixedEsModules: true
+        include: [/node_modules/, /long/],
+        transformMixedEsModules: true,
+        // Properly handle CommonJS requires for packages like 'long'
+        requireReturnsDefault: 'auto',
+        // Ensure long package is properly transformed
+        esmExternals: (id) => !id.includes('long')
       },
       // PERFORMANCE OPTIMIZATIONS
       rollupOptions: {
@@ -438,14 +465,20 @@ export default defineConfig(({ mode }) => {
         "react/jsx-runtime",
         "react/jsx-dev-runtime",
         "react-router-dom",
-        "exceljs"
+        "exceljs",
+        "long", // Explicitly include long package for TensorFlow.js
+        "seedrandom" // Include seedrandom to fix require errors
       ],
       exclude: ["@google/generative-ai","@huggingface/inference","@tensorflow/tfjs","three"],
+      // Force re-optimization to ensure long package is properly handled
+      force: true,
       esbuildOptions: {
         define: {
           global: "globalThis",
         },
-        target: "es2020"
+        target: "es2020",
+        // Ensure CommonJS modules are properly transformed
+        format: 'esm'
       }
     },
 

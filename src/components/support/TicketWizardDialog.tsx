@@ -15,9 +15,10 @@ import { Textarea } from '@/components/ui/textarea';
 // Removed Select components after converting machine serial to pill selection
 import { Label } from '@/components/ui/label';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
+import { CheckCircle2, ChevronLeft, ChevronRight, Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 import { useLanguage } from '@/context/LanguageContext';
+import { useClipboard } from '@/hooks/useClipboard';
 
 interface TicketWizardDialogProps {
   open: boolean;
@@ -665,16 +666,22 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                         <span className="text-xs uppercase tracking-wide text-gray-500">{t('ticket.digital_twin_code')}</span>
                         <code className="px-3 py-1 rounded bg-almona-dark/60 border border-almona-light/20 text-almona-orange text-sm font-mono">{createdTicketTwin}</code>
                       </div>
-                      <Button type="button" size="sm" variant="outline" className="flex items-center gap-1" onClick={() => {
-                        if (createdTicketTwin) {
-                          navigator.clipboard.writeText(createdTicketTwin).then(()=>{
-                            toast({ title: 'Copied', description: 'Digital twin code copied to clipboard.' });
-                          }).catch(()=>{
-                            toast({ title: 'Copy failed', variant: 'destructive', description: 'Could not copy to clipboard.' });
-                          });
-                        }
-                      }}>
-                        <Copy className="h-3 w-3" /> {t('ticket.copy_code')}
+                      <Button 
+                        type="button" 
+                        size="sm" 
+                        variant="outline" 
+                        className="flex items-center gap-1" 
+                        onClick={() => {
+                          if (createdTicketTwin) {
+                            twinClipboard.copyToClipboard(createdTicketTwin, 'digital twin code');
+                          }
+                        }}
+                      >
+                        {twinClipboard.copiedText === createdTicketTwin ? (
+                          <Check className="h-3 w-3 text-green-500" />
+                        ) : (
+                          <Copy className="h-3 w-3" />
+                        )} {t('ticket.copy_code')}
                       </Button>
                     </div>
                   ) : (
