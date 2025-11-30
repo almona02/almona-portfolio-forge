@@ -39,7 +39,8 @@ import {
   Moon,
   Layers,
   Sparkles,
-  Maximize2
+  Maximize2,
+  Scissors // For Section View
 } from 'lucide-react';
 import { track } from '@/lib/analytics';
 import { validateProjectWithConstraints, deriveSystemConstraintsFromProfiles } from '@/lib/fabricatorValidation';
@@ -362,7 +363,12 @@ interface Window3DGeneratorProps {
 }
 
 // Enhanced material creation with PBR properties
-const createMaterial = (materialType: string, color: string): THREE.MeshStandardMaterial => {
+// Updated to support clipping planes
+const createMaterial = (
+  materialType: string, 
+  color: string,
+  clippingPlanes?: THREE.Plane[]
+): THREE.MeshStandardMaterial => {
   const baseColor = new THREE.Color(color);
   const materialProps = MATERIAL_DATABASE[materialType as keyof typeof MATERIAL_DATABASE] || MATERIAL_DATABASE.aluminum;
   
@@ -373,11 +379,16 @@ const createMaterial = (materialType: string, color: string): THREE.MeshStandard
   return new THREE.MeshStandardMaterial({
     color: baseColor,
     ...standardProps,
+    clippingPlanes: clippingPlanes,
+    clipShadows: true
   });
 };
 
 // Enhanced glass material with realistic properties
-const createGlassMaterial = (glazingType: string): THREE.MeshPhysicalMaterial => {
+const createGlassMaterial = (
+  glazingType: string,
+  clippingPlanes?: THREE.Plane[]
+): THREE.MeshPhysicalMaterial => {
   return new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
     transparent: true,
@@ -391,15 +402,19 @@ const createGlassMaterial = (glazingType: string): THREE.MeshPhysicalMaterial =>
     clearcoatRoughness: 0.0,
     specularIntensity: 1.0,
     envMapIntensity: 1.5,
-    side: THREE.DoubleSide
+    side: THREE.DoubleSide,
+    clippingPlanes: clippingPlanes,
+    clipShadows: true
   });
 };
 
-const createSpacerMaterial = (): THREE.MeshStandardMaterial => {
+const createSpacerMaterial = (clippingPlanes?: THREE.Plane[]): THREE.MeshStandardMaterial => {
   return new THREE.MeshStandardMaterial({
     color: 0xcccccc,
     metalness: 0.8,
     roughness: 0.3,
+    clippingPlanes: clippingPlanes,
+    clipShadows: true
   });
 };
 
@@ -408,7 +423,8 @@ function generateEnhancedHardware(
   windowType: WindowType,
   width: number,
   height: number,
-  hardware: any[]
+  hardware: any[],
+  clippingPlanes?: THREE.Plane[]
 ): THREE.Group {
   const hardwareGroup = new THREE.Group();
 
@@ -441,6 +457,8 @@ function generateEnhancedHardware(
       metalness: 0.95,
       roughness: 0.1,
       envMapIntensity: 1.5,
+      clippingPlanes: clippingPlanes,
+      clipShadows: true
       // emissive: 0x000000,
     });
 
@@ -464,6 +482,7 @@ export function Window3DModel({
   onModelReady,
   quality = 'high',
   enableShadows = true,
+  clippingPlanes,
 }: {
   windowUnit: WindowUnit;
   isAnimating: boolean;
@@ -471,6 +490,7 @@ export function Window3DModel({
   onModelReady?: (model: THREE.Group) => void;
   quality?: 'low' | 'medium' | 'high' | 'ultra';
   enableShadows?: boolean;
+  clippingPlanes?: THREE.Plane[];
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const sashRefs = useRef<THREE.Group[]>([]);
@@ -515,16 +535,17 @@ export function Window3DModel({
       ? windowUnit.components[0].profile 
       : defaultProfile;
 
-    // Create enhanced materials
-    const frameMaterial = createMaterial(profile.material, profile.color || windowUnit.color || '#C0C0C0');
-    const sashMaterial = createMaterial(profile.material, profile.color || windowUnit.color || '#C0C0C0');
+    // Create enhanced materials with clipping planes support
+    const frameMaterial = createMaterial(profile.material, profile.color || windowUnit.color || '#C0C0C0', clippingPlanes);
+    const sashMaterial = createMaterial(profile.material, profile.color || windowUnit.color || '#C0C0C0', clippingPlanes);
     const glassMaterial = createGlassMaterial(
-      windowUnit.glazing?.type || (windowUnit.components && windowUnit.components.length > 0 ? windowUnit.components[0]?.glazingType : undefined) || 'single'
+      windowUnit.glazing?.type || (windowUnit.components && windowUnit.components.length > 0 ? windowUnit.components[0]?.glazingType : undefined) || 'single',
+      clippingPlanes
     );
-    const spacerMaterial = createSpacerMaterial();
+    const spacerMaterial = createSpacerMaterial(clippingPlanes);
 
     // ------------------------------------------------------------------------
-    // GRID MODE (PHASE 4)
+    // GRID MODE (PHASE 4 + 5 Animation)
     // ------------------------------------------------------------------------
     if (windowUnit.grid && windowUnit.grid.cells.length > 0) {
         const { rows, cols, cells } = windowUnit.grid;
@@ -554,52 +575,91 @@ export function Window3DModel({
             const cellThreeJS = frameGeometryToThreeJS(cellGeo);
 
             const cellGroup = new THREE.Group();
+            cellGroup.position.set(startX, startY, 0);
+            windowGroup.add(cellGroup);
             
-            // Frame
+            // Frame (Fixed relative to cell)
             const cellFrame = new THREE.Mesh(cellThreeJS.frame, frameMaterial);
             cellFrame.castShadow = enableShadows;
             cellFrame.receiveShadow = enableShadows;
             cellGroup.add(cellFrame);
 
-            // Sash
+            // Sash Group (Animatable)
             if (cellThreeJS.sash && cell.type === 'sash') {
+                const sashGroup = new THREE.Group();
+                // Center the sash group pivot for rotation (hinge side)
+                // Default hinge is usually Left or Right. Let's assume Left for now.
+                // Pivot at x=0 relative to cell? No, cell geom starts at 0,0.
+                // Hinge should be at x=0 (left) or x=cellWidth (right).
+                // Let's pivot around the left edge (x=0) for now.
+                
+                // But wait, the sash geometry is generated inside the frame.
+                // The sash geometry is already offset by the frame width.
+                // To rotate correctly, we need to put the sash in a group pivoted at the hinge.
+                // Hinge position X = profileWidth.
+                
+                const hingeX = profile.width ? profile.width / 1000 : 0.05;
+                sashGroup.position.set(hingeX, 0, 0); // Move pivot to hinge
+                
+                // The sash mesh itself needs to be offset back so it renders in the correct place relative to pivot
                 const sash = new THREE.Mesh(cellThreeJS.sash, sashMaterial);
+                sash.position.set(-hingeX, 0, 0); // Offset back
                 sash.castShadow = enableShadows;
                 sash.receiveShadow = enableShadows;
-                cellGroup.add(sash);
-            }
+                sashGroup.add(sash);
 
-            // Glass (only if not panel)
-            if (cell.type !== 'panel') {
-                cellThreeJS.glass.forEach(g => {
-                    const glass = new THREE.Mesh(g, glassMaterial);
-                    glass.receiveShadow = true;
-                    cellGroup.add(glass);
-                });
-                cellThreeJS.spacers.forEach(s => {
-                    const spacer = new THREE.Mesh(s, spacerMaterial);
-                    cellGroup.add(spacer);
-                });
-            } else {
-                // Panel placeholder (Solid Block)
-                const panelGeo = new THREE.BoxGeometry(cellWidth - 0.1, cellHeight - 0.1, 0.02);
-                const panelMesh = new THREE.Mesh(panelGeo, frameMaterial);
-                panelMesh.position.set(cellWidth/2, cellHeight/2, 0.025);
-                cellGroup.add(panelMesh);
-            }
+                // Glass & Spacers attached to Sash
+                if (cell.type !== 'panel') {
+                    cellThreeJS.glass.forEach(g => {
+                        const glass = new THREE.Mesh(g, glassMaterial);
+                        glass.position.set(-hingeX, 0, 0);
+                        glass.receiveShadow = true;
+                        sashGroup.add(glass);
+                    });
+                    cellThreeJS.spacers.forEach(s => {
+                        const spacer = new THREE.Mesh(s, spacerMaterial);
+                        spacer.position.set(-hingeX, 0, 0);
+                        sashGroup.add(spacer);
+                    });
+                }
 
-            cellGroup.position.set(startX, startY, 0);
-            windowGroup.add(cellGroup);
+                // Store reference for animation
+                // We tag it with a special userData to identify it in the animation loop
+                sashGroup.userData.isAnimatableSash = true;
+                sashGroup.userData.cellType = cell.type;
+                sashGroup.userData.gridCol = cell.col; // To alternate directions
+                sashRefs.current.push(sashGroup);
+                
+                cellGroup.add(sashGroup);
+            } else if (cell.type !== 'sash') {
+                 // Fixed Glass (not in sash group)
+                 if (cell.type !== 'panel') {
+                    cellThreeJS.glass.forEach(g => {
+                        const glass = new THREE.Mesh(g, glassMaterial);
+                        glass.receiveShadow = true;
+                        cellGroup.add(glass);
+                    });
+                    cellThreeJS.spacers.forEach(s => {
+                        const spacer = new THREE.Mesh(s, spacerMaterial);
+                        cellGroup.add(spacer);
+                    });
+                } else {
+                    // Panel placeholder
+                    const panelGeo = new THREE.BoxGeometry(cellWidth - 0.1, cellHeight - 0.1, 0.02);
+                    const panelMesh = new THREE.Mesh(panelGeo, frameMaterial);
+                    panelMesh.position.set(cellWidth/2, cellHeight/2, 0.025);
+                    cellGroup.add(panelMesh);
+                }
+            }
         });
 
         // 2. Intelligent Mullions (Between Columns)
-        // A simple box for now
         const profileWidth = (profile.width || 50) / 1000;
         for (let c = 1; c < cols; c++) {
             const x = -width/2 + (c * cellWidth);
             const mullionGeo = new THREE.BoxGeometry(profileWidth, height, profileWidth * 2);
             const mullion = new THREE.Mesh(mullionGeo, frameMaterial);
-            mullion.position.set(x, 0, 0); // Centered vertically
+            mullion.position.set(x, 0, 0); 
             windowGroup.add(mullion);
         }
 
@@ -612,15 +672,10 @@ export function Window3DModel({
             windowGroup.add(transom);
         }
 
-        // Adjust camera fit scale
-        // (Scale logic reused below)
-
     } else {
         // ------------------------------------------------------------------------
         // LEGACY PRESET MODE
         // ------------------------------------------------------------------------
-        
-        // Generate layouts for sash logic (still used for positioning logic)
         const layouts: SashLayout[] = computeSashLayout(windowUnit, width);
 
         // 1. Generate Outer Frame
@@ -633,7 +688,6 @@ export function Window3DModel({
         );
         const threeJSGeo = frameGeometryToThreeJS(fullGeometry);
         
-        // Create frame mesh
         const frame = new THREE.Mesh(threeJSGeo.frame, frameMaterial);
         frame.position.set(0, 0, 0);
         frame.castShadow = enableShadows;
@@ -650,7 +704,6 @@ export function Window3DModel({
 
           const sashWidth = layout.width;
           
-          // Generate temporary geometry for this sash segment
           const segmentGeo = generateFrameGeometry(
               sashWidth,
               height,
@@ -671,7 +724,6 @@ export function Window3DModel({
               sashGroup.add(sash);
           }
           
-          // Glass
           segmentThreeJS.glass.forEach((g, idx) => {
               const glass = new THREE.Mesh(g, glassMaterial);
               glass.castShadow = false;
@@ -680,7 +732,6 @@ export function Window3DModel({
               sashGroup.add(glass);
           });
           
-          // Spacers
           segmentThreeJS.spacers.forEach((s, idx) => {
               const spacer = new THREE.Mesh(s, spacerMaterial);
               spacer.castShadow = enableShadows;
@@ -689,7 +740,6 @@ export function Window3DModel({
               sashGroup.add(spacer);
           });
           
-          // Muntins
           if (segmentThreeJS.muntins) {
               const muntins = new THREE.Mesh(segmentThreeJS.muntins, frameMaterial); 
               muntins.castShadow = enableShadows;
@@ -698,23 +748,20 @@ export function Window3DModel({
               sashGroup.add(muntins);
           }
 
-          // Horizontal placement based on layout centerX
           sashGroup.position.x = layout.centerX;
 
           windowGroup.add(sashGroup);
           sashGroups.push(sashGroup);
         });
 
-        // Use all sash groups for animation reference
         sashRefs.current = sashGroups;
 
-        // Generate enhanced hardware
         if (windowUnit.hardware && windowUnit.hardware.length > 0) {
-          const hardwareGroup = generateEnhancedHardware(windowType, width, height, windowUnit.hardware);
+          const hardwareGroup = generateEnhancedHardware(windowType, width, height, windowUnit.hardware, clippingPlanes);
           hardwareGroup.name = 'hardware';
           windowGroup.add(hardwareGroup);
         }
-    } // End legacy mode
+    } 
 
     // Center the model
     const box = new THREE.Box3().setFromObject(windowGroup);
@@ -744,9 +791,9 @@ export function Window3DModel({
         console.warn('Error disposing geometries:', error);
       }
     };
-  }, [windowUnit, onModelReady, quality, enableShadows]);
+  }, [windowUnit, onModelReady, quality, enableShadows, clippingPlanes]);
 
-  // Enhanced animation system (Legacy Mode Only for now)
+  // Enhanced animation system
   useFrame(() => {
     if (!isAnimating || sashRefs.current.length === 0) return;
 
@@ -755,6 +802,21 @@ export function Window3DModel({
     const height = windowUnit.overallHeight / 1000;
     const progress = animationProgress;
 
+    // Handle Grid Mode Animations
+    if (windowUnit.grid) {
+        sashRefs.current.forEach((sashGroup) => {
+            if (sashGroup.userData.isAnimatableSash) {
+                // Determine direction based on column index (even/odd) to avoid collision
+                const direction = sashGroup.userData.gridCol % 2 === 0 ? 1 : -1;
+                // Rotate around Y axis (Casement style default for grid)
+                // Max 90 degrees (PI/2)
+                sashGroup.rotation.y = (Math.PI / 2) * progress * direction;
+            }
+        });
+        return; 
+    }
+
+    // Handle Legacy Preset Animations
     const layouts = computeSashLayout(windowUnit, width);
 
     sashRefs.current.forEach((sashGroup, index) => {
@@ -765,7 +827,6 @@ export function Window3DModel({
         case 'sliding_window':
         case 'sliding_door':
           if (layout.role === 'sliding') {
-            // Alternate sliding directions for multi-sash layouts
             const dir = index % 2 === 0 ? -1 : 1;
             sashGroup.position.x = layout.centerX + dir * (width * 0.25 * (1 - progress));
           }
@@ -783,10 +844,8 @@ export function Window3DModel({
 
         case 'tilt_turn':
           if (progress < 0.5) {
-            // Tilt mode
             sashGroup.rotation.x = -Math.PI / 6 * (progress * 2);
           } else {
-            // Turn mode
             sashGroup.rotation.x = -Math.PI / 6;
             sashGroup.rotation.y = Math.PI / 2 * ((progress - 0.5) * 2);
           }
@@ -808,176 +867,6 @@ export function Window3DModel({
   });
 
   return <group ref={groupRef} />;
-}
-
-// Exploded View Control Component
-function ExplodedViewControl({ 
-  exploded, 
-  modelGroup 
-}: { 
-  exploded: boolean; 
-  modelGroup: THREE.Group | null;
-}) {
-  useFrame(() => {
-    if (!modelGroup) return;
-    
-    const expansionFactor = exploded ? 0.2 : 0; // Expansion distance in meters
-    
-    modelGroup.children.forEach((child) => {
-      // Initialize original position if not set
-      if (!child.userData.originalPos) {
-        child.userData.originalPos = child.position.clone();
-      }
-
-      // Calculate direction from center (assuming local 0,0,0 is center)
-      // If parts are grouped, we might need world position logic, but this works for centered groups
-      const targetPos = child.userData.originalPos.clone();
-      const direction = targetPos.clone().normalize();
-      
-      // If the part is at (0,0,0), it won't move. Add a slight offset based on name if needed.
-      if (direction.length() === 0) {
-        // Default direction based on part name or use Z-axis
-        if (child.name.includes('sash')) {
-          direction.set(1, 0, 0); // Move right for sashes
-        } else if (child.name.includes('glass')) {
-          direction.set(0, 0, 1); // Move forward for glass
-        } else {
-          direction.set(0, 0, 1); // Default Z-axis
-        }
-      }
-
-      // Lerp to new position
-      const expandedPos = targetPos.clone().add(direction.multiplyScalar(expansionFactor));
-      child.position.lerp(expandedPos, 0.1);
-    });
-  });
-
-  return null;
-}
-
-// Enhanced error overlay with better visuals
-export function WindowErrorOverlay({ 
-  windowUnit, 
-  profiles 
-}: { 
-  windowUnit: WindowUnit;
-  profiles?: Profile[];
-}) {
-  const constraints = profiles ? deriveSystemConstraintsFromProfiles(profiles) : null;
-  const validation = validateProjectWithConstraints(windowUnit, constraints);
-  const errors = validation.errors;
-  const width = windowUnit.overallWidth / 1000;
-  const height = windowUnit.overallHeight / 1000;
-
-  if (errors.length === 0) return null;
-
-  return (
-    <>
-      {/* Enhanced error indicators */}
-      {errors.map((error, index) => {
-        const angle = (index / errors.length) * Math.PI * 2;
-        const radius = Math.max(width, height) * 0.7;
-        const x = Math.cos(angle) * radius;
-        const y = Math.sin(angle) * radius;
-        const z = 0.15;
-
-        return (
-          <group key={index} position={[x, y, z]}>
-            {/* Animated error indicator */}
-            <mesh>
-              <sphereGeometry args={[0.05, 8, 6]} />
-              <meshBasicMaterial color={0xff0000} transparent opacity={0.8} />
-            </mesh>
-            <Html center>
-              <div className="bg-red-500/95 text-white px-3 py-2 rounded-lg shadow-2xl border-2 border-red-600 max-w-xs backdrop-blur-sm">
-                <div className="flex items-center gap-2 mb-1">
-                  <AlertTriangle className="h-4 w-4 animate-pulse" />
-                  <span className="font-bold text-xs">Design Error</span>
-                  <Badge variant="outline" className="ml-auto bg-red-600 text-white text-xs">
-                    {error.field}
-                  </Badge>
-                </div>
-                <div className="text-xs leading-relaxed">{error.message}</div>
-              </div>
-            </Html>
-          </group>
-        );
-      })}
-
-      {/* Enhanced warning effects */}
-      {errors.some(e => e.field === 'overallWidth' || e.field === 'overallHeight') && (
-        <mesh position={[0, 0, 0]}>
-          <ringGeometry args={[Math.max(width, height) * 0.65, Math.max(width, height) * 0.7, 32]} />
-          <meshBasicMaterial 
-            color={0xff0000} 
-            transparent 
-            opacity={0.4} 
-            side={THREE.DoubleSide} 
-          />
-        </mesh>
-      )}
-    </>
-  );
-}
-
-// Enhanced measurement overlay with dimension highlighting
-export function WindowMeasurementOverlay({ 
-  windowUnit, 
-  highlightDimension 
-}: { 
-  windowUnit: WindowUnit;
-  highlightDimension?: 'width' | 'height' | null;
-}) {
-  const width = windowUnit.overallWidth / 1000;
-  const height = windowUnit.overallHeight / 1000;
-  const isWidthHighlighted = highlightDimension === 'width';
-  const isHeightHighlighted = highlightDimension === 'height';
-
-  return (
-    <>
-      {/* Width measurement with line */}
-      <group position={[0, -height / 2 - 0.15, 0]}>
-        <mesh>
-          <boxGeometry args={[width, 0.005, 0.005]} />
-          <meshBasicMaterial 
-            color={isWidthHighlighted ? 0xf97316 : 0x4ade80} // Orange if active, Green default
-            toneMapped={false} // Makes it glow with Bloom
-          />
-        </mesh>
-        <Html position={[0, -0.08, 0]} center>
-          <div className={`
-            px-3 py-1 rounded-full text-sm font-mono font-bold shadow-lg border-2 transition-all duration-300
-            ${isWidthHighlighted 
-              ? 'bg-orange-600 text-white border-orange-400 scale-110 shadow-[0_0_15px_rgba(249,115,22,0.6)]' 
-              : 'bg-green-600/90 text-white border-green-400'}
-          `}>
-            {windowUnit.overallWidth}mm
-          </div>
-        </Html>
-      </group>
-
-      {/* Height measurement with line */}
-      <group position={[-width / 2 - 0.15, 0, 0]}>
-        <mesh rotation={[0, 0, Math.PI / 2]}>
-          <boxGeometry args={[height, 0.005, 0.005]} />
-          <meshBasicMaterial 
-            color={isHeightHighlighted ? 0xf97316 : 0x4ade80} // Orange if active, Green default
-            toneMapped={false} // Makes it glow with Bloom
-          />
-        </mesh>
-        <Html position={[-0.05, 0, 0]} center>
-          <div className={`
-            px-3 py-1 rounded-full text-sm font-mono font-bold shadow-lg border-2 transition-all duration-300 transform -rotate-90
-            ${isHeightHighlighted 
-              ? 'bg-orange-600 text-white border-orange-400 scale-110 shadow-[0_0_15px_rgba(249,115,22,0.6)]' 
-              : 'bg-green-600/90 text-white border-green-400'}
-          `}>
-            {windowUnit.overallHeight}mm
-          </div>
-        </Html>
-      </group>
-    </>
-  );
 }
 
 // Enhanced controls component
@@ -1005,6 +894,8 @@ function WindowControls({
   enableShadows,
   setEnableShadows,
   isExporting,
+  sectionViewEnabled,
+  setSectionViewEnabled,
 }: {
   isAnimating: boolean;
   setIsAnimating: (val: boolean) => void;
@@ -1029,8 +920,13 @@ function WindowControls({
   enableShadows?: boolean;
   setEnableShadows?: (enable: boolean) => void;
   isExporting?: boolean;
+  sectionViewEnabled?: boolean;
+  setSectionViewEnabled?: (enabled: boolean) => void;
 }) {
+  // ... (Controls UI Implementation - Keeping existing structure but adding Section View)
+  
   if (presentationMode) {
+    // ... (Same Presentation Mode)
     return (
       <div className="absolute bottom-4 left-4 z-10">
         <Card className="bg-black/80 backdrop-blur-md border-orange-500/50 shadow-2xl">
@@ -1052,7 +948,6 @@ function WindowControls({
   return (
     <TooltipProvider>
       <div className="absolute top-4 right-4 z-10 space-y-3">
-        {/* Main Controls Card */}
         <Card className="bg-gray-900/95 backdrop-blur-md border-gray-600 shadow-2xl">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
@@ -1128,33 +1023,56 @@ function WindowControls({
                 </TooltipContent>
               </Tooltip>
 
-              {showErrorDetection && setShowErrors && (
+              {/* Section View Toggle */}
+              {setSectionViewEnabled && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       size="sm"
-                      variant={showErrors ? 'destructive' : hasErrors ? 'outline' : 'outline'}
-                      onClick={() => setShowErrors(!showErrors)}
-                      className="w-full relative"
+                      variant={sectionViewEnabled ? 'destructive' : 'outline'}
+                      onClick={() => setSectionViewEnabled(!sectionViewEnabled)}
+                      className="w-full"
                     >
-                      <AlertTriangle className="h-4 w-4" />
-                      {hasErrors && (
-                        <Badge className="absolute -top-1 -right-1 h-3 w-3 p-0 text-[8px] bg-red-500">
-                          {errorCount}
-                        </Badge>
-                      )}
+                      <Scissors className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    {showErrors ? 'Hide Errors' : 'Show Errors'}
+                    {sectionViewEnabled ? 'Disable Section View' : 'Enable Section View'}
                   </TooltipContent>
                 </Tooltip>
               )}
             </div>
+            
+            {/* Error Controls */}
+            {showErrorDetection && setShowErrors && (
+                <div className="pt-2">
+                    <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                        size="sm"
+                        variant={showErrors ? 'destructive' : hasErrors ? 'outline' : 'outline'}
+                        onClick={() => setShowErrors(!showErrors)}
+                        className="w-full relative"
+                        >
+                        <AlertTriangle className="h-4 w-4" />
+                        <span className="ml-2">Errors</span>
+                        {hasErrors && (
+                            <Badge className="absolute -top-1 -right-1 h-3 w-3 p-0 text-[8px] bg-red-500">
+                            {errorCount}
+                            </Badge>
+                        )}
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        {showErrors ? 'Hide Errors' : 'Show Errors'}
+                    </TooltipContent>
+                    </Tooltip>
+                </div>
+            )}
 
             {/* Quality Settings */}
             {setQuality && (
-              <div className="space-y-2">
+              <div className="space-y-2 pt-2 border-t border-gray-700">
                 <label className="text-xs text-gray-400 font-medium">Quality</label>
                 <Select value={quality} onValueChange={(v: any) => setQuality(v)}>
                   <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-xs">
@@ -1307,6 +1225,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [explodedView, setExplodedViewInternal] = useState(initialExplodedView);
+  const [sectionViewEnabled, setSectionViewEnabled] = useState(false);
   
   const modelRef = useRef<THREE.Group | null>(null);
   const glRef = useRef<any>(null);
@@ -1326,6 +1245,14 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
       onModelUpdate(model);
     }
   }, [onModelUpdate]);
+
+  // Clipping Plane for Section View
+  const clippingPlanes = useMemo(() => {
+    if (!sectionViewEnabled) return undefined;
+    // Simple horizontal cut for now, can be made adjustable later
+    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.2);
+    return [plane];
+  }, [sectionViewEnabled]);
 
   // Expose captureSnapshot method
   useImperativeHandle(ref, () => ({
@@ -1498,7 +1425,8 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
           antialias: quality !== 'low',
           alpha: true,
           powerPreference: quality === 'low' ? 'low-power' : 'high-performance',
-          preserveDrawingBuffer: true // Required for snapshot
+          preserveDrawingBuffer: true, // Required for snapshot
+          localClippingEnabled: true // Enable clipping planes
         }}
         className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
         style={{ width: '100%', height: '100%', minHeight: '500px' }}
@@ -1531,6 +1459,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
               profiles={profiles}
               quality={quality}
               enableShadows={enableShadows}
+              clippingPlanes={clippingPlanes}
             />
           </Bounds>
         </Suspense>
@@ -1575,6 +1504,8 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
           enableShadows={enableShadows}
           setEnableShadows={setEnableShadows}
           isExporting={isExporting}
+          sectionViewEnabled={sectionViewEnabled}
+          setSectionViewEnabled={setSectionViewEnabled}
         />
       )}
 
@@ -1592,6 +1523,12 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                   {enableShadows ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
                   <span>Shadows {enableShadows ? 'On' : 'Off'}</span>
                 </div>
+                {sectionViewEnabled && (
+                  <div className="flex items-center gap-1 text-orange-400">
+                    <Scissors className="h-3 w-3" />
+                    <span>Section View</span>
+                  </div>
+                )}
                 {hasErrors && (
                   <div className="flex items-center gap-1 text-red-400">
                     <AlertTriangle className="h-3 w-3" />
