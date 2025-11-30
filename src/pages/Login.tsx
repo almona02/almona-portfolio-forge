@@ -104,7 +104,7 @@ const Login = () => {
     <div className="flex flex-col min-h-screen bg-almona-dark">
       <main 
         className="flex-grow flex items-center justify-center p-4 bg-cover bg-center relative" 
-        style={{ backgroundImage: "url('/images/machines/processing-center.jpg')" }}
+        style={{ backgroundImage: "url('/images/machines/cutting-machine.jpg')" }}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-almona-dark/80 via-transparent to-almona-dark/80" />
         <motion.div 

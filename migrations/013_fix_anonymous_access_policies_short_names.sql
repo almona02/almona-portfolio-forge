@@ -120,15 +120,32 @@ END $$;
 -- 2.5: fabricator_audit_logs
 DO $$
 BEGIN
+    -- Drop all possible policy names
     DROP POLICY IF EXISTS "Service role can view all audit logs" ON public.fabricator_audit_logs;
     DROP POLICY IF EXISTS "Users can view their own audit logs" ON public.fabricator_audit_logs;
+    DROP POLICY IF EXISTS "service_role_view_all_audit_logs" ON public.fabricator_audit_logs;
     DROP POLICY IF EXISTS "auth_view_own_audit_logs" ON public.fabricator_audit_logs;
     
-    CREATE POLICY "service_role_view_all_audit_logs" ON public.fabricator_audit_logs
-        FOR SELECT TO service_role USING (true);
+    -- Only create if it doesn't exist
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE schemaname = 'public' 
+          AND tablename = 'fabricator_audit_logs' 
+          AND policyname = 'service_role_view_all_audit_logs'
+    ) THEN
+        CREATE POLICY "service_role_view_all_audit_logs" ON public.fabricator_audit_logs
+            FOR SELECT TO service_role USING (true);
+    END IF;
     
-    CREATE POLICY "auth_view_own_audit_logs" ON public.fabricator_audit_logs
-        FOR SELECT USING (auth.uid() IS NOT NULL AND user_id = auth.uid());
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE schemaname = 'public' 
+          AND tablename = 'fabricator_audit_logs' 
+          AND policyname = 'auth_view_own_audit_logs'
+    ) THEN
+        CREATE POLICY "auth_view_own_audit_logs" ON public.fabricator_audit_logs
+            FOR SELECT USING (auth.uid() IS NOT NULL AND user_id = auth.uid());
+    END IF;
 END $$;
 
 -- 2.6: fabricator_backup_operations
@@ -182,12 +199,17 @@ BEGIN
     DROP POLICY IF EXISTS "Users can delete their own profiles" ON public.fabricator_profiles;
     DROP POLICY IF EXISTS "Users can update their own profiles" ON public.fabricator_profiles;
     DROP POLICY IF EXISTS "Users can view their own profiles" ON public.fabricator_profiles;
+    DROP POLICY IF EXISTS "Users can insert their own profiles" ON public.fabricator_profiles;
     DROP POLICY IF EXISTS "auth_view_profiles" ON public.fabricator_profiles;
+    DROP POLICY IF EXISTS "auth_insert_profiles" ON public.fabricator_profiles;
     DROP POLICY IF EXISTS "auth_update_profiles" ON public.fabricator_profiles;
     DROP POLICY IF EXISTS "auth_delete_profiles" ON public.fabricator_profiles;
     
     CREATE POLICY "auth_view_profiles" ON public.fabricator_profiles
         FOR SELECT USING (auth.uid() IS NOT NULL AND user_id = auth.uid());
+    
+    CREATE POLICY "auth_insert_profiles" ON public.fabricator_profiles
+        FOR INSERT WITH CHECK (auth.uid() IS NOT NULL AND user_id = auth.uid());
     
     CREATE POLICY "auth_update_profiles" ON public.fabricator_profiles
         FOR UPDATE USING (auth.uid() IS NOT NULL AND user_id = auth.uid());
@@ -241,15 +263,32 @@ END $$;
 -- 2.13: fabricator_query_metrics
 DO $$
 BEGIN
+    -- Drop all possible policy names
     DROP POLICY IF EXISTS "Service role can view all query metrics" ON public.fabricator_query_metrics;
     DROP POLICY IF EXISTS "Users can view their own query metrics" ON public.fabricator_query_metrics;
+    DROP POLICY IF EXISTS "service_role_view_all_metrics" ON public.fabricator_query_metrics;
     DROP POLICY IF EXISTS "auth_view_own_metrics" ON public.fabricator_query_metrics;
     
-    CREATE POLICY "service_role_view_all_metrics" ON public.fabricator_query_metrics
-        FOR SELECT TO service_role USING (true);
+    -- Only create if it doesn't exist
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE schemaname = 'public' 
+          AND tablename = 'fabricator_query_metrics' 
+          AND policyname = 'service_role_view_all_metrics'
+    ) THEN
+        CREATE POLICY "service_role_view_all_metrics" ON public.fabricator_query_metrics
+            FOR SELECT TO service_role USING (true);
+    END IF;
     
-    CREATE POLICY "auth_view_own_metrics" ON public.fabricator_query_metrics
-        FOR SELECT USING (auth.uid() IS NOT NULL AND user_id = auth.uid());
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE schemaname = 'public' 
+          AND tablename = 'fabricator_query_metrics' 
+          AND policyname = 'auth_view_own_metrics'
+    ) THEN
+        CREATE POLICY "auth_view_own_metrics" ON public.fabricator_query_metrics
+            FOR SELECT USING (auth.uid() IS NOT NULL AND user_id = auth.uid());
+    END IF;
 END $$;
 
 -- 2.14: fabricator_system_packs
