@@ -1,6 +1,7 @@
 import React, { Suspense, useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/lib/supabase';
 import type { Profile, WindowUnit } from '@/types/fabricator';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
@@ -33,6 +34,7 @@ const ProfileManagement = React.lazy(() =>
 );
 
 const InventoryPage: React.FC = () => {
+  const { t } = useTranslation('fabricator');
   const { user } = useAuth();
   const { state: workspaceState, dispatch } = useFabricatorWorkspace();
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -257,11 +259,10 @@ const InventoryPage: React.FC = () => {
                 <div className="p-2 bg-orange-500/20 rounded-lg">
                   <Package className="h-6 w-6 text-orange-400" />
                 </div>
-                Inventory Intelligence Hub
+                {t('inventory.title', 'Inventory Intelligence Hub')}
               </CardTitle>
               <CardDescription className="text-slate-300/80 text-base">
-                Centralized inventory management with real-time analytics, remnant optimization, and
-                AI-powered stock predictions for Turkish &amp; Egyptian markets.
+                {t('inventory.description', 'Centralized inventory management with real-time analytics, remnant optimization, and AI-powered stock predictions for Turkish & Egyptian markets.')}
               </CardDescription>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
@@ -270,7 +271,7 @@ const InventoryPage: React.FC = () => {
                 onClick={() => setActiveTab('management')}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Profile
+                {t('inventory.add_profile', 'Add Profile')}
               </Button>
               <Button
                 variant="outline"
@@ -278,7 +279,7 @@ const InventoryPage: React.FC = () => {
                 onClick={() => (window.location.href = '/fabricator-workflow#inventory')}
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
-                Workflow Integration
+                {t('inventory.workflow_integration', 'Workflow Integration')}
               </Button>
             </div>
           </div>
@@ -351,15 +352,15 @@ const InventoryPage: React.FC = () => {
               <TabsList className="bg-slate-700/50 border border-slate-600/50">
                 <TabsTrigger value="dashboard" className="data-[state=active]:bg-orange-500">
                   <Package className="h-4 w-4 mr-2" />
-                  Dashboard
+                  {t('inventory.tabs.dashboard', 'Dashboard')}
                 </TabsTrigger>
                 <TabsTrigger value="management" className="data-[state=active]:bg-orange-500">
                   <Plus className="h-4 w-4 mr-2" />
-                  Profile Management
+                  {t('inventory.tabs.profile_management', 'Profile Management')}
                 </TabsTrigger>
                 <TabsTrigger value="analytics" className="data-[state=active]:bg-orange-500">
                   <TrendingUp className="h-4 w-4 mr-2" />
-                  Analytics
+                  {t('inventory.tabs.analytics', 'Analytics')}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -471,18 +472,18 @@ const InventoryPage: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-green-400" />
-                Inventory Analytics
+                {t('inventory.analytics.title', 'Inventory Analytics')}
               </CardTitle>
               <CardDescription>
-                Advanced analytics and insights for your fabricator inventory.
+                {t('inventory.analytics.description', 'Advanced analytics and insights for your fabricator inventory.')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center py-12 text-slate-500">
                 <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Advanced analytics dashboard coming soon.</p>
+                <p>{t('inventory.analytics.coming_soon', 'Advanced analytics dashboard coming soon.')}</p>
                 <p className="text-sm">
-                  Inventory utilization, trend analysis, and predictive stocking.
+                  {t('inventory.analytics.features', 'Inventory utilization, trend analysis, and predictive stocking.')}
                 </p>
               </div>
             </CardContent>

@@ -80,6 +80,68 @@ export interface WindowComponent {
   hardware: any[];
 }
 
+/**
+ * Cutting calibration for profile-specific adjustments
+ * Enhanced with comprehensive modifier system for allowances, strokes, and variations
+ */
+export interface CuttingCalibration {
+  id: string;
+  profileId: string;
+  systemPackId: string;
+  profileType?: 'frame' | 'sash' | 'mullion' | 'interlock' | 'glazing' | 'liner';
+  
+  /** Legacy: Length modifier in mm (e.g., +2mm or -1mm) */
+  lengthModifier: number;
+  /** Legacy: Blade width compensation in mm */
+  bladeWidthCompensation: number;
+  
+  /** Enhanced: Comprehensive allowance parameters */
+  allowances?: {
+    /** Basic cutting allowance in mm */
+    basicCutting: number;
+    /** Extra allowance for 45° miter cuts in mm */
+    miter45Extra: number;
+    /** Thermal break compensation in mm */
+    thermalBreakCompensation: number;
+    /** Grain direction factor (multiplier) */
+    grainDirectionFactor: number;
+  };
+  
+  /** Enhanced: Stroke and machining parameters */
+  strokes?: {
+    /** Saw blade thickness in mm */
+    sawBladeThickness: number;
+    /** Machining tolerance in mm */
+    machiningTolerance: number;
+    /** Corner clearance in mm */
+    cornerClearance: number;
+  };
+  
+  /** Enhanced: Material and environmental variations */
+  variations?: {
+    /** Temperature expansion coefficient (mm/°C) */
+    temperatureExpansion: number;
+    /** Material flexibility factor (multiplier) */
+    materialFlexibility: number;
+    /** Assembly clearance in mm */
+    assemblyClearance: number;
+  };
+  
+  /** Whether this calibration is currently active */
+  isActive: boolean;
+  /** Optional notes about the calibration */
+  notes?: string;
+  /** Validation test results */
+  testResults?: {
+    expectedLength: number;
+    actualLength: number;
+    difference: number;
+    testDate: Date;
+  }[];
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 export interface Profile {
   id: string;
   name: string;
@@ -100,6 +162,20 @@ export interface Profile {
   systemBrand?: string; // 'Yilmaz', 'Local Brand', etc.
   weightPerMeter?: number;
   grainDirection?: 'horizontal' | 'vertical' | null;
+  /** Category of profile: window, door, curtain_wall, structural, accessory */
+  category?: 'window' | 'door' | 'curtain_wall' | 'structural' | 'accessory';
+  /** System type: casement, sliding, tilt_turn, fixed, facade, commercial */
+  systemType?: 'casement' | 'sliding' | 'tilt_turn' | 'fixed' | 'facade' | 'commercial';
+  /** Profile role in system: frame, sash, mullion, transom, glazing_bead, interlock, accessory */
+  profileRole?: 'frame' | 'sash' | 'mullion' | 'transom' | 'glazing_bead' | 'interlock' | 'accessory';
+  /** IDs of compatible accessories */
+  compatibleAccessories?: string[];
+  /** Router/pantograph machining operations */
+  machiningMacros?: MachiningMacro[];
+  /** Technical drawings and previews */
+  technicalDrawings?: TechnicalDrawing[];
+  /** Associated system pack IDs */
+  systemPackIds?: string[];
   specifications?: {
     originalWeight?: number;
     aluminumPricePerKg?: number;
@@ -108,6 +184,8 @@ export interface Profile {
     optimizedFor45Degree?: boolean;
     [key: string]: any; // ... other specifications
   };
+  /** Optional calibrations for this profile */
+  calibrations?: CuttingCalibration[];
   userId?: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -138,6 +216,98 @@ export interface ProfileAccessoryCompatibility {
   accessoryId: string;
 }
 
+/**
+ * Machining macro for router/pantograph operations
+ */
+export interface MachiningMacro {
+  id: string;
+  name: string; // "Hinge Slot Type A", "Handle Cutout"
+  operation: 'slot' | 'pocket' | 'drill' | 'counterbore' | 'contour';
+  dimensions: { width: number; height: number; depth: number };
+  position: { x: number; y: number }; // Relative to profile origin
+  toolSpecs: { diameter: number; type: string };
+  gCodeTemplate?: string;
+}
+
+/**
+ * Technical drawing reference
+ */
+export interface TechnicalDrawing {
+  id: string;
+  name: string;
+  type: '2d' | '3d' | 'section' | 'detail';
+  url?: string;
+  previewUrl?: string;
+  description?: string;
+}
+
+/**
+ * Enhanced Accessory interface with installation macros
+ */
+export interface Accessory {
+  id: string;
+  name: string;
+  type: 'hinge' | 'handle' | 'lock' | 'corner_connector' | 'bracket' | 'seal' | 'screw';
+  compatibleProfiles: string[]; // Profile IDs
+  installationMacros: MachiningMacro[];
+  specifications: AccessorySpecs;
+  images: string[];
+  // Legacy compatibility fields
+  category?: string;
+  unitPrice?: number;
+  baseCost?: number;
+  markupPercentage?: number;
+  supplier?: string;
+  sku?: string;
+  description?: string;
+  compatibleMaterials?: string[];
+  region?: string[];
+  imageUrl?: string;
+  userId?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+/**
+ * Accessory specifications
+ */
+export interface AccessorySpecs {
+  material?: string;
+  finish?: string;
+  dimensions?: { width?: number; height?: number; depth?: number };
+  weight?: number;
+  loadCapacity?: number;
+  certifications?: string[];
+  [key: string]: any;
+}
+
+/**
+ * System Pack for window/door systems
+ */
+export interface SystemPack {
+  id: string;
+  name: string;
+  category: 'aluminum_windows' | 'aluminum_doors' | 'curtain_walls' | 'upvc_windows' | 'upvc_doors';
+  brand: string;
+  compatibleProfiles: string[];
+  compatibleAccessories: string[];
+  description: string;
+  technicalData: SystemTechnicalData;
+}
+
+/**
+ * System technical data
+ */
+export interface SystemTechnicalData {
+  uValue?: number;
+  airPermeability?: string;
+  waterTightness?: string;
+  windLoad?: string;
+  soundReduction?: number;
+  certifications?: string[];
+  [key: string]: any;
+}
+
 export interface OptimizationResult {
   materialUsage: number;
   wastePercentage: number;
@@ -151,6 +321,39 @@ export interface OptimizationResult {
     glazingCost: number;
     totalCost: number;
   };
+}
+
+/**
+ * Configuration for adaptive solver that selects optimization algorithm
+ * based on job complexity and time constraints
+ * Enhanced with runtime optimization features
+ */
+export interface AdaptiveSolverConfig {
+  /** Maximum time in seconds allowed for solving */
+  maxSolvingTime: number;
+  /** Preferred algorithm override (optional, will be auto-selected if not specified) */
+  preferredAlgorithm?: 'greedy' | 'linear' | 'genetic';
+  /** Complexity thresholds for algorithm selection */
+  complexityThresholds: {
+    /** Number of cuts below which greedy algorithm is used (e.g., 50) */
+    simple: number;
+    /** Number of cuts above which genetic algorithm is used (e.g., 500) */
+    medium: number;
+  };
+  /** Time constraint mode */
+  timeConstraint?: 'realtime' | 'fast' | 'thorough';
+  /** Optimization target priority */
+  optimalityTarget?: 'balanced' | 'min_waste' | 'max_speed';
+  /** Job complexity classification */
+  jobComplexity?: 'simple' | 'medium' | 'complex';
+  /** Enable real-time pre-solver for instant feedback */
+  enableRealtimePresolver?: boolean;
+  /** Enable progressive optimization (start fast, refine in background) */
+  enableProgressiveOptimization?: boolean;
+  /** Enable ML-based algorithm prediction */
+  enableMLPrediction?: boolean;
+  /** Enable caching of optimization results */
+  enableCaching?: boolean;
 }
 
 /**

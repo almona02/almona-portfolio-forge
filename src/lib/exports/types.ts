@@ -86,6 +86,18 @@ export interface MachineExportProfile {
   target: 'saw' | 'machining_center' | 'cnc_router';
   format: ExportFormat;
   /**
+   * Manufacturer name (e.g., 'Elumatec', 'FOMM', 'Emmegi')
+   */
+  manufacturer?: string;
+  /**
+   * Machine capabilities
+   */
+  capabilities?: string[];
+  /**
+   * Machine-specific configuration
+   */
+  configuration?: Record<string, any>;
+  /**
    * For CSV exports, defines the column order and labels expected
    * by the machine software.
    */
@@ -100,6 +112,10 @@ export interface MachineExportProfile {
     annotationLayer?: string;
     qrLayer?: string;
     barcodeLayer?: string;
+    drillingLayer?: string;
+    millingLayer?: string;
+    tappingLayer?: string;
+    templateLayer?: string;
   };
 }
 

@@ -1,38 +1,85 @@
 {
   "shop": {
     "tabs": {
-      "industrial-machines": "Industrial Machines",
-      "industrial-parts": "Industrial Parts",
+      "industrial-machines": "Industrial Processing Machines",
+      "industrial-parts": "Industrial Spare Parts",
       "unique-prototypes": "Unique Prototypes",
-      "unique-custom-fabrications": "Custom Fabrications",
-      "profiles": "Profiles",
-      "reports": "Reports"
+      "unique-custom-fabrications": "Custom Fabrication Solutions",
+      "profiles": "Aluminum Profiles",
+      "reports": "Technical Reports"
     },
     "products": {
       "KM-212": {
-        "title": "YILMAZ KM-212",
-        "description": "High precision CNC cutting machine."
+        "title": "YILMAZ KM-212 CNC Cutting Machine",
+        "description": "High precision CNC controlled industrial cutting machine. Optimized for aluminum and steel profiles."
       },
       "DC-421-PBS": {
-        "title": "YILMAZ DC-421-PBS",
-        "description": "Dual column processor for heavy-duty tasks."
+        "title": "YILMAZ DC-421-PBS Dual Column Processing Machine",
+        "description": "Dual column CNC processing machine designed for heavy industrial operations."
       }
     },
     "buttons": {
-      "configure": "Configure",
-      "requestQuote": "Request Quote",
-      "compare": "Compare",
-      "viewInAR": "View in Your Space"
+      "configure": "Technical Configuration",
+      "requestQuote": "Request Detailed Quote",
+      "compare": "Technical Comparison",
+      "viewInAR": "View in AR",
+      "scheduleDemo": "Schedule Demo",
+      "downloadSpecs": "Download Technical Documents",
+      "contactExpert": "Contact Expert",
+      "requestInfo": "Request Information"
     },
     "labels": {
       "price": "Price",
-      "contactWhatsApp": "Contact via WhatsApp"
+      "contactWhatsApp": "Technical Support via WhatsApp",
+      "availability": "Stock Status",
+      "delivery": "Delivery Time",
+      "warranty": "Warranty Period",
+      "certification": "Certifications",
+      "specifications": "Technical Specifications",
+      "features": "Features",
+      "applications": "Application Areas",
+      "maintenance": "Maintenance Information"
     },
     "messages": {
       "localShipping": "Local Shipping Calculator",
       "cashOnDelivery": "Cash on Delivery",
       "ramadanMode": "Ramadan Mode",
-      "eidMode": "Eid Mode"
+      "eidMode": "Eid Mode",
+      "industrialShipping": "Industrial Shipping",
+      "whiteGloveService": "White Glove Service",
+      "installationIncluded": "Installation Included",
+      "trainingIncluded": "Operator Training Included"
+    },
+    "categories": {
+      "cnc_machines": "CNC Processing Machines",
+      "cutting_equipment": "Cutting Equipment",
+      "welding_machines": "Welding Machines",
+      "fabrication_tools": "Manufacturing Tools",
+      "automation_systems": "Automation Systems",
+      "quality_control": "Quality Control Devices",
+      "spare_parts": "Spare Parts",
+      "consumables": "Consumables"
+    },
+    "filters": {
+      "price_range": "Price Range",
+      "brand": "Brand",
+      "category": "Category",
+      "power_consumption": "Power Consumption",
+      "precision": "Precision",
+      "capacity": "Capacity",
+      "certification": "Certification",
+      "availability": "Stock Status",
+      "delivery_time": "Delivery Time"
+    },
+    "sorting": {
+      "price_low_high": "Price (Low-High)",
+      "price_high_low": "Price (High-Low)",
+      "name_a_z": "Name (A-Z)",
+      "name_z_a": "Name (Z-A)",
+      "newest": "Newest",
+      "most_popular": "Most Popular",
+      "best_rated": "Best Rated",
+      "relevance": "Relevance"
     }
   }
 }

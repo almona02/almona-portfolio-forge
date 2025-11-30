@@ -42,7 +42,6 @@ from core.middleware import (
     RequestLoggingMiddleware
 )
 from core.config import settings
-from fastapi import Request
 from fastapi.exceptions import RequestValidationError
 from fastapi import HTTPException
 
@@ -64,12 +63,12 @@ def create_v2_app() -> FastAPI:
         redoc_url="/redoc",
         openapi_url="/openapi.json"
     )
-    
+
     # Add middleware in the correct order (last added is first executed)
 
     # 1. V2 Error handling (outermost)
     app.add_middleware(V2ErrorHandlerMiddleware)
-    
+
     # 2. General error handling
     app.add_middleware(ErrorHandlingMiddleware)
 
@@ -91,7 +90,11 @@ def create_v2_app() -> FastAPI:
     app.add_middleware(SecurityHeadersMiddleware)
 
     # 7. CORS (innermost)
-    origins = settings.ALLOWED_ORIGINS.split(",") if settings.ALLOWED_ORIGINS else ["*"]
+    origins = (
+        settings.ALLOWED_ORIGINS.split(",")
+        if settings.ALLOWED_ORIGINS
+        else ["*"]
+    )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,
@@ -99,15 +102,25 @@ def create_v2_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    
+
     # Register error handlers
     app.add_exception_handler(V2APIError, v2_error_handler)
-    app.add_exception_handler(RequestValidationError, v2_validation_error_handler)
+    app.add_exception_handler(
+        RequestValidationError, v2_validation_error_handler
+    )
     app.add_exception_handler(HTTPException, v2_http_exception_handler)
     app.add_exception_handler(Exception, v2_general_exception_handler)
-    
+
     # Include v2 router
     app.include_router(v2_router)
+
+    # Include cached endpoints router
+    from apis.v2.cached_endpoints import router as cached_router
+    app.include_router(cached_router)
+
+    # Include background tasks router
+    from apis.v2.background_tasks import router as tasks_router
+    app.include_router(tasks_router)
 
     # Add v2-specific endpoints
     @app.get("/health")
@@ -126,28 +139,45 @@ def create_v2_app() -> FastAPI:
             return {"enabled": False}
 
         # Get rate limit stats from middleware
-        # Note: This would need to be implemented in the middleware to expose stats
+        # Note: This would need to be implemented in the middleware
+        # to expose stats
         return {
             "enabled": True,
             "tiers": {
                 "anonymous": {
-                    "requests_per_minute": settings.RATE_LIMIT_ANONYMOUS_PER_MINUTE,
-                    "requests_per_hour": settings.RATE_LIMIT_ANONYMOUS_PER_HOUR,
+                    "requests_per_minute": (
+                        settings.RATE_LIMIT_ANONYMOUS_PER_MINUTE
+                    ),
+                    "requests_per_hour": (
+                        settings.RATE_LIMIT_ANONYMOUS_PER_HOUR
+                    ),
                     "burst_limit": settings.RATE_LIMIT_ANONYMOUS_BURST
                 },
                 "authenticated": {
-                    "requests_per_minute": settings.RATE_LIMIT_AUTHENTICATED_PER_MINUTE,
-                    "requests_per_hour": settings.RATE_LIMIT_AUTHENTICATED_PER_HOUR,
+                    "requests_per_minute": (
+                        settings.RATE_LIMIT_AUTHENTICATED_PER_MINUTE
+                    ),
+                    "requests_per_hour": (
+                        settings.RATE_LIMIT_AUTHENTICATED_PER_HOUR
+                    ),
                     "burst_limit": settings.RATE_LIMIT_AUTHENTICATED_BURST
                 },
                 "premium": {
-                    "requests_per_minute": settings.RATE_LIMIT_PREMIUM_PER_MINUTE,
-                    "requests_per_hour": settings.RATE_LIMIT_PREMIUM_PER_HOUR,
+                    "requests_per_minute": (
+                        settings.RATE_LIMIT_PREMIUM_PER_MINUTE
+                    ),
+                    "requests_per_hour": (
+                        settings.RATE_LIMIT_PREMIUM_PER_HOUR
+                    ),
                     "burst_limit": settings.RATE_LIMIT_PREMIUM_BURST
                 },
                 "admin": {
-                    "requests_per_minute": settings.RATE_LIMIT_ADMIN_PER_MINUTE,
-                    "requests_per_hour": settings.RATE_LIMIT_ADMIN_PER_HOUR,
+                    "requests_per_minute": (
+                        settings.RATE_LIMIT_ADMIN_PER_MINUTE
+                    ),
+                    "requests_per_hour": (
+                        settings.RATE_LIMIT_ADMIN_PER_HOUR
+                    ),
                     "burst_limit": settings.RATE_LIMIT_ADMIN_BURST
                 }
             }
@@ -169,7 +199,9 @@ def create_v2_app() -> FastAPI:
                     "total_queries": stats.total_queries,
                     "successful_queries": stats.successful_queries,
                     "failed_queries": stats.failed_queries,
-                    "avg_response_time_ms": round(stats.avg_response_time_ms, 2),
+                    "avg_response_time_ms": round(
+                        stats.avg_response_time_ms, 2
+                    ),
                     "slow_queries_count": stats.slow_queries_count,
                     "error_rate": round(stats.error_rate, 4),
                     "uptime_seconds": round(stats.uptime_seconds, 2)
@@ -226,7 +258,9 @@ def create_v2_app() -> FastAPI:
         except Exception as e:
             return {
                 "status": "error",
-                "message": f"Failed to validate connection pool health: {str(e)}"
+                "message": (
+                    f"Failed to validate connection pool health: {str(e)}"
+                )
             }
 
     @app.get("/celery/status")
@@ -234,18 +268,24 @@ def create_v2_app() -> FastAPI:
         """Get Celery worker and queue status."""
         try:
             inspect = celery_app.control.inspect()
-            
+
             # Get worker statistics
             worker_stats = inspect.stats()
             active_tasks = inspect.active()
             scheduled_tasks = inspect.scheduled()
             reserved_tasks = inspect.reserved()
-            
+
             # Calculate totals
-            total_active = sum(len(tasks) for tasks in (active_tasks or {}).values())
-            total_scheduled = sum(len(tasks) for tasks in (scheduled_tasks or {}).values())
-            total_reserved = sum(len(tasks) for tasks in (reserved_tasks or {}).values())
-            
+            total_active = sum(
+                len(tasks) for tasks in (active_tasks or {}).values()
+            )
+            total_scheduled = sum(
+                len(tasks) for tasks in (scheduled_tasks or {}).values()
+            )
+            total_reserved = sum(
+                len(tasks) for tasks in (reserved_tasks or {}).values()
+            )
+
             return {
                 "status": "success",
                 "data": {
@@ -257,7 +297,9 @@ def create_v2_app() -> FastAPI:
                         "active_tasks": total_active,
                         "scheduled_tasks": total_scheduled,
                         "reserved_tasks": total_reserved,
-                        "total_pending": total_active + total_scheduled + total_reserved
+                        "total_pending": (
+                            total_active + total_scheduled + total_reserved
+                        )
                     },
                     "task_distribution": {
                         "active": active_tasks or {},
@@ -277,16 +319,16 @@ def create_v2_app() -> FastAPI:
         """Get detailed information about Celery tasks."""
         try:
             inspect = celery_app.control.inspect()
-            
+
             # Get registered tasks
             registered_tasks = inspect.registered()
-            
+
             # Get active tasks with details
             active_tasks = inspect.active()
-            
+
             # Get scheduled tasks
             scheduled_tasks = inspect.scheduled()
-            
+
             return {
                 "status": "success",
                 "data": {
@@ -294,9 +336,18 @@ def create_v2_app() -> FastAPI:
                     "active_tasks": active_tasks or {},
                     "scheduled_tasks": scheduled_tasks or {},
                     "task_count": {
-                        "registered": sum(len(tasks) for tasks in (registered_tasks or {}).values()),
-                        "active": sum(len(tasks) for tasks in (active_tasks or {}).values()),
-                        "scheduled": sum(len(tasks) for tasks in (scheduled_tasks or {}).values())
+                        "registered": sum(
+                            len(tasks)
+                            for tasks in (registered_tasks or {}).values()
+                        ),
+                        "active": sum(
+                            len(tasks)
+                            for tasks in (active_tasks or {}).values()
+                        ),
+                        "scheduled": sum(
+                            len(tasks)
+                            for tasks in (scheduled_tasks or {}).values()
+                        )
                     }
                 }
             }
@@ -353,7 +404,10 @@ def create_v2_app() -> FastAPI:
                 "status": "success",
                 "data": {
                     "task_id": task.id,
-                    "message": f"Cleanup task started (older than {days_old} days)",
+                    "message": (
+                        f"Cleanup task started "
+                        f"(older than {days_old} days)"
+                    ),
                     "status_url": f"/api/v2/celery/tasks/{task.id}/status"
                 }
             }
@@ -368,17 +422,29 @@ def create_v2_app() -> FastAPI:
         """Get the status of a specific Celery task."""
         try:
             task_result = celery_app.AsyncResult(task_id)
-            
+
             return {
                 "status": "success",
                 "data": {
                     "task_id": task_id,
                     "state": task_result.state,
-                    "result": task_result.result if task_result.ready() else None,
+                    "result": (
+                        task_result.result
+                        if task_result.ready()
+                        else None
+                    ),
                     "info": task_result.info,
                     "ready": task_result.ready(),
-                    "successful": task_result.successful() if task_result.ready() else None,
-                    "failed": task_result.failed() if task_result.ready() else None
+                    "successful": (
+                        task_result.successful()
+                        if task_result.ready()
+                        else None
+                    ),
+                    "failed": (
+                        task_result.failed()
+                        if task_result.ready()
+                        else None
+                    )
                 }
             }
         except Exception as e:
@@ -405,7 +471,7 @@ def create_v2_app() -> FastAPI:
                 "status": "error",
                 "message": f"Failed to start worker monitoring: {str(e)}"
             }
-    
+
     return app
 
 

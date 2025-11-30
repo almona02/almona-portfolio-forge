@@ -5,6 +5,7 @@ import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { FileText, Calculator, Plus, Download, Send, SlidersHorizontal } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { DraftQuote, DraftInvoice, WindowUnit, OptimizationResult } from '@/types/fabricator';
 import { QuotingEngine } from '@/modules/commercial/QuotingEngine';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
@@ -12,6 +13,7 @@ import { SYSTEM_PACKS } from '@/data/systemPacks';
 const CommercialPage: React.FC = () => {
   const { state, dispatch } = useFabricatorWorkspace();
   const navigate = useNavigate();
+  const { t } = useTranslation('fabricator');
 
   const handleCreateDraftQuote = () => {
     const project = state.currentProject as WindowUnit | null;
@@ -81,9 +83,9 @@ const CommercialPage: React.FC = () => {
     <div className="container mx-auto px-4 py-8 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-white">Commercial Workspace</h1>
+          <h1 className="text-2xl font-bold text-white">{t('commercial.title', 'Commercial Workspace')}</h1>
           <p className="text-slate-400 text-sm">
-            Manage quotes, invoices, and commercial documents anchored to your active projects.
+            {t('commercial.description', 'Manage quotes, invoices, and commercial documents anchored to your active projects.')}
           </p>
         </div>
         <div className="flex gap-2">
@@ -93,11 +95,11 @@ const CommercialPage: React.FC = () => {
             onClick={() => navigate('/fabricator/pricing')}
           >
             <SlidersHorizontal className="h-3 w-3 mr-1" />
-            Pricing Settings
+            {t('commercial.pricing_settings', 'Pricing Settings')}
           </Button>
           <Button onClick={handleCreateDraftQuote} className="bg-orange-500 hover:bg-orange-600">
             <Plus className="h-4 w-4 mr-2" />
-            New Quote
+            {t('commercial.new_quote', 'New Quote')}
           </Button>
         </div>
       </div>
@@ -108,7 +110,7 @@ const CommercialPage: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
               <FileText className="h-5 w-5 text-amber-400" />
-              Draft Quotes
+              {t('commercial.draft_quotes.title', 'Draft Quotes')}
               <Badge
                 variant="outline"
                 className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px]"
@@ -121,9 +123,9 @@ const CommercialPage: React.FC = () => {
             {state.draftQuotes.length === 0 ? (
               <div className="text-center py-8 text-slate-500">
                 <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p className="font-medium">No draft quotes</p>
+                <p className="font-medium">{t('commercial.draft_quotes.no_quotes', 'No draft quotes')}</p>
                 <p className="text-sm">
-                  Create a quote from the active project or customer context to get started.
+                  {t('commercial.draft_quotes.no_quotes_description', 'Create a quote from the active project or customer context to get started.')}
                 </p>
               </div>
             ) : (
@@ -135,17 +137,17 @@ const CommercialPage: React.FC = () => {
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <p className="font-medium text-white">
-                        {quote.customerName || 'Unnamed Customer'}
+                        {quote.customerName || t('commercial.draft_quotes.unnamed_customer', 'Unnamed Customer')}
                       </p>
                       <p className="text-sm text-slate-400">
-                        {quote.projectTitle || 'Untitled Project'}
+                        {quote.projectTitle || t('commercial.draft_quotes.untitled_project', 'Untitled Project')}
                       </p>
                     </div>
                     <Badge
                       variant="outline"
                       className="bg-blue-500/20 text-blue-200 border-blue-500/40 text-[11px]"
                     >
-                      {quote.amount != null ? `$${quote.amount}` : 'Draft'}
+                      {quote.amount != null ? `$${quote.amount}` : t('commercial.draft_quotes.draft', 'Draft')}
                     </Badge>
                   </div>
                   <div className="flex gap-2">
@@ -154,7 +156,7 @@ const CommercialPage: React.FC = () => {
                       onClick={() => handleConvertToInvoice(quote.id)}
                       className="flex-1 bg-green-500 hover:bg-green-600 text-xs"
                     >
-                      Convert to Invoice
+                      {t('commercial.draft_quotes.convert_to_invoice', 'Convert to Invoice')}
                     </Button>
                     <Button
                       size="sm"
@@ -162,7 +164,7 @@ const CommercialPage: React.FC = () => {
                       onClick={() => handleDeleteDraft(quote.id, 'quote')}
                       className="border-red-500 text-red-300 hover:bg-red-500/20 text-xs"
                     >
-                      Delete
+                      {t('commercial.draft_quotes.delete', 'Delete')}
                     </Button>
                   </div>
                 </div>
@@ -176,7 +178,7 @@ const CommercialPage: React.FC = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
               <Calculator className="h-5 w-5 text-blue-400" />
-              Draft Invoices
+              {t('commercial.draft_invoices.title', 'Draft Invoices')}
               <Badge
                 variant="outline"
                 className="bg-blue-500/20 text-blue-200 border-blue-500/40 text-[10px]"
@@ -189,8 +191,8 @@ const CommercialPage: React.FC = () => {
             {state.draftInvoices.length === 0 ? (
               <div className="text-center py-8 text-slate-500">
                 <Calculator className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p className="font-medium">No draft invoices</p>
-                <p className="text-sm">Convert quotes to invoices to prepare billing.</p>
+                <p className="font-medium">{t('commercial.draft_invoices.no_invoices', 'No draft invoices')}</p>
+                <p className="text-sm">{t('commercial.draft_invoices.no_invoices_description', 'Convert quotes to invoices to prepare billing.')}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -202,23 +204,23 @@ const CommercialPage: React.FC = () => {
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <p className="font-medium text-white">
-                          {invoice.customerName || 'Unnamed Customer'}
+                          {invoice.customerName || t('commercial.draft_quotes.unnamed_customer', 'Unnamed Customer')}
                         </p>
                         <p className="text-sm text-slate-400">
-                          {invoice.invoiceNumber || 'Draft invoice'}
+                          {invoice.invoiceNumber || t('commercial.draft_invoices.draft_invoice', 'Draft invoice')}
                         </p>
                       </div>
                       <Badge
                         variant="outline"
                         className="bg-purple-500/20 text-purple-200 border-purple-500/40 text-[11px]"
                       >
-                        {invoice.amount != null ? `$${invoice.amount}` : 'Draft'}
+                        {invoice.amount != null ? `$${invoice.amount}` : t('commercial.draft_quotes.draft', 'Draft')}
                       </Badge>
                     </div>
                     <div className="flex gap-2">
                       <Button size="sm" className="flex-1 bg-blue-500 hover:bg-blue-600 text-xs">
                         <Send className="h-3 w-3 mr-1" />
-                        Send
+                        {t('commercial.draft_invoices.send', 'Send')}
                       </Button>
                       <Button
                         size="sm"
@@ -226,7 +228,7 @@ const CommercialPage: React.FC = () => {
                         className="border-slate-600 text-xs"
                       >
                         <Download className="h-3 w-3 mr-1" />
-                        PDF
+                        {t('commercial.draft_invoices.pdf', 'PDF')}
                       </Button>
                       <Button
                         size="sm"
@@ -234,7 +236,7 @@ const CommercialPage: React.FC = () => {
                         onClick={() => handleDeleteDraft(invoice.id, 'invoice')}
                         className="border-red-500 text-red-300 hover:bg-red-500/20 text-xs"
                       >
-                        Delete
+                        {t('commercial.draft_invoices.delete', 'Delete')}
                       </Button>
                     </div>
                   </div>

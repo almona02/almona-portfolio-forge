@@ -48,6 +48,7 @@ import {
   Box,
   Warehouse,
   AlertCircle,
+  Upload,
   Info,
   FileText,
 } from 'lucide-react';

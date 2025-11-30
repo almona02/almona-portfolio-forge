@@ -13,6 +13,12 @@ interface AnatolianCockpitProps {
   completedSteps: number;
   totalSteps: number;
   projectMeta: ProjectHeaderMeta | null;
+  performanceInsights?: {
+    optimizationSpeed?: string;
+    wasteReduction?: string;
+    mlAccuracy?: string;
+    remnantUtilization?: string;
+  };
 }
 
 type SupplierRegionKey = 'istanbul' | 'bursa' | 'ankara' | 'gaziantep';

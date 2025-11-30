@@ -2,13 +2,13 @@
   "title": "برامج تدريب المشغلين",
   "subtitle": "برامج تدريبية شاملة لمشغلي المعدات الصناعية",
   "programs": {
-    "basic_operator": "تدريب المشغل الأساسي",
-    "advanced_operator": "تدريب المشغل المتقدم",
-    "maintenance_technician": "تدريب فني الصيانة",
-    "safety_training": "تدريب الأمان",
+    "basic_operator": "تدريب مشغل أساسي",
+    "advanced_operator": "تدريب مشغل متقدم",
+    "maintenance_technician": "تدريب فني صيانة",
+    "safety_training": "تدريب السلامة",
     "cnc_programming": "تدريب برمجة CNC",
     "quality_control": "تدريب مراقبة الجودة",
-    "troubleshooting": "تدريب استكشاف الأخطاء",
+    "troubleshooting": "تدريب حل المشاكل",
     "preventive_maintenance": "تدريب الصيانة الوقائية"
   },
   "training_types": {
@@ -17,16 +17,16 @@
     "classroom": "تدريب في الفصل",
     "hands_on": "تدريب عملي",
     "virtual": "تدريب افتراضي",
-    "hybrid": "تدريب مختلط",
-    "self_paced": "تدريب ذاتي السرعة",
-    "instructor_led": "تدريب بقيادة المدرب"
+    "hybrid": "تدريب هجين",
+    "self_paced": "تدريب ذاتي الوتيرة",
+    "instructor_led": "تدريب بإشراف مدرب"
   },
   "levels": {
     "beginner": "مبتدئ",
     "intermediate": "متوسط",
     "advanced": "متقدم",
     "expert": "خبير",
-    "master": "أستاذ"
+    "master": "خبير متمرس"
   },
   "duration": {
     "hours": "ساعات",
@@ -37,7 +37,7 @@
   },
   "certification": {
     "certificate": "شهادة",
-    "certification": "شهادة",
+    "certification": "شهادة معتمدة",
     "certified_operator": "مشغل معتمد",
     "certified_technician": "فني معتمد",
     "certification_validity": "صلاحية الشهادة",
@@ -45,10 +45,10 @@
     "continuing_education": "التعليم المستمر"
   },
   "topics": {
-    "machine_operation": "تشغيل الماكينة",
-    "safety_procedures": "إجراءات الأمان",
+    "machine_operation": "تشغيل الآلة",
+    "safety_procedures": "إجراءات السلامة",
     "maintenance_procedures": "إجراءات الصيانة",
-    "troubleshooting": "استكشاف الأخطاء",
+    "troubleshooting": "حل المشاكل",
     "quality_control": "مراقبة الجودة",
     "programming": "البرمجة",
     "setup_procedures": "إجراءات الإعداد",
@@ -60,7 +60,7 @@
     "certified_instructor": "مدرب معتمد",
     "senior_technician": "فني أول",
     "field_expert": "خبير ميداني",
-    "manufacturer_representative": "ممثل المصنع",
+    "manufacturer_representative": "ممثل الشركة المصنعة",
     "local_trainer": "مدرب محلي",
     "remote_expert": "خبير عن بعد"
   },
@@ -71,8 +71,8 @@
     "practice_exercises": "تمارين عملية",
     "assessment_tests": "اختبارات التقييم",
     "reference_guides": "أدلة مرجعية",
-    "safety_manuals": "أدلة الأمان",
-    "maintenance_manuals": "أدلة الصيانة"
+    "safety_manuals": "دلائل السلامة",
+    "maintenance_manuals": "دلائل الصيانة"
   },
   "scheduling": {
     "schedule_training": "جدولة التدريب",
@@ -82,22 +82,22 @@
     "individual_training": "تدريب فردي",
     "custom_schedule": "جدول مخصص",
     "flexible_timing": "توقيت مرن",
-    "weekend_training": "تدريب نهاية الأسبوع"
+    "weekend_training": "تدريب في عطلة نهاية الأسبوع"
   },
   "pricing": {
     "training_cost": "تكلفة التدريب",
     "per_person": "لكل شخص",
     "group_discount": "خصم جماعي",
-    "package_deal": "صفقة حزمة",
+    "package_deal": "عرض حزمة",
     "custom_pricing": "تسعير مخصص",
     "payment_terms": "شروط الدفع",
     "cancellation_policy": "سياسة الإلغاء",
     "refund_policy": "سياسة الاسترداد"
   },
   "registration": {
-    "register": "تسجيل",
+    "register": "التسجيل",
     "registration_form": "نموذج التسجيل",
-    "prerequisites": "المتطلبات المسبقة",
+    "prerequisites": "المتطلبات الأساسية",
     "required_skills": "المهارات المطلوبة",
     "recommended_experience": "الخبرة الموصى بها",
     "equipment_requirements": "متطلبات المعدات",
@@ -120,22 +120,22 @@
     "learning_support": "دعم التعلم",
     "mentorship": "الإرشاد",
     "peer_learning": "التعلم من الأقران",
-    "online_forum": "منتدى إلكتروني",
+    "online_forum": "منتدى على الإنترنت",
     "help_desk": "مكتب المساعدة",
     "faq": "الأسئلة الشائعة"
   },
   "feedback": {
-    "course_feedback": "تقييم الدورة",
+    "course_feedback": "ملاحظات الدورة",
     "instructor_rating": "تقييم المدرب",
     "content_rating": "تقييم المحتوى",
-    "facility_rating": "تقييم المرافق",
+    "facility_rating": "تقييم المرفق",
     "overall_satisfaction": "الرضا العام",
     "recommendation": "التوصية",
     "improvement_suggestions": "اقتراحات التحسين"
   },
   "tracking": {
     "progress_tracking": "تتبع التقدم",
-    "completion_status": "حالة الإكمال",
+    "completion_status": "حالة الإنجاز",
     "learning_analytics": "تحليلات التعلم",
     "performance_metrics": "مقاييس الأداء",
     "attendance_record": "سجل الحضور",

@@ -10,12 +10,14 @@ import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { AutoSaveIndicator } from '@/components/fabricator/AutoSaveIndicator';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { WorkspaceSyncService } from '@/lib/workspace/WorkspaceSyncService';
+import { useTranslation } from 'react-i18next';
+import { isRTL } from '@/lib/i18n';
 
 const workspaceTabs = [
-  { id: 'projects', label: 'Projects', icon: FileText, path: '/fabricator/projects' },
-  { id: 'customers', label: 'Customers', icon: Users, path: '/fabricator/customers' },
-  { id: 'inventory', label: 'Inventory', icon: Package, path: '/fabricator/inventory' },
-  { id: 'commercial', label: 'Commercial', icon: Calculator, path: '/fabricator/commercial' },
+  { id: 'projects', icon: FileText, path: '/fabricator/projects', key: 'projects' },
+  { id: 'customers', icon: Users, path: '/fabricator/customers', key: 'customers' },
+  { id: 'inventory', icon: Package, path: '/fabricator/inventory', key: 'inventory' },
+  { id: 'commercial', icon: Calculator, path: '/fabricator/commercial', key: 'commercial' },
 ] as const;
 
 export const FabricatorWorkspaceLayout: React.FC = () => {
@@ -23,11 +25,13 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
   const location = useLocation();
   const { state, dispatch } = useFabricatorWorkspace();
   const { branding } = useCompanyBranding();
+  const { t, i18n } = useTranslation('fabricator');
+  const isRTLMode = isRTL(i18n.language);
 
   const workspaceOwner =
     branding.workshopName?.trim() ||
     branding.companyName?.trim() ||
-    'Fabricator';
+    t('workspace.title', 'Fabricator');
 
   const activeTab =
     workspaceTabs.find((tab) => location.pathname.startsWith(tab.path))?.id || 'projects';
@@ -72,14 +76,13 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
       {/* Workspace Header */}
       <div className="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-sm">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 py-4">
+          <div className={`flex flex-col md:flex-row items-start md:items-center justify-between gap-4 py-4 ${isRTLMode ? 'flex-row-reverse' : ''}`}>
             <div className="space-y-1">
-              <h1 className="text-xl md:text-2xl font-bold text-white">
-                {workspaceOwner} Production Workspace
+              <h1 className={`text-xl md:text-2xl font-bold text-white ${isRTLMode ? 'text-right' : 'text-left'}`}>
+                {workspaceOwner} {t('workspace.title', 'Production Workspace')}
               </h1>
-              <p className="text-slate-400 text-xs md:text-sm">
-                Heavy-duty Almona cockpit for projects, customers, inventory and commercial flows —
-                state preserved across tabs.
+              <p className={`text-slate-400 text-xs md:text-sm ${isRTLMode ? 'text-right' : 'text-left'}`}>
+                {t('workspace.subtitle', 'Heavy-duty Almona cockpit for projects, customers, inventory and commercial flows — state preserved across tabs.')}
               </p>
             </div>
 
@@ -104,26 +107,28 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
                 {workspaceTabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
+                  // Use translation with explicit namespace (since we're using useTranslation('fabricator'))
+                  const label = t(`workspace.tabs.${tab.key}`, tab.key.charAt(0).toUpperCase() + tab.key.slice(1));
                   return (
                     <TabsTrigger
                       key={tab.id}
                       value={tab.id}
-                      className="data-[state=active]:bg-orange-500 data-[state=active]:text-white px-3 md:px-4 py-1.5 text-xs md:text-sm rounded-lg"
+                      className={`data-[state=active]:bg-orange-500 data-[state=active]:text-white px-3 md:px-4 py-1.5 text-xs md:text-sm rounded-lg ${isRTLMode ? 'flex-row-reverse' : ''}`}
                     >
-                      <Icon className="h-3 w-3 md:h-4 md:w-4 mr-1.5" />
-                      {tab.label}
+                      <Icon className={`h-3 w-3 md:h-4 md:w-4 ${isRTLMode ? 'ml-1.5' : 'mr-1.5'}`} />
+                      {label}
                       {tab.id === 'projects' && state.currentProject && (
                         <Badge
                           variant="outline"
-                          className="ml-1 md:ml-2 bg-blue-500/20 text-blue-200 border-blue-500/40 text-[9px]"
+                          className={`${isRTLMode ? 'ml-1 md:ml-2' : 'ml-1 md:ml-2'} bg-blue-500/20 text-blue-200 border-blue-500/40 text-[9px]`}
                         >
-                          Active
+                          {t('workspace.badges.active', 'Active')}
                         </Badge>
                       )}
                       {tab.id === 'commercial' && state.draftQuotes.length > 0 && (
                         <Badge
                           variant="outline"
-                          className={`ml-1 md:ml-2 bg-amber-500/20 text-amber-200 border-amber-500/40 text-[9px] ${
+                          className={`${isRTLMode ? 'ml-1 md:ml-2' : 'ml-1 md:ml-2'} bg-amber-500/20 text-amber-200 border-amber-500/40 text-[9px] ${
                             isActive ? 'border-white/40' : ''
                           }`}
                         >

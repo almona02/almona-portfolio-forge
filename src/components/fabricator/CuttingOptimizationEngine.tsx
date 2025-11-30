@@ -26,11 +26,15 @@ import { YilmazCNC } from '@/integrations/yilmaz/YilmazCNC';
 import { ReportEngine } from '@/modules/reporting';
 import { PDFExportService } from '@/modules/reporting';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
+import { WasteComparisonReport } from '@/components/analytics/WasteComparisonReport';
+import { calculateManualCuttingPlan, compareWaste } from '@/lib/analytics/WasteCalculator';
+import { ProductionPreviewDialog } from './ProductionPreviewDialog';
 
 interface CuttingOptimizationEngineProps {
   project: WindowUnit | null;
   optimization: OptimizationResult | null;
   isGenerating: boolean;
+  profiles?: Profile[]; // Profiles for preview dialog
 }
 
 // Simple bin packing algorithm to optimize cutting
@@ -56,6 +60,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
   project,
   optimization,
   isGenerating,
+  profiles = [],
 }) => {
   const [selectedMachine, setSelectedMachine] = useState<YilmazMachineModel>('AIM-3410');
   const [isGeneratingGCode, setIsGeneratingGCode] = useState(false);
@@ -66,7 +71,41 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
   const [exportSuccess, setExportSuccess] = useState(false);
   const [showReportGenerator, setShowReportGenerator] = useState(false);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [showWasteComparison, setShowWasteComparison] = useState(false);
+  const [wasteComparison, setWasteComparison] = useState<any>(null);
+  const [showProductionPreview, setShowProductionPreview] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'gcode' | 'report' | null>(null);
   const { branding } = useCompanyBranding();
+
+  // Calculate waste comparison when optimization is available
+  React.useEffect(() => {
+    if (optimization && optimization.cuttingPlan.length > 0 && project) {
+      try {
+        // Collect all required cuts from components
+        const requiredCuts = project.components.flatMap((comp) => {
+          const cuts: any[] = [];
+          for (let i = 0; i < (comp.quantity || 1); i++) {
+            cuts.push({
+              id: `${comp.id}-${i}`,
+              profileId: comp.profileId,
+              length: comp.cuttingLength || comp.length,
+              quantity: 1,
+            });
+          }
+          return cuts;
+        });
+
+        // Calculate manual plan
+        const manualPlan = calculateManualCuttingPlan(requiredCuts, [], 6000);
+
+        // Calculate comparison
+        const comparison = compareWaste(manualPlan, optimization.cuttingPlan, 500); // 500 EGP per bar estimate
+        setWasteComparison(comparison);
+      } catch (error) {
+        console.error('Failed to calculate waste comparison:', error);
+      }
+    }
+  }, [optimization, project]);
 
   const availableMachines: YilmazMachineModel[] = [
     'AIM-3410',
@@ -77,6 +116,14 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
     'PIM-7510'
   ];
 
+  // Wrapper to show preview before generating G-code
+  const handleGenerateGCodeClick = () => {
+    if (!optimization || !project) return;
+    setPendingAction('gcode');
+    setShowProductionPreview(true);
+  };
+
+  // Actual G-code generation (called after preview confirmation)
   const handleGenerateGCode = async () => {
     if (!optimization || !project) return;
 
@@ -132,6 +179,14 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
     URL.revokeObjectURL(url);
   };
 
+  // Wrapper to show preview before exporting report
+  const handleExportCuttingReportClick = () => {
+    if (!project || !optimization) return;
+    setPendingAction('report');
+    setShowProductionPreview(true);
+  };
+
+  // Actual report export (called after preview confirmation)
   const handleExportCuttingReport = async () => {
     if (!project || !optimization) return;
 
@@ -224,6 +279,31 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
 
   return (
     <div className="space-y-6">
+      {/* Waste Comparison Button */}
+      {wasteComparison && (
+        <div className="flex justify-end">
+          <Button
+            onClick={() => setShowWasteComparison(!showWasteComparison)}
+            variant="outline"
+            className="bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/20"
+          >
+            {showWasteComparison ? 'Hide' : 'View'} Savings Report
+          </Button>
+        </div>
+      )}
+
+      {/* Waste Comparison Report */}
+      {showWasteComparison && wasteComparison && (
+        <WasteComparisonReport
+          comparison={wasteComparison}
+          currency="EGP"
+          onExportPDF={() => {
+            // TODO: Implement PDF export
+            console.log('Export PDF');
+          }}
+        />
+      )}
+
       {/* Optimization Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-gray-700/50 border-gray-600">
@@ -341,7 +421,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
         </CardHeader>
         <CardContent>
           <Button
-            onClick={handleExportCuttingReport}
+            onClick={handleExportCuttingReportClick}
             disabled={isGeneratingReport || !project || !optimization}
             className="w-full bg-orange-500 hover:bg-orange-600"
           >
@@ -431,7 +511,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
           {/* Export Buttons */}
           <div className="flex gap-3">
             <Button
-              onClick={handleGenerateGCode}
+              onClick={handleGenerateGCodeClick}
               disabled={isGeneratingGCode}
               className="flex-1 bg-orange-500 hover:bg-orange-600"
             >
@@ -512,6 +592,30 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
           )}
         </CardContent>
       </Card>
+
+      {/* MANDATORY Production Preview Dialog */}
+      {project && (
+        <ProductionPreviewDialog
+          open={showProductionPreview}
+          onOpenChange={setShowProductionPreview}
+          components={project.components || []}
+          profiles={profiles}
+          optimizationResult={optimization}
+          onConfirm={() => {
+            // Execute the pending action after confirmation
+            if (pendingAction === 'gcode') {
+              void handleGenerateGCode();
+            } else if (pendingAction === 'report') {
+              void handleExportCuttingReport();
+            }
+            setPendingAction(null);
+          }}
+          onAdjustCalibration={() => {
+            // Navigate to calibration wizard or show it
+            // This would be handled by parent component
+          }}
+        />
+      )}
     </div>
   );
 };

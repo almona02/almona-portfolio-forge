@@ -1,0 +1,305 @@
+{
+  "workspace": {
+    "title": "Üretim Çalışma Alanı",
+    "subtitle": "Projeler, müşteriler, envanter ve ticari akışlar için ağır hizmet Almona kokpiti — durum sekmeler arasında korunur.",
+    "tabs": {
+      "projects": "Projeler",
+      "customers": "Müşteriler",
+      "inventory": "Envanter",
+      "commercial": "Ticari"
+    },
+    "badges": {
+      "active": "Aktif",
+      "draft_quotes": "Taslak Teklifler"
+    },
+    "sections": {
+      "projects_positions": "Projeler ve Pozisyonlar",
+      "fabricator_customers": "Fabricator Müşterileri",
+      "inventory_intelligence": "Envanter Zeka Merkezi",
+      "commercial_workspace": "Ticari Çalışma Alanı",
+      "pricing_configuration": "Fiyatlandırma Yapılandırması",
+      "profile_management": "Profil Yönetimi",
+      "inventory_analytics": "Envanter Analitiği"
+    }
+  },
+  "dashboard": {
+    "title": "Fabricator Pro Pano",
+    "subtitle": "Gerçek zamanlı içgörülerle AI destekli atölye yönetimi",
+    "performance": {
+      "title": "Performans Özeti",
+      "optimization_speed": "Optimizasyon Hızı",
+      "waste_reduction": "Atık Azaltma",
+      "ml_accuracy": "ML Doğruluğu"
+    },
+    "remnant_marketplace": {
+      "title": "Artık Pazarı",
+      "subtitle": "Fabricator ağı boyunca fazla malzemeleri satın alın ve satın"
+    },
+    "recent_optimizations": "Son Optimizasyonlar",
+    "quick_actions": "Hızlı İşlemler",
+    "settings": "Ayarlar"
+  },
+  "workflow": {
+    "title": "Fabricator İş Akışı Pro",
+    "subtitle": "AI İŞ AKIŞI v4.0",
+    "header": {
+      "fabricator_pro": "FABRICATOR PRO",
+      "ai_workflow": "AI İŞ AKIŞI v4.0",
+      "workflow_pro": "Fabricator İş Akışı Pro"
+    },
+    "measuring": "Ölçüm",
+    "smart_measuring": "Akıllı Ölçüm Arayüzü",
+    "design": "Tasarım",
+    "optimization": "Optimizasyon",
+    "inventory": "Envanter",
+    "pricing": "Fiyatlandırma",
+    "reports": "Raporlar"
+  },
+  "project": {
+    "new_project": "Yeni Proje",
+    "professional_header": "Yeni Proje – Profesyonel Başlık",
+    "positions": "Pozisyonlar"
+  },
+  "projects": {
+    "title": "Projeler ve Pozisyonlar",
+    "loading": "Fabricator projeleriniz Supabase'den yükleniyor...",
+    "description": "Tüm pozisyonlara hızlı erişimle yüksek seviye proje görünümü. Siparişleri görmek için Projeler sekmesini, bireysel pozisyonlar/daireler için derinlemesine inceleme yapmak için Pozisyonlar sekmesini kullanın.",
+    "stats": {
+      "distinct_units": "Farklı birimler",
+      "total_poses": "Toplam pozisyon",
+      "projects": "Projeler"
+    },
+    "tabs": {
+      "projects": "Projeler",
+      "positions": "Son Pozisyonlar"
+    },
+    "projects_tab": {
+      "title": "Projeler",
+      "description": "Her satır, aynı proje kodu / sipariş numarasını paylaşan tüm pozisyonları gruplar.",
+      "no_projects": "Henüz proje yok. İlk pozisyonunuzu Fabricator iş akışından oluşturun.",
+      "customer": "Müşteri",
+      "poses": "Pozisyonlar",
+      "total_qty": "Toplam miktar"
+    }
+  },
+  "customers": {
+    "title": "Fabricator Müşterileri",
+    "description": "Yeni Proje Sihirbazı tarafından kullanılan atölye başına müşteri dizini. Bir müşteriyi bir kez oluşturun, ardından yeni projeler başlatırken açılır menüden yeniden kullanın.",
+    "add_new": "Yeni Müşteri Ekle",
+    "form": {
+      "name": "Müşteri / Şirket adı *",
+      "contact_person": "İletişim kişisi",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "notes": "Notlar (isteğe bağlı)",
+      "add_button": "Müşteri Ekle"
+    },
+    "filters": {
+      "title": "Akıllı Filtreler",
+      "search": "Ara",
+      "search_placeholder": "İsim, iletişim, e-posta, telefon…",
+      "sector": "Sektör",
+      "all_sectors": "Tüm sektörler",
+      "registered_year": "Kayıt Yılı",
+      "all_years": "Tüm yıllar"
+    },
+    "directory": {
+      "title": "Müşteri Dizini",
+      "description": "Bu müşteriler Yeni Proje Sihirbazı açılır menüsünde mevcuttur.",
+      "no_customers": "Mevcut filtreler için müşteri bulunamadı.",
+      "new_order": "Seçili müşteri için yeni sipariş",
+      "table": {
+        "name": "İsim",
+        "contact": "İletişim",
+        "email": "E-posta",
+        "phone": "Telefon",
+        "sector": "Sektör",
+        "registered": "Kayıtlı",
+        "notes": "Notlar"
+      }
+    },
+    "sectors": {
+      "all": "Tümü",
+      "aluminium": "Alüminyum",
+      "upvc": "UPVC",
+      "steel": "Çelik",
+      "glass": "Cam",
+      "general": "Genel"
+    }
+  },
+  "inventory": {
+    "title": "Envanter Zeka Merkezi",
+    "description": "Türk ve Mısır pazarları için gerçek zamanlı analitik, artık optimizasyonu ve AI destekli stok tahminleri ile merkezi envanter yönetimi.",
+    "add_profile": "Profil Ekle",
+    "workflow_integration": "İş Akışı Entegrasyonu",
+    "adding": "Ekleniyor...",
+    "tabs": {
+      "dashboard": "Pano",
+      "profile_management": "Profil Yönetimi",
+      "analytics": "Analitik",
+      "overview": "Genel Bakış",
+      "remnants": "Artıklar",
+      "alerts": "Uyarılar",
+      "history": "Geçmiş",
+      "purchases": "Satın Almalar"
+    },
+    "overview": {
+      "use_remnants_first": "Önce Artıkları Kullan",
+      "use_remnants_description": "Yeni stok kesmeden önce mevcut artıkları otomatik olarak eşleştir ve kullan",
+      "enabled": "Etkin",
+      "disabled": "Devre Dışı",
+      "search_placeholder": "Profilleri ara...",
+      "material_filter": "Malzeme",
+      "all_materials": "Tüm Malzemeler",
+      "aluminum": "Alüminyum",
+      "upvc": "UPVC",
+      "wood": "Ahşap",
+      "systems": "Sistemler",
+      "all": "Tümü",
+      "profile_inventory": "Profil Envanteri"
+    },
+    "status": {
+      "in_stock": "STOKTA",
+      "low_stock": "DÜŞÜK STOK",
+      "out_of_stock": "STOKTA YOK",
+      "critical": "KRİTİK"
+    },
+    "analytics": {
+      "title": "Envanter Analitiği",
+      "description": "Fabricator envanteriniz için gelişmiş analitik ve içgörüler.",
+      "coming_soon": "Gelişmiş analitik pano yakında.",
+      "features": "Envanter kullanımı, trend analizi ve tahmine dayalı stoklama."
+    }
+  },
+  "profileManagement": {
+    "title": "Profil Yönetimi",
+    "importProfiles": "Profilleri İçe Aktar",
+    "manualEntry": "Manuel Giriş",
+    "dxfImport": "DXF İçe Aktar",
+    "systemPacks": "Sistem Paketleri",
+    "addNewProfile": "Yeni Profil Ekle",
+    "name": "İsim",
+    "material": "Malzeme",
+    "aluminum": "Alüminyum",
+    "upvc": "UPVC",
+    "wood": "Ahşap",
+    "widthMm": "Genişlik (mm)",
+    "heightMm": "Yükseklik (mm)",
+    "thicknessMm": "Kalınlık (mm)",
+    "color": "Renk",
+    "costPerMeter": "Metre Başına Maliyet",
+    "cuttingAllowance": "Kesim Payı",
+    "stockQuantity": "Stok Miktarı",
+    "minStockLevel": "Minimum Stok Seviyesi",
+    "maxStockLevel": "Maksimum Stok Seviyesi",
+    "supplier": "Tedarikçi",
+    "systemBrand": "Sistem Markası",
+    "grainDirection": "Tahıl Yönü",
+    "weightPerMeter": "Metre Başına Ağırlık",
+    "specifications": "Özellikler",
+    "internalCode": "İç Kod",
+    "supplierCode": "Tedarikçi Kodu",
+    "series": "Seri",
+    "year": "Yıl",
+    "dxfImported": "DXF'den İçe Aktarıldı",
+    "saveProfile": "Profili Kaydet",
+    "updateProfile": "Profili Güncelle",
+    "cancel": "İptal",
+    "importDxf": "DXF İçe Aktar",
+    "uploadPreview": "2D Önizleme Yükle",
+    "uploading": "Yükleniyor...",
+    "preview": "Önizleme",
+    "searchProfiles": "Profilleri Ara",
+    "filterByMaterial": "Malzemeye Göre Filtrele",
+    "all": "Tümü",
+    "filterByRegion": "Bölgeye Göre Filtrele",
+    "turkey": "Türkiye",
+    "egypt": "Mısır",
+    "global": "Küresel",
+    "exportProfiles": "Profilleri Dışa Aktar",
+    "importProfilesFile": "Profil Dosyasını İçe Aktar",
+    "bulkUpdate": "Toplu Güncelleme",
+    "refreshProfiles": "Profilleri Yenile",
+    "profileSavedSuccess": "Profil başarıyla kaydedildi",
+    "profileUpdatedSuccess": "Profil başarıyla güncellendi",
+    "profileDeletedSuccess": "Profil başarıyla silindi",
+    "errorSavingProfile": "Profil kaydedilirken hata oluştu",
+    "errorUpdatingProfile": "Profil güncellenirken hata oluştu",
+    "errorDeletingProfile": "Profil silinirken hata oluştu",
+    "errorLoadingProfiles": "Profiller yüklenirken hata oluştu",
+    "confirmDelete": "Bu profili silmek istediğinizden emin misiniz?",
+    "lowStock": "Düşük Stok",
+    "inStock": "Stokta",
+    "outOfStock": "Stokta Yok",
+    "dimensions": "Boyutlar",
+    "cost": "Maliyet",
+    "stock": "Stok",
+    "stockLevel": "Stok Seviyesi",
+    "twinCode": "İkiz Kod",
+    "dxf": "DXF",
+    "imported": "İçe Aktarıldı",
+    "none": "—",
+    "bulkCost": "Toplu maliyet",
+    "bulkStock": "Toplu stok",
+    "editProfile": "Profili Düzenle",
+    "allRegions": "Tüm Bölgeler",
+    "allMaterials": "Tüm Malzemeler"
+  },
+  "commercial": {
+    "title": "Ticari Çalışma Alanı",
+    "description": "Aktif projelerinize bağlı teklifleri, faturaları ve ticari belgeleri yönetin.",
+    "pricing_settings": "Fiyatlandırma Ayarları",
+    "new_quote": "Yeni Teklif",
+    "draft_quotes": {
+      "title": "Taslak Teklifler",
+      "no_quotes": "Taslak teklif yok",
+      "no_quotes_description": "Başlamak için aktif projeden veya müşteri bağlamından bir teklif oluşturun.",
+      "unnamed_customer": "İsimsiz Müşteri",
+      "untitled_project": "Başlıksız Proje",
+      "draft": "Taslak",
+      "convert_to_invoice": "Faturaya Dönüştür",
+      "delete": "Sil"
+    },
+    "draft_invoices": {
+      "title": "Taslak Faturalar",
+      "no_invoices": "Taslak fatura yok",
+      "no_invoices_description": "Faturalamayı hazırlamak için teklifleri faturalara dönüştürün.",
+      "draft_invoice": "Taslak fatura",
+      "send": "Gönder",
+      "pdf": "PDF",
+      "delete": "Sil"
+    }
+  },
+  "onboarding": {
+    "title": "Fabricator Pro'ya Hoş Geldiniz",
+    "subtitle": "Hızlı bir eğitimle başlayalım",
+    "skip": "Eğitimi Atla",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "complete": "Eğitimi Tamamla",
+    "steps": {
+      "measuring": {
+        "title": "Akıllı Ölçüm",
+        "description": "Pencere boyutlarını hızlı ve doğru bir şekilde ölçmek için AI destekli ölçüm araçlarımızı nasıl kullanacağınızı öğrenin. Akıllı ölçüm arayüzümüz sizi adım adım süreç boyunca yönlendirir."
+      },
+      "design": {
+        "title": "AI Destekli Tasarım",
+        "description": "AI tasarım asistanımızın ölçümlerinize dayalı olarak optimal pencere konfigürasyonları oluşturmanıza, profil, aksesuar ve düzen önerileri sunmanıza nasıl yardımcı olduğunu keşfedin."
+      },
+      "optimization": {
+        "title": "Kesim Optimizasyonu",
+        "description": "Atığı en aza indiren ve verimliliği maksimize eden kesim optimizasyon motorunda uzmanlaşın. Optimizasyon parametrelerini nasıl yapılandıracağınızı ve sonuçları nasıl yorumlayacağınızı öğrenin."
+      },
+      "export": {
+        "title": "CNC Dışa Aktarma",
+        "description": "Optimize edilmiş kesim planlarınızı CNC makinelerine dışa aktarın. Tek tıkla DXF dosyaları, kesim listeleri ve üretim raporları oluşturun."
+      }
+    },
+    "video_coming_soon": "Video Eğitimi Yakında",
+    "video_placeholder": "\"{title}\" için etkileşimli video içeriği burada mevcut olacak.",
+    "try_yourself": "Kendiniz deneyin:",
+    "step_of": "Adım {current} / {total}",
+    "complete_percent": "%{percent} Tamamlandı"
+  }
+}
+

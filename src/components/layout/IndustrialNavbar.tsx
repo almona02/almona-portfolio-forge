@@ -27,6 +27,7 @@ import {
   Box
 } from 'lucide-react';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
+import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 
 interface IndustrialNavbarProps {
   user?: {
@@ -320,7 +321,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-      className={`fixed top-0 left-0 right-0 z-[200] transition-all duration-500 relative ${
+      className={`fixed top-0 left-0 right-0 z-[200] transition-all duration-500 ${
         isScrolled
           ? 'bg-slate-950/95 backdrop-blur-xl border-b border-orange-500/30 shadow-2xl shadow-orange-500/10'
           : 'bg-slate-950/90 backdrop-blur-lg border-b border-slate-800'
@@ -436,6 +437,11 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9 pr-3 py-2 rounded-full bg-slate-900/90 border border-slate-700 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400/60 w-60"
               />
+            </div>
+
+            {/* Language Switcher */}
+            <div className="hidden md:block">
+              <LanguageSwitcher variant="compact" />
             </div>
 
             {/* Notifications */}

@@ -13,7 +13,9 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
@@ -35,18 +37,23 @@ import {
   RefreshCw,
   Search,
   FileText,
+  Settings,
 } from 'lucide-react';
-import { Profile } from '@/types/fabricator';
+import { Profile, Accessory, MachiningMacro, SystemPack } from '@/types/fabricator';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
-import { ElsherifImportWizard } from '@/components/fabricator/ElsherifImportWizard';
 import {
   ROCK60_WINDOW_SYSTEM_TEMPLATE,
   ROCK60_SYSTEM_PACK,
   JUMBO100_WINDOW_SYSTEM_SPEC,
   JUMBO100_SYSTEM_PACK,
+  SYSTEM_PACKS,
 } from '@/data/systemPacks';
+import { ProfileDetailCard } from './ProfileDetailCard';
+import { SystemPackSelector } from './SystemPackSelector';
+import { AccessoryManagement } from './AccessoryManagement';
+import { ProfileDefinitionWizard } from './ProfileDefinitionWizard';
 
 // Material-specific color presets
 const MATERIAL_COLORS: Record<string, string[]> = {
@@ -102,6 +109,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   userId,
   initialProfiles,
 }) => {
+  const { t } = useTranslation('fabricator');
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles || []);
   const [filteredProfiles, setFilteredProfiles] = useState<Profile[]>(initialProfiles || []);
   const [activeImportTab, setActiveImportTab] = useState('manual');
@@ -113,9 +121,14 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [materialFilter, setMaterialFilter] = useState<string>('all');
   const [regionFilter, setRegionFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [systemPackFilter, setSystemPackFilter] = useState<string>('all');
   const [subscription, setSubscription] = useState<any>(null);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [isUploadingPreview, setIsUploadingPreview] = useState<string | null>(null);
+  const [accessories, setAccessories] = useState<Accessory[]>([]);
+  const [showAccessoryManager, setShowAccessoryManager] = useState(false);
+  const [selectedProfileForDetail, setSelectedProfileForDetail] = useState<Profile | null>(null);
 
   // Form state
   const [formData, setFormData] = useState<Partial<Profile>>({
@@ -135,6 +148,13 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     grainDirection: null,
     weightPerMeter: undefined,
     specifications: {},
+    category: 'window',
+    systemType: 'casement',
+    profileRole: 'frame',
+    compatibleAccessories: [],
+    machiningMacros: [],
+    technicalDrawings: [],
+    systemPackIds: [],
   });
 
   const handleImportDXF = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -316,6 +336,13 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             typeof specs.weightPerMeterKg === 'number'
               ? specs.weightPerMeterKg
               : undefined,
+          category: specs.category as Profile['category'],
+          systemType: specs.systemType as Profile['systemType'],
+          profileRole: specs.profileRole as Profile['profileRole'],
+          compatibleAccessories: specs.compatibleAccessories as string[] || [],
+          machiningMacros: specs.machiningMacros as MachiningMacro[] || [],
+          technicalDrawings: specs.technicalDrawings as any[] || [],
+          systemPackIds: specs.systemPackIds as string[] || [],
           specifications: specs,
           userId: p.user_id,
           createdAt: p.created_at ? new Date(p.created_at) : undefined,
@@ -376,6 +403,37 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     loadProfiles();
   }, [loadProfiles]);
 
+  // Helper function to get system packs for category
+  const getSystemPacksForCategory = (category: string): SystemPack[] => {
+    if (category === 'all') return [];
+    const mappedPacks: SystemPack[] = SYSTEM_PACKS.map((pack) => ({
+      id: pack.meta.id,
+      name: pack.meta.name,
+      category: determineCategoryFromPack(pack.meta.id, pack.meta.name),
+      brand: pack.meta.brands[0] || 'Unknown',
+      compatibleProfiles: [],
+      compatibleAccessories: [],
+      description: `System pack for ${pack.meta.name}`,
+      technicalData: {},
+    }));
+    return mappedPacks.filter((pack) => pack.category === category);
+  };
+
+  const determineCategoryFromPack = (
+    id: string,
+    name: string
+  ): 'aluminum_windows' | 'aluminum_doors' | 'curtain_walls' | 'upvc_windows' | 'upvc_doors' => {
+    const lowerId = id.toLowerCase();
+    const lowerName = name.toLowerCase();
+    if (lowerId.includes('curtain') || lowerName.includes('curtain')) return 'curtain_walls';
+    if (lowerId.includes('door') || lowerName.includes('door')) {
+      if (lowerId.includes('upvc') || lowerName.includes('upvc')) return 'upvc_doors';
+      return 'aluminum_doors';
+    }
+    if (lowerId.includes('upvc') || lowerName.includes('upvc')) return 'upvc_windows';
+    return 'aluminum_windows';
+  };
+
   // Filter profiles
   useEffect(() => {
     let filtered = profiles;
@@ -406,8 +464,21 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       });
     }
 
+    if (categoryFilter !== 'all') {
+      filtered = filtered.filter((p) => {
+        const category = p.category || 'window';
+        return category === categoryFilter;
+      });
+    }
+
+    if (systemPackFilter !== 'all') {
+      filtered = filtered.filter((p) => {
+        return p.systemPackIds?.includes(systemPackFilter);
+      });
+    }
+
     setFilteredProfiles(filtered);
-  }, [profiles, searchTerm, materialFilter, regionFilter]);
+  }, [profiles, searchTerm, materialFilter, regionFilter, categoryFilter, systemPackFilter]);
 
   const handleUploadPreviewImage = async (event: React.ChangeEvent<HTMLInputElement>, profile: Profile) => {
     const file = event.target.files?.[0];
@@ -469,6 +540,13 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         ...(formData.weightPerMeter !== undefined
           ? { weightPerMeterKg: formData.weightPerMeter }
           : {}),
+        category: formData.category,
+        systemType: formData.systemType,
+        profileRole: formData.profileRole,
+        compatibleAccessories: formData.compatibleAccessories || [],
+        machiningMacros: formData.machiningMacros || [],
+        technicalDrawings: formData.technicalDrawings || [],
+        systemPackIds: formData.systemPackIds || [],
       };
 
       // Derive cost per meter for aluminum from kg, otherwise use entered per‑meter price
@@ -511,12 +589,12 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       await loadProfiles();
       resetForm();
       setSuccess(true);
-      toast.success('Profile added successfully');
+      toast.success(t('profileManagement.profileSavedSuccess', 'Profile saved successfully'));
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       console.error('Error adding profile:', err);
-      setError(err instanceof Error ? err.message : 'Failed to add profile');
-      toast.error('Failed to add profile');
+      setError(err instanceof Error ? err.message : t('profileManagement.errorSavingProfile', 'Error saving profile'));
+      toast.error(t('profileManagement.errorSavingProfile', 'Error saving profile'));
     } finally {
       setSaving(false);
     }
@@ -534,6 +612,13 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         ...(formData.weightPerMeter !== undefined
           ? { weightPerMeterKg: formData.weightPerMeter }
           : {}),
+        category: formData.category,
+        systemType: formData.systemType,
+        profileRole: formData.profileRole,
+        compatibleAccessories: formData.compatibleAccessories || [],
+        machiningMacros: formData.machiningMacros || [],
+        technicalDrawings: formData.technicalDrawings || [],
+        systemPackIds: formData.systemPackIds || [],
       };
 
       let effectiveCostPerMeter = formData.costPerMeter || 0;
@@ -575,19 +660,19 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       await loadProfiles();
       resetForm();
       setSuccess(true);
-      toast.success('Profile updated successfully');
+      toast.success(t('profileManagement.profileUpdatedSuccess', 'Profile updated successfully'));
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       console.error('Error updating profile:', err);
-      setError(err instanceof Error ? err.message : 'Failed to update profile');
-      toast.error('Failed to update profile');
+      setError(err instanceof Error ? err.message : t('profileManagement.errorUpdatingProfile', 'Error updating profile'));
+      toast.error(t('profileManagement.errorUpdatingProfile', 'Error updating profile'));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteProfile = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this profile?')) return;
+    if (!confirm(t('profileManagement.confirmDelete', 'Are you sure you want to delete this profile?'))) return;
     if (!userId) return;
 
     try {
@@ -602,15 +687,16 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       if (deleteError) throw deleteError;
 
       await loadProfiles();
-      toast.success('Profile deleted successfully');
+      toast.success(t('profileManagement.profileDeletedSuccess', 'Profile deleted successfully'));
     } catch (err) {
       console.error('Error deleting profile:', err);
-      toast.error('Failed to delete profile');
+      toast.error(t('profileManagement.errorDeletingProfile', 'Error deleting profile'));
     }
   };
 
   const handleEditProfile = (profile: Profile) => {
     setEditingId(profile.id);
+    const specs = profile.specifications || {};
     setFormData({
       name: profile.name,
       material: profile.material,
@@ -627,7 +713,14 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       systemBrand: profile.systemBrand || 'Standard',
       grainDirection: profile.grainDirection,
       weightPerMeter: profile.weightPerMeter,
-      specifications: profile.specifications || {},
+      category: profile.category || (specs.category as Profile['category']) || 'window',
+      systemType: profile.systemType || (specs.systemType as Profile['systemType']) || 'casement',
+      profileRole: profile.profileRole || (specs.profileRole as Profile['profileRole']) || 'frame',
+      compatibleAccessories: profile.compatibleAccessories || (specs.compatibleAccessories as string[]) || [],
+      machiningMacros: profile.machiningMacros || (specs.machiningMacros as MachiningMacro[]) || [],
+      technicalDrawings: profile.technicalDrawings || (specs.technicalDrawings as any) || [],
+      systemPackIds: profile.systemPackIds || (specs.systemPackIds as string[]) || [],
+      specifications: specs,
     });
   };
 
@@ -650,7 +743,50 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       grainDirection: null,
       weightPerMeter: undefined,
       specifications: {},
+      category: 'window',
+      systemType: 'casement',
+      profileRole: 'frame',
+      compatibleAccessories: [],
+      machiningMacros: [],
+      technicalDrawings: [],
+      systemPackIds: [],
     });
+  };
+
+  // Machining macro helper functions
+  const addNewMacro = () => {
+    const newMacro: MachiningMacro = {
+      id: `macro-${Date.now()}`,
+      name: '',
+      operation: 'slot',
+      dimensions: { width: 0, height: 0, depth: 0 },
+      position: { x: 0, y: 0 },
+      toolSpecs: { diameter: 0, type: 'router' },
+    };
+    setFormData({
+      ...formData,
+      machiningMacros: [...(formData.machiningMacros || []), newMacro],
+    });
+  };
+
+  const updateMacro = (index: number, field: keyof MachiningMacro, value: any) => {
+    const updatedMacros = [...(formData.machiningMacros || [])];
+    updatedMacros[index] = { ...updatedMacros[index], [field]: value };
+    setFormData({ ...formData, machiningMacros: updatedMacros });
+  };
+
+  const updateMacroDimension = (index: number, dimension: 'width' | 'height' | 'depth', value: number) => {
+    const updatedMacros = [...(formData.machiningMacros || [])];
+    updatedMacros[index] = {
+      ...updatedMacros[index],
+      dimensions: { ...updatedMacros[index].dimensions, [dimension]: value },
+    };
+    setFormData({ ...formData, machiningMacros: updatedMacros });
+  };
+
+  const removeMacro = (index: number) => {
+    const updatedMacros = formData.machiningMacros?.filter((_, i) => i !== index) || [];
+    setFormData({ ...formData, machiningMacros: updatedMacros });
   };
 
   const handleExportJSON = () => {
@@ -785,6 +921,142 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     }
   };
 
+  // Bulk system import function
+  const handleImportSystemPack = async (systemPack: SystemPack) => {
+    if (!userId) return;
+
+    try {
+      setLoading(true);
+
+      // Import all profiles from the system pack
+      const profilesToImport = await fetchProfilesForSystemPack(systemPack.id);
+
+      // Import all accessories from the system pack
+      const accessoriesToImport = await fetchAccessoriesForSystemPack(systemPack.id);
+
+      // Batch insert profiles
+      const profileInserts = profilesToImport.map((profile) => ({
+        user_id: userId,
+        name: profile.name,
+        material: profile.material,
+        width: profile.width || 50,
+        height: profile.height,
+        thickness: profile.thickness,
+        color: profile.color || '#C0C0C0',
+        cost_per_meter: profile.costPerMeter || 0,
+        cutting_allowance: profile.cuttingAllowance || 3,
+        stock_quantity: profile.stockQuantity || 0,
+        min_stock_level: profile.minStockLevel || 0,
+        max_stock_level: profile.maxStockLevel,
+        supplier: profile.supplier || '',
+        system_brand: profile.systemBrand || systemPack.brand,
+        grain_direction: profile.grainDirection,
+        specifications: {
+          ...(profile.specifications || {}),
+          systemPackIds: [systemPack.id],
+          category: profile.category,
+          systemType: profile.systemType,
+          profileRole: profile.profileRole,
+          compatibleAccessories: profile.compatibleAccessories || [],
+          machiningMacros: profile.machiningMacros || [],
+          technicalDrawings: profile.technicalDrawings || [],
+        },
+      }));
+
+      // Batch insert accessories
+      const accessoryInserts = accessoriesToImport.map((accessory) => ({
+        user_id: userId,
+        name: accessory.name,
+        type: accessory.type,
+        category: accessory.category || '',
+        unit_price: accessory.unitPrice || 0,
+        base_cost: accessory.baseCost || 0,
+        markup_percentage: accessory.markupPercentage || 0,
+        supplier: accessory.supplier,
+        sku: accessory.sku,
+        description: accessory.description,
+        compatible_materials: accessory.compatibleMaterials || [],
+        region: accessory.region || [],
+        image_url: accessory.imageUrl || accessory.images?.[0],
+        specifications: accessory.specifications || {},
+      }));
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any;
+
+      if (profileInserts.length > 0) {
+        const { error: profileError } = await db
+          .from('fabricator_profiles')
+          .insert(profileInserts);
+
+        if (profileError) throw profileError;
+      }
+
+      if (accessoryInserts.length > 0) {
+        const { error: accessoryError } = await db
+          .from('fabricator_accessories')
+          .insert(accessoryInserts);
+
+        if (accessoryError) throw accessoryError;
+      }
+
+      // Reload data
+      await loadProfiles();
+      // Reload accessories if we have an accessory update handler
+      if (showAccessoryManager) {
+        // Trigger accessory reload
+        const { data: accessoryData } = await db
+          .from('fabricator_accessories')
+          .select('*')
+          .eq('user_id', userId);
+        if (accessoryData) {
+          setAccessories(accessoryData.map((acc: any) => ({
+            id: acc.id,
+            name: acc.name,
+            type: acc.type as any,
+            compatibleProfiles: [],
+            installationMacros: [],
+            specifications: acc.specifications || {},
+            images: acc.image_url ? [acc.image_url] : [],
+            category: acc.category,
+            unitPrice: acc.unit_price,
+            baseCost: acc.base_cost,
+            markupPercentage: acc.markup_percentage,
+            supplier: acc.supplier,
+            sku: acc.sku,
+            description: acc.description,
+            compatibleMaterials: acc.compatible_materials || [],
+            region: acc.region || [],
+            imageUrl: acc.image_url,
+            userId: acc.user_id,
+            createdAt: acc.created_at ? new Date(acc.created_at) : undefined,
+            updatedAt: acc.updated_at ? new Date(acc.updated_at) : undefined,
+          })));
+        }
+      }
+
+      toast.success(`Imported ${systemPack.name} with ${profilesToImport.length} profiles and ${accessoriesToImport.length} accessories`);
+    } catch (err) {
+      console.error('Error importing system pack:', err);
+      toast.error('Failed to import system pack');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper functions for fetching system pack data
+  const fetchProfilesForSystemPack = async (systemPackId: string): Promise<Profile[]> => {
+    // In a real implementation, this would fetch from a system pack database or API
+    // For now, return empty array - this should be implemented based on your data source
+    return [];
+  };
+
+  const fetchAccessoriesForSystemPack = async (systemPackId: string): Promise<Accessory[]> => {
+    // In a real implementation, this would fetch from a system pack database or API
+    // For now, return empty array - this should be implemented based on your data source
+    return [];
+  };
+
   const handleBulkUpdate = async (field: 'costPerMeter' | 'stockQuantity', value: number) => {
     if (!userId || filteredProfiles.length === 0) return;
 
@@ -838,20 +1110,27 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     }
   };
 
+  const getStockStatusLabel = (status: string) => {
+    switch (status) {
+      case 'high':
+        return t('profileManagement.inStock', 'In Stock');
+      case 'medium':
+      case 'low':
+        return t('profileManagement.lowStock', 'Low Stock');
+      case 'out':
+        return t('profileManagement.outOfStock', 'Out of Stock');
+      default:
+        return t('inventory.status.critical', 'CRITICAL');
+    }
+  };
+
   const getMaterialColors = () => {
     return MATERIAL_COLORS[formData.material || 'aluminum'] || MATERIAL_COLORS.aluminum;
   };
 
   // Show full-page loader only on the first load
   if (loading && !hasLoadedOnce) {
-    return (
-      <Card className="bg-gray-700/50 border-gray-600">
-        <CardContent className="p-8 text-center">
-          <RefreshCw className="h-12 w-12 text-gray-400 mx-auto mb-4 animate-spin" />
-          <h3 className="text-lg font-semibold mb-2">Loading Profiles</h3>
-        </CardContent>
-      </Card>
-    );
+    return <FabricatorProjectSkeleton showHeader={true} showTabs={false} showContent={true} />;
   }
 
   return (
@@ -877,9 +1156,9 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Package className="h-5 w-5 text-orange-400" />
-              Profile Management ({profiles.length})
+              {t('profileManagement.title', 'Profile Management')} ({profiles.length})
             </CardTitle>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Button
                 variant="outline"
                 size="sm"
@@ -887,7 +1166,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 disabled={profiles.length === 0}
               >
                 <Download className="h-4 w-4 mr-2" />
-                Export JSON
+                {t('profileManagement.exportProfiles', 'Export Profiles')} JSON
               </Button>
               <Button
                 variant="outline"
@@ -896,13 +1175,13 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 disabled={profiles.length === 0}
               >
                 <Download className="h-4 w-4 mr-2" />
-                Export CSV
+                {t('profileManagement.exportProfiles', 'Export Profiles')} CSV
               </Button>
               <label>
                 <Button variant="outline" size="sm" asChild>
                   <span>
                     <Upload className="h-4 w-4 mr-2" />
-                    Import JSON
+                    {t('profileManagement.importProfilesFile', 'Import Profile File')}
                   </span>
                 </Button>
                 <input
@@ -914,7 +1193,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               </label>
               <Button variant="outline" size="sm" onClick={loadProfiles}>
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
+                {t('profileManagement.refreshProfiles', 'Refresh Profiles')}
               </Button>
             </div>
           </div>
@@ -924,72 +1203,107 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       {/* Filters */}
       <Card className="bg-gray-800/50 border-gray-700">
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {/* Category Filter */}
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Material Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="aluminum_windows">Aluminum Windows</SelectItem>
+                <SelectItem value="aluminum_doors">Aluminum Doors</SelectItem>
+                <SelectItem value="curtain_walls">Curtain Walls</SelectItem>
+                <SelectItem value="upvc_windows">UPVC Windows</SelectItem>
+                <SelectItem value="upvc_doors">UPVC Doors</SelectItem>
+                <SelectItem value="accessories">Accessories</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* System Pack Filter */}
+            <Select value={systemPackFilter} onValueChange={setSystemPackFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="System Pack" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Systems</SelectItem>
+                {getSystemPacksForCategory(categoryFilter).map((pack) => (
+                  <SelectItem key={pack.id} value={pack.id}>
+                    {pack.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Search profiles..."
+                placeholder={t('profileManagement.searchProfiles', 'Search Profiles')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
+
+            {/* Material Filter */}
             <Select value={materialFilter} onValueChange={setMaterialFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="Filter by Material" />
+                <SelectValue placeholder={t('profileManagement.filterByMaterial', 'Filter by Material')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Materials</SelectItem>
-                <SelectItem value="aluminum">Aluminum</SelectItem>
-                <SelectItem value="upvc">UPVC</SelectItem>
-                <SelectItem value="wood">Wood</SelectItem>
+                <SelectItem value="all">{t('profileManagement.all', 'All')}</SelectItem>
+                <SelectItem value="aluminum">{t('profileManagement.aluminum', 'Aluminum')}</SelectItem>
+                <SelectItem value="upvc">{t('profileManagement.upvc', 'UPVC')}</SelectItem>
+                <SelectItem value="wood">{t('profileManagement.wood', 'Wood')}</SelectItem>
               </SelectContent>
             </Select>
+
+            {/* Region Filter */}
             <Select value={regionFilter} onValueChange={setRegionFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="Filter by Region" />
+                <SelectValue placeholder={t('profileManagement.filterByRegion', 'Filter by Region')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Regions</SelectItem>
-                <SelectItem value="turkey">Turkey</SelectItem>
-                <SelectItem value="egypt">Egypt</SelectItem>
+                <SelectItem value="all">{t('profileManagement.all', 'All')}</SelectItem>
+                <SelectItem value="turkey">{t('profileManagement.turkey', 'Turkey')}</SelectItem>
+                <SelectItem value="egypt">{t('profileManagement.egypt', 'Egypt')}</SelectItem>
               </SelectContent>
             </Select>
-            <div className="flex gap-2">
-              {filteredProfiles.length > 0 && (
-                <>
-                  <Input
-                    type="number"
-                    placeholder="Bulk cost"
-                    className="flex-1"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        const value = parseFloat(e.currentTarget.value);
-                        if (!isNaN(value)) {
-                          handleBulkUpdate('costPerMeter', value);
-                          e.currentTarget.value = '';
-                        }
-                      }
-                    }}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Bulk stock"
-                    className="flex-1"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        const value = parseFloat(e.currentTarget.value);
-                        if (!isNaN(value)) {
-                          handleBulkUpdate('stockQuantity', value);
-                          e.currentTarget.value = '';
-                        }
-                      }
-                    }}
-                  />
-                </>
-              )}
-            </div>
           </div>
+          {/* Bulk Operations */}
+          {filteredProfiles.length > 0 && (
+            <div className="flex gap-2 mt-4">
+              <Input
+                type="number"
+                placeholder={t('profileManagement.bulkCost', 'Bulk cost')}
+                className="flex-1"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const value = parseFloat(e.currentTarget.value);
+                    if (!isNaN(value)) {
+                      handleBulkUpdate('costPerMeter', value);
+                      e.currentTarget.value = '';
+                    }
+                  }
+                }}
+              />
+              <Input
+                type="number"
+                placeholder={t('profileManagement.bulkStock', 'Bulk stock')}
+                className="flex-1"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const value = parseFloat(e.currentTarget.value);
+                    if (!isNaN(value)) {
+                      handleBulkUpdate('stockQuantity', value);
+                      e.currentTarget.value = '';
+                    }
+                  }
+                }}
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -998,7 +1312,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             {editingId ? <Edit2 className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
-            {editingId ? 'Edit Profile' : 'Add New Profile'}
+            {editingId ? t('profileManagement.updateProfile', 'Update Profile') : t('profileManagement.addNewProfile', 'Add New Profile')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -1010,7 +1324,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               <Button variant="outline" size="sm" asChild>
                 <span>
                   <Upload className="h-4 w-4 mr-2" />
-                  Import from DXF
+                  {t('profileManagement.importDxf', 'Import DXF')}
                 </span>
               </Button>
               <input
@@ -1024,7 +1338,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Profile Name *</Label>
+              <Label>{t('profileManagement.name', 'Name')} *</Label>
               <Input
                 value={formData.name || ''}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -1032,7 +1346,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Material Type *</Label>
+              <Label>{t('profileManagement.material', 'Material')} *</Label>
               <Select
                 value={formData.material}
                 onValueChange={(value) => {
@@ -1047,14 +1361,51 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="aluminum">Aluminum</SelectItem>
-                  <SelectItem value="upvc">UPVC</SelectItem>
-                  <SelectItem value="wood">Wood</SelectItem>
+                  <SelectItem value="aluminum">{t('profileManagement.aluminum', 'Aluminum')}</SelectItem>
+                  <SelectItem value="upvc">{t('profileManagement.upvc', 'UPVC')}</SelectItem>
+                  <SelectItem value="wood">{t('profileManagement.wood', 'Wood')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Face Width (mm)</Label>
+              <Label>Category</Label>
+              <Select
+                value={formData.category || 'window'}
+                onValueChange={(value) => setFormData({ ...formData, category: value as Profile['category'] })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="window">Window</SelectItem>
+                  <SelectItem value="door">Door</SelectItem>
+                  <SelectItem value="curtain_wall">Curtain Wall</SelectItem>
+                  <SelectItem value="structural">Structural</SelectItem>
+                  <SelectItem value="accessory">Accessory</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>System Type</Label>
+              <Select
+                value={formData.systemType || 'casement'}
+                onValueChange={(value) => setFormData({ ...formData, systemType: value as Profile['systemType'] })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="casement">Casement</SelectItem>
+                  <SelectItem value="sliding">Sliding</SelectItem>
+                  <SelectItem value="tilt_turn">Tilt & Turn</SelectItem>
+                  <SelectItem value="fixed">Fixed</SelectItem>
+                  <SelectItem value="facade">Facade</SelectItem>
+                  <SelectItem value="commercial">Commercial</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>{t('profileManagement.widthMm', 'Width (mm)')}</Label>
               <Input
                 type="number"
                 step="0.1"
@@ -1063,7 +1414,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Depth / Section Height (mm)</Label>
+              <Label>{t('profileManagement.heightMm', 'Height (mm)')}</Label>
               <Input
                 type="number"
                 step="0.1"
@@ -1072,7 +1423,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Thickness (mm)</Label>
+              <Label>{t('profileManagement.thicknessMm', 'Thickness (mm)')}</Label>
               <Input
                 type="number"
                 step="0.1"
@@ -1081,7 +1432,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Color</Label>
+              <Label>{t('profileManagement.color', 'Color')}</Label>
               <div className="flex gap-2">
                 <Input
                   type="color"
@@ -1104,7 +1455,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               </div>
             </div>
             <div>
-              <Label>Cost per Meter ($)</Label>
+              <Label>{t('profileManagement.costPerMeter', 'Cost Per Meter')} ($)</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -1133,7 +1484,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               </div>
             )}
             <div>
-              <Label>Weight per Meter (kg/m) – Aluminum</Label>
+              <Label>{t('profileManagement.weightPerMeter', 'Weight Per Meter')} (kg/m) – Aluminum</Label>
               <Input
                 type="number"
                 step="0.001"
@@ -1148,7 +1499,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Cutting Allowance (mm)</Label>
+              <Label>{t('profileManagement.cuttingAllowance', 'Cutting Allowance')} (mm)</Label>
               <Input
                 type="number"
                 step="0.1"
@@ -1157,7 +1508,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Stock Quantity (m)</Label>
+              <Label>{t('profileManagement.stockQuantity', 'Stock Quantity')} (m)</Label>
               <Input
                 type="number"
                 step="0.1"
@@ -1166,7 +1517,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Min Stock Level (m)</Label>
+              <Label>{t('profileManagement.minStockLevel', 'Minimum Stock Level')} (m)</Label>
               <Input
                 type="number"
                 step="0.1"
@@ -1175,7 +1526,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Max Stock Level (m)</Label>
+              <Label>{t('profileManagement.maxStockLevel', 'Maximum Stock Level')} (m)</Label>
               <Input
                 type="number"
                 step="0.1"
@@ -1184,11 +1535,11 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Supplier</Label>
+              <Label>{t('profileManagement.supplier', 'Supplier')}</Label>
               <Input
                 value={formData.supplier || ''}
                 onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
-                placeholder="Supplier name"
+                placeholder={t('profileManagement.supplier', 'Supplier')}
               />
             </div>
             <div>
@@ -1219,7 +1570,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               </Select>
             </div>
             <div>
-              <Label>Supplier Code</Label>
+              <Label>{t('profileManagement.supplierCode', 'Supplier Code')}</Label>
               <Input
                 value={(formData.specifications as any)?.supplierCode || ''}
                 onChange={(e) =>
@@ -1235,7 +1586,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Internal Code</Label>
+              <Label>{t('profileManagement.internalCode', 'Internal Code')}</Label>
               <Input
                 value={(formData.specifications as any)?.internalCode || ''}
                 onChange={(e) =>
@@ -1251,7 +1602,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>System Brand</Label>
+              <Label>{t('profileManagement.systemBrand', 'System Brand')}</Label>
               <Select
                 value={formData.systemBrand || 'Standard'}
                 onValueChange={(value) => setFormData({ ...formData, systemBrand: value })}
@@ -1273,7 +1624,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             </div>
             {(formData.material === 'wood' || formData.material === 'upvc') && (
               <div>
-                <Label>Grain Direction</Label>
+                <Label>{t('profileManagement.grainDirection', 'Grain Direction')}</Label>
                 <Select
                   value={formData.grainDirection || 'none'}
                   onValueChange={(value) =>
@@ -1287,7 +1638,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">Not Applicable</SelectItem>
+                    <SelectItem value="none">{t('profileManagement.none', '—')}</SelectItem>
                     <SelectItem value="horizontal">Horizontal</SelectItem>
                     <SelectItem value="vertical">Vertical</SelectItem>
                   </SelectContent>
@@ -1295,7 +1646,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               </div>
             )}
             <div>
-              <Label>Series</Label>
+              <Label>{t('profileManagement.series', 'Series')}</Label>
               <Input
                 value={(formData.specifications as any)?.series || ''}
                 onChange={(e) =>
@@ -1311,7 +1662,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Year</Label>
+              <Label>{t('profileManagement.year', 'Year')}</Label>
               <Input
                 type="number"
                 value={(formData.specifications as any)?.year || ''}
@@ -1381,130 +1732,102 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 placeholder="Default 5mm when frame has 5 cm border"
               />
             </div>
+          </div>
 
-            {/* Egyptian market specific details (optional) */}
-            <div className="col-span-2 border-t border-gray-700 pt-4 mt-2">
-              <Label>Egyptian Sliding / Casement Details (optional)</Label>
-              <p className="text-xs text-gray-400 mb-2">
-                Use this to describe Egyptian sliding and casement frames with liners / borders
-                (flat or décor), such as Alsalam PS small / big / jumbo series with 5 cm frame
-                border included or without.
-              </p>
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                <div>
-                  <Label>Frame Type</Label>
-                  <Select
-                    value={(formData.specifications as any)?.egyptFrameType || 'sliding'}
-                    onValueChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        specifications: {
-                          ...(formData.specifications || {}),
-                          egyptFrameType: value,
-                        },
-                      })
-                    }
+          {/* Machining Macros Section */}
+          <div className="col-span-2 border-t border-gray-700 pt-4 mt-2">
+            <Label>Machining Macros (Router/Pantograph Operations)</Label>
+            <p className="text-xs text-gray-400 mb-2">
+              Define machining operations required for accessory installation
+            </p>
+
+            <div className="space-y-3">
+              {formData.machiningMacros?.map((macro, index) => (
+                <div key={macro.id} className="p-3 bg-gray-700 rounded space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      placeholder="Operation name"
+                      value={macro.name}
+                      onChange={(e) => updateMacro(index, 'name', e.target.value)}
+                    />
+                    <Select
+                      value={macro.operation}
+                      onValueChange={(value) => updateMacro(index, 'operation', value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="slot">Slot</SelectItem>
+                        <SelectItem value="pocket">Pocket</SelectItem>
+                        <SelectItem value="drill">Drill</SelectItem>
+                        <SelectItem value="counterbore">Counterbore</SelectItem>
+                        <SelectItem value="contour">Contour</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    <Input
+                      type="number"
+                      step="0.1"
+                      placeholder="Width (mm)"
+                      value={macro.dimensions.width}
+                      onChange={(e) => updateMacroDimension(index, 'width', parseFloat(e.target.value) || 0)}
+                    />
+                    <Input
+                      type="number"
+                      step="0.1"
+                      placeholder="Height (mm)"
+                      value={macro.dimensions.height}
+                      onChange={(e) => updateMacroDimension(index, 'height', parseFloat(e.target.value) || 0)}
+                    />
+                    <Input
+                      type="number"
+                      step="0.1"
+                      placeholder="Depth (mm)"
+                      value={macro.dimensions.depth}
+                      onChange={(e) => updateMacroDimension(index, 'depth', parseFloat(e.target.value) || 0)}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      type="number"
+                      step="0.1"
+                      placeholder="Position X (mm)"
+                      value={macro.position.x}
+                      onChange={(e) => updateMacro(index, 'position', { ...macro.position, x: parseFloat(e.target.value) || 0 })}
+                    />
+                    <Input
+                      type="number"
+                      step="0.1"
+                      placeholder="Position Y (mm)"
+                      value={macro.position.y}
+                      onChange={(e) => updateMacro(index, 'position', { ...macro.position, y: parseFloat(e.target.value) || 0 })}
+                    />
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => removeMacro(index)}
+                    className="text-red-400"
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select frame type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="sliding">Sliding Frame</SelectItem>
-                      <SelectItem value="casement">Casement Frame</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    Remove Macro
+                  </Button>
                 </div>
-                <div>
-                  <Label>Border / Liner Style</Label>
-                  <Select
-                    value={(formData.specifications as any)?.egyptBorderStyle || 'flat'}
-                    onValueChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        specifications: {
-                          ...(formData.specifications || {}),
-                          egyptBorderStyle: value,
-                        },
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select style" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="flat">Flat Liner</SelectItem>
-                      <SelectItem value="decor">Décor Liner</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Alsalam PS Series</Label>
-                  <Select
-                    value={(formData.specifications as any)?.egyptSeries || 'ps_small'}
-                    onValueChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        specifications: {
-                          ...(formData.specifications || {}),
-                          egyptSeries: value,
-                        },
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select series" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ps_small">Alsalam PS – Small</SelectItem>
-                      <SelectItem value="ps_big">Alsalam PS – Big</SelectItem>
-                      <SelectItem value="ps_jumbo">
-                        Alsalam PS – Jumbo (with 5 cm frame border)
-                      </SelectItem>
-                      <SelectItem value="custom">Other / Custom</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>5 cm Frame Border</Label>
-                  <Select
-                    value={(formData.specifications as any)?.egyptBorderIncluded ?? 'with'}
-                    onValueChange={(value) =>
-                      setFormData({
-                        ...formData,
-                        specifications: {
-                          ...(formData.specifications || {}),
-                          egyptBorderIncluded: value,
-                        },
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Border option" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="with">Included (5 cm border)</SelectItem>
-                      <SelectItem value="without">Without border</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="mt-3">
-                <Label>Profile Notes / Regional Description</Label>
-                <Textarea
-                  className="mt-1"
-                  placeholder="Example: Egyptian sliding frame, Alsalam PS Jumbo with integrated 5 cm décor liner border."
-                  value={(formData.specifications as any)?.description || ''}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      specifications: {
-                        ...(formData.specifications || {}),
-                        description: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </div>
+              ))}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={addNewMacro}
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add Machining Operation
+              </Button>
             </div>
           </div>
 
@@ -1517,60 +1840,124 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                   className="bg-orange-500 hover:bg-orange-600"
                 >
                   <Save className="h-4 w-4 mr-2" />
-                  {saving ? 'Updating...' : 'Update Profile'}
+                  {saving ? t('profileManagement.uploading', 'Uploading...') : t('profileManagement.updateProfile', 'Update Profile')}
                 </Button>
                 <Button variant="outline" onClick={resetForm}>
-                  Cancel
+                  {t('profileManagement.cancel', 'Cancel')}
                 </Button>
               </>
             ) : (
-              <Button
-                onClick={handleAddProfile}
-                disabled={saving}
-                className="bg-orange-500 hover:bg-orange-600"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                {saving ? 'Adding...' : 'Add Profile'}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleAddProfile}
+                  disabled={saving}
+                  className="bg-orange-500 hover:bg-orange-600"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  {saving ? t('inventory.adding', 'Adding...') : t('inventory.add_profile', 'Add Profile')}
+                </Button>
+                <Button
+                  onClick={() => setShowProfileDefinitionWizard(true)}
+                  variant="outline"
+                  className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Define from Data Sheet
+                </Button>
+              </div>
             )}
           </div>
         </CardContent>
       </Card>
 
-      {/* ELSHERIF Catalog Import */}
+      {/* Accessory Management Section */}
       <Card className="bg-gray-800/50 border-gray-700">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-blue-400" />
-            ELSHERIF Catalog Import
-          </CardTitle>
+          <div className="flex justify-between items-center">
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5 text-green-400" />
+              Accessory Library ({accessories.length})
+            </CardTitle>
+            <Button
+              variant="outline"
+              onClick={() => setShowAccessoryManager(!showAccessoryManager)}
+            >
+              {showAccessoryManager ? 'Hide' : 'Manage Accessories'}
+            </Button>
+          </div>
         </CardHeader>
-        <CardContent>
-          <ElsherifImportWizard
-            onProfilesImported={(importedProfiles) => {
-              setProfiles((prev) => [...prev, ...importedProfiles]);
-              setFilteredProfiles((prev) => [...prev, ...importedProfiles]);
-              if (onProfilesUpdate) {
-                onProfilesUpdate([...profiles, ...importedProfiles]);
-              }
-              toast.success(`Successfully imported ${importedProfiles.length} ELSHERIF profiles`);
-            }}
-            userId={userId}
-          />
-        </CardContent>
+
+        {showAccessoryManager && (
+          <CardContent>
+            <AccessoryManagement
+              accessories={accessories.map((acc) => {
+                // Convert Accessory to FabricatorAccessory format
+                return {
+                  id: acc.id,
+                  name: acc.name,
+                  type: acc.type === 'corner_connector' ? 'corner' : 
+                        acc.type === 'bracket' || acc.type === 'screw' ? 'other' : 
+                        acc.type as 'hinge' | 'lock' | 'handle' | 'seal' | 'spacer' | 'corner' | 'other',
+                  category: acc.category || '',
+                  unitPrice: acc.unitPrice || 0,
+                  baseCost: acc.baseCost || 0,
+                  markupPercentage: acc.markupPercentage || 0,
+                  supplier: acc.supplier,
+                  sku: acc.sku,
+                  description: acc.description,
+                  compatibleMaterials: acc.compatibleMaterials || [],
+                  region: acc.region || [],
+                  imageUrl: acc.imageUrl || acc.images?.[0],
+                  specifications: acc.specifications || {},
+                  userId: acc.userId,
+                  createdAt: acc.createdAt,
+                  updatedAt: acc.updatedAt,
+                };
+              })}
+              profiles={profiles}
+              onAccessoriesUpdate={(updatedAccessories) => {
+                setAccessories(updatedAccessories.map((acc) => ({
+                  id: acc.id,
+                  name: acc.name,
+                  type: acc.type === 'corner' ? 'corner_connector' : 
+                        acc.type === 'other' ? 'bracket' : 
+                        acc.type as 'hinge' | 'handle' | 'lock' | 'corner_connector' | 'bracket' | 'seal' | 'screw',
+                  compatibleProfiles: [],
+                  installationMacros: [],
+                  specifications: acc.specifications || {},
+                  images: acc.imageUrl ? [acc.imageUrl] : [],
+                  category: acc.category,
+                  unitPrice: acc.unitPrice,
+                  baseCost: acc.baseCost,
+                  markupPercentage: acc.markupPercentage,
+                  supplier: acc.supplier,
+                  sku: acc.sku,
+                  description: acc.description,
+                  compatibleMaterials: acc.compatibleMaterials || [],
+                  region: acc.region || [],
+                  imageUrl: acc.imageUrl,
+                  userId: acc.userId,
+                  createdAt: acc.createdAt,
+                  updatedAt: acc.updatedAt,
+                })));
+              }}
+              userId={userId}
+            />
+          </CardContent>
+        )}
       </Card>
 
       {/* Profiles List */}
       <Card className="bg-gray-800/50 border-gray-700">
         <CardHeader>
-          <CardTitle>Profiles ({filteredProfiles.length})</CardTitle>
+          <CardTitle>{t('profileManagement.title', 'Profile Management')} ({filteredProfiles.length})</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {filteredProfiles.length === 0 ? (
               <div className="text-center py-8 text-gray-400">
                 <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No profiles found. Add your first profile to get started.</p>
+                <p>{t('profileManagement.errorLoadingProfiles', 'No profiles found. Add your first profile to get started.')}</p>
               </div>
             ) : (
               filteredProfiles.map((profile) => {
@@ -1580,6 +1967,30 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     ? Math.min((profile.stockQuantity / profile.minStockLevel) * 100, 100)
                     : 100;
                 const specs = profile.specifications || {};
+
+                // Show detail card if selected, otherwise show compact view
+                if (selectedProfileForDetail?.id === profile.id) {
+                  return (
+                    <div key={profile.id} className="mb-4">
+                      <ProfileDetailCard
+                        profile={profile}
+                        accessories={accessories}
+                        onEdit={handleEditProfile}
+                        onMachiningPreview={(macro) => {
+                          toast.info(`Previewing machining operation: ${macro.name}`);
+                        }}
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => setSelectedProfileForDetail(null)}
+                      >
+                        Show Compact View
+                      </Button>
+                    </div>
+                  );
+                }
 
                 return (
                   <div key={profile.id} className="p-4 bg-gray-700 rounded-lg">
@@ -1597,37 +2008,37 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                             variant="outline"
                             className={`${getStatusColor(status)} border-current`}
                           >
-                            {status.toUpperCase()}
+                            {getStockStatusLabel(status)}
                           </Badge>
                         </div>
                         <div className="grid grid-cols-4 gap-4 text-sm text-gray-400">
                           <div>
-                            Dimensions: {profile.width}mm × {profile.height || 'N/A'}mm
+                            {t('profileManagement.dimensions', 'Dimensions')}: {profile.width}mm × {profile.height || 'N/A'}mm
                           </div>
-                          <div>Cost: ${profile.costPerMeter.toFixed(2)}/m</div>
-                          <div>Stock: {profile.stockQuantity}m</div>
-                          <div>Supplier: {profile.supplier || 'N/A'}</div>
+                          <div>{t('profileManagement.cost', 'Cost')}: ${profile.costPerMeter.toFixed(2)}/m</div>
+                          <div>{t('profileManagement.stock', 'Stock')}: {profile.stockQuantity}m</div>
+                          <div>{t('profileManagement.supplier', 'Supplier')}: {profile.supplier || t('profileManagement.none', '—')}</div>
                         </div>
                         <div className="grid grid-cols-4 gap-4 text-xs text-gray-400 mt-2">
                           <div>
-                            TwinCode:
+                            {t('profileManagement.twinCode', 'Twin Code')}:
                             <span className="ml-1 font-mono">
                               {(specs.internalCode as string) || profile.id.slice(0, 8)}/
-                              {(specs.supplierCode as string) || '—'}
+                              {(specs.supplierCode as string) || t('profileManagement.none', '—')}
                             </span>
                           </div>
-                          <div>Series: {(specs.series as string) || '—'}</div>
-                          <div>Year: {(specs.year as string) || '—'}</div>
+                          <div>{t('profileManagement.series', 'Series')}: {(specs.series as string) || t('profileManagement.none', '—')}</div>
+                          <div>{t('profileManagement.year', 'Year')}: {(specs.year as string) || t('profileManagement.none', '—')}</div>
                           <div>
-                            DXF:
+                            {t('profileManagement.dxf', 'DXF')}:
                             <span className="ml-1">
-                              {specs.dxfImported ? 'Imported' : '—'}
+                              {specs.dxfImported ? t('profileManagement.imported', 'Imported') : t('profileManagement.none', '—')}
                             </span>
                           </div>
                         </div>
                         <div className="mt-2">
                           <div className="flex justify-between text-xs mb-1">
-                            <span>Stock Level</span>
+                            <span>{t('profileManagement.stockLevel', 'Stock Level')}</span>
                             <span>{stockPercentage.toFixed(0)}%</span>
                           </div>
                           <Progress value={stockPercentage} className="h-2" />
@@ -1651,7 +2062,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                             >
                               <span>
                                 <Upload className="h-4 w-4 mr-1" />
-                                {isUploadingPreview === profile.id ? 'Uploading...' : '2D Preview'}
+                                {isUploadingPreview === profile.id ? t('profileManagement.uploading', 'Uploading...') : t('profileManagement.uploadPreview', 'Upload 2D Preview')}
                               </span>
                             </Button>
                             <input
@@ -1661,6 +2072,13 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                               className="hidden"
                             />
                           </label>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedProfileForDetail(profile)}
+                          >
+                            <FileText className="h-4 w-4" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -1686,6 +2104,21 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           </div>
         </CardContent>
       </Card>
+
+      {/* Profile Definition Wizard */}
+      {userId && (
+        <ProfileDefinitionWizard
+          open={showProfileDefinitionWizard}
+          onOpenChange={setShowProfileDefinitionWizard}
+          userId={userId}
+          onProfileCreated={(profile) => {
+            // Refresh profiles list
+            loadProfiles();
+            setShowProfileDefinitionWizard(false);
+            toast.success(`Profile "${profile.name}" created successfully`);
+          }}
+        />
+      )}
     </div>
   );
 };

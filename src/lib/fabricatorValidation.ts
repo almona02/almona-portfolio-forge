@@ -1,5 +1,6 @@
 import { MeasurementData, WindowComponent, Profile, WindowUnit } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { validateEgyptianStandards } from './validation/egyptianValidator';
 
 export interface ValidationError {
   field: string;
@@ -215,8 +216,13 @@ export function validateWindowComponent(component: WindowComponent, profiles: Pr
  * Validates project data completeness
  * @param project - The project to validate
  * @param requireComponents - Whether to require components (default: true)
+ * @param profiles - Optional profiles array for Egyptian standards validation
  */
-export function validateProject(project: WindowUnit | null, requireComponents: boolean = true): ValidationResult {
+export function validateProject(
+  project: WindowUnit | null, 
+  requireComponents: boolean = true,
+  profiles?: Profile[]
+): ValidationResult {
   const errors: ValidationError[] = [];
 
   if (!project) {
@@ -243,6 +249,18 @@ export function validateProject(project: WindowUnit | null, requireComponents: b
   // Only require components if explicitly requested (e.g., after design phase)
   if (requireComponents && (!project.components || project.components.length === 0)) {
     errors.push({ field: 'components', message: 'At least one component is required' });
+  }
+
+  // Add Egyptian standards validation if profiles are provided
+  if (profiles && profiles.length > 0) {
+    const egyptianErrors = validateEgyptianStandards(project, profiles);
+    // Convert Egyptian validation errors to standard format
+    egyptianErrors.forEach((egyptianError) => {
+      errors.push({
+        field: egyptianError.field,
+        message: egyptianError.message,
+      });
+    });
   }
 
   return {

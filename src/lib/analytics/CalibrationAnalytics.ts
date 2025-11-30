@@ -1,0 +1,284 @@
+/**
+ * Calibration Analytics Service
+ * Collects and stores calibration data for machine learning and pattern recognition
+ * This data will be used to train the CalibrationLearner system
+ */
+
+import { supabase } from '@/lib/supabase';
+import type { Profile } from '@/types/fabricator';
+
+export interface CalibrationTestResult {
+  profileId: string;
+  userId: string;
+  jointType: string;
+  expectedLength: number;
+  actualLength: number;
+  difference: number;
+  kFactor: number;
+  cutAngle: number;
+  profileWidth?: number;
+  profileHeight?: number;
+  materialThickness?: number;
+  temperature?: number;
+  humidity?: number;
+  testDate: Date;
+  workshopId?: string;
+}
+
+export interface CalibrationAdjustment {
+  profileId: string;
+  userId: string;
+  jointType: string;
+  previousKFactor: number;
+  newKFactor: number;
+  adjustmentReason: 'test_result' | 'manual' | 'suggestion' | 'auto_learn';
+  testResultId?: string;
+  success: boolean; // Whether the adjustment improved accuracy
+  createdAt: Date;
+}
+
+export interface CalibrationJobResult {
+  jobId: string;
+  userId: string;
+  profileId: string;
+  jointType: string;
+  kFactor: number;
+  totalCuts: number;
+  successfulCuts: number;
+  averageAccuracy: number; // mm deviation
+  jobDate: Date;
+  notes?: string;
+}
+
+export class CalibrationAnalytics {
+  /**
+   * Record a calibration test result
+   * This is called every time a user enters a test result in the CalibrationWizard
+   */
+  async recordTestResult(result: CalibrationTestResult): Promise<void> {
+    try {
+      // Store in profile_calibrations test_results JSONB field
+      const { data: existing } = await supabase
+        .from('profile_calibrations')
+        .select('test_results')
+        .eq('profile_id', result.profileId)
+        .eq('user_id', result.userId)
+        .eq('joint_type', result.jointType)
+        .single();
+
+      const existingResults = existing?.test_results || [];
+      const newResult = {
+        expected: result.expectedLength,
+        actual: result.actualLength,
+        difference: result.difference,
+        date: result.testDate.toISOString(),
+        kFactor: result.kFactor,
+        cutAngle: result.cutAngle,
+        temperature: result.temperature,
+        humidity: result.humidity,
+      };
+
+      const updatedResults = [...existingResults, newResult];
+
+      // Update or create calibration record
+      const { error } = await supabase
+        .from('profile_calibrations')
+        .upsert({
+          profile_id: result.profileId,
+          user_id: result.userId,
+          joint_type: result.jointType,
+          k_factor: result.kFactor,
+          cut_angle: result.cutAngle,
+          profile_width_mm: result.profileWidth,
+          profile_height_mm: result.profileHeight,
+          material_thickness_mm: result.materialThickness,
+          test_results: updatedResults,
+          is_active: true,
+        }, {
+          onConflict: 'profile_id,user_id,joint_type',
+        });
+
+      if (error) throw error;
+
+      // Also store in a dedicated analytics table for ML training (if it exists)
+      // This allows for easier querying and analysis
+      await this.storeAnalyticsRecord('test_result', {
+        profile_id: result.profileId,
+        user_id: result.userId,
+        joint_type: result.jointType,
+        expected_length: result.expectedLength,
+        actual_length: result.actualLength,
+        difference: result.difference,
+        k_factor: result.kFactor,
+        cut_angle: result.cutAngle,
+        profile_width: result.profileWidth,
+        profile_height: result.profileHeight,
+        material_thickness: result.materialThickness,
+        temperature: result.temperature,
+        humidity: result.humidity,
+        test_date: result.testDate.toISOString(),
+        workshop_id: result.workshopId,
+      });
+    } catch (error) {
+      console.error('Error recording test result:', error);
+      // Don't throw - analytics should not break the main flow
+    }
+  }
+
+  /**
+   * Record a manual calibration adjustment
+   * Called when user manually changes K-factor or other calibration parameters
+   */
+  async recordAdjustment(adjustment: CalibrationAdjustment): Promise<void> {
+    try {
+      await this.storeAnalyticsRecord('adjustment', {
+        profile_id: adjustment.profileId,
+        user_id: adjustment.userId,
+        joint_type: adjustment.jointType,
+        previous_k_factor: adjustment.previousKFactor,
+        new_k_factor: adjustment.newKFactor,
+        adjustment_reason: adjustment.adjustmentReason,
+        test_result_id: adjustment.testResultId,
+        success: adjustment.success,
+        created_at: adjustment.createdAt.toISOString(),
+      });
+    } catch (error) {
+      console.error('Error recording adjustment:', error);
+    }
+  }
+
+  /**
+   * Record job completion results
+   * Called after a job is completed to track calibration effectiveness
+   */
+  async recordJobResult(jobResult: CalibrationJobResult): Promise<void> {
+    try {
+      await this.storeAnalyticsRecord('job_result', {
+        job_id: jobResult.jobId,
+        user_id: jobResult.userId,
+        profile_id: jobResult.profileId,
+        joint_type: jobResult.jointType,
+        k_factor: jobResult.kFactor,
+        total_cuts: jobResult.totalCuts,
+        successful_cuts: jobResult.successfulCuts,
+        average_accuracy: jobResult.averageAccuracy,
+        job_date: jobResult.jobDate.toISOString(),
+        notes: jobResult.notes,
+      });
+    } catch (error) {
+      console.error('Error recording job result:', error);
+    }
+  }
+
+  /**
+   * Store analytics record in a generic analytics table
+   * This table will be used for ML training data collection
+   */
+  private async storeAnalyticsRecord(
+    eventType: string,
+    data: Record<string, any>
+  ): Promise<void> {
+    try {
+      // Store in a generic calibration_analytics table
+      // If the table doesn't exist yet, we'll create it in a migration
+      const { error } = await supabase.from('calibration_analytics').insert({
+        event_type: eventType,
+        event_data: data,
+        created_at: new Date().toISOString(),
+      });
+
+      if (error) {
+        // Table might not exist yet - that's okay, we'll create it
+        console.warn('Calibration analytics table not found, will be created in migration:', error);
+      }
+    } catch (error) {
+      // Silently fail - analytics should not break the app
+      console.warn('Analytics storage failed (non-critical):', error);
+    }
+  }
+
+  /**
+   * Get calibration statistics for a profile
+   * Used for displaying calibration effectiveness
+   */
+  async getCalibrationStats(
+    profileId: string,
+    userId: string,
+    jointType: string
+  ): Promise<{
+    totalTests: number;
+    averageAccuracy: number;
+    confidenceScore: number;
+    lastTestDate: Date | null;
+  }> {
+    try {
+      const { data, error } = await supabase
+        .from('profile_calibrations')
+        .select('test_results, confidence_score, updated_at')
+        .eq('profile_id', profileId)
+        .eq('user_id', userId)
+        .eq('joint_type', jointType)
+        .single();
+
+      if (error || !data) {
+        return {
+          totalTests: 0,
+          averageAccuracy: 0,
+          confidenceScore: 0,
+          lastTestDate: null,
+        };
+      }
+
+      const testResults = (data.test_results || []) as Array<{
+        expected: number;
+        actual: number;
+        difference: number;
+        date: string;
+      }>;
+
+      const totalTests = testResults.length;
+      const averageAccuracy =
+        totalTests > 0
+          ? testResults.reduce((sum, r) => sum + Math.abs(r.difference), 0) / totalTests
+          : 0;
+
+      return {
+        totalTests,
+        averageAccuracy: Math.round(averageAccuracy * 100) / 100,
+        confidenceScore: data.confidence_score || 0,
+        lastTestDate: data.updated_at ? new Date(data.updated_at) : null,
+      };
+    } catch (error) {
+      console.error('Error getting calibration stats:', error);
+      return {
+        totalTests: 0,
+        averageAccuracy: 0,
+        confidenceScore: 0,
+        lastTestDate: null,
+      };
+    }
+  }
+
+  /**
+   * Get pattern data for ML training
+   * Returns aggregated data for similar profiles/joints
+   */
+  async getPatternData(filters: {
+    profileType?: string;
+    systemPackId?: string;
+    jointType?: string;
+    minTests?: number;
+  }): Promise<any[]> {
+    try {
+      // This will be used by CalibrationLearner to find patterns
+      // For now, return empty array - will be implemented when ML system is built
+      return [];
+    } catch (error) {
+      console.error('Error getting pattern data:', error);
+      return [];
+    }
+  }
+}
+
+export const calibrationAnalytics = new CalibrationAnalytics();
+

@@ -36,6 +36,7 @@ import {
 import { FabricatorAccessory, Profile } from '@/types/fabricator';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates';
 
 interface AccessoryManagementProps {
   onAccessoriesUpdate?: (accessories: FabricatorAccessory[]) => void;
@@ -648,14 +649,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
   };
 
   if (loading) {
-    return (
-      <Card className="bg-gray-700/50 border-gray-600">
-        <CardContent className="p-8 text-center">
-          <RefreshCw className="h-12 w-12 text-gray-400 mx-auto mb-4 animate-spin" />
-          <h3 className="text-lg font-semibold mb-2">Loading Accessories</h3>
-        </CardContent>
-      </Card>
-    );
+    return <FabricatorProjectSkeleton showHeader={true} showTabs={false} showContent={true} />;
   }
 
   return (

@@ -1,0 +1,305 @@
+{
+  "workspace": {
+    "title": "Production Workspace",
+    "subtitle": "Heavy-duty Almona cockpit for projects, customers, inventory and commercial flows — state preserved across tabs.",
+    "tabs": {
+      "projects": "Projects",
+      "customers": "Customers",
+      "inventory": "Inventory",
+      "commercial": "Commercial"
+    },
+    "badges": {
+      "active": "Active",
+      "draft_quotes": "Draft Quotes"
+    },
+    "sections": {
+      "projects_positions": "Projects & Positions",
+      "fabricator_customers": "Fabricator Customers",
+      "inventory_intelligence": "Inventory Intelligence Hub",
+      "commercial_workspace": "Commercial Workspace",
+      "pricing_configuration": "Pricing Configuration",
+      "profile_management": "Profile Management",
+      "inventory_analytics": "Inventory Analytics"
+    }
+  },
+  "dashboard": {
+    "title": "Fabricator Pro Dashboard",
+    "subtitle": "AI-powered workshop management with real-time insights",
+    "performance": {
+      "title": "Performance Summary",
+      "optimization_speed": "Optimization Speed",
+      "waste_reduction": "Waste Reduction",
+      "ml_accuracy": "ML Accuracy"
+    },
+    "remnant_marketplace": {
+      "title": "Remnant Marketplace",
+      "subtitle": "Buy and sell excess materials across the fabricator network"
+    },
+    "recent_optimizations": "Recent Optimizations",
+    "quick_actions": "Quick Actions",
+    "settings": "Settings"
+  },
+  "workflow": {
+    "title": "Fabricator Workflow Pro",
+    "subtitle": "AI WORKFLOW v4.0",
+    "header": {
+      "fabricator_pro": "FABRICATOR PRO",
+      "ai_workflow": "AI WORKFLOW v4.0",
+      "workflow_pro": "Fabricator Workflow Pro"
+    },
+    "measuring": "Measuring",
+    "smart_measuring": "Smart Measuring Interface",
+    "design": "Design",
+    "optimization": "Optimization",
+    "inventory": "Inventory",
+    "pricing": "Pricing",
+    "reports": "Reports"
+  },
+  "project": {
+    "new_project": "New Project",
+    "professional_header": "New Project – Professional Header",
+    "positions": "Positions"
+  },
+  "projects": {
+    "title": "Projects & Positions",
+    "loading": "Loading your fabricator projects from Supabase...",
+    "description": "High-level projects view with quick access to all poses. Use the Projects tab to see orders, and the Positions tab to drill into individual poses/flats.",
+    "stats": {
+      "distinct_units": "Distinct units",
+      "total_poses": "Total poses",
+      "projects": "Projects"
+    },
+    "tabs": {
+      "projects": "Projects",
+      "positions": "Recent Poses"
+    },
+    "projects_tab": {
+      "title": "Projects",
+      "description": "Each row groups all poses that share the same project code / order number.",
+      "no_projects": "No projects yet. Create your first pose from the Fabricator workflow.",
+      "customer": "Customer",
+      "poses": "Poses",
+      "total_qty": "Total qty"
+    }
+  },
+  "customers": {
+    "title": "Fabricator Customers",
+    "description": "Per-workshop customer directory used by the New Project Wizard. Create a customer once, then reuse it from the dropdown when starting new projects.",
+    "add_new": "Add New Customer",
+    "form": {
+      "name": "Customer / Company name *",
+      "contact_person": "Contact person",
+      "email": "Email",
+      "phone": "Phone",
+      "notes": "Notes (optional)",
+      "add_button": "Add Customer"
+    },
+    "filters": {
+      "title": "Smart Filters",
+      "search": "Search",
+      "search_placeholder": "Name, contact, email, phone…",
+      "sector": "Sector",
+      "all_sectors": "All sectors",
+      "registered_year": "Registered Year",
+      "all_years": "All years"
+    },
+    "directory": {
+      "title": "Customer Directory",
+      "description": "These customers are available in the New Project Wizard dropdown.",
+      "no_customers": "No customers found for the current filters.",
+      "new_order": "New Order for selected customer",
+      "table": {
+        "name": "Name",
+        "contact": "Contact",
+        "email": "Email",
+        "phone": "Phone",
+        "sector": "Sector",
+        "registered": "Registered",
+        "notes": "Notes"
+      }
+    },
+    "sectors": {
+      "all": "All",
+      "aluminium": "Aluminium",
+      "upvc": "UPVC",
+      "steel": "Steel",
+      "glass": "Glass",
+      "general": "General"
+    }
+  },
+  "inventory": {
+    "title": "Inventory Intelligence Hub",
+    "description": "Centralized inventory management with real-time analytics, remnant optimization, and AI-powered stock predictions for Turkish & Egyptian markets.",
+    "add_profile": "Add Profile",
+    "workflow_integration": "Workflow Integration",
+    "adding": "Adding...",
+    "tabs": {
+      "dashboard": "Dashboard",
+      "profile_management": "Profile Management",
+      "analytics": "Analytics",
+      "overview": "Overview",
+      "remnants": "Remnants",
+      "alerts": "Alerts",
+      "history": "History",
+      "purchases": "Purchases"
+    },
+    "overview": {
+      "use_remnants_first": "Use Remnants First",
+      "use_remnants_description": "Automatically match and use available remnants before cutting new stock",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "search_placeholder": "Search profiles...",
+      "material_filter": "Material",
+      "all_materials": "All Materials",
+      "aluminum": "Aluminum",
+      "upvc": "UPVC",
+      "wood": "Wood",
+      "systems": "Systems",
+      "all": "All",
+      "profile_inventory": "Profile Inventory"
+    },
+    "status": {
+      "in_stock": "IN STOCK",
+      "low_stock": "LOW STOCK",
+      "out_of_stock": "OUT OF STOCK",
+      "critical": "CRITICAL"
+    },
+    "analytics": {
+      "title": "Inventory Analytics",
+      "description": "Advanced analytics and insights for your fabricator inventory.",
+      "coming_soon": "Advanced analytics dashboard coming soon.",
+      "features": "Inventory utilization, trend analysis, and predictive stocking."
+    }
+  },
+  "profileManagement": {
+    "title": "Profile Management",
+    "importProfiles": "Import Profiles",
+    "manualEntry": "Manual Entry",
+    "dxfImport": "DXF Import",
+    "systemPacks": "System Packs",
+    "addNewProfile": "Add New Profile",
+    "name": "Name",
+    "material": "Material",
+    "aluminum": "Aluminum",
+    "upvc": "UPVC",
+    "wood": "Wood",
+    "widthMm": "Width (mm)",
+    "heightMm": "Height (mm)",
+    "thicknessMm": "Thickness (mm)",
+    "color": "Color",
+    "costPerMeter": "Cost Per Meter",
+    "cuttingAllowance": "Cutting Allowance",
+    "stockQuantity": "Stock Quantity",
+    "minStockLevel": "Minimum Stock Level",
+    "maxStockLevel": "Maximum Stock Level",
+    "supplier": "Supplier",
+    "systemBrand": "System Brand",
+    "grainDirection": "Grain Direction",
+    "weightPerMeter": "Weight Per Meter",
+    "specifications": "Specifications",
+    "internalCode": "Internal Code",
+    "supplierCode": "Supplier Code",
+    "series": "Series",
+    "year": "Year",
+    "dxfImported": "Imported from DXF",
+    "saveProfile": "Save Profile",
+    "updateProfile": "Update Profile",
+    "cancel": "Cancel",
+    "importDxf": "Import DXF",
+    "uploadPreview": "Upload 2D Preview",
+    "uploading": "Uploading...",
+    "preview": "Preview",
+    "searchProfiles": "Search Profiles",
+    "filterByMaterial": "Filter by Material",
+    "all": "All",
+    "filterByRegion": "Filter by Region",
+    "turkey": "Turkey",
+    "egypt": "Egypt",
+    "global": "Global",
+    "exportProfiles": "Export Profiles",
+    "importProfilesFile": "Import Profile File",
+    "bulkUpdate": "Bulk Update",
+    "refreshProfiles": "Refresh Profiles",
+    "profileSavedSuccess": "Profile saved successfully",
+    "profileUpdatedSuccess": "Profile updated successfully",
+    "profileDeletedSuccess": "Profile deleted successfully",
+    "errorSavingProfile": "Error saving profile",
+    "errorUpdatingProfile": "Error updating profile",
+    "errorDeletingProfile": "Error deleting profile",
+    "errorLoadingProfiles": "Error loading profiles",
+    "confirmDelete": "Are you sure you want to delete this profile?",
+    "lowStock": "Low Stock",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "dimensions": "Dimensions",
+    "cost": "Cost",
+    "stock": "Stock",
+    "stockLevel": "Stock Level",
+    "twinCode": "Twin Code",
+    "dxf": "DXF",
+    "imported": "Imported",
+    "none": "—",
+    "bulkCost": "Bulk cost",
+    "bulkStock": "Bulk stock",
+    "editProfile": "Edit Profile",
+    "allRegions": "All Regions",
+    "allMaterials": "All Materials"
+  },
+  "commercial": {
+    "title": "Commercial Workspace",
+    "description": "Manage quotes, invoices, and commercial documents anchored to your active projects.",
+    "pricing_settings": "Pricing Settings",
+    "new_quote": "New Quote",
+    "draft_quotes": {
+      "title": "Draft Quotes",
+      "no_quotes": "No draft quotes",
+      "no_quotes_description": "Create a quote from the active project or customer context to get started.",
+      "unnamed_customer": "Unnamed Customer",
+      "untitled_project": "Untitled Project",
+      "draft": "Draft",
+      "convert_to_invoice": "Convert to Invoice",
+      "delete": "Delete"
+    },
+    "draft_invoices": {
+      "title": "Draft Invoices",
+      "no_invoices": "No draft invoices",
+      "no_invoices_description": "Convert quotes to invoices to prepare billing.",
+      "draft_invoice": "Draft invoice",
+      "send": "Send",
+      "pdf": "PDF",
+      "delete": "Delete"
+    }
+  },
+  "onboarding": {
+    "title": "Welcome to Fabricator Pro",
+    "subtitle": "Let's get you started with a quick tutorial",
+    "skip": "Skip Tutorial",
+    "previous": "Previous",
+    "next": "Next",
+    "complete": "Complete Tutorial",
+    "steps": {
+      "measuring": {
+        "title": "Smart Measuring",
+        "description": "Learn how to use our AI-powered measuring tools to quickly and accurately measure window dimensions. Our smart measuring interface guides you through the process step by step."
+      },
+      "design": {
+        "title": "AI-Powered Design",
+        "description": "Discover how our AI design assistant helps you create optimal window configurations. The system suggests profiles, accessories, and layouts based on your measurements."
+      },
+      "optimization": {
+        "title": "Cutting Optimization",
+        "description": "Master the cutting optimization engine that minimizes waste and maximizes efficiency. Learn how to configure optimization parameters and interpret results."
+      },
+      "export": {
+        "title": "CNC Export",
+        "description": "Export your optimized cutting plans to CNC machines. Generate DXF files, cutting lists, and production reports with a single click."
+      }
+    },
+    "video_coming_soon": "Video Tutorial Coming Soon",
+    "video_placeholder": "Interactive video content for \"{title}\" will be available here.",
+    "try_yourself": "Try it yourself:",
+    "step_of": "Step {current} of {total}",
+    "complete_percent": "{percent}% Complete"
+  }
+}
+

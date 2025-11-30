@@ -15,6 +15,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Factory, MapPin, Users } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Database, SectorType } from '@/types/database';
+import { ProjectCockpit, type ProjectType, getProjectTypeConfig } from './ProjectCockpit';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 
 type FabricatorCustomerRow = Database['public']['Tables']['fabricator_customers']['Row'];
 
@@ -30,6 +32,8 @@ export interface ProjectHeaderMeta {
   contactPhone?: string;
   orderNumber?: string;
   orderDate?: string;
+  projectType?: ProjectType;
+  systemPackId?: string;
 }
 
 interface NewProjectWizardProps {
@@ -64,6 +68,29 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
   const [contactPhone, setContactPhone] = useState(initialMeta?.contactPhone ?? '');
   const [orderNumber, setOrderNumber] = useState(initialMeta?.orderNumber ?? '');
   const [orderDate, setOrderDate] = useState(initialMeta?.orderDate ?? '');
+  const [projectType, setProjectType] = useState<ProjectType | undefined>(initialMeta?.projectType);
+  const [showProjectTypeSelection, setShowProjectTypeSelection] = useState(!initialMeta?.projectType);
+  const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>(
+    initialMeta?.systemPackId || ''
+  );
+
+  // Pre-select system pack based on project type
+  useEffect(() => {
+    if (projectType) {
+      const config = getProjectTypeConfig(projectType);
+      if (config && config.suggestedSystems.length > 0) {
+        const suggestedSystem = config.suggestedSystems[0];
+        const pack = SYSTEM_PACKS.find(
+          (p) =>
+            p.meta.id === suggestedSystem.toUpperCase() ||
+            p.meta.name.toUpperCase().includes(suggestedSystem.toUpperCase())
+        );
+        if (pack) {
+          setSelectedSystemPackId(pack.meta.id);
+        }
+      }
+    }
+  }, [projectType]);
 
   // Load saved fabricator customers so they can be used from the dropdown
   useEffect(() => {
@@ -111,12 +138,19 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
       contactPhone: contactPhone.trim() || undefined,
       orderNumber: orderNumber.trim() || undefined,
       orderDate: orderDate || undefined,
+      projectType,
+      systemPackId: selectedSystemPackId || undefined,
     });
+  };
+
+  const handleProjectTypeSelect = (type: ProjectType) => {
+    setProjectType(type);
+    setShowProjectTypeSelection(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-xl">
+      <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg">
             <Factory className="h-5 w-5 text-orange-400" />
@@ -128,7 +162,49 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 mt-2">
+        {showProjectTypeSelection ? (
+          <div className="mt-4">
+            <ProjectCockpit
+              selectedType={projectType}
+              onSelectType={handleProjectTypeSelect}
+            />
+            {projectType && (
+              <div className="mt-4 flex justify-end">
+                <Button
+                  onClick={() => setShowProjectTypeSelection(false)}
+                  className="bg-orange-500 hover:bg-orange-600"
+                >
+                  Continue to Project Details
+                </Button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            {projectType && (
+              <div className="mb-4 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-orange-300">
+                      Project Type: {getProjectTypeConfig(projectType)?.name}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {getProjectTypeConfig(projectType)?.description}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowProjectTypeSelection(true)}
+                    className="text-xs"
+                  >
+                    Change
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-4 mt-2">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label className="text-xs flex items-center gap-1">
@@ -271,24 +347,30 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
             </div>
           </div>
         </div>
+          </>
+        )}
 
         <DialogFooter className="mt-4">
-          <Button
-            type="button"
-            variant="outline"
-            className="text-xs"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            className="bg-orange-500 hover:bg-orange-600 text-xs"
-            disabled={!canSubmit}
-            onClick={handleCreate}
-          >
-            Create Project & Start Measuring
-          </Button>
+          {!showProjectTypeSelection && (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                className="text-xs"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                className="bg-orange-500 hover:bg-orange-600 text-xs"
+                disabled={!canSubmit}
+                onClick={handleCreate}
+              >
+                Create Project & Start Measuring
+              </Button>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

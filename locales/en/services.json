@@ -2,88 +2,142 @@
   "title": "Industrial Equipment Services",
   "subtitle": "Comprehensive maintenance, support and logistics solutions for your industrial equipment",
   "yilmazRegistration": {
-    "title": "Register Yilmaz Machine",
+    "title": "YILMAZ Machine Registration",
     "serialNumberLabel": "Serial Number",
-    "validateButton": "Validate"
+    "validateButton": "Validate",
+    "modelNumber": "Model Number",
+    "purchaseDate": "Purchase Date",
+    "installationDate": "Installation Date",
+    "warrantyExpiry": "Warranty Expiry Date"
   },
   "yilmazValidation": {
-    "success": "Serial validated successfully",
-    "invalidSerial": "Invalid serial number or not found"
+    "success": "Machine serial number validated successfully",
+    "invalidSerial": "Invalid serial number or not found in system",
+    "alreadyRegistered": "This machine is already registered",
+    "warrantyActive": "Under active warranty",
+    "warrantyExpired": "Warranty period expired"
   },
   "egypt_support_cta": "Get Egyptian Support",
   "tabs": {
-    "overview": "Overview",
-    "register": "Register Machine",
-    "dashboard": "Maintenance Dashboard",
+    "overview": "Service Overview",
+    "register": "Machine Registration",
+    "dashboard": "Maintenance Management Dashboard",
     "portal": "Customer Portal",
-    "nile_logistics": "Nile Logistics",
-    "egypt_support": "Egypt Support",
-    "ai": "AI Features"
+    "nile_logistics": "Nile River Logistics",
+    "egypt_support": "Egypt Technical Support",
+    "ai": "AI-Powered Features",
+    "maintenance": "Maintenance Services",
+    "training": "Operator Training",
+    "spare_parts": "Spare Parts Services",
+    "consulting": "Technical Consulting"
   },
   "cards": {
     "maintenance": {
-      "title": "Preventive Maintenance",
-      "description": "Scheduled maintenance to keep your equipment running at peak performance",
+      "title": "Preventive Maintenance Services",
+      "description": "Scheduled maintenance services to keep your equipment running at optimum performance",
       "features": [
-        "Custom maintenance schedules",
-        "Remote diagnostics",
-        "Automated service reminders"
+        "Customized maintenance programs",
+        "Remote diagnostics and monitoring",
+        "Automated service reminders",
+        "Predictive maintenance analysis",
+        "Maintenance history reports"
       ],
       "action": "Schedule Maintenance"
     },
     "emergency": {
-      "title": "24/7 Emergency Support",
-      "description": "Immediate assistance for critical equipment failures",
+      "title": "24/7 Emergency Technical Support",
+      "description": "Immediate technical intervention for critical equipment failures",
       "features": [
         "2-hour response guarantee",
-        "Egyptian technical specialists",
-        "Mobile repair units"
+        "Certified technical experts",
+        "Mobile repair units",
+        "Emergency spare parts supply",
+        "Remote support services"
       ],
       "action": "Request Emergency Support"
     },
     "training": {
-      "title": "Operator Training",
-      "description": "Comprehensive training programs for equipment operators",
+      "title": "Operator Training Programs",
+      "description": "Comprehensive technical training programs for equipment operators",
       "features": [
         "Certified instructors",
-        "On-site or virtual sessions",
-        "Customized training materials"
+        "On-site or virtual training sessions",
+        "Customized training materials",
+        "Practical application sessions",
+        "Training certificate"
       ],
       "action": "View Training Programs"
     },
     "nile_logistics": {
-      "title": "Nile River Logistics",
-      "description": "Specialized transport solutions along the Nile River",
+      "title": "Nile River Industrial Logistics",
+      "description": "Heavy equipment transport solutions along the Nile River",
       "features": [
-        "Heavy equipment transport",
-        "Custom clearance assistance",
-        "Real-time shipment tracking"
+        "Heavy industrial equipment transport",
+        "Customs clearance consulting",
+        "Real-time cargo tracking",
+        "Insurance coverage",
+        "Delivery guarantee"
       ],
-      "action": "Calculate Transport Cost"
+      "action": "Calculate Shipping Cost"
+    },
+    "spare_parts": {
+      "title": "Spare Parts Services",
+      "description": "Original spare parts supply and fast delivery",
+      "features": [
+        "Original manufacturer spare parts",
+        "Fast delivery guarantee",
+        "Stock status tracking",
+        "Technical compatibility check",
+        "Price guarantee"
+      ],
+      "action": "Query Spare Parts"
+    },
+    "consulting": {
+      "title": "Technical Consulting",
+      "description": "Expert technical consulting for your industrial processes",
+      "features": [
+        "Process optimization",
+        "Equipment selection consulting",
+        "Technical solution recommendations",
+        "Performance analysis",
+        "Cost optimization"
+      ],
+      "action": "Request Consulting"
     }
   },
   "connected_network": {
-    "title": "Connected Equipment Network",
-    "serial": "Serial",
-    "installed": "Installed",
-    "show_map": "Show Map View",
-    "show_list": "Show List View",
-    "active_warranty": "Active Warranty"
+    "title": "Connected Industrial Equipment Network",
+    "serial": "Serial No",
+    "installed": "Installation Date",
+    "show_map": "Map View",
+    "show_list": "List View",
+    "active_warranty": "Active Warranty",
+    "last_maintenance": "Last Maintenance",
+    "next_maintenance": "Next Maintenance",
+    "status": "Status",
+    "location": "Location",
+    "operator": "Operator"
   },
   "tech_highlights": {
-    "badge": "Technology",
-    "title": "Advanced Service Technology",
-    "description": "Our Egyptian operations leverage cutting-edge technology to deliver superior service",
+    "badge": "Advanced Technology",
+    "title": "Advanced Industrial Service Technology",
+    "description": "Our Egyptian operations use cutting-edge technology to deliver superior technical service",
     "features": [
-      "IoT-enabled equipment monitoring",
-      "AI-powered predictive maintenance",
+      "IoT-enabled equipment monitoring and diagnostics",
+      "AI-powered predictive maintenance analysis",
       "Augmented reality repair guides",
-      "Blockchain-based service records"
+      "Blockchain-based service records",
+      "Remote access and control systems",
+      "Real-time performance analysis"
     ]
   },
   "service_network": {
-    "title": "Egyptian Service Network",
-    "description": "Our nationwide network of technical specialists covers all major industrial zones"
+    "title": "Egypt Technical Service Network",
+    "description": "Our nationwide network of certified technical experts covers all major industrial zones",
+    "coverage": "Coverage Area",
+    "response_time": "Response Time",
+    "technicians": "Technical Experts",
+    "service_centers": "Service Centers"
   },
   "standards": {
     "title": "Egyptian Industrial Standards",

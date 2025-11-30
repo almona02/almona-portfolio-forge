@@ -24,6 +24,8 @@
  * ```
  */
 
+import LZString from 'lz-string';
+
 /**
  * Quick performance optimization utilities
  * 
@@ -135,18 +137,9 @@ export const quickPerformanceWins = {
     }
     
     try {
-      // Try to use LZ-String if available
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const LZString = (window as any).LZString;
-      
-      if (LZString) {
-        const jsonString = JSON.stringify(data);
-        return LZString.compressToUTF16(jsonString);
-      } else {
-        // Fallback to JSON if LZ-String not loaded
-        console.warn('[quickPerformance] LZ-String not available, using uncompressed JSON');
-        return JSON.stringify(data);
-      }
+      const jsonString = JSON.stringify(data);
+      // Use LZ-String compression (reduces size by 60-70%)
+      return LZString.compressToUTF16(jsonString);
     } catch (error) {
       console.error('[quickPerformance] Compression failed:', error);
       // Fallback to JSON on error
@@ -187,41 +180,37 @@ export const quickPerformanceWins = {
     }
     
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const LZString = (window as any).LZString;
+      // Try decompression first (LZ-String compressed data)
+      const decompressed = LZString.decompressFromUTF16(compressed);
       
-      if (LZString) {
-        // Try decompression first
-        const decompressed = LZString.decompressFromUTF16(compressed);
-        
-        if (decompressed) {
-          return JSON.parse(decompressed);
-        } else {
-          // If decompression fails, try parsing as JSON (might be uncompressed)
-          return JSON.parse(compressed);
-        }
+      if (decompressed) {
+        return JSON.parse(decompressed);
       } else {
-        // Fallback to JSON parsing if LZ-String not available
+        // If decompression returns null/empty, try parsing as JSON (might be uncompressed legacy data)
         return JSON.parse(compressed);
       }
     } catch (error) {
-      console.error('[quickPerformance] Decompression failed:', error);
-      return null;
+      // If decompression fails, try parsing as plain JSON (backward compatibility)
+      try {
+        return JSON.parse(compressed);
+      } catch (parseError) {
+        console.error('[quickPerformance] Decompression and JSON parsing failed:', error, parseError);
+        return null;
+      }
     }
   },
 
   /**
-   * Check if LZ-String is available
+   * Check if LZ-String compression is available
    * 
-   * @returns True if LZ-String library is loaded
+   * @returns True if LZ-String library is loaded and compression is available
    */
   isCompressionAvailable: (): boolean => {
     if (typeof window === 'undefined') return false;
     
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const LZString = (window as any).LZString;
-      return typeof LZString?.compressToUTF16 === 'function';
+      return typeof LZString?.compressToUTF16 === 'function' && 
+             typeof LZString?.decompressFromUTF16 === 'function';
     } catch {
       return false;
     }
@@ -229,27 +218,19 @@ export const quickPerformanceWins = {
 };
 
 /**
- * LZ-String Integration Instructions
+ * LZ-String Integration
  * 
- * To enable compression, install and load LZ-String:
+ * LZ-String is now imported directly in this module.
+ * The compression utilities will automatically use LZ-String compression,
+ * which reduces localStorage size by 60-70% compared to plain JSON.
  * 
- * 1. Install the package:
- *    ```bash
- *    npm install lz-string @types/lz-string
- *    ```
+ * Installation (already done):
+ * ```bash
+ * npm install lz-string @types/lz-string
+ * ```
  * 
- * 2. Load LZ-String in your app (e.g., in main.tsx or index.html):
- *    ```ts
- *    import LZString from 'lz-string';
- *    (window as any).LZString = LZString;
- *    ```
- * 
- *    Or add to index.html:
- *    ```html
- *    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
- *    ```
- * 
- * 3. The compression utilities will automatically use LZ-String if available,
- *    or fall back to JSON if not loaded.
+ * The compression is transparent - compressed data is automatically
+ * decompressed when loading, and legacy uncompressed JSON data is
+ * still supported for backward compatibility.
  */
 
