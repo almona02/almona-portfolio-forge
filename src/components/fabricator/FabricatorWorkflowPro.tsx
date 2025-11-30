@@ -6,6 +6,7 @@ import { useJobsStore } from '@/store/jobsStore';
 import { WindowUnit } from '@/types/fabricator';
 import { supabase } from '@/lib/supabase';
 import { Factory, Sparkles, AlertCircle } from 'lucide-react';
+import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
 
 const MassProductionDashboard = React.lazy(() =>
   import('@/components/fabricator/MassProductionDashboard').then((m) => ({
@@ -128,12 +129,11 @@ export const FabricatorWorkflowPro: React.FC = () => {
 
         <Suspense
           fallback={
-            <Card className="bg-gray-900/70 border-gray-800">
-              <CardContent className="p-8 text-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-400 mx-auto mb-4" />
-                <p className="text-sm text-gray-300">Loading Mass Production Dashboard…</p>
-              </CardContent>
-            </Card>
+            <FabricatorLoader 
+              stage="Loading Mass Production Dashboard…" 
+              progress={0}
+              message="Initializing workspace..."
+            />
           }
         >
           {userId ? (

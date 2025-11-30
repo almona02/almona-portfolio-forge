@@ -115,6 +115,58 @@
 
   <body>
     <div id="root" class="app-fade-enter"></div>
+    <!-- Module and require polyfills - must be before any module scripts -->
+    <!-- This fixes CommonJS packages like 'long' and 'seedrandom' -->
+    <script>
+      (function() {
+        'use strict';
+        // Create module and exports for CommonJS compatibility
+        var createModule = function() {
+          var mod = { exports: {} };
+          return mod;
+        };
+        
+        // Module polyfill
+        if (typeof window !== 'undefined') {
+          if (typeof window.module === 'undefined') {
+            window.module = createModule();
+          }
+          if (typeof window.exports === 'undefined') {
+            window.exports = window.module.exports;
+          }
+        }
+        if (typeof globalThis !== 'undefined') {
+          if (typeof globalThis.module === 'undefined') {
+            globalThis.module = (typeof window !== 'undefined' && window.module) || createModule();
+          }
+          if (typeof globalThis.exports === 'undefined') {
+            globalThis.exports = globalThis.module.exports;
+          }
+        }
+        
+        // Require polyfill - minimal implementation for CommonJS packages
+        var requireCache = {};
+        var require = function(id) {
+          // If already cached, return it
+          if (requireCache[id]) {
+            return requireCache[id];
+          }
+          // For now, return an empty object - actual modules will be handled by Vite
+          // This prevents "require is not defined" errors
+          var mod = { exports: {} };
+          requireCache[id] = mod.exports;
+          return mod.exports;
+        };
+        
+        // Make require available globally
+        if (typeof window !== 'undefined') {
+          window.require = require;
+        }
+        if (typeof globalThis !== 'undefined') {
+          globalThis.require = require;
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
   <script>

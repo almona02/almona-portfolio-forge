@@ -2,10 +2,12 @@ import React, { useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Badge } from '@/shared/ui/ui/badge';
+import { useTranslation } from 'react-i18next';
 import { useJobsStore } from '@/store/jobsStore';
 import { PositionsGrid } from '@/components/fabricator/PositionsGrid';
 
 const ProjectsPage: React.FC = () => {
+  const { t } = useTranslation('fabricator');
   const { jobs, isLoading, loadJobs } = useJobsStore();
 
   useEffect(() => {
@@ -56,9 +58,9 @@ const ProjectsPage: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         <Card className="bg-gray-900/80 border-gray-800">
           <CardHeader className="pb-3">
-            <CardTitle className="text-xl">Projects & Positions</CardTitle>
+            <CardTitle className="text-xl">{t('projects.title', 'Projects & Positions')}</CardTitle>
             <CardDescription className="text-sm text-gray-400">
-              Loading your fabricator projects from Supabase...
+              {t('projects.loading', 'Loading your fabricator projects from Supabase...')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -73,23 +75,22 @@ const ProjectsPage: React.FC = () => {
     <div className="container mx-auto px-4 py-8 space-y-4">
       <Card className="bg-gray-900/80 border-gray-800">
         <CardHeader className="pb-3">
-          <CardTitle className="text-xl">Projects & Positions</CardTitle>
+          <CardTitle className="text-xl">{t('projects.title', 'Projects & Positions')}</CardTitle>
           <CardDescription className="text-sm text-gray-400">
-            High-level projects view with quick access to all poses. Use the Projects tab to see
-            orders, and the Positions tab to drill into individual poses/flats.
+            {t('projects.description', 'High-level projects view with quick access to all poses. Use the Projects tab to see orders, and the Positions tab to drill into individual poses/flats.')}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-4 text-xs text-gray-300">
           <div>
-            <span className="text-gray-400">Distinct units:</span>{' '}
+            <span className="text-gray-400">{t('projects.stats.distinct_units', 'Distinct units')}:</span>{' '}
             <span className="font-semibold text-gray-100">{totalUnits}</span>
           </div>
           <div>
-            <span className="text-gray-400">Total poses:</span>{' '}
+            <span className="text-gray-400">{t('projects.stats.total_poses', 'Total poses')}:</span>{' '}
             <span className="font-semibold text-gray-100">{totalPoses}</span>
           </div>
           <div>
-            <span className="text-gray-400">Projects:</span>{' '}
+            <span className="text-gray-400">{t('projects.stats.projects', 'Projects')}:</span>{' '}
             <span className="font-semibold text-gray-100">{projectsSummary.length}</span>
           </div>
         </CardContent>
@@ -101,27 +102,27 @@ const ProjectsPage: React.FC = () => {
             value="projects"
             className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-xs px-3 py-1.5 rounded-lg"
           >
-            Projects
+            {t('projects.tabs.projects', 'Projects')}
           </TabsTrigger>
           <TabsTrigger
             value="positions"
             className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-xs px-3 py-1.5 rounded-lg"
           >
-            Recent Poses
+            {t('projects.tabs.positions', 'Recent Poses')}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="projects" className="space-y-3">
           <Card className="bg-gray-900/80 border-gray-800">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm">Projects</CardTitle>
+              <CardTitle className="text-sm">{t('projects.projects_tab.title', 'Projects')}</CardTitle>
               <CardDescription className="text-xs text-gray-400">
-                Each row groups all poses that share the same project code / order number.
+                {t('projects.projects_tab.description', 'Each row groups all poses that share the same project code / order number.')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 text-xs">
               {projectsSummary.length === 0 ? (
-                <p className="text-gray-500 text-xs">No projects yet. Create your first pose from the Fabricator workflow.</p>
+                <p className="text-gray-500 text-xs">{t('projects.projects_tab.no_projects', 'No projects yet. Create your first pose from the Fabricator workflow.')}</p>
               ) : (
                 <div className="divide-y divide-gray-800">
                   {projectsSummary.map((p) => (
@@ -137,16 +138,16 @@ const ProjectsPage: React.FC = () => {
                         </div>
                         {p.customer && (
                           <div className="text-[11px] text-gray-400">
-                            Customer: <span className="text-gray-200">{p.customer}</span>
+                            {t('projects.projects_tab.customer', 'Customer')}: <span className="text-gray-200">{p.customer}</span>
                           </div>
                         )}
                       </div>
                       <div className="flex items-center gap-3 text-[11px] text-gray-400">
                         <span>
-                          Poses: <span className="text-gray-100 font-semibold">{p.poses}</span>
+                          {t('projects.projects_tab.poses', 'Poses')}: <span className="text-gray-100 font-semibold">{p.poses}</span>
                         </span>
                         <span>
-                          Total qty:{' '}
+                          {t('projects.projects_tab.total_qty', 'Total qty')}:{' '}
                           <span className="text-gray-100 font-semibold">{p.qty}</span>
                         </span>
                       </div>

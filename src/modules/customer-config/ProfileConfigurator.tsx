@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
@@ -32,6 +33,7 @@ export const ProfileConfigurator: React.FC<ProfileConfiguratorProps> = ({
   onProfilesUpdate,
   region = 'global',
 }) => {
+  const { t } = useTranslation('fabricator');
   const [customProfiles, setCustomProfiles] = useState<CustomProfile[]>(profiles as CustomProfile[]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -349,7 +351,7 @@ export const ProfileConfigurator: React.FC<ProfileConfiguratorProps> = ({
             ) : (
               <Button onClick={handleAddProfile} className="bg-orange-500 hover:bg-orange-600">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Profile
+                {t('inventory.add_profile', 'Add Profile')}
               </Button>
             )}
           </div>

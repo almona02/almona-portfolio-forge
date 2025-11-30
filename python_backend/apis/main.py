@@ -11,9 +11,14 @@ from core.middleware import (
     RequestLoggingMiddleware
 )
 from core.connection_pool import get_connection_pool
-from core.monitoring import setup_monitoring, monitoring, get_structured_logger
-from core.health_checks import get_health_status, get_liveness_status, get_readiness_status
+from core.monitoring import setup_monitoring, monitoring
+from core.health_checks import (
+    get_health_status,
+    get_liveness_status,
+    get_readiness_status
+)
 from core.railway_health import get_railway_recommendations
+from core.sentry_setup import init_sentry
 
 app = FastAPI(
     title="Almona Industrial API",
@@ -21,19 +26,24 @@ app = FastAPI(
     description="""
     # Almona Industrial API
 
-    A comprehensive API for industrial machinery management, service ticketing, and quote generation.
+    A comprehensive API for industrial machinery management,
+    service ticketing, and quote generation.
 
     ## Features
 
-    * **Service Ticketing**: Create and manage support tickets, maintenance requests, and emergency services
-    * **Quote Management**: Generate and lookup product quotes with digital twin integration
-    * **Authentication**: JWT-based authentication with role-based access control
+    * **Service Ticketing**: Create and manage support tickets,
+      maintenance requests, and emergency services
+    * **Quote Management**: Generate and lookup product quotes
+      with digital twin integration
+    * **Authentication**: JWT-based authentication with
+      role-based access control
     * **AI Integration**: Part detection and machine learning capabilities
     * **Real-time Updates**: WebSocket support for live updates
 
     ## Authentication
 
-    Most endpoints require authentication. Use the `/api/v2/auth/token` endpoint to obtain a JWT token.
+    Most endpoints require authentication. Use the
+    `/api/v2/auth/token` endpoint to obtain a JWT token.
 
     ## Rate Limiting
 
@@ -45,7 +55,8 @@ app = FastAPI(
 
     ## Error Handling
 
-    All errors follow a consistent format with error codes, messages, and context information.
+    All errors follow a consistent format with error codes,
+    messages, and context information.
     """,
     contact={
         "name": "Almona Industrial Support",
@@ -77,7 +88,10 @@ app = FastAPI(
         },
         {
             "name": "Tickets",
-            "description": "Service ticket management - support, maintenance, and emergency services"
+            "description": (
+                "Service ticket management - support, "
+                "maintenance, and emergency services"
+            )
         },
         {
             "name": "Quotes",
@@ -85,7 +99,10 @@ app = FastAPI(
         },
         {
             "name": "AI",
-            "description": "AI-powered part detection and machine learning features"
+            "description": (
+                "AI-powered part detection and "
+                "machine learning features"
+            )
         },
         {
             "name": "Health",
@@ -97,12 +114,19 @@ app = FastAPI(
 # Setup monitoring infrastructure
 monitoring_setup = setup_monitoring(app)
 
+# Initialize Sentry error tracking
+init_sentry()
+
 # Add security and monitoring middleware (order matters!)
 app.add_middleware(ErrorHandlingMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(RequestValidationMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
-app.add_middleware(RateLimitMiddleware, requests_per_minute=100, burst_limit=20)
+app.add_middleware(
+    RateLimitMiddleware,
+    requests_per_minute=100,
+    burst_limit=20
+)
 
 # CORS middleware (production domains)
 app.add_middleware(
@@ -111,8 +135,10 @@ app.add_middleware(
         "http://localhost:5173",  # Development
         "https://www.almona02.com",  # Production domain
         "https://almona-portfolio-forge.vercel.app",  # Vercel domain
-        "https://almona-portfolio-forge-kz44hknh6.vercel.app",  # Vercel preview
-        "https://almona-portfolio-forge-git-main.vercel.app"  # Vercel branch
+        "https://almona-portfolio-forge-kz44hknh6.vercel.app",
+        # Vercel preview
+        "https://almona-portfolio-forge-git-main.vercel.app"
+        # Vercel branch
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -167,7 +193,7 @@ async def metrics_json():
     """Enhanced metrics endpoint for monitoring (JSON format)."""
     pool = get_connection_pool()
     stats = pool.get_performance_stats()
-    
+
     return {
         "database": {
             "connection_pool": {
@@ -181,7 +207,11 @@ async def metrics_json():
                 "total_queries": stats.total_queries,
                 "successful_queries": stats.successful_queries,
                 "failed_queries": stats.failed_queries,
-                "success_rate": stats.successful_queries / stats.total_queries if stats.total_queries > 0 else 0,
+                "success_rate": (
+                    stats.successful_queries / stats.total_queries
+                    if stats.total_queries > 0
+                    else 0
+                ),
                 "error_rate": stats.error_rate,
                 "avg_response_time_ms": stats.avg_response_time_ms,
                 "slow_queries_count": stats.slow_queries_count
@@ -202,14 +232,18 @@ async def detailed_metrics(limit: int = 100):
     stats = pool.get_performance_stats()
     recent_metrics = pool.get_detailed_metrics(limit)
     connection_health = pool.get_connection_health()
-    
+
     return {
         "summary": {
             "total_connections": stats.total_connections,
             "active_connections": stats.active_connections,
             "healthy_connections": stats.healthy_connections,
             "total_queries": stats.total_queries,
-            "success_rate": stats.successful_queries / stats.total_queries if stats.total_queries > 0 else 0,
+            "success_rate": (
+                stats.successful_queries / stats.total_queries
+                if stats.total_queries > 0
+                else 0
+            ),
             "avg_response_time_ms": stats.avg_response_time_ms,
             "uptime_seconds": stats.uptime_seconds
         },
@@ -223,14 +257,14 @@ async def database_health():
     """Database health check endpoint."""
     pool = get_connection_pool()
     stats = pool.get_performance_stats()
-    
+
     # Determine overall health
     is_healthy = (
         stats.healthy_connections > 0 and
         stats.error_rate < 0.1 and  # Less than 10% error rate
         stats.avg_response_time_ms < 5000  # Less than 5 seconds average
     )
-    
+
     return {
         "status": "healthy" if is_healthy else "unhealthy",
         "details": {

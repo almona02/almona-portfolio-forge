@@ -104,9 +104,62 @@ export { zlibModule as zlib };
 // Default exports for each module
 export default streamModule;
 
+// Polyfill for 'module' and 'require' (CommonJS) - fixes "module is not defined" and "require is not defined" errors
+// Used by packages like 'long' and 'seedrandom' that use CommonJS
+const initializeModulePolyfill = () => {
+  if (typeof window !== 'undefined') {
+    // Create module object if it doesn't exist
+    if (typeof (window as any).module === 'undefined') {
+      (window as any).module = {
+        exports: {},
+      };
+    }
+    // Also ensure it's available globally (not just on window)
+    if (typeof (globalThis as any).module === 'undefined') {
+      (globalThis as any).module = (window as any).module;
+    }
+    // Create exports as an alias to module.exports for CommonJS compatibility
+    if (typeof (window as any).exports === 'undefined') {
+      (window as any).exports = (window as any).module.exports;
+    }
+    if (typeof (globalThis as any).exports === 'undefined') {
+      (globalThis as any).exports = (globalThis as any).module.exports;
+    }
+    
+    // Create require function if it doesn't exist
+    if (typeof (window as any).require === 'undefined') {
+      const requireCache: Record<string, any> = {};
+      (window as any).require = function(id: string) {
+        // If already cached, return it
+        if (requireCache[id]) {
+          return requireCache[id];
+        }
+        // For now, return an empty object - actual modules will be handled by Vite
+        // This prevents "require is not defined" errors
+        const mod = { exports: {} };
+        requireCache[id] = mod.exports;
+        return mod.exports;
+      };
+    }
+    if (typeof (globalThis as any).require === 'undefined') {
+      (globalThis as any).require = (window as any).require;
+    }
+  }
+};
+
 // Initialize polyfills globally if needed
 export function initializePolyfills() {
   if (typeof window !== 'undefined') {
+    // Initialize module polyfill first (needed for CommonJS packages)
+    initializeModulePolyfill();
+    // Pre-load long package for TensorFlow.js compatibility
+    import('./polyfills/long').then((longModule) => {
+      if (longModule.default && typeof (window as any).Long === 'undefined') {
+        (window as any).Long = longModule.default;
+      }
+    }).catch(() => {
+      // Long package might not be needed immediately, that's okay
+    });
     // Only run in browser environment
     console.log('🔧 Browser polyfills initialized for Node.js modules');
   }

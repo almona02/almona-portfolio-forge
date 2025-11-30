@@ -1,0 +1,305 @@
+{
+  "workspace": {
+    "title": "مساحة العمل الإنتاجية",
+    "subtitle": "قمرة قيادة المونة الثقيلة للمشاريع والعملاء والمخزون والتدفقات التجارية — الحالة محفوظة عبر التبويبات.",
+    "tabs": {
+      "projects": "المشاريع",
+      "customers": "العملاء",
+      "inventory": "المخزون",
+      "commercial": "تجاري"
+    },
+    "badges": {
+      "active": "نشط",
+      "draft_quotes": "عروض مسودة"
+    },
+    "sections": {
+      "projects_positions": "المشاريع والمواضع",
+      "fabricator_customers": "عملاء المصنع",
+      "inventory_intelligence": "مركز ذكاء المخزون",
+      "commercial_workspace": "مساحة العمل التجارية",
+      "pricing_configuration": "تكوين التسعير",
+      "profile_management": "إدارة القطاعات",
+      "inventory_analytics": "تحليلات المخزون"
+    }
+  },
+  "dashboard": {
+    "title": "لوحة تحكم Fabricator Pro",
+    "subtitle": "إدارة الورشة المدعومة بالذكاء الاصطناعي مع رؤى في الوقت الفعلي",
+    "performance": {
+      "title": "ملخص الأداء",
+      "optimization_speed": "سرعة التحسين",
+      "waste_reduction": "تقليل النفايات",
+      "ml_accuracy": "دقة التعلم الآلي"
+    },
+    "remnant_marketplace": {
+      "title": "سوق المخلفات",
+      "subtitle": "شراء وبيع المواد الزائدة عبر شبكة المصنعين"
+    },
+    "recent_optimizations": "التحسينات الأخيرة",
+    "quick_actions": "إجراءات سريعة",
+    "settings": "الإعدادات"
+  },
+  "workflow": {
+    "title": "سير عمل المصنع المحترف",
+    "subtitle": "سير عمل الذكاء الاصطناعي الإصدار 4.0",
+    "header": {
+      "fabricator_pro": "FABRICATOR PRO",
+      "ai_workflow": "سير عمل الذكاء الاصطناعي الإصدار 4.0",
+      "workflow_pro": "سير عمل المصنع المحترف"
+    },
+    "measuring": "القياس",
+    "smart_measuring": "واجهة القياس الذكية",
+    "design": "التصميم",
+    "optimization": "التحسين",
+    "inventory": "المخزون",
+    "pricing": "التسعير",
+    "reports": "التقارير"
+  },
+  "project": {
+    "new_project": "مشروع جديد",
+    "professional_header": "مشروع جديد – رأس احترافي",
+    "positions": "المواضع"
+  },
+  "projects": {
+    "title": "المشاريع والمواضع",
+    "loading": "جارٍ تحميل مشاريع المصنع من Supabase...",
+    "description": "عرض المشاريع عالي المستوى مع وصول سريع لجميع المواضع. استخدم تبويب المشاريع لعرض الطلبات، وتبويب المواضع للتعمق في المواضع/الشقق الفردية.",
+    "stats": {
+      "distinct_units": "وحدات متميزة",
+      "total_poses": "إجمالي المواضع",
+      "projects": "المشاريع"
+    },
+    "tabs": {
+      "projects": "المشاريع",
+      "positions": "المواضع الأخيرة"
+    },
+    "projects_tab": {
+      "title": "المشاريع",
+      "description": "كل صف يجمع جميع المواضع التي تشترك في نفس رمز المشروع / رقم الطلب.",
+      "no_projects": "لا توجد مشاريع بعد. أنشئ موضعك الأول من سير عمل المصنع.",
+      "customer": "العميل",
+      "poses": "المواضع",
+      "total_qty": "إجمالي الكمية"
+    }
+  },
+  "customers": {
+    "title": "عملاء المصنع",
+    "description": "دليل العملاء لكل ورشة مستخدم في معالج المشروع الجديد. أنشئ عميلاً مرة واحدة، ثم أعد استخدامه من القائمة المنسدلة عند بدء مشاريع جديدة.",
+    "add_new": "إضافة عميل جديد",
+    "form": {
+      "name": "اسم العميل / الشركة *",
+      "contact_person": "الشخص المسؤول",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "notes": "ملاحظات (اختياري)",
+      "add_button": "إضافة عميل"
+    },
+    "filters": {
+      "title": "مرشحات ذكية",
+      "search": "بحث",
+      "search_placeholder": "الاسم، جهة الاتصال، البريد الإلكتروني، الهاتف…",
+      "sector": "القطاع",
+      "all_sectors": "جميع القطاعات",
+      "registered_year": "سنة التسجيل",
+      "all_years": "جميع السنوات"
+    },
+    "directory": {
+      "title": "دليل العملاء",
+      "description": "هؤلاء العملاء متاحون في القائمة المنسدلة لمعالج المشروع الجديد.",
+      "no_customers": "لم يتم العثور على عملاء للمرشحات الحالية.",
+      "new_order": "طلب جديد للعميل المحدد",
+      "table": {
+        "name": "الاسم",
+        "contact": "جهة الاتصال",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "sector": "القطاع",
+        "registered": "مسجل",
+        "notes": "ملاحظات"
+      }
+    },
+    "sectors": {
+      "all": "الكل",
+      "aluminium": "ألومنيوم",
+      "upvc": "UPVC",
+      "steel": "حديد",
+      "glass": "زجاج",
+      "general": "عام"
+    }
+  },
+  "inventory": {
+    "title": "مركز ذكاء المخزون",
+    "description": "إدارة المخزون المركزية مع التحليلات في الوقت الفعلي وتحسين المخلفات وتوقعات المخزون المدعومة بالذكاء الاصطناعي لأسواق تركيا ومصر.",
+    "add_profile": "إضافة قطاع",
+    "workflow_integration": "تكامل سير العمل",
+    "adding": "جاري الإضافة...",
+    "tabs": {
+      "dashboard": "لوحة التحكم",
+      "profile_management": "إدارة القطاعات",
+      "analytics": "التحليلات",
+      "overview": "نظرة عامة",
+      "remnants": "المخلفات",
+      "alerts": "التنبيهات",
+      "history": "السجل",
+      "purchases": "المشتريات"
+    },
+    "overview": {
+      "use_remnants_first": "استخدام المخلفات أولاً",
+      "use_remnants_description": "تطابق واستخدم المخلفات المتاحة تلقائياً قبل قطع المخزون الجديد",
+      "enabled": "مفعل",
+      "disabled": "معطل",
+      "search_placeholder": "البحث في القطاعات...",
+      "material_filter": "المادة",
+      "all_materials": "جميع المواد",
+      "aluminum": "ألومنيوم",
+      "upvc": "UPVC",
+      "wood": "خشب",
+      "systems": "الأنظمة",
+      "all": "الكل",
+      "profile_inventory": "مخزون القطاعات"
+    },
+    "status": {
+      "in_stock": "متوفر",
+      "low_stock": "مخزون منخفض",
+      "out_of_stock": "نفد المخزون",
+      "critical": "حرج"
+    },
+    "analytics": {
+      "title": "تحليلات المخزون",
+      "description": "تحليلات ورؤى متقدمة لمخزون المصنع الخاص بك.",
+      "coming_soon": "لوحة تحكم التحليلات المتقدمة قريباً.",
+      "features": "استخدام المخزون وتحليل الاتجاهات والتخزين التنبؤي."
+    }
+  },
+  "profileManagement": {
+    "title": "إدارة القطاعات",
+    "importProfiles": "استيراد القطاعات",
+    "manualEntry": "إدخال يدوي",
+    "dxfImport": "استيراد DXF",
+    "systemPacks": "حزم الأنظمة",
+    "addNewProfile": "إضافة قطاع جديد",
+    "name": "الاسم",
+    "material": "المادة",
+    "aluminum": "ألومنيوم",
+    "upvc": "UPVC",
+    "wood": "خشب",
+    "widthMm": "العرض (مم)",
+    "heightMm": "الارتفاع (مم)",
+    "thicknessMm": "السمك (مم)",
+    "color": "اللون",
+    "costPerMeter": "التكلفة لكل متر",
+    "cuttingAllowance": "بدل القطع",
+    "stockQuantity": "كمية المخزون",
+    "minStockLevel": "مستوى المخزون الأدنى",
+    "maxStockLevel": "مستوى المخزون الأقصى",
+    "supplier": "المورد",
+    "systemBrand": "علامة النظام",
+    "grainDirection": "اتجاه الحبوب",
+    "weightPerMeter": "الوزن لكل متر",
+    "specifications": "المواصفات",
+    "internalCode": "الكود الداخلي",
+    "supplierCode": "كود المورد",
+    "series": "السلسلة",
+    "year": "السنة",
+    "dxfImported": "مستورد من DXF",
+    "saveProfile": "حفظ القطاع",
+    "updateProfile": "تحديث القطاع",
+    "cancel": "إلغاء",
+    "importDxf": "استيراد DXF",
+    "uploadPreview": "رفع معاينة 2D",
+    "uploading": "جاري الرفع...",
+    "preview": "معاينة",
+    "searchProfiles": "البحث عن القطاعات",
+    "filterByMaterial": "تصفية حسب المادة",
+    "all": "الكل",
+    "filterByRegion": "تصفية حسب المنطقة",
+    "turkey": "تركيا",
+    "egypt": "مصر",
+    "global": "عالمي",
+    "exportProfiles": "تصدير القطاعات",
+    "importProfilesFile": "استيراد ملف القطاعات",
+    "bulkUpdate": "تحديث جماعي",
+    "refreshProfiles": "تحديث القطاعات",
+    "profileSavedSuccess": "تم حفظ القطاع بنجاح",
+    "profileUpdatedSuccess": "تم تحديث القطاع بنجاح",
+    "profileDeletedSuccess": "تم حذف القطاع بنجاح",
+    "errorSavingProfile": "خطأ في حفظ القطاع",
+    "errorUpdatingProfile": "خطأ في تحديث القطاع",
+    "errorDeletingProfile": "خطأ في حذف القطاع",
+    "errorLoadingProfiles": "خطأ في تحميل القطاعات",
+    "confirmDelete": "هل أنت متأكد من حذف هذا القطاع؟",
+    "lowStock": "مخزون منخفض",
+    "inStock": "في المخزون",
+    "outOfStock": "نفد المخزون",
+    "dimensions": "الأبعاد",
+    "cost": "التكلفة",
+    "stock": "المخزون",
+    "stockLevel": "مستوى المخزون",
+    "twinCode": "كود توأم",
+    "dxf": "DXF",
+    "imported": "مستورد",
+    "none": "—",
+    "bulkCost": "تكلفة جماعية",
+    "bulkStock": "مخزون جماعي",
+    "editProfile": "تعديل القطاع",
+    "allRegions": "جميع المناطق",
+    "allMaterials": "جميع المواد"
+  },
+  "commercial": {
+    "title": "مساحة العمل التجارية",
+    "description": "إدارة العروض والفواتير والوثائق التجارية المرتبطة بمشاريعك النشطة.",
+    "pricing_settings": "إعدادات التسعير",
+    "new_quote": "عرض جديد",
+    "draft_quotes": {
+      "title": "عروض مسودة",
+      "no_quotes": "لا توجد عروض مسودة",
+      "no_quotes_description": "أنشئ عرضاً من المشروع النشط أو سياق العميل للبدء.",
+      "unnamed_customer": "عميل غير مسجل الاسم",
+      "untitled_project": "مشروع بدون عنوان",
+      "draft": "مسودة",
+      "convert_to_invoice": "تحويل إلى فاتورة",
+      "delete": "حذف"
+    },
+    "draft_invoices": {
+      "title": "فواتير مسودة",
+      "no_invoices": "لا توجد فواتير مسودة",
+      "no_invoices_description": "حول العروض إلى فواتير لإعداد الفوترة.",
+      "draft_invoice": "فاتورة مسودة",
+      "send": "إرسال",
+      "pdf": "PDF",
+      "delete": "حذف"
+    }
+  },
+  "onboarding": {
+    "title": "مرحباً بك في Fabricator Pro",
+    "subtitle": "دعنا نبدأ معك ببرنامج تعليمي سريع",
+    "skip": "تخطي البرنامج التعليمي",
+    "previous": "السابق",
+    "next": "التالي",
+    "complete": "إكمال البرنامج التعليمي",
+    "steps": {
+      "measuring": {
+        "title": "القياس الذكي",
+        "description": "تعلم كيفية استخدام أدوات القياس المدعومة بالذكاء الاصطناعي لقياس أبعاد النوافذ بسرعة ودقة. واجهة القياس الذكية لدينا ترشدك خلال العملية خطوة بخطوة."
+      },
+      "design": {
+        "title": "التصميم المدعوم بالذكاء الاصطناعي",
+        "description": "اكتشف كيف يساعدك مساعد التصميم بالذكاء الاصطناعي في إنشاء تكوينات نوافذ مثالية. يقترح النظام القطاعات والملحقات والتخطيطات بناءً على قياساتك."
+      },
+      "optimization": {
+        "title": "تحسين القطع",
+        "description": "أتقن محرك تحسين القطع الذي يقلل النفايات ويزيد الكفاءة. تعلم كيفية تكوين معاملات التحسين وتفسير النتائج."
+      },
+      "export": {
+        "title": "تصدير CNC",
+        "description": "قم بتصدير خطط القطع المحسّنة إلى آلات CNC. قم بإنشاء ملفات DXF وقوائم القطع وتقارير الإنتاج بنقرة واحدة."
+      }
+    },
+    "video_coming_soon": "فيديو تعليمي قريباً",
+    "video_placeholder": "سيتم توفير محتوى فيديو تفاعلي لـ \"{title}\" هنا.",
+    "try_yourself": "جرب بنفسك:",
+    "step_of": "الخطوة {current} من {total}",
+    "complete_percent": "{percent}% مكتمل"
+  }
+}
+

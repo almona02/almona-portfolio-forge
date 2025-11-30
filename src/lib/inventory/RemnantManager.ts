@@ -6,6 +6,9 @@
 
 import { supabase } from '../supabase';
 import { Profile, CuttingPlan, Cut } from '@/types/fabricator';
+import { remnantPredictor } from './RemnantPredictor';
+import { remnantMLPredictor } from '../ml/RemnantUsagePredictor';
+import { featureEngineer } from '../analytics/FeatureEngineer';
 
 export interface Remnant {
   id: string;
@@ -184,6 +187,7 @@ export class RemnantManager {
 
   /**
    * Find best matching remnants for cuts
+   * Enhanced with ML-based prediction scoring and multi-location support
    */
   async findRemnantMatches(
     cuts: Cut[],
@@ -193,12 +197,16 @@ export class RemnantManager {
       useRemnantsFirst?: boolean;
       minUtilization?: number;
       maxWastePercentage?: number;
+      locationId?: string; // Optional: filter by specific location
+      prioritizeLocation?: string; // Optional: prioritize remnants from this location
     } = {}
   ): Promise<RemnantMatch[]> {
     const {
       useRemnantsFirst = true,
       minUtilization = 70,
       maxWastePercentage = 30,
+      locationId,
+      prioritizeLocation,
     } = options;
 
     if (!useRemnantsFirst) {
@@ -206,22 +214,93 @@ export class RemnantManager {
     }
 
     try {
-      // Get available remnants for this profile
-      const { data: remnants, error } = await supabase
+      // Build query for available remnants
+      let query = supabase
         .from('material_remnants')
         .select(`
           *,
           fabricator_profiles (*),
-          inventory_locations (name, code)
+          inventory_locations (name, code, id)
         `)
         .eq('user_id', profile.userId || '')
         .eq('profile_id', profile.id)
         .eq('status', 'available')
-        .gte('length', Math.min(...cuts.map(c => c.length)))
-        .order('length', { ascending: false });
+        .gte('length', Math.min(...cuts.map(c => c.length)));
+
+      // Filter by location if specified
+      if (locationId) {
+        query = query.eq('location_id', locationId);
+      }
+
+      const { data: remnants, error } = await query;
 
       if (error) throw error;
       if (!remnants || remnants.length === 0) return [];
+
+      // Map remnants and calculate prediction scores (with ML if available)
+      const remnantScores: Array<{
+        remnant: Remnant;
+        predictionScore: number;
+        locationPriority: number;
+        compositeScore: number;
+        mlUsed: boolean;
+      }> = [];
+
+      for (const remnantData of remnants) {
+        const remnant = this.mapRemnantFromDb(remnantData);
+        
+        // Try ML prediction first, fallback to rule-based
+        let predictionScore: number;
+        let mlUsed = false;
+
+        try {
+          // Extract features for ML
+          const features = await featureEngineer.extractRemnantFeatures(remnant);
+          
+          // Try ML prediction
+          const mlPrediction = await remnantMLPredictor.predict(remnant, features as any);
+          
+          if (!mlPrediction.fallbackUsed && mlPrediction.confidence >= 80) {
+            predictionScore = mlPrediction.reuseLikelihood;
+            mlUsed = true;
+          } else {
+            // Fallback to rule-based
+            predictionScore = await remnantPredictor.predictReuseLikelihood(remnant);
+          }
+        } catch (error) {
+          // Fallback to rule-based on error
+          console.warn('ML prediction failed, using rule-based:', error);
+          predictionScore = await remnantPredictor.predictReuseLikelihood(remnant);
+        }
+        
+        // Calculate location priority (1.0 for main/prioritized, 0.8 for others)
+        let locationPriority = 1.0;
+        if (prioritizeLocation) {
+          if (remnant.locationId === prioritizeLocation || remnant.locationName === prioritizeLocation) {
+            locationPriority = 1.0;
+          } else {
+            locationPriority = 0.8;
+          }
+        } else if (remnant.locationName === 'main' || remnant.locationName === 'Main') {
+          locationPriority = 1.0;
+        } else {
+          locationPriority = 0.8;
+        }
+
+        // Composite score: prediction (70%) + location priority (30%)
+        const compositeScore = predictionScore * 0.7 + locationPriority * 100 * 0.3;
+
+        remnantScores.push({
+          remnant,
+          predictionScore,
+          locationPriority,
+          compositeScore,
+          mlUsed,
+        });
+      }
+
+      // Sort by composite score (highest first)
+      remnantScores.sort((a, b) => b.compositeScore - a.compositeScore);
 
       const matches: RemnantMatch[] = [];
       const usedRemnantIds = new Set<string>();
@@ -234,10 +313,10 @@ export class RemnantManager {
         if (assignedCuts.has(cut.componentId)) continue;
 
         let bestMatch: RemnantMatch | null = null;
-        let bestUtilization = 0;
+        let bestScore = 0;
 
-        for (const remnantData of remnants) {
-          const remnant = this.mapRemnantFromDb(remnantData);
+        // Try remnants in order of composite score
+        for (const { remnant, compositeScore } of remnantScores) {
           if (usedRemnantIds.has(remnant.id)) continue;
           if (remnant.length < cut.length) continue;
 
@@ -248,19 +327,23 @@ export class RemnantManager {
           // Check if match meets criteria
           if (
             utilization >= minUtilization &&
-            wastePercentage <= maxWastePercentage &&
-            utilization > bestUtilization
+            wastePercentage <= maxWastePercentage
           ) {
-            const savings = (remnant.length / 1000) * profile.costPerMeter;
-            bestMatch = {
-              remnant,
-              cuts: [cut],
-              utilization,
-              waste,
-              savings,
-              canFitMultiple: false,
-            };
-            bestUtilization = utilization;
+            // Combine technical match quality with prediction score
+            const matchScore = utilization * 0.6 + compositeScore * 0.4;
+
+            if (matchScore > bestScore) {
+              const savings = (remnant.length / 1000) * profile.costPerMeter;
+              bestMatch = {
+                remnant,
+                cuts: [cut],
+                utilization,
+                waste,
+                savings,
+                canFitMultiple: false,
+              };
+              bestScore = matchScore;
+            }
           }
         }
 
@@ -295,7 +378,12 @@ export class RemnantManager {
         }
       }
 
-      return matches;
+      // Sort final matches by composite score (highest first)
+      return matches.sort((a, b) => {
+        const scoreA = remnantScores.find(s => s.remnant.id === a.remnant.id)?.compositeScore || 0;
+        const scoreB = remnantScores.find(s => s.remnant.id === b.remnant.id)?.compositeScore || 0;
+        return scoreB - scoreA;
+      });
     } catch (error) {
       console.error('Error finding remnant matches:', error);
       return [];
