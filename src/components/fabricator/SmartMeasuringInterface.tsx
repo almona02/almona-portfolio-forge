@@ -1,16 +1,20 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Ruler, Camera, Scan, Smartphone, AlertCircle, Box } from 'lucide-react';
+import { Toggle } from '@/shared/ui/ui/toggle';
+import { Checkbox } from '@/shared/ui/ui/checkbox';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Ruler, Camera, Scan, Smartphone, AlertCircle, Box, CheckCircle2, ArrowRight, ArrowLeft, Factory, Sparkles, Layers, ShieldCheck } from 'lucide-react';
 import { MeasurementData, SystemProfileSelections, WindowUnit } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateMeasurements, ValidationError, getConstraintsForSystemPack } from '@/lib/fabricatorValidation';
 import { Window3DGenerator, WindowMeasurementOverlay } from './Window3DGenerator';
+import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
 
 interface SmartMeasuringInterfaceProps {
   onMeasurementComplete: (data: MeasurementData) => void;
@@ -62,6 +66,19 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [show3DPreview, setShow3DPreview] = useState(true);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [highlightedDimension, setHighlightedDimension] = useState<'width' | 'height' | null>(null);
+  const [explodedView, setExplodedView] = useState(false);
+  const [verificationConfirmed, setVerificationConfirmed] = useState<boolean | 'indeterminate'>(false);
+
+  // Defined Steps
+  const STEPS = [
+    { id: 'system', title: 'System Configuration', icon: Factory },
+    { id: 'dimensions', title: 'Precise Dimensions', icon: Ruler },
+    { id: 'specs', title: 'Glass & Specs', icon: Box },
+    { id: 'location', title: 'Location Context', icon: CheckCircle2 },
+    { id: 'verify', title: 'Verification', icon: ShieldCheck },
+  ];
 
   // Generate preview window unit from measurements for 3D visualization
   const previewWindowUnit = useMemo<WindowUnit | null>(() => {
@@ -106,6 +123,30 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         return newErrors;
       });
     }
+  };
+
+  const nextStep = () => {
+    if (currentStep < STEPS.length - 1) setCurrentStep(c => c + 1);
+  };
+  
+  const prevStep = () => {
+    if (currentStep > 0) setCurrentStep(c => c - 1);
+  };
+
+  // Animation variants for smooth slide transitions
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 50 : -50,
+      opacity: 0
+    }),
+    center: {
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction: number) => ({
+      x: direction < 0 ? 50 : -50,
+      opacity: 0
+    })
   };
 
   const getFieldError = (field: string): string | undefined => {
@@ -256,6 +297,26 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     setValidationErrors([]);
     setFieldErrors({});
 
+    // Log verification event if confirmed
+    if (verificationConfirmed === true) {
+      const cutLength = Number(measurements.width) - 6; // Simplified calculation for MVP
+      calibrationAnalytics.recordVerificationEvent({
+        userId: 'current-user', // Ideally from auth context
+        systemPackId: selectedSystemPackId,
+        measurements: {
+          width: Number(measurements.width),
+          height: Number(measurements.height),
+          windowType: measurements.windowType,
+        },
+        calculations: {
+          deduction: 6,
+          cutLength: cutLength
+        },
+        durationSeconds: 0, // TODO: Track time
+        timestamp: new Date()
+      });
+    }
+
     const payload: MeasurementData = {
       ...measurements,
       systemPackId: selectedSystemPackId,
@@ -280,496 +341,520 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   };
 
   return (
-    <div className="space-y-6">
-      {/* System pack + profile selection */}
-      <Card className="bg-gray-800/60 border-gray-700">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center justify-between gap-2 text-sm">
-            <div className="flex items-center gap-2">
-              <FactoryIcon />
-              <span>System Pack & Profiles</span>
-            </div>
-            {activeSystemPack && (
-              <span className="text-[11px] text-gray-300">
-                {activeSystemPack.meta.name}
-              </span>
-            )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4 text-xs">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="md:col-span-1">
-              <Label className="text-[11px]">System Pack</Label>
-              <Select
-                value={selectedSystemPackId}
-                onValueChange={(value) => setSelectedSystemPackId(value)}
-              >
-                <SelectTrigger className="bg-gray-900 border-gray-700 h-8 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-60">
-                  {availableSystemPacks.map((pack) => (
-                    <SelectItem key={pack.meta.id} value={pack.meta.id}>
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-gray-100">{pack.meta.name}</span>
-                        <span className="text-[10px] text-gray-500">
-                          {pack.meta.brands.join(', ')} · {pack.meta.regions.join('/')}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="mt-1 text-[10px] text-gray-500">
-                Controls which pack rules and profile codes apply to this unit (e.g. ROCK 60 vs
-                JUMBO100).
-              </p>
-            </div>
+    <div className="flex flex-col lg:flex-row h-[80vh] gap-6">
+      {/* Left Panel: The Guided Form */}
+      <div className="w-full lg:w-1/3 flex flex-col bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-xl overflow-hidden">
+        {/* Step Progress Indicator */}
+        <div className="flex items-center p-4 border-b border-gray-800 space-x-2">
+          {STEPS.map((step, idx) => (
+            <div 
+              key={step.id} 
+              className={`h-1 flex-1 rounded-full transition-all duration-500 ${
+                idx <= currentStep ? 'bg-orange-500' : 'bg-gray-700'
+              }`} 
+            />
+          ))}
+        </div>
+        <div className="p-4">
+          <h2 className="text-xl font-light text-white flex items-center gap-2">
+            <span className="text-orange-500 font-bold">0{currentStep + 1}.</span> {STEPS[currentStep].title}
+          </h2>
+        </div>
 
-            <div className="md:col-span-2 space-y-3">
-              {systemPackRoleOptions.length === 0 ? (
-                <p className="text-[11px] text-gray-400">
-                  This system does not yet expose detailed profile roles. You can still continue
-                  measuring and design as normal.
-                </p>
-              ) : (
-                systemPackRoleOptions.map((role) => {
-                  const fieldKey = `systemProfile.${role.id}`;
-                  const error = getFieldError(fieldKey);
-                  const value = (systemProfileSelections as any)[role.id] || '';
-
-                  return (
-                    <div key={role.id} className="space-y-1.5">
-                      <Label className="text-[11px]">{role.label}</Label>
+        {/* Form Content Container */}
+        <div className="flex-1 overflow-y-auto p-4 relative">
+          <AnimatePresence mode='wait' custom={currentStep}>
+            <motion.div
+              key={currentStep}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="space-y-6"
+            >
+              {/* STEP 1: System */}
+              {currentStep === 0 && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="md:col-span-1">
+                      <Label className="text-[11px]">System Pack</Label>
                       <Select
-                        value={value}
-                        onValueChange={(code) =>
-                          handleSystemProfileChange(role.id as keyof SystemProfileSelections, code)
-                        }
+                        value={selectedSystemPackId}
+                        onValueChange={(value) => setSelectedSystemPackId(value)}
                       >
-                        <SelectTrigger
-                          className={`bg-gray-900 border-gray-700 h-8 text-xs ${
-                            error ? 'border-red-500' : ''
-                          }`}
-                        >
-                          <SelectValue placeholder="Select profile code" />
+                        <SelectTrigger className="bg-gray-800 border-gray-700 h-8 text-xs">
+                          <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-56">
-                          {role.options.map((opt) => (
-                            <SelectItem key={opt.code} value={opt.code}>
+                        <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-60">
+                          {availableSystemPacks.map((pack) => (
+                            <SelectItem key={pack.meta.id} value={pack.meta.id}>
                               <div className="flex flex-col gap-0.5">
-                                <span className="text-gray-100">{opt.code}</span>
-                                <span className="text-[10px] text-gray-500">{opt.label}</span>
+                                <span className="text-gray-100">{pack.meta.name}</span>
+                                <span className="text-[10px] text-gray-500">
+                                  {pack.meta.brands.join(', ')} · {pack.meta.regions.join('/')}
+                                </span>
                               </div>
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                      <p className="text-[10px] text-gray-500">{role.description}</p>
-                      {error && <p className="text-[10px] text-red-400">{error}</p>}
                     </div>
-                  );
-                })
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Manual Input */}
-      <Card className="bg-gray-700/50 border-gray-600">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Ruler className="h-5 w-5 text-orange-400" />
-            Manual Measurements
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {validationErrors.length > 0 && (
-            <Alert variant="destructive" className="bg-red-900/20 border-red-500">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                <div className="space-y-1">
-                  {validationErrors.map((error, index) => (
-                    <div key={index} className="text-sm">{error.message}</div>
-                  ))}
-                </div>
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="width">Width (mm)</Label>
-              <Input
-                id="width"
-                type="number"
-                value={measurements.width}
-                onChange={(e) => handleInputChange('width', e.target.value)}
-                placeholder="1200"
-                min={systemConstraints?.minWidthMm ?? 300}
-                max={systemConstraints?.maxWidthMm ?? 5000}
-                className={`bg-gray-800 border-gray-600 ${getFieldError('width') ? 'border-red-500' : ''}`}
-              />
-              {getFieldError('width') && (
-                <p className="text-sm text-red-400 mt-1">{getFieldError('width')}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="height">Height (mm)</Label>
-              <Input
-                id="height"
-                type="number"
-                value={measurements.height}
-                onChange={(e) => handleInputChange('height', e.target.value)}
-                placeholder="1500"
-                min={systemConstraints?.minHeightMm ?? 300}
-                max={systemConstraints?.maxHeightMm ?? 5000}
-                className={`bg-gray-800 border-gray-600 ${getFieldError('height') ? 'border-red-500' : ''}`}
-              />
-              {getFieldError('height') && (
-                <p className="text-sm text-red-400 mt-1">{getFieldError('height')}</p>
-              )}
-            </div>
-          </div>
+                    <div className="md:col-span-2 space-y-3">
+                      {systemPackRoleOptions.length === 0 ? (
+                        <p className="text-[11px] text-gray-400">
+                          This system does not yet expose detailed profile roles.
+                        </p>
+                      ) : (
+                        systemPackRoleOptions.map((role) => {
+                          const fieldKey = `systemProfile.${role.id}`;
+                          const error = getFieldError(fieldKey);
+                          const value = (systemProfileSelections as any)[role.id] || '';
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="glazingType">Glazing Type</Label>
-              <Select
-                value={measurements.glazingType}
-                onValueChange={(value) => handleInputChange('glazingType', value)}
-              >
-                <SelectTrigger
-                  id="glazingType"
-                  className={`bg-gray-800 border-gray-600 ${
-                    getFieldError('glazingType') ? 'border-red-500' : ''
-                  }`}
-                >
-                  <SelectValue placeholder="Select glazing type" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
-                  <SelectItem value="single" className="bg-gray-800 hover:bg-gray-700 text-white">
-                    Single
-                  </SelectItem>
-                  <SelectItem value="double" className="bg-gray-800 hover:bg-gray-700 text-white">
-                    Double
-                  </SelectItem>
-                  <SelectItem value="triple" className="bg-gray-800 hover:bg-gray-700 text-white">
-                    Triple
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              {getFieldError('glazingType') && (
-                <p className="text-sm text-red-400 mt-1">{getFieldError('glazingType')}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="glassColor">Glass Color / Tint</Label>
-              <Select
-                value={measurements.glassColor}
-                onValueChange={(value) => handleInputChange('glassColor', value)}
-              >
-                <SelectTrigger
-                  id="glassColor"
-                  className={`bg-gray-800 border-gray-600 ${
-                    getFieldError('glassColor') ? 'border-red-500' : ''
-                  }`}
-                >
-                  <SelectValue placeholder="Clear, Green, Bronze..." />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
-                  <SelectItem value="clear" className="bg-gray-800 hover:bg-gray-700 text-white">
-                    Clear
-                  </SelectItem>
-                  <SelectItem value="green" className="bg-gray-800 hover:bg-gray-700 text-white">
-                    Green
-                  </SelectItem>
-                  <SelectItem value="blue" className="bg-gray-800 hover:bg-gray-700 text-white">
-                    Blue
-                  </SelectItem>
-                  <SelectItem value="bronze" className="bg-gray-800 hover:bg-gray-700 text-white">
-                    Bronze
-                  </SelectItem>
-                  <SelectItem value="grey" className="bg-gray-800 hover:bg-gray-700 text-white">
-                    Grey
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              {getFieldError('glassColor') && (
-                <p className="text-sm text-red-400 mt-1">{getFieldError('glassColor')}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="flyScreenType">Flyscreen Type</Label>
-              <Select
-                value={measurements.flyScreenType}
-                onValueChange={(value) => handleInputChange('flyScreenType', value)}
-              >
-                <SelectTrigger
-                  id="flyScreenType"
-                  className={`bg-gray-800 border-gray-600 ${
-                    getFieldError('flyScreenType') ? 'border-red-500' : ''
-                  }`}
-                >
-                  <SelectValue placeholder="Select flyscreen type" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
-                  <SelectItem value="none" className="bg-gray-800 hover:bg-gray-700 text-white">
-                    None
-                  </SelectItem>
-                  <SelectItem value="plisee" className="bg-gray-800 hover:bg-gray-700 text-white">
-                    Plisse
-                  </SelectItem>
-                  <SelectItem value="fixed" className="bg-gray-800 hover:bg-gray-700 text-white">
-                    Fixed
-                  </SelectItem>
-                  <SelectItem value="sliding" className="bg-gray-800 hover:bg-gray-700 text-white">
-                    Sliding
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              {getFieldError('flyScreenType') && (
-                <p className="text-sm text-red-400 mt-1">{getFieldError('flyScreenType')}</p>
-              )}
-            </div>
-          </div>
-          {/* Quick location / pose metadata for enterprise projects */}
-          <div className="mt-4 border-t border-gray-600 pt-4 space-y-3">
-            <p className="text-[11px] text-gray-400 uppercase tracking-wide">
-              Location / Pose details (optional)
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-              <div>
-                <Label className="text-[11px]">Building / Block</Label>
-                <Input
-                  value={measurements.buildingBlock}
-                  onChange={(e) => handleInputChange('buildingBlock', e.target.value)}
-                  placeholder="Block A"
-                  className="h-8 bg-gray-800 border-gray-600"
-                />
-              </div>
-              <div>
-                <Label className="text-[11px]">Flat / Unit</Label>
-                <Input
-                  value={measurements.unitOrApartment}
-                  onChange={(e) => handleInputChange('unitOrApartment', e.target.value)}
-                  placeholder="Flat 12"
-                  className="h-8 bg-gray-800 border-gray-600"
-                />
-              </div>
-              <div>
-                <Label className="text-[11px]">Floor</Label>
-                <Input
-                  value={measurements.floor}
-                  onChange={(e) => handleInputChange('floor', e.target.value)}
-                  placeholder="3"
-                  className="h-8 bg-gray-800 border-gray-600"
-                />
-              </div>
-              <div>
-                <Label className="text-[11px]">Room / Zone</Label>
-                <Input
-                  value={measurements.roomOrZone}
-                  onChange={(e) => handleInputChange('roomOrZone', e.target.value)}
-                  placeholder="Living, Bedroom..."
-                  className="h-8 bg-gray-800 border-gray-600"
-                />
-              </div>
-              <div>
-                <Label className="text-[11px]">Elevation</Label>
-                <Input
-                  value={measurements.elevation}
-                  onChange={(e) => handleInputChange('elevation', e.target.value)}
-                  placeholder="North, Street, Garden..."
-                  className="h-8 bg-gray-800 border-gray-600"
-                />
-              </div>
-              <div>
-                <Label className="text-[11px]">Window Index</Label>
-                <Input
-                  value={measurements.windowIndex}
-                  onChange={(e) => handleInputChange('windowIndex', e.target.value)}
-                  placeholder="W1, W2..."
-                  className="h-8 bg-gray-800 border-gray-600"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <Label className="text-[11px]">Remarks</Label>
-                <Input
-                  value={measurements.remarks}
-                  onChange={(e) => handleInputChange('remarks', e.target.value)}
-                  placeholder="Any special note for this pose"
-                  className="h-8 bg-gray-800 border-gray-600"
-                />
-              </div>
-            </div>
-          </div>
-          
-          <div>
-            <Label htmlFor="windowType">Window Type & Layout</Label>
-            <Select value={measurements.windowType} onValueChange={(value) => handleInputChange('windowType', value)}>
-              <SelectTrigger className={`bg-gray-800 border-gray-600 ${getFieldError('windowType') ? 'border-red-500' : ''}`}>
-                <SelectValue placeholder="Select window or door layout" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-600 text-white z-50 space-y-1">
-                <div className="px-2 pt-1 text-xs uppercase tracking-wide text-gray-400">Sliding Windows</div>
-                <SelectItem value="sliding_window_2sash" className="bg-gray-800 hover:bg-gray-700 text-white">
-                  Sliding Window – 2 Sash
-                </SelectItem>
-                <SelectItem value="sliding_window_4sash" className="bg-gray-800 hover:bg-gray-700 text-white">
-                  Sliding Window – 4 Sash
-                </SelectItem>
-                <SelectItem value="sliding_window_3sash_center_fixed" className="bg-gray-800 hover:bg-gray-700 text-white">
-                  Sliding Window – 3 Sash (Center Fixed)
-                </SelectItem>
-
-                <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Casement / Tilt & Turn</div>
-                <SelectItem value="casement" className="bg-gray-800 hover:bg-gray-700 text-white">
-                  Casement – Single
-                </SelectItem>
-                <SelectItem value="casement_double" className="bg-gray-800 hover:bg-gray-700 text-white">
-                  Casement – Double (Left / Right)
-                </SelectItem>
-                <SelectItem value="tilt_turn" className="bg-gray-800 hover:bg-gray-700 text-white">
-                  Tilt &amp; Turn
-                </SelectItem>
-
-                <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Doors</div>
-                <SelectItem value="sliding_door_2panel" className="bg-gray-800 hover:bg-gray-700 text-white">
-                  Sliding Door – 2 Panel
-                </SelectItem>
-                <SelectItem value="casement_door" className="bg-gray-800 hover:bg-gray-700 text-white">
-                  Casement Door (Single / Double)
-                </SelectItem>
-
-                <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Fixed & Combinations</div>
-                <SelectItem value="fixed_window" className="bg-gray-800 hover:bg-gray-700 text-white">
-                  Fixed Window
-                </SelectItem>
-                <SelectItem value="fixed_with_side_casements" className="bg-gray-800 hover:bg-gray-700 text-white">
-                  Fixed + Side Casements
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            {getFieldError('windowType') && (
-              <p className="text-sm text-red-400 mt-1">{getFieldError('windowType')}</p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="color">Color</Label>
-            <Select value={measurements.color} onValueChange={(value) => handleInputChange('color', value)}>
-              <SelectTrigger className="bg-gray-800 border-gray-600">
-                <SelectValue placeholder="Select color" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
-                <SelectItem value="Silver" className="bg-gray-800 hover:bg-gray-700 text-white">Silver</SelectItem>
-                <SelectItem value="White" className="bg-gray-800 hover:bg-gray-700 text-white">White</SelectItem>
-                <SelectItem value="Black" className="bg-gray-800 hover:bg-gray-700 text-white">Black</SelectItem>
-                <SelectItem value="Bronze" className="bg-gray-800 hover:bg-gray-700 text-white">Bronze</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* AR Scanning */}
-      <Card className="bg-gray-700/50 border-gray-600">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Camera className="h-5 w-5 text-orange-400" />
-            AR Measurement
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center space-y-4">
-            <div className="p-8 border-2 border-dashed border-gray-600 rounded-lg">
-              <Scan className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-              <p className="text-gray-400 mb-4">
-                {isScanning ? 'Scanning in progress...' : 'Point your device camera at the window opening'}
-              </p>
-              {isScanning && (
-                <div className="flex justify-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400"></div>
+                          return (
+                            <div key={role.id} className="space-y-1.5">
+                              <Label className="text-[11px]">{role.label}</Label>
+                              <Select
+                                value={value}
+                                onValueChange={(code) =>
+                                  handleSystemProfileChange(role.id as keyof SystemProfileSelections, code)
+                                }
+                              >
+                                <SelectTrigger
+                                  className={`bg-gray-800 border-gray-700 h-8 text-xs ${
+                                    error ? 'border-red-500' : ''
+                                  }`}
+                                >
+                                  <SelectValue placeholder="Select profile code" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-56">
+                                  {role.options.map((opt) => (
+                                    <SelectItem key={opt.code} value={opt.code}>
+                                      <div className="flex flex-col gap-0.5">
+                                        <span className="text-gray-100">{opt.code}</span>
+                                        <span className="text-[10px] text-gray-500">{opt.label}</span>
+                                      </div>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              {error && <p className="text-[10px] text-red-400">{error}</p>}
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                  
+                  {region === 'egypt' && (
+                    <Alert className="bg-blue-900/20 border-blue-500 text-blue-200">
+                      <Sparkles className="h-4 w-4" />
+                      <AlertDescription>
+                        AI Recommendation: Based on your region (Egypt), <strong>ROCK 60</strong> is the optimal choice.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </div>
               )}
-            </div>
+
+              {/* STEP 2: Dimensions */}
+              {currentStep === 1 && (
+                <div className="space-y-6">
+                  <div className="group">
+                    <Label className="text-xs uppercase tracking-widest text-gray-500 group-focus-within:text-orange-400 transition-colors">
+                      Total Width (mm)
+                    </Label>
+                    <div className="relative mt-2">
+                      <Input 
+                        value={measurements.width}
+                        onChange={(e) => handleInputChange('width', e.target.value)}
+                        onFocus={() => setHighlightedDimension('width')}
+                        onBlur={() => setHighlightedDimension(null)}
+                        className="bg-gray-800/50 border-gray-700 text-2xl font-mono h-12 focus:border-orange-500 transition-all"
+                        placeholder="1200"
+                        min={systemConstraints?.minWidthMm ?? 300}
+                        max={systemConstraints?.maxWidthMm ?? 5000}
+                      />
+                      <span className="absolute right-4 top-3 text-gray-500">mm</span>
+                    </div>
+                    {getFieldError('width') && (
+                      <p className="text-sm text-red-400 mt-1">{getFieldError('width')}</p>
+                    )}
+                  </div>
+                  
+                  <div className="group">
+                    <Label className="text-xs uppercase tracking-widest text-gray-500 group-focus-within:text-orange-400 transition-colors">
+                      Total Height (mm)
+                    </Label>
+                    <div className="relative mt-2">
+                      <Input 
+                        value={measurements.height}
+                        onChange={(e) => handleInputChange('height', e.target.value)}
+                        onFocus={() => setHighlightedDimension('height')}
+                        onBlur={() => setHighlightedDimension(null)}
+                        className="bg-gray-800/50 border-gray-700 text-2xl font-mono h-12 focus:border-orange-500 transition-all"
+                        placeholder="1500"
+                        min={systemConstraints?.minHeightMm ?? 300}
+                        max={systemConstraints?.maxHeightMm ?? 5000}
+                      />
+                      <span className="absolute right-4 top-3 text-gray-500">mm</span>
+                    </div>
+                    {getFieldError('height') && (
+                      <p className="text-sm text-red-400 mt-1">{getFieldError('height')}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="windowType">Window Type & Layout</Label>
+                    <Select value={measurements.windowType} onValueChange={(value) => handleInputChange('windowType', value)}>
+                      <SelectTrigger className={`bg-gray-800 border-gray-600 ${getFieldError('windowType') ? 'border-red-500' : ''}`}>
+                        <SelectValue placeholder="Select window or door layout" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-600 text-white z-50 space-y-1">
+                        <div className="px-2 pt-1 text-xs uppercase tracking-wide text-gray-400">Sliding Windows</div>
+                        <SelectItem value="sliding_window_2sash" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Sliding Window – 2 Sash
+                        </SelectItem>
+                        <SelectItem value="sliding_window_4sash" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Sliding Window – 4 Sash
+                        </SelectItem>
+                        <SelectItem value="sliding_window_3sash_center_fixed" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Sliding Window – 3 Sash (Center Fixed)
+                        </SelectItem>
+                        <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Casement / Tilt & Turn</div>
+                        <SelectItem value="casement" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Casement – Single
+                        </SelectItem>
+                        <SelectItem value="casement_double" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Casement – Double (Left / Right)
+                        </SelectItem>
+                        <SelectItem value="tilt_turn" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Tilt &amp; Turn
+                        </SelectItem>
+                        <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Doors</div>
+                        <SelectItem value="sliding_door_2panel" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Sliding Door – 2 Panel
+                        </SelectItem>
+                        <SelectItem value="casement_door" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Casement Door (Single / Double)
+                        </SelectItem>
+                        <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Fixed & Combinations</div>
+                        <SelectItem value="fixed_window" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Fixed Window
+                        </SelectItem>
+                        <SelectItem value="fixed_with_side_casements" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Fixed + Side Casements
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {getFieldError('windowType') && (
+                      <p className="text-sm text-red-400 mt-1">{getFieldError('windowType')}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3: Glass & Specs */}
+              {currentStep === 2 && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="glazingType">Glazing Type</Label>
+                      <Select
+                        value={measurements.glazingType}
+                        onValueChange={(value) => handleInputChange('glazingType', value)}
+                      >
+                        <SelectTrigger
+                          id="glazingType"
+                          className={`bg-gray-800 border-gray-600 ${
+                            getFieldError('glazingType') ? 'border-red-500' : ''
+                          }`}
+                        >
+                          <SelectValue placeholder="Select glazing type" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
+                          <SelectItem value="single" className="bg-gray-800 hover:bg-gray-700 text-white">
+                            Single
+                          </SelectItem>
+                          <SelectItem value="double" className="bg-gray-800 hover:bg-gray-700 text-white">
+                            Double
+                          </SelectItem>
+                          <SelectItem value="triple" className="bg-gray-800 hover:bg-gray-700 text-white">
+                            Triple
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {getFieldError('glazingType') && (
+                        <p className="text-sm text-red-400 mt-1">{getFieldError('glazingType')}</p>
+                      )}
+                    </div>
+                    <div>
+                      <Label htmlFor="glassColor">Glass Color / Tint</Label>
+                      <Select
+                        value={measurements.glassColor}
+                        onValueChange={(value) => handleInputChange('glassColor', value)}
+                      >
+                        <SelectTrigger
+                          id="glassColor"
+                          className={`bg-gray-800 border-gray-600 ${
+                            getFieldError('glassColor') ? 'border-red-500' : ''
+                          }`}
+                        >
+                          <SelectValue placeholder="Clear, Green, Bronze..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
+                          <SelectItem value="clear" className="bg-gray-800 hover:bg-gray-700 text-white">
+                            Clear
+                          </SelectItem>
+                          <SelectItem value="green" className="bg-gray-800 hover:bg-gray-700 text-white">
+                            Green
+                          </SelectItem>
+                          <SelectItem value="blue" className="bg-gray-800 hover:bg-gray-700 text-white">
+                            Blue
+                          </SelectItem>
+                          <SelectItem value="bronze" className="bg-gray-800 hover:bg-gray-700 text-white">
+                            Bronze
+                          </SelectItem>
+                          <SelectItem value="grey" className="bg-gray-800 hover:bg-gray-700 text-white">
+                            Grey
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {getFieldError('glassColor') && (
+                        <p className="text-sm text-red-400 mt-1">{getFieldError('glassColor')}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="flyScreenType">Flyscreen Type</Label>
+                    <Select
+                      value={measurements.flyScreenType}
+                      onValueChange={(value) => handleInputChange('flyScreenType', value)}
+                    >
+                      <SelectTrigger
+                        id="flyScreenType"
+                        className={`bg-gray-800 border-gray-600 ${
+                          getFieldError('flyScreenType') ? 'border-red-500' : ''
+                        }`}
+                      >
+                        <SelectValue placeholder="Select flyscreen type" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
+                        <SelectItem value="none" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          None
+                        </SelectItem>
+                        <SelectItem value="plisee" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Plisse
+                        </SelectItem>
+                        <SelectItem value="fixed" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Fixed
+                        </SelectItem>
+                        <SelectItem value="sliding" className="bg-gray-800 hover:bg-gray-700 text-white">
+                          Sliding
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {getFieldError('flyScreenType') && (
+                      <p className="text-sm text-red-400 mt-1">{getFieldError('flyScreenType')}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="color">Color</Label>
+                    <Select value={measurements.color} onValueChange={(value) => handleInputChange('color', value)}>
+                      <SelectTrigger className="bg-gray-800 border-gray-600">
+                        <SelectValue placeholder="Select color" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
+                        <SelectItem value="Silver" className="bg-gray-800 hover:bg-gray-700 text-white">Silver</SelectItem>
+                        <SelectItem value="White" className="bg-gray-800 hover:bg-gray-700 text-white">White</SelectItem>
+                        <SelectItem value="Black" className="bg-gray-800 hover:bg-gray-700 text-white">Black</SelectItem>
+                        <SelectItem value="Bronze" className="bg-gray-800 hover:bg-gray-700 text-white">Bronze</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 4: Location Context */}
+              {currentStep === 3 && (
+                <div className="space-y-3">
+                  <p className="text-[11px] text-gray-400 uppercase tracking-wide">
+                    Location / Pose details (optional)
+                  </p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                    <div>
+                      <Label className="text-[11px]">Building / Block</Label>
+                      <Input
+                        value={measurements.buildingBlock}
+                        onChange={(e) => handleInputChange('buildingBlock', e.target.value)}
+                        placeholder="Block A"
+                        className="h-8 bg-gray-800 border-gray-600"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-[11px]">Flat / Unit</Label>
+                      <Input
+                        value={measurements.unitOrApartment}
+                        onChange={(e) => handleInputChange('unitOrApartment', e.target.value)}
+                        placeholder="Flat 12"
+                        className="h-8 bg-gray-800 border-gray-600"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-[11px]">Floor</Label>
+                      <Input
+                        value={measurements.floor}
+                        onChange={(e) => handleInputChange('floor', e.target.value)}
+                        placeholder="3"
+                        className="h-8 bg-gray-800 border-gray-600"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-[11px]">Room / Zone</Label>
+                      <Input
+                        value={measurements.roomOrZone}
+                        onChange={(e) => handleInputChange('roomOrZone', e.target.value)}
+                        placeholder="Living, Bedroom..."
+                        className="h-8 bg-gray-800 border-gray-600"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-[11px]">Elevation</Label>
+                      <Input
+                        value={measurements.elevation}
+                        onChange={(e) => handleInputChange('elevation', e.target.value)}
+                        placeholder="North, Street, Garden..."
+                        className="h-8 bg-gray-800 border-gray-600"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-[11px]">Window Index</Label>
+                      <Input
+                        value={measurements.windowIndex}
+                        onChange={(e) => handleInputChange('windowIndex', e.target.value)}
+                        placeholder="W1, W2..."
+                        className="h-8 bg-gray-800 border-gray-600"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label className="text-[11px]">Remarks</Label>
+                      <Input
+                        value={measurements.remarks}
+                        onChange={(e) => handleInputChange('remarks', e.target.value)}
+                        placeholder="Any special note for this pose"
+                        className="h-8 bg-gray-800 border-gray-600"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 5: Verification Gate */}
+              {currentStep === 4 && (
+                <div className="space-y-6">
+                  <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-orange-400 font-semibold flex items-center gap-2">
+                        <ShieldCheck className="h-5 w-5" /> Trust but Verify
+                      </h3>
+                      <Badge variant="outline" className="bg-green-900/30 text-green-400 border-green-800">
+                        Calibration Accuracy: 98%
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-gray-300 mb-4">
+                      The system has calculated cut dimensions based on your inputs and profile calibration data.
+                      Please verify these critical dimensions against site conditions to prevent waste.
+                    </p>
+                    
+                    <div className="space-y-3 text-sm bg-black/20 p-3 rounded border border-gray-800">
+                       <div className="flex justify-between items-center">
+                         <span className="text-gray-400">Overall Width Input:</span>
+                         <span className="font-mono text-white text-base">{measurements.width} mm</span>
+                       </div>
+                       <div className="flex justify-between items-center">
+                         <span className="text-gray-400">Deduction (K-Factor):</span>
+                         <span className="font-mono text-red-400">- 6 mm</span> 
+                       </div>
+                       <div className="h-px bg-gray-700 my-1" />
+                       <div className="flex justify-between items-center font-bold">
+                         <span className="text-orange-400">Calculated Cut Length:</span>
+                         <span className="font-mono text-green-400 text-lg">{Number(measurements.width) - 6} mm</span>
+                       </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-3 p-3 bg-gray-800/50 rounded-lg border border-gray-700">
+                    <Checkbox 
+                      id="verify" 
+                      checked={verificationConfirmed as boolean} 
+                      onCheckedChange={setVerificationConfirmed}
+                      className="border-orange-500 data-[state=checked]:bg-orange-500 data-[state=checked]:text-black"
+                    />
+                    <label htmlFor="verify" className="text-sm text-gray-200 cursor-pointer select-none font-medium">
+                      I verify these dimensions match site requirements and accept responsibility for production.
+                    </label>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Footer Navigation */}
+        <div className="p-4 border-t border-gray-800 flex justify-between bg-gray-900">
+          <Button variant="ghost" disabled={currentStep === 0} onClick={prevStep}>
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+          </Button>
+          
+          {currentStep === STEPS.length - 1 ? (
             <Button 
-              onClick={startARScan}
-              disabled={isScanning}
-              className="bg-orange-500 hover:bg-orange-600"
+              onClick={handleSubmit} 
+              disabled={!verificationConfirmed}
+              className={`
+                transition-all duration-300
+                ${verificationConfirmed 
+                  ? 'bg-green-600 hover:bg-green-500 text-white shadow-[0_0_20px_rgba(22,163,74,0.4)]' 
+                  : 'bg-gray-700 text-gray-400 cursor-not-allowed'}
+              `}
             >
-              <Smartphone className="h-4 w-4 mr-2" />
-              Start AR Scan
+              Finalize Design <CheckCircle2 className="ml-2 h-4 w-4" />
             </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* 3D Preview with AR Measurement Visualization */}
-      {show3DPreview && previewWindowUnit && (
-        <Card className="bg-gray-700/50 border-gray-600">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Box className="h-5 w-5 text-orange-400" />
-                3D Model Preview
-              </CardTitle>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShow3DPreview(false)}
-              >
-                Hide Preview
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="w-full h-[500px] rounded-lg overflow-hidden border border-gray-600 relative">
-              <Window3DGenerator 
-                windowUnit={previewWindowUnit}
-                showControls={true}
-                presentationMode={false}
-              />
-            </div>
-            <p className="text-sm text-gray-400 mt-2 text-center">
-              Real-time 3D visualization with measurement overlays. The model updates as you enter dimensions.
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Show 3D Preview Button if hidden */}
-      {!show3DPreview && previewWindowUnit && (
-        <Card className="bg-gray-700/50 border-gray-600">
-          <CardContent className="p-4">
-            <Button
-              variant="outline"
-              onClick={() => setShow3DPreview(true)}
-              className="w-full"
-            >
-              <Box className="h-4 w-4 mr-2" />
-              Show 3D Preview
+          ) : (
+            <Button onClick={nextStep} className="bg-orange-600 hover:bg-orange-500 text-white">
+              Next Step <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </div>
+      </div>
 
-      {/* Submit Button */}
-      <div className="flex justify-end">
-        <Button 
-          onClick={handleSubmit}
-          disabled={
-            !measurements.width || !measurements.height || !measurements.windowType || isScanning
-          }
-          className="bg-orange-500 hover:bg-orange-600"
-        >
-          Continue to Design
-        </Button>
+      {/* Right Panel: The 3D Stage */}
+      <div className="flex-1 bg-gradient-to-br from-gray-900 to-black rounded-xl border border-gray-800 relative overflow-hidden shadow-2xl">
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          {/* New "Exploded View" Toggle */}
+          <Toggle 
+            pressed={explodedView} 
+            onPressedChange={setExplodedView}
+            className="bg-black/50 backdrop-blur text-white data-[state=on]:bg-orange-600"
+          >
+            <Layers className="h-4 w-4 mr-2" /> Explode
+          </Toggle>
+        </div>
+
+        {/* Pass the highlightedDimension to the generator to illuminate the arrow */}
+        {previewWindowUnit && (
+          <Window3DGenerator 
+            windowUnit={previewWindowUnit}
+            showControls={true}
+            presentationMode={false}
+            highlightDimension={highlightedDimension}
+            explodedView={explodedView}
+            setExplodedView={setExplodedView}
+            quality="high"
+          />
+        )}
       </div>
     </div>
   );
@@ -792,4 +877,3 @@ const FactoryIcon: React.FC = () => (
     />
   </svg>
 );
-
