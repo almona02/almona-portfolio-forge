@@ -78,10 +78,6 @@ export default defineConfig(({ mode }) => {
           // CRITICAL: Ensure index.html is precached
           navigateFallback: '/index.html',
           navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
-          // Explicitly add index.html to precache manifest
-          additionalManifestEntries: [
-            { url: '/index.html', revision: null }
-          ],
           globIgnores: ['**/node_modules/**/*', '**/sw.js', '**/workbox-*.js', '**/registerSW.js'],
           cleanupOutdatedCaches: true,
           skipWaiting: true,
@@ -90,6 +86,38 @@ export default defineConfig(({ mode }) => {
           dontCacheBustURLsMatching: /\.\w{8}\./,
           // Use mode: 'production' to avoid globbing issues
           mode: 'production',
+          // Fix duplicate cache entries by normalizing URLs
+          // This prevents the "add-to-cache-list-conflicting-entries" error
+          manifestTransforms: [
+            (manifestEntries) => {
+              // Map to track unique entries by base URL (without revision parameter)
+              const uniqueEntries = new Map<string, typeof manifestEntries[0]>();
+              
+              for (const entry of manifestEntries) {
+                // Extract base URL without revision parameter
+                // Handle both URL with ?__WB_REVISION__=xxx and without
+                let baseUrl = entry.url;
+                
+                // Remove __WB_REVISION__ query parameter if present
+                baseUrl = baseUrl.replace(/\?__WB_REVISION__=[^&]*/, '').replace(/&__WB_REVISION__=[^&]*/, '');
+                
+                // Normalize: remove trailing slash for consistency (except root)
+                if (baseUrl !== '/' && baseUrl.endsWith('/')) {
+                  baseUrl = baseUrl.slice(0, -1);
+                }
+                
+                // Prefer entry with revision property or URL with revision parameter
+                const hasRevision = entry.revision || entry.url.includes('__WB_REVISION__');
+                const existing = uniqueEntries.get(baseUrl);
+                
+                if (!existing || (hasRevision && !existing.revision && !existing.url.includes('__WB_REVISION__'))) {
+                  uniqueEntries.set(baseUrl, entry);
+                }
+              }
+              
+              return { manifest: Array.from(uniqueEntries.values()) };
+            }
+          ],
           // Fix for crypto.hash compatibility
           runtimeCaching: [
             {

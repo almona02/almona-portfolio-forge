@@ -119,7 +119,7 @@ export const Register = () => {
     <>
       <main 
         className="flex-grow flex items-center justify-center p-4 bg-cover bg-center relative py-12" 
-        style={{ backgroundImage: "url('/images/machines/processing-center.jpg')" }}
+        style={{ backgroundImage: "url('/images/machines/cutting-machine.jpg')" }}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-almona-dark/90 via-almona-dark/70 to-almona-dark/90" />
         <motion.div 
