@@ -338,7 +338,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       systemProfileSelections,
     };
 
-    onMeasurementComplete(payload);
+    // Call the callback
+    if (onMeasurementComplete) {
+        onMeasurementComplete(payload);
+    } else {
+        console.error("onMeasurementComplete callback is missing in SmartMeasuringInterface");
+    }
   };
 
   const startARScan = () => {
