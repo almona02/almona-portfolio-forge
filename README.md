@@ -98,7 +98,33 @@ The Admin Dashboard features a polished glass/opacity UI, live KPI cards, realti
 - **Digital Twin Integration**: Machine lifecycle tracking with unique identifiers
 - **Quote Twin Search Panel**: Customer portal quote tracking system
 
+## 🔄 Fabricator Pro Workflow
 
+The Fabricator Pro module guides users through a closed-loop manufacturing process, ensuring reliability from design to production.
+
+### 1. **System Configuration**
+   - Select from branded System Packs (ROCK 60, JUMBO 100, etc.) or custom profiles.
+   - The system automatically loads relevant constraints (min/max dimensions) and profile roles.
+
+### 2. **Smart Measuring & Design**
+   - **Standard Mode**: Quick input for standard typologies (Sliding 2-Sash, Casement, etc.).
+   - **Grid Mode (New)**: Use the `SmartDrawCanvas` to design complex multi-unit structures by defining rows/cols and clicking cells to toggle types (Fixed, Sash, Panel).
+   - **Validation**: Real-time input validation against system constraints prevents physically impossible designs.
+
+### 3. **Advanced 3D Visualization**
+   - **Realism**: View the unit with PBR materials (glass refraction, metal roughness), spacers, and muntin bars.
+   - **Interaction**: Animate sashes to check opening direction.
+   - **Cross-Section**: Use the "Section View" (Scissors tool) to inspect internal profile geometry and mating details in real-time.
+
+### 4. **Verification Gate ("Trust but Verify")**
+   - A mandatory safety step displaying the explicit math: `Input Dimension - Deduction (K-Factor) = Cut Length`.
+   - Displays a **Calibration Confidence** score based on historical data.
+   - User must explicitly check "I verify" to proceed, recording a verification event in the analytics pipeline.
+
+### 5. **Production & Feedback**
+   - **Production Label**: Generate a printable label with a unique QR code.
+   - **Feedback Loop**: Production floor staff scan the QR code to report fit status (Perfect vs. Adjust).
+   - **Auto-Tuning**: The `CalibrationLearner` AI analyzes feedback and auto-suggests K-factor adjustments for future jobs.
 
 ### 🤖 **AI-Powered Features**
 - **ML Algorithm Predictor**: Machine learning-based algorithm selection (greedy/linear/genetic) with 94% prediction accuracy and automatic learning from optimization results
@@ -210,276 +236,384 @@ The Admin Dashboard features a polished glass/opacity UI, live KPI cards, realti
 
 ### **Frontend Structure**
 ```
-src/
-├── components/           # Reusable UI components
-│   ├── 3d-model/        # 3D viewers and AR components
-│   │   ├── Model3DDialog.tsx
-│   │   ├── EnhancedModel3DDialog.tsx
+almona-portfolio-forge/
+├── src/
+│   ├── components/              # Reusable UI components (370+ files)
+│   │   ├── 3d-model/           # 3D viewers and AR components
+│   │   │   ├── Enhanced3DViewer.tsx
+│   │   │   ├── EnhancedModel3DDialog.tsx
+│   │   │   ├── Model3DDialog.tsx
+│   │   │   ├── Model3DGallery.tsx
+│   │   │   ├── ModelMeasurementTool.tsx
+│   │   │   ├── SwiftXRManager.tsx
+│   │   │   └── UniversalARViewer.tsx
+│   │   ├── fabricator/         # Fabricator Pro components (75+ files)
+│   │   │   ├── __tests__/
+│   │   │   │   └── Reliability.test.tsx   # Critical dimension validation tests
+│   │   │   ├── AccessoryManagement.tsx
+│   │   │   ├── AnatolianCockpit.tsx
+│   │   │   ├── AISuggestionPanel.tsx
+│   │   │   ├── BosphorusWorkflowRibbon.tsx
+│   │   │   ├── CalibrationWizard.tsx
+│   │   │   ├── CommercialOfferPanel.tsx
+│   │   │   ├── CutSimulationViewer.tsx
+│   │   │   ├── CuttingOptimizationEngine.tsx
+│   │   │   ├── DesignInterface.tsx
+│   │   │   ├── FabricatorOnboarding.tsx
+│   │   │   ├── FabricatorWorkflowPro.tsx
+│   │   │   ├── FabricatorWorkspaceLayout.tsx
+│   │   │   ├── InventoryDashboard.tsx
+│   │   │   ├── InventoryManagement.tsx
+│   │   │   ├── KFactorCalculator.tsx
+│   │   │   ├── MachiningZoneEditor.tsx
+│   │   │   ├── MassProductionDashboard.tsx
+│   │   │   ├── NewProjectWizard.tsx
+│   │   │   ├── OptimizationEqualizer.tsx
+│   │   │   ├── PersonalAnalyticsDashboard.tsx
+│   │   │   ├── PricingConfiguration.tsx
+│   │   │   ├── PricingPreview.tsx
+│   │   │   ├── ProductionLabel.tsx        # QR-enabled production labels
+│   │   │   ├── ProductionPreviewDialog.tsx
+│   │   │   ├── ProductionScheduler.tsx
+│   │   │   ├── ProfileCrossSectionViewer.tsx
+│   │   │   ├── ProfileDefinitionWizard.tsx
+│   │   │   ├── ProfileManagement.tsx
+│   │   │   ├── QualityControl.tsx
+│   │   │   ├── QuickReportsPanel.tsx
+│   │   │   ├── RealTimeMonitoring.tsx
+│   │   │   ├── RemnantMarketplacePreview.tsx
+│   │   │   ├── SmartDrawCanvas.tsx        # Grid-based multi-unit designer
+│   │   │   ├── SmartDrawTool.tsx
+│   │   │   ├── SmartMeasuringInterface.tsx
+│   │   │   ├── TechnicalCalculator.tsx
+│   │   │   ├── Window3DGenerator.tsx
+│   │   │   ├── WorkflowProgress.tsx
+│   │   │   └── WorkshopPerformanceWidget.tsx
+│   │   ├── admin/              # Admin dashboard components (18 files)
+│   │   ├── about/              # Company information components
+│   │   ├── ai/                 # AI-powered components
+│   │   ├── analytics/          # Analytics and reporting (8 files)
+│   │   ├── auth/               # Authentication components
+│   │   ├── charts/             # Chart components
+│   │   │   ├── MaterialUtilizationChart.tsx
+│   │   │   └── RemnantLifespanChart.tsx
+│   │   ├── comparison/         # Product comparison tools
+│   │   │   ├── CompareBar.tsx
+│   │   │   ├── CompareDialog.tsx
+│   │   │   └── CompareTable.tsx
+│   │   ├── compliance/         # Compliance and standards
+│   │   ├── contact/            # Contact and support forms (5 files)
+│   │   ├── currency/           # Multi-currency support
+│   │   ├── dashboard/          # Dashboard components (5 files)
+│   │   ├── enterprise/         # Enterprise features
+│   │   │   ├── EnterpriseClientActivation.tsx
+│   │   │   └── WhiteLabelPortal.tsx
+│   │   ├── home/               # Homepage sections (6 files)
+│   │   ├── iot/                # IoT and monitoring
+│   │   ├── layout/             # Navigation and layout components (9 files)
+│   │   │   ├── IndustrialNavbar.tsx
+│   │   │   ├── Footer.tsx
+│   │   │   └── RegionAwareLayout.tsx
+│   │   ├── marketplace/        # Marketplace components
+│   │   ├── mobile/             # Mobile-optimized components
+│   │   ├── monitoring/         # System monitoring
+│   │   ├── optimized/          # Performance-optimized components (7 files)
+│   │   │   ├── VirtualizedMachineGrid.tsx
+│   │   │   ├── MobileOptimizedGrid.tsx
+│   │   │   └── MobileFilterPanel.tsx
+│   │   ├── portal/             # Customer portal components
+│   │   ├── products/           # Product display components (9 files)
+│   │   │   ├── SmartCategoryNavigation.tsx
+│   │   │   └── CategoryBreadcrumb.tsx
+│   │   ├── quotes/             # Quote management components (9 files)
+│   │   │   ├── QuoteRequestDialog.tsx
+│   │   │   ├── QuoteTwinSearchPanel.tsx
+│   │   │   └── QuoteCalculator.tsx
+│   │   ├── regional/           # Region-specific components
+│   │   │   ├── egyptian/       # Egyptian-specific components
+│   │   │   └── turkish/        # Turkish-specific components
+│   │   ├── reports/            # Reporting components (2 files)
+│   │   ├── sales/                # Sales components
+│   │   ├── search/             # Search functionality (2 files)
+│   │   ├── services/           # Service-related components (32 files)
+│   │   │   ├── ServiceCard.tsx
+│   │   │   ├── EmergencyServiceDialog.tsx
+│   │   │   ├── ServiceViewToggle.tsx
+│   │   │   ├── SimpleServicesView.tsx
+│   │   │   ├── MachineRegistrationEnhanced.tsx
+│   │   │   ├── MaintenanceDashboard.tsx
+│   │   │   ├── PredictiveMaintenanceEngine.tsx
+│   │   │   └── OperatorTrainingIncentiveDialog.tsx
+│   │   ├── settings/           # Settings and configuration
+│   │   ├── shared/             # Shared components
+│   │   ├── shop/               # E-commerce components (27 files)
+│   │   │   ├── IndustrialProductCard.tsx
+│   │   │   ├── ProductQuickView.tsx
+│   │   │   ├── RecentlyViewedProducts.tsx
+│   │   │   ├── FreightCalculator.tsx
+│   │   │   ├── EgyptianStandardsGuide.tsx
+│   │   │   ├── EgyptianTechnicalSupportHub.tsx
+│   │   │   └── ai-advisor/
+│   │   │       └── AiEquipmentAdvisor.tsx
+│   │   ├── support/            # Customer support components (13 files)
+│   │   │   ├── TicketWizardDialog.tsx
+│   │   │   └── AITechnicalChatbot.tsx
+│   │   ├── swiftxr/            # SwiftXR AR integration
+│   │   ├── training/           # Training components (2 files)
+│   │   ├── ui/                 # Base UI components (shadcn/ui) (66 files)
+│   │   │   ├── loading/        # Loading state components
+│   │   │   ├── FormSkeleton.tsx
+│   │   │   ├── Progress.tsx
+│   │   │   └── [shadcn/ui components]
+│   │   ├── used-machines/      # Used machinery marketplace (10+ files)
+│   │   │   ├── SellUsedMachineForm.tsx
+│   │   │   ├── UsedMachineCard.tsx
+│   │   │   └── UsedMachineFilters.tsx
+│   │   └── workflows/          # Workflow components
+│   ├── pages/                  # Route components (46 files)
+│   │   ├── About.tsx
+│   │   ├── AdminDashboard.tsx
+│   │   ├── CustomerPortal.tsx
+│   │   ├── FabricatorDashboard.tsx
+│   │   ├── FabricatorWorkflow.tsx
+│   │   ├── FabricationServices.tsx
+│   │   ├── FabricationWorkflowDetail.tsx
+│   │   ├── FabricatorBrandingSettings.tsx
+│   │   ├── Index.tsx
+│   │   ├── Login.tsx
 │   │   ├── Model3DGallery.tsx
-│   │   └── ModelMeasurementTool.tsx
-│   ├── fabricator/      # Fabricator Pro components
-│   │   ├── AccessoryManagement.tsx
-│   │   ├── AnatolianCockpit.tsx
-│   │   ├── AISuggestionPanel.tsx
-│   │   ├── BosphorusWorkflowRibbon.tsx
-│   │   ├── CalibrationWizard.tsx
-│   │   ├── CommercialOfferPanel.tsx
-│   │   ├── CutSimulationViewer.tsx
-│   │   ├── CuttingOptimizationEngine.tsx
-│   │   ├── DesignInterface.tsx
-│   │   ├── FabricatorWorkflowPro.tsx
-│   │   ├── FabricatorWorkspaceLayout.tsx
-│   │   ├── InventoryDashboard.tsx
-│   │   ├── InventoryManagement.tsx
-│   │   ├── KFactorCalculator.tsx
-│   │   ├── MachiningZoneEditor.tsx
-│   │   ├── MassProductionDashboard.tsx
-│   │   ├── NewProjectWizard.tsx
-│   │   ├── OptimizationEqualizer.tsx
-│   │   ├── PersonalAnalyticsDashboard.tsx
-│   │   ├── PricingConfiguration.tsx
-│   │   ├── PricingPreview.tsx
-│   │   ├── ProductionPreviewDialog.tsx
-│   │   ├── ProductionScheduler.tsx
-│   │   ├── ProfileCrossSectionViewer.tsx
-│   │   ├── ProfileDefinitionWizard.tsx
-│   │   ├── ProfileManagement.tsx
-│   │   ├── QualityControl.tsx
-│   │   ├── QuickReportsPanel.tsx
-│   │   ├── RealTimeMonitoring.tsx
-│   │   ├── RemnantMarketplacePreview.tsx
-│   │   ├── SmartDrawTool.tsx
-│   │   ├── SmartMeasuringInterface.tsx
-│   │   ├── TechnicalCalculator.tsx
-│   │   ├── Window3DGenerator.tsx
-│   │   ├── WorkflowProgress.tsx
-│   │   └── WorkshopPerformanceWidget.tsx
-│   ├── about/           # Company information components
-│   ├── admin/           # Admin dashboard components
-│   ├── ai/              # AI-powered components
-│   ├── analytics/       # Analytics and reporting
-│   ├── auth/            # Authentication components
-│   ├── comparison/      # Product comparison tools
-│   │   ├── CompareBar.tsx
-│   │   └── CompareDialog.tsx
-│   ├── compliance/      # Compliance and standards
-│   ├── contact/         # Contact and support forms
-│   ├── currency/        # Multi-currency support
-│   ├── dashboard/       # Dashboard components
-│   ├── enterprise/      # Enterprise features
-│   ├── home/            # Homepage sections
-│   ├── iot/             # IoT and monitoring
-│   ├── layout/          # Navigation and layout components
-│   │   ├── IndustrialNavbar.tsx
-│   │   ├── Footer.tsx
-│   │   └── RegionAwareLayout.tsx
-│   ├── marketplace/     # Marketplace components
-│   ├── mobile/          # Mobile-optimized components
-│   │   └── MobileTicketCreator.tsx
-│   ├── monitoring/      # System monitoring
-│   ├── optimized/       # Performance-optimized components
-│   │   ├── VirtualizedMachineGrid.tsx
-│   │   ├── MobileOptimizedGrid.tsx
-│   │   └── MobileFilterPanel.tsx
-│   ├── portal/          # Customer portal components
-│   │   └── MachineHealthDashboard.tsx
-│   ├── products/        # Product display components
-│   │   ├── SmartCategoryNavigation.tsx
-│   │   └── CategoryBreadcrumb.tsx
-│   ├── quotes/          # Quote management components
-│   │   ├── QuoteRequestDialog.tsx
-│   │   └── QuoteTwinSearchPanel.tsx
-│   ├── regional/        # Region-specific components
-│   ├── reports/         # Reporting components
-│   ├── sales/           # Sales and CRM
-│   ├── search/          # Search functionality
-│   ├── services/        # Service-related components
-│   │   ├── ServiceCard.tsx
-│   │   ├── EmergencyServiceDialog.tsx
-│   │   ├── ServiceViewToggle.tsx
-│   │   ├── SimpleServicesView.tsx
-│   │   ├── MachineRegistrationEnhanced.tsx
-│   │   ├── MaintenanceDashboard.tsx
-│   │   ├── PredictiveMaintenanceEngine.tsx
-│   │   └── OperatorTrainingIncentiveDialog.tsx
-│   ├── settings/        # Settings and configuration
-│   ├── shared/          # Shared components
-│   ├── shop/            # E-commerce components
-│   │   ├── IndustrialProductCard.tsx
-│   │   ├── ProductQuickView.tsx
-│   │   ├── RecentlyViewedProducts.tsx
-│   │   ├── FreightCalculator.tsx
-│   │   ├── EgyptianStandardsGuide.tsx
-│   │   ├── EgyptianTechnicalSupportHub.tsx
-│   │   └── ai-advisor/
-│   │       └── AiEquipmentAdvisor.tsx
-│   ├── support/         # Customer support components
-│   │   ├── TicketWizardDialog.tsx
-│   │   └── AITechnicalChatbot.tsx
-│   ├── swiftxr/         # SwiftXR AR integration
-│   ├── training/        # Training components
-│   ├── ui/              # Base UI components (shadcn/ui)
-│   │   ├── FormSkeleton.tsx
-│   │   └── Progress.tsx
-│   ├── used-machines/   # Used machinery marketplace
-│   │   └── SellUsedMachineForm.tsx
-│   └── workflows/       # Workflow components
-├── pages/               # Route components
-│   ├── About.tsx        # Company information
-│   ├── AdminDashboard.tsx # Admin management
-│   ├── CustomerPortal.tsx # Customer dashboard
-│   ├── FabricatorDashboard.tsx # Fabricator workspace
-│   ├── FabricatorWorkflow.tsx # Main fabricator workflow
-│   ├── FabricationServices.tsx # Fabrication services
-│   ├── FabricationWorkflowDetail.tsx # Workflow details
-│   ├── FabricatorBrandingSettings.tsx # Branding settings
-│   ├── Index.tsx        # Homepage
-│   ├── Login.tsx        # Authentication
-│   ├── Model3DGallery.tsx # 3D model gallery
-│   ├── ModelViewerDemo.tsx # Model viewer demo
-│   ├── Products.tsx     # YILMAZ machines showcase
-│   ├── Projects.tsx     # Project management
-│   ├── QuotePage.tsx    # Quote management
-│   ├── Register.tsx     # User registration
-│   ├── Services.tsx     # AI-powered services
-│   ├── Shop.tsx         # Industrial equipment hub
-│   ├── UsedMachines.tsx # Used machinery marketplace
-│   ├── machines/        # Machine-specific pages
-│   ├── profiles/        # Profile management pages
-│   ├── Services/        # Service sub-pages
-│   └── workflows/       # Workflow sub-pages
-├── hooks/               # Custom React hooks
-│   ├── useVirtualizedMachines.ts
-│   ├── useScrollThreshold.ts
-│   ├── useToast.ts
-│   └── useReducedMotionPref.ts
-├── lib/                 # Utility libraries
-│   ├── ai/             # AI service integrations
-│   ├── analytics/      # Business intelligence
-│   │   ├── CalibrationAnalytics.ts
-│   │   ├── ConsumptionForecaster.ts
+│   │   ├── Products.tsx
+│   │   ├── Projects.tsx
+│   │   ├── QuotePage.tsx
+│   │   ├── Register.tsx
+│   │   ├── Services.tsx
+│   │   ├── Shop.tsx
+│   │   ├── UsedMachines.tsx
+│   │   ├── machines/           # Machine-specific pages
+│   │   │   └── MachineDetail.tsx
+│   │   ├── profiles/           # Profile management pages
+│   │   │   └── ProfileDetail.tsx
+│   │   └── workflows/          # Workflow sub-pages
+│   │       └── WorkflowDetail.tsx
+│   ├── hooks/                   # Custom React hooks (23 files)
+│   │   ├── useVirtualizedMachines.ts
+│   │   ├── useScrollThreshold.ts
+│   │   ├── useToast.ts
+│   │   ├── useReducedMotionPref.ts
+│   │   ├── usePythonAPI.ts
+│   │   ├── useAutoSave.ts
+│   │   └── [other custom hooks]
+│   ├── lib/                     # Utility libraries (161 files)
+│   │   ├── 3d/                  # 3D utilities
+│   │   │   └── windowGeometry.ts
+│   │   ├── ai/                  # AI service integrations (6 files)
+│   │   │   ├── DesignAISuggestor.ts
+│   │   │   ├── EquipmentRecommendationEngine.ts
+│   │   │   └── SparePartsService.ts
+│   │   ├── analytics/           # Business intelligence (15 files)
+│   │   │   ├── CalibrationAnalytics.ts
+│   │   │   ├── ConsumptionForecaster.ts
+│   │   │   ├── CostOptimizer.ts
+│   │   │   ├── FeatureEngineer.ts
+│   │   │   ├── JobComplexityPredictor.ts
+│   │   │   ├── PersonalAnalytics.ts
+│   │   │   ├── PerformanceBenchmarker.ts
+│   │   │   └── WorkshopPerformanceAnalytics.ts
+│   │   ├── api/                 # API clients (2 files)
+│   │   ├── calibration/         # Calibration management (3 files)
+│   │   │   ├── CalibrationManager.ts
+│   │   │   ├── EnhancedCalibrationManager.ts
+│   │   │   └── KFactorEngine.ts
+│   │   ├── clients/             # Supabase clients (5 files)
+│   │   ├── cnc/                 # CNC integration
+│   │   │   └── CNCIntegration.ts
+│   │   ├── data/                # Data clients (11 files)
+│   │   │   ├── activityClient.ts
+│   │   │   ├── catalogClient.ts
+│   │   │   └── ordersClient.ts
+│   │   ├── exports/             # Export generators (14 files)
+│   │   │   ├── CSVExportGenerator.ts
+│   │   │   ├── DXFExportGenerator.ts
+│   │   │   ├── PDFExportGenerator.ts
+│   │   │   └── QRBarcodeGenerator.ts
+│   │   ├── inventory/           # Inventory management (6 files)
+│   │   │   ├── RemnantManager.ts
+│   │   │   ├── RemnantMarketplace.ts
+│   │   │   └── RemnantPredictor.ts
+│   │   ├── ml/                  # Machine learning (5 files)
+│   │   │   ├── AlgorithmPredictor.ts
+│   │   │   ├── CalibrationLearner.ts
+│   │   │   ├── ModelTrainer.ts
+│   │   │   ├── RemnantUsagePredictor.ts
+│   │   │   └── TrainingDataCollector.ts
+│   │   ├── optimization/       # Optimization strategies
+│   │   │   └── OptimizationPresets.ts
+│   │   ├── profile/             # Profile management (2 files)
+│   │   │   ├── ProfileDataSheetParser.ts
+│   │   │   └── ProfileDefinitionManager.ts
+│   │   ├── simulation/          # Cut simulation
+│   │   │   └── CutSimulator.ts
+│   │   ├── quality/             # Quality prediction
+│   │   │   └── AIQualityPredictor.ts
+│   │   ├── regional/           # Regional localization
+│   │   │   └── RegionalLocalizationEngine.ts
+│   │   ├── reports/             # Report generation (6 files)
+│   │   ├── supplychain/         # Supply chain intelligence
+│   │   │   └── SupplyChainIntelligence.ts
+│   │   ├── ticketing/           # Unified ticketing system
+│   │   ├── workspace/           # Workspace synchronization
+│   │   │   └── WorkspaceSyncService.ts
+│   │   ├── supabase.ts          # Supabase client
+│   │   ├── i18n.ts              # Internationalization
+│   │   └── utils.ts             # Utility functions
+│   ├── algorithms/              # Optimization algorithms (13 files)
+│   │   ├── adaptiveSolver.ts
+│   │   ├── EnhancedAdaptiveSolver.ts
+│   │   ├── HybridMassOptimizer.ts
+│   │   ├── linearProgramming.ts
+│   │   ├── remnantManagement.ts
+│   │   ├── simulatedAnnealing.ts
+│   │   ├── smartDraw.ts
+│   │   └── productionScheduling/
+│   ├── analytics/               # Analytics utilities (5 files)
 │   │   ├── CostOptimizer.ts
-│   │   ├── FeatureEngineer.ts
-│   │   ├── JobComplexityPredictor.ts
-│   │   ├── PersonalAnalytics.ts
-│   │   ├── PerformanceBenchmarker.ts
-│   │   └── WorkshopPerformanceAnalytics.ts
-│   ├── calibration/    # Calibration management
-│   │   ├── CalibrationManager.ts
-│   │   ├── EnhancedCalibrationManager.ts
-│   │   └── KFactorEngine.ts
-│   ├── ml/             # Machine learning
-│   │   ├── AlgorithmPredictor.ts
-│   │   ├── CalibrationLearner.ts
-│   │   ├── ModelTrainer.ts
-│   │   ├── RemnantUsagePredictor.ts
-│   │   └── TrainingDataCollector.ts
-│   ├── optimization/   # Optimization strategies
-│   │   └── OptimizationPresets.ts
-│   ├── profile/        # Profile management
-│   │   ├── ProfileDataSheetParser.ts
-│   │   └── ProfileDefinitionManager.ts
-│   ├── simulation/     # Cut simulation
-│   │   └── CutSimulator.ts
-│   ├── inventory/      # Inventory management
-│   │   ├── RemnantManager.ts
-│   │   ├── RemnantMarketplace.ts
-│   │   └── RemnantPredictor.ts
-│   ├── ml/             # Machine learning
-│   │   ├── AlgorithmPredictor.ts
-│   │   ├── CalibrationLearner.ts
-│   │   ├── ModelTrainer.ts
-│   │   ├── RemnantUsagePredictor.ts
-│   │   └── TrainingDataCollector.ts
-│   ├── analytics/      # Business intelligence
-│   │   ├── CalibrationAnalytics.ts
-│   │   ├── ConsumptionForecaster.ts
-│   │   ├── CostOptimizer.ts
-│   │   ├── FeatureEngineer.ts
-│   │   ├── JobComplexityPredictor.ts
-│   │   ├── PersonalAnalytics.ts
-│   │   ├── PerformanceBenchmarker.ts
-│   │   └── WorkshopPerformanceAnalytics.ts
-│   ├── optimization/   # Optimization strategies
-│   │   └── OptimizationPresets.ts
-│   ├── profile/        # Profile management
-│   │   ├── ProfileDataSheetParser.ts
-│   │   └── ProfileDefinitionManager.ts
-│   ├── simulation/     # Cut simulation
-│   │   └── CutSimulator.ts
-│   ├── quality/        # Quality prediction
-│   │   └── AIQualityPredictor.ts
-│   ├── regional/       # Regional localization
-│   │   └── RegionalLocalizationEngine.ts
-│   ├── supplychain/    # Supply chain intelligence
-│   │   └── SupplyChainIntelligence.ts
-│   ├── comparisonStorage.ts # Comparison persistence
-│   ├── i18n.ts         # Internationalization
-│   ├── performance.ts  # Performance monitoring
-│   ├── imageOptimization.ts # Image optimization
-│   ├── pricing/        # Pricing utilities
-│   └── ticketing/      # Unified ticketing system
-├── context/            # React context providers
-│   ├── AuthContext.tsx
-│   ├── FabricatorWorkspaceContext.tsx
-│   └── QuoteContext.tsx
-├── constants/          # Static data and configurations
-│   ├── yilmazMachines.ts
-│   ├── productsData.ts
-│   ├── uniqueProductsData.ts
-│   └── smartCategories.ts
-├── data/               # Mock data and fixtures
-│   ├── inventory.ts
-│   └── usedMachines.ts
-├── types/              # TypeScript type definitions
-│   ├── fabricator.ts   # Fabricator-specific types
-│   └── index.ts        # Main type definitions
-├── shared/             # Shared UI components
-│   └── ui/            # shadcn/ui components
-├── assets/             # Static assets and images
-├── algorithms/         # Optimization algorithms
-│   ├── adaptiveSolver.ts
-│   ├── EnhancedAdaptiveSolver.ts
-│   ├── geneticOptimization.ts
-│   ├── greedyHeuristic.ts
-│   ├── HybridMassOptimizer.ts
-│   ├── linearProgramming.ts
-│   ├── massProductionOptimizer.ts
-│   ├── remnantManagement.ts
-│   ├── simulatedAnnealing.ts
-│   └── smartDraw.ts
-├── cloud/              # Cloud integration
-├── config/             # Configuration files
-├── hocs/               # Higher-order components
-├── integrations/       # Third-party integrations
-├── localization/       # Localization utilities
-├── machine-connectors/ # CNC machine connectors
-├── modules/            # Feature modules
-├── optimization/       # Cutting optimization
-├── routes/             # Routing configuration
-├── services/           # Service layer
-├── store/              # State management
-├── stories/            # Storybook stories
-├── styles/             # Styling utilities
-└── utils/              # Utility functions
+│   │   └── PredictiveAnalytics.ts
+│   ├── context/                 # React context providers (5 files)
+│   │   ├── AuthContext.tsx
+│   │   ├── FabricatorWorkspaceContext.tsx
+│   │   └── QuoteContext.tsx
+│   ├── contexts/                # Additional contexts (2 files)
+│   ├── constants/               # Static data and configurations (9 files)
+│   │   ├── yilmazMachines.ts
+│   │   ├── productsData.ts
+│   │   └── smartCategories.ts
+│   ├── data/                    # Mock data and fixtures
+│   │   ├── profileSystems/      # Profile system definitions (5 files)
+│   │   ├── supplierProfiles/    # Supplier profile data
+│   │   │   ├── profileDatabase.ts
+│   │   │   └── supplierAPI.ts
+│   │   ├── systemPacks.ts
+│   │   └── usedMachines.ts
+│   ├── types/                   # TypeScript type definitions (13 files)
+│   │   ├── fabricator.ts
+│   │   ├── database.ts
+│   │   ├── product.ts
+│   │   └── index.ts
+│   ├── shared/                  # Shared UI components (70 files)
+│   │   └── ui/                  # shadcn/ui components (66 files)
+│   │       ├── CircuitDivider.tsx
+│   │       ├── NeonButton.tsx
+│   │       └── ui/              # Base UI components
+│   ├── assets/                  # Static assets and images
+│   ├── cloud/                   # Cloud integration (5 files)
+│   ├── compliance/              # Compliance utilities (5 files)
+│   ├── config/                  # Configuration files
+│   │   └── regionalConfig.ts
+│   ├── hocs/                    # Higher-order components
+│   │   └── withErrorBoundary.tsx
+│   ├── integrations/            # Third-party integrations (14 files)
+│   │   ├── cnc/                 # CNC machine connectors
+│   │   │   ├── BiesseCNC.ts
+│   │   │   ├── ElumatecCNC.ts
+│   │   │   └── YilmazCNC.ts
+│   │   └── yilmaz/              # Yilmaz-specific integrations
+│   │       ├── YilmazCNC.ts
+│   │       └── YilmazGCodeGenerator.ts
+│   ├── localization/            # Localization utilities (4 files)
+│   ├── machine-connectors/      # CNC machine connectors (4 files)
+│   │   ├── YilmazNetworkProtocol.ts
+│   │   └── YilmazUSBBridge.ts
+│   ├── modules/                  # Feature modules (28 files)
+│   ├── optimization/            # Cutting optimization (4 files)
+│   ├── routes/                   # Routing configuration (2 files)
+│   │   ├── AppRoutes.tsx
+│   │   └── TrainingServicesPage.tsx
+│   ├── services/                 # Service layer (5 files)
+│   │   ├── SearchAnalyticsTracker.ts
+│   │   └── RelatedMachinesEngine.ts
+│   ├── store/                    # State management
+│   │   └── jobsStore.ts
+│   ├── stories/                  # Storybook stories (26 files)
+│   ├── styles/                   # Styling utilities
+│   │   └── mobile-scaling.css
+│   ├── tests/                    # Test files (8 files)
+│   │   ├── integration/         # Integration tests
+│   │   ├── performance/         # Performance tests
+│   │   └── deployment/           # Deployment tests
+│   └── utils/                    # Utility functions (4 files)
+│       ├── excelImport.ts
+│       └── priceUtils.ts
+├── python_backend/               # Python FastAPI backend
+│   ├── apis/                    # API route handlers (47 files)
+│   │   ├── v1/                   # Version 1 API endpoints
+│   │   └── v2/                   # Version 2 API endpoints
+│   ├── ai_services/             # AI and ML services (15 files)
+│   │   ├── part_detection/      # Computer vision for parts
+│   │   │   ├── inference.py
+│   │   │   ├── v1/               # Version 1 models
+│   │   │   └── v2/               # Version 2 models
+│   │   ├── preprocessing/       # Image processing utilities
+│   │   ├── predictive_maintenance.py
+│   │   └── recommendation_engine.py
+│   ├── core/                    # Core application logic (20 files)
+│   │   ├── config.py
+│   │   ├── database.py
+│   │   ├── security.py
+│   │   └── monitoring.py
+│   ├── models/                   # Pydantic data models (4 files)
+│   │   ├── api_v1_models.py
+│   │   └── api_v2_models.py
+│   ├── services/                 # Business logic services
+│   │   └── unified_ticket_service.py
+│   ├── tasks/                    # Background tasks (4 files)
+│   │   ├── notification_tasks.py
+│   │   └── quote_tasks.py
+│   ├── templates/                # Email templates (4 files)
+│   ├── tests/                    # Comprehensive test suite (17 files)
+│   │   ├── test_api.py
+│   │   ├── test_integration.py
+│   │   └── test_performance.py
+│   ├── monitoring/               # Performance monitoring
+│   ├── scripts/                  # Utility scripts (2 files)
+│   └── uploads/                  # File upload handling
+├── migrations/                   # Database migrations (35 SQL files)
+├── docs/                         # Documentation (21 files)
+├── public/                       # Static public assets (100 files)
+├── locales/                      # Translation files (56 JSON files)
+├── scripts/                      # Build and utility scripts (21 files)
+├── k8s/                          # Kubernetes deployment configs
+│   ├── eu-production/            # EU production configs
+│   └── monitoring/               # Monitoring configs
+└── [config files]                # Root-level configuration files
+    ├── package.json
+    ├── vite.config.ts
+    ├── tsconfig.json
+    └── vercel.json
 ```
 
-### **Backend Structure**
-```
-python_backend/
-├── apis/               # API route handlers
-│   ├── v1/            # Version 1 API endpoints
-│   └── v2/            # Version 2 API endpoints
-├── ai_services/       # AI and ML services
-│   ├── part_detection/ # Computer vision for parts
-│   └── preprocessing/ # Image processing utilities
-├── core/              # Core application logic
-├── models/            # Pydantic data models
-├── templates/         # Email templates
-├── tests/             # Comprehensive test suite
-├── monitoring/        # Performance monitoring
-└── uploads/           # File upload handling
-```
+### **Key Directory Descriptions**
+
+**Frontend (`src/`):**
+- **`components/`**: 370+ React components organized by feature domain
+- **`lib/`**: 161 utility libraries for AI, analytics, exports, inventory, ML, etc.
+- **`algorithms/`**: 13 optimization algorithms for cutting and production
+- **`pages/`**: 46 route components for different application pages
+- **`hooks/`**: 23 custom React hooks for reusable logic
+- **`types/`**: 13 TypeScript type definition files
+- **`shared/ui/`**: 70 shared UI components including shadcn/ui base components
+
+**Backend (`python_backend/`):**
+- **`apis/`**: FastAPI route handlers with v1 and v2 endpoints
+- **`ai_services/`**: ML models and AI services for part detection and predictions
+- **`core/`**: Core application logic, database, security, and monitoring
+- **`models/`**: Pydantic data models for API validation
+- **`tests/`**: Comprehensive test suite with integration and performance tests
+
+**Configuration & Infrastructure:**
+- **`migrations/`**: 35 SQL migration files for database schema
+- **`k8s/`**: Kubernetes deployment configurations
+- **`locales/`**: 56 JSON translation files for internationalization
+- **`public/`**: 100 static assets (images, PDFs, etc.)
 
 ## 🗄️ Database Schema
 
@@ -497,6 +631,7 @@ python_backend/
 - **workshop_metrics**: Daily OEE and performance metrics
 - **operator_metrics**: Operator performance tracking
 - **optimization_training_data**: ML model training data collection
+- **calibration_analytics**: Verification events, test results, and production feedback logging
 
 ### **Unified Ticketing System**
 The unified ticket model consolidates support, maintenance, and emergency tickets with digital twin integration. See migration scripts for full implementation details.
@@ -672,6 +807,8 @@ Notes
 - `NewProjectWizard` - Smart project creation with branded system packs
 - `SmartMeasuringInterface` - AI-powered measurement and design interface
 - `SmartDrawTool` - Intelligent mullion/transom placement with constraints
+- `SmartDrawCanvas` - Grid-based multi-unit window designer
+- `ProductionLabel` - QR-enabled production labels for feedback loops
 - `QualityControl` - Computer vision inspection and defect detection
 - `ProductionScheduler` - CNC job sequencing and machine-ready exports
 - `RealTimeMonitoring` - Live performance metrics and efficiency tracking
@@ -750,10 +887,7 @@ Notes
 - `SensorDataAnalysis` - Vibration, temperature, acoustic monitoring
 - `AutomatedWorkflowGeneration` - AI-powered process optimization
 - `NaturalLanguageProcessing` - Technical document analysis
-- `ComputerVision` - Quality control and part identification
-- `AITechnicalChatbot` - Customer support automation
-- `AI Sales Acceleration` - Lead scoring and automated proposal generation
-- `PredictiveAnalyticsPlatform` - Machine learning trend forecasting
+- **CalibrationLearner** - Auto-tuning K-factors based on production feedback
 
 ### **UI/UX Components**
 - `NeonButton` - Industrial-themed button components
@@ -888,7 +1022,16 @@ For technical support or questions:
 
 ## 🔄 Recent Updates
 
-### **Version 4.0 - The Intelligent Engine** (Latest - Complete AI Integration)
+### **Version 5.0 - The Reliability & Realism Update** (Latest - Nov 2025)
+A massive overhaul of the Fabricator Pro module focusing on visual fidelity, data reliability, and closing the loop between design and production.
+- ✅ **Visual Realism (PBR)**: High-fidelity 3D rendering with Physically Based Rendering materials (glass refraction, metal roughness), spacer bars, and muntin grids.
+- ✅ **Reliability (Verification Gate)**: New "Trust but Verify" workflow step displaying explicit math (`Input - Deduction = Cut Length`) and calibration confidence scores.
+- ✅ **Multi-Unit Grid Design**: Introduced `SmartDrawCanvas` for designing complex multi-unit windows using a grid system (Rows/Cols) with intelligent mullion and transom insertion.
+- ✅ **Advanced Animation**: Interactive sash opening and closing (Standard and Grid modes) to verify opening direction and clearance.
+- ✅ **Real-Time Cross-Section**: "Scissors" tool providing a live cross-section view of the 3D model to inspect profile mating and internal geometry.
+- ✅ **Production Loop (QR Labels)**: Generate printable labels (`ProductionLabel`) with QR codes. Scanning the code links to a feedback form that auto-tunes the system's K-factors via `CalibrationLearner`.
+
+### **Version 4.0 - The Intelligent Engine**
 - ✅ **Profile Calibration Wizard**: Complete profile definition system from technical data sheets without DXF dependency. Visual cross-section viewer with annotation support, K-Factor Calculator with real-time formulas, and initial calibration setup.
 - ✅ **Pre-Production Visual Verification**: Mandatory safety gate with 2D/3D cut simulation, calibration status validation, and visual confirmation before generating cut lists or G-code. Prevents costly production mistakes.
 - ✅ **Optimization Equalizer**: User control over optimization strategy with presets (Maximum Savings, Fast Production, Remnant Reuse, Balanced) and fine-grained weight sliders. Real-time impact preview and strategy persistence.
