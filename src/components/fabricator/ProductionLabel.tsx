@@ -1,5 +1,5 @@
 import React from 'react';
-import QRCode from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
 import { Printer, QrCode, CheckCircle2, AlertCircle } from 'lucide-react';
@@ -86,7 +86,7 @@ export const ProductionLabel: React.FC<ProductionLabelProps> = ({ windowUnit, on
           {/* Feedback Loop Section */}
           <div className="flex gap-4 items-center border-t-2 border-black pt-4">
             <div className="bg-white p-1 border border-gray-300 rounded">
-               <QRCode value={feedbackUrl} size={80} />
+               <QRCodeCanvas value={feedbackUrl} size={80} />
             </div>
             <div className="flex-1">
                <h4 className="font-bold text-sm flex items-center gap-1">
