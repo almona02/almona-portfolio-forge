@@ -943,6 +943,43 @@ function mergeBoxGeometries(geometries: THREE.BufferGeometry[]): THREE.BufferGeo
 // ============================================================================
 
 /**
+ * Calculate recommended material thickness and reinforcement needs
+ */
+function calculateMaterialThickness(
+  width: number,
+  height: number,
+  material: MaterialType
+): {
+  recommendedWallThickness: number;
+  reinforcementSpecs?: ReinforcementChannel[];
+} {
+  // Default baseline
+  let recommendedWallThickness = 1.5;
+  let reinforcementSpecs: ReinforcementChannel[] | undefined = undefined;
+
+  if (material === 'aluminum') {
+    // Heuristic: Thicker walls for larger windows
+    if (width > 1500 || height > 2000) {
+      recommendedWallThickness = 2.0;
+    }
+    
+    // Add reinforcement for large spans
+    if (width > 1200 || height > 1500) {
+       reinforcementSpecs = generateReinforcementChannels(width, height);
+    }
+  } else if (material === 'upvc') {
+     recommendedWallThickness = 3.0;
+     // UPVC almost always needs steel reinforcement for structural integrity
+     reinforcementSpecs = generateReinforcementChannels(width, height);
+  }
+
+  return {
+    recommendedWallThickness,
+    reinforcementSpecs
+  };
+}
+
+/**
  * Generate complete frame geometry for a window unit
  */
 export function generateFrameGeometry(
