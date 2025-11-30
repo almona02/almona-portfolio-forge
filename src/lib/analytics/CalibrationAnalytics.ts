@@ -66,6 +66,18 @@ export interface VerificationEvent {
   timestamp: Date;
 }
 
+export interface ProductionFeedback {
+  windowUnitId: string;
+  systemPackId: string;
+  status: 'perfect' | 'adjust';
+  notes?: string;
+  adjustments?: {
+    widthDelta?: number; // How much was it off by?
+    heightDelta?: number;
+  };
+  timestamp: Date;
+}
+
 export class CalibrationAnalytics {
   /**
    * Record a calibration test result
@@ -202,6 +214,54 @@ export class CalibrationAnalytics {
       });
     } catch (error) {
       console.error('Error recording verification event:', error);
+    }
+  }
+
+  /**
+   * Record production floor feedback from QR codes
+   * This closes the loop and provides the ground truth for auto-tuning
+   */
+  async recordProductionFeedback(feedback: ProductionFeedback): Promise<void> {
+    try {
+      // 1. Store the raw feedback event
+      await this.storeAnalyticsRecord('production_feedback', {
+        window_unit_id: feedback.windowUnitId,
+        system_pack_id: feedback.systemPackId,
+        status: feedback.status,
+        notes: feedback.notes,
+        width_delta: feedback.adjustments?.widthDelta,
+        height_delta: feedback.adjustments?.heightDelta,
+        timestamp: feedback.timestamp.toISOString()
+      });
+
+      // 2. If feedback indicates adjustment needed, trigger auto-tune logic
+      if (feedback.status === 'adjust' && feedback.adjustments) {
+        await this.autoTuneKFactor(feedback);
+      }
+    } catch (error) {
+      console.error('Error recording production feedback:', error);
+    }
+  }
+
+  /**
+   * Auto-tune K-factors based on feedback (Simulation for MVP)
+   */
+  private async autoTuneKFactor(feedback: ProductionFeedback): Promise<void> {
+    // In a real system, this would query historical data and run a regression.
+    // For MVP, we just log that we "would" update the K-factor.
+    console.log(`[CalibrationLearner] Auto-tuning triggered for System Pack: ${feedback.systemPackId}`);
+    
+    if (feedback.adjustments?.widthDelta && Math.abs(feedback.adjustments.widthDelta) > 0) {
+       console.log(`[CalibrationLearner] Suggesting Width Deduction Adjustment: ${feedback.adjustments.widthDelta > 0 ? 'Increase' : 'Decrease'} by ${Math.abs(feedback.adjustments.widthDelta)}mm`);
+       
+       // Simulate recording an automated adjustment recommendation
+       await this.storeAnalyticsRecord('adjustment_suggestion', {
+         system_pack_id: feedback.systemPackId,
+         suggested_delta: feedback.adjustments.widthDelta,
+         reason: 'production_feedback_loop',
+         confidence: 0.85,
+         timestamp: new Date().toISOString()
+       });
     }
   }
 

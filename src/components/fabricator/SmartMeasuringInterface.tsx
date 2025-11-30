@@ -9,13 +9,14 @@ import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Toggle } from '@/shared/ui/ui/toggle';
 import { Checkbox } from '@/shared/ui/ui/checkbox';
 import { Badge } from '@/shared/ui/ui/badge';
-import { Ruler, Camera, Scan, Smartphone, AlertCircle, Box, CheckCircle2, ArrowRight, ArrowLeft, Factory, Sparkles, Layers, ShieldCheck, Grid3X3 } from 'lucide-react';
+import { Ruler, Camera, Scan, Smartphone, AlertCircle, Box, CheckCircle2, ArrowRight, ArrowLeft, Factory, Sparkles, Layers, ShieldCheck, Grid3X3, QrCode } from 'lucide-react';
 import { MeasurementData, SystemProfileSelections, WindowUnit, WindowGrid } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateMeasurements, ValidationError, getConstraintsForSystemPack } from '@/lib/fabricatorValidation';
 import { Window3DGenerator, WindowMeasurementOverlay } from './Window3DGenerator';
-import { SmartDrawCanvas } from './SmartDrawCanvas'; // Import the new Grid Editor
+import { SmartDrawCanvas } from './SmartDrawCanvas';
 import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
+import { ProductionLabel } from './ProductionLabel';
 
 interface SmartMeasuringInterfaceProps {
   onMeasurementComplete: (data: MeasurementData) => void;
@@ -80,6 +81,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   const [highlightedDimension, setHighlightedDimension] = useState<'width' | 'height' | null>(null);
   const [explodedView, setExplodedView] = useState(false);
   const [verificationConfirmed, setVerificationConfirmed] = useState<boolean | 'indeterminate'>(false);
+  const [showLabel, setShowLabel] = useState(false);
 
   // Defined Steps
   const STEPS = [
@@ -101,9 +103,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     }
 
     return {
-      id: 'preview',
-      orderNumber: 'PREVIEW',
-      posNumber: 'PREVIEW',
+      id: 'preview-unit-id', // Fixed ID for preview
+      orderNumber: 'ORD-2024-001', // Mock order number
+      posNumber: measurements.windowIndex || 'W-01', // Mock pos
       type: measurements.windowType || 'sliding_window',
       components: [],
       overallWidth: width,
@@ -120,10 +122,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       optimization: null,
       createdAt: new Date(),
       updatedAt: new Date(),
+      systemPackId: selectedSystemPackId,
       // Attach Grid if in Grid Mode
       grid: isGridMode ? grid : undefined
     };
-  }, [measurements, grid, isGridMode]);
+  }, [measurements, grid, isGridMode, selectedSystemPackId]);
 
   const handleInputChange = (field: string, value: string) => {
     setMeasurements(prev => ({ ...prev, [field]: value }));
@@ -354,6 +357,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
   return (
     <div className="flex flex-col lg:flex-row h-[80vh] gap-6">
+      {/* Label Modal */}
+      {showLabel && previewWindowUnit && (
+        <ProductionLabel 
+          windowUnit={previewWindowUnit} 
+          onClose={() => setShowLabel(false)} 
+        />
+      )}
+
       {/* Left Panel: The Guided Form */}
       <div className="w-full lg:w-1/3 flex flex-col bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-xl overflow-hidden">
         {/* Step Progress Indicator */}
@@ -854,18 +865,31 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           </Button>
           
           {currentStep === STEPS.length - 1 ? (
-            <Button 
-              onClick={handleSubmit} 
-              disabled={!verificationConfirmed}
-              className={`
-                transition-all duration-300
-                ${verificationConfirmed 
-                  ? 'bg-green-600 hover:bg-green-500 text-white shadow-[0_0_20px_rgba(22,163,74,0.4)]' 
-                  : 'bg-gray-700 text-gray-400 cursor-not-allowed'}
-              `}
-            >
-              Finalize Design <CheckCircle2 className="ml-2 h-4 w-4" />
-            </Button>
+            <div className="flex gap-2">
+              {/* Print Label Button - Enabled only after verification */}
+              {verificationConfirmed && (
+                <Button
+                  variant="outline"
+                  onClick={() => setShowLabel(true)}
+                  className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                >
+                  <QrCode className="mr-2 h-4 w-4" /> Print Label
+                </Button>
+              )}
+
+              <Button 
+                onClick={handleSubmit} 
+                disabled={!verificationConfirmed}
+                className={`
+                  transition-all duration-300
+                  ${verificationConfirmed 
+                    ? 'bg-green-600 hover:bg-green-500 text-white shadow-[0_0_20px_rgba(22,163,74,0.4)]' 
+                    : 'bg-gray-700 text-gray-400 cursor-not-allowed'}
+                `}
+              >
+                Finalize Design <CheckCircle2 className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
           ) : (
             <Button onClick={nextStep} className="bg-orange-600 hover:bg-orange-500 text-white">
               Next Step <ArrowRight className="ml-2 h-4 w-4" />
