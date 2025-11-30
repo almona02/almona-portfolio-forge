@@ -64,6 +64,30 @@ export interface WindowUnit {
     /** Remnant IDs that were sourced from other projects for this unit */
     crossProjectRemnantsUsed?: string[];
   };
+  /** 
+   * Grid layout for multi-unit structures
+   * @since Phase 4
+   */
+  grid?: WindowGrid;
+}
+
+/**
+ * Grid Layout Definitions for Phase 4
+ */
+export interface WindowGrid {
+  rows: number;
+  cols: number;
+  cells: GridCell[];
+}
+
+export interface GridCell {
+  id: string;
+  row: number;
+  col: number;
+  rowSpan?: number;
+  colSpan?: number;
+  type: 'fixed' | 'sash' | 'panel' | 'empty';
+  componentId?: string; // Links to a specific component definition if needed
 }
 
 export interface WindowComponent {
@@ -649,4 +673,3 @@ export interface ProfileAccessoryCompatibilityRow {
   accessory_id: string;
   created_at: string;
 }
-

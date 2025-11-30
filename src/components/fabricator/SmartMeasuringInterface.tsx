@@ -9,11 +9,12 @@ import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Toggle } from '@/shared/ui/ui/toggle';
 import { Checkbox } from '@/shared/ui/ui/checkbox';
 import { Badge } from '@/shared/ui/ui/badge';
-import { Ruler, Camera, Scan, Smartphone, AlertCircle, Box, CheckCircle2, ArrowRight, ArrowLeft, Factory, Sparkles, Layers, ShieldCheck } from 'lucide-react';
-import { MeasurementData, SystemProfileSelections, WindowUnit } from '@/types/fabricator';
+import { Ruler, Camera, Scan, Smartphone, AlertCircle, Box, CheckCircle2, ArrowRight, ArrowLeft, Factory, Sparkles, Layers, ShieldCheck, Grid3X3 } from 'lucide-react';
+import { MeasurementData, SystemProfileSelections, WindowUnit, WindowGrid } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateMeasurements, ValidationError, getConstraintsForSystemPack } from '@/lib/fabricatorValidation';
 import { Window3DGenerator, WindowMeasurementOverlay } from './Window3DGenerator';
+import { SmartDrawCanvas } from './SmartDrawCanvas'; // Import the new Grid Editor
 import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
 
 interface SmartMeasuringInterfaceProps {
@@ -33,7 +34,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     // Default professional stub dimensions – can be refined per system later.
     width: '1200',
     height: '1200',
-    windowType: '',
+    windowType: 'sliding_window', // Default to sliding
     color: '',
     glazingType: '',
     glassColor: '',
@@ -47,6 +48,15 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     windowIndex: '',
     remarks: '',
   });
+
+  // Grid State for Phase 4
+  const [grid, setGrid] = useState<WindowGrid>({
+    rows: 1,
+    cols: 1,
+    cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }]
+  });
+  
+  const [isGridMode, setIsGridMode] = useState(false);
 
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>(() => {
     if (systemPackId) return systemPackId;
@@ -74,7 +84,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   // Defined Steps
   const STEPS = [
     { id: 'system', title: 'System Configuration', icon: Factory },
-    { id: 'dimensions', title: 'Precise Dimensions', icon: Ruler },
+    { id: 'dimensions', title: 'Dimensions & Layout', icon: Ruler },
     { id: 'specs', title: 'Glass & Specs', icon: Box },
     { id: 'location', title: 'Location Context', icon: CheckCircle2 },
     { id: 'verify', title: 'Verification', icon: ShieldCheck },
@@ -109,9 +119,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       status: 'design',
       optimization: null,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      // Attach Grid if in Grid Mode
+      grid: isGridMode ? grid : undefined
     };
-  }, [measurements]);
+  }, [measurements, grid, isGridMode]);
 
   const handleInputChange = (field: string, value: string) => {
     setMeasurements(prev => ({ ...prev, [field]: value }));
@@ -458,7 +470,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 </div>
               )}
 
-              {/* STEP 2: Dimensions */}
+              {/* STEP 2: Dimensions & Layout */}
               {currentStep === 1 && (
                 <div className="space-y-6">
                   <div className="group">
@@ -505,51 +517,83 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     )}
                   </div>
 
-                  <div>
-                    <Label htmlFor="windowType">Window Type & Layout</Label>
-                    <Select value={measurements.windowType} onValueChange={(value) => handleInputChange('windowType', value)}>
-                      <SelectTrigger className={`bg-gray-800 border-gray-600 ${getFieldError('windowType') ? 'border-red-500' : ''}`}>
-                        <SelectValue placeholder="Select window or door layout" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-600 text-white z-50 space-y-1">
-                        <div className="px-2 pt-1 text-xs uppercase tracking-wide text-gray-400">Sliding Windows</div>
-                        <SelectItem value="sliding_window_2sash" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Sliding Window – 2 Sash
-                        </SelectItem>
-                        <SelectItem value="sliding_window_4sash" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Sliding Window – 4 Sash
-                        </SelectItem>
-                        <SelectItem value="sliding_window_3sash_center_fixed" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Sliding Window – 3 Sash (Center Fixed)
-                        </SelectItem>
-                        <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Casement / Tilt & Turn</div>
-                        <SelectItem value="casement" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Casement – Single
-                        </SelectItem>
-                        <SelectItem value="casement_double" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Casement – Double (Left / Right)
-                        </SelectItem>
-                        <SelectItem value="tilt_turn" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Tilt &amp; Turn
-                        </SelectItem>
-                        <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Doors</div>
-                        <SelectItem value="sliding_door_2panel" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Sliding Door – 2 Panel
-                        </SelectItem>
-                        <SelectItem value="casement_door" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Casement Door (Single / Double)
-                        </SelectItem>
-                        <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Fixed & Combinations</div>
-                        <SelectItem value="fixed_window" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Fixed Window
-                        </SelectItem>
-                        <SelectItem value="fixed_with_side_casements" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Fixed + Side Casements
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {getFieldError('windowType') && (
-                      <p className="text-sm text-red-400 mt-1">{getFieldError('windowType')}</p>
+                  <div className="space-y-3 border-t border-gray-800 pt-4">
+                    <div className="flex items-center justify-between">
+                      <Label className="flex items-center gap-2 cursor-pointer">
+                        <Grid3X3 className="h-4 w-4 text-orange-400" />
+                        <span>Grid / Multi-Unit Mode</span>
+                      </Label>
+                      <Toggle 
+                        pressed={isGridMode} 
+                        onPressedChange={setIsGridMode}
+                        className="data-[state=on]:bg-orange-600"
+                        size="sm"
+                      >
+                        {isGridMode ? 'On' : 'Off'}
+                      </Toggle>
+                    </div>
+
+                    {isGridMode ? (
+                      <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                         <p className="text-xs text-gray-400">
+                           Design complex multi-unit windows by defining rows and columns. Click cells on the grid below to change their type.
+                         </p>
+                         <SmartDrawCanvas 
+                            width={Number(measurements.width) || 1000}
+                            height={Number(measurements.height) || 1000}
+                            grid={grid}
+                            onGridChange={setGrid}
+                            className="border border-orange-500/20 rounded-lg p-2 bg-orange-500/5"
+                         />
+                      </div>
+                    ) : (
+                      <div>
+                        <Label htmlFor="windowType">Window Type & Layout</Label>
+                        <Select value={measurements.windowType} onValueChange={(value) => handleInputChange('windowType', value)}>
+                          <SelectTrigger className={`bg-gray-800 border-gray-600 ${getFieldError('windowType') ? 'border-red-500' : ''}`}>
+                            <SelectValue placeholder="Select window or door layout" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-gray-800 border-gray-600 text-white z-50 space-y-1">
+                            <div className="px-2 pt-1 text-xs uppercase tracking-wide text-gray-400">Sliding Windows</div>
+                            <SelectItem value="sliding_window_2sash" className="bg-gray-800 hover:bg-gray-700 text-white">
+                              Sliding Window – 2 Sash
+                            </SelectItem>
+                            <SelectItem value="sliding_window_4sash" className="bg-gray-800 hover:bg-gray-700 text-white">
+                              Sliding Window – 4 Sash
+                            </SelectItem>
+                            <SelectItem value="sliding_window_3sash_center_fixed" className="bg-gray-800 hover:bg-gray-700 text-white">
+                              Sliding Window – 3 Sash (Center Fixed)
+                            </SelectItem>
+                            <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Casement / Tilt & Turn</div>
+                            <SelectItem value="casement" className="bg-gray-800 hover:bg-gray-700 text-white">
+                              Casement – Single
+                            </SelectItem>
+                            <SelectItem value="casement_double" className="bg-gray-800 hover:bg-gray-700 text-white">
+                              Casement – Double (Left / Right)
+                            </SelectItem>
+                            <SelectItem value="tilt_turn" className="bg-gray-800 hover:bg-gray-700 text-white">
+                              Tilt &amp; Turn
+                            </SelectItem>
+                            <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Doors</div>
+                            <SelectItem value="sliding_door_2panel" className="bg-gray-800 hover:bg-gray-700 text-white">
+                              Sliding Door – 2 Panel
+                            </SelectItem>
+                            <SelectItem value="casement_door" className="bg-gray-800 hover:bg-gray-700 text-white">
+                              Casement Door (Single / Double)
+                            </SelectItem>
+                            <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Fixed & Combinations</div>
+                            <SelectItem value="fixed_window" className="bg-gray-800 hover:bg-gray-700 text-white">
+                              Fixed Window
+                            </SelectItem>
+                            <SelectItem value="fixed_with_side_casements" className="bg-gray-800 hover:bg-gray-700 text-white">
+                              Fixed + Side Casements
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {getFieldError('windowType') && (
+                          <p className="text-sm text-red-400 mt-1">{getFieldError('windowType')}</p>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
