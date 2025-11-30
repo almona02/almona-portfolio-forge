@@ -102,9 +102,18 @@ export interface GlassLayer {
   type: 'single' | 'double' | 'triple';
   spacer?: {
     width: number;
+    height: number;
     material: 'aluminum' | 'warm_edge' | 'foam';
     thickness: number;
+    position: number;
   };
+}
+
+export interface MuntinConfig {
+  type: 'grid' | 'cross' | 'diamond' | 'perimeter' | 'none';
+  pattern?: { rows: number; cols: number }; // For grid
+  width?: number; // Bar width (mm)
+  thickness?: number; // Bar thickness (mm)
 }
 
 export interface OpeningPath {
@@ -144,8 +153,15 @@ export interface FrameGeometry {
     openingPath?: OpeningPath;
   };
   glass: GlassLayer[];
+  spacers: GlassLayer['spacer'][];
   mullions: MullionConnection[];
   transoms: MullionConnection[];
+  muntins?: {
+    config: MuntinConfig;
+    width: number;
+    height: number;
+    position: number;
+  };
 }
 
 // ============================================================================
@@ -295,23 +311,35 @@ export function calculateGlassPocket(
   pocketWidth: number;
   pocketDepth: number;
   glassLayers: GlassLayer[];
-  spacerPositions: number[];
+  spacers: GlassLayer['spacer'][];
 } {
   const pocketWidth = profile.glassPocket.width;
   const pocketDepth = profile.glassPocket.depth;
   const bottomClearance = profile.glassPocket.bottomClearance;
 
   const glassLayers: GlassLayer[] = [];
-  const spacerPositions: number[] = [];
+  const spacers: GlassLayer['spacer'][] = [];
 
-  let currentZ = bottomClearance;
+  // Center the glazing unit within the pocket depth
+  let totalThickness = 0;
+  const spacerThickness = 12; // Default spacer thickness
+  
+  if (glazingType === 'single') {
+    totalThickness = glassThickness;
+  } else if (glazingType === 'double') {
+    totalThickness = glassThickness * 2 + spacerThickness;
+  } else if (glazingType === 'triple') {
+    totalThickness = glassThickness * 3 + spacerThickness * 2;
+  }
+  
+  let currentZ = (pocketDepth - totalThickness) / 2;
 
   if (glazingType === 'single') {
     glassLayers.push({
-      width: pocketWidth - 2, // 1mm clearance on each side
-      height: pocketDepth - bottomClearance - 2, // 1mm clearance on top
+      width: pocketWidth - 2,
+      height: pocketDepth - bottomClearance - 2,
       thickness: glassThickness,
-      position: currentZ,
+      position: currentZ + glassThickness / 2,
       type: 'single',
     });
   } else if (glazingType === 'double') {
@@ -320,27 +348,30 @@ export function calculateGlassPocket(
       width: pocketWidth - 2,
       height: pocketDepth - bottomClearance - 2,
       thickness: glassThickness,
-      position: currentZ,
+      position: currentZ + glassThickness / 2,
       type: 'double',
     });
 
-    currentZ += glassThickness + 12; // 12mm spacer
+    currentZ += glassThickness;
 
     // Spacer
-    spacerPositions.push(currentZ - 6);
+    spacers.push({
+      width: pocketWidth - 2 - 10, // Inset
+      height: pocketDepth - bottomClearance - 2 - 10, // Inset
+      material: 'warm_edge',
+      thickness: spacerThickness,
+      position: currentZ + spacerThickness / 2,
+    });
+    
+    currentZ += spacerThickness;
 
     // Second glass pane
     glassLayers.push({
       width: pocketWidth - 2,
       height: pocketDepth - bottomClearance - 2,
       thickness: glassThickness,
-      position: currentZ,
+      position: currentZ + glassThickness / 2,
       type: 'double',
-      spacer: {
-        width: pocketWidth - 2,
-        material: 'warm_edge',
-        thickness: 12,
-      },
     });
   } else if (glazingType === 'triple') {
     // First glass pane
@@ -348,42 +379,52 @@ export function calculateGlassPocket(
       width: pocketWidth - 2,
       height: pocketDepth - bottomClearance - 2,
       thickness: glassThickness,
-      position: currentZ,
+      position: currentZ + glassThickness / 2,
       type: 'triple',
     });
 
-    currentZ += glassThickness + 12; // First spacer
-    spacerPositions.push(currentZ - 6);
+    currentZ += glassThickness;
+
+    // First Spacer
+    spacers.push({
+      width: pocketWidth - 2 - 10,
+      height: pocketDepth - bottomClearance - 2 - 10,
+      material: 'warm_edge',
+      thickness: spacerThickness,
+      position: currentZ + spacerThickness / 2,
+    });
+    
+    currentZ += spacerThickness;
 
     // Second glass pane
     glassLayers.push({
       width: pocketWidth - 2,
       height: pocketDepth - bottomClearance - 2,
       thickness: glassThickness,
-      position: currentZ,
+      position: currentZ + glassThickness / 2,
       type: 'triple',
-      spacer: {
-        width: pocketWidth - 2,
-        material: 'warm_edge',
-        thickness: 12,
-      },
     });
 
-    currentZ += glassThickness + 12; // Second spacer
-    spacerPositions.push(currentZ - 6);
+    currentZ += glassThickness;
+
+    // Second Spacer
+    spacers.push({
+      width: pocketWidth - 2 - 10,
+      height: pocketDepth - bottomClearance - 2 - 10,
+      material: 'warm_edge',
+      thickness: spacerThickness,
+      position: currentZ + spacerThickness / 2,
+    });
+    
+    currentZ += spacerThickness;
 
     // Third glass pane
     glassLayers.push({
       width: pocketWidth - 2,
       height: pocketDepth - bottomClearance - 2,
       thickness: glassThickness,
-      position: currentZ,
+      position: currentZ + glassThickness / 2,
       type: 'triple',
-      spacer: {
-        width: pocketWidth - 2,
-        material: 'warm_edge',
-        thickness: 12,
-      },
     });
   }
 
@@ -391,7 +432,7 @@ export function calculateGlassPocket(
     pocketWidth,
     pocketDepth,
     glassLayers,
-    spacerPositions,
+    spacers,
   };
 }
 
@@ -804,191 +845,97 @@ export function calculateOpeningPath(
 }
 
 // ============================================================================
-// MATERIAL THICKNESS AND REINFORCEMENT CALCULATIONS
+// MUNTIN BAR GENERATION
 // ============================================================================
 
 /**
- * Calculate required material thickness based on window dimensions and loads
+ * Generate geometry for muntin bars (grids)
  */
-export function calculateMaterialThickness(
+export function generateMuntinBarGeometry(
   width: number,
   height: number,
-  material: MaterialType,
-  windLoad: number = 1200, // Pa (Pascal)
-  safetyFactor: number = 2.0
-): {
-  requiredThickness: number;
-  recommendedThickness: number;
-  reinforcementRequired: boolean;
-  reinforcementSpecs?: ReinforcementChannel[];
-} {
-  // Calculate wind pressure on window
-  const area = (width / 1000) * (height / 1000); // Convert to m²
-  const totalLoad = windLoad * area; // N (Newton)
+  config: MuntinConfig
+): THREE.BufferGeometry | null {
+  if (!config || config.type === 'none') return null;
 
-  let requiredThickness: number;
-  let recommendedThickness: number;
-  let reinforcementRequired = false;
+  const barWidth = (config.width || 18) / 1000; // Default 18mm, convert to meters
+  const barThickness = (config.thickness || 5) / 1000; // Default 5mm
+  const rows = config.pattern?.rows || 2;
+  const cols = config.pattern?.cols || 2;
 
-  if (material === 'aluminum') {
-    // Aluminum strength: ~275 MPa yield strength
-    const maxStress = 275e6; // Pa
-    const moment = (totalLoad * height) / 8; // N·m (simplified beam calculation)
-    const sectionModulus = moment / (maxStress / safetyFactor);
-    
-    // Simplified thickness calculation
-    requiredThickness = Math.sqrt(sectionModulus / (width / 1000)) * 1000; // Convert to mm
-    recommendedThickness = Math.max(requiredThickness, 1.5); // Minimum 1.5mm
+  const geometries: THREE.BufferGeometry[] = [];
 
-    // Reinforcement required for large windows
-    if (width > 2000 || height > 2000 || totalLoad > 5000) {
-      reinforcementRequired = true;
+  // Horizontal Bars
+  if (rows > 0) {
+    const rowSpacing = height / (rows + 1);
+    for (let i = 1; i <= rows; i++) {
+      const geometry = new THREE.BoxGeometry(width, barWidth, barThickness);
+      geometry.translate(0, -height/2 + rowSpacing * i, 0);
+      geometries.push(geometry);
     }
-  } else if (material === 'upvc') {
-    // UPVC strength: ~50 MPa yield strength
-    const maxStress = 50e6; // Pa
-    const moment = (totalLoad * height) / 8;
-    const sectionModulus = moment / (maxStress / safetyFactor);
-    
-    requiredThickness = Math.sqrt(sectionModulus / (width / 1000)) * 1000;
-    recommendedThickness = Math.max(requiredThickness, 2.5); // Minimum 2.5mm
+  }
 
-    // UPVC typically doesn't use steel reinforcement, but may need thicker walls
-    if (width > 2500 || height > 2500 || totalLoad > 4000) {
-      reinforcementRequired = true;
-      recommendedThickness = Math.max(recommendedThickness, 3.5);
+  // Vertical Bars
+  if (cols > 0) {
+    const colSpacing = width / (cols + 1);
+    for (let i = 1; i <= cols; i++) {
+      const geometry = new THREE.BoxGeometry(barWidth, height, barThickness);
+      geometry.translate(-width/2 + colSpacing * i, 0, 0);
+      geometries.push(geometry);
     }
-  } else {
-    // Default values
-    requiredThickness = 2.0;
-    recommendedThickness = 2.5;
   }
+  
+  if (geometries.length === 0) return null;
 
-  let reinforcementSpecs: ReinforcementChannel[] | undefined;
-  if (reinforcementRequired && material === 'aluminum') {
-    reinforcementSpecs = generateReinforcementChannels(width, height);
-  }
-
-  return {
-    requiredThickness,
-    recommendedThickness,
-    reinforcementRequired,
-    reinforcementSpecs,
-  };
+  // Manual merge function to avoid dependency on BufferGeometryUtils
+  return mergeBoxGeometries(geometries);
 }
 
-/**
- * Calculate reinforcement requirements for large windows
- */
-export function calculateReinforcement(
-  width: number,
-  height: number,
-  material: MaterialType,
-  profile: ProfileCrossSection
-): {
-  required: boolean;
-  channels: ReinforcementChannel[];
-  positions: number[];
-} {
-  const area = (width / 1000) * (height / 1000);
-  const requiresReinforcement = area > 4 || width > 2500 || height > 2500;
-
-  if (!requiresReinforcement || material !== 'aluminum') {
-    return {
-      required: false,
-      channels: [],
-      positions: [],
-    };
-  }
-
-  const channels = generateReinforcementChannels(profile.outerWidth, profile.outerHeight);
-  const positions = channels.map(ch => ch.position);
-
-  return {
-    required: true,
-    channels,
-    positions,
-  };
-}
-
-// ============================================================================
-// MULLION AND TRANSOM CONNECTION CALCULATIONS
-// ============================================================================
-
-/**
- * Calculate mullion connection geometry
- */
-export function calculateMullionConnection(
-  type: 'T' | 'L' | 'X' | 'corner',
-  position: { x: number; y: number; z: number },
-  profile: ProfileCrossSection,
-  connectionDepth: number = 50
-): MullionConnection {
-  const fasteners: MullionConnection['fasteners'] = [];
-
-  // Calculate fastener positions based on connection type
-  if (type === 'T' || type === 'X') {
-    // Fasteners on both sides
-    fasteners.push(
-      {
-        type: 'screw',
-        position: { x: -profile.outerWidth / 4, y: 0 },
-        diameter: 5.0,
-      },
-      {
-        type: 'screw',
-        position: { x: profile.outerWidth / 4, y: 0 },
-        diameter: 5.0,
-      },
-      {
-        type: 'screw',
-        position: { x: 0, y: -profile.outerHeight / 4 },
-        diameter: 5.0,
-      },
-      {
-        type: 'screw',
-        position: { x: 0, y: profile.outerHeight / 4 },
-        diameter: 5.0,
-      }
-    );
-  } else if (type === 'L' || type === 'corner') {
-    // Fasteners on two adjacent sides
-    fasteners.push(
-      {
-        type: 'screw',
-        position: { x: -profile.outerWidth / 4, y: 0 },
-        diameter: 5.0,
-      },
-      {
-        type: 'screw',
-        position: { x: profile.outerWidth / 4, y: 0 },
-        diameter: 5.0,
-      },
-      {
-        type: 'screw',
-        position: { x: 0, y: -profile.outerHeight / 4 },
-        diameter: 5.0,
-      }
-    );
-  }
-
-  return {
-    type,
-    position,
-    connectionDepth,
-    fasteners,
-  };
-}
-
-/**
- * Calculate transom connection (horizontal mullion)
- */
-export function calculateTransomConnection(
-  position: { x: number; y: number; z: number },
-  profile: ProfileCrossSection,
-  connectionDepth: number = 50
-): MullionConnection {
-  return calculateMullionConnection('T', position, profile, connectionDepth);
+function mergeBoxGeometries(geometries: THREE.BufferGeometry[]): THREE.BufferGeometry {
+  if (geometries.length === 0) return new THREE.BufferGeometry();
+  if (geometries.length === 1) return geometries[0];
+  
+  let totalVertices = 0;
+  let totalIndices = 0;
+  
+  geometries.forEach(g => {
+    totalVertices += g.attributes.position.count;
+    if (g.index) totalIndices += g.index.count;
+  });
+  
+  const positionArray = new Float32Array(totalVertices * 3);
+  const normalArray = new Float32Array(totalVertices * 3);
+  const uvArray = new Float32Array(totalVertices * 2);
+  const indexArray = new Uint16Array(totalIndices);
+  
+  let offset = 0;
+  let indexOffset = 0;
+  
+  geometries.forEach(g => {
+    const positions = g.attributes.position.array;
+    const normals = g.attributes.normal.array;
+    const uvs = g.attributes.uv.array;
+    const indices = g.index ? g.index.array : [];
+    
+    positionArray.set(positions, offset * 3);
+    normalArray.set(normals, offset * 3);
+    uvArray.set(uvs, offset * 2);
+    
+    for (let i = 0; i < indices.length; i++) {
+      indexArray[indexOffset + i] = offset + indices[i];
+    }
+    
+    offset += g.attributes.position.count;
+    indexOffset += indices.length;
+  });
+  
+  const merged = new THREE.BufferGeometry();
+  merged.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
+  merged.setAttribute('normal', new THREE.BufferAttribute(normalArray, 3));
+  merged.setAttribute('uv', new THREE.BufferAttribute(uvArray, 2));
+  merged.setIndex(new THREE.BufferAttribute(indexArray, 1));
+  
+  return merged;
 }
 
 // ============================================================================
@@ -1004,7 +951,8 @@ export function generateFrameGeometry(
   profile: Profile,
   windowType: WindowType,
   glazingType: 'single' | 'double' | 'triple' = 'double',
-  component?: WindowComponent
+  component?: WindowComponent,
+  muntinConfig?: MuntinConfig
 ): FrameGeometry {
   const material = (profile.material?.toLowerCase() || 'aluminum') as MaterialType;
   const profileCrossSection = generateProfileCrossSection(profile, material);
@@ -1029,30 +977,62 @@ export function generateFrameGeometry(
     profileCrossSection.reinforcementChannels = thicknessCalc.reinforcementSpecs;
   }
 
+  // Calculate dimensions
+  const frameDepth = profileCrossSection.outerHeight;
+  // Sash calculations
+  let sash: FrameGeometry['sash'];
+  let glassWidth = width - profileCrossSection.outerWidth * 2;
+  let glassHeight = height - profileCrossSection.outerWidth * 2;
+
+  if (windowType !== 'fixed_window') {
+    const sashProfile = generateProfileCrossSection(profile, material);
+    const sashWidth = width - profileCrossSection.outerWidth * 2 - 10;
+    const sashHeight = height - profileCrossSection.outerWidth * 2 - 10;
+    
+    sash = {
+      width: sashWidth,
+      height: sashHeight,
+      depth: sashProfile.outerHeight,
+      profile: sashProfile,
+      openingPath,
+    };
+    
+    // Refine glass size for sash
+    glassWidth = sashWidth - sashProfile.outerWidth * 2;
+    glassHeight = sashHeight - sashProfile.outerWidth * 2;
+  }
+
+  // Determine muntin bars
+  let muntins: FrameGeometry['muntins'] = undefined;
+  if (muntinConfig && muntinConfig.type !== 'none') {
+     let zPos = profileCrossSection.glassPocket.depth / 2;
+     if (glassPocket.spacers.length > 0) {
+        zPos = glassPocket.spacers[0].position;
+     }
+     
+     muntins = {
+       config: muntinConfig,
+       width: glassWidth,
+       height: glassHeight,
+       position: zPos
+     };
+  }
+
   // Generate frame geometry
   const frameGeometry: FrameGeometry = {
     frame: {
       width,
       height,
-      depth: profileCrossSection.outerHeight,
+      depth: frameDepth,
       profile: profileCrossSection,
     },
+    sash,
     glass: glassPocket.glassLayers,
+    spacers: glassPocket.spacers,
     mullions: [],
     transoms: [],
+    muntins
   };
-
-  // Add sash if window is not fixed
-  if (windowType !== 'fixed_window') {
-    const sashProfile = generateProfileCrossSection(profile, material);
-    frameGeometry.sash = {
-      width: width - profileCrossSection.outerWidth * 2 - 10, // Account for frame overlap
-      height: height - profileCrossSection.outerWidth * 2 - 10,
-      depth: sashProfile.outerHeight,
-      profile: sashProfile,
-      openingPath,
-    };
-  }
 
   return frameGeometry;
 }
@@ -1067,6 +1047,8 @@ export function frameGeometryToThreeJS(
   frame: THREE.BufferGeometry;
   sash?: THREE.BufferGeometry;
   glass: THREE.BufferGeometry[];
+  spacers: THREE.BufferGeometry[];
+  muntins?: THREE.BufferGeometry;
 } {
   // Frame geometry
   const frameShape = new THREE.Shape();
@@ -1131,15 +1113,55 @@ export function frameGeometryToThreeJS(
     });
   }
 
-  // Glass geometries
+  // Glass geometries - UPDATED
   const glassGeometries = geometry.glass.map((layer) => {
     return new THREE.BoxGeometry(layer.width, layer.height, layer.thickness);
   });
+  
+  // Spacer geometries - UPDATED
+  const spacerGeometries = geometry.spacers.map((spacer) => {
+    // Spacer is a hollow frame, not a solid block
+    const spacerShape = new THREE.Shape();
+    spacerShape.moveTo(0, 0);
+    spacerShape.lineTo(spacer.width, 0);
+    spacerShape.lineTo(spacer.width, spacer.height);
+    spacerShape.lineTo(0, spacer.height);
+    spacerShape.lineTo(0, 0);
+    
+    const spacerThickness = 10; // 10mm wide spacer bar (visual width)
+    const hole = new THREE.Path();
+    hole.moveTo(spacerThickness, spacerThickness);
+    hole.lineTo(spacer.width - spacerThickness, spacerThickness);
+    hole.lineTo(spacer.width - spacerThickness, spacer.height - spacerThickness);
+    hole.lineTo(spacerThickness, spacer.height - spacerThickness);
+    hole.lineTo(spacerThickness, spacerThickness);
+    spacerShape.holes.push(hole);
+    
+    const spacerGeom = new THREE.ExtrudeGeometry(spacerShape, {
+        depth: spacer.thickness,
+        bevelEnabled: false
+    });
+    spacerGeom.center();
+    return spacerGeom;
+  });
+  
+  // Muntin Geometry
+  let muntinGeometry: THREE.BufferGeometry | undefined;
+  if (geometry.muntins) {
+     const geom = generateMuntinBarGeometry(
+         geometry.muntins.width, 
+         geometry.muntins.height, 
+         geometry.muntins.config
+     );
+     if (geom) muntinGeometry = geom;
+  }
 
   return {
     frame: frameGeometry,
     sash: sashGeometry,
     glass: glassGeometries,
+    spacers: spacerGeometries,
+    muntins: muntinGeometry
   };
 }
 
@@ -1198,4 +1220,3 @@ export function calculateWeight(
   const density = densities[material] || 2000;
   return (volume / 1e9) * density; // Convert mm³ to m³, then multiply by density
 }
-

@@ -50,6 +50,22 @@ export interface CalibrationJobResult {
   notes?: string;
 }
 
+export interface VerificationEvent {
+  userId: string;
+  systemPackId: string;
+  measurements: {
+    width: number;
+    height: number;
+    windowType: string;
+  };
+  calculations: {
+    deduction: number;
+    cutLength: number;
+  };
+  durationSeconds: number; // Time spent on verification screen
+  timestamp: Date;
+}
+
 export class CalibrationAnalytics {
   /**
    * Record a calibration test result
@@ -171,6 +187,25 @@ export class CalibrationAnalytics {
   }
 
   /**
+   * Record user verification of calculated dimensions
+   * This helps track user trust and identify potential systemic issues
+   */
+  async recordVerificationEvent(event: VerificationEvent): Promise<void> {
+    try {
+      await this.storeAnalyticsRecord('verification_gate', {
+        user_id: event.userId,
+        system_pack_id: event.systemPackId,
+        measurements: event.measurements,
+        calculations: event.calculations,
+        duration_seconds: event.durationSeconds,
+        timestamp: event.timestamp.toISOString(),
+      });
+    } catch (error) {
+      console.error('Error recording verification event:', error);
+    }
+  }
+
+  /**
    * Store analytics record in a generic analytics table
    * This table will be used for ML training data collection
    */
@@ -281,4 +316,3 @@ export class CalibrationAnalytics {
 }
 
 export const calibrationAnalytics = new CalibrationAnalytics();
-
