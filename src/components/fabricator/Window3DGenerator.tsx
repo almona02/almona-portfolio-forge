@@ -367,7 +367,7 @@ interface Window3DGeneratorProps {
 const createMaterial = (
   materialType: string, 
   color: string,
-  clippingPlanes?: THREE.Plane[]
+  clippingPlanes?: THREE.Plane[] | null
 ): THREE.MeshStandardMaterial => {
   const baseColor = new THREE.Color(color);
   const materialProps = MATERIAL_DATABASE[materialType as keyof typeof MATERIAL_DATABASE] || MATERIAL_DATABASE.aluminum;
@@ -379,7 +379,7 @@ const createMaterial = (
   return new THREE.MeshStandardMaterial({
     color: baseColor,
     ...standardProps,
-    clippingPlanes: clippingPlanes,
+    clippingPlanes: clippingPlanes || null, // Ensure it's null if undefined
     clipShadows: true
   });
 };
@@ -387,7 +387,7 @@ const createMaterial = (
 // Enhanced glass material with realistic properties
 const createGlassMaterial = (
   glazingType: string,
-  clippingPlanes?: THREE.Plane[]
+  clippingPlanes?: THREE.Plane[] | null
 ): THREE.MeshPhysicalMaterial => {
   return new THREE.MeshPhysicalMaterial({
     color: 0xffffff,
@@ -403,17 +403,17 @@ const createGlassMaterial = (
     specularIntensity: 1.0,
     envMapIntensity: 1.5,
     side: THREE.DoubleSide,
-    clippingPlanes: clippingPlanes,
+    clippingPlanes: clippingPlanes || null, // Ensure it's null if undefined
     clipShadows: true
   });
 };
 
-const createSpacerMaterial = (clippingPlanes?: THREE.Plane[]): THREE.MeshStandardMaterial => {
+const createSpacerMaterial = (clippingPlanes?: THREE.Plane[] | null): THREE.MeshStandardMaterial => {
   return new THREE.MeshStandardMaterial({
     color: 0xcccccc,
     metalness: 0.8,
     roughness: 0.3,
-    clippingPlanes: clippingPlanes,
+    clippingPlanes: clippingPlanes || null, // Ensure it's null if undefined
     clipShadows: true
   });
 };
@@ -424,7 +424,7 @@ function generateEnhancedHardware(
   width: number,
   height: number,
   hardware: any[],
-  clippingPlanes?: THREE.Plane[]
+  clippingPlanes?: THREE.Plane[] | null
 ): THREE.Group {
   const hardwareGroup = new THREE.Group();
 
@@ -457,7 +457,7 @@ function generateEnhancedHardware(
       metalness: 0.95,
       roughness: 0.1,
       envMapIntensity: 1.5,
-      clippingPlanes: clippingPlanes,
+      clippingPlanes: clippingPlanes || null, // Ensure null
       clipShadows: true
       // emissive: 0x000000,
     });
@@ -1248,7 +1248,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
 
   // Clipping Plane for Section View
   const clippingPlanes = useMemo(() => {
-    if (!sectionViewEnabled) return undefined;
+    if (!sectionViewEnabled) return null; // Return null instead of undefined
     // Simple horizontal cut for now, can be made adjustable later
     const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0.2);
     return [plane];
