@@ -86,7 +86,7 @@ export interface GridCell {
   col: number;
   rowSpan?: number;
   colSpan?: number;
-  type: 'fixed' | 'sash' | 'panel' | 'empty';
+  type: 'fixed' | 'sash' | 'panel' | 'empty' | 'sliding';
   componentId?: string; // Links to a specific component definition if needed
 }
 

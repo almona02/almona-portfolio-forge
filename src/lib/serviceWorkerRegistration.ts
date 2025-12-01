@@ -1,13 +1,24 @@
 export const registerServiceWorker = () => {
+  // Only register if VitePWA is not handling it (check if registration already exists)
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(() => {
-          console.log('[SW] registration successful');
-        })
-        .catch((err) => {
-          console.log('[SW] registration failed:', err);
+    // Check if service worker is already registered by VitePWA
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      if (registrations.length === 0) {
+        // No service worker registered, register manually
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(() => {
+              console.log('[SW] Manual registration successful');
+            })
+            .catch((err) => {
+              console.log('[SW] Manual registration failed:', err);
+            });
         });
+      } else {
+        console.log('[SW] Service worker already registered (likely by VitePWA)');
+      }
+    }).catch((err) => {
+      console.warn('[SW] Error checking registrations:', err);
     });
   }
 };

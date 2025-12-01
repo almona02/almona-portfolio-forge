@@ -47,16 +47,17 @@ class OfflineSyncService {
   }
 
   private initializeService() {
-    // Register service worker for background sync and push notifications
-    // Only register in production - Vite dev server doesn't support service workers
+    // Use existing service worker registration (from VitePWA or other registration)
+    // Don't register a new one to avoid conflicts
     if ('serviceWorker' in navigator && import.meta.env.PROD) {
-      navigator.serviceWorker.register('/sw.js')
+      // Wait for existing service worker to be ready
+      navigator.serviceWorker.ready
         .then((registration) => {
           this.registration = registration;
-          console.log('SW registered:', registration);
+          console.log('[OfflineSync] Service worker ready:', registration);
         })
         .catch((error) => {
-          console.error('SW registration failed:', error);
+          console.warn('[OfflineSync] Service worker not available:', error);
         });
     } else if (import.meta.env.DEV) {
       console.info('[OfflineSync] Service worker registration skipped in development mode');

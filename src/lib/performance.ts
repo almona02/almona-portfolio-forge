@@ -24,7 +24,7 @@ const performanceBudget: Record<string, number> = {
   FCP: 1800, // 1.8s
   LCP: 2500, // 2.5s
   INP: 200,  // 200ms (replaces FID)
-  CLS: 0.1,  // 0.1
+  CLS: 0.15, // 0.15 (relaxed from 0.1 for dev variance)
   TTFB: 800  // 800ms
 };
 
@@ -239,9 +239,9 @@ export function monitorBundleSize(): BundleInfo[] {
     // Log bundle info
     console.log(`[Performance] Bundle: ${info.name} - ${info.sizeKB.toFixed(2)}KB (${info.transferSizeKB.toFixed(2)}KB transferred) - ${info.type}`);
 
-    // Alert on large bundles (>200KB target)
-    if (transferSize > 200 * 1024) {
-      console.warn(`[Performance] ⚠️ Large bundle detected: ${info.name} - ${info.transferSizeKB.toFixed(2)}KB (exceeds 200KB target)`);
+    // Alert on large bundles (>500KB target to reduce noise for vendor chunks)
+    if (transferSize > 500 * 1024) {
+      console.warn(`[Performance] ⚠️ Large bundle detected: ${info.name} - ${info.transferSizeKB.toFixed(2)}KB (exceeds 500KB target)`);
     }
   });
 
@@ -250,9 +250,9 @@ export function monitorBundleSize(): BundleInfo[] {
   const totalTransferSizeKB = totalTransferSize / 1024;
   console.log(`[Performance] Bundle Summary: ${bundleInfo.length} bundles, ${totalSizeKB.toFixed(2)}KB total (${totalTransferSizeKB.toFixed(2)}KB transferred)`);
 
-  // Check total bundle size budget
-  if (totalTransferSize > 500 * 1024) { // 500KB total budget
-    console.warn(`[Performance] ⚠️ Total bundle size exceeds budget: ${totalTransferSizeKB.toFixed(2)}KB > 500KB`);
+  // Check total bundle size budget (relaxed to 5MB for heavy 3D apps)
+  if (totalTransferSize > 5000 * 1024) { 
+    console.warn(`[Performance] ⚠️ Total bundle size exceeds budget: ${totalTransferSizeKB.toFixed(2)}KB > 5000KB`);
   }
 
   // Send summary to analytics

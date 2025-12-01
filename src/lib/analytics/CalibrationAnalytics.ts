@@ -84,6 +84,13 @@ export class CalibrationAnalytics {
    * This is called every time a user enters a test result in the CalibrationWizard
    */
   async recordTestResult(result: CalibrationTestResult): Promise<void> {
+    // Validate UUID to prevent 400 errors
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(result.profileId)) {
+      console.warn(`Skipping recordTestResult: Invalid UUID "${result.profileId}"`);
+      return;
+    }
+
     try {
       // Store in profile_calibrations test_results JSONB field
       const { data: existing } = await supabase
@@ -306,6 +313,17 @@ export class CalibrationAnalytics {
     confidenceScore: number;
     lastTestDate: Date | null;
   }> {
+    // Validate UUID to prevent 400 errors
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(profileId)) {
+      return {
+        totalTests: 0,
+        averageAccuracy: 0,
+        confidenceScore: 0,
+        lastTestDate: null,
+      };
+    }
+
     try {
       const { data, error } = await supabase
         .from('profile_calibrations')

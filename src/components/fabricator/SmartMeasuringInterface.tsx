@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
@@ -13,10 +13,13 @@ import { Ruler, Camera, Scan, Smartphone, AlertCircle, Box, CheckCircle2, ArrowR
 import { MeasurementData, SystemProfileSelections, WindowUnit, WindowGrid } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateMeasurements, ValidationError, getConstraintsForSystemPack } from '@/lib/fabricatorValidation';
-import { Window3DGenerator, WindowMeasurementOverlay } from './Window3DGenerator';
+// import { Window3DGenerator, WindowMeasurementOverlay } from './Window3DGenerator';
 import { SmartDrawCanvas } from './SmartDrawCanvas';
 import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
 import { ProductionLabel } from './ProductionLabel';
+
+// Lazy load Window3DGenerator to improve initial load performance
+const Window3DGenerator = React.lazy(() => import('./Window3DGenerator').then(module => ({ default: module.Window3DGenerator })));
 
 interface SmartMeasuringInterfaceProps {
   onMeasurementComplete: (data: MeasurementData) => void;
@@ -918,15 +921,25 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
         {/* Pass the highlightedDimension to the generator to illuminate the arrow */}
         {previewWindowUnit && (
-          <Window3DGenerator 
-            windowUnit={previewWindowUnit}
-            showControls={true}
-            presentationMode={false}
-            highlightDimension={highlightedDimension}
-            explodedView={explodedView}
-            setExplodedView={setExplodedView}
-            quality="high"
-          />
+          <Suspense fallback={
+            <div className="w-full h-full min-h-[500px] flex items-center justify-center text-gray-500">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs">Loading 3D Engine...</span>
+              </div>
+            </div>
+          }>
+            <Window3DGenerator 
+              key={isGridMode ? `grid-${grid.rows}-${grid.cols}-${grid.cells.length}-${previewWindowUnit?.type}` : `standard-view-${previewWindowUnit?.type}`}
+              windowUnit={previewWindowUnit}
+              showControls={true}
+              presentationMode={false}
+              highlightDimension={highlightedDimension}
+              explodedView={explodedView}
+              setExplodedView={setExplodedView}
+              quality="high"
+            />
+          </Suspense>
         )}
       </div>
     </div>

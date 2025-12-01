@@ -7,7 +7,7 @@
  * - Generation of mullion components compatible with WindowUnit export
  */
 
-import type { WindowUnit, WindowComponent, Profile } from '@/types/fabricator';
+import type { WindowUnit, WindowComponent, Profile, WindowGrid } from '@/types/fabricator';
 import {
   type ValidationResult,
   type ValidationError,
@@ -291,4 +291,205 @@ export function generateMullionComponentsFromLayout(
   return { layout, components };
 }
 
+// ---------------------------------------------------------------------------
+// Grid → Components (New function)
+// ---------------------------------------------------------------------------
 
+export function generateComponentsFromGrid(
+  project: WindowUnit | null,
+  grid: WindowGrid,
+  profiles: Profile[],
+  systemPackId: string | null
+): { components: WindowComponent[]; hardware: any[] } {
+  if (!project || !grid) {
+    return { components: [], hardware: [] };
+  }
+
+  const components: WindowComponent[] = [];
+  const hardware: any[] = [];
+
+  // Find appropriate profiles based on systemPackId or defaults
+  const frameProfile = profiles.find(p => 
+    (p.profileRole === 'frame') && 
+    (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
+  ) || profiles.find(p => p.profileRole === 'frame') || profiles[0];
+
+  const sashProfile = profiles.find(p => 
+    (p.profileRole === 'sash') && 
+    (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
+  ) || profiles.find(p => p.profileRole === 'sash') || profiles[0];
+  
+  const mullionProfile = profiles.find(p => 
+    (p.profileRole === 'mullion') && 
+    (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
+  ) || profiles.find(p => p.profileRole === 'mullion') || profiles[0];
+
+  if (!frameProfile) {
+      return { components: [], hardware: [] };
+  }
+
+  const width = project.overallWidth;
+  const height = project.overallHeight;
+
+  // 1. Outer Frame (4 pieces)
+  components.push({
+    id: `frame_top_${Date.now()}`,
+    type: 'frame',
+    profile: frameProfile,
+    width: width,
+    height: frameProfile.width, 
+    quantity: 1,
+    cuttingLengths: [width],
+    angles: [45, 45],
+    machiningOperations: [],
+    glazingType: 'none',
+    hardware: []
+  });
+  components.push({
+    id: `frame_bottom_${Date.now()}`,
+    type: 'frame',
+    profile: frameProfile,
+    width: width,
+    height: frameProfile.width,
+    quantity: 1,
+    cuttingLengths: [width],
+    angles: [45, 45],
+    machiningOperations: [],
+    glazingType: 'none',
+    hardware: []
+  });
+  components.push({
+    id: `frame_left_${Date.now()}`,
+    type: 'frame',
+    profile: frameProfile,
+    width: frameProfile.width,
+    height: height,
+    quantity: 1,
+    cuttingLengths: [height],
+    angles: [45, 45],
+    machiningOperations: [],
+    glazingType: 'none',
+    hardware: []
+  });
+  components.push({
+    id: `frame_right_${Date.now()}`,
+    type: 'frame',
+    profile: frameProfile,
+    width: frameProfile.width,
+    height: height,
+    quantity: 1,
+    cuttingLengths: [height],
+    angles: [45, 45],
+    machiningOperations: [],
+    glazingType: 'none',
+    hardware: []
+  });
+
+  // 2. Internal Grid (Mullions/Transoms)
+  if (grid.cols > 1 && mullionProfile) {
+      for (let i = 1; i < grid.cols; i++) {
+          components.push({
+            id: `mullion_v_${i}_${Date.now()}`,
+            type: 'mullion',
+            profile: mullionProfile,
+            width: mullionProfile.width,
+            height: height - (2 * frameProfile.width),
+            quantity: 1,
+            cuttingLengths: [height - (2 * frameProfile.width)],
+            angles: [90, 90],
+            machiningOperations: [],
+            glazingType: 'none',
+            hardware: []
+          });
+      }
+  }
+
+  if (grid.rows > 1 && mullionProfile) {
+      for (let i = 1; i < grid.rows; i++) {
+          components.push({
+            id: `transom_h_${i}_${Date.now()}`,
+            type: 'transom',
+            profile: mullionProfile,
+            width: width - (2 * frameProfile.width),
+            height: mullionProfile.width,
+            quantity: 1,
+            cuttingLengths: [width - (2 * frameProfile.width)],
+            angles: [90, 90],
+            machiningOperations: [],
+            glazingType: 'none',
+            hardware: []
+          });
+      }
+  }
+
+  // 3. Sashes
+  grid.cells.forEach(cell => {
+      if (cell.type === 'sash' && sashProfile) {
+          const cellW = (width - (2 * frameProfile.width)) / grid.cols;
+          const cellH = (height - (2 * frameProfile.width)) / grid.rows;
+          
+           components.push({
+            id: `sash_${cell.id}_top`,
+            type: 'sash',
+            profile: sashProfile,
+            width: cellW,
+            height: sashProfile.width,
+            quantity: 1,
+            cuttingLengths: [cellW],
+            angles: [45, 45],
+            machiningOperations: [],
+            glazingType: 'double',
+            hardware: []
+          });
+           components.push({
+            id: `sash_${cell.id}_bottom`,
+            type: 'sash',
+            profile: sashProfile,
+            width: cellW,
+            height: sashProfile.width,
+            quantity: 1,
+            cuttingLengths: [cellW],
+            angles: [45, 45],
+            machiningOperations: [],
+            glazingType: 'double',
+            hardware: []
+          });
+           components.push({
+            id: `sash_${cell.id}_left`,
+            type: 'sash',
+            profile: sashProfile,
+            width: sashProfile.width,
+            height: cellH,
+            quantity: 1,
+            cuttingLengths: [cellH],
+            angles: [45, 45],
+            machiningOperations: [],
+            glazingType: 'double',
+            hardware: []
+          });
+           components.push({
+            id: `sash_${cell.id}_right`,
+            type: 'sash',
+            profile: sashProfile,
+            width: sashProfile.width,
+            height: cellH,
+            quantity: 1,
+            cuttingLengths: [cellH],
+            angles: [45, 45],
+            machiningOperations: [],
+            glazingType: 'double',
+            hardware: []
+          });
+          
+          hardware.push({
+              id: `handle_${cell.id}`,
+              name: 'Standard Handle',
+              type: 'handle',
+              quantity: 1,
+              position: 'left'
+          });
+      }
+  });
+
+  return { components, hardware };
+}

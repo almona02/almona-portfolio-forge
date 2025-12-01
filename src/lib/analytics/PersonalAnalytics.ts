@@ -441,6 +441,12 @@ export class PersonalAnalytics {
     averageAccuracy: number;
     confidenceScore: number;
   }> {
+    // Validate UUID to prevent 400 errors
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(profileId)) {
+      return { totalTests: 0, averageAccuracy: 0, confidenceScore: 0 };
+    }
+
     try {
       const { data, error } = await supabase
         .from('calibration_analytics')

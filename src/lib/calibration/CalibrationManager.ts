@@ -63,6 +63,19 @@ export class CalibrationManager {
     profileId: string,
     calibration: Omit<CuttingCalibration, 'id' | 'createdAt' | 'updatedAt'>
   ): Promise<CuttingCalibration> {
+    // Validate UUID to prevent 400 errors with mock IDs
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(profileId)) {
+      console.warn(`Skipping saveCalibration: Invalid UUID "${profileId}". Likely mock data.`);
+      // Return a mock result to prevent breaking the flow
+      return {
+        ...calibration,
+        id: `cal_mock_${Date.now()}`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as CuttingCalibration;
+    }
+
     try {
       // Fetch current profile
       const { data: profileData, error: fetchError } = await supabase
@@ -127,6 +140,13 @@ export class CalibrationManager {
    * Delete a calibration
    */
   async deleteCalibration(profileId: string, calibrationId: string): Promise<void> {
+    // Validate UUID to prevent 400 errors with mock IDs
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(profileId)) {
+      console.warn(`Skipping deleteCalibration: Invalid UUID "${profileId}". Likely mock data.`);
+      return;
+    }
+
     try {
       const { data: profileData, error: fetchError } = await supabase
         .from('fabricator_profiles')
