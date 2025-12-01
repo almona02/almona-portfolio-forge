@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Button } from '@/shared/ui/ui/button';
-import { Plus, Minus, Grid3X3, Maximize, Columns, Rows } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Plus, Minus, Columns, Rows } from 'lucide-react';
 import { WindowGrid, GridCell } from '@/types/fabricator';
 import { cn } from '@/lib/utils';
 
@@ -19,7 +18,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   onGridChange,
   className
 }) => {
-  // Local state to track the "active" cell for styling (optional)
+  // Local state to track the "active" cell for styling
   const [hoveredCell, setHoveredCell] = useState<string | null>(null);
 
   // Initialize grid if empty (fallback safety)
@@ -66,8 +65,8 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   const handleCellClick = (cellId: string) => {
     const newCells = grid.cells.map(cell => {
       if (cell.id === cellId) {
-        // Cycle types: Fixed -> Sash -> Panel -> Empty -> Fixed
-        const types = ['fixed', 'sash', 'panel', 'empty'] as const;
+        // Cycle types: Fixed -> Sash -> Sliding -> Panel -> Empty -> Fixed
+        const types = ['fixed', 'sash', 'sliding', 'panel', 'empty'] as const;
         const currentIndex = types.indexOf(cell.type as any);
         const nextType = types[(currentIndex + 1) % types.length];
         return { ...cell, type: nextType };
@@ -79,8 +78,6 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   };
 
   // SVG ViewBox calculations
-  // We use a normalized coordinate system 0-100 for simplicity in SVG, 
-  // but aspect ratio is handled by the container
   const svgWidth = 1000;
   const svgHeight = (height / width) * 1000;
   
@@ -88,25 +85,28 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   const cellWidth = svgWidth / grid.cols;
   const cellHeight = svgHeight / grid.rows;
 
-  const getCellColor = (type: string) => {
-    switch (type) {
-      case 'fixed': return 'rgba(59, 130, 246, 0.1)'; // Blue tint
-      case 'sash': return 'rgba(34, 197, 94, 0.1)'; // Green tint
-      case 'panel': return 'rgba(107, 114, 128, 0.5)'; // Grey opaque
-      case 'empty': return 'transparent';
-      default: return 'transparent';
-    }
-  };
+  // ENHANCED VISUALS: Upgrade the styling functions
+    const getCellFill = (type: string, isHovered: boolean) => {
+        const baseColor = {
+            'fixed': 'rgba(59, 130, 246, 0.1)',   // Blue
+            'sash': 'rgba(34, 197, 94, 0.1)',    // Green
+            'sliding': 'rgba(234, 179, 8, 0.1)',  // Yellow
+            'panel': 'rgba(107, 114, 128, 0.2)', // Grey
+            'empty': 'rgba(239, 68, 68, 0.05)',  // Red
+        }[type] || 'transparent';
 
-  const getCellBorder = (type: string) => {
-    switch (type) {
-      case 'fixed': return '#3b82f6';
-      case 'sash': return '#22c55e';
-      case 'panel': return '#4b5563';
-      case 'empty': return '#ef4444'; // Red for empty/error
-      default: return '#374151';
-    }
-  };
+        return isHovered ? 'rgba(255, 255, 255, 0.1)' : baseColor;
+    };
+
+    const getCellStroke = (type: string) => {
+        return {
+            'fixed': '#3b82f6',
+            'sash': '#22c55e',
+            'sliding': '#eab308',
+            'panel': '#6b7280',
+            'empty': '#ef4444',
+        }[type] || '#4b5563';
+    };
 
   return (
     <div className={cn("flex flex-col gap-4", className)}>
@@ -161,14 +161,23 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
         </div>
       </div>
 
-      {/* Canvas Area */}
-      <div className="relative w-full flex-1 bg-gray-900 border border-gray-800 rounded-lg overflow-hidden flex items-center justify-center p-8">
-        <div className="relative shadow-2xl" style={{ aspectRatio: `${width}/${height}`, maxHeight: '100%', maxWidth: '100%' }}>
+      {/* Canvas Area with Enhanced Styling */}
+       <div className="relative w-full aspect-video bg-gray-950 border border-gray-800 rounded-lg overflow-hidden flex items-center justify-center p-4 shadow-inner">
+        <div className="relative shadow-2xl w-full h-full">
           {/* SVG Grid Renderer */}
           <svg 
             viewBox={`0 0 ${svgWidth} ${svgHeight}`} 
-            className="w-full h-full bg-gray-950"
+            className="w-full h-full"
+             preserveAspectRatio="xMidYMid meet"
           >
+             {/* Add a subtle background grid */}
+            {Array.from({ length: grid.cols - 1 }).map((_, i) => (
+                <line key={`v-${i}`} x1={(i + 1) * (svgWidth / grid.cols)} y1="0" x2={(i + 1) * (svgWidth / grid.cols)} y2={svgHeight} stroke="#374151" strokeWidth="0.5" strokeDasharray="10 10"/>
+            ))}
+            {Array.from({ length: grid.rows - 1 }).map((_, i) => (
+                <line key={`h-${i}`} x1="0" y1={(i + 1) * (svgHeight / grid.rows)} x2={svgWidth} y2={(i + 1) * (svgHeight / grid.rows)} stroke="#374151" strokeWidth="0.5" strokeDasharray="10 10"/>
+            ))}
+
             {/* Render Cells */}
             {grid.cells.map((cell) => (
               <g 
@@ -184,9 +193,11 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                   y={cell.row * cellHeight}
                   width={cellWidth}
                   height={cellHeight}
-                  fill={getCellColor(cell.type)}
-                  stroke={getCellBorder(cell.type)}
-                  strokeWidth={hoveredCell === cell.id ? 4 : 2}
+                  fill={getCellFill(cell.type, hoveredCell === cell.id)}
+                  stroke={getCellStroke(cell.type)}
+                  strokeWidth={hoveredCell === cell.id ? 4 : 1.5}
+                  strokeDasharray={cell.type === 'empty' ? '10 10' : 'none'}
+                  className="transition-all duration-150"
                 />
 
                 {/* Cell Type Label/Icon */}
@@ -218,6 +229,25 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                   />
                 )}
                 
+                {/* Sliding Arrow Indicator (if sliding) */}
+                {cell.type === 'sliding' && (
+                   <g>
+                     <path
+                        d={`
+                          M ${cell.col * cellWidth + cellWidth * 0.2} ${cell.row * cellHeight + cellHeight * 0.5} 
+                          L ${cell.col * cellWidth + cellWidth * 0.8} ${cell.row * cellHeight + cellHeight * 0.5}
+                          L ${cell.col * cellWidth + cellWidth * 0.7} ${cell.row * cellHeight + cellHeight * 0.4}
+                          M ${cell.col * cellWidth + cellWidth * 0.8} ${cell.row * cellHeight + cellHeight * 0.5}
+                          L ${cell.col * cellWidth + cellWidth * 0.7} ${cell.row * cellHeight + cellHeight * 0.6}
+                        `}
+                        fill="none"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeOpacity="0.6"
+                     />
+                   </g>
+                )}
+                
                 {/* Cross for Panel */}
                 {cell.type === 'panel' && (
                   <path
@@ -246,19 +276,23 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
               strokeWidth="4" 
             />
           </svg>
-        </div>
-
-        {/* Legend Overlay */}
-        <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur p-2 rounded text-[10px] text-gray-300 flex flex-col gap-1">
+          
+           {/* Legend Overlay */}
+        <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur p-2 rounded text-[10px] text-gray-300 flex flex-col gap-1 pointer-events-none">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-blue-500/50 border border-blue-500" /> Fixed
           </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500/50 border border-green-500" /> Sash
           </div>
+           <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-yellow-500/50 border border-yellow-500" /> Sliding
+          </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-gray-500/50 border border-gray-500" /> Panel
           </div>
+        </div>
+
         </div>
       </div>
     </div>

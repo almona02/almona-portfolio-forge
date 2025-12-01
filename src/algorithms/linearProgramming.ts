@@ -114,7 +114,7 @@ export class LinearProgrammingOptimizer {
         
         for (const cut1 of cuts1) {
           for (const cut2 of cuts2) {
-            if (cut1.id === cut2.id) continue;
+            if (cut1 === cut2) continue;
             
             const totalLength = cut1.length + cut2.length;
             if (totalLength <= this.stockLength) {
@@ -143,7 +143,7 @@ export class LinearProgrammingOptimizer {
             for (const cut1 of cuts1.slice(0, 3)) {
               for (const cut2 of cuts2.slice(0, 3)) {
                 for (const cut3 of cuts3.slice(0, 3)) {
-                  if (cut1.id === cut2.id || cut1.id === cut3.id || cut2.id === cut3.id) continue;
+                  if (cut1 === cut2 || cut1 === cut3 || cut2 === cut3) continue;
                   
                   const totalLength = cut1.length + cut2.length + cut3.length;
                   if (totalLength <= this.stockLength) {

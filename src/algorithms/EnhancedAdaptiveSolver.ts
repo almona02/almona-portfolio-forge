@@ -8,17 +8,11 @@
  */
 
 import {
-  CuttingPlan,
-  Cut,
   Profile,
   OptimizationResult,
   AdaptiveSolverConfig,
-  WindowComponent,
 } from '@/types/fabricator';
 import { AdaptiveSolver, JobComplexity, CuttingJob } from './adaptiveSolver';
-import { GreedyHeuristic } from './greedyHeuristic';
-import { LinearProgrammingOptimizer } from './linearProgramming';
-import { GeneticOptimizer } from './geneticOptimization';
 import { algorithmPredictor, TrainingDataPoint } from '@/lib/ml/AlgorithmPredictor';
 
 export interface OptimizationCache {

@@ -6,7 +6,6 @@
 
 import {
   WindowUnit,
-  OptimizationResult,
   CuttingPlan,
   Cut,
   Profile,
@@ -14,7 +13,6 @@ import {
 } from '@/types/fabricator';
 import { remnantManager, RemnantMatch } from '@/lib/inventory/RemnantManager';
 import { GeneticOptimizer } from './geneticOptimization';
-import { GreedyHeuristic } from './greedyHeuristic';
 
 export interface HybridOptimizationResult {
   unifiedCuttingPlan: CuttingPlan[];
@@ -113,7 +111,7 @@ export class HybridMassOptimizer {
    * Get available remnants (workshop-wide if cross-project enabled)
    */
   private async getAvailableRemnants(
-    crossProject: boolean
+    _crossProject: boolean
   ): Promise<Map<string, any[]>> {
     // TODO: Implement actual remnant fetching from database
     // For now, return empty map
@@ -126,12 +124,12 @@ export class HybridMassOptimizer {
   private async matchRemnantsToCuts(
     cutsByProfile: Map<string, { profile: Profile; cuts: Cut[] }>,
     availableRemnants: Map<string, any[]>,
-    request: MassProductionOptimizationRequest
+    _request: MassProductionOptimizationRequest
   ): Promise<RemnantMatch[]> {
     const matches: RemnantMatch[] = [];
 
     for (const [profileId, { profile, cuts }] of cutsByProfile.entries()) {
-      const remnants = availableRemnants.get(profileId) || [];
+      const _remnants = availableRemnants.get(profileId) || [];
 
       // Find matches for this profile
       const profileMatches = await remnantManager.findRemnantMatches(
@@ -189,7 +187,7 @@ export class HybridMassOptimizer {
   ): Promise<CuttingPlan[]> {
     const allPlans: CuttingPlan[] = [];
 
-    for (const [profileId, { profile, cuts }] of remainingCuts.entries()) {
+    for (const [_profileId, { profile, cuts }] of remainingCuts.entries()) {
       const stockLength = request.constraints.maxStockLengthMm || 6000;
 
       // Use genetic algorithm for complex optimization
@@ -231,8 +229,8 @@ export class HybridMassOptimizer {
     plans: CuttingPlan[],
     remnantMatches: RemnantMatch[]
   ): number {
-    let planWaste = plans.reduce((sum, plan) => sum + plan.totalWaste, 0);
-    let remnantWaste = remnantMatches.reduce((sum, match) => sum + match.waste, 0);
+    const planWaste = plans.reduce((sum, plan) => sum + plan.totalWaste, 0);
+    const remnantWaste = remnantMatches.reduce((sum, match) => sum + match.waste, 0);
 
     return planWaste + remnantWaste;
   }

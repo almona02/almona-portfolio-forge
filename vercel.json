@@ -6,7 +6,7 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/((?!assets|js|css|fonts|images|favicon\\.ico|robots\\.txt|manifest\\.webmanifest|service-worker\\.js|.*\\..*).*)",
+      "source": "/((?!assets|js|css|fonts|images|favicon\\.ico|robots\\.txt|manifest\\.webmanifest|service-worker\\.js|workbox-.*\\.js|registerSW\\.js|.*\\..*).*)",
       "destination": "/index.html"
     },
     {
@@ -29,7 +29,9 @@
       "headers": [
         { "key": "Content-Type", "value": "application/manifest+json" },
         { "key": "Cache-Control", "value": "public, max-age=86400" },
-        { "key": "Access-Control-Allow-Origin", "value": "*" }
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
       ]
     },
     {
