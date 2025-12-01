@@ -34,7 +34,7 @@ export interface CuttingJob {
 }
 
 export class AdaptiveSolver {
-  private config: AdaptiveSolverConfig;
+  protected config: AdaptiveSolverConfig;
 
   constructor(config: AdaptiveSolverConfig) {
     this.config = config;
@@ -79,7 +79,7 @@ export class AdaptiveSolver {
   /**
    * Analyze job complexity to determine optimal algorithm
    */
-  private analyzeComplexity(job: CuttingJob, profiles: Profile[]): JobComplexity {
+  protected analyzeComplexity(job: CuttingJob, profiles: Profile[]): JobComplexity {
     // Collect all cuts from all components
     const allCuts: Cut[] = [];
     const profileMap = new Map<string, Profile>();
@@ -138,7 +138,7 @@ export class AdaptiveSolver {
   /**
    * Select optimal algorithm based on complexity and configuration
    */
-  private selectAlgorithm(complexity: JobComplexity): 'greedy' | 'linear' | 'genetic' {
+  protected selectAlgorithm(complexity: JobComplexity): 'greedy' | 'linear' | 'genetic' {
     // If preferred algorithm is specified and complexity allows, use it
     if (this.config.preferredAlgorithm) {
       const preferred = this.config.preferredAlgorithm;
@@ -168,7 +168,7 @@ export class AdaptiveSolver {
   /**
    * Execute optimization with selected algorithm
    */
-  private async executeOptimization(
+  protected async executeOptimization(
     job: CuttingJob,
     profiles: Profile[],
     algorithm: 'greedy' | 'linear' | 'genetic',
@@ -281,7 +281,7 @@ export class AdaptiveSolver {
   /**
    * Calculate optimization result from cutting plans
    */
-  private calculateOptimizationResult(
+  protected calculateOptimizationResult(
     cuttingPlan: CuttingPlan[],
     profiles: Profile[],
     durationMs: number

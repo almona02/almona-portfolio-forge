@@ -38,9 +38,9 @@ const DesignInterface = React.lazy(() =>
     default: m.DesignInterface,
   })),
 );
-const CuttingOptimizationEngine = React.lazy(() =>
-  import('@/components/fabricator/CuttingOptimizationEngine').then((m) => ({
-    default: m.CuttingOptimizationEngine,
+const ProductionCommand = React.lazy(() =>
+  import('@/components/fabricator/ProductionCommand').then((m) => ({
+    default: m.ProductionCommand,
   })),
 );
 const OptimizationEqualizer = React.lazy(() =>
@@ -808,7 +808,20 @@ export const FabricatorWorkflow: React.FC = () => {
       console.error('Error completing design:', error);
       setProjectError(error instanceof Error ? error.message : 'Failed to generate cutting plan');
     }
-  }, [currentProject, inventory, generateCuttingPlan, addOrUpdateJob, setSelectedJob, workspaceDispatch]);
+  },     [currentProject, inventory, generateCuttingPlan, addOrUpdateJob, setSelectedJob, workspaceDispatch]);
+
+  const handleHardwareUpdate = useCallback((hardware: any[]) => {
+    if (!currentProject) return;
+
+    const updatedProject: WindowUnit = {
+      ...currentProject,
+      hardware,
+      updatedAt: new Date(),
+    };
+
+    workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: updatedProject });
+    addOrUpdateJob(updatedProject);
+  }, [currentProject, addOrUpdateJob, workspaceDispatch]);
 
   const handleSmartDrawApply = useCallback(
     (components: WindowComponent[]) => {
@@ -1581,6 +1594,7 @@ export const FabricatorWorkflow: React.FC = () => {
                           }}
                           onDesignComplete={handleDesignComplete}
                           onSmartDrawApply={handleSmartDrawApply}
+                          onHardwareUpdate={handleHardwareUpdate}
                         />
                         
                         {/* Calibration Wizard Integration */}
@@ -1729,14 +1743,14 @@ export const FabricatorWorkflow: React.FC = () => {
                     </ErrorBoundary>
                   )}
 
-                  {/* Cutting Optimization Engine */}
+                  {/* Production Command Center */}
                   <ErrorBoundary level="component">
                     <Suspense
                       fallback={
                         <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
                       }
                     >
-                      <CuttingOptimizationEngine 
+                      <ProductionCommand 
                         project={currentProject}
                         optimization={optimizationResults} 
                         isGenerating={isGeneratingCuttingPlan}

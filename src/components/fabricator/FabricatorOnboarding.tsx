@@ -21,7 +21,7 @@ import { X, ChevronRight, ChevronLeft, CheckCircle2, Play, SkipForward } from 'l
 import { Button } from '@/shared/ui/ui/button';
 import { Progress } from '@/shared/ui/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Dialog, DialogContent } from '@/shared/ui/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/shared/ui/ui/dialog';
 import { OnboardingVideoPlayer } from './OnboardingVideoPlayer';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -289,7 +289,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
           <div className="sticky top-0 z-10 bg-gradient-to-r from-orange-600 to-orange-700 text-white p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-2xl font-bold">{t('onboarding.title', 'Welcome to Fabricator Pro')}</h2>
+                <DialogTitle className="text-2xl font-bold">{t('onboarding.title', 'Welcome to Fabricator Pro')}</DialogTitle>
                 <p className="text-orange-100 text-sm mt-1">
                   {t('onboarding.subtitle', "Let's get you started with a quick tutorial")}
                 </p>

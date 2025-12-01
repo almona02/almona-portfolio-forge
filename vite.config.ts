@@ -74,52 +74,37 @@ export default defineConfig(({ mode }) => {
           enabled: false // Disable in development to avoid build issues
         },
         workbox: {
-          globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
-          // CRITICAL: Ensure index.html is precached
+          // Use only essential glob patterns to reduce sync errors
+          globPatterns: ['**/*.{js,css,html}'],
+          globDirectory: 'dist',
           navigateFallback: '/index.html',
           navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
-          globIgnores: ['**/node_modules/**/*', '**/sw.js', '**/workbox-*.js', '**/registerSW.js'],
+          globIgnores: [
+            '**/node_modules/**',
+            '**/sw.js',
+            '**/workbox-*.js',
+            '**/workbox-*.map',
+            '**/registerSW.js'
+          ],
           cleanupOutdatedCaches: true,
           skipWaiting: true,
-          clientsClaim: true,
-          // Disable globbing warnings and fix sync issue
-          dontCacheBustURLsMatching: /\.\w{8}\./,
-          // Use mode: 'production' to avoid globbing issues
-          mode: 'production',
-          // Fix duplicate cache entries by normalizing URLs
-          // This prevents the "add-to-cache-list-conflicting-entries" error
-          manifestTransforms: [
-            (manifestEntries) => {
-              // Map to track unique entries by base URL (without revision parameter)
-              const uniqueEntries = new Map<string, typeof manifestEntries[0]>();
-              
-              for (const entry of manifestEntries) {
-                // Extract base URL without revision parameter
-                // Handle both URL with ?__WB_REVISION__=xxx and without
-                let baseUrl = entry.url;
-                
-                // Remove __WB_REVISION__ query parameter if present
-                baseUrl = baseUrl.replace(/\?__WB_REVISION__=[^&]*/, '').replace(/&__WB_REVISION__=[^&]*/, '');
-                
-                // Normalize: remove trailing slash for consistency (except root)
-                if (baseUrl !== '/' && baseUrl.endsWith('/')) {
-                  baseUrl = baseUrl.slice(0, -1);
-                }
-                
-                // Prefer entry with revision property or URL with revision parameter
-                const hasRevision = entry.revision || entry.url.includes('__WB_REVISION__');
-                const existing = uniqueEntries.get(baseUrl);
-                
-                if (!existing || (hasRevision && !existing.revision && !existing.url.includes('__WB_REVISION__'))) {
-                  uniqueEntries.set(baseUrl, entry);
-                }
-              }
-              
-              return { manifest: Array.from(uniqueEntries.values()) };
-            }
-          ],
-          // Fix for crypto.hash compatibility
+          clientsClaim: false,
+          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+          
+          // Use runtime caching for better control
           runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'supabase-cache',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 5 * 60,
+                },
+                networkTimeoutSeconds: 10,
+              },
+            },
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
               handler: 'CacheFirst',
@@ -127,13 +112,11 @@ export default defineConfig(({ mode }) => {
                 cacheName: 'google-fonts-cache',
                 expiration: {
                   maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                  maxAgeSeconds: 60 * 60 * 24 * 365
                 }
               }
             }
-          ],
-          // Increase file size limit to accommodate large hero background image (9.99 MB)
-          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024 // 10 MB
+          ]
         },
         includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg"],
         manifest: {
@@ -270,6 +253,27 @@ export default defineConfig(({ mode }) => {
           propertyReadSideEffects: false,
           tryCatchDeoptimization: false
         },
+        // Suppress known false-positive warnings
+        onwarn(warning, warn) {
+          // Suppress manualChunks warning (false positive in newer Vite)
+          if (warning.code === 'UNKNOWN_OPTION' && warning.message?.includes('manualChunks')) {
+            return;
+          }
+          // Suppress dynamic import warnings (they're just informational)
+          if (warning.code === 'MODULE_LEVEL_DIRECTIVE' || warning.message?.includes('dynamically imported')) {
+            return;
+          }
+          // Suppress Workbox globbing warnings
+          if (warning.plugin === 'workbox' && warning.message?.includes('globbing')) {
+            return;
+          }
+          // Suppress Workbox sync errors (known compatibility issue)
+          if (warning.message?.includes('Cannot read properties of undefined') || 
+              warning.message?.includes('reading \'sync\'')) {
+            return;
+          }
+          warn(warning);
+        },
         input: "index.html",
         external: [],
         // Exclude markdown editor CSS from main bundle
@@ -309,20 +313,12 @@ export default defineConfig(({ mode }) => {
         ],
         output: {
           entryFileNames: `assets/[name]-[hash].js`,
-          chunkFileNames: (chunkInfo) => {
-            // Ensure react-vendor has proper naming and loads first
-            if (chunkInfo.name === 'react-vendor') {
-              return `assets/react-vendor-[hash].js`;
-            }
-            return `assets/[name]-[hash].js`;
-          },
+          chunkFileNames: `assets/[name]-[hash].js`,
           assetFileNames: `assets/[name]-[hash].[ext]`,
-          // Optimize chunk splitting for better caching
-          // CRITICAL: React must load before chunks that depend on it
-          // FIX: Ensure React loads FIRST by checking it before any other logic
-          manualChunks: (id) => {
+          
+          // CORRECT: Use function format that returns string | undefined
+          manualChunks: (id: string) => {
             // CRITICAL: Check React FIRST - this ensures react-vendor is created first
-            // and loads before any other vendor chunks
             if (id.includes('node_modules')) {
               // React core packages - MUST be first check
               if (
@@ -334,64 +330,61 @@ export default defineConfig(({ mode }) => {
                 return 'react-vendor';
               }
               // React-dependent packages - must be with React
-              // CRITICAL: Catch ALL packages that use React to prevent "forwardRef" and "createContext" errors
               if (
                 id.includes('react-router') ||
                 id.includes('react-helmet') ||
                 id.includes('react-reconciler') ||
-                id.includes('@react-three') || // React Three Fiber
-                id.includes('react-') || // ALL react-* packages
-                id.includes('/react') || // Any package with /react in path
-                id.includes('react-chartjs') || // react-chartjs-2
-                id.includes('@tanstack/react') || // TanStack Query
-                id.includes('framer-motion') || // framer-motion
-                id.includes('next-themes') || // next-themes
-                id.includes('sonner') || // sonner
-                id.includes('zustand') || // zustand
-                id.includes('embla-carousel-react') || // embla-carousel-react
-                id.includes('react-content-loader') || // react-content-loader
-                id.includes('react-day-picker') || // react-day-picker
-                id.includes('react-hook-form') || // react-hook-form
-                id.includes('react-i18next') || // react-i18next
-                id.includes('react-media-recorder') || // react-media-recorder
-                id.includes('react-resizable-panels') || // react-resizable-panels
-                id.includes('react-window') || // react-window-infinite-loader
-                id.includes('recharts') || // recharts
-                id.includes('vaul') || // vaul
-                id.includes('lucide-react') || // lucide-react
-                id.includes('cmdk') || // cmdk (uses React)
-                id.includes('input-otp') || // input-otp (uses React)
-                id.includes('markdown-to-jsx') || // markdown-to-jsx (uses React)
-                id.includes('@vercel/analytics/react') // Vercel Analytics React
+                // id.includes('@react-three') || // Split Three out
+                id.includes('react-') ||
+                id.includes('/react') ||
+                id.includes('react-chartjs') ||
+                id.includes('@tanstack/react') ||
+                // id.includes('framer-motion') || // Split framer-motion out
+                id.includes('next-themes') ||
+                id.includes('sonner') ||
+                id.includes('zustand') ||
+                id.includes('embla-carousel-react') ||
+                id.includes('react-content-loader') ||
+                id.includes('react-day-picker') ||
+                id.includes('react-hook-form') ||
+                id.includes('react-i18next') ||
+                id.includes('react-media-recorder') ||
+                id.includes('react-resizable-panels') ||
+                id.includes('react-window') ||
+                id.includes('recharts') ||
+                id.includes('vaul') ||
+                // id.includes('lucide-react') || // Split lucide out
+                id.includes('cmdk') ||
+                id.includes('input-otp') ||
+                id.includes('markdown-to-jsx') ||
+                id.includes('@vercel/analytics/react') ||
+                id.includes('@radix-ui') ||
+                id.includes('@radix') ||
+                id.includes('chart.js')
               ) {
                 return 'react-vendor';
-              }
-              // UI libraries - ALL use React
-              if (id.includes('@radix-ui') || id.includes('@radix')) {
-                return 'react-vendor'; // Radix UI uses React
-              }
-              // Chart libraries
-              if (id.includes('chart.js') || id.includes('react-chartjs')) {
-                return 'react-vendor'; // react-chartjs uses React
               }
               // PDF libraries
               if (id.includes('pdf-lib') || id.includes('pdfjs')) {
                 return 'pdf-vendor';
               }
-              // Pure Three.js library (without React wrappers)
-              // @react-three packages are already in react-vendor above
-              if (id.includes('/three/') && !id.includes('@react-three')) {
+              // Pure Three.js library and React Three Fiber
+              if ((id.includes('/three/') && !id.includes('@react-three')) || id.includes('@react-three')) {
                 return 'three-vendor';
+              }
+              // Animation libraries
+              if (id.includes('framer-motion')) {
+                return 'animation-vendor';
+              }
+              // Icon libraries
+              if (id.includes('lucide-react')) {
+                return 'icons-vendor';
               }
               // Utility libraries (non-React)
               if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
                 return 'utils-vendor';
               }
-              // FIX: Put ALL libraries in react-vendor to prevent module loading order issues
-              // The "Cannot set properties of undefined (setting 'exports')" error
-              // happens when vendor chunk executes before react-vendor is ready
-              // Solution: Put everything in react-vendor to ensure single execution order
-              // Only keep truly isolated, non-module libraries separate
+              // Pure JS utilities with no module dependencies
               if (
                 id.includes('axios') ||
                 id.includes('exceljs') ||
@@ -401,16 +394,15 @@ export default defineConfig(({ mode }) => {
                 id.includes('jwt-decode') ||
                 id.includes('zxcvbn')
               ) {
-                // These are pure JS utilities with no module dependencies - safe for vendor
                 return 'vendor';
               }
               // Everything else goes to react-vendor to ensure proper loading order
               return 'react-vendor';
             }
             
-            // Fabricator-specific chunks - Enhanced splitting
+            // Fabricator-specific chunks
             if (id.includes('components/fabricator')) {
-              // Core Fabricator components (most critical, loaded first)
+              // Core Fabricator components
               if (
                 id.includes('FabricatorWorkflowPro') ||
                 id.includes('FabricatorWorkspaceLayout') ||
@@ -418,7 +410,7 @@ export default defineConfig(({ mode }) => {
               ) {
                 return 'fabricator-core';
               }
-              // Optimization engine and algorithms (heavy computation)
+              // Optimization engine and algorithms
               if (
                 id.includes('CuttingOptimizationEngine') ||
                 id.includes('MassProductionDashboard') ||
@@ -426,7 +418,7 @@ export default defineConfig(({ mode }) => {
               ) {
                 return 'fabricator-algorithms';
               }
-              // Reporting components (PDF/CSV/DXF generation)
+              // Reporting components
               if (
                 id.includes('CuttingListReport') ||
                 id.includes('AccessoriesReport') ||
@@ -448,17 +440,8 @@ export default defineConfig(({ mode }) => {
               return 'fabricator-components';
             }
             
-            // Algorithms directory (optimization algorithms)
+            // Algorithms directory
             if (id.includes('algorithms/')) {
-              // Mass production optimizer
-              if (id.includes('massProductionOptimizer')) {
-                return 'fabricator-algorithms';
-              }
-              // Smart draw algorithms
-              if (id.includes('smartDraw')) {
-                return 'fabricator-algorithms';
-              }
-              // All other algorithms
               return 'fabricator-algorithms';
             }
             

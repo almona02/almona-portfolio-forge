@@ -45,6 +45,8 @@ const supabaseOptions = {
     params: {
       eventsPerSecond: 10,
     },
+    // WebSocket reconnection is handled automatically by Supabase client
+    // Transient connection errors are expected and will retry automatically
   },
   global: {
     headers: {

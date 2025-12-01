@@ -1,4 +1,4 @@
-import type { Profile } from '@/types/fabricator';
+import type { Profile, WindowGrid } from '@/types/fabricator';
 import { ANADOLU_W60_PACK } from '@/data/profileSystems/turkish/anadolu/w60';
 import { KALE_70_SLIDING_PACK, KALE_COMMERCIAL_PACK } from '@/data/profileSystems/turkish/kale/kale70';
 import { 
@@ -75,6 +75,8 @@ export interface SystemPack {
   smartDrawPreset?: SystemPackSmartDrawPreset;
   /** Optional glass sizing rules used for glazing and 2D glass optimisation. */
   glassAllowances?: GlassAllowanceSpec;
+  /** Optional default grid layout to apply when this pack is selected */
+  defaultGrid?: WindowGrid;
 }
 
 // ----------------------------------------------------------------------------
@@ -411,6 +413,14 @@ export const ROCK60_SYSTEM_PACK: SystemPack = {
     maxHeightMm: 2400,
     maxAreaM2: 4.5,
   },
+  defaultGrid: {
+    rows: 1,
+    cols: 2,
+    cells: [
+      { id: '0-0', row: 0, col: 0, type: 'sash' },
+      { id: '0-1', row: 0, col: 1, type: 'fixed' },
+    ],
+  },
 };
 
 // ----------------------------------------------------------------------------
@@ -633,7 +643,6 @@ export const JUMBO100_WINDOW_SYSTEM_SPEC: Record<string, any> = {
         G: 53.0,
         H: 84.0,
         X: true,
-        Y: true,
       },
       page: 65,
     },
@@ -649,7 +658,6 @@ export const JUMBO100_WINDOW_SYSTEM_SPEC: Record<string, any> = {
         F: 28.86,
         G: 80.0,
         X: true,
-        Y: true,
       },
       page: 65,
     },
@@ -693,7 +701,6 @@ export const JUMBO100_WINDOW_SYSTEM_SPEC: Record<string, any> = {
         F: 26.06,
         G: 80.0,
         X: true,
-        Y: true,
       },
       page: 67,
     },
@@ -709,7 +716,6 @@ export const JUMBO100_WINDOW_SYSTEM_SPEC: Record<string, any> = {
         F: 28.76,
         G: 81.5,
         X: true,
-        Y: true,
       },
       page: 67,
     },
@@ -726,7 +732,6 @@ export const JUMBO100_WINDOW_SYSTEM_SPEC: Record<string, any> = {
         G: 100.0,
         H: 54.0,
         X: true,
-        Y: true,
       },
       page: 68,
     },
@@ -742,7 +747,6 @@ export const JUMBO100_WINDOW_SYSTEM_SPEC: Record<string, any> = {
         F: 100.0,
         G: 54.0,
         X: true,
-        Y: true,
       },
       page: 68,
     },
@@ -1015,6 +1019,14 @@ export const JUMBO100_SYSTEM_PACK: SystemPack = {
     maxAreaM2: 6.5,
     maxGlazingThicknessMm: 26,
   },
+  defaultGrid: {
+    rows: 1,
+    cols: 2,
+    cells: [
+      { id: '0-0', row: 0, col: 0, type: 'sliding' },
+      { id: '0-1', row: 0, col: 1, type: 'sliding' },
+    ],
+  },
 };
 
 export const SYSTEM_PACKS: SystemPack[] = [
@@ -1034,5 +1046,3 @@ export const SYSTEM_PACKS: SystemPack[] = [
   // ALUMIL_EGYPT_NC_PACK,
   // ALSALAM_PS_PACK,
 ];
-
-

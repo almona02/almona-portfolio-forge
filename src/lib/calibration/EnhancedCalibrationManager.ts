@@ -224,6 +224,13 @@ export class EnhancedCalibrationManager {
    * Record a test result for calibration learning
    */
   async recordTestResult(testResult: CalibrationTestResult): Promise<void> {
+    // Validate UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(testResult.profileId)) {
+      console.warn(`Skipping recordTestResult: Invalid UUID "${testResult.profileId}"`);
+      return;
+    }
+
     try {
       // Get current calibration
       const { data: profileData } = await supabase
@@ -285,6 +292,12 @@ export class EnhancedCalibrationManager {
     profileId: string,
     systemPackId: string
   ): Promise<CalibrationTestResult[]> {
+    // Validate UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(profileId)) {
+      return [];
+    }
+
     try {
       const { data: profileData } = await supabase
         .from('fabricator_profiles')
@@ -315,6 +328,12 @@ export class EnhancedCalibrationManager {
     profileId: string,
     systemPackId: string
   ): Promise<CuttingCalibration[]> {
+    // Validate UUID
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(profileId)) {
+      return [];
+    }
+
     try {
       const { data: profileData } = await supabase
         .from('fabricator_profiles')
