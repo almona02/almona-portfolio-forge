@@ -1,8 +1,17 @@
 User-agent: *
 Allow: /
+Allow: /dealer-verification
 Allow: /dealer-verification.html
+Allow: /dealer-verification-en
+Allow: /dealer-verification-en.html
+Allow: /yilmaz-machines-egypt
 Allow: /yilmaz-machines-egypt.html
+Allow: /yilmaz-machines-egypt-en
+Allow: /yilmaz-machines-egypt-en.html
+Allow: /fabricator-pro-software
 Allow: /fabricator-pro-software.html
+Allow: /fabricator-pro-software-en
+Allow: /fabricator-pro-software-en.html
 Disallow: /admin
 Disallow: /api
 Sitemap: https://almona02.com/sitemap.xml
