@@ -52,6 +52,9 @@ const YilmazDealer = lazy(() => import("./pages/YilmazDealer.tsx"));
 const YilmazService = lazy(() => import("./pages/YilmazService.tsx"));
 const YilmazTraining = lazy(() => import("./pages/YilmazTraining.tsx"));
 
+// Digital Egypt Initiative - lazy loaded
+const DigitalEgypt = lazy(() => import("./pages/DigitalEgypt.tsx"));
+
 // Workflow and fabrication - lazy loaded
 const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail.tsx"));
 const FabricationWorkflowDetail = lazy(() => import("./pages/FabricationWorkflowDetail.tsx"));
@@ -181,6 +184,10 @@ const App = () => (
                   <Route path="/yilmaz-training-egypt" element={<Suspense fallback={getLoadingComponent('/yilmaz')}><YilmazTraining /></Suspense>} />
                   {/* Alias for CNC machines to Products */}
                   <Route path="/yilmaz-cnc-machines" element={<Navigate to="/products/machines?category=processing-centers" replace />} />
+                  
+                  {/* Digital Egypt Initiative */}
+                  <Route path="/digital-egypt" element={<Suspense fallback={getLoadingComponent('/digital-egypt')}><DigitalEgypt /></Suspense>} />
+                  <Route path="/digital-egypt/smart-manufacturing" element={<Navigate to="/digital-egypt" replace />} />
 
                   {/* Products specific routes first - 3D gallery before general */}
                   <Route path="/products/3d-gallery" element={<Suspense fallback={getLoadingComponent('/products/3d-gallery')}><Model3DGallery /></Suspense>} />
