@@ -51,12 +51,14 @@ import {
   Upload,
   Info,
   FileText,
+  ShoppingCart,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { WindowUnit, Profile } from '@/types/fabricator';
 import { remnantManager, type Remnant, type RemnantStatistics, type RemnantConsolidationSuggestion } from '@/lib/inventory/RemnantManager';
 import { supabase } from '@/lib/supabase';
 import { Rock60PricingSetup } from '@/components/fabricator/Rock60PricingSetup';
+import { PurchaseWizard } from '@/components/fabricator/PurchaseWizard';
 import { ROCK60_WINDOW_SYSTEM_TEMPLATE, JUMBO100_WINDOW_SYSTEM_SPEC, SYSTEM_PACKS } from '@/data/systemPacks';
 
 // System-pack specific paint color options (can be expanded per catalog)
@@ -225,6 +227,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const [invoicePaintColor, setInvoicePaintColor] = useState<string>('');
   const [invoiceSystemPackFilter, setInvoiceSystemPackFilter] = useState<string>('all');
   const [invoiceRoleFilter, setInvoiceRoleFilter] = useState<string>('all');
+  const [showPurchaseWizard, setShowPurchaseWizard] = useState(false);
 
   const loadStockAlerts = useCallback(async () => {
     if (!userId) return;
@@ -421,6 +424,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
         const rows = lines.slice(1);
         const inserts: any[] = [];
+        const stockUpdates = new Map<string, number>();
         let skippedUnknownProfiles = 0;
 
         for (const row of rows) {
@@ -462,7 +466,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             continue;
           }
 
-          const effectiveUnit = unit === 'meter' ? 'm' : 'bar';
+          const effectiveUnit = unit === 'meter' ? 'meters' : 'pieces';
           const defaultBarLenM =
             typeof (profile.specifications as any)?.stockLengthMm === 'number'
               ? ((profile.specifications as any).stockLengthMm as number) / 1000
@@ -471,6 +475,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           const effectiveBarLenM = unit === 'meter' ? 0 : barLengthM || defaultBarLenM;
           const totalLengthM =
             unit === 'meter' ? quantity : quantity * (effectiveBarLenM > 0 ? effectiveBarLenM : 0);
+
+          // Accumulate stock update
+          const currentUpdate = stockUpdates.get(profile.id) || 0;
+          stockUpdates.set(profile.id, currentUpdate + totalLengthM);
 
           const movementQuantity = unit === 'meter' ? totalLengthM : quantity;
 
@@ -485,7 +493,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           inserts.push({
             user_id: userId,
             profile_id: profile.id,
-            movement_type: 'purchase',
+            movement_type: 'in', // 'in' is the correct type for stock intake/purchases
             quantity: movementQuantity,
             unit: effectiveUnit,
             notes,
@@ -501,6 +509,20 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         const db = supabase as any;
         const { error } = await (db.from('stock_movements') as any).insert(inserts as any);
         if (error) throw error;
+
+        // Update profile stock quantities
+        for (const [profileId, addedLength] of stockUpdates.entries()) {
+          const profile = inventory.find((p) => p.id === profileId);
+          if (profile) {
+            await (db.from('fabricator_profiles') as any)
+              .update({ 
+                stock_quantity: (profile.stockQuantity || 0) + addedLength,
+                updated_at: new Date().toISOString()
+              } as any)
+              .eq('id', profileId)
+              .eq('user_id', userId);
+          }
+        }
 
         await Promise.all([loadStockMovements(), loadStockAlerts()]);
 
@@ -524,7 +546,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     try {
       setIsSavingInvoice(true);
       const lengthM = totalInvoiceLengthM;
-      const effectiveUnit = invoiceUnit === 'meter' ? 'm' : 'bar';
+      const effectiveUnit = invoiceUnit === 'meter' ? 'meters' : 'pieces';
       const movementQuantity = invoiceUnit === 'meter' ? lengthM : invoiceQuantity;
 
       const metaParts: string[] = [];
@@ -552,13 +574,24 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       const { error } = await (db.from('stock_movements') as any).insert({
         user_id: userId,
         profile_id: invoiceProfileId,
-        movement_type: 'purchase',
+        movement_type: 'in', // 'in' is the correct type for stock intake/purchases
         quantity: movementQuantity,
         unit: effectiveUnit,
         notes,
       } as any);
 
       if (error) throw error;
+
+      // Update profile stock quantity
+      const { error: updateError } = await (db.from('fabricator_profiles') as any)
+        .update({ 
+          stock_quantity: (invoiceSelectedProfile.stockQuantity || 0) + lengthM,
+          updated_at: new Date().toISOString()
+        } as any)
+        .eq('id', invoiceProfileId)
+        .eq('user_id', userId);
+
+      if (updateError) throw updateError;
 
       toast.success('Stock updated from purchase invoice');
 
@@ -1465,6 +1498,16 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="flex justify-end mb-2">
+                <Button
+                  onClick={() => setShowPurchaseWizard(true)}
+                  className="bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white border-none shadow-lg shadow-orange-500/20"
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Open Purchase Wizard
+                </Button>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div className="md:col-span-2 space-y-2">
                   <Label className="text-xs">Profile / Series / Pack</Label>
@@ -1967,6 +2010,18 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           </div>
         </TabsContent>
       </Tabs>
+
+      {userId && (
+        <PurchaseWizard
+          open={showPurchaseWizard}
+          onOpenChange={setShowPurchaseWizard}
+          userId={userId}
+          onPurchaseComplete={() => {
+            loadDashboardData();
+            setShowPurchaseWizard(false);
+          }}
+        />
+      )}
     </div>
   );
 };

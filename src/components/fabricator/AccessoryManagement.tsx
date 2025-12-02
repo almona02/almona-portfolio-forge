@@ -197,6 +197,8 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
           if (seedError) {
             console.error('Error seeding ROCK 60 accessories:', seedError);
+            // Don't show error toast for seeding - it's optional template data
+            // The error is logged for debugging purposes
           } else {
             const { data: reloaded, error: reloadError } = await supabase
               .from('fabricator_accessories')
@@ -235,9 +237,9 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
       setAccessories(mappedAccessories);
       setFilteredAccessories(mappedAccessories);
-      if (onAccessoriesUpdate) {
-        onAccessoriesUpdate(mappedAccessories);
-      }
+      // Only call onAccessoriesUpdate if accessories actually changed to prevent re-render loops
+      // The parent component will be notified through the real-time subscription or explicit updates
+      // Avoid calling onAccessoriesUpdate here to prevent flashing/flashing issues
     } catch (err) {
       console.error('Error loading accessories:', err);
       setError(err instanceof Error ? err.message : 'Failed to load accessories');
