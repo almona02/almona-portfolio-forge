@@ -81,7 +81,17 @@ const SEO = ({
     'Job Complexity Prediction', 'Workshop Intelligence', 'Production Intelligence'
   ].join(', ');
 
-  const finalKeywords = `${keywords}, ${dealerKeywords}, ${industry40Keywords}`;
+  // Digital Egypt & National Strategy keywords
+  const digitalEgyptKeywords = [
+    'Digital Egypt', 'Egypt Vision 2030', 'smart manufacturing Egypt', 'industrial digital transformation Egypt',
+    'MCIT', 'ITIDA', 'G5 collaborative regulation', 'sustainable manufacturing', 'CO2 reduction',
+    'SME productivity Egypt', 'national pilot project', 'Industry 4.0 Egypt', 'Egyptian manufacturing',
+    'national industrial modernization', 'evidence-based industrial policy', 'Egypt AI strategy',
+    'manufacturing productivity Egypt', 'circular economy Egypt', 'youth upskilling Egypt',
+    'digital fabricator certification', 'national remnant marketplace'
+  ].join(', ');
+
+  const finalKeywords = `${keywords}, ${dealerKeywords}, ${industry40Keywords}, ${digitalEgyptKeywords}`;
 
   return (
     <Helmet>
