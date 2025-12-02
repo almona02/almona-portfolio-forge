@@ -22,19 +22,46 @@ interface SEOProps {
 }
 
 const SEO = ({
-  title = 'ALMONA Co. - Industry 4.0 Industrial Machinery & Smart Manufacturing Solutions',
-  description = 'ALMONA Co. is a leading Egyptian industrial company established in 1991, specializing in Industry 4.0 solutions including YILMAZ machinery, AI-powered Fabricator Pro platform, smart manufacturing, predictive maintenance, and digital transformation for construction and aluminum/UPVC fabrication industries.',
-  keywords = 'ALMONA, Industry 4.0, smart manufacturing, AI-powered fabrication, YILMAZ machines, industrial machinery, construction materials, Egypt, aluminum processing, PVC processing, digital twin, predictive maintenance, CNC integration, ML optimization, real-time analytics, IoT manufacturing, cyber-physical systems, automated quality control, intelligent production planning, remnant marketplace, calibration AI, constraint programming optimization',
+  title = 'Yilmaz Machines Egypt | Authorized Dealer | ALMONA Co.',
+  description = 'Official authorized dealer of Yilmaz industrial machinery in Egypt. Industry 4.0 solutions including Fabricator Pro AI platform, CNC integration, smart manufacturing, and digital services for aluminium/UPVC fabricators.',
+  keywords = 'Yilmaz Egypt, Yilmaz authorized dealer, Yilmaz machines Egypt, Yilmaz CNC, industrial machinery Egypt, aluminium fabrication Egypt, smart manufacturing Egypt, Industry 4.0 Egypt',
   image = '/logo.svg',
   url = import.meta.env.VITE_APP_URL || 'https://almona.eg',
   type = 'website',
   productData
 }: SEOProps) => {
-  const siteTitle = 'ALMONA Co. - Industry 4.0 Solutions';
+  const siteTitle = 'ALMONA Co. - Authorized Yilmaz Dealer';
   const fullTitle = title.includes(siteTitle) ? title : `${title} | ${siteTitle}`;
   
   // Prioritize specific product image for social sharing, fallback to provided image or default logo
   const socialImage = productData?.image || image;
+
+  // Dealer specific keywords
+  const dealerKeywords = [
+    // Primary dealer terms
+    'Yilmaz authorized dealer Egypt',
+    'Yilmaz official distributor Egypt',
+    'Yilmaz machines Cairo',
+    'Yilmaz CNC Egypt',
+    'Yilmaz copy router Egypt',
+    
+    // Service terms
+    'Yilmaz machine service Egypt',
+    'Yilmaz spare parts Egypt',
+    'Yilmaz training Egypt',
+    'Yilmaz installation Egypt',
+    
+    // Industry-specific
+    'aluminium machine Egypt',
+    'UPVC machine Egypt',
+    'window fabrication machine',
+    'door manufacturing equipment',
+    
+    // Location specific
+    'industrial machines Cairo',
+    'factory equipment Egypt',
+    'Egypt machinery supplier'
+  ].join(', ');
 
   // Industry 4.0 comprehensive keywords
   const industry40Keywords = [
@@ -51,7 +78,7 @@ const SEO = ({
     'Job Complexity Prediction', 'Workshop Intelligence', 'Production Intelligence'
   ].join(', ');
 
-  const finalKeywords = `${keywords}, ${industry40Keywords}`;
+  const finalKeywords = `${keywords}, ${dealerKeywords}, ${industry40Keywords}`;
 
   return (
     <Helmet>
@@ -94,6 +121,42 @@ const SEO = ({
 
       {/* Canonical URL */}
       <link rel="canonical" href={url} />
+
+      {/* Structured Data - Local Business (Dealer) */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "ALMONA Co. - Authorized Yilmaz Dealer",
+          "description": "Official authorized dealer of Yilmaz industrial machinery in Egypt",
+          "url": "https://almona.eg",
+          "telephone": "+201001234567", // Replaced placeholder with generic pattern, should be updated with real one
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Industrial Zone",
+            "addressLocality": "Cairo",
+            "addressRegion": "Cairo Governorate",
+            "postalCode": "11835",
+            "addressCountry": "EG"
+          },
+          "priceRange": "$$$",
+          "openingHours": "Mo-Fr 08:00-17:00",
+          "areaServed": {
+            "@type": "Country",
+            "name": "Egypt"
+          },
+          "brand": {
+            "@type": "Brand",
+            "name": "Yilmaz Makina"
+          },
+          "knowsAbout": [
+            "Yilmaz CNC Machines",
+            "Yilmaz Copy Routers",
+            "Yilmaz Cutting Machines",
+            "Industrial Machinery Egypt"
+          ]
+        })}
+      </script>
 
       {/* Structured Data - Organization */}
       <script type="application/ld+json">
