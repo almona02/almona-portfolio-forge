@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, lazy, Suspense, startTransition } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Phone } from "lucide-react";
+import { ArrowRight, Phone, CheckCircle, Award } from "lucide-react";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
 
 // Lazy load the heavy background component to improve LCP
@@ -44,15 +44,17 @@ const Hero = () => {
       id: 1,
       title: "YILMAZ Machines",
       subtitle: "Premium Quality Aluminium & PVC Processing Machines",
-      description: "Authorized dealer in Egypt since 2000",
-      link: "/products/machines",
+      description: "Authorized Dealer in Egypt Since 2000",
+      link: "/yilmaz-machines-egypt", // Updated link to new landing page
+      badge: true
     },
     {
       id: 2,
       title: "ALMONA Co.",
       subtitle: "Your Trusted Partner Since 1991",
-      description: "Expert consultation, sales and service",
+      description: "Expert Consultation, Sales & Service",
       link: "/about",
+      badge: false
     },
   ], []);
 
@@ -165,9 +167,17 @@ const Hero = () => {
             >
               {activeSlide === index && (
                 <div className="max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
+                  {/* Official Partner Badge - NEW */}
+                  {slide.badge && (
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/40 text-orange-400 mb-4 animate-fade-in backdrop-blur-sm">
+                      <Award className="w-4 h-4" />
+                      <span className="text-sm font-semibold uppercase tracking-wide">Official Partner</span>
+                    </div>
+                  )}
+
                   {/* Badge/Description - Optimized for mobile - Enhanced visibility with better contrast */}
                   <span 
-                    className="inline-block mb-3 sm:mb-4 md:mb-5 text-xs sm:text-sm md:text-base lg:text-lg font-bold uppercase tracking-wider animate-fade-in opacity-100 sm:opacity-100"
+                    className="block mb-3 sm:mb-4 md:mb-5 text-xs sm:text-sm md:text-base lg:text-lg font-bold uppercase tracking-wider animate-fade-in opacity-100 sm:opacity-100"
                     style={{
                       color: '#FFC107',
                       textShadow: '0 2px 8px rgba(0, 0, 0, 0.95), 0 0 20px rgba(255, 193, 7, 0.5), 0 1px 3px rgba(0, 0, 0, 1)',

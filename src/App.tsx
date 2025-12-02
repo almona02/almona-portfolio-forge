@@ -47,6 +47,11 @@ const SpareParts = lazy(() => import("./pages/SpareParts.tsx"));
 const MachineDetail = lazy(() => import("./pages/machines/MachineDetail.tsx"));
 const ProfileDetail = lazy(() => import("./pages/profiles/ProfileDetail.tsx"));
 
+// New Yilmaz Dealer Pages - lazy loaded
+const YilmazDealer = lazy(() => import("./pages/YilmazDealer.tsx"));
+const YilmazService = lazy(() => import("./pages/YilmazService.tsx"));
+const YilmazTraining = lazy(() => import("./pages/YilmazTraining.tsx"));
+
 // Workflow and fabrication - lazy loaded
 const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail.tsx"));
 const FabricationWorkflowDetail = lazy(() => import("./pages/FabricationWorkflowDetail.tsx"));
@@ -170,6 +175,13 @@ const App = () => (
                   <Route path="/test/localization" element={<Suspense fallback={getLoadingComponent('/test/localization')}><LocalizationTest /></Suspense>} />
                   <Route path="/test/swiftxr" element={<Suspense fallback={getLoadingComponent('/test/swiftxr')}><SwiftXRTest /></Suspense>} />
                   
+                  {/* Yilmaz Dealer Pages */}
+                  <Route path="/yilmaz-machines-egypt" element={<Suspense fallback={getLoadingComponent('/yilmaz')}><YilmazDealer /></Suspense>} />
+                  <Route path="/yilmaz-service-egypt" element={<Suspense fallback={getLoadingComponent('/yilmaz')}><YilmazService /></Suspense>} />
+                  <Route path="/yilmaz-training-egypt" element={<Suspense fallback={getLoadingComponent('/yilmaz')}><YilmazTraining /></Suspense>} />
+                  {/* Alias for CNC machines to Products */}
+                  <Route path="/yilmaz-cnc-machines" element={<Navigate to="/products/machines?category=processing-centers" replace />} />
+
                   {/* Products specific routes first - 3D gallery before general */}
                   <Route path="/products/3d-gallery" element={<Suspense fallback={getLoadingComponent('/products/3d-gallery')}><Model3DGallery /></Suspense>} />
                   <Route path="/products/machines" element={<Suspense fallback={getLoadingComponent('/products')}><Products /></Suspense>} />
@@ -203,8 +215,6 @@ const App = () => (
                   <Route path="/fabricator-workflow" element={<Suspense fallback={getLoadingComponent('/fabricator')}><FabricatorWorkflow /></Suspense>} />
                   <Route path="/fabricator-workflow/pro" element={<Suspense fallback={getLoadingComponent('/fabricator-workflow/pro')}><FabricatorWorkflowPro /></Suspense>} />
                   <Route path="/fabricator" element={<Suspense fallback={getLoadingComponent('/fabricator')}><FabricatorDashboard /></Suspense>} />
-
-                  {/* Fabricator production workspace – shared context across cockpit tabs */}
                   <Route
                     path="/fabricator/*"
                     element={
