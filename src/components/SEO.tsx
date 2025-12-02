@@ -35,7 +35,7 @@ const SEO = ({
   
   // Prioritize specific product image for social sharing, fallback to provided image or default logo
   const socialImage = productData?.image || image;
-  
+
   // Google Business Profile Link
   const googleBusinessProfile = 'https://share.google/Pah6FoMlL3e5MuGnq';
 
@@ -133,7 +133,7 @@ const SEO = ({
           "name": "ALMONA Co. - Authorized Yilmaz Dealer",
           "description": "Official authorized dealer of Yilmaz industrial machinery in Egypt",
           "url": "https://almona.eg",
-          "telephone": "+201001234567", // Placeholder - please update with your real business phone
+          "telephone": "+201003097177",
           "hasMap": googleBusinessProfile,
           "sameAs": [
             googleBusinessProfile,
@@ -143,14 +143,14 @@ const SEO = ({
           ].filter(Boolean),
           "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Industrial Zone", // Placeholder - please update with exact street address
-            "addressLocality": "Cairo",
-            "addressRegion": "Cairo Governorate",
-            "postalCode": "11835",
+            "streetAddress": "13B/18 Tarik Ibn Ziad st. Taawen , Haram",
+            "addressLocality": "Giza",
+            "addressRegion": "Giza Governorate",
+            "postalCode": "12111",
             "addressCountry": "EG"
           },
           "priceRange": "$$$",
-          "openingHours": "Mo-Fr 08:00-17:00",
+          "openingHours": "Sa-Th 10:00-20:00",
           "areaServed": {
             "@type": "Country",
             "name": "Egypt"

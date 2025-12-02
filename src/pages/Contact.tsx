@@ -238,7 +238,7 @@ const Contact = () => {
               </div>
 
               <div className="bg-almona-darker p-1 rounded-xl border border-almona-light/20 overflow-hidden">
-                <div className="rounded-lg overflow-hidden h-80 relative group cursor-pointer" onClick={() => window.open('https://www.google.com/maps/place/Yilmaz+machine/@29.997034,31.1610963,17z/data=!3m1!4b1!4m6!3m5!1s0x1458452786e7c71d:0x3b8c19b580db70e!8m2!3d29.997034!4d31.1636712!16s%2Fg%2F11nn4nvz79?entry=ttu', '_blank')}>
+                <div className="rounded-lg overflow-hidden h-80 relative group cursor-pointer" onClick={() => window.open('https://share.google/Pah6FoMlL3e5MuGnq', '_blank')}>
                   {/* Map placeholder with location info */}
                   <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
                     <div className="text-center text-white">
@@ -261,6 +261,13 @@ const Contact = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+              
+              {/* Neighborhood Discovery Button */}
+              <div className="mt-4 text-center">
+                <Button variant="outline" className="w-full border-almona-light/30 hover:bg-almona-light/10" onClick={() => window.open('/neighborhood-discovery.html', '_blank')}>
+                  Explore Our Neighborhood
+                </Button>
               </div>
             </motion.div>
           </div>
