@@ -1,14 +1,8 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+Allow: /dealer-verification.html
+Allow: /yilmaz-machines-egypt.html
+Allow: /fabricator-pro-software.html
+Disallow: /admin
+Disallow: /api
+Sitemap: https://almona02.com/sitemap.xml
