@@ -35,6 +35,9 @@ const SEO = ({
   
   // Prioritize specific product image for social sharing, fallback to provided image or default logo
   const socialImage = productData?.image || image;
+  
+  // Google Business Profile Link
+  const googleBusinessProfile = 'https://share.google/Pah6FoMlL3e5MuGnq';
 
   // Dealer specific keywords
   const dealerKeywords = [
@@ -130,10 +133,17 @@ const SEO = ({
           "name": "ALMONA Co. - Authorized Yilmaz Dealer",
           "description": "Official authorized dealer of Yilmaz industrial machinery in Egypt",
           "url": "https://almona.eg",
-          "telephone": "+201001234567", // Replaced placeholder with generic pattern, should be updated with real one
+          "telephone": "+201001234567", // Placeholder - please update with your real business phone
+          "hasMap": googleBusinessProfile,
+          "sameAs": [
+            googleBusinessProfile,
+            import.meta.env.VITE_FACEBOOK_URL,
+            import.meta.env.VITE_LINKEDIN_URL,
+            import.meta.env.VITE_INSTAGRAM_URL
+          ].filter(Boolean),
           "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Industrial Zone",
+            "streetAddress": "Industrial Zone", // Placeholder - please update with exact street address
             "addressLocality": "Cairo",
             "addressRegion": "Cairo Governorate",
             "postalCode": "11835",
@@ -178,6 +188,7 @@ const SEO = ({
             "contactType": "customer service"
           },
           "sameAs": [
+            googleBusinessProfile,
             import.meta.env.VITE_FACEBOOK_URL,
             import.meta.env.VITE_LINKEDIN_URL,
             import.meta.env.VITE_INSTAGRAM_URL
