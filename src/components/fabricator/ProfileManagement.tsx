@@ -12,7 +12,7 @@
  * - Bulk operations for pricing and stock updates
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates';
@@ -128,7 +128,62 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [isUploadingPreview, setIsUploadingPreview] = useState<string | null>(null);
   const [accessories, setAccessories] = useState<Accessory[]>([]);
   const [showAccessoryManager, setShowAccessoryManager] = useState(false);
+  const [showProfileDefinitionWizard, setShowProfileDefinitionWizard] = useState(false);
   const [selectedProfileForDetail, setSelectedProfileForDetail] = useState<Profile | null>(null);
+  const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>('custom');
+
+  // Memoized conversion of accessories to FabricatorAccessory format to prevent re-renders
+  const convertedAccessories = useMemo(() => {
+    return accessories.map((acc) => ({
+      id: acc.id,
+      name: acc.name,
+      type: acc.type === 'corner_connector' ? 'corner' : 
+            acc.type === 'bracket' || acc.type === 'screw' ? 'other' : 
+            acc.type as 'hinge' | 'lock' | 'handle' | 'seal' | 'spacer' | 'corner' | 'other',
+      category: acc.category || '',
+      unitPrice: acc.unitPrice || 0,
+      baseCost: acc.baseCost || 0,
+      markupPercentage: acc.markupPercentage || 0,
+      supplier: acc.supplier,
+      sku: acc.sku,
+      description: acc.description,
+      compatibleMaterials: acc.compatibleMaterials || [],
+      region: acc.region || [],
+      imageUrl: acc.imageUrl || acc.images?.[0],
+      specifications: acc.specifications || {},
+      userId: acc.userId,
+      createdAt: acc.createdAt,
+      updatedAt: acc.updatedAt,
+    }));
+  }, [accessories]);
+
+  // Memoized callback to prevent re-renders
+  const handleAccessoriesUpdate = useCallback((updatedAccessories: any[]) => {
+    setAccessories(updatedAccessories.map((acc) => ({
+      id: acc.id,
+      name: acc.name,
+      type: acc.type === 'corner' ? 'corner_connector' : 
+            acc.type === 'other' ? 'bracket' : 
+            acc.type as 'hinge' | 'handle' | 'lock' | 'corner_connector' | 'bracket' | 'seal' | 'screw',
+      compatibleProfiles: [],
+      installationMacros: [],
+      specifications: acc.specifications || {},
+      images: acc.imageUrl ? [acc.imageUrl] : [],
+      category: acc.category,
+      unitPrice: acc.unitPrice,
+      baseCost: acc.baseCost,
+      markupPercentage: acc.markupPercentage,
+      supplier: acc.supplier,
+      sku: acc.sku,
+      description: acc.description,
+      compatibleMaterials: acc.compatibleMaterials || [],
+      region: acc.region || [],
+      imageUrl: acc.imageUrl,
+      userId: acc.userId,
+      createdAt: acc.createdAt,
+      updatedAt: acc.updatedAt,
+    })));
+  }, []);
 
   // Form state
   const [formData, setFormData] = useState<Partial<Profile>>({
@@ -593,8 +648,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       console.error('Error adding profile:', err);
-      setError(err instanceof Error ? err.message : t('profileManagement.errorSavingProfile', 'Error saving profile'));
-      toast.error(t('profileManagement.errorSavingProfile', 'Error saving profile'));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const detailedError = (err as any)?.message || (err as any)?.details || (err as any)?.error_description || 'Unknown error';
+      setError(detailedError);
+      toast.error(`Error saving profile: ${detailedError}`);
     } finally {
       setSaving(false);
     }
@@ -697,6 +754,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const handleEditProfile = (profile: Profile) => {
     setEditingId(profile.id);
     const specs = profile.specifications || {};
+    const packIds = profile.systemPackIds || (specs.systemPackIds as string[]) || [];
+    const firstPackId = packIds.length > 0 ? packIds[0] : 'custom';
+    
+    setSelectedSystemPackId(firstPackId);
     setFormData({
       name: profile.name,
       material: profile.material,
@@ -719,13 +780,14 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       compatibleAccessories: profile.compatibleAccessories || (specs.compatibleAccessories as string[]) || [],
       machiningMacros: profile.machiningMacros || (specs.machiningMacros as MachiningMacro[]) || [],
       technicalDrawings: profile.technicalDrawings || (specs.technicalDrawings as any) || [],
-      systemPackIds: profile.systemPackIds || (specs.systemPackIds as string[]) || [],
+      systemPackIds: packIds,
       specifications: specs,
     });
   };
 
   const resetForm = () => {
     setEditingId(null);
+    setSelectedSystemPackId('custom');
     setFormData({
       name: '',
       material: 'aluminum',
@@ -1602,10 +1664,62 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               />
             </div>
             <div>
+              <Label>System Pack *</Label>
+              <Select
+                value={selectedSystemPackId}
+                onValueChange={(value) => {
+                  setSelectedSystemPackId(value);
+                  if (value === 'custom') {
+                    // Custom system - user will enter manually
+                    setFormData({
+                      ...formData,
+                      systemPackIds: [],
+                      systemBrand: formData.systemBrand || 'Standard',
+                    });
+                  } else {
+                    // Find the selected system pack
+                    const selectedPack = SYSTEM_PACKS.find(p => p.meta.id === value);
+                    if (selectedPack) {
+                      setFormData({
+                        ...formData,
+                        systemPackIds: [selectedPack.meta.id],
+                        systemBrand: selectedPack.meta.brands[0] || selectedPack.meta.name,
+                        specifications: {
+                          ...(formData.specifications || {}),
+                          window_system: selectedPack.meta.name,
+                          systemPackId: selectedPack.meta.id,
+                        },
+                      });
+                    }
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select system pack or Custom" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  <SelectItem value="custom">
+                    Custom / Other
+                  </SelectItem>
+                  {SYSTEM_PACKS.map((pack) => (
+                    <SelectItem key={pack.meta.id} value={pack.meta.id}>
+                      {pack.meta.name} ({pack.meta.brands[0] || 'Generic'})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-gray-400 mt-1">
+                {selectedSystemPackId === 'custom' 
+                  ? 'You can manually enter system details below'
+                  : 'System details will be auto-filled'}
+              </p>
+            </div>
+            <div>
               <Label>{t('profileManagement.systemBrand', 'System Brand')}</Label>
               <Select
                 value={formData.systemBrand || 'Standard'}
                 onValueChange={(value) => setFormData({ ...formData, systemBrand: value })}
+                disabled={selectedSystemPackId !== 'custom'}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -1621,6 +1735,11 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                   <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
+              {selectedSystemPackId !== 'custom' && (
+                <p className="text-xs text-gray-400 mt-1">
+                  Auto-filled from selected system pack
+                </p>
+              )}
             </div>
             {(formData.material === 'wood' || formData.material === 'upvc') && (
               <div>
@@ -1880,6 +1999,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             </CardTitle>
             <Button
               variant="outline"
+              type="button"
               onClick={() => setShowAccessoryManager(!showAccessoryManager)}
             >
               {showAccessoryManager ? 'Hide' : 'Manage Accessories'}
@@ -1890,57 +2010,9 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         {showAccessoryManager && (
           <CardContent>
             <AccessoryManagement
-              accessories={accessories.map((acc) => {
-                // Convert Accessory to FabricatorAccessory format
-                return {
-                  id: acc.id,
-                  name: acc.name,
-                  type: acc.type === 'corner_connector' ? 'corner' : 
-                        acc.type === 'bracket' || acc.type === 'screw' ? 'other' : 
-                        acc.type as 'hinge' | 'lock' | 'handle' | 'seal' | 'spacer' | 'corner' | 'other',
-                  category: acc.category || '',
-                  unitPrice: acc.unitPrice || 0,
-                  baseCost: acc.baseCost || 0,
-                  markupPercentage: acc.markupPercentage || 0,
-                  supplier: acc.supplier,
-                  sku: acc.sku,
-                  description: acc.description,
-                  compatibleMaterials: acc.compatibleMaterials || [],
-                  region: acc.region || [],
-                  imageUrl: acc.imageUrl || acc.images?.[0],
-                  specifications: acc.specifications || {},
-                  userId: acc.userId,
-                  createdAt: acc.createdAt,
-                  updatedAt: acc.updatedAt,
-                };
-              })}
+              accessories={convertedAccessories}
               profiles={profiles}
-              onAccessoriesUpdate={(updatedAccessories) => {
-                setAccessories(updatedAccessories.map((acc) => ({
-                  id: acc.id,
-                  name: acc.name,
-                  type: acc.type === 'corner' ? 'corner_connector' : 
-                        acc.type === 'other' ? 'bracket' : 
-                        acc.type as 'hinge' | 'handle' | 'lock' | 'corner_connector' | 'bracket' | 'seal' | 'screw',
-                  compatibleProfiles: [],
-                  installationMacros: [],
-                  specifications: acc.specifications || {},
-                  images: acc.imageUrl ? [acc.imageUrl] : [],
-                  category: acc.category,
-                  unitPrice: acc.unitPrice,
-                  baseCost: acc.baseCost,
-                  markupPercentage: acc.markupPercentage,
-                  supplier: acc.supplier,
-                  sku: acc.sku,
-                  description: acc.description,
-                  compatibleMaterials: acc.compatibleMaterials || [],
-                  region: acc.region || [],
-                  imageUrl: acc.imageUrl,
-                  userId: acc.userId,
-                  createdAt: acc.createdAt,
-                  updatedAt: acc.updatedAt,
-                })));
-              }}
+              onAccessoriesUpdate={handleAccessoriesUpdate}
               userId={userId}
             />
           </CardContent>
