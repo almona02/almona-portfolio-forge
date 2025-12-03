@@ -38,14 +38,3 @@ def create_augmentation_pipeline() -> A.Compose:
         A.Blur(blur_limit=3, p=0.1),
     ])
 
-def extract_features_for_mlflow(image: np.ndarray) -> Dict[str, float]:
-    """Extract features for MLflow tracking."""
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
-    return {
-        "mean_intensity": float(np.mean(gray)),
-        "std_intensity": float(np.std(gray)),
-        "image_height": image.shape[0],
-        "image_width": image.shape[1],
-        "aspect_ratio": image.shape[1] / image.shape[0]
-    }

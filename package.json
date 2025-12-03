@@ -6,8 +6,15 @@
     "react-reconciler": "^0.29.0",
     "sourcemap-codec": "^1.4.8",
     "source-map": "^0.7.4",
-    "glob": "^10.0.0",
+    "glob": "^11.0.0",
+    "js-yaml": "^4.1.0",
+    "mdast-util-to-hast": "^13.0.0",
     "inflight": "npm:@npmcli/inflight@^1.0.0"
+  },
+  "resolutions": {
+    "glob": "^11.0.0",
+    "js-yaml": "^4.1.0",
+    "mdast-util-to-hast": "^13.0.0"
   },
   "name": "vite_react_shadcn_ts",
   "private": true,

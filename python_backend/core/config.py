@@ -15,7 +15,10 @@ class Settings(BaseSettings):
     # AI Model
     MODEL_PATH: str = "ai_services/part_detection/models/yolov8n.pt"
     MODEL_VERSIONS: Optional[Dict[str, str]] = Field(default_factory=dict)
-    MLFLOW_TRACKING_URI: str = "file:./mlruns"
+    
+    # Local Model Management
+    MODEL_DIR: str = Field(default="models")
+    LOG_EXPERIMENTS_LOCALLY: bool = Field(default=True)
 
     # Security
     VALID_API_KEYS: str = "your-secret-api-key"
