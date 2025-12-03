@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
-import { Eye, ShoppingCart, GitCompare, Play, Download } from "lucide-react";
+import { Eye, ShoppingCart, GitCompare, Play, Pause, Download } from "lucide-react";
 import { OptimizedImage } from "@/components/optimized/OptimizedImage";
-import { ProductHoverPreview } from '@/components/shop/ProductHoverPreview';
+import { ProductVideoPlayer } from "@/components/ui/ProductVideoPlayer";
+// ProductHoverPreview removed to avoid duplicate info popup
 import type { Machine } from "@/constants/yilmazMachines";
 
 interface EnhancedProductCardProps {
@@ -128,6 +129,8 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
   onQuickPreview,
   show3DBadge = true
 }) => {
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
   const handleSelect = () => {
     onSelect?.(machine, !isSelected);
   };
@@ -144,18 +147,18 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
     onQuoteRequest?.(machine);
   };
 
+  const handleVideoToggle = () => {
+    setIsVideoPlaying(!isVideoPlaying);
+  };
+
   return (
-    <ProductHoverPreview 
-      product={machine} 
-      onQuickPreview={onQuickPreview}
-    >
       <motion.div
         variants={cardVariants}
         initial="initial"
         animate="animate"
         whileHover="hover"
         whileTap="tap"
-        className={`group relative bg-gradient-to-br from-gray-900 to-black rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${
+        className={`group relative h-full flex flex-col bg-gradient-to-br from-gray-900 to-black rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${
           isSelected 
             ? 'border-orange-500 shadow-lg shadow-orange-500/20' 
             : 'border-gray-700 hover:border-orange-400/50'
@@ -197,12 +200,29 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
               animate="animate"
               exit="exit"
             >
-              <a href={machine.youtubeUrl} target="_blank" rel="noopener noreferrer">
-                <Badge className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-0 shadow-lg cursor-pointer">
-                  <Play className="w-3 h-3 mr-1" />
-                  Video
-                </Badge>
-              </a>
+              <Badge 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleVideoToggle();
+                }}
+                className={`cursor-pointer border-0 shadow-lg transition-all ${
+                  isVideoPlaying 
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600' 
+                    : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
+                } text-white`}
+              >
+                {isVideoPlaying ? (
+                  <>
+                    <Pause className="w-3 h-3 mr-1" />
+                    Playing
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-3 h-3 mr-1" />
+                    Video
+                  </>
+                )}
+              </Badge>
             </motion.div>
           )}
         </AnimatePresence>
@@ -225,6 +245,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
 
       {/* Image Container with Fixed Aspect Ratio - KEY CHANGE: object-contain */}
       <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-gradient-to-br from-gray-800 to-gray-900">
+        {/* Product Image */}
         <motion.div
           variants={imageVariants}
           initial="initial"
@@ -241,59 +262,50 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
             quality={85}
           />
         </motion.div>
+
+        {/* Embedded Video Player */}
+        {machine.youtubeUrl && (
+          <ProductVideoPlayer
+            youtubeUrl={machine.youtubeUrl}
+            thumbnailUrl={machine.imageUrl}
+            productName={machine.name}
+            isOpen={isVideoPlaying}
+            onClose={() => setIsVideoPlaying(false)}
+            autoPlay={true}
+          />
+        )}
         
-        {/* Quick Preview Overlay */}
-        <AnimatePresence>
-          <motion.div 
-            className="absolute inset-0 bg-black/60 flex items-center justify-center"
-            variants={overlayVariants}
-            initial="initial"
-            animate="initial"
-            whileHover="animate"
-            exit="exit"
-          >
-            <motion.div 
-              className="flex gap-2"
-              variants={overlayVariants}
-            >
-              {onQuickPreview && (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    size="sm"
-                    className="bg-orange-500 hover:bg-orange-600 text-white shadow-lg"
-                    onClick={handleQuickPreview}
-                  >
-                    <Eye className="w-4 h-4 mr-1" />
-                    Quick View
-                  </Button>
-                </motion.div>
-              )}
-              {machine.has3DModel && on3DView && (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="bg-transparent border-white text-white hover:bg-white/20"
-                    onClick={handle3DView}
-                  >
-                    3D
-                  </Button>
-                </motion.div>
-              )}
-            </motion.div>
-          </motion.div>
-        </AnimatePresence>
+        {/* Quick Preview Overlay - CSS hover instead of Framer Motion for reliability */}
+        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+          <div className="flex gap-2 scale-90 group-hover:scale-100 transition-transform duration-200">
+            {onQuickPreview && (
+              <Button
+                size="sm"
+                className="bg-orange-500 hover:bg-orange-600 text-white shadow-lg"
+                onClick={handleQuickPreview}
+              >
+                <Eye className="w-4 h-4 mr-1" />
+                Quick View
+              </Button>
+            )}
+            {machine.has3DModel && on3DView && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="bg-cyan-500/80 hover:bg-cyan-600 border-0 text-white"
+                onClick={handle3DView}
+              >
+                <Eye className="w-4 h-4 mr-1" />
+                3D View
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Content */}
       <motion.div 
-        className="p-4 space-y-3"
+        className="p-4 space-y-3 flex-1 flex flex-col"
         variants={contentVariants}
         initial="initial"
         animate="animate"
@@ -360,21 +372,25 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         )}
 
         {/* Action Buttons */}
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-2 pt-2 mt-auto">
           {machine.specPdf && (
             <motion.div
               className="flex-1"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <a href={machine.specPdf} target="_blank" rel="noopener noreferrer" className="block">
+              <a 
+                href={machine.specPdf} 
+                download={`${machine.name.replace(/\s+/g, '-')}-specs.pdf`}
+                className="block"
+              >
                 <Button
                   size="sm"
                   variant="outline"
                   className="w-full border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white transition-all duration-300"
                 >
                   <Download className="w-4 h-4 mr-1" />
-                  Specs
+                  PDF
                 </Button>
               </a>
             </motion.div>
@@ -421,7 +437,6 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         </div>
       </motion.div>
     </motion.div>
-    </ProductHoverPreview>
   );
 };
 

@@ -12,9 +12,10 @@
  * - Bulk operations for pricing and stock updates
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/ui/collapsible';
 import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
@@ -38,10 +39,12 @@ import {
   Search,
   FileText,
   Settings,
+  ChevronDown,
 } from 'lucide-react';
 import { Profile, Accessory, MachiningMacro, SystemPack } from '@/types/fabricator';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
 import {
   ROCK60_WINDOW_SYSTEM_TEMPLATE,
@@ -102,12 +105,15 @@ interface ProfileManagementProps {
   userId?: string;
   /** Optional initial list of profiles from a higher-level page shell. */
   initialProfiles?: Profile[];
+  /** If true, skip initial load and use initialProfiles instead */
+  skipInitialLoad?: boolean;
 }
 
 export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   onProfilesUpdate,
   userId,
   initialProfiles,
+  skipInitialLoad = false,
 }) => {
   const { t } = useTranslation('fabricator');
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles || []);
@@ -118,7 +124,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const { state: workspaceState, dispatch } = useFabricatorWorkspace();
+  const searchTerm = workspaceState.globalSearchQuery || '';
   const [materialFilter, setMaterialFilter] = useState<string>('all');
   const [regionFilter, setRegionFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -131,6 +138,9 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [showProfileDefinitionWizard, setShowProfileDefinitionWizard] = useState(false);
   const [selectedProfileForDetail, setSelectedProfileForDetail] = useState<Profile | null>(null);
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>('custom');
+  // Collapsible states - both collapsed by default
+  const [isProfileManagementOpen, setIsProfileManagementOpen] = useState<boolean>(false);
+  const [isProfileFormOpen, setIsProfileFormOpen] = useState<boolean>(false);
 
   // Memoized conversion of accessories to FabricatorAccessory format to prevent re-renders
   const convertedAccessories = useMemo(() => {
@@ -254,28 +264,53 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
     try {
       setLoading(true);
+      
+      // Check session validity
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        throw new Error('Session expired. Please log in again.');
+      }
+      
       // Use untyped Supabase client here to avoid friction with generated types
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any;
-      const { data, error: fetchError } = await db
+      
+      // Add timeout wrapper
+      const queryPromise = db
         .from('fabricator_profiles')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
+      
+      // Add timeout (30 seconds)
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Query timeout: Request took too long')), 30000)
+      );
+      
+      const { data, error: fetchError } = await Promise.race([queryPromise, timeoutPromise]) as any;
 
       if (fetchError) {
+        // Check for auth errors
+        if (fetchError.code === 'PGRST301' || fetchError.message?.includes('JWT') || fetchError.message?.includes('token')) {
+          throw new Error('Authentication failed. Please log in again.');
+        }
         throw fetchError;
       }
 
       let rows = data || [];
 
-      // Seed ROCK 60 template profile once per user if it does not exist yet
+      // Seed templates in a single batch to avoid multiple reloads
       const hasRock60Template = rows.some(
         (p: any) => p.specifications?.window_system === ROCK60_WINDOW_SYSTEM_TEMPLATE.window_system
       );
+      const hasJumbo100Template = rows.some(
+        (p: any) => p.specifications?.window_system === JUMBO100_WINDOW_SYSTEM_SPEC.window_system
+      );
 
+      const profilesToSeed: any[] = [];
+      
       if (!hasRock60Template) {
-        const seedProfile = {
+        profilesToSeed.push({
           user_id: userId,
           name: 'ROCK 60 System Template',
           material: 'aluminum',
@@ -296,36 +331,11 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             template: true,
             template_type: 'window_system',
           },
-        };
-
-        const { error: seedError } = await db
-          .from('fabricator_profiles')
-          .insert(seedProfile);
-
-        if (seedError) {
-          console.error('Error seeding ROCK 60 template profile:', seedError);
-        } else {
-          const { data: reloaded, error: reloadError } = await db
-            .from('fabricator_profiles')
-            .select('*')
-            .eq('user_id', userId)
-            .order('created_at', { ascending: false });
-
-          if (reloadError) {
-            console.error('Error reloading profiles after seeding:', reloadError);
-          } else if (reloaded) {
-            rows = reloaded;
-          }
-        }
+        });
       }
 
-      // Seed ELSHERIF JUMBO 100 template profile once per user if it does not exist yet
-      const hasJumbo100Template = rows.some(
-        (p: any) => p.specifications?.window_system === JUMBO100_WINDOW_SYSTEM_SPEC.window_system
-      );
-
       if (!hasJumbo100Template) {
-        const jumboSeedProfile = {
+        profilesToSeed.push({
           user_id: userId,
           name: 'JUMBO 100 Sliding Template',
           material: 'aluminum',
@@ -346,15 +356,19 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             template: true,
             template_type: 'window_system',
           },
-        };
+        });
+      }
 
-        const { error: jumboSeedError } = await db
+      // Insert all templates at once if needed
+      if (profilesToSeed.length > 0) {
+        const { error: seedError } = await db
           .from('fabricator_profiles')
-          .insert(jumboSeedProfile);
+          .insert(profilesToSeed);
 
-        if (jumboSeedError) {
-          console.error('Error seeding JUMBO 100 template profile:', jumboSeedError);
+        if (seedError) {
+          console.error('Error seeding template profiles:', seedError);
         } else {
+          // Reload once after seeding all templates
           const { data: reloaded, error: reloadError } = await db
             .from('fabricator_profiles')
             .select('*')
@@ -362,7 +376,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             .order('created_at', { ascending: false });
 
           if (reloadError) {
-            console.error('Error reloading profiles after JUMBO 100 seeding:', reloadError);
+            console.error('Error reloading profiles after seeding:', reloadError);
           } else if (reloaded) {
             rows = reloaded;
           }
@@ -379,11 +393,11 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           height: p.height,
           thickness: p.thickness,
           color: p.color || '#C0C0C0',
-          costPerMeter: p.cost_per_meter,
-          cuttingAllowance: p.cutting_allowance,
-          stockQuantity: p.stock_quantity,
-          minStockLevel: p.min_stock_level,
-          maxStockLevel: p.max_stock_level,
+          costPerMeter: p.cost_per_meter ?? 0,
+          cuttingAllowance: p.cutting_allowance ?? 3,
+          stockQuantity: p.stock_quantity ?? 0,
+          minStockLevel: p.min_stock_level ?? 0,
+          maxStockLevel: p.max_stock_level ?? 1000,
           supplier: p.supplier || '',
           systemBrand: p.system_brand,
           grainDirection: p.grain_direction,
@@ -413,21 +427,31 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       setHasLoadedOnce(true);
     } catch (err) {
       console.error('Error loading profiles:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load profiles');
-      toast.error('Failed to load profiles');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load profiles';
+      setError(errorMessage);
+      
+      // Don't show toast for auth errors (handled at page level)
+      if (!errorMessage.includes('Session expired') && !errorMessage.includes('Authentication failed')) {
+        toast.error('Failed to load profiles');
+      }
     } finally {
       setLoading(false);
     }
   }, [userId, onProfilesUpdate]);
 
-  // Setup real-time subscription
+  // Setup real-time subscription (use ref to avoid circular dependency)
+  const loadProfilesRef = useRef(loadProfiles);
+  useEffect(() => {
+    loadProfilesRef.current = loadProfiles;
+  }, [loadProfiles]);
+
   useEffect(() => {
     if (!userId) return;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const db = supabase as any;
     const channel = db
-      .channel('fabricator_profiles_changes')
+      .channel(`fabricator_profiles_changes_${userId}`)
       .on(
         'postgres_changes',
         {
@@ -436,9 +460,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           table: 'fabricator_profiles',
           filter: `user_id=eq.${userId}`,
         },
-        (payload) => {
+        (payload: any) => {
           console.log('Profile change detected:', payload);
-          loadProfiles();
+          // Use ref to avoid dependency on loadProfiles
+          loadProfilesRef.current();
         }
       )
       .subscribe();
@@ -446,17 +471,34 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     setSubscription(channel);
 
     return () => {
-      if (subscription) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (supabase as any).removeChannel(subscription);
+      // Cleanup subscription properly
+      if (channel) {
+        db.removeChannel(channel);
       }
     };
-  }, [userId, loadProfiles]);
+  }, [userId]); // Only depend on userId, not loadProfiles
 
-  // Initial load
+  // Initial load - use initialProfiles if provided and skipInitialLoad is true
   useEffect(() => {
-    loadProfiles();
-  }, [loadProfiles]);
+    if (skipInitialLoad && initialProfiles !== undefined) {
+      // Use initial profiles from parent component (even if empty array)
+      setProfiles(initialProfiles);
+      setFilteredProfiles(initialProfiles);
+      setLoading(false);
+      setHasLoadedOnce(true);
+    } else if (userId && !hasLoadedOnce) {
+      // Only load if we don't have initial profiles or skipInitialLoad is false
+      loadProfiles();
+    }
+  }, [userId, skipInitialLoad]); // Don't depend on loadProfiles or initialProfiles to avoid re-runs
+
+  // Update profiles when initialProfiles changes (for real-time updates from parent)
+  useEffect(() => {
+    if (skipInitialLoad && initialProfiles !== undefined) {
+      setProfiles(initialProfiles);
+      setFilteredProfiles(initialProfiles);
+    }
+  }, [initialProfiles, skipInitialLoad]);
 
   // Helper function to get system packs for category
   const getSystemPacksForCategory = (category: string): SystemPack[] => {
@@ -494,12 +536,32 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     let filtered = profiles;
 
     if (searchTerm) {
-      filtered = filtered.filter(
-        (p) =>
-          p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.supplier.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          p.systemBrand?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      const query = searchTerm.toLowerCase();
+      filtered = filtered.filter((p) => {
+        // Search across multiple fields
+        const name = p.name?.toLowerCase() || '';
+        const supplier = p.supplier?.toLowerCase() || '';
+        const systemBrand = p.systemBrand?.toLowerCase() || '';
+        const material = p.material?.toLowerCase() || '';
+        const width = p.width?.toString() || '';
+        const height = p.height?.toString() || '';
+        const code = (p.specifications as any)?.supplierCode?.toLowerCase() || 
+                     (p.specifications as any)?.internalCode?.toLowerCase() || '';
+        const role = (p.specifications as any)?.profileRole?.toLowerCase() || '';
+        const profileNumber = p.profileNumber?.toLowerCase() || '';
+        
+        return (
+          name.includes(query) ||
+          supplier.includes(query) ||
+          systemBrand.includes(query) ||
+          material.includes(query) ||
+          width.includes(query) ||
+          height.includes(query) ||
+          code.includes(query) ||
+          role.includes(query) ||
+          profileNumber.includes(query)
+        );
+      });
     }
 
     if (materialFilter !== 'all') {
@@ -1212,55 +1274,67 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         </Alert>
       )}
 
-      {/* Header with Actions */}
-      <Card className="bg-gray-800/50 border-gray-700">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5 text-orange-400" />
-              {t('profileManagement.title', 'Profile Management')} ({profiles.length})
-            </CardTitle>
-            <div className="flex gap-2 flex-wrap">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExportJSON}
-                disabled={profiles.length === 0}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                {t('profileManagement.exportProfiles', 'Export Profiles')} JSON
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExportCSV}
-                disabled={profiles.length === 0}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                {t('profileManagement.exportProfiles', 'Export Profiles')} CSV
-              </Button>
-              <label>
-                <Button variant="outline" size="sm" asChild>
-                  <span>
-                    <Upload className="h-4 w-4 mr-2" />
-                    {t('profileManagement.importProfilesFile', 'Import Profile File')}
-                  </span>
-                </Button>
-                <input
-                  type="file"
-                  accept=".json"
-                  onChange={handleImportJSON}
-                  className="hidden"
-                />
-              </label>
-              <Button variant="outline" size="sm" onClick={loadProfiles}>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                {t('profileManagement.refreshProfiles', 'Refresh Profiles')}
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
+      {/* Header with Actions - Collapsible */}
+      <Collapsible open={isProfileManagementOpen} onOpenChange={setIsProfileManagementOpen}>
+        <Card className="bg-gray-800/50 border-gray-700">
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-gray-800/70 transition-colors">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5 text-orange-400" />
+                  {t('profileManagement.title', 'Profile Management')} ({profiles.length})
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-2 flex-wrap" onClick={(e) => e.stopPropagation()}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleExportJSON}
+                      disabled={profiles.length === 0}
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      {t('profileManagement.exportProfiles', 'Export Profiles')} JSON
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleExportCSV}
+                      disabled={profiles.length === 0}
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      {t('profileManagement.exportProfiles', 'Export Profiles')} CSV
+                    </Button>
+                    <label>
+                      <Button variant="outline" size="sm" asChild>
+                        <span>
+                          <Upload className="h-4 w-4 mr-2" />
+                          {t('profileManagement.importProfilesFile', 'Import Profile File')}
+                        </span>
+                      </Button>
+                      <input
+                        type="file"
+                        accept=".json"
+                        onChange={handleImportJSON}
+                        className="hidden"
+                      />
+                    </label>
+                    <Button variant="outline" size="sm" onClick={loadProfiles}>
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      {t('profileManagement.refreshProfiles', 'Refresh Profiles')}
+                    </Button>
+                  </div>
+                  <ChevronDown 
+                    className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+                      isProfileManagementOpen ? 'rotate-180' : ''
+                    }`} 
+                  />
+                </div>
+              </div>
+            </CardHeader>
+          </CollapsibleTrigger>
+        </Card>
+
+        <CollapsibleContent>
 
       {/* Filters */}
       <Card className="bg-gray-800/50 border-gray-700">
@@ -1303,7 +1377,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               <Input
                 placeholder={t('profileManagement.searchProfiles', 'Search Profiles')}
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => dispatch({ type: 'SET_GLOBAL_SEARCH', payload: e.target.value })}
                 className="pl-10"
               />
             </div>
@@ -1369,15 +1443,26 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         </CardContent>
       </Card>
 
-      {/* Profile Form */}
-      <Card className="bg-gray-800/50 border-gray-700">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {editingId ? <Edit2 className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
-            {editingId ? t('profileManagement.updateProfile', 'Update Profile') : t('profileManagement.addNewProfile', 'Add New Profile')}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      {/* Profile Form - Collapsible */}
+      <Collapsible open={isProfileFormOpen} onOpenChange={setIsProfileFormOpen}>
+        <Card className="bg-gray-800/50 border-gray-700">
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-gray-800/70 transition-colors">
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  {editingId ? <Edit2 className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+                  {editingId ? t('profileManagement.updateProfile', 'Update Profile') : t('profileManagement.addNewProfile', 'Add New Profile')}
+                </CardTitle>
+                <ChevronDown 
+                  className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+                    isProfileFormOpen ? 'rotate-180' : ''
+                  }`} 
+                />
+              </div>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="space-y-4">
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs text-gray-400">
               You can also start a new profile from a DXF file exported from your CAD system.
@@ -1986,8 +2071,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               </div>
             )}
           </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
       {/* Accessory Management Section */}
       <Card className="bg-gray-800/50 border-gray-700">
@@ -2035,9 +2122,9 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               filteredProfiles.map((profile) => {
                 const status = getStockStatus(profile);
                 const stockPercentage =
-                  profile.minStockLevel > 0
-                    ? Math.min((profile.stockQuantity / profile.minStockLevel) * 100, 100)
-                    : 100;
+                  profile.minStockLevel > 0 && profile.stockQuantity !== undefined && profile.minStockLevel !== undefined
+                    ? Math.min(((profile.stockQuantity ?? 0) / profile.minStockLevel) * 100, 100)
+                    : (profile.stockQuantity !== undefined && profile.stockQuantity > 0 ? 100 : 0);
                 const specs = profile.specifications || {};
 
                 // Show detail card if selected, otherwise show compact view
@@ -2087,7 +2174,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                           <div>
                             {t('profileManagement.dimensions', 'Dimensions')}: {profile.width}mm × {profile.height || 'N/A'}mm
                           </div>
-                          <div>{t('profileManagement.cost', 'Cost')}: ${profile.costPerMeter.toFixed(2)}/m</div>
+                          <div>{t('profileManagement.cost', 'Cost')}: ${(profile.costPerMeter ?? 0).toFixed(2)}/m</div>
                           <div>{t('profileManagement.stock', 'Stock')}: {profile.stockQuantity}m</div>
                           <div>{t('profileManagement.supplier', 'Supplier')}: {profile.supplier || t('profileManagement.none', '—')}</div>
                         </div>
@@ -2111,9 +2198,9 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                         <div className="mt-2">
                           <div className="flex justify-between text-xs mb-1">
                             <span>{t('profileManagement.stockLevel', 'Stock Level')}</span>
-                            <span>{stockPercentage.toFixed(0)}%</span>
+                            <span>{(stockPercentage ?? 0).toFixed(0)}%</span>
                           </div>
-                          <Progress value={stockPercentage} className="h-2" />
+                          <Progress value={stockPercentage ?? 0} className="h-2" />
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-2 ml-4">
@@ -2176,6 +2263,9 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           </div>
         </CardContent>
       </Card>
+
+        </CollapsibleContent>
+      </Collapsible>
 
       {/* Profile Definition Wizard */}
       {userId && (

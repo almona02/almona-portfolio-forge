@@ -20,6 +20,7 @@ export interface Machine {
   modelPath?: string;
   has3DModel?: boolean;
   category: string;
+  subcategory?: string; // e.g., "copy-routers", "end-milling", "cnc-routers"
   featured: boolean;
   releaseDate: string;
   type: string;
@@ -33,8 +34,24 @@ export interface Machine {
     width: string;
     height: string;
   };
+  weight?: {
+    net: string;
+    gross: string;
+  };
+  workingCapacity?: {
+    x1?: string;
+    x2?: string;
+    y1?: string;
+    y2?: string;
+    z1?: string;
+    z2?: string;
+  };
+  spindleSpeed?: string;
+  cutterBits?: string;
   tags: string[];
   specifications: string[];
+  standardAccessories?: string[];
+  optionalAccessories?: string[];
   certifications: Certification[];
   safetyFeatures: SafetyStandard[];
   egyptianCompliance?: {
@@ -70,38 +87,99 @@ const createPowerSpec = (powerStr: string): PowerSpecification => {
 export const yilmazMachines: Machine[] = [
   {
     id: "ym-001",
-    name: "YILMAZ ALM6510",
-    description: "High-precision CNC cutting and processing machine for aluminum profiles",
+    name: "ALM 6510",
+    description: "Aluminium Profile Machining Center - 8-axis CNC servo control for milling, drilling, and cutting operations on four sides of profiles",
     imageUrl: "/images/machines/cutting-machine.jpg",
-    specPdf: "/documents/specs/cnc-cutting-machine.pdf",
+    specPdf: "/documents/specs/ALM-6510.pdf",
     youtubeUrl: "https://www.youtube.com/watch?v=CeGDjE9QCqQ",
     category: "processing-centers",
     featured: true,
     releaseDate: "2023-05-15",
-    type: "CNC Cutting and Processing Center",
+    type: "Aluminium Profile Machining Center",
     powerSpec: {
-      voltage: '400V',
-      frequency: '50Hz',
+      voltage: '400V AC',
+      frequency: '50-60Hz',
       phase: '3',
-      consumption: '32.0 kW'
+      consumption: '29 kW',
+      amperage: '58A'
     },
     airSpec: {
-      consumption: '520 L/min',
-      pressure: '6 bar'
+      consumption: '250 L/min',
+      pressure: '6-8 bar'
     },
     dimensions: {
-      length: '7500mm',
-      width: '2200mm',
-      height: '1800mm'
+      width: '2000mm',
+      length: '11720mm',
+      height: '2310mm'
     },
-    tags: ["New", "TOP TECHNOLOGY"],
+    weight: {
+      net: '3650 kg',
+      gross: '4106 kg'
+    },
+    sawBlade: {
+      diameter: 'Ø550 mm',
+      bore: 'Ø30 mm',
+      speed: '3,000 RPM',
+      motorPower: '2.2 kW'
+    },
+    spindleSpeed: '12,000 RPM',
+    cncAxes: 8,
+    processingCapacity: '1,600-1,800 running meters / 8 hours',
+    profileCapacity: {
+      minLength: '700mm',
+      maxLength: '6,500mm',
+      minProfile: '40 x 40 mm',
+      maxProfile: '130 x 180 mm',
+      loadingCapacity: '7 profiles'
+    },
+    cuttingCapacity: {
+      minLength: '400mm',
+      at90deg: '130 x 180 mm',
+      at45deg: '130 x 180 mm',
+      at30deg: '130 x 180 mm'
+    },
+    angularCapacity: {
+      pivotingInward: '45°',
+      pivotingOutward: '135°',
+      compound: '45° to 135° servo controlled'
+    },
+    axisSpeed: 'X: 40 m/min, Y: 40 m/min, Z: 40 m/min',
+    infeedSpeed: '100 m/min',
+    tags: ["8-Axis CNC", "Aluminium", "PVC", "Machining Center", "Servo Control", "Windows PC", "Touch Screen", "Remote Support", "Automatic"],
     specifications: [
-      "Cutting accuracy: ±0.1mm",
-      "Max cutting length: 6500mm",
-      "Programmable cutting angles"
+      "8-axis CNC servo control system",
+      "Fully automated feeding, carrying, positioning, cutting and transferring",
+      "Operations on four sides: milling, key holes, hinge holes, handle holes, marking, cutting",
+      "Pneumatic gripper for accurate profile positioning",
+      "Automatic horizontal and vertical clamping system",
+      "Processing capacity: 1,600-1,800 running meters / 8 hours",
+      "Automatic conveyor with 7 profile loading capacity",
+      "Ø550mm servo controlled down-cutting saw (45° to 135°)",
+      "Windows based PC with 15.6'' LCD touch screen",
+      "Remote desktop connection for technical support",
+      "Simultaneous milling and cutting operations",
+      "CAD program compatible interface software",
+      "Automatic frame and sash profile recognition",
+      "Automatic profile dimension control system",
+      "Automatic lubrication and tool spray cooling",
+      "Low pressure safety control",
+      "Interior LED lighting"
+    ],
+    standardAccessories: [
+      "8 milling tools (4x Ø5mm + 4x Ø8mm)",
+      "Barcode printer",
+      "Safety fence around machine",
+      "Keyboard & mouse"
+    ],
+    optionalAccessories: [
+      "Angled swarf conveyor",
+      "KP 3500 chip vacuum extractor",
+      "Workshop logistic equipment",
+      "Spare saw blade Ø550mm",
+      "Spare Ø5 and Ø8 cutter bits"
     ],
     certifications: ['CE', 'ISO9001'],
-    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop'],
+    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop', 'LowPressureControl', 'SafetyFence'],
     egyptianCompliance: {
       standard: 'ES1109',
       certificateNumber: 'ES-ALM6510-2023',
@@ -110,336 +188,725 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-002",
-    name: "YILMAZ DC-421-PBS",
-    description: "High-precision Double Head cutting machine for aluminum profiles",
+    name: "DC-421-PBS",
+    description: "Full Automatic Double Head Mitre Saw Machine - Windows based industrial PC with 15'' LCD touch screen, automatic tilting to 90° and 45° inwards",
     imageUrl: "/images/machines/DC-421-PBS.jpg",
     specPdf: "/documents/specs/DC-421-PBS.pdf",
     youtubeUrl: "https://www.youtube.com/watch?v=1B5elf1hDG4",
     category: "cutting-machines",
     featured: true,
     releaseDate: "2012-05-10",
-    type: "Double Head Cutting Machine",
+    type: "Full Automatic Double Head Mitre Saw",
     powerSpec: {
-      voltage: '400V',
-      frequency: '50Hz',
+      voltage: '400V AC',
+      frequency: '50-60Hz',
       phase: '3',
-      consumption: '32.0 kW'
+      consumption: '5 kW',
+      amperage: '4A'
     },
     airSpec: {
-      consumption: '480 L/min',
-      pressure: '6 bar'
+      consumption: '165 L/min',
+      pressure: '6-8 bar'
     },
     dimensions: {
-      length: '4000mm',
-      width: '2200mm',
-      height: '1800mm'
+      width: '1450mm',
+      length: '4510mm',
+      height: '1670mm'
     },
-    tags: ["New", "Best Sales"],
+    weight: {
+      net: '888 kg',
+      gross: '965 kg'
+    },
+    sawBlade: {
+      diameter: 'Ø420 mm',
+      bore: 'Ø30-32 mm',
+      speed: '2,900 RPM',
+      motorPower: '5 kW'
+    },
+    angularCapacity: {
+      tilting: '90° and 45° inward (automatic)',
+      pivotingInward: '90° to 45° (manual for intermediate)',
+      compound: 'Automatic slicing at 90° and 45° inward'
+    },
+    tags: ["Full Automatic", "Double Head", "Industrial PC", "Touch Screen", "Barcode", "Windows Based", "Remote Support"],
     specifications: [
-      "Cutting accuracy: ±0.1mm",
-      "Max cutting length: 6500mm",
-      "Programmable cutting angles"
+      "Automatic tilting to 90° and 45° inwards for both angles",
+      "Manual adjustment for intermediate angles (90° to 45°)",
+      "Windows based industrial PC with 15'' LCD touch screen",
+      "Obtains cutting dimensions and angles from cut list (automatic mode)",
+      "USB and network transfer of cutting lists (mdb/csv formats)",
+      "Technical support via remote connection",
+      "Automatic slicing feature at 90° and 45° inward",
+      "Solid steel construction body",
+      "Automatically closing safety guards",
+      "Hydro-pneumatic saw blade feed",
+      "Cutting accuracy: ±0.2 mm",
+      "Two-hand safety operation"
+    ],
+    standardAccessories: [
+      "2x Ø420 mm saw blades",
+      "Roller conveyor & 2x pneumatic profile supports",
+      "Spray saw blade lubrication system",
+      "4x pneumatic horizontal clamps",
+      "2x pneumatic vertical clamps",
+      "Barcode printer",
+      "Air gun"
+    ],
+    optionalAccessories: [
+      "DKN 71 short cut system (with ruler)",
+      "Mould heights for special profiles",
+      "Machine with 5m length",
+      "Machine with 6m length",
+      "VCE 1570 chip vacuum extractor",
+      "DLG 200 digital length gauge",
+      "DLG 300 digital length gauge",
+      "Spare saw blade Ø420 mm"
     ],
     certifications: ['CE', 'ISO9001'],
-    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards']
+    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop', 'AutoClosingGuards']
   },
   {
     id: "ym-003",
-    name: "YILMAZ DK502",
-    description: "High-Quality Double Head Welding machine for UPVC profiles",
+    name: "DK 502",
+    description: "Double Corner PVC Welding Machine - Fully automatic two corner welding of PVC window profiles at 90° with single head welding possibility",
     imageUrl: "/images/machines/DK-502.jpg",
     specPdf: "/documents/specs/DK-502.pdf",
     youtubeUrl: "https://youtu.be/jOLX0XMXC9A?si=U6F-JPhfUVARqUx1",
     category: "welding-machines",
     featured: true,
     releaseDate: "2012-05-10",
-    type: "Double Head WELDING Machine",
+    type: "Double Corner PVC Welding",
     powerSpec: {
-      voltage: '230V',
-      frequency: '50Hz',
+      voltage: '230V AC',
+      frequency: '50-60Hz',
       phase: '1',
-      consumption: '2.2 kW'
+      consumption: '3 kW'
     },
     airSpec: {
-      consumption: '150 L/min',
-      pressure: '4 bar'
+      consumption: '180 L/min',
+      pressure: '6-8 bar'
     },
     dimensions: {
-      length: '3500mm',
-      width: '1200mm',
-      height: '1800mm'
+      width: '4100mm',
+      length: '1700mm',
+      height: '800mm'
     },
-    tags: ["New", "Best Sales"],
+    weight: {
+      net: '611 kg',
+      gross: '700 kg'
+    },
+    weldingCapacity: {
+      heightMax: '180mm',
+      heightMin: '30mm',
+      widthMax: '140mm',
+      widthMin: '30mm',
+      angleRange: '30° - 180°'
+    },
+    temperatureRange: '0° - 300°C',
+    weldingOptions: 'Standard (2mm) or Seamless (0.2mm)',
+    tags: ["Double Corner", "PVC Welding", "Automatic", "90° Welding", "Single Head Option", "Seamless Welding", "Electronic Thermostat"],
     specifications: [
-      "Machine is ideal for welding process of PVC plastic profiles at two corners.",
-      "Practical setting of standard (2 mm) or seamless (0.2 mm for free of flashes) welding options",
-      "Max welding square is 3530 mm"
+      "Fully automatic two corner welding at 90°",
+      "Single head welding possibility",
+      "Precise welding of profiles between 30°-180° on left head",
+      "Independent control of melting time, welding time, and pressure",
+      "Linear rails for continuous welding precision",
+      "Welds two corners of frame or sash in one cycle",
+      "Practical teflon change with roller system",
+      "Most practical mold change system in the market",
+      "Adjustable clamp and welding pressure per profile type",
+      "Electronic thermostat: 0-300°C heat adjustment",
+      "Standard (2mm) or seamless (0.2mm) welding options",
+      "Movable right unit moves manually with brake system",
+      "Automatic welding after profile clamping",
+      "Low pressure control system for safety"
     ],
-    certifications: ['CE'],
-    safetyFeatures: ['AutomaticGuards', 'EmergencyStop']
+    standardAccessories: [
+      "2x support arms"
+    ],
+    optionalAccessories: [
+      "Special welding molds on demand"
+    ],
+    certifications: ['CE', 'ISO9001'],
+    safetyFeatures: ['AutomaticGuards', 'EmergencyStop', 'LowPressureControl']
   },
   {
     id: "ym-004",
-    name: "YILMAZ KM212",
-    description: "Portable End Milling Machine for aluminum profiles",
+    name: "KM 212",
+    description: "Portable End Milling Machine - High quality end-milling operations with manual controls for aluminum and PVC profiles",
     imageUrl: "/images/machines/KM-212.jpg",
     specPdf: "/documents/specs/KM-212.pdf",
     youtubeUrl: "https://youtu.be/1iiAfHwLhsQ?si=UQYOLQVwQq5N9143",
-    category: "processing-centers",
+    category: "end-milling",
     featured: true,
     releaseDate: "2012-05-10",
-    type: "End Milling Machine",
+    type: "Portable End Milling",
     powerSpec: {
-      voltage: '230V',
-      frequency: '50Hz',
+      voltage: '230V AC',
+      frequency: '50-60Hz',
       phase: '1',
-      consumption: '0.75 kW'
-    },
-    airSpec: {
-      consumption: '80 L/min',
-      pressure: '3 bar'
+      consumption: '800 W'
     },
     dimensions: {
-      length: '600mm',
-      width: '500mm',
-      height: '400mm'
+      width: '570mm',
+      length: '510mm',
+      height: '420mm'
     },
-    tags: ["Portable", "Precision"],
+    weight: {
+      net: '26 kg',
+      gross: '28 kg'
+    },
+    sawBlade: {
+      diameter: 'Ø120 mm (max)',
+      bore: 'Ø30 mm',
+      speed: '3,000 RPM'
+    },
+    clampingCapacity: {
+      widthMax: '160mm',
+      heightMax: '65mm'
+    },
+    millingCapacity: {
+      widthMax: '160mm',
+      heightMax: '65mm'
+    },
+    tags: ["Portable", "End Milling", "Manual", "Compact", "Lightweight", "PVC", "Aluminum"],
     specifications: [
-      "Max end-milling capacity: 65mm × 160mm",
-      "Max saw blade diameter: Ø120mm",
-      "Manual vertical and horizontal clamps"
+      "High quality end-milling with manual operations",
+      "Firm workpiece fixing with manual vertical and horizontal clamps",
+      "Practical cutter adjustment with spacers",
+      "Profile clamping capacity: H: 65mm x W: 160mm",
+      "Max end-milling capacity: H: 65mm x W: 160mm",
+      "Max saw blade diameter: Ø120 mm",
+      "Spindle speed: 3,000 RPM",
+      "Compact and portable design (26 kg)"
     ],
-    certifications: ['CE'],
+    standardAccessories: [
+      "1x manual horizontal clamp",
+      "1x manual vertical clamp"
+    ],
+    optionalAccessories: [
+      "H: 80mm x W: 160mm clamping capacity version (on demand)",
+      "Milling cutter set",
+      "Machine stand"
+    ],
+    certifications: ['CE', 'ISO9001'],
     safetyFeatures: ['EmergencyStop']
   },
   {
     id: "ym-005",
-    name: "YILMAZ KD-402-S",
-    description: "Double Head Mitre Saw Machine with hydro-pneumatic feed",
+    name: "KD-402-S",
+    description: "Double Head Mitre Saw Machine - Semi-automatic with two circular saws for flat or angled cutting of PVC, aluminium and wooden materials",
     imageUrl: "/images/machines/KD-402-S.jpg",
     specPdf: "/documents/specs/KD-402-S.pdf",
     youtubeUrl: "https://youtu.be/3GTWyawzxMw?si=6E8Xa5UsjBEcoUYG",
     category: "cutting-machines",
     featured: true,
     releaseDate: "2023-05-15",
-    type: "DOUBLE HEAD CUTTING MACHINE",
+    type: "Double Head Mitre Saw",
     powerSpec: {
-      voltage: '400V',
-      frequency: '50Hz',
+      voltage: '400V AC',
+      frequency: '50-60Hz',
       phase: '3',
-      consumption: '4.4 kW'
+      consumption: '4.5 kW',
+      amperage: '9A'
     },
     airSpec: {
-      consumption: '320 L/min',
-      pressure: '5 bar'
+      consumption: '46 L/min',
+      pressure: '6-8 bar'
     },
     dimensions: {
-      length: '3500mm',
-      width: '1200mm',
-      height: '1300mm'
+      width: '1290mm',
+      length: '5560mm',
+      height: '1440mm'
     },
-    tags: ["New", "RELIABLE"],
+    weight: {
+      net: '530 kg',
+      gross: '593 kg'
+    },
+    sawBlade: {
+      diameter: 'Ø400 mm',
+      bore: 'Ø30-32 mm',
+      speed: '2,900 RPM',
+      motorPower: '4.5 kW'
+    },
+    cuttingCapacity: {
+      maxLength5m: '3,455mm',
+      minLength: '530mm',
+      maxWidth90: '482mm',
+      maxWidth45: '593mm'
+    },
+    angularCapacity: {
+      pivotingInward: '+45° inward',
+      pivotingOutward: '-45° outward',
+      presetAngles: '0°, 15°, 22.5°, 30°, 45° (both sides)'
+    },
+    tags: ["Double Head", "Semi-Automatic", "Mitre Saw", "PVC", "Aluminum", "Wood", "Hydro-Pneumatic", "Digital Display"],
     specifications: [
-      "Cutting accuracy: ±0.1mm",
-      "Max cutting length: 6500mm",
-      "Programmable cutting angles"
+      "Semi-automatic miter saw with two circular saws",
+      "Left cutting unit fixed, right unit manually positioned",
+      "Digital display for accurate distance adjustment",
+      "Pivoting range: +45° to -45° infinitely adjustable",
+      "Preset angles: 0°, 15°, 22.5°, 30°, 45° (left and right)",
+      "Max cut length: 3,455mm, Min cut length: 530mm",
+      "Pressure control valves for profile fixing adjustment",
+      "Hydro-pneumatic saw feed",
+      "Pneumatic head fixing feature",
+      "On/off switch for horizontal clamp",
+      "Two-hand safety operation"
     ],
-    certifications: ['CE'],
-    safetyFeatures: ['AutomaticGuards']
+    standardAccessories: [
+      "2x Ø400 mm saw blades",
+      "Digital display indicating cutting length",
+      "Pneumatic spray mist lubrication system",
+      "3x pneumatic horizontal clamps",
+      "2x pneumatic vertical clamps",
+      "Profile support mechanism",
+      "Air gun"
+    ],
+    optionalAccessories: [
+      "Two-step head speed control system (patented)",
+      "VCE 1570 chip vacuum extractor & accessories",
+      "DLG 200 digital profile length gauge",
+      "DLG 300 digital profile length gauge",
+      "Machine with 5m length",
+      "Spare saw blade Ø400 mm"
+    ],
+    certifications: ['CE', 'ISO9001'],
+    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop', 'PressureControlValves']
   },
   {
     id: "ym-006",
-    name: "YILMAZ FR-221-S",
-    description: "High-QUALITY COPY ROUTER machine for aluminum profiles",
+    name: "FR-221-S",
+    description: "Pneumatic Template Copy Router - For opening locks, drilling handles, hinges, espagnolette and barrel holes on PVC and aluminium profiles",
     imageUrl: "/images/machines/FR-221-S.jpg",
     specPdf: "/documents/specs/FR-221-S.pdf",
     youtubeUrl: "https://www.youtube.com/watch?v=CeGDjE9QCqQ",
-    category: "processing-centers",
+    category: "copy-routers",
     featured: true,
     releaseDate: "2023-05-15",
-    type: "COPY ROUTER",
+    type: "Template Copy Router",
     powerSpec: {
-      voltage: '230V',
-      frequency: '50Hz',
-      phase: '1',
-      consumption: '0.740 kW'
+      voltage: '400V AC',
+      frequency: '50-60Hz',
+      phase: '3',
+      consumption: '750 W'
     },
     airSpec: {
-      consumption: '100 L/min',
-      pressure: '4 bar'
+      consumption: '5 L/min',
+      pressure: '6-8 bar'
     },
     dimensions: {
-      length: '1000mm',
-      width: '1500mm',
-      height: '800mm'
+      width: '550mm',
+      length: '580mm',
+      height: '1335mm'
     },
-    tags: ["New", "RELIABLE"],
+    weight: {
+      net: '77 kg',
+      gross: '103 kg'
+    },
+    workingCapacity: {
+      x1: '270mm',
+      y1: '110mm',
+      z1: '130mm'
+    },
+    spindleSpeed: '14,000 RPM',
+    cutterBits: 'Ø5 x L60 mm',
+    clampingCapacity: {
+      widthMax: '130mm',
+      widthMin: '10mm',
+      heightMax: '130mm',
+      heightMin: '20mm'
+    },
+    tags: ["Pneumatic", "Template Copy Router", "PVC", "Aluminum", "Lock Machining", "Hinge Drilling", "Compact"],
     specifications: [
-      "Cutting accuracy: ±0.1mm",
-      "Max cutting length: 6500mm",
-      "Programmable cutting angles"
+      "For locks, handles, hinges, espagnolette and barrel holes",
+      "Working capacity: X: 270mm, Y: 110mm, Z: 130mm",
+      "Clamping capacity: W: 10-130mm, H: 20-130mm",
+      "Spindle speed: 14,000 RPM",
+      "Corrosion proof bearing shaft",
+      "Robust steel sheet machine stand",
+      "Electroplated copy template",
+      "Cast aluminium structure",
+      "2x tracer pins for template following"
     ],
-    certifications: ['CE'],
-    safetyFeatures: ['AutomaticGuards']
+    standardAccessories: [
+      "Ø5 x L60 mm router bit installed",
+      "2x left and right profile stops",
+      "2x pneumatic horizontal clamps",
+      "Spray tool lubrication system",
+      "Air gun"
+    ],
+    optionalAccessories: [
+      "Spare Ø5 x L60 mm router bits",
+      "Special copy templates",
+      "MA 240 centring apparatus",
+      "MKN 150 roller conveyor"
+    ],
+    certifications: ['CE', 'ISO9001'],
+    safetyFeatures: ['AutomaticGuards', 'EmergencyStop']
   },
   // New machines from catalogue
   {
     id: "ym-007",
-    name: "YILMAZ PIM 6509",
-    description: "PVC Profile Machining and Cutting Center with 8-axis CNC control",
+    name: "PIM 6509",
+    description: "PVC Profile Machining and Cutting Center - 8-axis CNC servo control for milling, water slots, drilling, and cutting operations on four sides",
     imageUrl: "/images/machines/PIM-6509.jpg",
     specPdf: "/documents/specs/PIM-6509.pdf",
     youtubeUrl: "https://youtu.be/lQlX-jXfegU?si=_N5SbMJyFHa1obiG",
     category: "processing-centers",
-    featured: false,
+    featured: true,
     releaseDate: "2023-01-01",
-    type: "CNC Machining Center",
+    type: "PVC Profile Machining Center",
     powerSpec: {
-      voltage: '400V',
-      frequency: '50Hz',
+      voltage: '400V AC',
+      frequency: '50-60Hz',
       phase: '3',
-      consumption: '17.0 kW'
+      consumption: '17 kW',
+      amperage: '34A'
     },
     airSpec: {
-      consumption: '380 L/min',
-      pressure: '6 bar'
+      consumption: '250 L/min',
+      pressure: '6-8 bar'
     },
     dimensions: {
-      length: '2790mm',
-      width: '13440mm',
+      width: '2790mm',
+      length: '13440mm',
       height: '2310mm'
     },
-    tags: ["CNC", "Multi-function"],
+    weight: {
+      net: '3650 kg',
+      gross: '4106 kg'
+    },
+    sawBlade: {
+      diameter: 'Ø550 mm',
+      bore: 'Ø30 mm',
+      speed: '2,440 RPM',
+      motorPower: '2.2 kW'
+    },
+    spindleSpeed: '18,000 RPM',
+    cncAxes: 8,
+    millingMotors: 10,
+    tripleHoleMotor: 1,
+    processingCapacity: '2,200-2,400 running meters / 8 hours',
+    profileCapacity: {
+      minLength: '700mm',
+      maxLength: '6,500mm',
+      minProfile: '40 x 40 mm',
+      maxProfile: '130 x 180 mm',
+      loadingCapacity: '7 profiles'
+    },
+    cuttingCapacity: {
+      minLength: '400mm',
+      at90deg: '130 x 180 mm',
+      at45deg: '130 x 180 mm',
+      at30deg: '130 x 180 mm'
+    },
+    angularCapacity: {
+      pivotingInward: '30°',
+      pivotingOutward: '150°',
+      compound: '30° to 150° servo controlled'
+    },
+    axisSpeed: 'X: 40 m/min, Y: 40 m/min, Z: 40 m/min',
+    infeedSpeed: '100 m/min',
+    tags: ["8-Axis CNC", "PVC", "Machining Center", "Servo Control", "Windows PC", "Touch Screen", "Remote Support", "Water Slots", "Triple Hole"],
     specifications: [
-      "8-axis CNC control system",
-      "Max profile length: 6500mm",
-      "Min profile length: 700mm",
-      "Saw blade diameter: 550mm",
-      "10 milling motors",
-      "Automatic conveyor unit"
+      "8-axis CNC servo control system",
+      "Fully automated feeding, carrying, positioning, cutting and transferring",
+      "Operations on four sides: milling, water slots, key holes, hinge holes, handle holes, marking, cutting",
+      "Pneumatic gripper moving in three axes for accurate positioning",
+      "Horizontal and vertical clamping during sawing",
+      "Processing capacity: 2,200-2,400 running meters / 8 hours",
+      "Automatic conveyor with 7 profile loading capacity",
+      "Ø550mm servo controlled down-cutting saw (30° to 150°)",
+      "Windows based PC with 15.6'' LCD touch screen",
+      "Remote desktop connection for technical support",
+      "CAD program compatible interface software",
+      "Simultaneous milling and cutting operations",
+      "Easy integration with CNC welding, corner cleaning, screwing machines",
+      "Automatic frame and sash profile recognition",
+      "Automatic profile dimension control system",
+      "Automatic lubrication system",
+      "Low pressure safety control for saw blade",
+      "Interior LED lighting",
+      "10 milling motors + 1 triple hole motor"
+    ],
+    standardAccessories: [
+      "11 milling and drilling tools",
+      "Safety fence around machine",
+      "Keyboard & mouse",
+      "Barcode printer"
+    ],
+    optionalAccessories: [
+      "Workshop logistic equipment",
+      "Spare cutter bits",
+      "KP 3500 chip vacuum extractor",
+      "Spare Ø550mm saw blade",
+      "Angled swarf conveyor"
     ],
     certifications: ['CE', 'ISO9001'],
-    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop']
+    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop', 'LowPressureControl', 'SafetyFence']
   },
   {
     id: "ym-008",
-    name: "YILMAZ CCL 1661",
-    description: "PVC Welding and Corner Cleaning Line with automated production",
+    name: "CCL 1661",
+    description: "PVC Welding and Corner Cleaning Line - Complete automated production line with 4-head welding, CNC corner cleaning, and robot transfer system",
     imageUrl: "/images/machines/CCL-1661.jpg",
     specPdf: "/documents/specs/CCL-1661.pdf",
     youtubeUrl: "https://youtu.be/feWx5BXMSn0?si=1b5AP3moNi37475i",
     category: "fabrication-equipment",
-    featured: false,
+    featured: true,
     releaseDate: "2023-01-01",
-    type: "Welding and Cleaning Line",
+    type: "PVC Welding and Corner Cleaning Line",
     powerSpec: {
-      voltage: '400V',
-      frequency: '50Hz',
+      voltage: '400V AC',
+      frequency: '50-60Hz',
       phase: '3',
-      consumption: '14.0 kW'
+      consumption: '14 kW'
     },
     airSpec: {
-      consumption: '280 L/min',
-      pressure: '5 bar'
+      consumption: '180 L/min',
+      pressure: '6-8 bar'
     },
     dimensions: {
-      length: '5000mm',
-      width: '2500mm',
-      height: '2000mm'
+      width: '4720mm',
+      length: '11730mm',
+      height: '2070mm'
     },
-    tags: ["Automated", "Production Line"],
+    weight: {
+      net: '3156 kg',
+      gross: '3931 kg'
+    },
+    spindleSpeed: '18,000 RPM',
+    cleaningTools: 11,
+    sawBlade: {
+      diameter: 'Ø250 mm',
+      bore: 'Ø30-32 mm',
+      speed: '6,000 RPM'
+    },
+    weldingCapacity: {
+      heightMax: '180mm',
+      heightMin: '30mm',
+      widthMax: '130mm',
+      widthMin: '30mm'
+    },
+    frameCapacity: {
+      maxFrame: '3,100 x 2,700 mm (welding)',
+      minFrame: '400 x 400 mm',
+      maxRobotFrame: '2,200 x 2,200 mm',
+      maxCleaningFrame: '2,200 x 2,200 mm'
+    },
+    processingCapacity: '220 frames/8hrs (CNC 609) or 270 frames/8hrs (CNC 611)',
+    weldingOptions: '0.2mm to 2.0mm automatic transition',
+    tags: ["Production Line", "4-Head Welding", "CNC Cleaning", "Robot Transfer", "Automated", "Windows PC", "Touch Screen", "Barcode"],
     specifications: [
-      "Includes CNC 608/610 Corner Cleaning Machine",
+      "Complete automated welding and corner cleaning line",
+      "DK 540 Four Head Welding Machine included",
+      "CNC 609 or CNC 611 Corner Cleaning Machine",
+      "SA 261 Robot transfer mechanism",
+      "SA 251 Cooling unit",
+      "11 automatic profile cleaning knives",
+      "Separate knives for color and white profiles",
+      "Automatic sash and frame profile recognition",
+      "Profile width and height measurement system",
+      "Windows based touch screen control",
+      "USB program transfer capability",
+      "Remote connection for technical support",
+      "Movable control panel",
+      "Speed change during process",
+      "Processing: 220-270 frames / 8 hours",
+      "Automatic 0.2-2mm welding transition (Yılmaz exclusive)",
+      "Barcode reader integration for automatic operation",
+      "Lame sash door welding capability",
+      "1,000 profile recipes storage",
+      "Millimeter or inch operation modes",
+      "Phase and low pressure control systems"
+    ],
+    standardAccessories: [
+      "CNC 609 or CNC 611 Corner Cleaning Machine",
       "DK 540 Four Head Welding Machine",
-      "SA 250 Cooling Unit",
-      "SA 260 Robot Unit",
-      "Max frame size: 2200mm × 2200mm"
+      "SA 251 Cooling Unit",
+      "SA 261 Robot Unit"
+    ],
+    optionalAccessories: [
+      "Welding fixture set for lame sash",
+      "Special welding moulds on demand",
+      "CS 240 gasket pressing system",
+      "SA 255 window buffer station"
     ],
     certifications: ['CE', 'ISO9001'],
-    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop']
+    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop', 'PhaseControl', 'LowPressureControl']
   },
   {
     id: "ym-009",
-    name: "YILMAZ CDC 600",
-    description: "FULL AUTOMATIC DOUBLE HEAD COMPOUND CUTTING MACHINE",
+    name: "CDC 600",
+    description: "Full Automatic Double Head Compound Cutting Machine - 2x Ø600mm saw blades with compound cuts (45°x45°) pivoting and tilting on both heads",
     imageUrl: "/images/machines/CDC-600.jpg",
     specPdf: "/documents/specs/CDC-600.pdf",
     youtubeUrl: "https://youtu.be/GywonVe7yMk?si=WBR_PUqDDJB6f8Bb",
     category: "cutting-machines",
     featured: true,
     releaseDate: "2022-01-01",
-    type: "DOUBLE HEAD CUTTING MACHINE",
+    type: "Double Head Compound Cutting",
     powerSpec: {
       voltage: '400V',
-      frequency: '50Hz',
+      frequency: '50-60Hz',
       phase: '3',
-      consumption: '12.5 kW'
+      consumption: '12.5 kW',
+      amperage: '25A'
     },
     airSpec: {
-      consumption: '350 L/min',
-      pressure: '6 bar'
+      consumption: '60 L/min',
+      pressure: '6-8 bar'
     },
     dimensions: {
-      length: '3500mm',
-      width: '1500mm',
-      height: '1500mm'
+      width: '2510mm',
+      length: '1560mm',
+      height: '1160mm'
     },
-    tags: ["Precision", "Double Head","Compound cuts"],
+    weight: {
+      net: '2350 kg',
+      gross: '2500 kg'
+    },
+    sawBlade: {
+      diameter: 'Ø600 mm',
+      bore: 'Ø30 mm',
+      speed: '2,300 RPM',
+      motorPower: '2x 4 kW'
+    },
+    cuttingCapacity: {
+      maxLength5m: '5,000mm (90°/45°)',
+      maxLength7m: '7,000mm (90°/45°)',
+      at90deg: '485mm',
+      at45degInward: '840mm',
+      at45degOutward: '750mm',
+      minLength: '150mm',
+      maxWidth90: '200mm',
+      maxWidth45: '100mm'
+    },
+    angularCapacity: {
+      tilting: '0° to 45° inward',
+      pivotingInward: '+22.5° inward',
+      pivotingOutward: '-140° outward',
+      compound: '45° x 45° (pivoting & tilting)'
+    },
+    tags: ["Double Head", "Compound Cuts", "Automatic", "Servo Control", "45x45", "Industrial PC", "Touch Screen", "Barcode"],
     specifications: [
-      "Max cut length: 5000mm",
-      "Min cut length: 840mm",
-      "Automatic precise angle adjustment at all angles",
-      "Automatic servo control hardware for all angle and linear movements",
-      "Cutting accuracy +/- 0.2mm",
-      "Profile lifting system to prevent the profile surface from being scratched",
+      "2x Ø600mm diameter saw blades with 2,300 RPM",
+      "Saw blade motor power: 2x 4 kW",
       "Compound cuts (45° x 45°) pivoting and tilting on both heads",
-      "Tilting of both saws to 45° inward"  
-      
+      "Pivoting: 22.5° inward to 140° outward",
+      "Tilting: 0° to 45° inward on both saws",
+      "Windows based industrial PC with 15\" color touch screen",
+      "Automatic servo control for all angle and linear movements",
+      "Automatic precise angle adjustment at all angles",
+      "USB and network transfer of cutting lists (mdb/csv formats)",
+      "Profile lifting system prevents surface scratching",
+      "Short length cuts by automatic slicing feature",
+      "Saw movement controlled by electrical cylinder",
+      "Arrow cutting feature for mullion profiles",
+      "Remote connection for technical support",
+      "User-friendly graphical software",
+      "Two-hand safety operation"
     ],
-    certifications: ['CE'],
-    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards']
+    standardAccessories: [
+      "2x Ø600 mm saw blades",
+      "2x pneumatic pop-up supports",
+      "2x pneumatic horizontal clamps",
+      "4x pneumatic vertical clamps",
+      "Spray saw blade cooling system",
+      "Profile support conveyor",
+      "Keyboard & mouse set",
+      "Barcode printer"
+    ],
+    optionalAccessories: [
+      "Machine with 7m cutting length",
+      "VCE 1570 Vacuum chip extraction system",
+      "Chip conveyor belt"
+    ],
+    certifications: ['CE', 'ISO9001'],
+    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop', 'ProfileLiftingSystem']
   },
   {
     id: "ym-010",
-    name: "YILMAZ DC-421-PSD",
-    description: "Full Automatic Double Head Mitre Saw Machine with touch screen",
+    name: "DC-421-PSD",
+    description: "Full Automatic Double Head Mitre Saw Machine - 9'' touch screen with automatic tilting to 90° and 45° inwards, USB cutting list transfer",
     imageUrl: "/images/machines/DC-421-PSD.jpg",
     specPdf: "/documents/specs/DC-421-PSD.pdf",
     youtubeUrl: "https://youtu.be/5pluTvKsQs4?si=YwmMnIQDV_g9kLH6",
     category: "cutting-machines",
-    featured: false,
+    featured: true,
     releaseDate: "2022-01-01",
-    type: "Cutting Machine",
+    type: "Full Automatic Double Head Mitre Saw",
     powerSpec: {
-      voltage: '400V',
-      frequency: '50Hz',
+      voltage: '400V AC',
+      frequency: '50-60Hz',
       phase: '3',
-      consumption: '5.0 kW'
+      consumption: '5 kW'
     },
     airSpec: {
-      consumption: '300 L/min',
-      pressure: '5 bar'
+      consumption: '80 L/min',
+      pressure: '6-8 bar'
     },
     dimensions: {
-      length: '4000mm',
-      width: '2000mm',
-      height: '1800mm'
+      width: '1450mm',
+      length: '4510mm',
+      height: '1670mm'
     },
-    tags: ["Automatic", "High Precision"],
+    weight: {
+      net: '830 kg',
+      gross: '949 kg'
+    },
+    sawBlade: {
+      diameter: 'Ø420 mm',
+      bore: 'Ø30-32 mm',
+      speed: '2,900 RPM',
+      motorPower: '5 kW'
+    },
+    angularCapacity: {
+      tilting: '90° and 45° inward (automatic)',
+      pivotingInward: '90° to 45° (manual for intermediate)',
+      compound: 'Automatic slicing at 90° and 45° inward'
+    },
+    tags: ["Full Automatic", "Double Head", "Touch Screen", "USB Transfer", "Short Cut System", "High Precision"],
     specifications: [
-      "Tilting automatically to 90° and 45°",
-      "9\" touch screen operator panel",
-      "Cutting list transfer via USB",
-      "Cutting accuracy +/- 0.2mm",
-      "Barcode printer included"
+      "Automatic tilting to 90° and 45° inwards for both angles",
+      "Manual adjustment for intermediate angles (90° to 45°)",
+      "9'' touch screen operator panel",
+      "Obtains cutting dimensions and angles from cut list (automatic mode)",
+      "USB cutting list transfer in CSV format",
+      "Automatic slicing feature at 90° and 45° inward",
+      "Solid steel construction body",
+      "Automatically closing safety guards",
+      "Hydro-pneumatic saw blade feed",
+      "Cutting accuracy: ±0.2 mm",
+      "Two-hand safety operation"
+    ],
+    standardAccessories: [
+      "2x Ø420 mm saw blades",
+      "Roller conveyor & 2x pneumatic profile supports",
+      "Spray saw blade lubrication system",
+      "4x pneumatic horizontal clamps",
+      "Air gun"
+    ],
+    optionalAccessories: [
+      "DKN 80 Arrow Cut System for mullion profiles",
+      "DKN 71 short cut system (with ruler)",
+      "Mould heights for special profiles",
+      "Machine with 5m length",
+      "Machine with 6m length",
+      "VCE 1570 chip vacuum extractor",
+      "2x pneumatic vertical clamps",
+      "DLG 200 digital length gauge",
+      "DLG 300 digital length gauge",
+      "Spare saw blade Ø420 mm",
+      "Barcode printer"
     ],
     certifications: ['CE', 'ISO9001'],
-    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop']
+    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop', 'AutoClosingGuards']
   },
   {
     id: "ym-011",
-    name: "YILMAZ ACK-420-S",
+    name: "ACK-420-S",
     description: "Up-Cutting Saw Machine for specialized operations",
     imageUrl: "/images/machines/ACK-420-S.jpg",
     specPdf: "/documents/specs/ACK-420-S.pdf",
@@ -476,7 +943,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-012",
-    name: "YILMAZ FR-226-S",
+    name: "FR-226-S",
     description: "Automatic Copy Router Machine for precision operations",
     imageUrl: "/images/machines/FR-226-S.jpg",
     specPdf: "/documents/specs/FR-226-S.pdf",
@@ -513,44 +980,89 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-013",
-    name: "YILMAZ NCR 300",
-    description: "4 Axis Numerical Controlled NC Router Machine",
+    name: "NCR 300",
+    description: "4 Axis Numerical Controlled NC Router Machine - Designed for daily operations on PVC, aluminium and low alloy materials to machine four surfaces simultaneously",
     imageUrl: "/images/machines/NCR-300.jpg",
     specPdf: "/documents/specs/NCR-300.pdf",
     youtubeUrl: "https://youtu.be/ThfN9iUPsnU?si=863zRTryzWJhHbgH",
-    category: "processing-centers",
+    category: "routers",
     featured: true,
     releaseDate: "2023-01-01",
-    type: "CNC Router",
+    type: "NC Router",
     powerSpec: {
-      voltage: '400V',
-      frequency: '50Hz',
+      voltage: '400V AC',
+      frequency: '50-60Hz',
       phase: '3',
       consumption: '5.5 kW'
     },
     airSpec: {
-      consumption: '200 L/min',
-      pressure: '5 bar'
+      consumption: '110 L/min',
+      pressure: '6-8 bar'
     },
     dimensions: {
-      length: '1835mm',
-      width: '2810mm',
+      width: '1635mm',
+      length: '2810mm',
       height: '2180mm'
     },
-    tags: ["CNC", "4-Axis"],
+    weight: {
+      net: '520 kg',
+      gross: '600 kg'
+    },
+    workingCapacity: {
+      x1: '300mm',
+      y1: '120mm',
+      z1: '115mm'
+    },
+    spindleSpeed: '12,000 RPM',
+    spindlePower: '2.2 kW',
+    cutterBits: 'Ø8 x L120 mm',
+    toolCollet: 'ER 16',
+    clampingCapacity: {
+      widthMax: '120mm',
+      widthMin: '30mm',
+      heightMax: '115mm',
+      heightMin: '30mm',
+      lengthMax: '2750mm',
+      lengthMin: '400mm'
+    },
+    tags: ["NC", "4-Axis", "Numerical Control", "PVC", "Aluminum", "Multi-Surface", "Servo Control", "PLC"],
     specifications: [
-      "Machines four surfaces simultaneously",
-      "Servo-controlled table mechanism",
-      "Max profile length: 2750mm",
-      "12,000 RPM spindle",
+      "Machines four surfaces of profiles simultaneously",
+      "Servo-controlled table mechanism for 0°/90°/180°/270° angles",
+      "Multi pop-up length stops for profiles up to 2,750mm",
+      "Machining capacity: X: 300mm, Y: 120mm, Z: 115mm",
+      "Profile clamping width: 120mm max / 30mm min",
+      "Profile clamping height: 115mm max / 30mm min",
+      "Profile clamping length: 2,750mm max / 400mm min",
+      "Electronic and pneumatic braking system for head and table",
+      "ER 16 tool collet",
+      "2.2 kW, 3P, 400V Spindle motor (12,000 RPM)",
       "PLC control system"
     ],
+    standardAccessories: [
+      "Ø8 x L120 mm cutter bit installed",
+      "2x horizontal and 2x pneumatic vertical clamps",
+      "Spray tool lubrication system",
+      "Multiple left and right profile stops",
+      "Service spanners (22 mm)",
+      "Collet wrench",
+      "LED lighting equipment",
+      "Extending parts for clamps",
+      "Profile centring apparatus",
+      "Air gun"
+    ],
+    optionalAccessories: [
+      "Spare Ø8 x L120 carbide single lip cutter bits",
+      "Spare Ø8 x L63 carbide single lip cutter bits",
+      "Spare Ø8 x L120 carbide double lip cutter bits",
+      "Spare ER16 collets for Ø8 mm cutter bits"
+    ],
     certifications: ['CE', 'ISO9001'],
-    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop']
+    safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop', 'ElectronicBraking', 'PneumaticBraking']
   },
   {
     id: "ym-014",
-    name: "YILMAZ TK 505",
+    name: "TK 505",
     description: "Single Corner PVC Welding Machine",
     imageUrl: "/images/machines/TK-505.jpg",
     specPdf: "/documents/specs/TK-505.pdf",
@@ -588,7 +1100,7 @@ export const yilmazMachines: Machine[] = [
   // Additional machines from catalogue
   {
     id: "ym-015",
-    name: "YILMAZ KM-215-S",
+    name: "KM-215-S",
     description: "Semi Automatic End Milling Machine for aluminum profiles",
     imageUrl: "/images/machines/KM-215-S.jpg",
     specPdf: "/documents/specs/KM-215-S.pdf",
@@ -624,43 +1136,79 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-016",
-    name: "YILMAZ CRM-250-S",
-    description: "3 Spindle Copy Router Machine for complex operations",
+    name: "CRM-250-S",
+    description: "3 Spindle Copy Router Machine - 1x vertical and 2x horizontal spindle motors for complex aluminium profile operations on 3 sides without releasing",
     imageUrl: "/images/machines/CRM-250-S.jpg",
     specPdf: "/documents/specs/CRM-250-S.pdf",
     youtubeUrl: "https://youtu.be/cipBYN8sKG4?si=UlU-2KoUWpvEoeRg",
-    category: "processing-centers",
+    category: "copy-routers",
     featured: true,
     releaseDate: "2023-01-01",
-    type: "Copy Router",
+    type: "Template Copy Router",
     powerSpec: {
-      voltage: '230V',
-      frequency: '50Hz',
+      voltage: '220/230V',
+      frequency: '50-60Hz',
       phase: '1',
       consumption: '3.3 kW'
     },
     airSpec: {
-      consumption: '150 L/min',
-      pressure: '4 bar'
+      consumption: '24 L/min',
+      pressure: '6-8 bar'
     },
     dimensions: {
-      length: '1860mm',
-      width: '2900mm',
-      height: '1670mm'
+      width: '1260mm',
+      length: '2900mm',
+      height: '1870mm'
     },
-    tags: ["3-Spindle", "Multi-function"],
+    weight: {
+      net: '328 kg',
+      gross: '373 kg'
+    },
+    workingCapacity: {
+      x1: '650mm',
+      x2: '350mm',
+      y1: '180mm',
+      y2: '230mm',
+      z1: '170mm',
+      z2: '150mm'
+    },
+    spindleSpeed: '12,000 RPM',
+    cutterBits: '2x Ø10xL100mm / Ø5xL100mm',
+    tags: ["3-Spindle", "Multi-function", "Template Copy Router", "Aluminum", "PVC", "Heavy Duty", "Mass Production"],
     specifications: [
       "1x vertical and 2x horizontal spindle motors",
-      "Max profile dimension: 200mm × 150mm",
-      "Pneumatic clamps",
-      "Spray tool lubrication system"
+      "Operations on 3 sides of aluminium profile without releasing",
+      "2x pneumatic horizontal clamps + 2x pneumatic vertical clamps",
+      "Horizontal and vertical pneumatic tracers with Ø5, Ø8, Ø10 mm diameters",
+      "Horizontal & vertical templates with standard figures for Aluminum and PVC profiles",
+      "High precision bearing mechanism with gas shock absorbers",
+      "Ergonomic arm design for easy operation",
+      "1 meter roller tables on right and left sides",
+      "Manually adjustable profile stops on both sides",
+      "Spray tool cooling system",
+      "Spindle speed: 12,000 RPM"
+    ],
+    standardAccessories: [
+      "1x Ø5 x L100 mm and 2x Ø10 x L100 mm cutter bits installed",
+      "2x profile stops (left and right)",
+      "Spray tool lubrication system",
+      "2x pneumatic horizontal clamps",
+      "2x pneumatic vertical clamps",
+      "Air gun"
+    ],
+    optionalAccessories: [
+      "Spare cutter bits Ø5 x L100 mm (for copy routing)",
+      "Spare cutter bits Ø10 x L100 mm (for copy routing)",
+      "Spare collets for Ø5 mm cutter bit",
+      "Spare collets for Ø10 mm cutter bit",
+      "Special custom templates"
     ],
     certifications: ['CE', 'ISO9001'],
     safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop']
   },
   {
     id: "ym-017",
-    name: "YILMAZ ST 264",
+    name: "ST 264",
     description: "Automatic PVC Water Slot Machine",
     imageUrl: "/images/machines/ST-264.jpg",
     specPdf: "/documents/specs/ST-264.pdf",
@@ -696,7 +1244,7 @@ export const yilmazMachines: Machine[] = [
   },
   {
     id: "ym-018",
-    name: "YILMAZ SDT 275",
+    name: "SDT 275",
     description: "Reinforcement Steel and Square Profile Cutting Saw",
     imageUrl: "/images/machines/SDT-275.jpg",
     specPdf: "/documents/specs/SDT-275.pdf",
@@ -732,7 +1280,7 @@ export const yilmazMachines: Machine[] = [
   }, 
   {
   id: "ym-019",
-  name: "YILMAZ MK 450",
+  name: "MK 450",
   description: "Single Head Cutting Machine with versatile angle options",
   imageUrl: "/images/machines/MK-450.jpg",
   specPdf: "/documents/specs/MK-450.pdf",
@@ -768,7 +1316,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-020",
-  name: "YILMAZ RYK-420-W",
+  name: "RYK-420-W",
   description: "Radial Saw Machine with ergonomic design",
   imageUrl: "/images/machines/RYK-420-W.jpg",
   specPdf: "/documents/specs/RYK-420-W.pdf",
@@ -804,7 +1352,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-021",
-  name: "YILMAZ SCM-420-L4",
+  name: "SCM-420-L4",
   description: "Servo Controlled Serial Cutting Machine (3.6m stroke)",
   imageUrl: "/images/machines/SCM-420-L4.jpg",
   specPdf: "/documents/specs/SCM-420-L4.pdf",
@@ -840,7 +1388,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-022",
-  name: "YILMAZ CK 412",
+  name: "CK 412",
   description: "PVC Glazing Bead Saw for precise cutting",
   imageUrl: "/images/machines/CK-412.jpg",
   specPdf: "/documents/specs/CK-412.pdf",
@@ -876,7 +1424,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-023",
-  name: "YILMAZ DK 540",
+  name: "DK 540",
   description: "Four Head Welding Machine for PVC profiles",
   imageUrl: "/images/machines/DK-540.jpg",
   specPdf: "/documents/specs/DK-540.pdf",
@@ -912,7 +1460,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-024",
-  name: "YILMAZ CNC 608",
+  name: "CNC 608",
   description: "Corner Cleaning Machine with CNC control",
   imageUrl: "/images/machines/CNC-608.jpg",
   specPdf: "/documents/specs/CNC-608.pdf",
@@ -948,7 +1496,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-025",
-  name: "YILMAZ KD 305",
+  name: "KD 305",
   description: "Mitre Saw Machine with manual operation",
   imageUrl: "/images/machines/KD-305.jpg",
   specPdf: "/documents/specs/KD-305.pdf",
@@ -984,7 +1532,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-026",
-  name: "YILMAZ KD-350-PS",
+  name: "KD-350-PS",
   description: "Mitre Saw Machine with pneumatic system",
   imageUrl: "/images/machines/KD-350-PS.jpg",
   specPdf: "/documents/specs/KD-350-PS.pdf",
@@ -1020,7 +1568,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-027",
-  name: "YILMAZ KD-350-M",
+  name: "KD-350-M",
   description: "Compact Mitre Saw Machine",
   imageUrl: "/images/machines/KD-350-M.jpg",
   specPdf: "/documents/specs/KD-350-M.pdf",
@@ -1056,12 +1604,12 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-028",
-  name: "YILMAZ FR 223",
+  name: "FR 223",
   description: "Portable Template Copy Router",
   imageUrl: "/images/machines/FR-223.jpg",
   specPdf: "/documents/specs/FR-223.pdf",
   youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
-  modelPath: "/models/AR-Code-Object-Capture-app-1752786892 (1).glb",
+  modelPath: "/models/demo-machine.glb",
   category: "processing-centers",
   featured: false,
   releaseDate: "2021-01-01",
@@ -1093,12 +1641,12 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-029",
-  name: "YILMAZ FR-223-S",
+  name: "FR-223-S",
   description: "Portable Template Copy Router with spray cooling",
   imageUrl: "/images/machines/FR-223-S.jpg",
   specPdf: "/documents/specs/FR-223-S.pdf",
   youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
-  modelPath: "/models/AR-Code-Object-Capture-app-1752786892 (1).glb",
+  modelPath: "/models/demo-machine.glb",
   category: "processing-centers",
   featured: false,
   releaseDate: "2021-01-01",
@@ -1130,7 +1678,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-030",
-  name: "YILMAZ FR 222",
+  name: "FR 222",
   description: "Economical Portable Template Copy Router",
   imageUrl: "/images/machines/FR-222.jpg",
   specPdf: "/documents/specs/FR-222.pdf",
@@ -1167,7 +1715,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-031",
-  name: "YILMAZ KM-211-S",
+  name: "KM-211-S",
   description: "Manual End Milling Machine with pneumatic clamps",
   imageUrl: "/images/machines/KM-211-S.jpg",
   specPdf: "/documents/specs/KM-211-S.pdf",
@@ -1203,7 +1751,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-032",
-  name: "YILMAZ SA 250",
+  name: "SA 250",
   description: "Cooling Unit for welding systems",
   imageUrl: "/images/machines/SA-250.jpg",
   specPdf: "/documents/specs/SA-250.pdf",
@@ -1239,7 +1787,7 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-033",
-  name: "YILMAZ SA 260",
+  name: "SA 260",
   description: "Robot Unit for profile transfer",
   imageUrl: "/images/machines/SA-260.jpg",
   specPdf: "/documents/specs/SA-260.pdf",

@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Progress } from '@/shared/ui/ui/progress';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/ui/collapsible';
+import { ChevronDown } from 'lucide-react';
 
 interface WorkflowStep {
   id: string;
@@ -33,7 +35,11 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
   efficiency = 92.5,
   wastePercentage = 7.5,
 }) => {
+  const [isProgressOpen, setIsProgressOpen] = useState(false);
   const progressPercent = totalSteps > 0 ? ((currentStepIndex + 1) / totalSteps) * 100 : 0;
+  const clamped = Math.max(0, Math.min(1, progressPercent / 100));
+  const totalWindows = 18;
+  const litWindows = Math.round(totalWindows * clamped);
 
   const getStatus = (index: number) => {
     if (index < currentStepIndex) return 'completed' as const;
@@ -122,12 +128,6 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
               </div>
             </div>
 
-            <p className="text-xs text-slate-300/90 mt-1 max-w-2xl">
-              Bridging legendary craftsmanship from ancient Egypt and the Ottoman Empire with modern
-              <span className="text-blue-300 font-semibold"> YILMAZ industrial technology</span>. Each
-              tower represents a fusion of historical precision and cutting-edge innovation—where
-              ancient craft meets YILMAZ precision.
-            </p>
           </div>
 
           <div className="flex items-center gap-3 text-xs text-slate-300">
@@ -326,39 +326,111 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
           })}
         </div>
 
-        {/* Enhanced Progress with Empire Legacy */}
-        <div className="mt-4 bg-slate-950/90 rounded-xl p-4 border border-slate-800/80 backdrop-blur-sm">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-medium text-slate-200">Cross-Empire Innovation Index</span>
-            <span className="text-xs text-slate-300">
-              Step {currentStepIndex + 1} of {totalSteps}{' '}
-              <span className="ml-1 text-amber-300 font-semibold">
-                {Math.round(progressPercent)}%
-              </span>
-            </span>
-          </div>
-
-          <Progress value={progressPercent} className="h-2 bg-slate-800">
-            <div className="h-full bg-gradient-to-r from-amber-500 via-blue-500 to-emerald-400 rounded-full relative">
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_45%,rgba(255,255,255,0.3)_50%,transparent_55%)] bg-[length:20px_100%] animate-pulse" />
+        {/* Enhanced Progress with Empire Legacy - Collapsible */}
+        <Collapsible open={isProgressOpen} onOpenChange={setIsProgressOpen}>
+          <CollapsibleTrigger asChild>
+            <div className="mt-4 bg-slate-950/90 rounded-xl p-4 border border-slate-800/80 backdrop-blur-sm cursor-pointer hover:bg-slate-900/90 transition-colors">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-medium text-slate-200">Cross-Empire Innovation Index</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-300">
+                    Step {currentStepIndex + 1} of {totalSteps}{' '}
+                    <span className="ml-1 text-amber-300 font-semibold">
+                      {Math.round(progressPercent)}%
+                    </span>
+                  </span>
+                  <ChevronDown 
+                    className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
+                      isProgressOpen ? 'rotate-180' : ''
+                    }`} 
+                  />
+                </div>
+              </div>
             </div>
-          </Progress>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-2 bg-slate-950/90 rounded-xl p-4 border border-slate-800/80 backdrop-blur-sm">
+              <Progress value={progressPercent} className="h-2 bg-slate-800 mb-3">
+                <div className="h-full bg-gradient-to-r from-amber-500 via-blue-500 to-emerald-400 rounded-full relative">
+                  <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_45%,rgba(255,255,255,0.3)_50%,transparent_55%)] bg-[length:20px_100%] animate-pulse" />
+                </div>
+              </Progress>
 
-          <div className="mt-1 flex justify-between text-[11px] text-slate-500">
-            <span className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-              Ottoman Craft
-            </span>
-            <span className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-              Egyptian Precision
-            </span>
-            <span className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-              YILMAZ Tech
-            </span>
-          </div>
-        </div>
+              <div className="mt-1 flex justify-between text-[11px] text-slate-500 mb-4">
+                <span className="flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  Ottoman Craft
+                </span>
+                <span className="flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+                  Egyptian Precision
+                </span>
+                <span className="flex items-center gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                  YILMAZ Tech
+                </span>
+              </div>
+
+              {/* Istanbul Skyline SVG merged here */}
+              <div className="mt-4 rounded-lg border-t border-slate-800 pt-4">
+                <div className="flex items-center justify-between text-[11px] text-slate-400 mb-2">
+                  <span>Istanbul Skyline – lights react as you progress from Measuring to Quality.</span>
+                  <span className="font-medium text-amber-300">
+                    {Math.round(clamped * 100)}% journey complete
+                  </span>
+                </div>
+                <svg
+                  viewBox="0 0 400 80"
+                  className="mt-1 h-16 w-full text-slate-700"
+                  aria-hidden="true"
+                >
+                  <defs>
+                    <linearGradient id="skylineGlow" x1="0" x2="1" y1="0" y2="0">
+                      <stop offset="0%" stopColor="#0f172a" />
+                      <stop offset="50%" stopColor="#020617" />
+                      <stop offset="100%" stopColor="#082f49" />
+                    </linearGradient>
+                  </defs>
+                  <rect x="0" y="0" width="400" height="80" fill="url(#skylineGlow)" />
+                  <rect x="0" y="62" width="400" height="3" fill="#020617" opacity={0.9} />
+                  <path
+                    d="M10 55 Q 200 40 390 55"
+                    fill="none"
+                    stroke="#0ea5e9"
+                    strokeWidth={1.5}
+                    strokeOpacity={0.6 + clamped * 0.3}
+                  />
+                  <g stroke="#020617" strokeWidth="1">
+                    <rect x="40" y="30" width="12" height="32" fill="#020617" />
+                    <rect x="120" y="26" width="14" height="36" fill="#020617" />
+                    <rect x="190" y="18" width="18" height="44" fill="#020617" />
+                    <rect x="260" y="24" width="14" height="38" fill="#020617" />
+                    <rect x="330" y="28" width="12" height="34" fill="#020617" />
+                  </g>
+                  {Array.from({ length: totalWindows }).map((_, index) => {
+                    const lit = index < litWindows;
+                    const towerIndex = Math.floor(index / 3);
+                    const windowInTower = index % 3;
+                    const towerX = [40, 120, 190, 260, 330][towerIndex] || 40;
+                    const windowX = towerX + 3 + windowInTower * 3;
+                    const windowY = 35 + towerIndex * 2;
+                    return (
+                      <rect
+                        key={index}
+                        x={windowX}
+                        y={windowY}
+                        width="2"
+                        height="3"
+                        fill={lit ? '#fbbf24' : '#1e293b'}
+                        opacity={lit ? 0.8 + Math.random() * 0.2 : 0.1}
+                      />
+                    );
+                  })}
+                </svg>
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </motion.div>
   );
