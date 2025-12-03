@@ -427,21 +427,23 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
 
           {/* Right Section – search, menus, user */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Search Bar with global fabricator search overlay */}
-            <div className="hidden md:flex items-center relative">
-              <Search className="absolute left-3 w-4 h-4 text-slate-400 pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search machines, orders..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 pr-3 py-2 rounded-full bg-slate-900/90 border border-slate-700 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400/60 w-60"
-              />
-            </div>
+            {/* Search Bar with global fabricator search overlay - Hidden on fabricator routes */}
+            {!location.pathname.startsWith('/fabricator') && (
+              <div className="hidden md:flex items-center relative">
+                <Search className="absolute left-3 w-4 h-4 text-slate-400 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search machines, orders..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 pr-3 py-2 rounded-full bg-slate-900/90 border border-slate-700 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400/60 w-60"
+                />
+              </div>
+            )}
 
-            {/* Language Switcher */}
+            {/* Language Switcher - Compact */}
             <div className="hidden md:block">
-              <LanguageSwitcher variant="compact" />
+              <LanguageSwitcher variant="minimal-text" />
             </div>
 
             {/* Notifications */}

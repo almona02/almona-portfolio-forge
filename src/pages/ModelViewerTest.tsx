@@ -52,7 +52,7 @@ export function ModelViewerTest() {
               </CardHeader>
               <CardContent className="h-[500px] p-0">
                 <LazyEnhancedGLBViewer
-                  modelPath="/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
+                  modelPath="/models/demo-machine.glb"
                   onLoaded={handleLoad}
                 />
               </CardContent>
@@ -112,7 +112,7 @@ export function ModelViewerTest() {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm">
-                  <li><strong>File:</strong> AR-Code-Object-Capture-app-1752786892 (1).glb</li>
+                  <li><strong>File:</strong> demo-machine.glb</li>
                   <li><strong>Size:</strong> ~13.4 MB</li>
                   <li><strong>Format:</strong> GLB (Binary glTF)</li>
                   <li><strong>Features:</strong></li>

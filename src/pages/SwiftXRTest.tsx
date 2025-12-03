@@ -36,7 +36,7 @@ export default function SwiftXRTestPage() {
   const [detectionResult, setDetectionResult] = useState<any>(null);
   const { toast } = useToast();
 
-  const testModelPath = '/models/AR-Code-Object-Capture-app-1752786892 (1).glb';
+  const testModelPath = '/models/demo-machine.glb';
   const testModelName = 'Test Model';
 
   const updateTestResult = (name: string, status: TestResult['status'], message?: string) => {

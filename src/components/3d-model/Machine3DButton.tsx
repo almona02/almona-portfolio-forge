@@ -34,7 +34,7 @@ export function Machine3DButton({ machineId, machineName, className = "" }: Mach
         isOpen={show3DModel}
         onClose={() => setShow3DModel(false)}
         machineName={machineName}
-        modelPath="/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
+        modelPath="/models/demo-machine.glb"
       />
     </>
   );

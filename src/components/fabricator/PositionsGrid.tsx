@@ -17,9 +17,19 @@ import {
   TableRow,
 } from '@/shared/ui/ui/table';
 import { ScrollArea } from '@/shared/ui/ui/scroll-area';
-import { MapPin, Search, ArrowLeft, ArrowRight, Layers } from 'lucide-react';
+import { MapPin, Search, ArrowLeft, ArrowRight, Layers, Trash2, Eye } from 'lucide-react';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/shared/ui/ui/alert-dialog';
 
 interface PositionsGridProps {
   currentProject: WindowUnit | null;
@@ -42,6 +52,8 @@ export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) 
   const [pageSize] = useState(100);
   const [searchTerm, setSearchTerm] = useState('');
   const [limitToCurrentProject, setLimitToCurrentProject] = useState(true);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [jobToDelete, setJobToDelete] = useState<WindowUnit | null>(null);
 
   const packLabelById = useMemo(() => {
     const map = new Map<string, string>();
@@ -163,24 +175,24 @@ export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) 
         </div>
 
         <ScrollArea className="h-[260px] rounded-md border border-gray-800">
-          <Table className="min-w-[700px] text-[11px]">
+          <Table className="min-w-[900px] text-[10px]">
             <TableHeader>
-              <TableRow className="bg-gray-900/80">
-                <TableHead className="w-28">Order / POS</TableHead>
-                <TableHead className="w-24">Codes</TableHead>
-                <TableHead className="w-32">System Pack</TableHead>
-                <TableHead className="w-28">Type</TableHead>
-                <TableHead className="w-28">Size (mm)</TableHead>
-                <TableHead className="w-32">Glazing / Screen</TableHead>
-                <TableHead className="w-16 text-right">Qty</TableHead>
-                <TableHead className="w-48">
+              <TableRow className="bg-gray-900/80 h-8">
+                <TableHead className="w-20 px-2 py-1.5">Order/POS</TableHead>
+                <TableHead className="w-20 px-2 py-1.5">Codes</TableHead>
+                <TableHead className="w-24 px-2 py-1.5">System</TableHead>
+                <TableHead className="w-20 px-2 py-1.5">Type</TableHead>
+                <TableHead className="w-20 px-2 py-1.5">Size</TableHead>
+                <TableHead className="w-24 px-2 py-1.5">Glazing</TableHead>
+                <TableHead className="w-12 px-2 py-1.5 text-right">Qty</TableHead>
+                <TableHead className="w-40 px-2 py-1.5">
                   <div className="flex items-center gap-1">
                     <MapPin className="h-3 w-3 text-orange-400" />
                     Location
                   </div>
                 </TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="w-24 text-right">Actions</TableHead>
+                <TableHead className="w-16 px-2 py-1.5">Status</TableHead>
+                <TableHead className="w-20 px-2 py-1.5 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -189,108 +201,102 @@ export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) 
                 const packLabel =
                   (job.systemPackId && packLabelById.get(job.systemPackId)) || job.systemPackId;
                 return (
-                  <TableRow key={job.id}>
-                    <TableCell>
-                      <div className="flex flex-col gap-0.5">
-                        <span className="font-mono text-[10px] text-gray-200">
+                  <TableRow key={job.id} className="h-9">
+                    <TableCell className="px-2 py-1">
+                      <div className="flex flex-col gap-0">
+                        <span className="font-mono text-[9px] text-gray-200 leading-tight">
                           {job.orderNumber}
                         </span>
-                        <span className="text-[10px] text-gray-500">{job.posNumber}</span>
+                        <span className="text-[9px] text-gray-500 leading-tight">{job.posNumber}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-0.5">
+                    <TableCell className="px-2 py-1">
+                      <div className="flex flex-col gap-0">
                         {job.projectCode && (
-                          <span className="text-[10px] text-gray-300 truncate">
+                          <span className="text-[9px] text-gray-300 truncate leading-tight">
                             {job.projectCode}
                           </span>
                         )}
                         {job.positionCode && (
-                          <span className="text-[10px] text-gray-500 truncate">
+                          <span className="text-[9px] text-gray-500 truncate leading-tight">
                             {job.positionCode}
                           </span>
                         )}
+                        {!job.projectCode && !job.positionCode && (
+                          <span className="text-[9px] text-gray-500 italic">—</span>
+                        )}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-2 py-1">
                       {packLabel ? (
-                        <span className="text-[10px] text-gray-200 truncate">{packLabel}</span>
+                        <span className="text-[9px] text-gray-200 truncate leading-tight">{packLabel}</span>
                       ) : (
-                        <span className="text-[10px] text-gray-500 italic">—</span>
+                        <span className="text-[9px] text-gray-500 italic">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-gray-200 truncate">{job.type}</TableCell>
-                    <TableCell>
-                      {job.overallWidth} × {job.overallHeight}
+                    <TableCell className="px-2 py-1 text-gray-200 truncate text-[9px] leading-tight">
+                      {job.type.replace('_', ' ').substring(0, 12)}
                     </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-[10px] text-gray-200">
-                          {String((job as any).glazing?.type || '—')} {String((job as any).glazing?.color || '')}
+                    <TableCell className="px-2 py-1 text-[9px] leading-tight">
+                      {job.overallWidth}×{job.overallHeight}
+                    </TableCell>
+                    <TableCell className="px-2 py-1">
+                      <div className="flex flex-col gap-0">
+                        <span className="text-[9px] text-gray-200 leading-tight truncate">
+                          {String((job as any).glazing?.type || '—')}
                         </span>
-                        <span className="text-[10px] text-gray-400">
-                          Flyscreen:{' '}
+                        <span className="text-[8px] text-gray-400 leading-tight truncate">
                           {meta.flyScreenType
-                            ? (meta.flyScreenType as string)
+                            ? (meta.flyScreenType as string).substring(0, 8)
                             : (job as any).flyScreenType || 'none'}
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <span className="font-mono">{job.quantity || 1}</span>
+                    <TableCell className="px-2 py-1 text-right">
+                      <span className="font-mono text-[9px]">{job.quantity || 1}</span>
                     </TableCell>
-                    <TableCell>
-                      <div className="space-y-0.5">
-                        <div className="flex flex-wrap gap-1">
+                    <TableCell className="px-2 py-1">
+                      <div className="space-y-0">
+                        <div className="flex flex-wrap gap-0.5">
                           {meta.flatNumber && (
-                            <Badge variant="outline" className="text-[9px]">
-                              Flat {meta.flatNumber}
-                            </Badge>
-                          )}
-                          {meta.buildingBlock && (
-                            <Badge variant="outline" className="text-[9px]">
-                              Block {meta.buildingBlock}
+                            <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 leading-tight">
+                              F{meta.flatNumber}
                             </Badge>
                           )}
                           {meta.floor && (
-                            <Badge variant="outline" className="text-[9px]">
-                              Floor {meta.floor}
+                            <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 leading-tight">
+                              {meta.floor}
                             </Badge>
                           )}
-                          {meta.elevation && (
-                            <Badge variant="outline" className="text-[9px]">
-                              {meta.elevation}
+                          {meta.buildingBlock && (
+                            <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 leading-tight">
+                              B{meta.buildingBlock}
                             </Badge>
                           )}
                           {meta.roomOrZone && (
-                            <Badge variant="outline" className="text-[9px]">
-                              {meta.roomOrZone}
-                            </Badge>
-                          )}
-                          {meta.windowIndex && (
-                            <Badge variant="outline" className="text-[9px]">
-                              W {meta.windowIndex}
+                            <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 leading-tight truncate max-w-[40px]">
+                              {String(meta.roomOrZone).substring(0, 4)}
                             </Badge>
                           )}
                         </div>
                         {meta.remarks && (
-                          <div className="text-[10px] text-gray-400 truncate">
+                          <div className="text-[8px] text-gray-400 truncate mt-0.5 max-w-[120px]">
                             {meta.remarks}
                           </div>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <Badge className="text-[9px] capitalize bg-gray-800 text-gray-100">
-                        {job.status}
+                    <TableCell className="px-2 py-1">
+                      <Badge className="text-[8px] capitalize bg-gray-800 text-gray-100 px-1.5 py-0 h-4 leading-tight">
+                        {job.status.substring(0, 6)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
+                    <TableCell className="px-2 py-1 text-right">
+                      <div className="flex justify-end gap-1">
                         <Button
-                          size="xs"
-                          variant="outline"
-                          className="h-6 px-2 text-[10px]"
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-gray-400 hover:text-orange-400"
                           onClick={() => {
                             // Persist any active project changes before switching focus
                             if (currentProject) {
@@ -305,23 +311,21 @@ export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) 
                               state: { jobId: job.id, startTab: 'design' },
                             });
                           }}
+                          title="Focus on this position"
                         >
-                          Focus
+                          <Eye className="h-3 w-3" />
                         </Button>
                         <Button
-                          size="xs"
-                          variant="outline"
-                          className="h-6 px-2 text-[10px] border-red-500/60 text-red-300 hover:bg-red-900/40"
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-red-400 hover:text-red-300 hover:bg-red-900/40"
                           onClick={() => {
-                            const confirmed = window.confirm(
-                              `Delete position ${job.orderNumber} / ${job.posNumber}? This cannot be undone for this workspace session.`,
-                            );
-                            if (confirmed) {
-                              deleteJob(job.id);
-                            }
+                            setJobToDelete(job);
+                            setDeleteConfirmOpen(true);
                           }}
+                          title="Delete position"
                         >
-                          Delete
+                          <Trash2 className="h-3 w-3" />
                         </Button>
                       </div>
                     </TableCell>
@@ -330,7 +334,7 @@ export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) 
               })}
               {pageSlice.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-[11px] text-gray-500">
+                  <TableCell colSpan={10} className="text-center text-[10px] text-gray-500 py-4">
                     No positions found for the current filters.
                   </TableCell>
                 </TableRow>
@@ -338,6 +342,39 @@ export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) 
             </TableBody>
           </Table>
         </ScrollArea>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+          <AlertDialogContent className="bg-gray-900 border-gray-700">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-gray-100">Delete Position?</AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-400">
+                Are you sure you want to delete position{' '}
+                <span className="font-mono text-orange-400">
+                  {jobToDelete?.orderNumber} / {jobToDelete?.posNumber}
+                </span>
+                ? This action cannot be undone for this workspace session.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700">
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-red-600 hover:bg-red-700 text-white"
+                onClick={() => {
+                  if (jobToDelete) {
+                    deleteJob(jobToDelete.id);
+                    setJobToDelete(null);
+                    setDeleteConfirmOpen(false);
+                  }
+                }}
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
   );

@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
 import ConditionalNavbar from '../ConditionalNavbar';
 import Footer from '../Footer';
@@ -21,6 +22,9 @@ export const EgyptianLayout: React.FC<EgyptianLayoutProps> = ({
   onRegionChange: _onRegionChange,
   enableRegionSwitching: _enableRegionSwitching
 }) => {
+  const location = useLocation();
+  const isFabricatorRoute = location.pathname.startsWith('/fabricator');
+  
   return (
     <div className="min-h-screen bg-almona-dark text-white" dir="rtl">
       {/* Main Navigation */}
@@ -31,8 +35,8 @@ export const EgyptianLayout: React.FC<EgyptianLayoutProps> = ({
         {children}
       </div>
 
-      {/* Footer */}
-      <Footer />
+      {/* Footer - Hidden for fabricator routes (they have their own minimal footer) */}
+      {!isFabricatorRoute && <Footer />}
     </div>
   );
 };

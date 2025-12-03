@@ -14,7 +14,7 @@ import type {
   DraftInvoice,
 } from '@/types/fabricator';
 
-type WorkspaceTabId = 'customers' | 'inventory' | 'projects' | 'commercial';
+type WorkspaceTabId = 'customers' | 'inventory' | 'projects' | 'profiles' | 'commercial';
 
 interface WorkspaceSnapshot {
   id: string;
@@ -39,6 +39,7 @@ export interface FabricatorWorkspaceState {
   // UI state
   activeWorkspaceTab: WorkspaceTabId;
   lastSaved: string | null; // ISO string for persistence
+  globalSearchQuery: string; // Global search across all sections
 
   // Snapshots
   snapshots: WorkspaceSnapshot[];
@@ -64,6 +65,7 @@ type FabricatorWorkspaceAction =
   | { type: 'RESTORE_SNAPSHOT'; payload: { id: string } }
   | { type: 'DELETE_SNAPSHOT'; payload: { id: string } }
   | { type: 'SET_ACTIVE_TAB'; payload: WorkspaceTabId }
+  | { type: 'SET_GLOBAL_SEARCH'; payload: string }
   | { type: 'HYDRATE_FROM_STORAGE'; payload: FabricatorWorkspaceState }
   | { type: 'MARK_SAVED'; payload: string };
 
@@ -77,6 +79,7 @@ const initialState: FabricatorWorkspaceState = {
   inventoryEdits: {},
   activeWorkspaceTab: 'projects',
   lastSaved: null,
+  globalSearchQuery: '',
   snapshots: [],
   currentSnapshotId: null,
 };
@@ -184,6 +187,8 @@ const workspaceReducer = (
     }
     case 'SET_ACTIVE_TAB':
       return { ...state, activeWorkspaceTab: action.payload };
+    case 'SET_GLOBAL_SEARCH':
+      return { ...state, globalSearchQuery: action.payload };
     case 'HYDRATE_FROM_STORAGE':
       return { ...state, ...action.payload };
     case 'MARK_SAVED':

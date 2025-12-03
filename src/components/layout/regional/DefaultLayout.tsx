@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
 import ConditionalNavbar from '../ConditionalNavbar';
 import Footer from '../Footer';
@@ -22,6 +23,9 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
   onRegionChange,
   enableRegionSwitching: _enableRegionSwitching
 }) => {
+  const location = useLocation();
+  const isFabricatorRoute = location.pathname.startsWith('/fabricator');
+  
   const _handleRegionChange = (region: RegionCode) => {
     onRegionChange(region);
   };
@@ -36,8 +40,8 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
         {children}
       </div>
 
-      {/* Footer */}
-      <Footer />
+      {/* Footer - Hidden for fabricator routes (they have their own minimal footer) */}
+      {!isFabricatorRoute && <Footer />}
 
       {/* WhatsApp Contact */}
       <WhatsAppContact 

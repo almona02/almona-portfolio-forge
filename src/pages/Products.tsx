@@ -813,7 +813,7 @@ const Products = function ProductsPage() {
           machineName={selectedMachineFor3D.name}
           modelPath={
             selectedMachineFor3D.modelPath ||
-            "/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
+            "/models/demo-machine.glb"
           }
           machineData={{
             dimensions: selectedMachineFor3D.dimensions ? {

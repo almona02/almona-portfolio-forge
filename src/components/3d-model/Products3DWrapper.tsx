@@ -30,7 +30,7 @@ export function Products3DWrapper({ children }: Products3DWrapperProps) {
           isOpen={show3DModel}
           onClose={() => setShow3DModel(false)}
           machineName={selectedMachine.name}
-          modelPath="/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
+          modelPath="/models/demo-machine.glb"
         />
       )}
     </>

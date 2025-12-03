@@ -1,10 +1,11 @@
-import React, { useCallback } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import React, { useCallback, useState } from 'react';
+import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Badge } from '@/shared/ui/ui/badge';
+import { Input } from '@/shared/ui/ui/input';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
-import { Users, Package, FileText, Calculator } from 'lucide-react';
+import { Users, Package, FileText, Calculator, Library, Search } from 'lucide-react';
 import { WorkspaceSnapshotManager } from '@/components/fabricator/WorkspaceSnapshotManager';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { AutoSaveIndicator } from '@/components/fabricator/AutoSaveIndicator';
@@ -17,6 +18,7 @@ const workspaceTabs = [
   { id: 'projects', icon: FileText, path: '/fabricator/projects', key: 'projects' },
   { id: 'customers', icon: Users, path: '/fabricator/customers', key: 'customers' },
   { id: 'inventory', icon: Package, path: '/fabricator/inventory', key: 'inventory' },
+  { id: 'profiles', icon: Library, path: '/fabricator/profiles', key: 'profiles' },
   { id: 'commercial', icon: Calculator, path: '/fabricator/commercial', key: 'commercial' },
 ] as const;
 
@@ -27,6 +29,7 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
   const { branding } = useCompanyBranding();
   const { t, i18n } = useTranslation('fabricator');
   const isRTLMode = isRTL(i18n.language);
+  const [searchQuery, setSearchQuery] = useState(state.globalSearchQuery || '');
 
   const workspaceOwner =
     branding.workshopName?.trim() ||
@@ -41,6 +44,11 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
     if (!tab) return;
     dispatch({ type: 'SET_ACTIVE_TAB', payload: tabId as any });
     navigate(tab.path);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    dispatch({ type: 'SET_GLOBAL_SEARCH', payload: value });
   };
 
   // Create save function for useAutoSave hook
@@ -72,7 +80,7 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 pt-[calc(4rem+1rem)]">
       {/* Workspace Header */}
       <div className="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-sm">
         <div className="container mx-auto px-4 md:px-6">
@@ -81,7 +89,7 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
               <h1 className={`text-xl md:text-2xl font-bold text-white ${isRTLMode ? 'text-right' : 'text-left'}`}>
                 {workspaceOwner} {t('workspace.title', 'Production Workspace')}
               </h1>
-              <p className={`text-slate-400 text-xs md:text-sm ${isRTLMode ? 'text-right' : 'text-left'}`}>
+              <p className={`text-slate-400 text-xs md:text-sm mt-4 ${isRTLMode ? 'text-right' : 'text-left'}`}>
                 {t('workspace.subtitle', 'Heavy-duty Almona cockpit for projects, customers, inventory and commercial flows — state preserved across tabs.')}
               </p>
             </div>
@@ -100,10 +108,11 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
             </div>
           </div>
 
-          {/* Tabs */}
+          {/* Tabs with Search */}
           <div className="pb-3">
-            <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full md:w-auto">
-              <TabsList className="bg-slate-800/70 border border-slate-700/70 p-1 rounded-xl">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-4">
+              <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full md:w-auto">
+                <TabsList className="bg-slate-800/70 border border-slate-700/70 p-1 rounded-xl">
                 {workspaceTabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -140,6 +149,19 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
                 })}
               </TabsList>
             </Tabs>
+
+            {/* Global Search */}
+            <div className="flex items-center relative w-full md:w-auto md:min-w-[280px]">
+              <Search className="absolute left-3 w-4 h-4 text-slate-400 pointer-events-none" />
+              <Input
+                type="text"
+                placeholder={t('workspace.search.placeholder', 'Search inventory, profiles, orders, projects...')}
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="pl-9 pr-3 py-2 rounded-full bg-slate-800/90 border border-slate-700 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400/60 w-full md:w-60"
+              />
+            </div>
+            </div>
           </div>
         </div>
       </div>
@@ -154,10 +176,29 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18 }}
           >
-            <Outlet />
+            <Outlet context={{ globalSearchQuery: state.globalSearchQuery }} />
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Minimal Footer - Copyright Only */}
+      <footer className="border-t border-gray-800 mt-12">
+        <div className="container mx-auto px-4 md:px-6 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-500 text-sm">
+              © {new Date().getFullYear()} ALMONA Co. All rights reserved.
+            </p>
+            <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+              <Link to="/terms" className="hover:text-orange-400 transition-colors">
+                Terms & Conditions
+              </Link>
+              <Link to="/privacy" className="hover:text-orange-400 transition-colors">
+                Privacy Policy
+              </Link>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

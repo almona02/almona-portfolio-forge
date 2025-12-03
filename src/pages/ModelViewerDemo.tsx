@@ -19,7 +19,7 @@ export function ModelViewerDemo() {
   // const [showGrid, setShowGrid] = useState(false);
   const [isLoading, _setIsLoading] = useState(true);
   const [error, _setError] = useState<string | null>(null);
-  const [modelPath] = useState("/models/AR-Code-Object-Capture-app-1752786892 (1).glb");
+  const [modelPath] = useState("/models/demo-machine.glb");
 
   // const handleLoad = () => {
   //   setIsLoading(false);

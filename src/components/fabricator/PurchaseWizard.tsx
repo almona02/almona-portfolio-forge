@@ -4,7 +4,6 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogFooter,
   DialogDescription 
 } from '@/shared/ui/ui/dialog';
 import { Button } from '@/shared/ui/ui/button';
@@ -17,10 +16,8 @@ import {
   ShoppingCart, 
   Check, 
   Search, 
-  Package, 
   ChevronRight, 
   Layers, 
-  Ruler,
   ArrowRight,
   Trash2,
   Plus,
@@ -270,7 +267,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
           .maybeSingle();
 
         let profileId = existing?.id;
-        let currentStock = existing?.stock_quantity || 0;
+        const currentStock = existing?.stock_quantity || 0;
 
         if (!profileId) {
           // Create new profile
@@ -307,8 +304,9 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
         // 2. Record Stock Movement (Purchase)
         // Use authenticatedUserId to ensure RLS policy compliance (auth.uid() = user_id)
         // Note: movement_type must be 'in' (not 'purchase') per table constraint
-        const quantityMeters = item.quantity * (item.lengthMm / 1000);
-        const stockAfter = currentStock + quantityMeters;
+        const quantityMeters = parseFloat((item.quantity * (item.lengthMm / 1000)).toFixed(2));
+        const stockBefore = parseFloat((currentStock || 0).toFixed(2));
+        const stockAfter = parseFloat((stockBefore + quantityMeters).toFixed(2));
         
         // Prepare stock movement data
         const movementData = {
@@ -317,9 +315,10 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
           movement_type: 'in', // 'in' is the correct type for stock intake/purchases
           quantity: quantityMeters,
           unit: 'meters',
-          stock_before: currentStock,
+          stock_before: stockBefore,
           stock_after: stockAfter,
           notes: `Purchase Wizard - ${selectedSystem?.name || 'Unknown'} Batch`,
+          created_by: authenticatedUserId,
         };
 
         // Verify session is still valid and matches authenticatedUserId
@@ -348,7 +347,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
         });
 
         // Use supabase directly (not db cast) to ensure auth headers are included
-        const { error: movementError, data: movementDataResult } = await supabase
+        const { error: movementError, data: movementDataResult } = await (supabase as any)
           .from('stock_movements')
           .insert(movementData)
           .select();
@@ -368,7 +367,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
 
         console.log('Stock movement recorded successfully:', movementDataResult);
 
-        // 3. Update Stock Level
+        // 3. Update Stock Level (use stockAfter from movementData to ensure consistency)
         const { error: updateError } = await db.from('fabricator_profiles')
           .update({ 
             stock_quantity: stockAfter,
@@ -383,12 +382,24 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
         }
       }
 
+      // Refresh and resolve stock alerts after purchase
+      // This will automatically resolve alerts when stock is restored above thresholds
+      try {
+        const db = supabase as any;
+        const alertResult = await db.rpc('check_stock_levels', { p_user_id: authenticatedUserId });
+        console.log('Stock alerts refreshed:', alertResult);
+      } catch (alertError) {
+        console.warn('Failed to refresh stock alerts:', alertError);
+        // Don't fail the purchase if alert refresh fails
+      }
+
       toast.success('Purchase recorded and inventory updated!');
+      
+      // Call onPurchaseComplete which should refresh the dashboard and alerts
       onPurchaseComplete();
       onOpenChange(false);
     } catch (error) {
       console.error('Purchase failed:', error);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const errorMessage = (error as any)?.message || (error as any)?.details || (error as any)?.error_description || 'Unknown error';
       toast.error(`Failed to record stock intake: ${errorMessage}`);
     } finally {
@@ -497,7 +508,8 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                         No profiles found for this role.
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 gap-3">
+                      <ScrollArea className="h-[400px] pr-4">
+                        <div className="grid grid-cols-1 gap-3">
                         {profiles.map(profile => {
                           const inCart = cart.find(i => i.profile.profileCode === profile.profileCode);
                           const isEditingQuantity = editingQuantityFor === profile.profileCode;
@@ -617,7 +629,8 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                             </div>
                           );
                         })}
-                      </div>
+                        </div>
+                      </ScrollArea>
                     )}
                   </TabsContent>
                 ))}

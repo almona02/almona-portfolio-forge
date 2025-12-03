@@ -16,7 +16,8 @@
  * - Automatic remnant consolidation suggestions
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Progress } from '@/shared/ui/ui/progress';
@@ -32,23 +33,19 @@ import {
   AlertTriangle,
   CheckCircle,
   TrendingUp,
-  TrendingDown,
   History,
   MapPin,
   QrCode,
   BarChart3,
   RefreshCw,
   Download,
-  Filter,
   Search,
   X,
-  Plus,
   Calendar,
   DollarSign,
   Box,
   Warehouse,
   AlertCircle,
-  Upload,
   Info,
   FileText,
   ShoppingCart,
@@ -56,6 +53,7 @@ import {
 import { toast } from 'sonner';
 import { WindowUnit, Profile } from '@/types/fabricator';
 import { remnantManager, type Remnant, type RemnantStatistics, type RemnantConsolidationSuggestion } from '@/lib/inventory/RemnantManager';
+import { syncStockFromMovements } from '@/lib/inventory/StockCalculator';
 import { supabase } from '@/lib/supabase';
 import { Rock60PricingSetup } from '@/components/fabricator/Rock60PricingSetup';
 import { PurchaseWizard } from '@/components/fabricator/PurchaseWizard';
@@ -202,6 +200,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   project,
   userId,
 }) => {
+  const { state: workspaceState } = useFabricatorWorkspace();
+  const searchQuery = workspaceState.globalSearchQuery || '';
   const [activeTab, setActiveTab] = useState('overview');
   const [remnants, setRemnants] = useState<Remnant[]>([]);
   const [remnantStats, setRemnantStats] = useState<RemnantStatistics | null>(null);
@@ -210,9 +210,9 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const [locations, setLocations] = useState<InventoryLocation[]>([]);
   const [consolidationSuggestions, setConsolidationSuggestions] = useState<RemnantConsolidationSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const isLoadingRef = useRef(false);
   const [useRemnantsFirst, setUseRemnantsFirst] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
   const [filterMaterial, setFilterMaterial] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterSystemPackId, setFilterSystemPackId] = useState<string>('all');
@@ -228,13 +228,13 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const [invoiceSystemPackFilter, setInvoiceSystemPackFilter] = useState<string>('all');
   const [invoiceRoleFilter, setInvoiceRoleFilter] = useState<string>('all');
   const [showPurchaseWizard, setShowPurchaseWizard] = useState(false);
+  const [selectedRock60ProfileId, setSelectedRock60ProfileId] = useState<string | undefined>(undefined);
 
   const loadStockAlerts = useCallback(async () => {
     if (!userId) return;
 
     try {
       // Use untyped Supabase client here to avoid friction with generated types
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any;
 
       // Check stock levels (this will create/update alerts)
@@ -277,7 +277,6 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     if (!userId) return;
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any;
 
       const { data, error } = await (db
@@ -315,7 +314,6 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     if (!userId) return;
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any;
 
       const { data, error } = await (db
@@ -343,10 +341,15 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   }, [userId]);
 
   const loadDashboardData = useCallback(async () => {
-    if (!userId || isLoading) return;
+    if (!userId || isLoadingRef.current) return;
 
+    isLoadingRef.current = true;
     setIsLoading(true);
     try {
+      // Sync stock quantities from movements first (ensures stock_quantity is accurate)
+      // This updates fabricator_profiles.stock_quantity based on actual stock_movements
+      await syncStockFromMovements(userId);
+
       // Core remnant data (depends on selectedLocation)
       const [availableRemnants, stats, suggestions] = await Promise.all([
         remnantManager.getAvailableRemnants(userId, {
@@ -367,15 +370,17 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       toast.error('Failed to load inventory data');
     } finally {
       setIsLoading(false);
+      isLoadingRef.current = false;
     }
-  }, [userId, selectedLocation, isLoading, loadStockAlerts, loadStockMovements, loadLocations]);
+  }, [userId, selectedLocation, loadStockAlerts, loadStockMovements, loadLocations]);
 
   // Load data on mount / when user or location changes
   useEffect(() => {
     if (userId) {
       loadDashboardData();
     }
-  }, [userId, selectedLocation, loadDashboardData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, selectedLocation]);
 
   const handleInvoiceCsvImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -505,7 +510,6 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           return;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const db = supabase as any;
         const { error } = await (db.from('stock_movements') as any).insert(inserts as any);
         if (error) throw error;
@@ -568,7 +572,6 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
       const notes = metaParts.length ? metaParts.join(' – ') : null;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any;
 
       const { error } = await (db.from('stock_movements') as any).insert({
@@ -679,7 +682,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           setRemnants(updated);
         }
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to generate barcode');
     }
   };
@@ -688,7 +691,6 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
     if (!userId) return;
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any;
 
       const { error } = await (db
@@ -704,7 +706,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
       toast.success('Alert resolved');
       await loadStockAlerts();
-    } catch (error) {
+    } catch {
       toast.error('Failed to resolve alert');
     }
   };
@@ -756,8 +758,28 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   // Filtered inventory
   const filteredInventory = useMemo(() => {
     return inventory.filter((profile) => {
-      if (searchQuery && !profile.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false;
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const name = profile.name?.toLowerCase() || '';
+        const supplier = profile.supplier?.toLowerCase() || '';
+        const systemBrand = profile.systemBrand?.toLowerCase() || '';
+        const material = profile.material?.toLowerCase() || '';
+        const code = (profile.specifications as any)?.supplierCode?.toLowerCase() || 
+                     (profile.specifications as any)?.internalCode?.toLowerCase() || '';
+        const role = (profile.specifications as any)?.profileRole?.toLowerCase() || '';
+        const profileNumber = profile.profileNumber?.toLowerCase() || '';
+        
+        if (!(
+          name.includes(query) ||
+          supplier.includes(query) ||
+          systemBrand.includes(query) ||
+          material.includes(query) ||
+          code.includes(query) ||
+          role.includes(query) ||
+          profileNumber.includes(query)
+        )) {
+          return false;
+        }
       }
       if (filterMaterial !== 'all' && profile.material !== filterMaterial) {
         return false;
@@ -1154,7 +1176,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     </p>
                   </div>
                 </div>
-                <Badge variant={useRemnantsFirst ? 'default' : 'outline'}>
+                <Badge variant={useRemnantsFirst ? 'default' : 'outline'} className="cursor-default" title="Status indicator - use the switch above to toggle">
                   {useRemnantsFirst ? 'Enabled' : 'Disabled'}
                 </Badge>
               </div>
@@ -1197,7 +1219,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     <span className="text-gray-400">Systems:</span>
                     <Button
                       type="button"
-                      size="xs"
+                      size="sm"
                       variant={filterSystemPackId === 'all' ? 'default' : 'outline'}
                       className="h-6 px-2"
                       onClick={() => setFilterSystemPackId('all')}
@@ -1209,7 +1231,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         <Button
                           key={tree.systemPackId}
                           type="button"
-                          size="xs"
+                          size="sm"
                           variant={filterSystemPackId === tree.systemPackId ? 'default' : 'outline'}
                           className="h-6 px-2"
                           onClick={() => setFilterSystemPackId(tree.systemPackId)}
@@ -1271,14 +1293,43 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
                           <div className="space-y-2">
                             <div className="flex justify-between text-sm">
-                              <span>Stock: {profile.stockQuantity}m</span>
-                              <span>Min Level: {profile.minStockLevel}m</span>
+                              <span>Stock: {profile.stockQuantity > 0 ? `${profile.stockQuantity.toFixed(2)}m` : '0m'} {profile.stockQuantity > 0 && '(from purchases)'}</span>
+                              <span>Min Level: {profile.minStockLevel || 0}m</span>
                             </div>
                             <Progress value={stockPercentage} className="h-2" />
                             <div className="flex justify-between text-sm text-gray-400">
                               <span>Cost: ${profile.costPerMeter}/m</span>
                               <span>Supplier: {profile.supplier || 'N/A'}</span>
                             </div>
+                            {((profile.systemBrand && SYSTEM_PACKS.some(p => p.meta.name === profile.systemBrand)) ||
+                              (profile.specifications && (profile.specifications as any).window_system) ||
+                              (profile.specifications && (profile.specifications as any).systemPackId)) && (
+                              <div className="mt-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="w-full text-xs h-7"
+                                  onClick={() => {
+                                    setSelectedRock60ProfileId(profile.id);
+                                    // Scroll to pricing panel after a short delay to allow state update
+                                    setTimeout(() => {
+                                      const pricingPanel = document.querySelector('[data-pricing-panel]');
+                                      if (pricingPanel) {
+                                        pricingPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                        // Highlight the panel briefly
+                                        pricingPanel.classList.add('ring-2', 'ring-orange-500', 'ring-offset-2');
+                                        setTimeout(() => {
+                                          pricingPanel.classList.remove('ring-2', 'ring-orange-500', 'ring-offset-2');
+                                        }, 2000);
+                                      }
+                                    }, 100);
+                                  }}
+                                >
+                                  <DollarSign className="h-3 w-3 mr-1" />
+                                  Edit System Pricing
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         </div>
                       );
@@ -1348,8 +1399,15 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                 </CardContent>
               </Card>
 
-              {/* ROCK 60 pricing setup (per-element) */}
-              <Rock60PricingSetup profiles={inventory} userId={userId} />
+              {/* System pricing setup (per-element) */}
+              <div data-pricing-panel>
+                <Rock60PricingSetup 
+                  profiles={inventory} 
+                  userId={userId}
+                  selectedProfileId={selectedRock60ProfileId}
+                  onProfileChange={setSelectedRock60ProfileId}
+                />
+              </div>
             </div>
           </div>
         </TabsContent>
@@ -2016,8 +2074,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           open={showPurchaseWizard}
           onOpenChange={setShowPurchaseWizard}
           userId={userId}
-          onPurchaseComplete={() => {
-            loadDashboardData();
+          onPurchaseComplete={async () => {
+            // Refresh all dashboard data including alerts
+            await loadDashboardData();
+            // Explicitly reload alerts to ensure they're resolved
+            await loadStockAlerts();
             setShowPurchaseWizard(false);
           }}
         />
