@@ -1,0 +1,10 @@
+{
+  "models": {
+    "yolov8n.pt": {
+      "first_loaded": "2025-12-03T19:14:48.008626",
+      "load_count": 1,
+      "last_loaded": "2025-12-03T19:14:48.008640"
+    }
+  },
+  "experiments": {}
+}

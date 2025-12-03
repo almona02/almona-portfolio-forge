@@ -3,9 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from apis.v1 import router as v1_router
 from apis.v2.app import v2_app
+from core.security_middleware import setup_security_middleware
 from core.middleware import (
     RateLimitMiddleware,
-    SecurityHeadersMiddleware,
     RequestValidationMiddleware,
     ErrorHandlingMiddleware,
     RequestLoggingMiddleware
@@ -117,11 +117,14 @@ monitoring_setup = setup_monitoring(app)
 # Initialize Sentry error tracking
 init_sentry()
 
+# Configure security middleware
+setup_security_middleware(app)
+
 # Add security and monitoring middleware (order matters!)
 app.add_middleware(ErrorHandlingMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(RequestValidationMiddleware)
-app.add_middleware(SecurityHeadersMiddleware)
+# Security headers are handled by setup_security_middleware
 app.add_middleware(
     RateLimitMiddleware,
     requests_per_minute=100,
