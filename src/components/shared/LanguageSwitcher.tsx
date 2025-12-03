@@ -30,7 +30,7 @@ const languages: Language[] = [
 ];
 
 export const LanguageSwitcher: React.FC<{
-  variant?: 'default' | 'compact' | 'minimal';
+  variant?: 'default' | 'compact' | 'minimal' | 'minimal-text';
   className?: string;
 }> = ({ variant = 'default', className = '' }) => {
   const { i18n } = useTranslation();
@@ -60,6 +60,35 @@ export const LanguageSwitcher: React.FC<{
           </button>
         ))}
       </div>
+    );
+  }
+
+  if (variant === 'minimal-text') {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className={className}>
+            <span className="hidden sm:inline">{currentLang.nativeName}</span>
+            <span className="sm:hidden">{currentLang.name}</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align={isRTLMode ? 'start' : 'end'}>
+          {languages.map((lang) => (
+            <DropdownMenuItem
+              key={lang.code}
+              onClick={() => handleLanguageChange(lang.code)}
+              className={`flex items-center gap-2 ${
+                i18n.language === lang.code ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+              }`}
+            >
+              <span>{lang.nativeName}</span>
+              {i18n.language === lang.code && (
+                <span className="ml-auto text-blue-600">✓</span>
+              )}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 

@@ -13,7 +13,7 @@ interface Model3DDialogProps {
 export function Model3DDialog({ 
   isOpen, 
   onClose, 
-  modelPath = "/models/AR-Code-Object-Capture-app-1752786892 (1).glb",
+  modelPath = "/models/demo-machine.glb",
   machineName = "3D Model Viewer"
 }: Model3DDialogProps) {
   const [isLoading, setIsLoading] = useState(true);

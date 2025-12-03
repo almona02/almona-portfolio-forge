@@ -32,7 +32,7 @@ interface NavItem {
   path: string;
   type: "link" | "dropdown";
   items?: { name: string; path: string; description?: string; icon?: string; featured?: boolean }[];
-  badge?: "NEW" | "AI" | "PRO";
+  badge?: "NEW" | "AI" | "PRO" | "BETA";
 }
 
 const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogout }) => {
@@ -84,7 +84,6 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
       name: "Products", 
       path: "/products", 
       type: "dropdown",
-      badge: "AI",
       items: [
         { name: "YILMAZ Machines", path: "/products/machines", description: "Industrial machinery solutions" },
         { name: "3D Configurator", path: "/products/configurator", description: "Customize in real-time" },
@@ -105,7 +104,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
         { name: "Fabrication Services", path: "/fabrication-services", description: "Precision engineering" }
       ]
     },
-    { name: "Fabricator Pro", path: "/fabricator", type: "link", badge: "PRO" },
+    { name: "Fabricator Pro", path: "/fabricator", type: "link", badge: "BETA" },
     { name: "Smart Shop", path: "/shop", type: "link", badge: "NEW" },
     { name: "About", path: "/about", type: "link" },
     { name: "Contact", path: "/contact", type: "link" },
@@ -214,6 +213,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
     switch (badge) {
       case "AI": return `${baseStyles} bg-gradient-to-r from-cyan-500 to-blue-500`;
       case "PRO": return `${baseStyles} bg-gradient-to-r from-purple-500 to-pink-500`;
+      case "BETA": return `${baseStyles} bg-gradient-to-r from-purple-500 to-pink-500`;
       case "NEW": return `${baseStyles} bg-gradient-to-r from-green-500 to-emerald-500`;
       default: return baseStyles;
     }

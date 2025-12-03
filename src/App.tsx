@@ -71,6 +71,7 @@ const FabricatorBrandingSettings = lazy(() => import("./pages/FabricatorBranding
 const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
 const InventoryPage = lazy(() => import("./pages/Inventory.tsx"));
 const ProjectsPage = lazy(() => import("./pages/Projects.tsx"));
+const ProfilesPage = lazy(() => import("./pages/Profiles.tsx"));
 const PublicOptimizer = lazy(() => import("./pages/PublicOptimizer.tsx"));
 const FabricatorWorkspaceLayout = lazy(
   () => import("./components/fabricator/FabricatorWorkspaceLayout.tsx"),
@@ -255,6 +256,16 @@ const App = () => (
                         <Suspense fallback={getLoadingComponent('/fabricator/inventory')}>
                           <ProtectedRoute>
                             <InventoryPage />
+                          </ProtectedRoute>
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="profiles"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/profiles')}>
+                          <ProtectedRoute>
+                            <ProfilesPage />
                           </ProtectedRoute>
                         </Suspense>
                       }

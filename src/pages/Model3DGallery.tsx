@@ -167,10 +167,10 @@ export default function Model3DGalleryPage() {
           <div className="flex items-center gap-4">
             <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0">
               <Star className="w-3 h-3 mr-1" />
-              {modelsData.filter(m => m.featured).length} Featured Models
+              {modelsData.filter(m => m.featured).length} Featured
             </Badge>
             <Badge variant="secondary" className="bg-gray-800 text-gray-300">
-              {modelsData.length} Total Models
+              {modelsData.length} 3D Models Available
             </Badge>
           </div>
 

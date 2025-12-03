@@ -20,10 +20,11 @@ import {
 } from 'lucide-react';
 import { Input } from '@/shared/ui/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { LazyOptimizedGLBViewer } from './LazyGLBViewer';
-import { EnhancedGLBViewer } from './EnhancedGLBViewer';
-import { UnifiedARManager } from './UnifiedARManager';
-import { SwiftXRManager } from './SwiftXRManager';
+// 3D viewers are loaded lazily in the full-screen dialog to prevent WebGL context issues
+// import { LazyOptimizedGLBViewer } from './LazyGLBViewer';
+// import { EnhancedGLBViewer } from './EnhancedGLBViewer';
+// import { UnifiedARManager } from './UnifiedARManager';
+// import { SwiftXRManager } from './SwiftXRManager';
 import { useToast } from '@/hooks/useToast';
 import './SwiftXR.css';
 
@@ -64,7 +65,7 @@ export function Model3DGallery({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedModel, setSelectedModel] = useState<Model3D | null>(null);
-  const [autoPlay, setAutoPlay] = useState(true);
+  const [autoPlay, setAutoPlay] = useState(false); // Disabled by default to prevent WebGL context issues with multiple canvases
   const [isMuted, setIsMuted] = useState(false);
   const [failedModels, setFailedModels] = useState<Set<string>>(new Set());
   const [loadedModels, setLoadedModels] = useState<Set<string>>(new Set());
@@ -266,31 +267,21 @@ export function Model3DGallery({
                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                           />
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-2 backdrop-blur-sm">
-                              <Eye className="w-6 h-6 text-white" />
-                            </div>
-                            <p className="text-white text-sm font-medium">View 3D Model</p>
-                          </div>
-                        </div>
                       </div>
 
-                      {/* Overlay */}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            className="bg-orange-500 hover:bg-orange-600 text-white"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleModelClick(model);
-                            }}
-                          >
-                            <Eye className="w-4 h-4 mr-1" />
-                            View
-                          </Button>
-                        </div>
+                      {/* Hover Overlay with View Button */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <Button
+                          size="sm"
+                          className="bg-orange-500 hover:bg-orange-600 text-white shadow-lg"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleModelClick(model);
+                          }}
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          View 3D Model
+                        </Button>
                       </div>
 
                       {/* Badges */}
@@ -494,18 +485,21 @@ export function Model3DGallery({
 
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <div className="bg-gray-800 rounded-xl p-4 aspect-square relative overflow-hidden">
-                      <EnhancedGLBViewer
-                        modelPath={selectedModel.modelPath}
-                        backgroundColor="#374151"
-                        enableAR={true}
-                        enableWebXR={true}
-                        autoRotate={true}
-                        autoPlayAnimations={true}
-                        onLoaded={() => {}}
-                        onError={() => {}}
-                        title={selectedModel.name}
+                    <div className="bg-gray-800 rounded-xl aspect-square relative overflow-hidden group">
+                      {/* Show thumbnail image with 3D indicator */}
+                      <img
+                        src={selectedModel.thumbnail}
+                        alt={selectedModel.name}
+                        className="w-full h-full object-cover"
                       />
+                      {/* 3D indicator overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col items-center justify-center">
+                        <div className="w-20 h-20 rounded-full bg-orange-500/20 backdrop-blur-sm border-2 border-orange-500 flex items-center justify-center mb-4">
+                          <Eye className="w-10 h-10 text-orange-500" />
+                        </div>
+                        <p className="text-white font-medium text-lg">3D Model Ready</p>
+                        <p className="text-gray-400 text-sm mt-1">Click "View Full Model" to interact</p>
+                      </div>
                     </div>
                   </div>
 

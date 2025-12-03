@@ -6,7 +6,7 @@ interface ModelTestProps {
   modelPath?: string
 }
 
-export function ModelTest({ modelPath = "/models/AR-Code-Object-Capture-app-1752786892 (1).glb" }: ModelTestProps) {
+export function ModelTest({ modelPath = "/models/demo-machine.glb" }: ModelTestProps) {
   return (
     <div className="w-full h-[600px] bg-gray-100 rounded-lg overflow-hidden">
       <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>

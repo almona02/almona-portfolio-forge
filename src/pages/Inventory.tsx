@@ -2,6 +2,7 @@ import React, { Suspense, useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import type { Profile, WindowUnit } from '@/types/fabricator';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
@@ -27,18 +28,15 @@ const InventoryDashboard = React.lazy(() =>
   })),
 );
 
-const ProfileManagement = React.lazy(() =>
-  import('@/components/fabricator/ProfileManagement').then((m) => ({
-    default: m.ProfileManagement,
-  })),
-);
 
 const InventoryPage: React.FC = () => {
   const { t } = useTranslation('fabricator');
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { state: workspaceState, dispatch } = useFabricatorWorkspace();
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [searchQuery, setSearchQuery] = useState('');
+  // Use global search from workspace context
+  const searchQuery = workspaceState.globalSearchQuery || '';
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [conflicts, setConflicts] = useState<Profile[]>([]);
 
@@ -50,6 +48,16 @@ const InventoryPage: React.FC = () => {
     queryKey: ['inventory-dashboard', user?.id],
     queryFn: async () => {
       if (!user) return [] as Profile[];
+      
+      // First, sync stock quantities from movements to ensure accurate stock_quantity values
+      try {
+        const db = supabase as any;
+        await db.rpc('sync_stock_from_movements', { p_user_id: user.id });
+      } catch (syncError) {
+        console.warn('Failed to sync stock from movements:', syncError);
+        // Continue loading even if sync fails
+      }
+      
       // Use untyped client here to avoid friction with generated Supabase types
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any;
@@ -59,9 +67,19 @@ const InventoryPage: React.FC = () => {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return (data || []) as Profile[];
+      
+      // Ensure stock quantities are numbers and not null/undefined
+      const profiles = (data || []).map((profile: any) => ({
+        ...profile,
+        stockQuantity: profile.stock_quantity ? parseFloat(profile.stock_quantity) : 0,
+        minStockLevel: profile.min_stock_level ? parseFloat(profile.min_stock_level) : 0,
+      })) as Profile[];
+      
+      return profiles;
     },
     enabled: !!user,
+    refetchOnWindowFocus: false,
+    refetchOnMount: true,
   });
 
   const inventoryWithEdits = useMemo(() => {
@@ -268,7 +286,7 @@ const InventoryPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 className="bg-orange-500 hover:bg-orange-600 border-orange-500"
-                onClick={() => setActiveTab('management')}
+                onClick={() => navigate('/fabricator/profiles')}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 {t('inventory.add_profile', 'Add Profile')}
@@ -354,10 +372,6 @@ const InventoryPage: React.FC = () => {
                   <Package className="h-4 w-4 mr-2" />
                   {t('inventory.tabs.dashboard', 'Dashboard')}
                 </TabsTrigger>
-                <TabsTrigger value="management" className="data-[state=active]:bg-orange-500">
-                  <Plus className="h-4 w-4 mr-2" />
-                  {t('inventory.tabs.profile_management', 'Profile Management')}
-                </TabsTrigger>
                 <TabsTrigger value="analytics" className="data-[state=active]:bg-orange-500">
                   <TrendingUp className="h-4 w-4 mr-2" />
                   {t('inventory.tabs.analytics', 'Analytics')}
@@ -372,7 +386,7 @@ const InventoryPage: React.FC = () => {
                 <Input
                   placeholder="Search profiles, brands, materials..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => dispatch({ type: 'SET_GLOBAL_SEARCH', payload: e.target.value })}
                   className="pl-9 bg-slate-700/50 border-slate-600/50 text-slate-100 placeholder-slate-500"
                 />
               </div>
@@ -421,8 +435,8 @@ const InventoryPage: React.FC = () => {
                 size="sm"
                 className="border-orange-500 text-orange-300 hover:bg-orange-500/20"
                 onClick={() => {
-                  setSearchQuery('');
-                  setActiveTab('management');
+                  dispatch({ type: 'SET_GLOBAL_SEARCH', payload: '' });
+                  navigate('/fabricator/profiles');
                 }}
               >
                 Review Items
@@ -454,16 +468,6 @@ const InventoryPage: React.FC = () => {
             project={workspaceState.currentProject as WindowUnit | null}
             userId={user.id}
             viewMode={viewMode}
-          />
-        )}
-
-        {activeTab === 'management' && (
-          <ProfileManagement
-            userId={user.id}
-            initialProfiles={filteredInventory}
-            onProfilesUpdate={() => {
-              void refetch();
-            }}
           />
         )}
 

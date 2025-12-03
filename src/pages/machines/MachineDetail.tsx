@@ -210,7 +210,7 @@ const MachineDetail: React.FC = () => {
           isOpen={show3DModel}
           onClose={() => setShow3DModel(false)}
           machineName={machine.name}
-          modelPath="/models/AR-Code-Object-Capture-app-1752786892 (1).glb"
+          modelPath="/models/demo-machine.glb"
         />
       )}
 

@@ -2,7 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Progress } from '@/shared/ui/ui/progress';
-import { Factory, Flame, MapPin, Award, TrendingUp } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/ui/collapsible';
+import { Factory, Flame, MapPin, Award, TrendingUp, ChevronDown } from 'lucide-react';
 import type { Profile, WindowUnit, OptimizationResult } from '@/types/fabricator';
 import type { ProjectHeaderMeta } from './NewProjectWizard';
 
@@ -138,9 +139,30 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
     : 0;
 
   const activeRegionMeta = SUPPLIER_REGIONS[activeRegion];
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="mb-8 grid grid-cols-1 xl:grid-cols-3 gap-4">
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="mb-8">
+      <CollapsibleTrigger asChild>
+        <div className="cursor-pointer hover:bg-slate-900/50 transition-colors rounded-lg p-3 border border-slate-700/50 mb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Factory className="h-4 w-4 text-orange-400" />
+              <span className="text-sm font-semibold text-orange-100">Local System Intelligence</span>
+            </div>
+            <ChevronDown 
+              className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
+                isOpen ? 'rotate-180' : ''
+              }`} 
+            />
+          </div>
+          <p className="text-xs text-slate-300/80 mt-1">
+            Dynamic preference suggestions for Turkish & Egyptian system houses – tuned to your active region.
+          </p>
+        </div>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
       {/* Market intelligence & system preference */}
       <Card className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-slate-700/80 shadow-lg shadow-orange-900/30">
         <CardHeader className="pb-3">
@@ -363,7 +385,9 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
           </div>
         </CardContent>
       </Card>
-    </div>
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 };
 

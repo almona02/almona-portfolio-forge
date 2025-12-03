@@ -237,10 +237,10 @@ const ProductGrid = ({
 }: ProductGridProps) => {
   if (isLoading) {
     return (
-      <div className={`grid gap-6 ${
-        viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'
+      <div className={`grid items-stretch ${
+        viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-3 sm:gap-4' : 'grid-cols-1 gap-4'
       }`}>
-        {Array.from({ length: 6 }).map((_, index) => (
+        {Array.from({ length: 8 }).map((_, index) => (
           <Skeleton key={index} className="w-full h-96" />
         ))}
       </div>
@@ -274,12 +274,13 @@ const ProductGrid = ({
 
   return (
     <>
-      <div className={`grid gap-6 ${
-        viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'
+      <div className={`grid items-stretch ${
+        viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-3 sm:gap-4' : 'grid-cols-1 gap-4'
       }`}>
         {filteredProducts.slice(0, displayedProductCount).map((product: ShopProduct, index: number) => (
           <motion.div
             key={product.id}
+            className="h-full"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.05 }}

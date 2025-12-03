@@ -171,7 +171,6 @@ import { validateProject, deriveSystemConstraintsFromProfiles, validateProjectWi
 import { useJobsStore } from '@/store/jobsStore';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AnatolianCockpit } from '@/components/fabricator/AnatolianCockpit';
-import { IstanbulSkylineFooter } from '@/components/fabricator/IstanbulSkylineFooter';
 import { BosphorusWorkflowRibbon } from '@/components/fabricator/BosphorusWorkflowRibbon';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
@@ -182,7 +181,6 @@ import {
   trackOptimization 
 } from '@/lib/performance';
 import { FabricatorLoader, IntelligentSuspense } from '@/components/ui/EnhancedLoadingStates';
-import { FabricatorOnboarding, hasCompletedOnboarding } from '@/components/fabricator/FabricatorOnboarding';
 import { ContextualTooltips } from '@/components/fabricator/ContextualTooltips';
 
 const sampleHardware = [
@@ -227,7 +225,6 @@ export const FabricatorWorkflow: React.FC = () => {
   const [showProjectWizard, setShowProjectWizard] = useState(false);
   const [projectMeta, setProjectMeta] = useState<ProjectHeaderMeta | null>(null);
   const [projectCreatedMessage, setProjectCreatedMessage] = useState<string | null>(null);
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const { branding } = useCompanyBranding();
 
   const activeWorkshopLabel =
@@ -238,16 +235,6 @@ export const FabricatorWorkflow: React.FC = () => {
   // Force-remount SmartMeasuringInterface when starting a fresh pose measuring session
   const [measurementSessionId, setMeasurementSessionId] = useState(0);
 
-  // Check if onboarding should be shown
-  useEffect(() => {
-    if (!hasCompletedOnboarding()) {
-      // Small delay to let the page load first
-      const timer = setTimeout(() => {
-        setShowOnboarding(true);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
 
   // Performance tracking: Track component mount
   useEffect(() => {
@@ -2034,12 +2021,6 @@ export const FabricatorWorkflow: React.FC = () => {
             </Suspense>
           )}
 
-          {/* Istanbul Skyline – interactive ambient footer */}
-          <IstanbulSkylineFooter
-            completionRatio={
-              workflowSteps.length > 0 ? (currentStepIndex + 1) / workflowSteps.length : 0
-            }
-          />
 
           {/* Feedback button for stabilization phase */}
           <Suspense fallback={null}>
@@ -2066,15 +2047,6 @@ export const FabricatorWorkflow: React.FC = () => {
             />
           </Suspense>
 
-          {/* Onboarding Tutorial */}
-          <FabricatorOnboarding
-            open={showOnboarding}
-            onClose={() => setShowOnboarding(false)}
-            onComplete={() => {
-              console.log('Onboarding completed');
-              // Could track analytics here
-            }}
-          />
 
           {/* Contextual Tooltips */}
           <ContextualTooltips
@@ -2087,7 +2059,7 @@ export const FabricatorWorkflow: React.FC = () => {
                 trigger: 'after-delay',
                 delay: 5000,
                 priority: 10,
-                condition: () => activeTab === 'measuring' && !hasCompletedOnboarding(),
+                condition: () => activeTab === 'measuring',
               },
               {
                 id: 'design-tab',
@@ -2100,7 +2072,7 @@ export const FabricatorWorkflow: React.FC = () => {
                 condition: () => activeTab === 'design' && currentProject !== null,
               },
             ]}
-            enabled={!showOnboarding && hasCompletedOnboarding()}
+            enabled={true}
           />
         </div>
       </div>
