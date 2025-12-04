@@ -345,6 +345,12 @@ export default defineConfig(({ mode }) => {
           
           // CORRECT: Use function format that returns string | undefined
           manualChunks: (id: string) => {
+            // CRITICAL: Exclude egyptian-loading-strategy from vendor chunks
+            // to prevent circular dependencies with lazy-loaded libraries
+            if (id.includes('egyptian-loading-strategy')) {
+              return 'app-core'; // Bundle with main app code
+            }
+            
             // CRITICAL: Check React FIRST - this ensures react-vendor is created first
             if (id.includes('node_modules')) {
               // React core packages ONLY - keep this minimal
