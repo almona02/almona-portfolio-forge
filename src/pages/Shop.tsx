@@ -1,7 +1,8 @@
 // Enhanced Shop Component for Almona Portfolio
 
 import React, { useEffect, useState, useMemo, useCallback, lazy, Suspense } from "react";
-import { motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { 
   Search, 
   Truck, 
@@ -278,12 +279,10 @@ const ProductGrid = ({
         viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-3 sm:gap-4' : 'grid-cols-1 gap-4'
       }`}>
         {filteredProducts.slice(0, displayedProductCount).map((product: ShopProduct, index: number) => (
-          <motion.div
+          <div
             key={product.id}
-            className="h-full"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.05 }}
+            className="h-full fade-in-up"
+            style={{ animationDelay: `${index * 0.05}s` }}
           >
             <IndustrialProductCard
               title={product.name}
@@ -332,7 +331,7 @@ const ProductGrid = ({
                     : []),
                 ]}
             />
-          </motion.div>
+          </div>
         ))}
       </div>
 
@@ -588,13 +587,17 @@ const Shop = () => {
   const productTabs: ProductTab[] = ['industrial-machines', 'industrial-parts', 'unique-prototypes', 'unique-custom-fabrications'];
 
   return (
-    <main className="flex-grow pt-20">
+    <>
+      <SEO
+        title="Shop - Industrial Machinery & Equipment | Almona Co."
+        description="Browse our extensive catalog of industrial machinery, spare parts, and custom fabrications. YILMAZ authorized dealer in Egypt."
+        url={`https://www.almona02.com${location.pathname}`}
+        keywords="industrial machinery shop, YILMAZ machines, spare parts, custom fabrications"
+      />
+      <main className="flex-grow pt-20">
         {/* Hero Section */}
-        <motion.section 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="relative bg-gradient-to-br from-almona-dark to-almona-darker py-16 overflow-hidden"
+        <section 
+          className="relative bg-gradient-to-br from-almona-dark to-almona-darker py-16 overflow-hidden fade-in-up"
         >
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&w=2000')] opacity-10 mix-blend-overlay"></div>
           
@@ -626,17 +629,15 @@ const Shop = () => {
               </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Main Shop Content */}
         <section className="container mx-auto px-4 py-12">
           <div className="flex flex-col xl:flex-row gap-6 xl:gap-8">
             {/* Smart Category Navigation Sidebar */}
-            <motion.aside 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="w-full xl:w-80 xl:flex-shrink-0"
+            <aside 
+              className="w-full xl:w-80 xl:flex-shrink-0 fade-in-up"
+              style={{ animationDelay: '0.2s' }}
             >
               <SmartCategoryNavigation
                 machines={enhancedProducts}
@@ -682,7 +683,7 @@ const Shop = () => {
                   </CardContent>
                 </Card>
               </div>
-            </motion.aside>
+            </aside>
 
             {/* Main Content */}
             <div className="flex-1 min-w-0">
@@ -698,11 +699,9 @@ const Shop = () => {
 
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as ProductTab)}>
               {/* Header with tabs and controls */}
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="bg-almona-darker p-4 lg:p-6 rounded-lg border border-almona-light/20 mb-8"
+              <div 
+                className="bg-almona-darker p-4 lg:p-6 rounded-lg border border-almona-light/20 mb-8 fade-in-up"
+                style={{ animationDelay: '0.3s' }}
               >
                 <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
                   <h2 className="text-xl lg:text-2xl font-bold">
@@ -768,7 +767,7 @@ const Shop = () => {
                     ))}
                   </TabsList>
                 </div>
-              </motion.div>
+              </div>
 
               {productTabs.map(tab => (
                 <TabsContent key={tab} value={tab}>
@@ -821,6 +820,7 @@ const Shop = () => {
           />
         )}
       </main>
+    </>
   );
 };
 

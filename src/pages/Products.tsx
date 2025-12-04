@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
 import { EnhancedModel3DDialog } from "@/components/3d-model/EnhancedModel3DDialog";
 import CompareBar from "@/components/comparison/CompareBar";
@@ -45,7 +44,8 @@ interface SourceMachineLike {
 import { Eye } from "lucide-react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import React, { useEffect, useState, Suspense, useCallback, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { debounce } from "@/lib/utils";
 
@@ -333,9 +333,19 @@ const Products = function ProductsPage() {
     }
   ];
 
+  const location = useLocation();
+  const currentUrl = `https://www.almona02.com${location.pathname}${location.search}`;
+
   return (
-    <main className="flex-grow pt-24">
-      {/* SEO Structured Data */}
+    <>
+      <SEO
+        title="YILMAZ Industrial Machinery - Products Catalog | Almona Co."
+        description="Browse our complete catalog of YILMAZ industrial machinery including CNC machines, copy routers, and aluminum processing equipment. Industry 4.0 solutions for smart manufacturing."
+        url={currentUrl}
+        keywords="YILMAZ machines, CNC machines Egypt, industrial machinery, aluminum processing, PVC machines, copy routers"
+      />
+      <main className="flex-grow pt-24">
+        {/* SEO Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -368,11 +378,8 @@ const Products = function ProductsPage() {
       <div className="mx-auto px-4 xl:px-8 py-12 max-w-screen-2xl">
         {/* Industry 4.0 Hero Section */}
         <div className="mb-16 text-center relative overflow-hidden">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative z-10"
+          <div
+            className="relative z-10 fade-in-up"
           >
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               <span className="text-gradient-orange">Industry 4.0</span>
@@ -388,17 +395,15 @@ const Products = function ProductsPage() {
             {/* Industry 4.0 Feature Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8 max-w-6xl mx-auto">
               {industry40Features.map((feature, index) => (
-                <motion.div
+                <div
                   key={feature.title}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1, duration: 0.5 }}
-                  className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-lg p-4 hover:bg-gray-800/70 transition-all duration-300 hover:scale-105"
+                  className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-lg p-4 hover:bg-gray-800/70 transition-all duration-300 hover:scale-105 fade-in-up"
+                  style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className={`text-2xl mb-2 ${feature.color}`}>{feature.icon}</div>
                   <h3 className="text-sm font-semibold text-white mb-1">{feature.title}</h3>
                   <p className="text-xs text-gray-400 leading-tight">{feature.description}</p>
-                </motion.div>
+                </div>
               ))}
             </div>
 
@@ -422,7 +427,7 @@ const Products = function ProductsPage() {
                 📊 View Analytics
               </Button>
             </div>
-          </motion.div>
+          </div>
 
           {/* Animated Background Elements */}
           <div className="absolute inset-0 -z-10">
@@ -433,11 +438,9 @@ const Products = function ProductsPage() {
         </div>
 
         {/* Smart Manufacturing Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
+        <div
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 fade-in-up"
+          style={{ animationDelay: '0.3s' }}
         >
           <div className="text-center bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-lg p-6">
             <div className="text-3xl font-bold text-blue-400 mb-2">99.9%</div>
@@ -455,35 +458,31 @@ const Products = function ProductsPage() {
             <div className="text-3xl font-bold text-orange-400 mb-2">AI</div>
             <div className="text-sm text-gray-300">Powered</div>
           </div>
-        </motion.div>
+        </div>
 
 
 
         {/* Certifications */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="mb-16"
+        <div
+          className="mb-16 fade-in-up"
+          style={{ animationDelay: '0.5s' }}
         >
           <h2 className="text-2xl font-bold text-center mb-8">
             <span className="text-gradient-orange">Certifications & Standards</span>
           </h2>
           <div className="flex flex-wrap justify-center gap-4">
-            {certifications.map((cert, index) => (
-              <motion.div
+              {certifications.map((cert, index) => (
+              <div
                 key={cert.name}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 + index * 0.05, duration: 0.5 }}
-                className="bg-gradient-to-r from-gray-800 to-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-center hover:from-gray-700 hover:to-gray-600 transition-all duration-300"
+                className="bg-gradient-to-r from-gray-800 to-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-center hover:from-gray-700 hover:to-gray-600 transition-all duration-300 fade-in-up"
+                style={{ animationDelay: `${0.6 + index * 0.05}s` }}
               >
                 <div className="text-sm font-semibold text-white">{cert.name}</div>
                 <div className="text-xs text-gray-400">{cert.description}</div>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Existing Products page content */}
         <div className="mb-12 text-center">
@@ -622,11 +621,9 @@ const Products = function ProductsPage() {
         <Separator className="my-12 bg-almona-light/20" />
 
         {/* Industry 4.0 Technology Showcase */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="bg-gradient-to-r from-gray-900/50 to-gray-800/50 border border-gray-700/50 rounded-lg p-8 mb-12"
+        <div
+          className="bg-gradient-to-r from-gray-900/50 to-gray-800/50 border border-gray-700/50 rounded-lg p-8 mb-12 fade-in-up"
+          style={{ animationDelay: '0.5s' }}
         >
           <h2 className="text-3xl font-bold mb-6 text-center">
             <span className="text-gradient-orange">Advanced Technology</span>
@@ -666,40 +663,34 @@ const Products = function ProductsPage() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* FAQ Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
-          className="mb-12"
+        <div
+          className="mb-12 fade-in-up"
+          style={{ animationDelay: '0.6s' }}
         >
           <h2 className="text-3xl font-bold text-center mb-8">
             <span className="text-gradient-orange">Frequently Asked Questions</span>
           </h2>
           <div className="max-w-4xl mx-auto space-y-4">
             {faqs.map((faq, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 + index * 0.1, duration: 0.5 }}
-                className="bg-gray-800/30 border border-gray-700/50 rounded-lg p-6 hover:bg-gray-800/50 transition-all duration-300"
+                className="bg-gray-800/30 border border-gray-700/50 rounded-lg p-6 hover:bg-gray-800/50 transition-all duration-300 fade-in-up"
+                style={{ animationDelay: `${0.7 + index * 0.1}s` }}
               >
                 <h3 className="text-lg font-semibold text-white mb-2">{faq.question}</h3>
                 <p className="text-gray-400">{faq.answer}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
         {/* Newsletter Signup */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.8 }}
-          className="mb-12 bg-gradient-to-r from-orange-500/10 to-blue-500/10 border border-orange-500/20 rounded-lg p-8 text-center"
+        <div
+          className="mb-12 bg-gradient-to-r from-orange-500/10 to-blue-500/10 border border-orange-500/20 rounded-lg p-8 text-center fade-in-up"
+          style={{ animationDelay: '0.7s' }}
         >
           <h2 className="text-2xl font-bold mb-4">
             <span className="text-gradient-orange">Stay Updated</span>
@@ -721,7 +712,7 @@ const Products = function ProductsPage() {
               Subscribe
             </Button>
           </div>
-        </motion.div>
+        </div>
 
         <div className="bg-almona-darker/50 p-8 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">
@@ -834,16 +825,12 @@ const Products = function ProductsPage() {
 
       {/* Live Configurator Modal Placeholder */}
       {showConfigurator && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 fade-in-up"
           onClick={() => setShowConfigurator(false)}
         >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+          <div
+            className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto fade-in-up"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-center">
@@ -886,10 +873,11 @@ const Products = function ProductsPage() {
                 </Button>
               </div>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
-    </main>
+      </main>
+    </>
   );
 };
 

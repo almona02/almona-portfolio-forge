@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Input } from '@/shared/ui/ui/input';
@@ -168,17 +167,9 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
 
       {/* Workspace Content */}
       <div className="container mx-auto px-4 md:px-6 py-6">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.18 }}
-          >
-            <Outlet context={{ globalSearchQuery: state.globalSearchQuery }} />
-          </motion.div>
-        </AnimatePresence>
+        <div key={location.pathname} className="workspace-content-fade">
+          <Outlet context={{ globalSearchQuery: state.globalSearchQuery }} />
+        </div>
       </div>
 
       {/* Minimal Footer - Copyright Only */}

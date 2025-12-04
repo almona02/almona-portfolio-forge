@@ -26,7 +26,7 @@ const SEO = ({
   description = 'Official authorized dealer of Yilmaz industrial machinery in Egypt. Industry 4.0 solutions including Fabricator Pro AI platform, CNC integration, smart manufacturing, and digital services for aluminium/UPVC fabricators.',
   keywords = 'Yilmaz Egypt, Yilmaz authorized dealer, Yilmaz machines Egypt, Yilmaz CNC, industrial machinery Egypt, aluminium fabrication Egypt, smart manufacturing Egypt, Industry 4.0 Egypt',
   image = '/logo.svg',
-  url = import.meta.env.VITE_APP_URL || 'https://almona.eg',
+  url = import.meta.env.VITE_APP_URL || 'https://www.almona02.com',
   type = 'website',
   productData
 }: SEOProps) => {
@@ -142,7 +142,7 @@ const SEO = ({
           "@type": "LocalBusiness",
           "name": "ALMONA Co. - Authorized Yilmaz Dealer",
           "description": "Official authorized dealer of Yilmaz industrial machinery in Egypt",
-          "url": "https://almona.eg",
+          "url": "https://www.almona02.com",
           "telephone": "+201003097177",
           "hasMap": googleBusinessProfile,
           "sameAs": [
