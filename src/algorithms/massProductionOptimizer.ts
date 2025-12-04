@@ -28,8 +28,6 @@ import type {
 import type { OptimizationOptions } from '@/integrations/cnc/CNCController';
 import {
   remnantManager,
-  type Remnant,
-  type RemnantMatch,
   type RemnantOptimizationResult,
 } from '@/lib/inventory/RemnantManager';
 import { GeneticOptimizer } from './geneticOptimization';
@@ -48,7 +46,7 @@ export interface OptimizationTiming {
  * Lightweight base optimizer for shared timing / logging behaviour.
  * Can be extended later to support telemetry, cancellation, etc.
  */
-export abstract class BaseOptimizer<TOptions = unknown> {
+export abstract class BaseOptimizer<_TOptions = unknown> {
   readonly name: string;
 
   protected constructor(name: string) {

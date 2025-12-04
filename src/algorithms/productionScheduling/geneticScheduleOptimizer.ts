@@ -224,7 +224,7 @@ function generateRandomAssignments(
 function evaluateFitness(
   population: Chromosome[],
   projects: FabricatorProject[],
-  machines: Machine[]
+  _machines: Machine[]
 ): number[] {
   return population.map((chromosome) => {
     let fitness = 0;
@@ -381,7 +381,7 @@ function findOperation(
  */
 function selection(
   population: Chromosome[],
-  fitness: number[]
+  _fitness: number[]
 ): Chromosome[] {
   const selected: Chromosome[] = [];
 
@@ -500,7 +500,7 @@ function repairAssignments(
  */
 function mutation(
   population: Chromosome[],
-  machines: Machine[]
+  _machines: Machine[]
 ): Chromosome[] {
   return population.map((chromosome) => {
     if (Math.random() < MUTATION_RATE) {
@@ -546,7 +546,7 @@ function mutation(
 function replacePopulation(
   oldPopulation: Chromosome[],
   newPopulation: Chromosome[],
-  fitness: number[]
+  _fitness: number[]
 ): Chromosome[] {
   // Keep elite from old population
   const sorted = [...oldPopulation].sort((a, b) => b.fitness - a.fitness);
@@ -576,7 +576,7 @@ function getBestSchedule(population: Chromosome[]): Chromosome {
 function formatSchedule(
   chromosome: Chromosome,
   projects: FabricatorProject[],
-  machines: Machine[]
+  _machines: Machine[]
 ): ProductionSchedule {
   const makespan = calculateMakespan(chromosome.assignments);
   const avgUtilization = calculateAverageUtilization(chromosome.assignments);

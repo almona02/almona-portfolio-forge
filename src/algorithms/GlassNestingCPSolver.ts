@@ -240,7 +240,7 @@ export class GlassNestingCPSolver {
   private placePanesOnSheet(
     panes: GlassPane[],
     sheet: MasterSheet,
-    sheetIndex: number
+    _sheetIndex: number
   ): {
     placedPanes: PlacedPane[];
     unplacedPanes: GlassPane[];
@@ -249,7 +249,7 @@ export class GlassNestingCPSolver {
     const unplacedPanes: GlassPane[] = [];
 
     // Define variables for each pane: (x, y, rotated)
-    const variables: Map<string, { x: number; y: number; rotated: boolean }> = new Map();
+    const _variables: Map<string, { x: number; y: number; rotated: boolean }> = new Map();
 
     // Try to place each pane
     for (const pane of panes) {
@@ -257,11 +257,11 @@ export class GlassNestingCPSolver {
         pane,
         sheet,
         placedPanes,
-        variables
+        _variables
       );
 
       if (placement) {
-        variables.set(pane.id, placement);
+        _variables.set(pane.id, placement);
         placedPanes.push({
           pane,
           x: placement.x,
@@ -286,7 +286,7 @@ export class GlassNestingCPSolver {
     pane: GlassPane,
     sheet: MasterSheet,
     existingPanes: PlacedPane[],
-    variables: Map<string, { x: number; y: number; rotated: boolean }>
+    _variables: Map<string, { x: number; y: number; rotated: boolean }>
   ): { x: number; y: number; rotated: boolean } | null {
     const orientations = this.config.allowRotation && pane.allowRotation
       ? [
@@ -628,6 +628,7 @@ export function glassSpecsToPanes(
 
   return panes;
 }
+
 
 
 
