@@ -3,47 +3,55 @@
  * This file provides tree-shakeable imports for Three.js components
  */
 
-// Core Three.js - only import what we need
+// Core Three.js - minimal essential imports
 export { 
-  Scene, 
-  PerspectiveCamera, 
-  WebGLRenderer, 
-  AmbientLight, 
-  DirectionalLight, 
-  PointLight, 
-  SpotLight,
+  // Core Three.js - minimal essential imports
+  Vector3, 
+  Matrix4, 
+  Quaternion, 
+  Euler, 
+  Box3,
+  Sphere,
+  Raycaster,
+  Mesh,
   Group,
-  Object3D,
-  Vector3,
-  Euler,
-  Color,
-  Fog,
-  FogExp2
+  Scene,
+  Camera,
+  PerspectiveCamera,
+  OrthographicCamera,
+  WebGLRenderer,
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+  MeshLambertMaterial,
+  TextureLoader,
+  LoadingManager,
+  Color
 } from 'three';
-// NOTE: For routes/components, prefer dynamic import('three') when possible to avoid upfront cost.
 
-// React Three Fiber - core components only
+// Remove heavy exporters unless specifically needed
+// export { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
+// export { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js';
+// export { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter.js';
+
+// React Three Fiber - core only
 export { 
   Canvas, 
   useFrame, 
   useThree, 
-  extend,
-  createRoot
+  extend
 } from '@react-three/fiber';
 
-// React Three Drei - selective imports
+// React Three Drei - essential components only (remove heavy post-processing)
 export { 
   OrbitControls,
   useGLTF,
-  useAnimations,
   Environment,
-  ContactShadows,
-  Float,
-  Text,
-  Html,
-  useProgress,
-  Loader
+  Bounds
 } from '@react-three/drei';
+
+// Dynamic import post-processing only when needed
+export const lazyPostProcessing = () => import('@react-three/postprocessing');
+export const lazyDreiEffects = () => import('@react-three/drei');
 
 // Runtime loaders for compressed assets
 let dracoInitialized = false;

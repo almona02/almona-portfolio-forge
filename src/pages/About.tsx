@@ -187,8 +187,7 @@ const About = () => {
       </div>
 
       {/* Company Timeline Section - Full Width Below */}
-      <div className="fade-in-up" 
-        className="mb-6 sm:mb-8 md:mb-10"
+      <div className="fade-in-up mb-6 sm:mb-8 md:mb-10"
         variants={itemVariants}
         initial="hidden"
         animate="visible"
@@ -265,12 +264,11 @@ const About = () => {
         </div>
       </div>
 
-      <div className="fade-in-up"
+      <div className="fade-in-up mb-6 sm:mb-8 md:mb-10"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.7 }}
-        className="mb-6 sm:mb-8 md:mb-10"
       >
         <TeamProfiles />
       </div>

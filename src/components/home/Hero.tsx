@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo, lazy, Suspense, startTransit
 import { Link } from "react-router-dom";
 import { ArrowRight, Phone, CheckCircle, Award } from "lucide-react";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
+import { cn } from "@/lib/utils";
 
 // Lazy load the heavy background component to improve LCP
 const EgyptianIndustrialHero = lazy(() => import("./EgyptianIndustrialHero").then(module => ({ default: module.EgyptianIndustrialHero })));
@@ -236,6 +237,7 @@ const Hero = () => {
                       glow="industrialGlow"
                       size="lg"
                       className="px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-4 text-xs sm:text-sm md:text-base w-full sm:w-auto"
+                      aria-label={`Navigate to ${slide.nationalFocus ? 'Digital Transformation' : slide.title} section`}
                     >
                       <Link 
                         to={slide.link} 
@@ -251,6 +253,7 @@ const Hero = () => {
                       glow="subtle"
                       size="lg"
                       className="border-white/20 text-white hover:bg-white/10 transition-colors px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-4 text-xs sm:text-sm md:text-base w-full sm:w-auto"
+                      aria-label="Contact Almona for consultation and support"
                     >
                       <Link 
                         to="/contact" 
@@ -342,13 +345,21 @@ const Hero = () => {
     <section 
       className="relative min-h-screen h-screen overflow-hidden -mt-16 pt-16 bg-[#1a1a1a]"
       style={{ minHeight: '-webkit-fill-available' }}
+      role="region"
       aria-label="Hero carousel"
+      aria-roledescription="carousel"
+      aria-live="polite"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
+      {/* Add slide counter for screen readers */}
+      <div className="sr-only" aria-live="polite">
+        Slide {activeSlide + 1} of {slides.length}. {slides[activeSlide].title}
+      </div>
+
       {/* Render hero content immediately for LCP - no background blocking */}
       {heroContent}
 

@@ -323,6 +323,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                         : "text-gray-300 hover:text-white hover:bg-white/5"
                     }`}
                     onClick={closeAllDropdowns}
+                    aria-label={`Navigate to ${item.name} page`}
                   >
                     <span className="flex items-center gap-2">
                       {item.name}
@@ -346,6 +347,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                         ? "text-orange-400 bg-gradient-to-r from-orange-500/10 to-red-500/10"
                         : "text-gray-300 hover:text-white hover:bg-white/5"
                     }`}
+                    aria-haspopup="true"
+                    aria-expanded={activeDropdown === item.name}
+                    aria-label={`Open ${item.name} dropdown menu`}
                   >
                     <span>{item.name}</span>
                     {item.badge && <span className={getBadgeStyles(item.badge)}>{item.badge}</span>}
@@ -368,6 +372,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                                 to={subItem.path}
                                 className="block p-3 rounded-xl transition-all duration-200 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10"
                                 onClick={closeAllDropdowns}
+                                aria-label={`Navigate to ${subItem.name} page`}
                               >
                                 <div className="flex items-start gap-3">
                                   {IconComponent && <IconComponent className="h-5 w-5 mt-0.5 flex-shrink-0 text-gray-400" />}
@@ -400,6 +405,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
               <button
                 onClick={() => handleDropdownToggle('region')}
                 className="flex items-center gap-1.5 xl:gap-2 p-1.5 xl:p-2 2xl:p-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
+                aria-haspopup="true"
+                aria-expanded={activeDropdown === 'region'}
+                aria-label="Open region dropdown menu"
               >
                 <Globe className="h-4 w-4 xl:h-4 xl:w-4 2xl:h-5 2xl:w-5" />
                 <span className="hidden xl:block text-xs 2xl:text-sm font-medium whitespace-nowrap">Region</span>
@@ -424,6 +432,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                               console.log('Selected region:', region);
                               setActiveDropdown(null);
                             }}
+                            aria-label={`Select ${region.name} region`}
                           >
                             <div className="flex items-center gap-3">
                               <span className="text-2xl">{region.flag}</span>
@@ -445,6 +454,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
               to="/quote"
               className="relative p-1.5 xl:p-2 2xl:p-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
               onClick={closeAllDropdowns}
+              aria-label="Navigate to quote page"
             >
               <ShoppingCart className="h-4 w-4 xl:h-4 xl:w-4 2xl:h-5 2xl:w-5" />
               {quoteItems.length > 0 && (
@@ -460,6 +470,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                 <button
                   onClick={() => handleDropdownToggle("user")}
                   className="flex items-center gap-1.5 xl:gap-2 px-2 py-1.5 xl:px-2.5 xl:py-2 2xl:px-3 2xl:py-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
+                  aria-haspopup="true"
+                  aria-expanded={activeDropdown === "user"}
+                  aria-label="Open user dropdown menu"
                 >
                   <div className="w-6 h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs xl:text-xs 2xl:text-sm font-bold">
                     {user.name.charAt(0).toUpperCase()}
@@ -483,6 +496,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                             to="/admin"
                             className="flex items-center gap-3 px-3 py-3 text-sm text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10 rounded-xl transition-all duration-200"
                             onClick={closeAllDropdowns}
+                            aria-label="Navigate to admin panel"
                           >
                             <Shield className="h-4 w-4" />
                             <span>Admin Panel</span>
@@ -492,6 +506,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                           to="/portal"
                           className="flex items-center gap-3 px-3 py-3 text-sm text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10 rounded-xl transition-all duration-200"
                           onClick={closeAllDropdowns}
+                          aria-label="Navigate to my portal"
                         >
                           <User className="h-4 w-4" />
                           <span>My Portal</span>
@@ -502,6 +517,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                             closeAllDropdowns();
                           }}
                           className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10 rounded-xl transition-all duration-200 text-left"
+                          aria-label="Logout"
                         >
                           <LogOut className="h-4 w-4" />
                           <span>Logout</span>
@@ -516,6 +532,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                   to="/login"
                   className="px-2.5 py-1.5 xl:px-3 xl:py-2 2xl:px-3.5 2xl:py-2 text-xs xl:text-xs 2xl:text-sm text-gray-300 hover:text-white transition-all duration-200 font-medium whitespace-nowrap"
                   onClick={closeAllDropdowns}
+                  aria-label="Navigate to login page"
                 >
                   Login
                 </Link>
@@ -523,6 +540,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                   to="/register"
                   className="px-2.5 py-1.5 xl:px-3 xl:py-2 2xl:px-3.5 2xl:py-2 text-xs xl:text-xs 2xl:text-sm bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-200 font-medium shadow-lg whitespace-nowrap"
                   onClick={closeAllDropdowns}
+                  aria-label="Navigate to register page"
                 >
                   Register
                 </Link>
@@ -534,7 +552,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
           <button
             className="lg:hidden p-2 sm:p-3 text-gray-300 hover:text-white transition-all duration-200 hover:bg-white/5 rounded-xl flex-shrink-0 ml-auto"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle mobile menu"
+            aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={isMobileMenuOpen}
           >
             {isMobileMenuOpen ? <X className="h-6 w-6 sm:h-7 sm:w-7" /> : <Menu className="h-6 w-6 sm:h-7 sm:w-7" />}
@@ -558,6 +576,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                             : "text-gray-300 hover:text-white hover:bg-white/5"
                         }`}
                         onClick={closeAllDropdowns}
+                        aria-label={`Navigate to ${item.name} page`}
                       >
                         <span className="flex items-center gap-3">
                           {item.name}
@@ -573,6 +592,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                               : "text-gray-300 hover:text-white hover:bg-white/5"
                           }`}
                           onClick={() => handleDropdownToggle(item.name)}
+                          aria-haspopup="true"
+                          aria-expanded={activeDropdown === item.name}
+                          aria-label={`Open ${item.name} dropdown menu`}
                         >
                           <span className="flex items-center gap-3">
                             {item.name}
@@ -591,6 +613,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                                   to={subItem.path}
                                   className="block px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 text-gray-300 hover:text-white hover:bg-orange-500/10"
                                   onClick={closeAllDropdowns}
+                                  aria-label={`Navigate to ${subItem.name} page`}
                                 >
                                   <div className="font-medium text-sm sm:text-base text-white">{subItem.name}</div>
                                   {subItem.description && (
@@ -618,6 +641,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                           to="/admin"
                           className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
                           onClick={closeAllDropdowns}
+                          aria-label="Navigate to admin panel"
                         >
                           <Shield className="h-5 w-5" />
                           <span className="text-sm sm:text-base">Admin Panel</span>
@@ -627,6 +651,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                         to="/portal"
                         className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
                         onClick={closeAllDropdowns}
+                        aria-label="Navigate to my portal"
                       >
                         <User className="h-5 w-5" />
                         <span className="text-sm sm:text-base">My Portal</span>
@@ -644,6 +669,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                           }
                         }}
                         className="w-full flex items-center gap-3 px-4 py-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 text-left"
+                        aria-label="Logout"
                       >
                         <LogOut className="h-5 w-5" />
                         <span className="text-sm sm:text-base">Logout</span>
@@ -655,6 +681,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                         to="/login"
                         className="block px-4 py-3 sm:py-4 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 text-center font-semibold text-sm sm:text-base"
                         onClick={closeAllDropdowns}
+                        aria-label="Navigate to login page"
                       >
                         Login
                       </Link>
@@ -662,6 +689,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                         to="/register"
                         className="block px-4 py-3 sm:py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl hover:from-orange-600 hover:to-red-600 transition-all duration-200 text-center font-semibold shadow-lg text-sm sm:text-base"
                         onClick={closeAllDropdowns}
+                        aria-label="Navigate to register page"
                       >
                         Register
                       </Link>
