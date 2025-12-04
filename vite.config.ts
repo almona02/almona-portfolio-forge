@@ -398,6 +398,7 @@ export default defineConfig(({ mode }) => {
               }
               
               // Other React utilities - smaller ones together
+              // CRITICAL: Catch ALL React-dependent libraries here
               if (
                 id.includes('react-') ||
                 id.includes('/react') ||
@@ -414,7 +415,10 @@ export default defineConfig(({ mode }) => {
                 id.includes('cmdk') ||
                 id.includes('input-otp') ||
                 id.includes('markdown-to-jsx') ||
-                id.includes('@vercel/analytics/react')
+                id.includes('@vercel/analytics/react') ||
+                id.includes('qrcode.react') ||
+                id.includes('qrcode/react') ||
+                id.includes('react-window-infinite-loader')
               ) {
                 return 'react-utils';
               }
@@ -572,11 +576,19 @@ export default defineConfig(({ mode }) => {
               // CRITICAL: Catch any remaining React-dependent libraries BEFORE vendor catch-all
               // Libraries that import React but weren't caught by earlier checks
               // This prevents React-dependent code from ending up in vendor chunk
+              // Check for common React patterns that might have been missed
               if (id.includes('node_modules') && (
                 id.includes('/react') || 
                 id.includes('react-') ||
                 id.includes('@react') ||
-                (id.includes('use') && id.includes('react'))
+                id.includes('react/') ||
+                (id.includes('use') && (id.includes('react') || id.includes('hook'))) ||
+                id.includes('createContext') ||
+                id.includes('useState') ||
+                id.includes('useEffect') ||
+                id.includes('useLayoutEffect') ||
+                id.includes('useMemo') ||
+                id.includes('useCallback')
               )) {
                 // If it's React-related but not caught above, ensure it's in react-utils
                 return 'react-utils';
