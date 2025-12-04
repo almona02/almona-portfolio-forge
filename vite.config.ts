@@ -2,7 +2,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig, loadEnv } from "vite";
-import { VitePWA } from "vite-plugin-pwa";
+// import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 // Updated: 2024-09-26 - Simplified build config to fix chunk rendering issues
@@ -228,8 +228,14 @@ export default defineConfig(({ mode }) => {
       outDir: 'dist',
       assetsDir: 'assets',
       target: "esnext",
-      minify: isProduction ? "esbuild" : false,
+      minify: isProduction ? "terser" : false,
       sourcemap: false, // Disable sourcemaps to speed up build
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
+      },
       // Note: react-vendor is intentionally large (3.9MB) to prevent module loading errors
       // This is acceptable as it contains React core and all React-dependent libraries
       chunkSizeWarningLimit: 5000, // Increased to accommodate react-vendor chunk
@@ -322,6 +328,11 @@ export default defineConfig(({ mode }) => {
             if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router-dom')) {
               return 'vendor';
             }
+
+          // Charting libraries
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/chart.js')) {
+            return 'charts';
+          }
             
             // UI vendor chunks
             if (id.includes('node_modules/@radix-ui') || id.includes('node_modules/class-variance-authority') || 
@@ -331,7 +342,7 @@ export default defineConfig(({ mode }) => {
             
             // Three.js related
             if (id.includes('node_modules/three') || id.includes('node_modules/@react-three')) {
-              return 'vendor-three';
+            return 'three';
             }
             
             // Fabricator specific chunks
