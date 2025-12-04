@@ -1,0 +1,43 @@
+# Version control
+.git
+.gitignore
+
+# Dependencies
+node_modules
+python_backend/venv
+python_backend/env
+
+# Build outputs
+dist
+build
+python_backend/build
+python_backend/dist
+
+# Caches and logs
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.coverage
+htmlcov
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Local data volumes
+gov-data
+redis_data
+postgres_data
+
+# IDE settings
+.vscode
+.idea
+.cursor
+
+

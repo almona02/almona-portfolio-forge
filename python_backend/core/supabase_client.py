@@ -2,6 +2,7 @@
 Enhanced Supabase client configuration with connection pooling and performance monitoring.
 """
 import logging
+import os
 import time
 from typing import Optional, Any, Dict
 from contextlib import asynccontextmanager
@@ -19,9 +20,15 @@ class PooledSupabaseClient:
     def __init__(self, pool):
         self._pool = pool
         self._current_client = None
+        self._sovereign_mode = os.getenv("SKIP_SUPABASE_INIT", "").lower() == "true"
     
     def __getattr__(self, name):
         """Delegate all attribute access to the current pooled client."""
+        if self._sovereign_mode:
+            raise RuntimeError(
+                "Supabase not available in sovereign mode. "
+                "Use local PostgreSQL database directly."
+            )
         if self._current_client is None:
             # This is a synchronous proxy, so we can't use async context manager
             # Instead, we'll create a direct client for synchronous operations
@@ -47,6 +54,11 @@ class EnhancedSupabaseClient:
     
     def _initialize_client(self) -> None:
         """Initialize the Supabase client with configuration validation."""
+        # Check for sovereign mode (skip Supabase initialization)
+        if os.getenv("SKIP_SUPABASE_INIT", "").lower() == "true":
+            logger.info("Sovereign mode: Supabase client not initialized")
+            return
+            
         try:
             if not settings.SUPABASE_URL:
                 raise ValueError(

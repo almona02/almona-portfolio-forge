@@ -69,3 +69,14 @@ gunicorn>=21.0.0
 Flask==3.0.3
 Flask-Limiter==3.7.0
 PyJWT==2.9.0
+
+# Security Tools
+pip-audit>=2.7.0
+bandit>=1.7.7
+
+# AI & CNC Integration (Fabricator Pro)
+onnx==1.15.0
+onnxruntime==1.16.3
+ortools==9.8.3296
+python-magic==0.4.27
+pyserial==3.5

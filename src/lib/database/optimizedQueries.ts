@@ -1,6 +1,6 @@
 // Optimized database queries for better performance
 
-import { supabase } from './supabase';
+import { supabase } from '@/lib/supabase';
 
 // Machine queries with optimized indexing
 export const machineQueries = {

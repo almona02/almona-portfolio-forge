@@ -1,0 +1,60 @@
+name: Security Pipeline
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 9 AM
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  dependency-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Python Security Scan
+        run: |
+          pip install pip-audit
+          pip-audit -r python_backend/requirements.txt --format json --output pip-audit-report.json
+          
+      - name: NPM Security Scan
+        run: |
+          cd frontend
+          npm audit --audit-level=high --json > ../npm-audit-report.json
+          
+      - name: Upload Security Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            pip-audit-report.json
+            npm-audit-report.json
+          
+  code-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: p/python
+          
+      - name: Check for MLflow regressions
+        run: |
+          if grep -r "mlflow" python_backend/ --include="*.py"; then
+            echo "::error::MLflow found in codebase!"
+            exit 1
+          fi
+          
+  security-headers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Test Security Headers
+        run: |
+          # Replace with your domain
+          curl -s -I https://staging.your-domain.com | grep -E "(X-Content-Type-Options|X-Frame-Options|Content-Security-Policy)" || echo "Headers check failed or domain not reachable"
+

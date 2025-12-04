@@ -91,6 +91,13 @@ class SupabaseConnectionPool:
         """Initialize connection pool with health monitoring."""
         if self._initialized:
             return
+        
+        # Check for sovereign mode (skip Supabase initialization)
+        import os
+        if os.getenv("SKIP_SUPABASE_INIT", "").lower() == "true":
+            logger.info("Sovereign mode: Skipping Supabase connection pool initialization")
+            self._initialized = True
+            return
             
         try:
             for i in range(self.max_connections):

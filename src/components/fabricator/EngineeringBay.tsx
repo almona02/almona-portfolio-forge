@@ -24,13 +24,14 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Settings, Box, AlertCircle, Cpu, FileText, Wand2 } from 'lucide-react';
+import { Settings, Box, AlertCircle, Cpu, FileText, Wand2, Sparkles } from 'lucide-react';
 import { WindowUnit, Profile, WindowComponent, WindowGrid } from '@/types/fabricator';
 import { Window3DGenerator } from './Window3DGenerator'; 
 import { SystemPackSelector } from './SystemPackSelector'; 
 import { SmartDrawCanvas } from './SmartDrawCanvas'; 
 import { generateComponentsFromGrid } from '@/algorithms/smartDraw'; 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { validateDesign } from '@/lib/fabricator/ConstraintEngine';
 
 interface EngineeringBayProps {
     project: WindowUnit | null;
@@ -48,6 +49,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     const [currentGrid, setCurrentGrid] = useState<WindowGrid>({ rows: 1, cols: 1, cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }]});
     const [activeSystemPackId, setActiveSystemPackId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isPro3D, setIsPro3D] = useState<boolean>(true);
     
     // --- Derived State & Memos ---
     // The "live" project object that reflects the current state of the engineering design
@@ -123,6 +125,20 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             setError('Cannot complete design: the grid is empty or invalid.');
             return;
         }
+
+        // Egyptian-style validation before 3D & optimization
+        const validation = validateDesign(
+            liveProject.overallWidth,
+            liveProject.overallHeight,
+            currentGrid,
+            activeSystemPackId || 'generic'
+        );
+
+        if (!validation.isValid) {
+            setError(validation.errors.join(' '));
+            return;
+        }
+
         setError(null);
         onDesignComplete(liveProject.components);
     };
@@ -165,6 +181,38 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                     </div>
                 </CardHeader>
                 <CardContent>
+                    {/* 3D Mode Toggle */}
+                    <div className="flex items-center justify-between mb-4 gap-2">
+                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                            <Sparkles className="h-4 w-4 text-orange-400" />
+                            <span>3D Engine Mode</span>
+                        </div>
+                        <div className="inline-flex rounded-md border border-gray-700 bg-gray-900/60 p-1 text-[11px]">
+                            <button
+                                type="button"
+                                onClick={() => setIsPro3D(false)}
+                                className={`px-2 py-1 rounded-sm transition-colors ${
+                                    !isPro3D
+                                        ? 'bg-gray-100 text-gray-900'
+                                        : 'text-gray-400 hover:text-gray-200'
+                                }`}
+                            >
+                                Standard 3D
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setIsPro3D(true)}
+                                className={`px-2 py-1 rounded-sm transition-colors ${
+                                    isPro3D
+                                        ? 'bg-orange-500 text-white'
+                                        : 'text-gray-400 hover:text-gray-200'
+                                }`}
+                            >
+                                Pro 3D
+                            </button>
+                        </div>
+                    </div>
+
                     <Alert className="bg-blue-900/30 border-blue-500/50 mb-6">
                         <AlertCircle className="h-4 w-4" />
                         <AlertDescription className="text-sm">
@@ -236,10 +284,10 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             <Window3DGenerator
                                                 windowUnit={liveProject}
                                                 profiles={profiles}
-                                                // Merging props from previous usage and new request
                                                 showControls={true}
                                                 presentationMode={false}
                                                 showErrorDetection={true}
+                                                mode={isPro3D ? 'pro' : 'standard'}
                                             />
                                         )}
                                     </div>
