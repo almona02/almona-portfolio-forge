@@ -5,9 +5,14 @@
   "installCommand": "npm ci",
   "framework": "vite",
   "cleanUrls": true,
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/.*", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/dealer-verification", "destination": "/dealer-verification.html" },
+    { "source": "/dealer-verification-en", "destination": "/dealer-verification-en.html" },
+    { "source": "/yilmaz-machines-egypt", "destination": "/yilmaz-machines-egypt.html" },
+    { "source": "/yilmaz-machines-egypt-en", "destination": "/yilmaz-machines-egypt-en.html" },
+    { "source": "/fabricator-pro-software", "destination": "/fabricator-pro-software.html" },
+    { "source": "/fabricator-pro-software-en", "destination": "/fabricator-pro-software-en.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
