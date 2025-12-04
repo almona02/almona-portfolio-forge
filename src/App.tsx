@@ -131,6 +131,12 @@ const getLoadingComponent = (path: string) => {
   return <LoadingSpinner message={`Loading ${path === '/' ? 'home' : path.replace('/', '').replace('-', ' ')}...`} />;
 };
 
+// Lightweight helper to activate route prefetching hook
+const RoutePrefetchingHelper = () => {
+  useRoutePrefetching();
+  return null;
+};
+
 // Global error handler for dynamic import failures
 const GlobalDynamicImportGuard = () => {
   useEffect(() => {
@@ -170,10 +176,8 @@ const App = () => (
                         v7_relativeSplatPath: true,
                       }}
                     >
-                      <ScrollRestoration />
-                      <NavPrefetchHints />
                       <GlobalDynamicImportGuard />
-                      <RoutePrefetching />
+                      <RoutePrefetchingHelper />
                       <Analytics />
                       <RegionAwareLayout showRegionalFeatures={true} enableRegionSwitching={true}>
                         <Routes>
