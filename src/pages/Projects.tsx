@@ -1,13 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useMemo, useState, lazy, Suspense } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { useTranslation } from 'react-i18next';
 import { useJobsStore } from '@/store/jobsStore';
-import { PositionsGrid } from '@/components/fabricator/PositionsGrid';
 import { Plus, Trash2 } from 'lucide-react';
+import SEO from '@/components/SEO';
+
+// Lazy load heavy component for better performance
+const PositionsGrid = lazy(() => import('@/components/fabricator/PositionsGrid'));
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +27,7 @@ import { toast } from 'sonner';
 const ProjectsPage: React.FC = () => {
   const { t } = useTranslation('fabricator');
   const navigate = useNavigate();
+  const location = useLocation();
   const { jobs, isLoading, loadJobs, deleteJob } = useJobsStore();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<{
@@ -135,26 +139,41 @@ const ProjectsPage: React.FC = () => {
     }
   };
 
+  const currentUrl = `https://www.almona02.com${location.pathname}`;
+
   if (isLoading && !jobs.length) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="bg-gray-900/80 border-gray-800">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-xl">{t('projects.title', 'Projects & Positions')}</CardTitle>
-            <CardDescription className="text-sm text-gray-400">
-              {t('projects.loading', 'Loading your fabricator projects from Supabase...')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-24 rounded-lg bg-gray-800/60 animate-pulse" />
-          </CardContent>
-        </Card>
-      </div>
+      <>
+        <SEO
+          title="Fabricator Projects - Almona Portfolio Forge"
+          description="Manage your fabrication projects, positions, and orders"
+          url={currentUrl}
+        />
+        <main className="container mx-auto px-4 py-8">
+          <Card className="bg-gray-900/80 border-gray-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl">{t('projects.title', 'Projects & Positions')}</CardTitle>
+              <CardDescription className="text-sm text-gray-400">
+                {t('projects.loading', 'Loading your fabricator projects from Supabase...')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-24 rounded-lg bg-gray-800/60 animate-pulse" />
+            </CardContent>
+          </Card>
+        </main>
+      </>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-4">
+    <>
+      <SEO
+        title="Fabricator Projects - Almona Portfolio Forge"
+        description="Manage your fabrication projects, positions, and orders"
+        url={currentUrl}
+      />
+      <main className="container mx-auto px-4 py-8 space-y-4">
       <Card className="bg-gray-900/80 border-gray-800">
         <CardHeader className="pb-3">
           <CardTitle className="text-xl">{t('projects.title', 'Projects & Positions')}</CardTitle>
@@ -266,7 +285,11 @@ const ProjectsPage: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="positions">
-          <PositionsGrid currentProject={null} />
+          <Suspense fallback={
+            <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+          }>
+            <PositionsGrid currentProject={null} />
+          </Suspense>
         </TabsContent>
       </Tabs>
 
@@ -316,7 +339,8 @@ const ProjectsPage: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+      </main>
+    </>
   );
 };
 

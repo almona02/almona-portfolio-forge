@@ -1,10 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { CompanyTimeline } from "@/components/about/CompanyTimeline";
 import { TeamProfiles } from "@/components/about/TeamProfiles";
 import { CompanyValues } from "@/components/about/CompanyValues";
 import { CustomerTestimonials } from "@/components/about/CustomerTestimonials";
 import { Button } from "@/shared/ui/ui/button";
-import { motion } from "framer-motion";
+import SEO from "@/components/SEO";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
@@ -14,31 +14,23 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 const About = () => {
   const isMobile = useIsMobile();
-  
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1,
-      transition: { type: 'spring' as const, stiffness: 100 }
-    }
-  };
+  const location = useLocation();
+  const currentUrl = `https://www.almona02.com${location.pathname}`;
 
   return (
     <>
+      <SEO
+        title="About Us - Almona Co. | YILMAZ Authorized Dealer Egypt"
+        description="Learn about Almona Co., the official YILMAZ authorized dealer in Egypt. Over 30 years of experience in industrial machinery and smart manufacturing solutions."
+        url={currentUrl}
+        keywords="Almona Co., YILMAZ dealer Egypt, industrial machinery Egypt, company history"
+      />
       <main className="pt-24">
         {/* Epic Hero Section with Egyptian-Ottoman Industrial Background */}
         <section className="relative min-h-[45vh] sm:min-h-[55vh] md:min-h-[65vh] lg:min-h-[70vh] xl:min-h-[75vh] overflow-hidden -mt-24 pt-24 mb-6 sm:mb-8 md:mb-10 lg:mb-12">
           {/* Background Image */}
-          <motion.div 
+          <div 
             className="absolute inset-0 z-0"
             style={{
               backgroundImage: 'url(/images/egyptian-industrial-hero-bg.png)',
@@ -46,15 +38,6 @@ const About = () => {
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
               opacity: isMobile ? 0.4 : 0.5,
-              willChange: 'opacity'
-            }}
-            animate={{
-              opacity: isMobile ? [0.4, 0.45, 0.4] : [0.5, 0.55, 0.5]
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut"
             }}
           />
           
@@ -76,17 +59,12 @@ const About = () => {
 
           {/* Content */}
           <div className="relative z-[100] flex flex-col justify-center items-center min-h-[45vh] sm:min-h-[55vh] md:min-h-[65vh] lg:min-h-[70vh] xl:min-h-[75vh] container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-6 sm:py-8 md:py-12 lg:py-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-              className="text-center max-w-4xl mx-auto w-full"
+            <div
+              className="text-center max-w-4xl mx-auto w-full fade-in-up"
             >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                className="mb-3 sm:mb-4 md:mb-6"
+              <div
+                className="mb-3 sm:mb-4 md:mb-6 fade-in-up"
+                style={{ animationDelay: '0.2s' }}
               >
                 <Badge 
                   variant="secondary" 
@@ -98,61 +76,46 @@ const About = () => {
                 >
                   Since 1991
                 </Badge>
-              </motion.div>
+              </div>
               
-              <motion.h1 
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-white leading-tight px-2"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.7 }}
+              <h1 
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-white leading-tight px-2 fade-in-up"
                 style={{
-                  textShadow: '0 4px 12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 95, 31, 0.4)'
+                  textShadow: '0 4px 12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 95, 31, 0.4)',
+                  animationDelay: '0.3s'
                 }}
               >
                 <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent drop-shadow-[0_3px_8px_rgba(255,95,31,0.6)]">
                   About Almona
                 </span>
-              </motion.h1>
+              </h1>
               
-              <motion.p 
-                className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white max-w-3xl mx-auto px-2 sm:px-4 leading-relaxed"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.7 }}
+              <p 
+                className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white max-w-3xl mx-auto px-2 sm:px-4 leading-relaxed fade-in-up"
                 style={{
-                  textShadow: '0 2px 8px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 1)'
+                  textShadow: '0 2px 8px rgba(0, 0, 0, 0.8), 0 1px 3px rgba(0, 0, 0, 1)',
+                  animationDelay: '0.4s'
                 }}
               >
                 Pioneering industrial excellence in Egypt, Africa and the Middle East for over three decades
-              </motion.p>
-            </motion.div>
+              </p>
+            </div>
           </div>
         </section>
 
         <div className="container py-4 sm:py-6 md:py-8 px-4 sm:px-6 md:px-8 lg:px-12">
 
       {/* Epic Egyptian-Ottoman Industrial Image Display - Side by Side with Our Story */}
-      <motion.div 
-        className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 lg:gap-12 mb-8 sm:mb-10 md:mb-12 items-start lg:items-stretch"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+      <div 
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 lg:gap-12 mb-8 sm:mb-10 md:mb-12 items-start lg:items-stretch fade-in-up"
       >
         {/* Image Display Section */}
-        <motion.div
-          variants={itemVariants}
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="order-1 lg:order-2 flex flex-col"
+        <div
+          className="order-1 lg:order-2 flex flex-col fade-in-up"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-almona-orange/20 flex-1"
+          <div
+            className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-almona-orange/20 flex-1 fade-in-up"
+            style={{ animationDelay: '0.2s' }}
           >
             {/* Image with elegant frame - Responsive aspect ratio */}
             <div className="relative w-full overflow-hidden bg-almona-dark">
@@ -189,23 +152,19 @@ const About = () => {
             <div className="absolute inset-0 pointer-events-none rounded-xl sm:rounded-2xl" style={{
               boxShadow: 'inset 0 0 20px rgba(255, 95, 31, 0.1), 0 0 40px rgba(255, 95, 31, 0.15)'
             }} />
-          </motion.div>
+          </div>
           
           {/* Caption - Moved outside image container with proper spacing */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-center mt-4 sm:mt-5 md:mt-6 mb-4 sm:mb-6 md:mb-8 lg:mb-0 text-xs sm:text-sm md:text-base text-gray-300 italic px-2 sm:px-4 leading-relaxed"
-            style={{ textShadow: '0 1px 3px rgba(0, 0, 0, 0.7)' }}
+          <p
+            className="text-center mt-4 sm:mt-5 md:mt-6 mb-4 sm:mb-6 md:mb-8 lg:mb-0 text-xs sm:text-sm md:text-base text-gray-300 italic px-2 sm:px-4 leading-relaxed fade-in-up"
+            style={{ textShadow: '0 1px 3px rgba(0, 0, 0, 0.7)', animationDelay: '0.4s' }}
           >
             Cross-Empire Innovation: Bridging legendary craftsmanship from ancient Egypt and the Ottoman Empire with modern YILMAZ industrial technology
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
 
         {/* Our Story Section */}
-        <motion.div variants={itemVariants} className="order-2 lg:order-1 flex flex-col justify-center pt-0 lg:pt-0">
+        <div className="order-2 lg:order-1 flex flex-col justify-center pt-0 lg:pt-0 fade-in-up">
           <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-3 sm:mb-4 md:mb-5 text-white leading-tight" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Our Story</h2>
           <p className="text-sm sm:text-base md:text-lg mb-3 sm:mb-4 md:mb-5 text-gray-200 leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' }}>
             Founded in 1991, Almona has grown from a humble equipment importer to a
@@ -217,44 +176,36 @@ const About = () => {
             plastic processing, and aluminum profile production, serving thousands
             of businesses across the region.
           </p>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="mt-4 sm:mt-5 md:mt-6">
+          <div className="mt-4 sm:mt-5 md:mt-6 transition-transform hover:scale-105 active:scale-95">
             <Button asChild className="bg-gradient-orange hover:bg-almona-orange-dark text-white w-full sm:w-auto text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-2.5 shadow-lg">
               <Link to="/contact">
                 Contact Our Team
               </Link>
             </Button>
-          </motion.div>
-        </motion.div>
-      </motion.div>
+          </div>
+        </div>
+      </div>
 
       {/* Company Timeline Section - Full Width Below */}
-      <motion.div 
-        className="mb-6 sm:mb-8 md:mb-10"
-        variants={itemVariants}
-        initial="hidden"
-        animate="visible"
+      <div className="fade-in-up mb-6 sm:mb-8 md:mb-10"
       >
         <div className="relative w-full">
           <div className="absolute inset-0 bg-gradient-to-r from-almona-orange/20 to-almona-light/20 rounded-xl sm:rounded-2xl blur-xl -z-10"></div>
           <CompanyTimeline />
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div 
-        className="bg-gradient-to-r from-almona-dark/60 to-almona-darker/60 p-4 sm:p-5 md:p-6 lg:p-8 rounded-xl sm:rounded-2xl border border-almona-light/20 mb-6 sm:mb-8 md:mb-10 backdrop-blur-sm"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
+      <div 
+        className="bg-gradient-to-r from-almona-dark/60 to-almona-darker/60 p-4 sm:p-5 md:p-6 lg:p-8 rounded-xl sm:rounded-2xl border border-almona-light/20 mb-6 sm:mb-8 md:mb-10 backdrop-blur-sm fade-in-up"
+        style={{ animationDelay: '0.3s' }}
       >
         <div className="max-w-4xl mx-auto text-center px-2 sm:px-4">
-          <motion.div 
-            className="flex justify-center mb-2 sm:mb-3 md:mb-4"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.4, type: "spring" }}
+          <div 
+            className="flex justify-center mb-2 sm:mb-3 md:mb-4 fade-in-up"
+            style={{ animationDelay: '0.4s' }}
           >
             <Target className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-almona-orange" />
-          </motion.div>
+          </div>
           <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-2 sm:mb-3 md:mb-4 text-white leading-tight px-2" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Our Mission</h2>
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-200 leading-relaxed px-2" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' }}>
             To empower Egyptian manufacturers with world-class equipment, training, and support, 
@@ -262,15 +213,12 @@ const About = () => {
             across the region.
           </p>
         </div>
-      </motion.div>
+      </div>
 
-      <motion.div 
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 mb-6 sm:mb-8 md:mb-10"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
+      <div 
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 mb-6 sm:mb-8 md:mb-10 fade-in-up"
       >
-        <motion.div variants={itemVariants}>
+        <div className="fade-in-up">
           <Card className="bg-almona-dark/60 border-almona-light/20 h-full backdrop-blur-sm hover:border-almona-orange/50 transition-colors p-4 sm:p-5 md:p-6">
             <CardHeader className="text-center pb-3 sm:pb-4 p-0">
               <div className="flex justify-center mb-2 sm:mb-3 md:mb-4">
@@ -282,9 +230,9 @@ const About = () => {
               <p className="text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>30+ years specializing in metal fabrication and processing equipment</p>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
 
-        <motion.div variants={itemVariants}>
+        <div className="fade-in-up">
           <Card className="bg-almona-dark/60 border-almona-light/20 h-full backdrop-blur-sm hover:border-almona-orange/50 transition-colors p-4 sm:p-5 md:p-6">
             <CardHeader className="text-center pb-3 sm:pb-4 p-0">
               <div className="flex justify-center mb-2 sm:mb-3 md:mb-4">
@@ -296,9 +244,9 @@ const About = () => {
               <p className="text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>Serving clients across Egypt, Africa, and the Middle East</p>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
 
-        <motion.div variants={itemVariants} className="sm:col-span-2 lg:col-span-1">
+        <div className="sm:col-span-2 lg:col-span-1 fade-in-up">
           <Card className="bg-almona-dark/60 border-almona-light/20 h-full backdrop-blur-sm hover:border-almona-orange/50 transition-colors p-4 sm:p-5 md:p-6">
             <CardHeader className="text-center pb-3 sm:pb-4 p-0">
               <div className="flex justify-center mb-2 sm:mb-3 md:mb-4">
@@ -310,44 +258,30 @@ const About = () => {
               <p className="text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed" style={{ textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)' }}>Certified equipment with comprehensive warranty and support</p>
             </CardContent>
           </Card>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7 }}
-        className="mb-6 sm:mb-8 md:mb-10"
+      <div className="fade-in-up mb-6 sm:mb-8 md:mb-10"
+        style={{ animationDelay: '0.4s' }}
       >
         <TeamProfiles />
-      </motion.div>
+      </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7, delay: 0.2 }}
-        className="mb-6 sm:mb-8 md:mb-10"
+      <div
+        className="mb-6 sm:mb-8 md:mb-10 fade-in-up"
+        style={{ animationDelay: '0.2s' }}
       >
         <CompanyValues />
-      </motion.div>
+      </div>
 
       {/* New Image Display Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="mb-6 sm:mb-8 md:mb-10 lg:mb-12"
+      <section
+        className="mb-6 sm:mb-8 md:mb-10 lg:mb-12 fade-in-up"
       >
         <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-almona-orange/20"
+          <div
+            className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-almona-orange/20 fade-in-up"
+            style={{ animationDelay: '0.2s' }}
           >
             {/* Image with elegant frame - Responsive aspect ratio */}
             <div className="relative w-full overflow-hidden bg-almona-dark">
@@ -384,44 +318,37 @@ const About = () => {
             <div className="absolute inset-0 pointer-events-none rounded-xl sm:rounded-2xl" style={{
               boxShadow: 'inset 0 0 20px rgba(255, 95, 31, 0.1), 0 0 40px rgba(255, 95, 31, 0.15)'
             }} />
-          </motion.div>
+          </div>
         </div>
-      </motion.section>
+      </section>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7, delay: 0.4 }}
-        className="mb-6 sm:mb-8 md:mb-10"
+      <div
+        className="mb-6 sm:mb-8 md:mb-10 fade-in-up"
+        style={{ animationDelay: '0.4s' }}
       >
         <CustomerTestimonials />
-      </motion.div>
+      </div>
 
-      <motion.div 
-        className="mt-8 sm:mt-10 md:mt-12 bg-gradient-to-r from-almona-orange/10 to-almona-light/10 p-5 sm:p-6 md:p-8 lg:p-10 rounded-xl sm:rounded-2xl border border-almona-orange/30 text-center"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7 }}
+      <div 
+        className="mt-8 sm:mt-10 md:mt-12 bg-gradient-to-r from-almona-orange/10 to-almona-light/10 p-5 sm:p-6 md:p-8 lg:p-10 rounded-xl sm:rounded-2xl border border-almona-orange/30 text-center fade-in-up"
       >
         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 sm:mb-3 md:mb-4 leading-tight px-2" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Ready to Transform Your Business?</h2>
         <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-200 mb-3 sm:mb-4 md:mb-6 max-w-2xl mx-auto px-2 leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' }}>
           Join thousands of manufacturers who trust Almona for their industrial equipment needs
         </p>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center px-2">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+          <div className="w-full sm:w-auto transition-transform hover:scale-105 active:scale-95">
             <Button asChild className="bg-gradient-orange hover:bg-almona-orange-dark text-white w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base">
               <Link to="/products">Explore Our Products</Link>
             </Button>
-          </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+          </div>
+          <div className="w-full sm:w-auto transition-transform hover:scale-105 active:scale-95">
             <Button asChild className="border-almona-light text-almona-light hover:bg-almona-light/10 w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 bg-transparent border text-sm sm:text-base">
               <Link to="/contact">Request Consultation</Link>
             </Button>
-          </motion.div>
+          </div>
         </div>
-      </motion.div>
+      </div>
         </div>
       </main>
       <Footer />

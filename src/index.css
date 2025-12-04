@@ -239,3 +239,117 @@ html {
     scroll-behavior: auto !important;
   }
 }
+
+/* Workspace content fade animation - lightweight CSS alternative to framer-motion */
+@keyframes workspace-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.workspace-content-fade {
+  animation: workspace-fade-in 0.18s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-content-fade {
+    animation: none;
+  }
+}
+
+/* Navbar dropdown animations - lightweight CSS alternative to framer-motion */
+@keyframes dropdown-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdown-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes mobile-menu-slide-in {
+  from {
+    opacity: 0;
+    height: 0;
+  }
+  to {
+    opacity: 1;
+    height: auto;
+  }
+}
+
+@keyframes mobile-menu-slide-out {
+  from {
+    opacity: 1;
+    height: auto;
+  }
+  to {
+    opacity: 0;
+    height: 0;
+  }
+}
+
+.navbar-dropdown-enter {
+  animation: dropdown-fade-in 0.15s ease-out forwards;
+}
+
+.navbar-dropdown-exit {
+  animation: dropdown-fade-out 0.15s ease-out forwards;
+}
+
+.mobile-menu-enter {
+  animation: mobile-menu-slide-in 0.2s ease-out forwards;
+}
+
+.mobile-menu-exit {
+  animation: mobile-menu-slide-out 0.2s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar-dropdown-enter,
+  .navbar-dropdown-exit,
+  .mobile-menu-enter,
+  .mobile-menu-exit {
+    animation: none;
+  }
+}
+
+/* Fade-in-up animation for page content - lightweight alternative to framer-motion */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in-up {
+    animation: none;
+  }
+}

@@ -19,7 +19,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!assets|js|css|fonts|images|favicon\\.ico|robots\\.txt|manifest\\.webmanifest|service-worker\\.js|workbox-.*\\.js|registerSW\\.js|.*\\..*).*)",
+      "source": "/((?!assets|js|css|fonts|images|favicon\\.ico|robots\\.txt|manifest\\.webmanifest|service-worker\\.js|workbox-.*\\.js|registerSW\\.js|.*\\.html|.*\\..*).*)",
       "destination": "/index.html"
     },
     {
@@ -57,6 +57,16 @@
       "source": "/images/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=2592000" }
+      ]
+    },
+    {
+      "source": "/(.*\\.html)",
+      "headers": [
+        { "key": "Content-Type", "value": "text/html; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" }
       ]
     },
     {
