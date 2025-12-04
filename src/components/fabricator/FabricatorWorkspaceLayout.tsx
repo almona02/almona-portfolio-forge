@@ -12,6 +12,12 @@ import { useAutoSave } from '@/hooks/useAutoSave';
 import { WorkspaceSyncService } from '@/lib/workspace/WorkspaceSyncService';
 import { useTranslation } from 'react-i18next';
 import { isRTL } from '@/lib/i18n';
+import { Suspense } from 'react';
+
+// At the top of the file, replace static imports with dynamic ones
+const ProfileManagement = React.lazy(() => import('./ProfileManagement'));
+const CuttingOptimizationPanel = React.lazy(() => import('./CuttingOptimizationPanel'));
+const Window3DGenerator = React.lazy(() => import('./Window3DGenerator'));
 
 const workspaceTabs = [
   { id: 'projects', icon: FileText, path: '/fabricator/projects', key: 'projects' },

@@ -20,6 +20,9 @@ import { ABTestProvider } from "./components/analytics/ABTestProvider";
 import { Analytics } from "@vercel/analytics/react";
 import RegionAwareLayout from "./components/layout/RegionAwareLayout";
 import { useRoutePrefetching } from "./hooks/useRoutePrefetching";
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
+import Script from 'react-google-analytics'; // or use gtag directly
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // Core pages (essential) - loaded immediately
 const Index = lazy(() => import("./pages/Index.tsx"));
@@ -232,7 +235,7 @@ const App = () => (
                   <Route
                     path="/fabricator/*"
                     element={
-                      <Suspense fallback={getLoadingComponent('/fabricator')}>
+                      <Suspense fallback={<PageLoadingWrapper message="Loading Fabricator Workspace..." variant="fullscreen" />}>
                         <FabricatorWorkspaceLayout />
                       </Suspense>
                     }
@@ -395,60 +398,8 @@ const App = () => (
         </QueryClientProvider>
       </PrestigeLoader>
     </ErrorBoundary>
+    <SpeedInsights />
   </ChunkLoadingErrorBoundary>
 );
 
 export default App;
-
-// Smooth scroll restoration on route change
-function ScrollRestoration() {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    if ('scrollBehavior' in document.documentElement.style) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      window.scrollTo(0, 0);
-    }
-  }, [pathname]);
-  return null;
-}
-
-// Prefetch route chunks on hover/focus for primary nav links
-function NavPrefetchHints() {
-  useEffect(() => {
-    const selector = 'a[data-prefetch="true"]';
-    const handler = (e: Event) => {
-      const el = e.currentTarget as HTMLAnchorElement;
-      const href = el.getAttribute('href');
-      if (!href) return;
-      // Hint browser to prefetch target document
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.as = 'document';
-      link.href = href;
-      document.head.appendChild(link);
-      // remove later to avoid head bloat
-      setTimeout(() => link.remove(), 5000);
-    };
-    const els = Array.from(document.querySelectorAll(selector));
-    els.forEach(el => {
-      el.addEventListener('mouseenter', handler, { passive: true });
-      el.addEventListener('focus', handler, { passive: true });
-      el.addEventListener('touchstart', handler, { passive: true });
-    });
-    return () => {
-      els.forEach(el => {
-        el.removeEventListener('mouseenter', handler as EventListener);
-        el.removeEventListener('focus', handler as EventListener);
-        el.removeEventListener('touchstart', handler as EventListener);
-      });
-    };
-  }, []);
-  return null;
-}
-
-// Route prefetching component
-function RoutePrefetching() {
-  useRoutePrefetching();
-  return null;
-}
