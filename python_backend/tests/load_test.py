@@ -35,3 +35,57 @@ class AlmonaAPIUser(HttpUser):
         queries = ["machine", "fabrication", "cutting", "welding"]
         query = random.choice(queries)
         self.client.get(f"/api/search?q={query}")
+
+    @task(2)
+    def heavy_cutting_optimization(self):
+        """
+        Exercise the Python heavy optimization endpoint with a realistic
+        batch of cuts and stock bars to validate performance under load.
+        """
+        cuts = [
+            {
+                "id": f"cut-{i}",
+                "length_mm": random.randint(400, 2400),
+                "quantity": random.randint(1, 4),
+                "priority": random.randint(1, 3),
+                "profile_id": "profile-60mm",
+                "allow_defects": False,
+            }
+            for i in range(40)
+        ]
+
+        stock = [
+            {
+                "id": "bar-6000",
+                "length_mm": 6000,
+                "quantity": 10,
+                "cost_per_unit": 120.0,
+                "is_remnant": False,
+                "profile_id": "profile-60mm",
+            },
+            {
+                "id": "rem-4500",
+                "length_mm": 4500,
+                "quantity": 4,
+                "cost_per_unit": 60.0,
+                "is_remnant": True,
+                "profile_id": "profile-60mm",
+            },
+        ]
+
+        payload = {
+            "cuts": cuts,
+            "stock": stock,
+            "objective": "balanced",
+            "kerf_width_mm": 3.0,
+            "min_usable_remnant_mm": 100.0,
+            "time_limit_seconds": 10.0,
+            "workshop_id": "load-test-workshop",
+            "project_ids": ["LT-1", "LT-2"],
+        }
+
+        self.client.post(
+            "/api/v2/heavy/optimize/cutting",
+            data=json.dumps(payload),
+            headers={"Content-Type": "application/json"},
+        )

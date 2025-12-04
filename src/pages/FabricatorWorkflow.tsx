@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent } from '@/shared/ui/ui/tabs';
 import { Badge } from '@/shared/ui/ui/badge';
-import { Progress } from '@/shared/ui/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Button } from '@/shared/ui/ui/button';
 import {
@@ -18,9 +17,6 @@ import {
   Loader2,
   Box,
   Share2,
-  ChevronRight,
-  Play,
-  CheckCircle2,
   Clock,
   Search,
   BarChart3,
@@ -63,9 +59,9 @@ const ProfileManagement = React.lazy(() =>
     default: m.ProfileManagement,
   })),
 );
-const ElsherifImportWizard = React.lazy(() =>
-  import('@/components/fabricator/ElsherifImportWizard').then((m) => ({
-    default: m.ElsherifImportWizard,
+const ProfileImportTool = React.lazy(() =>
+  import('@/components/fabricator/ProfileImportTool').then((m) => ({
+    default: m.ProfileImportTool,
   })),
 );
 import { supabase } from '@/lib/supabase';
@@ -159,12 +155,9 @@ import {
   Profile,
   OptimizationResult,
   WindowComponent,
-  CuttingPlan,
-  Cut,
   MeasurementData,
   AdaptiveSolverConfig,
 } from '@/types/fabricator';
-import { AdaptiveSolver } from '@/algorithms/adaptiveSolver';
 import { EnhancedAdaptiveSolver } from '@/algorithms/EnhancedAdaptiveSolver';
 import { trainingDataCollector } from '@/lib/ml/TrainingDataCollector';
 import { validateProject, deriveSystemConstraintsFromProfiles, validateProjectWithConstraints } from '@/lib/fabricatorValidation';
@@ -180,7 +173,7 @@ import {
   trackInventoryLoad,
   trackOptimization 
 } from '@/lib/performance';
-import { FabricatorLoader, IntelligentSuspense } from '@/components/ui/EnhancedLoadingStates';
+import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
 import { ContextualTooltips } from '@/components/fabricator/ContextualTooltips';
 
 const sampleHardware = [
@@ -224,7 +217,7 @@ export const FabricatorWorkflow: React.FC = () => {
   const [showMobilePanel, setShowMobilePanel] = useState(false);
   const [showProjectWizard, setShowProjectWizard] = useState(false);
   const [projectMeta, setProjectMeta] = useState<ProjectHeaderMeta | null>(null);
-  const [projectCreatedMessage, setProjectCreatedMessage] = useState<string | null>(null);
+  // Project-created toast message is now handled directly by wizards
   const { branding } = useCompanyBranding();
 
   const activeWorkshopLabel =
@@ -570,17 +563,17 @@ export const FabricatorWorkflow: React.FC = () => {
         try {
           const complexity = (adaptiveSolver as any).analyzeComplexity(
             { components, profiles },
-            profiles
+            profiles,
           );
           const algorithm = (adaptiveSolver as any).selectAlgorithm(complexity);
-          
+
           await trainingDataCollector.collectTrainingData(
             result,
             complexity,
             algorithm,
             solveTime,
-            workspaceState.userId || 'anonymous',
-            currentProject?.id
+            userId || 'anonymous',
+            currentProject?.id,
           );
         } catch (error) {
           console.warn('Failed to collect training data:', error);
@@ -614,7 +607,7 @@ export const FabricatorWorkflow: React.FC = () => {
         throw error;
       }
     },
-    [workspaceDispatch]
+    [workspaceDispatch, currentProject?.id, currentProject?.systemPackId, userId]
   );
 
   const handleMeasurementComplete = useCallback(
@@ -706,8 +699,7 @@ export const FabricatorWorkflow: React.FC = () => {
             roomOrZone: data.roomOrZone || undefined,
             windowIndex: data.windowIndex || undefined,
             remarks: data.remarks || undefined,
-            flyScreenType: data.flyScreenType || undefined,
-          },
+          } as any,
         };
 
         // Don't require components at measurement stage - they'll be added in design phase
@@ -912,14 +904,7 @@ export const FabricatorWorkflow: React.FC = () => {
       console.error('Error starting production:', error);
       setProjectError(error instanceof Error ? error.message : 'Failed to start production');
     }
-  }, [currentProject, addOrUpdateJob, setSelectedJob, workspaceDispatch]);
-
-  const getStepStatus = (stepId: string) => {
-    const stepIndex = workflowSteps.findIndex(step => step.id === stepId);
-    if (stepIndex < currentStepIndex) return 'completed';
-    if (stepIndex === currentStepIndex) return 'current';
-    return 'upcoming';
-  };
+  }, [currentProject, addOrUpdateJob, setSelectedJob, workspaceDispatch, inventory]);
 
   return (
     <ErrorBoundary level="page">
@@ -1599,7 +1584,7 @@ export const FabricatorWorkflow: React.FC = () => {
                                 ) || inventory[0]}
                                 systemPackId={currentProject.systemPackId || ''}
                                 userId={userId}
-                                onCalibrationComplete={(calibration) => {
+                                onCalibrationComplete={(_calibration) => {
                                   // Update project with calibrated profiles
                                   const updatedProject = {
                                     ...currentProject,
@@ -1812,15 +1797,16 @@ export const FabricatorWorkflow: React.FC = () => {
                     </Suspense>
                   </ErrorBoundary>
 
-                  {/* ELSHERIF Catalog Import – ROCK60 45° optimized profiles */}
+                  {/* Smart Profile Import Tool – Multi-format with K-factor learning */}
                   <div className="mt-4">
                     <Suspense
                       fallback={
                         <div className="h-24 rounded-lg bg-gray-800/60 animate-pulse" />
                       }
                     >
-                      <ElsherifImportWizard
+                      <ProfileImportTool
                         userId={userId}
+                        existingProfiles={inventory}
                         onProfilesImported={(importedProfiles) => {
                           // Merge into current inventory so optimization engine can use them immediately
                           setInventory((prev) => [...prev, ...importedProfiles]);

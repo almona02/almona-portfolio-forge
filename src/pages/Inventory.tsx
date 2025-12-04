@@ -10,6 +10,7 @@ import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Input } from '@/shared/ui/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import {
   Search,
   Package,
@@ -39,6 +40,7 @@ const InventoryPage: React.FC = () => {
   const searchQuery = workspaceState.globalSearchQuery || '';
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [conflicts, setConflicts] = useState<Profile[]>([]);
+  const [tuningFilter, setTuningFilter] = useState<'all' | 'tuned' | 'in_progress' | 'untuned'>('all');
 
   const {
     data: inventory = [],
@@ -82,6 +84,16 @@ const InventoryPage: React.FC = () => {
     refetchOnMount: true,
   });
 
+  const getTuningStatus = (profile: Profile): 'untuned' | 'in_progress' | 'tuned' => {
+    const specs = (profile as any).specifications || {};
+    const raw = specs.tuningStatus as 'untuned' | 'in_progress' | 'tuned' | undefined;
+    if (raw === 'tuned' || raw === 'in_progress' || raw === 'untuned') return raw;
+    if ((profile as any).calibrations?.length || (profile as any).machiningMacros?.length) {
+      return 'in_progress';
+    }
+    return 'untuned';
+  };
+
   const inventoryWithEdits = useMemo(() => {
     return inventory.map((profile) => {
       const edits = workspaceState.profileEdits[profile.id];
@@ -103,6 +115,16 @@ const InventoryPage: React.FC = () => {
       return sum + cost * quantity;
     }, 0);
 
+    const tunedItems = inventoryWithEdits.filter(
+      (p) => getTuningStatus(p) === 'tuned',
+    ).length;
+    const inProgressItems = inventoryWithEdits.filter(
+      (p) => getTuningStatus(p) === 'in_progress',
+    ).length;
+    const untunedItems = inventoryWithEdits.filter(
+      (p) => getTuningStatus(p) === 'untuned',
+    ).length;
+
     return {
       totalItems,
       lowStockItems,
@@ -110,21 +132,32 @@ const InventoryPage: React.FC = () => {
       totalValue: totalValue.toFixed(2),
       utilizationRate:
         totalItems > 0 ? (((totalItems - outOfStockItems) / totalItems) * 100).toFixed(1) : '0',
+      tunedItems,
+      inProgressItems,
+      untunedItems,
     };
   }, [inventoryWithEdits]);
 
   const filteredInventory = useMemo(() => {
-    if (!searchQuery) return inventoryWithEdits;
-    const q = searchQuery.toLowerCase();
-    return inventoryWithEdits.filter((profile) => {
-      return (
-        profile.name?.toLowerCase().includes(q) ||
-        profile.systemBrand?.toLowerCase().includes(q) ||
-        profile.material?.toLowerCase().includes(q) ||
-        profile.supplier?.toLowerCase().includes(q)
-      );
-    });
-  }, [inventoryWithEdits, searchQuery]);
+    let list = inventoryWithEdits;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter((profile) => {
+        return (
+          profile.name?.toLowerCase().includes(q) ||
+          profile.systemBrand?.toLowerCase().includes(q) ||
+          profile.material?.toLowerCase().includes(q) ||
+          profile.supplier?.toLowerCase().includes(q)
+        );
+      });
+    }
+
+    if (tuningFilter !== 'all') {
+      list = list.filter((p) => getTuningStatus(p) === tuningFilter);
+    }
+
+    return list;
+  }, [inventoryWithEdits, searchQuery, tuningFilter]);
 
   const handleSaveAllEdits = async () => {
     try {
@@ -334,10 +367,16 @@ const InventoryPage: React.FC = () => {
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="bg-slate-800/40 rounded-lg p-4 border border-slate-700/30">
               <div className="text-2xl font-bold text-white mb-1">{inventoryStats.totalItems}</div>
               <div className="text-sm text-slate-400">Total Items</div>
+            </div>
+            <div className="bg-slate-800/40 rounded-lg p-4 border border-slate-700/30">
+              <div className="text-2xl font-bold text-emerald-400 mb-1">
+                {inventoryStats.tunedItems}
+              </div>
+              <div className="text-sm text-slate-400">Tuned Items</div>
             </div>
             <div className="bg-slate-800/40 rounded-lg p-4 border border-slate-700/30">
               <div className="text-2xl font-bold text-orange-400 mb-1">
@@ -392,6 +431,20 @@ const InventoryPage: React.FC = () => {
               </div>
 
               <div className="flex gap-2">
+                <Select
+                  value={tuningFilter}
+                  onValueChange={(v) => setTuningFilter(v as any)}
+                >
+                  <SelectTrigger className="w-40 bg-slate-700/50 border-slate-600/50 text-slate-100 text-xs">
+                    <SelectValue placeholder="Tuning status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-700 text-xs">
+                    <SelectItem value="all">All Tuning</SelectItem>
+                    <SelectItem value="tuned">Tuned Only</SelectItem>
+                    <SelectItem value="in_progress">Tuning In Progress</SelectItem>
+                    <SelectItem value="untuned">Untuned Only</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Button
                   variant="outline"
                   size="sm"

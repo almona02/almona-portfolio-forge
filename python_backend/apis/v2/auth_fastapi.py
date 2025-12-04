@@ -1,14 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Body, Form
+from fastapi import APIRouter, Depends, HTTPException, status, Body, Form, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from pydantic import BaseModel, Field
 from typing import Optional
+import hashlib
 
 from core.config import settings
 from core.supabase_client import supabase_client
+from core.security_logger import SecurityLogger, SecurityEventType, SecurityEvent
 
 router = APIRouter()
+security_logger = SecurityLogger()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v2/auth/token")
 
@@ -69,9 +72,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
+    request: Request,
     username: str = Form(...),
     password: str = Form(...)
 ):
+    ip = request.client.host if request.client else "unknown"
+    user_agent = request.headers.get("user-agent", "unknown")
+    
     try:
         user_response = supabase_client.client.auth.sign_in_with_password({
             "email": username,
@@ -79,6 +86,14 @@ async def login_for_access_token(
         })
         
         if user_response.user:
+            # Log successful login
+            security_logger.log_auth_attempt(
+                user_id=str(user_response.user.id),
+                success=True,
+                ip=ip,
+                user_agent=user_agent
+            )
+            
             access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
             access_token = create_access_token(
                 data={"sub": user_response.user.email}, expires_delta=access_token_expires
@@ -86,12 +101,30 @@ async def login_for_access_token(
             refresh_token = create_refresh_token(data={"sub": user_response.user.email})
             return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
         else:
+            # Log failed login attempt (username only as we don't have ID)
+            security_logger.log_auth_attempt(
+                user_id=username,
+                success=False,
+                ip=ip,
+                user_agent=user_agent
+            )
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
     except Exception as e:
+        # Log failed login attempt with error
+        security_logger.log_auth_attempt(
+            user_id=username,
+            success=False,
+            ip=ip,
+            user_agent=user_agent
+        )
+        
+        if isinstance(e, HTTPException):
+            raise e
+            
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",

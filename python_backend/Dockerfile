@@ -33,12 +33,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PATH="/opt/venv/bin:$PATH" \
     ENVIRONMENT=production
 
-# Install runtime dependencies (including OpenCV system libs)
+# Install runtime dependencies (including OpenCV system libs and libmagic)
 RUN apt-get update && apt-get install -y \
     libpq5 \
     curl \
     libgl1 \
     libglib2.0-0 \
+    libmagic1 \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 

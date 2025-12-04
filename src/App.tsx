@@ -70,6 +70,7 @@ const FabricatorPricingConfiguration = lazy(() =>
 const FabricatorBrandingSettings = lazy(() => import("./pages/FabricatorBrandingSettings.tsx"));
 const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
 const InventoryPage = lazy(() => import("./pages/Inventory.tsx"));
+const FabricatorReportsPage = lazy(() => import("./pages/FabricatorReports.tsx"));
 const ProjectsPage = lazy(() => import("./pages/Projects.tsx"));
 const ProfilesPage = lazy(() => import("./pages/Profiles.tsx"));
 const PublicOptimizer = lazy(() => import("./pages/PublicOptimizer.tsx"));
@@ -103,6 +104,9 @@ const RegisterMachinePage = lazy(() => import("./pages/RegisterMachinePage.tsx")
 const CustomerSupport = lazy(() => import("./pages/CustomerSupport.tsx"));
 const RegionalFeaturesDemo = lazy(() => import("./pages/RegionalFeaturesDemo.tsx"));
 const AIRecommendationDemo = lazy(() => import("./pages/AIRecommendationDemo.tsx"));
+
+// National Service Dashboard - Egypt Vision 2030
+const NationalDashboard = lazy(() => import("./pages/NationalDashboard.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -291,6 +295,16 @@ const App = () => (
                       }
                     />
                     <Route
+                      path="reports"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/reports')}>
+                          <ProtectedRoute>
+                            <FabricatorReportsPage />
+                          </ProtectedRoute>
+                        </Suspense>
+                      }
+                    />
+                    <Route
                       path="settings/branding"
                       element={
                         <Suspense fallback={getLoadingComponent('/fabricator/settings/branding')}>
@@ -359,6 +373,11 @@ const App = () => (
                   
                   {/* AI Recommendation Demo */}
                   <Route path="/demo/ai-recommendations" element={<Suspense fallback={getLoadingComponent('/demo')}><AIRecommendationDemo /></Suspense>} />
+                  
+                  {/* National Service Dashboard - Egypt Vision 2030 (Public for Demo) */}
+                  <Route path="/national-dashboard" element={<Suspense fallback={getLoadingComponent('/national-dashboard')}><NationalDashboard /></Suspense>} />
+                  <Route path="/government/dashboard" element={<Suspense fallback={getLoadingComponent('/government')}><NationalDashboard /></Suspense>} />
+                  <Route path="/egypt-vision-2030" element={<Suspense fallback={getLoadingComponent('/egypt-vision-2030')}><NationalDashboard /></Suspense>} />
                   
                   {/* 404 */}
                   <Route path="*" element={<Suspense fallback={getLoadingComponent('/404')}><NotFound /></Suspense>} />

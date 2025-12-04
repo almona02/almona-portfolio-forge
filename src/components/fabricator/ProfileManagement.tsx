@@ -20,7 +20,6 @@ import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
-import { Textarea } from '@/shared/ui/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
@@ -40,6 +39,8 @@ import {
   FileText,
   Settings,
   ChevronDown,
+  Sparkles,
+  Shield,
 } from 'lucide-react';
 import { Profile, Accessory, MachiningMacro, SystemPack } from '@/types/fabricator';
 import { supabase } from '@/lib/supabase';
@@ -54,9 +55,9 @@ import {
   SYSTEM_PACKS,
 } from '@/data/systemPacks';
 import { ProfileDetailCard } from './ProfileDetailCard';
-import { SystemPackSelector } from './SystemPackSelector';
 import { AccessoryManagement } from './AccessoryManagement';
 import { ProfileDefinitionWizard } from './ProfileDefinitionWizard';
+import { ProfileTuningStudio } from './ProfileTuningStudio';
 
 // Material-specific color presets
 const MATERIAL_COLORS: Record<string, string[]> = {
@@ -118,7 +119,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const { t } = useTranslation('fabricator');
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles || []);
   const [filteredProfiles, setFilteredProfiles] = useState<Profile[]>(initialProfiles || []);
-  const [activeImportTab, setActiveImportTab] = useState('manual');
+  const [_activeImportTab, _setActiveImportTab] = useState('manual');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -130,7 +131,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [regionFilter, setRegionFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [systemPackFilter, setSystemPackFilter] = useState<string>('all');
-  const [subscription, setSubscription] = useState<any>(null);
+  const [_subscription, _setSubscription] = useState<any>(null);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [isUploadingPreview, setIsUploadingPreview] = useState<string | null>(null);
   const [accessories, setAccessories] = useState<Accessory[]>([]);
@@ -138,34 +139,51 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [showProfileDefinitionWizard, setShowProfileDefinitionWizard] = useState(false);
   const [selectedProfileForDetail, setSelectedProfileForDetail] = useState<Profile | null>(null);
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>('custom');
+  const [tuningProfile, setTuningProfile] = useState<Profile | null>(null);
+  const [tuningFilter, setTuningFilter] = useState<'all' | 'tuned' | 'in_progress' | 'untuned'>('all');
+
+  const getTuningStatus = (profile: Profile): 'untuned' | 'in_progress' | 'tuned' => {
+    const specs = profile.specifications || {};
+    const raw = (specs as any).tuningStatus as 'untuned' | 'in_progress' | 'tuned' | undefined;
+    if (raw === 'tuned' || raw === 'in_progress' || raw === 'untuned') return raw;
+    if ((profile.calibrations && profile.calibrations.length > 0) || profile.machiningMacros?.length) {
+      return 'in_progress';
+    }
+    return 'untuned';
+  };
+
+  const tuningStats = useMemo(() => {
+    const stats = {
+      total: profiles.length,
+      tuned: 0,
+      inProgress: 0,
+      untuned: 0,
+      byRole: {
+        frame: { total: 0, tuned: 0 },
+        sash: { total: 0, tuned: 0 },
+        mullion: { total: 0, tuned: 0 },
+        glazing_bead: { total: 0, tuned: 0 },
+      } as Record<string, { total: number; tuned: number }>,
+    };
+
+    profiles.forEach((p) => {
+      const status = getTuningStatus(p);
+      if (status === 'tuned') stats.tuned += 1;
+      else if (status === 'in_progress') stats.inProgress += 1;
+      else stats.untuned += 1;
+
+      const role = p.profileRole || (p.specifications as any)?.profileRole;
+      if (role && stats.byRole[role]) {
+        stats.byRole[role].total += 1;
+        if (status === 'tuned') stats.byRole[role].tuned += 1;
+      }
+    });
+
+    return stats;
+  }, [profiles]);
   // Collapsible states - both collapsed by default
   const [isProfileManagementOpen, setIsProfileManagementOpen] = useState<boolean>(false);
   const [isProfileFormOpen, setIsProfileFormOpen] = useState<boolean>(false);
-
-  // Memoized conversion of accessories to FabricatorAccessory format to prevent re-renders
-  const convertedAccessories = useMemo(() => {
-    return accessories.map((acc) => ({
-      id: acc.id,
-      name: acc.name,
-      type: acc.type === 'corner_connector' ? 'corner' : 
-            acc.type === 'bracket' || acc.type === 'screw' ? 'other' : 
-            acc.type as 'hinge' | 'lock' | 'handle' | 'seal' | 'spacer' | 'corner' | 'other',
-      category: acc.category || '',
-      unitPrice: acc.unitPrice || 0,
-      baseCost: acc.baseCost || 0,
-      markupPercentage: acc.markupPercentage || 0,
-      supplier: acc.supplier,
-      sku: acc.sku,
-      description: acc.description,
-      compatibleMaterials: acc.compatibleMaterials || [],
-      region: acc.region || [],
-      imageUrl: acc.imageUrl || acc.images?.[0],
-      specifications: acc.specifications || {},
-      userId: acc.userId,
-      createdAt: acc.createdAt,
-      updatedAt: acc.updatedAt,
-    }));
-  }, [accessories]);
 
   // Memoized callback to prevent re-renders
   const handleAccessoriesUpdate = useCallback((updatedAccessories: any[]) => {
@@ -468,8 +486,6 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       )
       .subscribe();
 
-    setSubscription(channel);
-
     return () => {
       // Cleanup subscription properly
       if (channel) {
@@ -548,7 +564,6 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         const code = (p.specifications as any)?.supplierCode?.toLowerCase() || 
                      (p.specifications as any)?.internalCode?.toLowerCase() || '';
         const role = (p.specifications as any)?.profileRole?.toLowerCase() || '';
-        const profileNumber = p.profileNumber?.toLowerCase() || '';
         
         return (
           name.includes(query) ||
@@ -558,8 +573,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           width.includes(query) ||
           height.includes(query) ||
           code.includes(query) ||
-          role.includes(query) ||
-          profileNumber.includes(query)
+          role.includes(query)
         );
       });
     }
@@ -594,8 +608,12 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       });
     }
 
+    if (tuningFilter !== 'all') {
+      filtered = filtered.filter((p) => getTuningStatus(p) === tuningFilter);
+    }
+
     setFilteredProfiles(filtered);
-  }, [profiles, searchTerm, materialFilter, regionFilter, categoryFilter, systemPackFilter]);
+  }, [profiles, searchTerm, materialFilter, regionFilter, categoryFilter, systemPackFilter, tuningFilter]);
 
   const handleUploadPreviewImage = async (event: React.ChangeEvent<HTMLInputElement>, profile: Profile) => {
     const file = event.target.files?.[0];
@@ -678,7 +696,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const db = supabase as any;
-      const { data, error: insertError } = await db
+      const { error: insertError } = await db
         .from('fabricator_profiles')
         .insert({
           user_id: userId,
@@ -1046,7 +1064,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   };
 
   // Bulk system import function
-  const handleImportSystemPack = async (systemPack: SystemPack) => {
+  const _handleImportSystemPack = async (systemPack: SystemPack) => {
     if (!userId) return;
 
     try {
@@ -1169,13 +1187,13 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   };
 
   // Helper functions for fetching system pack data
-  const fetchProfilesForSystemPack = async (systemPackId: string): Promise<Profile[]> => {
+  const fetchProfilesForSystemPack = async (_systemPackId: string): Promise<Profile[]> => {
     // In a real implementation, this would fetch from a system pack database or API
     // For now, return empty array - this should be implemented based on your data source
     return [];
   };
 
-  const fetchAccessoriesForSystemPack = async (systemPackId: string): Promise<Accessory[]> => {
+  const fetchAccessoriesForSystemPack = async (_systemPackId: string): Promise<Accessory[]> => {
     // In a real implementation, this would fetch from a system pack database or API
     // For now, return empty array - this should be implemented based on your data source
     return [];
@@ -1274,6 +1292,62 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         </Alert>
       )}
 
+      {/* Tuning & System Overview */}
+      <Card className="bg-gray-900/70 border-gray-700">
+        <CardContent className="py-4 px-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500/15 border border-orange-400/60">
+                <Sparkles className="h-5 w-5 text-orange-300" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-gray-400">
+                  Fabricator Pro · Profile Readiness
+                </p>
+                <p className="text-sm text-gray-200">
+                  {tuningStats.tuned}/{tuningStats.total} profiles tuned for production
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              <div className="px-3 py-2 rounded-md bg-gray-800/70 border border-gray-700">
+                <p className="text-[10px] uppercase text-gray-400">Tuned</p>
+                <p className="text-sm font-semibold text-emerald-400">
+                  {tuningStats.tuned}
+                  <span className="text-[11px] text-gray-500 ml-1">
+                    ({tuningStats.total > 0 ? Math.round((tuningStats.tuned / tuningStats.total) * 100) : 0}
+                    %)
+                  </span>
+                </p>
+              </div>
+              <div className="px-3 py-2 rounded-md bg-gray-800/70 border border-gray-700">
+                <p className="text-[10px] uppercase text-gray-400">In Progress</p>
+                <p className="text-sm font-semibold text-blue-300">
+                  {tuningStats.inProgress}
+                </p>
+              </div>
+              <div className="px-3 py-2 rounded-md bg-gray-800/70 border border-gray-700">
+                <p className="text-[10px] uppercase text-gray-400">Untuned</p>
+                <p className="text-sm font-semibold text-yellow-300">
+                  {tuningStats.untuned}
+                </p>
+              </div>
+              <div className="px-3 py-2 rounded-md bg-gray-800/70 border border-gray-700 hidden md:block">
+                <p className="text-[10px] uppercase text-gray-400 flex items-center gap-1">
+                  <Shield className="h-3 w-3 text-teal-300" />
+                  Core Roles Tuned
+                </p>
+                <p className="text-[11px] text-gray-200 mt-1">
+                  F:{tuningStats.byRole.frame.tuned}/{tuningStats.byRole.frame.total}{' '}
+                  S:{tuningStats.byRole.sash.tuned}/{tuningStats.byRole.sash.total}{' '}
+                  M:{tuningStats.byRole.mullion.tuned}/{tuningStats.byRole.mullion.total}
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Header with Actions - Collapsible */}
       <Collapsible open={isProfileManagementOpen} onOpenChange={setIsProfileManagementOpen}>
         <Card className="bg-gray-800/50 border-gray-700">
@@ -1339,7 +1413,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       {/* Filters */}
       <Card className="bg-gray-800/50 border-gray-700">
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
             {/* Category Filter */}
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger>
@@ -1404,6 +1478,19 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                 <SelectItem value="all">{t('profileManagement.all', 'All')}</SelectItem>
                 <SelectItem value="turkey">{t('profileManagement.turkey', 'Turkey')}</SelectItem>
                 <SelectItem value="egypt">{t('profileManagement.egypt', 'Egypt')}</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Tuning Status Filter */}
+            <Select value={tuningFilter} onValueChange={(v) => setTuningFilter(v as any)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Tuning Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Tuning States</SelectItem>
+                <SelectItem value="tuned">Tuned</SelectItem>
+                <SelectItem value="in_progress">Tuning in Progress</SelectItem>
+                <SelectItem value="untuned">Not Tuned</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -2097,7 +2184,6 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         {showAccessoryManager && (
           <CardContent>
             <AccessoryManagement
-              accessories={convertedAccessories}
               profiles={profiles}
               onAccessoriesUpdate={handleAccessoriesUpdate}
               userId={userId}
@@ -2121,6 +2207,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             ) : (
               filteredProfiles.map((profile) => {
                 const status = getStockStatus(profile);
+                const tuningStatus = getTuningStatus(profile);
                 const stockPercentage =
                   profile.minStockLevel > 0 && profile.stockQuantity !== undefined && profile.minStockLevel !== undefined
                     ? Math.min(((profile.stockQuantity ?? 0) / profile.minStockLevel) * 100, 100)
@@ -2139,7 +2226,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                           toast.info(`Previewing machining operation: ${macro.name}`);
                         }}
                       />
-                      <Button
+                          <Button
                         variant="outline"
                         size="sm"
                         className="mt-2"
@@ -2169,6 +2256,22 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                           >
                             {getStockStatusLabel(status)}
                           </Badge>
+                          <Badge
+                            variant="outline"
+                            className={
+                              tuningStatus === 'tuned'
+                                ? 'border-emerald-400 text-emerald-300'
+                                : tuningStatus === 'in_progress'
+                                ? 'border-blue-400 text-blue-300'
+                                : 'border-yellow-400 text-yellow-300'
+                            }
+                          >
+                            {tuningStatus === 'tuned'
+                              ? 'Tuned'
+                              : tuningStatus === 'in_progress'
+                              ? 'Tuning'
+                              : 'Untuned'}
+                          </Badge>
                         </div>
                         <div className="grid grid-cols-4 gap-4 text-sm text-gray-400">
                           <div>
@@ -2192,6 +2295,24 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                             {t('profileManagement.dxf', 'DXF')}:
                             <span className="ml-1">
                               {specs.dxfImported ? t('profileManagement.imported', 'Imported') : t('profileManagement.none', '—')}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-500">Tuning:</span>
+                            <span
+                              className={
+                                tuningStatus === 'tuned'
+                                  ? 'text-emerald-300'
+                                  : tuningStatus === 'in_progress'
+                                  ? 'text-blue-300'
+                                  : 'text-yellow-300'
+                              }
+                            >
+                              {tuningStatus === 'tuned'
+                                ? 'Full profile tuned'
+                                : tuningStatus === 'in_progress'
+                                ? 'Partially tuned'
+                                : 'Not tuned yet'}
                             </span>
                           </div>
                         </div>
@@ -2238,6 +2359,16 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                           >
                             <FileText className="h-4 w-4" />
                           </Button>
+                          {userId && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="border-orange-500/60 text-orange-300 hover:bg-orange-500/10"
+                              onClick={() => setTuningProfile(profile)}
+                            >
+                              Tune
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
@@ -2279,6 +2410,16 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             setShowProfileDefinitionWizard(false);
             toast.success(`Profile "${profile.name}" created successfully`);
           }}
+        />
+      )}
+
+      {/* Profile Tuning Studio Overlay */}
+      {userId && tuningProfile && (
+        <ProfileTuningStudio
+          profile={tuningProfile}
+          userId={userId}
+          onClose={() => setTuningProfile(null)}
+          onProfileUpdated={loadProfiles}
         />
       )}
     </div>

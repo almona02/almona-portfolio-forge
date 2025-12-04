@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Standard Sliding Window (2-Track)",
+    "category": "slider",
+    "system_pack_id": "alumil_m900",
+    "glazing_options": {
+      "default": "6mm+12mm+6mm Clear"
+    },
+    "hardware_template": {
+      "handle": "standard_sliding_handle",
+      "lock": "multi_point"
+    },
+    "geometry_data": {
+      "width_min": 1.0,
+      "width_max": 3.0,
+      "height_min": 1.0,
+      "height_max": 2.4,
+      "sash_count": 2,
+      "track_count": 2
+    },
+    "variants": [
+      {
+        "variant_name": "120x120 Standard",
+        "dimensions": { "width": 1200, "height": 1200 },
+        "price_estimate": 4500.00,
+        "is_standard": true
+      },
+      {
+        "variant_name": "150x120 Wide",
+        "dimensions": { "width": 1500, "height": 1200 },
+        "price_estimate": 5200.00,
+        "is_standard": true
+      }
+    ]
+  },
+  {
+    "name": "Casement Window (Side Hung)",
+    "category": "window",
+    "system_pack_id": "alumil_m11000",
+    "glazing_options": {
+      "default": "6mm+12mm+6mm Low-E"
+    },
+    "geometry_data": {
+      "width_min": 0.5,
+      "width_max": 1.0,
+      "height_min": 0.6,
+      "height_max": 1.8,
+      "opening_type": "side_hung_in"
+    },
+    "variants": [
+      {
+        "variant_name": "60x100 Bathroom",
+        "dimensions": { "width": 600, "height": 1000 },
+        "price_estimate": 3200.00,
+        "is_standard": true
+      }
+    ]
+  },
+  {
+    "name": "Tilt & Turn Window",
+    "category": "window",
+    "system_pack_id": "alumil_m11000",
+    "geometry_data": {
+      "opening_type": "tilt_turn"
+    },
+    "variants": [
+      {
+        "variant_name": "80x120 Bedroom",
+        "dimensions": { "width": 800, "height": 1200 },
+        "price_estimate": 4100.00,
+        "is_standard": true
+      }
+    ]
+  },
+  {
+    "name": "Balcony Door (Glazed)",
+    "category": "door",
+    "system_pack_id": "alumil_m11000",
+    "geometry_data": {
+      "threshold": "low"
+    },
+    "variants": [
+      {
+        "variant_name": "90x210 Single Leaf",
+        "dimensions": { "width": 900, "height": 2100 },
+        "price_estimate": 7500.00,
+        "is_standard": true
+      }
+    ]
+  }
+]
+

@@ -7,6 +7,7 @@ from apis.v2.quotes import router as quotes_router
 from apis.v2.auth_fastapi import router as auth_router
 from apis.v2.part_detection_fastapi import router as part_detection_router
 from apis.fabricator_profiles import router as fabricator_router
+from apis.v2.heavy_optimization import router as heavy_optimization_router
 
 # Import v2 error handlers
 from apis.v2.core.errors import (
@@ -38,3 +39,6 @@ router.include_router(
     part_detection_router, prefix="/ai", tags=["AI"]
 )  # optional namespacing
 router.include_router(fabricator_router)  # fabricator uses /fabricator prefix
+router.include_router(
+    heavy_optimization_router
+)  # heavy optimization under /heavy/*

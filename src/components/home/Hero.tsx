@@ -42,14 +42,23 @@ const Hero = () => {
   const slides = useMemo(() => [
     {
       id: 1,
-      title: "YILMAZ Machines",
-      subtitle: "Premium Quality Aluminium & PVC Processing Machines",
-      description: "Authorized Dealer in Egypt Since 2000",
-      link: "/yilmaz-machines-egypt", // Updated link to new landing page
-      badge: true
+      title: "Fabricator Pro",
+      subtitle: "Empowering Egypt's Industrial Transformation",
+      description: "Supporting Egypt Vision 2030",
+      link: "/fabricator-workflow",
+      badge: true,
+      nationalFocus: true
     },
     {
       id: 2,
+      title: "YILMAZ Machines",
+      subtitle: "Premium Quality Aluminium & PVC Processing Machines",
+      description: "Authorized Dealer in Egypt Since 2000",
+      link: "/yilmaz-machines-egypt",
+      badge: true
+    },
+    {
+      id: 3,
       title: "ALMONA Co.",
       subtitle: "Your Trusted Partner Since 1991",
       description: "Expert Consultation, Sales & Service",
@@ -167,11 +176,24 @@ const Hero = () => {
             >
               {activeSlide === index && (
                 <div className="max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
-                  {/* Official Partner Badge - NEW */}
+                  {/* Official Partner Badge / National Badge */}
                   {slide.badge && (
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 border border-orange-500/40 text-orange-400 mb-4 animate-fade-in backdrop-blur-sm">
-                      <Award className="w-4 h-4" />
-                      <span className="text-sm font-semibold uppercase tracking-wide">Official Partner</span>
+                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 animate-fade-in backdrop-blur-sm ${
+                      slide.nationalFocus 
+                        ? "bg-green-500/20 border border-green-500/40 text-green-400"
+                        : "bg-orange-500/20 border border-orange-500/40 text-orange-400"
+                    }`}>
+                      {slide.nationalFocus ? (
+                        <>
+                          <CheckCircle className="w-4 h-4" />
+                          <span className="text-sm font-semibold uppercase tracking-wide">National Strategic Asset</span>
+                        </>
+                      ) : (
+                        <>
+                          <Award className="w-4 h-4" />
+                          <span className="text-sm font-semibold uppercase tracking-wide">Official Partner</span>
+                        </>
+                      )}
                     </div>
                   )}
 
@@ -219,7 +241,7 @@ const Hero = () => {
                         to={slide.link} 
                         className="flex items-center justify-center gap-2"
                       >
-                        Explore {slide.title}
+                        {slide.nationalFocus ? "Start Your Digital Transformation" : `Explore ${slide.title}`}
                         <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
                       </Link>
                     </NeonButton>

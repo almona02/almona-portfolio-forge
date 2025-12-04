@@ -26,6 +26,18 @@ interface ProfileDefinitionWizardProps {
   onOpenChange: (open: boolean) => void;
   userId: string;
   onProfileCreated?: (profile: Profile) => void;
+  initialData?: {
+    profileCode?: string;
+    systemName?: string;
+    width?: number;
+    height?: number;
+    materialThickness?: number;
+    weightPerMeter?: number;
+    role?: 'frame' | 'mullion' | 'transom' | 'sash' | 'casement' | 'tilt' | 'turn' | 'fixed' | 'ventilator';
+    material?: 'aluminum' | 'steel' | 'upvc' | 'wood';
+    defaultKFactor45?: number;
+    defaultKFactor90?: number;
+  };
 }
 
 interface Annotation {
@@ -43,6 +55,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
   onOpenChange,
   userId,
   onProfileCreated,
+  initialData,
 }) => {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
@@ -53,17 +66,35 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
   const [isCreating, setIsCreating] = useState(false);
 
   const [formData, setFormData] = useState({
-    profileCode: '',
-    systemName: '',
-    width: 60,
-    height: 40,
-    materialThickness: 1.5,
-    weightPerMeter: 0,
-    role: 'frame' as const,
-    material: 'aluminum' as const,
-    defaultKFactor45: undefined as number | undefined,
-    defaultKFactor90: 0,
+    profileCode: initialData?.profileCode || '',
+    systemName: initialData?.systemName || '',
+    width: initialData?.width || 60,
+    height: initialData?.height || 40,
+    materialThickness: initialData?.materialThickness || 1.5,
+    weightPerMeter: initialData?.weightPerMeter || 0,
+    role: initialData?.role || 'frame' as const,
+    material: initialData?.material || 'aluminum' as const,
+    defaultKFactor45: initialData?.defaultKFactor45,
+    defaultKFactor90: initialData?.defaultKFactor90 || 0,
   });
+
+  // Update form data when initialData changes (e.g., when wizard opens with new data)
+  React.useEffect(() => {
+    if (initialData && open) {
+      setFormData({
+        profileCode: initialData.profileCode || '',
+        systemName: initialData.systemName || '',
+        width: initialData.width || 60,
+        height: initialData.height || 40,
+        materialThickness: initialData.materialThickness || 1.5,
+        weightPerMeter: initialData.weightPerMeter || 0,
+        role: initialData.role || 'frame',
+        material: initialData.material || 'aluminum',
+        defaultKFactor45: initialData.defaultKFactor45,
+        defaultKFactor90: initialData.defaultKFactor90 || 0,
+      });
+    }
+  }, [initialData, open]);
 
   const totalSteps = 3;
 
