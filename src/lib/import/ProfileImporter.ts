@@ -3,8 +3,7 @@
  * Parses Excel/CSV files and imports profiles
  */
 
-// ExcelJS imported dynamically for better performance
-// See EgyptianLoadingStrategy for connection-aware loading
+import ExcelJS from 'exceljs';
 
 export interface ParsedRow {
   [key: string]: any;
@@ -43,10 +42,7 @@ export class ProfileImporter {
 
           resolve({ headers, rows });
         } else {
-          // Parse Excel using ExcelJS (lazy loaded)
-          const { EgyptianLoadingStrategy } = await import('@/lib/egyptian-loading-strategy');
-          const ExcelJS = await EgyptianLoadingStrategy.loadExcelJS();
-          
+          // Parse Excel using ExcelJS
           const arrayBuffer = await file.arrayBuffer();
           const workbook = new ExcelJS.Workbook();
           await workbook.xlsx.load(arrayBuffer);

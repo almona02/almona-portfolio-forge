@@ -66,13 +66,116 @@ export default defineConfig(({ mode }) => {
           }
         }
       },
-      // CRITICAL FIX: PWA temporarily disabled to fix deployment blocker
-      // Error: "Cannot read properties of undefined (reading 'sync')"
-      // This is caused by workbox-build's glob dependency issue in Vercel environment
-      // PWA can be re-enabled after investigating the glob.sync() issue
-      /* PWA DISABLED - Uncomment after fixing glob.sync() issue
-      VitePWA({...}),
-      */
+      // Simplified PWA configuration for reliable builds
+      VitePWA({
+        registerType: "autoUpdate",
+        injectRegister: "auto",
+        devOptions: {
+          enabled: false // Disable in development to avoid build issues
+        },
+        workbox: {
+          // Use only essential glob patterns to reduce sync errors
+          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+          globDirectory: 'dist',
+          navigateFallback: null, // Disable navigate fallback to prevent sw.js errors
+          navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
+          globIgnores: [
+            '**/node_modules/**',
+            '**/sw.js',
+            '**/workbox-*.js',
+            '**/workbox-*.map',
+            '**/registerSW.js'
+          ],
+          cleanupOutdatedCaches: true,
+          skipWaiting: true,
+          clientsClaim: false,
+          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+          
+          // Use runtime caching for better control
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'supabase-cache',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 5 * 60,
+                },
+                networkTimeoutSeconds: 10,
+              },
+            },
+            {
+              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365
+                }
+              }
+            }
+          ]
+        },
+        includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg"],
+        manifest: {
+          name: "Almona Portfolio Forge - Industrial Machinery Solutions",
+          short_name: "Almona",
+          description: "Leading provider of industrial machinery, fabrication services, and technical solutions in Egypt and the Middle East. Now with offline support for service tickets.",
+          theme_color: "#f97316",
+          background_color: "#0d0f12",
+          display: "standalone",
+          orientation: "any",
+          start_url: "/",
+          scope: "/",
+          categories: ["business", "productivity", "utilities"],
+          lang: "ar",
+          dir: "rtl",
+          shortcuts: [
+            {
+              name: "Create Service Ticket",
+              short_name: "New Ticket",
+              description: "Create a new service ticket",
+              url: "/portal/tickets/new",
+              icons: [{ src: "/icons/ticket-icon.png", sizes: "96x96" }]
+            },
+            {
+              name: "Machine Health",
+              short_name: "Health",
+              description: "View machine health dashboard",
+              url: "/portal/health",
+              icons: [{ src: "/icons/health-icon.png", sizes: "96x96" }]
+            }
+          ],
+          icons: [
+            {
+              src: "/icons/pwa-192x192.png",
+              sizes: "192x192",
+              type: "image/png",
+              purpose: "any"
+            },
+            {
+              src: "/icons/pwa-512x512.png",
+              sizes: "512x512", 
+              type: "image/png",
+              purpose: "any"
+            },
+            {
+              src: "/icons/pwa-192x192.png",
+              sizes: "192x192",
+              type: "image/png",
+              purpose: "maskable"
+            },
+            {
+              src: "/icons/pwa-512x512.png",
+              sizes: "512x512",
+              type: "image/png", 
+              purpose: "maskable"
+            }
+          ]
+        }
+      }),
       ...(isProduction && process.env.ANALYZE === 'true'
         ? [
             visualizer({
