@@ -1052,6 +1052,7 @@ The unified ticket model consolidates support, maintenance, and emergency ticket
    cd python_backend
    pip install -r requirements-enhanced.txt
    ```
+new new 
 
 4. **Environment Setup**
    ```bash
