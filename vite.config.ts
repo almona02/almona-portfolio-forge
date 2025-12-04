@@ -569,6 +569,19 @@ export default defineConfig(({ mode }) => {
                 return 'ml-vendor';
               }
               
+              // CRITICAL: Catch any remaining React-dependent libraries BEFORE vendor catch-all
+              // Libraries that import React but weren't caught by earlier checks
+              // This prevents React-dependent code from ending up in vendor chunk
+              if (id.includes('node_modules') && (
+                id.includes('/react') || 
+                id.includes('react-') ||
+                id.includes('@react') ||
+                (id.includes('use') && id.includes('react'))
+              )) {
+                // If it's React-related but not caught above, ensure it's in react-utils
+                return 'react-utils';
+              }
+              
               // Everything else (unknown libraries) - try to split by common patterns
               // If it's a scoped package, try to group by scope
               if (id.includes('node_modules/@')) {
@@ -598,6 +611,7 @@ export default defineConfig(({ mode }) => {
               }
               
               // Everything else goes to vendor (should be much smaller now)
+              // NOTE: Vendor chunk should NOT contain React-dependent code
               return 'vendor';
             }
             
