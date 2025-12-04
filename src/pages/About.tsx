@@ -187,7 +187,11 @@ const About = () => {
       </div>
 
       {/* Company Timeline Section - Full Width Below */}
-      <div className="fade-in-up mb-6 sm:mb-8 md:mb-10"
+      <div className="fade-in-up" 
+        className="mb-6 sm:mb-8 md:mb-10"
+        variants={itemVariants}
+        initial="hidden"
+        animate="visible"
       >
         <div className="relative w-full">
           <div className="absolute inset-0 bg-gradient-to-r from-almona-orange/20 to-almona-light/20 rounded-xl sm:rounded-2xl blur-xl -z-10"></div>
@@ -261,8 +265,12 @@ const About = () => {
         </div>
       </div>
 
-      <div className="fade-in-up mb-6 sm:mb-8 md:mb-10"
-        style={{ animationDelay: '0.4s' }}
+      <div className="fade-in-up"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+        className="mb-6 sm:mb-8 md:mb-10"
       >
         <TeamProfiles />
       </div>

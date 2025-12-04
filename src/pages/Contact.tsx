@@ -173,7 +173,8 @@ const Contact = () => {
             </div>
 
             {/* Contact Info & Map */}
-            <div className="fade-in-up space-y-8"
+            <div className="fade-in-up"
+              className="space-y-8"
             >
               <div className="bg-almona-darker p-8 rounded-xl border border-almona-light/20">
                 <h2 className="text-2xl font-semibold mb-6">
