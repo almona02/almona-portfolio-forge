@@ -448,6 +448,7 @@ export default defineConfig(({ mode }) => {
               
               // TensorFlow - very large, should be lazy loaded
               // CRITICAL: Consolidate ALL tensorflow packages into ml-vendor to prevent split initialization issues
+              // Force deployment rebuild: 2025-12-04
               if (id.includes('@tensorflow/')) {
                 return 'ml-vendor';
               }
