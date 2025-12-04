@@ -11,8 +11,11 @@
     <meta property="og:description" content="Official dealer of YILMAZ machinery in Egypt. Fabricator Pro AI platform for smart manufacturing." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/logo.png" />
-    <meta property="og:url" content="https://almona02.com" />
+    <meta property="og:url" content="https://www.almona02.com" />
     <meta property="og:locale" content="ar_EG" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.almona02.com/" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@almona" />
@@ -27,11 +30,11 @@
         "@graph": [
             {
                 "@type": "Organization",
-                "@id": "https://almona02.com/#organization",
+                "@id": "https://www.almona02.com/#organization",
                 "name": "Almona Co.",
                 "alternateName": "Almona Portfolio Forge",
-                "url": "https://almona02.com",
-                "logo": "https://almona02.com/logo.png",
+                "url": "https://www.almona02.com",
+                "logo": "https://www.almona02.com/logo.png",
                 "description": "Official authorized dealer of YILMAZ industrial machinery in Egypt. Provider of Fabricator Pro AI manufacturing platform.",
                 "foundingDate": "1991",
                 "address": {
@@ -55,10 +58,10 @@
             },
             {
                 "@type": "LocalBusiness",
-                "@id": "https://almona02.com/#localbusiness",
+                "@id": "https://www.almona02.com/#localbusiness",
                 "name": "Almona Co. - YILMAZ Dealer Egypt",
                 "description": "Official YILMAZ machinery dealer in Egypt",
-                "url": "https://almona02.com",
+                "url": "https://www.almona02.com",
                 "telephone": "+20-100-309-7177",
                 "address": {
                     "@id": "https://almona02.com/#organization/address"
@@ -83,12 +86,20 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/pwa-512x512.png">
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-321C22X7E3"></script>
+    <!-- Google Analytics - Deferred until after page load for better performance -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-321C22X7E3');
+      // Defer Google Analytics until after page load
+      window.addEventListener('load', function() {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-321C22X7E3';
+        document.head.appendChild(script);
+        
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-321C22X7E3');
+      });
     </script>
 
     <style>
@@ -103,8 +114,15 @@
       @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
     
+    <!-- Resource hints for faster connections -->
     <link rel="preconnect" href="https://shfsebdncjnncqqnewfj.supabase.co" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    
+    <!-- Prefetch likely next pages -->
+    <link rel="prefetch" href="/fabricator/projects" as="document">
+    <link rel="prefetch" href="/products" as="document">
   </head>
 
   <body>

@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { EmergencyServiceDialog } from "@/components/services/EmergencyServiceDialog";
 import { FormSkeleton } from "@/components/ui/FormSkeleton";
@@ -33,7 +35,6 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/shared/ui/ui/tabs";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
@@ -326,14 +327,19 @@ const Services = () => {
     }
   };
 
+  const location = useLocation();
+  const currentUrl = `https://www.almona02.com${location.pathname}`;
+
   return (
-    <main className="flex-grow pt-20">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="container mx-auto px-4 py-12"
-      >
+    <>
+      <SEO
+        title="Industrial Services - AI-Powered Solutions | Almona Co."
+        description="Comprehensive industrial services including AI equipment advisor, machine sales, technical training, and fabrication services. Industry 4.0 solutions for smart manufacturing."
+        url={currentUrl}
+        keywords="industrial services, AI advisor, machine training, fabrication services, maintenance services Egypt"
+      />
+      <main className="flex-grow pt-20">
+        <div className="container mx-auto px-4 py-12 fade-in-up">
         {/* View Toggle and Language Toggle */}
         <div className="flex justify-between items-center mb-6">
           <ServiceViewToggle viewMode={viewMode} onViewChange={setViewMode} />
@@ -347,17 +353,12 @@ const Services = () => {
           <>
             {/* Enhanced Hero Section with AI Focus */}
             <div className="mb-16 text-center">
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.7 }}
-                className="inline-flex items-center gap-3 mb-6 px-6 py-3 rounded-full bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20"
-              >
+              <div className="inline-flex items-center gap-3 mb-6 px-6 py-3 rounded-full bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20 fade-in-up">
                 <Brain className="h-6 w-6 text-orange-400" />
                 <Badge variant="secondary" className="text-sm font-semibold">
                   {t('services.ai_powered_maintenance')}
                 </Badge>
-              </motion.div>
+              </div>
               
               <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
                 {t('services.title')}
@@ -479,13 +480,7 @@ const Services = () => {
 
           {/* AI-Powered Services Overview */}
           <TabsContent value="overview">
-            <motion.div
-              key="overview"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-8"
-            >
+            <div className="space-y-8 fade-in-up">
               {/* Predictive Alerts Section */}
               <Card className="bg-gradient-to-br from-gray-900 to-black border-orange-500/20">
                 <CardHeader>
@@ -500,11 +495,9 @@ const Services = () => {
                 <CardContent>
                   <div className="space-y-4">
                     {predictiveAlerts.map((alert) => (
-                      <motion.div
+                      <div
                         key={alert.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className={`p-4 rounded-lg border ${
+                        className={`p-4 rounded-lg border fade-in-up ${
                           alert.severity === 'critical' ? 'border-red-500/30 bg-red-500/10' :
                           alert.severity === 'high' ? 'border-orange-500/30 bg-orange-500/10' :
                           'border-yellow-500/30 bg-yellow-500/10'
@@ -546,7 +539,7 @@ const Services = () => {
                             {language === 'ar' ? 'جدولة' : 'Schedule'}
                           </Button>
                         </div>
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
                 </CardContent>
@@ -622,10 +615,9 @@ const Services = () => {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {machineHealth.map((machine) => (
-                      <motion.div
+                      <div
                         key={machine.machineId}
-                        whileHover={{ scale: 1.02 }}
-                        className={`p-4 rounded-lg border ${
+                        className={`p-4 rounded-lg border transition-transform hover:scale-[1.02] ${
                           machine.status === 'optimal' ? 'border-green-500/30' :
                           machine.status === 'degraded' ? 'border-yellow-500/30' :
                           machine.status === 'maintenance_required' ? 'border-orange-500/30' :
@@ -673,65 +665,44 @@ const Services = () => {
                             ))}
                           </div>
                         </div>
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            </div>
           </TabsContent>
 
           {/* Predictive Maintenance Engine */}
           <TabsContent value="predictive">
-            <motion.div
-              key="predictive"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
+            <div className="fade-in-up">
               <Suspense fallback={<FormSkeleton />}>
                 <PredictiveMaintenanceEngine />
               </Suspense>
-            </motion.div>
+            </div>
           </TabsContent>
 
           {/* Machine Registration */}
           <TabsContent value="register">
-            <motion.div
-              key="register"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
+            <div className="fade-in-up">
               <Suspense fallback={<FormSkeleton />}>
                 <MachineRegistrationEnhanced />
               </Suspense>
-            </motion.div>
+            </div>
           </TabsContent>
 
           {/* AI Maintenance Dashboard */}
           <TabsContent value="dashboard">
-            <motion.div
-              key="dashboard"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
+            <div className="fade-in-up">
               <Suspense fallback={<div className="space-y-4"><FormSkeleton /><FormSkeleton /></div>}>
                 <MaintenanceDashboard />
               </Suspense>
-            </motion.div>
+            </div>
           </TabsContent>
 
           {/* Business KPIs for Services */}
           <TabsContent value="service-kpis">
-            <motion.div
-              key="service-kpis"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-8"
-            >
+            <div className="space-y-8 fade-in-up">
               {/* KPI Highlights */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card className="bg-gradient-to-br from-gray-900 to-black border-green-500/20">
@@ -787,29 +758,23 @@ const Services = () => {
                   <BusinessKPIDashboard />
                 </Suspense>
               </div>
-            </motion.div>
+            </div>
           </TabsContent>
 
           {/* ROI Analytics */}
           <TabsContent value="roi-analytics">
-            <motion.div
-              key="roi-analytics"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-8"
-            >
+            <div className="space-y-8 fade-in-up">
               <div className="bg-gradient-to-br from-gray-900 to-black border border-orange-500/20 rounded-xl p-6">
                 <Suspense fallback={<FormSkeleton />}>
                   <ServiceROIAnalytics />
                 </Suspense>
               </div>
-            </motion.div>
+            </div>
           </TabsContent>
         </Tabs>
           </>
         )}
-      </motion.div>
+      </div>
 
       {/* Dialogs */}
       <TicketWizardDialog
@@ -824,7 +789,8 @@ const Services = () => {
         open={operatorTrainingOpen}
         onOpenChange={setOperatorTrainingOpen}
       />
-    </main>
+      </main>
+    </>
   );
 };
 

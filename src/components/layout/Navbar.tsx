@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import { 
   Menu, 
   X, 
@@ -353,14 +352,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                     <ChevronDown className={`h-4 w-4 transition-transform ${activeDropdown === item.name ? 'rotate-180' : ''}`} />
                   </button>
 
-                  <AnimatePresence>
-                    {activeDropdown === item.name && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute top-full left-0 mt-2 w-72 xl:w-80 2xl:w-96 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl overflow-hidden"
+                  {activeDropdown === item.name && (
+                      <div
+                        className="absolute top-full left-0 mt-2 w-72 xl:w-80 2xl:w-96 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl overflow-hidden navbar-dropdown-enter"
                         style={{ zIndex: 10000 }}
                         onMouseEnter={() => handleDropdownEnter(item.name)}
                         onMouseLeave={() => handleDropdownLeave(item.name)}
@@ -388,9 +382,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                             );
                           })}
                         </div>
-                      </motion.div>
+                      </div>
                     )}
-                  </AnimatePresence>
                 </div>
               );
             })}
@@ -413,14 +406,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                 <ChevronDown className={`h-3 w-3 xl:h-3.5 xl:w-3.5 transition-transform ${activeDropdown === 'region' ? 'rotate-180' : ''}`} />
               </button>
 
-              <AnimatePresence>
-                {activeDropdown === 'region' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-full mt-2 w-72 xl:w-80 2xl:w-96 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl overflow-hidden"
+              {activeDropdown === 'region' && (
+                  <div
+                    className="absolute right-0 top-full mt-2 w-72 xl:w-80 2xl:w-96 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl overflow-hidden navbar-dropdown-enter"
                     style={{ zIndex: 10000 }}
                     onMouseEnter={() => handleDropdownEnter('region')}
                     onMouseLeave={() => handleDropdownLeave('region')}
@@ -448,9 +436,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                         ))}
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
             </div>
 
             {/* Quote Cart */}
@@ -481,14 +468,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                   <ChevronDown className={`h-3 w-3 xl:h-3 xl:w-3 2xl:h-3.5 2xl:w-3.5 transition-transform ${activeDropdown === "user" ? "rotate-180" : ""}`} />
                 </button>
 
-                <AnimatePresence>
-                  {activeDropdown === "user" && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full mt-2 w-56 xl:w-64 2xl:w-72 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl overflow-hidden"
+                {activeDropdown === "user" && (
+                    <div
+                      className="absolute right-0 top-full mt-2 w-56 xl:w-64 2xl:w-72 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl overflow-hidden navbar-dropdown-enter"
                       style={{ zIndex: 10000 }}
                     >
                       <div className="p-3 border-b border-orange-500/20">
@@ -525,9 +507,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                           <span>Logout</span>
                         </button>
                       </div>
-                    </motion.div>
+                    </div>
                   )}
-                </AnimatePresence>
               </div>
             ) : (
               <div className="flex items-center gap-1.5 xl:gap-2 flex-shrink-0">
@@ -561,14 +542,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
         </div>
 
         {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="lg:hidden border-t border-orange-500/30 bg-black/98 backdrop-blur-xl max-h-[calc(100vh-4rem)] overflow-y-auto"
+        {isMobileMenuOpen && (
+            <div
+              className="lg:hidden border-t border-orange-500/30 bg-black/98 backdrop-blur-xl max-h-[calc(100vh-4rem)] overflow-y-auto mobile-menu-enter"
             >
               <div className="py-4 space-y-1 px-2">
                 {navItems.map((item) => (
@@ -605,14 +581,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                           <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 transition-transform ${activeDropdown === item.name ? "rotate-180" : ""}`} />
                         </button>
 
-                        <AnimatePresence>
-                          {activeDropdown === item.name && (
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: 'auto' }}
-                              exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.2 }}
-                              className="ml-4 sm:ml-6 mt-1 space-y-1 overflow-hidden"
+                        {activeDropdown === item.name && (
+                            <div
+                              className="ml-4 sm:ml-6 mt-1 space-y-1 overflow-hidden mobile-menu-enter"
                             >
                               {item.items?.map((subItem) => (
                                 <Link
@@ -627,9 +598,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                                   )}
                                 </Link>
                               ))}
-                            </motion.div>
+                            </div>
                           )}
-                        </AnimatePresence>
                       </div>
                     )}
                   </div>
@@ -699,9 +669,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                   )}
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
       </div>
     </nav>
   );

@@ -14,4 +14,4 @@ Allow: /fabricator-pro-software-en
 Allow: /fabricator-pro-software-en.html
 Disallow: /admin
 Disallow: /api
-Sitemap: https://almona02.com/sitemap.xml
+Sitemap: https://www.almona02.com/sitemap.xml

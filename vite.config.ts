@@ -230,12 +230,39 @@ export default defineConfig(({ mode }) => {
       target: "esnext",
       minify: isProduction ? "esbuild" : false,
       sourcemap: false, // Disable sourcemaps to speed up build
-      // Note: react-vendor is intentionally large (3.9MB) to prevent module loading errors
-      // This is acceptable as it contains React core and all React-dependent libraries
-      chunkSizeWarningLimit: 5000, // Increased to accommodate react-vendor chunk
+      // Note: After optimization, react-core should be ~200-300KB (React + ReactDOM only)
+      // Other React libraries are split into separate chunks for better caching
+      chunkSizeWarningLimit: 1500, // Further reduced to catch large chunks
       assetsInlineLimit: 2048, // Reduced to prevent large inline assets
       reportCompressedSize: false,
       cssCodeSplit: true, // Enable CSS code splitting to reduce main bundle size
+      // Optimize chunk loading
+      modulePreload: {
+        polyfill: true,
+        resolveDependencies: (filename, deps) => {
+          // Preload critical chunks only - avoid preloading heavy vendors
+          if (filename.includes('index')) {
+            return deps.filter(dep => 
+              (dep.includes('react-core') || 
+               dep.includes('react-router') ||
+               dep.includes('react-utils') ||
+               dep.includes('index')) &&
+              // Exclude heavy vendors from preload
+              !dep.includes('three-vendor') &&
+              !dep.includes('three-ecosystem-vendor') &&
+              !dep.includes('pdf-vendor') &&
+              !dep.includes('ml-vendor') &&
+              !dep.includes('ai-vendor') &&
+              !dep.includes('charts-vendor') &&
+              !dep.includes('file-vendor') &&
+              !dep.includes('maps-vendor') &&
+              !dep.includes('fabricator-components') &&
+              !dep.includes('vendor') // Exclude large vendor chunk
+            );
+          }
+          return deps;
+        }
+      },
       // Ensure proper module resolution for React and CommonJS packages like 'long'
       commonjsOptions: {
         include: [/node_modules/, /long/],
@@ -320,49 +347,76 @@ export default defineConfig(({ mode }) => {
           manualChunks: (id: string) => {
             // CRITICAL: Check React FIRST - this ensures react-vendor is created first
             if (id.includes('node_modules')) {
-              // React core packages - MUST be first check
+              // React core packages ONLY - keep this minimal
               if (
                 id.includes('/react/') || 
                 id.includes('/react-dom/') || 
                 id.includes('react/jsx-runtime') ||
                 id.includes('react/jsx-dev-runtime')
               ) {
-                return 'react-vendor';
+                return 'react-core';
               }
-              // React-dependent packages - must be with React
+              
+              // React Router - essential for routing
+              if (id.includes('react-router')) {
+                return 'react-router';
+              }
+              
+              // React Query - data fetching
+              if (id.includes('@tanstack/react-query')) {
+                return 'react-query';
+              }
+              
+              // Heavy charting libraries - split out
+              if (id.includes('recharts') || id.includes('chart.js') || id.includes('react-chartjs')) {
+                return 'charts-vendor';
+              }
+              
+              // Heavy form libraries - split out
+              if (id.includes('react-hook-form') || id.includes('zod') || id.includes('@hookform')) {
+                return 'forms-vendor';
+              }
+              
+              // Heavy UI libraries - split out
+              if (id.includes('@radix-ui') || id.includes('@radix')) {
+                return 'ui-vendor';
+              }
+              
+              // React Helmet - SEO
+              if (id.includes('react-helmet')) {
+                return 'react-utils';
+              }
+              
+              // React i18n - internationalization
+              if (id.includes('react-i18next') || id.includes('i18next')) {
+                return 'react-utils';
+              }
+              
+              // TanStack Table and Virtual - separate chunk
+              if (id.includes('@tanstack/react-table') || id.includes('@tanstack/react-virtual')) {
+                return 'table-vendor';
+              }
+              
+              // Other React utilities - smaller ones together
               if (
-                id.includes('react-router') ||
-                id.includes('react-helmet') ||
-                id.includes('react-reconciler') ||
-                // id.includes('@react-three') || // Split Three out
                 id.includes('react-') ||
                 id.includes('/react') ||
-                id.includes('react-chartjs') ||
-                id.includes('@tanstack/react') ||
-                // id.includes('framer-motion') || // Split framer-motion out
                 id.includes('next-themes') ||
                 id.includes('sonner') ||
                 id.includes('zustand') ||
                 id.includes('embla-carousel-react') ||
                 id.includes('react-content-loader') ||
                 id.includes('react-day-picker') ||
-                id.includes('react-hook-form') ||
-                id.includes('react-i18next') ||
                 id.includes('react-media-recorder') ||
                 id.includes('react-resizable-panels') ||
                 id.includes('react-window') ||
-                id.includes('recharts') ||
                 id.includes('vaul') ||
-                // id.includes('lucide-react') || // Split lucide out
                 id.includes('cmdk') ||
                 id.includes('input-otp') ||
                 id.includes('markdown-to-jsx') ||
-                id.includes('@vercel/analytics/react') ||
-                id.includes('@radix-ui') ||
-                id.includes('@radix') ||
-                id.includes('chart.js')
+                id.includes('@vercel/analytics/react')
               ) {
-                return 'react-vendor';
+                return 'react-utils';
               }
               // PDF libraries - ensure pako loads first
               if (id.includes('pako')) {
@@ -387,20 +441,155 @@ export default defineConfig(({ mode }) => {
               if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
                 return 'utils-vendor';
               }
-              // Pure JS utilities with no module dependencies
+              // Supabase - large library, split out
+              if (id.includes('@supabase/supabase-js')) {
+                return 'supabase-vendor';
+              }
+              
+              // TensorFlow - very large, should be lazy loaded
+              if (id.includes('@tensorflow/tfjs')) {
+                return 'ml-vendor';
+              }
+              
+              // i18next - internationalization
+              if (id.includes('i18next') || id.includes('i18next-browser')) {
+                return 'i18n-vendor';
+              }
+              
+              // Maps library
+              if (id.includes('maplibre-gl')) {
+                return 'maps-vendor';
+              }
+              
+              // Markdown libraries
+              if (id.includes('markdown-it') || id.includes('@uiw/react-md') || id.includes('@uiw/react-markdown')) {
+                return 'markdown-vendor';
+              }
+              
+              // Excel/File processing - can be lazy loaded
+              if (id.includes('exceljs') || id.includes('file-saver')) {
+                return 'file-vendor';
+              }
+              
+              // QR Code
+              if (id.includes('qrcode')) {
+                return 'qrcode-vendor';
+              }
+              
+              // AI/ML libraries - very large, should be lazy loaded
+              if (id.includes('@google/generative-ai') || id.includes('@huggingface/inference')) {
+                return 'ai-vendor';
+              }
+              
+              // Three.js ecosystem - split from core three
+              if (
+                id.includes('@react-spring/three') ||
+                id.includes('@react-three/xr') ||
+                id.includes('@use-gesture/react') ||
+                id.includes('ammo.js')
+              ) {
+                return 'three-ecosystem-vendor';
+              }
+              
+              // Database libraries (shouldn't be in browser, but handle if present)
+              if (id.includes('/pg/') || id.includes('node_modules/pg')) {
+                return 'db-vendor';
+              }
+              
+              // Web vitals and analytics
+              if (id.includes('web-vitals') || id.includes('@vercel/analytics')) {
+                return 'analytics-vendor';
+              }
+              
+              // Tailwind utilities
+              if (id.includes('tailwindcss-rtl') || id.includes('tailwindcss-animate') || id.includes('class-variance-authority')) {
+                return 'tailwind-vendor';
+              }
+              
+              // Small utilities - keep together
               if (
                 id.includes('axios') ||
-                id.includes('exceljs') ||
-                id.includes('qrcode') ||
-                id.includes('file-saver') ||
                 id.includes('dompurify') ||
                 id.includes('jwt-decode') ||
-                id.includes('zxcvbn')
+                id.includes('zxcvbn') ||
+                id.includes('lz-string') ||
+                id.includes('dxf-writer')
               ) {
-                return 'vendor';
+                return 'utils-vendor';
               }
-              // Everything else goes to react-vendor to ensure proper loading order
-              return 'react-vendor';
+              
+              // Check for other known large libraries before catch-all
+              // React Three Fiber dependencies (if not caught above)
+              if (id.includes('@react-three/drei') || id.includes('@react-three/postprocessing')) {
+                return 'three-ecosystem-vendor';
+              }
+              
+              // Transitive dependencies - common large ones
+              // @floating-ui (Radix UI dependency) - positioning library
+              if (id.includes('@floating-ui')) {
+                return 'ui-vendor'; // Group with Radix UI
+              }
+              
+              // @use-gesture (Three.js ecosystem dependency)
+              if (id.includes('@use-gesture')) {
+                return 'three-ecosystem-vendor';
+              }
+              
+              // @remix-run/router (React Router dependency)
+              if (id.includes('@remix-run/router')) {
+                return 'react-router';
+              }
+              
+              // @monogrid (fullpage.js dependency) - if used
+              if (id.includes('@monogrid')) {
+                return 'utils-vendor';
+              }
+              
+              // @babel (runtime helpers) - should be small
+              if (id.includes('@babel/runtime')) {
+                return 'utils-vendor';
+              }
+              
+              // @ungap (polyfills)
+              if (id.includes('@ungap')) {
+                return 'utils-vendor';
+              }
+              
+              // @mediapipe (if used for ML/AR features)
+              if (id.includes('@mediapipe')) {
+                return 'ml-vendor';
+              }
+              
+              // Everything else (unknown libraries) - try to split by common patterns
+              // If it's a scoped package, try to group by scope
+              if (id.includes('node_modules/@')) {
+                const scopeMatch = id.match(/node_modules\/(@[^/]+)/);
+                if (scopeMatch) {
+                  const scope = scopeMatch[1];
+                  // Group by scope for unknown scoped packages
+                  if (!scope.includes('radix') && 
+                      !scope.includes('tanstack') && 
+                      !scope.includes('react-three') &&
+                      !scope.includes('uiw') &&
+                      !scope.includes('supabase') &&
+                      !scope.includes('tensorflow') &&
+                      !scope.includes('google') &&
+                      !scope.includes('huggingface') &&
+                      !scope.includes('vercel') &&
+                      !scope.includes('floating-ui') &&
+                      !scope.includes('use-gesture') &&
+                      !scope.includes('remix-run') &&
+                      !scope.includes('monogrid') &&
+                      !scope.includes('babel') &&
+                      !scope.includes('ungap') &&
+                      !scope.includes('mediapipe')) {
+                    return `scope-${scope.replace('@', '').replace('/', '-')}-vendor`;
+                  }
+                }
+              }
+              
+              // Everything else goes to vendor (should be much smaller now)
+              return 'vendor';
             }
             
             // Fabricator-specific chunks
@@ -443,9 +632,32 @@ export default defineConfig(({ mode }) => {
               return 'fabricator-components';
             }
             
-            // Algorithms directory
+            // Algorithms directory - heavy computation
             if (id.includes('algorithms/')) {
               return 'fabricator-algorithms';
+            }
+            
+            // Pages - split heavy pages
+            if (id.includes('pages/')) {
+              // Heavy pages that should be lazy loaded
+              if (
+                id.includes('FabricatorWorkflow') ||
+                id.includes('FabricationServices') ||
+                id.includes('CustomerPortal') ||
+                id.includes('AdminDashboard')
+              ) {
+                return undefined; // Let them be their own chunks
+              }
+              // Products and Services are already large - keep separate
+              if (id.includes('Products.tsx')) {
+                return undefined;
+              }
+              if (id.includes('Services.tsx')) {
+                return undefined;
+              }
+              if (id.includes('Shop.tsx')) {
+                return undefined;
+              }
             }
             
             // Fabricator context and workspace
@@ -462,6 +674,15 @@ export default defineConfig(({ mode }) => {
               id.includes('lib/reports/')
             ) {
               return 'fabricator-reports';
+            }
+            
+            // Route-specific chunks for better code splitting
+            if (id.includes('pages/Projects') || id.includes('components/fabricator/PositionsGrid')) {
+              return 'fabricator-projects';
+            }
+            
+            if (id.includes('components/fabricator/FabricatorWorkspaceLayout')) {
+              return 'fabricator-layout';
             }
             
             // Default: no manual chunk (let Vite decide)
@@ -499,7 +720,13 @@ export default defineConfig(({ mode }) => {
 
     esbuild: {
       drop: isProduction ? ["console", "debugger"] : [],
-      target: "es2020"
+      target: "es2020",
+      // Improved minification for production
+      minifyIdentifiers: isProduction,
+      minifySyntax: isProduction,
+      minifyWhitespace: isProduction,
+      legalComments: 'none', // Remove comments in production
+      treeShaking: true,
     },
 
     experimental: {

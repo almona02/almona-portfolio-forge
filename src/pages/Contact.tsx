@@ -8,7 +8,8 @@ import { Textarea } from "@/shared/ui/ui/textarea";
 import { Label } from "@/shared/ui/ui/label";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import { motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
+import SEO from "@/components/SEO";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -44,15 +45,20 @@ const Contact = () => {
     }, 1500);
   };
 
+  const location = useLocation();
+  const currentUrl = `https://www.almona02.com${location.pathname}`;
+
   return (
-    <main className="flex-grow pt-20">
+    <>
+      <SEO
+        title="Contact Us - Get in Touch | Almona Co."
+        description="Contact Almona Co. for industrial machinery inquiries, technical support, and business partnerships. Official YILMAZ dealer in Egypt."
+        url={currentUrl}
+        keywords="contact Almona, industrial machinery contact, YILMAZ dealer contact Egypt"
+      />
+      <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 py-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-16 text-center"
-          >
+          <div className="mb-16 text-center fade-in-up">
             <h1 className="text-4xl font-bold mb-4">
               <span className="text-gradient-orange">Contact Us</span>
             </h1>
@@ -60,16 +66,11 @@ const Contact = () => {
               Have questions or need assistance? Our team is ready to help you
               with any inquiries.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-almona-darker p-8 rounded-xl border border-almona-light/20"
-            >
+            <div className="bg-almona-darker p-8 rounded-xl border border-almona-light/20 fade-in-up">
               <h2 className="text-2xl font-semibold mb-6">Send us a message</h2>
 
               {submitSuccess && (
@@ -169,14 +170,10 @@ const Contact = () => {
                   {isSubmitting ? "Sending..." : "Send Message"}
                 </Button>
               </form>
-            </motion.div>
+            </div>
 
             {/* Contact Info & Map */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="space-y-8"
+            <div className="fade-in-up space-y-8"
             >
               <div className="bg-almona-darker p-8 rounded-xl border border-almona-light/20">
                 <h2 className="text-2xl font-semibold mb-6">
@@ -269,10 +266,11 @@ const Contact = () => {
                   Explore Our Neighborhood
                 </Button>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </main>
+    </>
   );
 };
 
