@@ -172,7 +172,7 @@ export class AdaptiveSolver {
     job: CuttingJob,
     profiles: Profile[],
     algorithm: 'greedy' | 'linear' | 'genetic',
-    complexity: JobComplexity
+    _complexity: JobComplexity
   ): Promise<CuttingPlan[]> {
     const allPlans: CuttingPlan[] = [];
 
@@ -283,8 +283,8 @@ export class AdaptiveSolver {
    */
   protected calculateOptimizationResult(
     cuttingPlan: CuttingPlan[],
-    profiles: Profile[],
-    durationMs: number
+    _profiles: Profile[],
+    _durationMs: number
   ): OptimizationResult {
     let totalMaterialCost = 0;
     let totalWaste = 0;
