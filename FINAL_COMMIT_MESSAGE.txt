@@ -1,0 +1,97 @@
+fix: resolve deployment blockers and security vulnerabilities
+
+## Critical Fixes
+
+### 1. TensorFlow.js Circular Dependency (Production Breaking)
+- **Error**: `ReferenceError: Cannot access 'oN' before initialization` in ml-vendor chunk
+- **Solution**: Exclude egyptian-loading-strategy from vendor chunks in vite.config.ts
+- **Impact**: Prevents runtime crash on production deployment
+
+### 2. CI/CD Linting Failures (Blocking Deployment)
+Fixed 12 critical linting errors across 6 files:
+- src/lib/catalog/UnifiedProfileCatalog.ts: const vs let
+- src/components/services/PackageCalculator.tsx: const vs let
+- src/algorithms/*.ts: Prefixed unused parameters with underscore
+
+### 3. Security Pipeline Failure (Python Dependencies)
+- **Error**: TensorFlow 2.15.0 incompatible with Python 3.12
+- **Solution**: Updated to TensorFlow 2.17.1 (Python 3.11+ compatible)
+- **Bonus**: Updated ONNX 1.15.0 → 1.17.0 (fixes 4 security vulnerabilities)
+
+### 4. GitHub Actions Python Version Mismatch
+- **Issue**: Security pipeline using Python 3.12 (default)
+- **Solution**: Explicitly set Python 3.11 in security.yml
+- **Benefit**: Consistent with production environment
+
+## Security Fixes (Dependabot Alerts)
+
+### Resolved
+- ✅ #114: ONNX Arbitrary File Overwrite (High)
+- ✅ #116: ONNX Path Traversal (High)
+- ✅ #117: ONNX Directory Traversal (High)
+- ✅ #115: ONNX Out-of-bounds Read (Moderate)
+
+### Remaining (Frontend - Separate PR)
+- ⏳ #111: glob CLI Command Injection (High)
+- ⏳ #113: mdast-util-to-hast XSS (Moderate)
+- ⏳ #101: vite server.fs.deny bypass (Moderate)
+- ⏳ #109: js-yaml Prototype Pollution (Moderate)
+
+## Build Verification
+
+### Before Fixes
+```
+❌ Frontend Build: FAILED (12 linting errors)
+❌ Security Pipeline: FAILED (Python version mismatch)
+❌ Production: Runtime error in ml-vendor chunk
+❌ Dependabot: 8 security alerts
+```
+
+### After Fixes
+```
+✅ Frontend Build: SUCCESS (34.21s, 0 critical errors)
+✅ Security Pipeline: Should PASS (Python 3.11, updated deps)
+✅ Production: No runtime errors
+✅ Dependabot: 4 alerts resolved (50% reduction)
+```
+
+## Testing
+- [x] npm run build - Completes successfully
+- [x] npm run lint - No critical errors
+- [x] npm run preview - Server runs correctly
+- [x] Chunk analysis - No circular dependencies
+- [x] Python deps - Compatible with Python 3.11
+
+## Breaking Changes
+None - All changes are internal fixes and compatible updates
+
+## Files Changed
+Frontend (Linting & Build):
+- src/algorithms/GlassNestingCPSolver.ts
+- src/algorithms/adaptiveSolver.ts
+- src/algorithms/massProductionOptimizer.ts
+- src/algorithms/productionScheduling/geneticScheduleOptimizer.ts
+- src/components/services/PackageCalculator.tsx
+- src/lib/catalog/UnifiedProfileCatalog.ts
+
+Backend (Security):
+- python_backend/requirements.txt (TensorFlow 2.17.1, ONNX 1.17.0)
+
+CI/CD:
+- .github/workflows/security.yml (Python 3.11)
+
+Documentation:
+- FIX_SUMMARY.md
+- SECURITY_FIX_SUMMARY.md
+- DEPLOYMENT_FIX_COMPLETE.md
+
+## Deployment Impact
+- Vercel: Should deploy successfully
+- GitHub Actions: All workflows should pass
+- Security: 4 high/moderate vulnerabilities patched
+- Performance: No impact (same bundle sizes)
+
+Closes #114, #115, #116, #117
+
+Co-authored-by: AI Assistant <assistant@cursor.com>
+
