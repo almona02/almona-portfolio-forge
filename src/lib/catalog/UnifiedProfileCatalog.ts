@@ -34,7 +34,7 @@ export class UnifiedProfileCatalog {
 
   static async getAllSystems(userId?: string): Promise<CatalogSystem[]> {
     let systems: CatalogSystem[] = [];
-    let userProfilesMap: Map<string, any> = new Map();
+    const userProfilesMap: Map<string, any> = new Map();
 
     // Pre-fetch user profiles if userId is provided to use their roles
     if (userId) {

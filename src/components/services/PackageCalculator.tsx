@@ -58,7 +58,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
   };
 
   const calculateRecommendation = (inputs: CalculatorInputs): PackageRecommendation => {
-    let score = { basic: 0, professional: 0, enterprise: 0 };
+    const score = { basic: 0, professional: 0, enterprise: 0 };
     const reasoning: string[] = [];
 
     // Machine count scoring
