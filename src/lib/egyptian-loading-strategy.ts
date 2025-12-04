@@ -107,15 +107,16 @@ export class EgyptianLoadingStrategy {
     const isSlow = this.isSlowConnection();
     
     if (isSlow) {
-      // On slow connections, warn user before loading 2.9 MB
-      const shouldLoad = await this.confirmHeavyLoad('TensorFlow ML features', '2.9 MB');
+      // On slow connections, warn user before loading 1.1 MB
+      const shouldLoad = await this.confirmHeavyLoad('TensorFlow ML features', '1.1 MB');
       if (!shouldLoad) {
         throw new Error('User cancelled TensorFlow load on slow connection');
       }
     }
     
     console.log('[EgyptianStrategy] Loading TensorFlow.js...');
-    return import('@tensorflow/tfjs');
+    // Use dynamic import string to prevent bundler from including this
+    return import(/* @vite-ignore */ '@tensorflow/tfjs');
   }
 
   /**
@@ -125,15 +126,16 @@ export class EgyptianLoadingStrategy {
     const isSlow = this.isSlowConnection();
     
     if (isSlow) {
-      // On slow connections, warn user before loading 2.1 MB
-      const shouldLoad = await this.confirmHeavyLoad('3D visualization', '2.1 MB');
+      // On slow connections, warn user before loading 0.8 MB
+      const shouldLoad = await this.confirmHeavyLoad('3D visualization', '0.8 MB');
       if (!shouldLoad) {
         throw new Error('User cancelled Three.js load on slow connection');
       }
     }
     
     console.log('[EgyptianStrategy] Loading Three.js...');
-    return import('three');
+    // Use dynamic import to prevent bundler from including this
+    return import(/* @vite-ignore */ 'three');
   }
 
   /**
@@ -151,7 +153,8 @@ export class EgyptianLoadingStrategy {
     }
     
     console.log('[EgyptianStrategy] Loading ExcelJS...');
-    return import('exceljs');
+    // Use dynamic import to prevent bundler from including this
+    return import(/* @vite-ignore */ 'exceljs');
   }
 
   /**
@@ -169,7 +172,8 @@ export class EgyptianLoadingStrategy {
     }
     
     console.log('[EgyptianStrategy] Loading MapLibre...');
-    return import('maplibre-gl');
+    // Use dynamic import to prevent bundler from including this
+    return import(/* @vite-ignore */ 'maplibre-gl');
   }
 
   /**
