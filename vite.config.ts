@@ -447,9 +447,16 @@ export default defineConfig(({ mode }) => {
               }
               
               // TensorFlow - very large, should be lazy loaded
-              // CRITICAL: Consolidate ALL tensorflow packages into ml-vendor to prevent split initialization issues
+              // CRITICAL: Consolidate ALL tensorflow packages AND their dependencies into ml-vendor
+              // to prevent split initialization issues. This includes 'long' which is a critical dependency.
               // Force deployment rebuild: 2025-12-04
               if (id.includes('@tensorflow/')) {
+                return 'ml-vendor';
+              }
+              
+              // CRITICAL: 'long' package is a dependency of TensorFlow and MUST be in the same chunk
+              // to prevent initialization order issues. Check this BEFORE other utility checks.
+              if (id.includes('/long/') || id.includes('node_modules/long')) {
                 return 'ml-vendor';
               }
               
