@@ -1,0 +1,77 @@
+[
+  {
+    "id": "egypt_slide_2_track",
+    "name": "Standard 2-Sash Sliding (Balcony)",
+    "system_type": "sliding",
+    "topology": {
+      "rows": 1,
+      "cols": 2,
+      "patterns": [["sliding", "sliding"]]
+    },
+    "constraints": {
+      "min_width": 1500,
+      "max_width": 3000,
+      "min_height": 1800,
+      "max_height": 2600,
+      "max_sash_ratio": 2.5,
+      "allowed_profile_systems": ["generic", "alumil_m9660", "yilmaz_w60", "generic_slide"]
+    },
+    "defaults": {
+      "width": 2000,
+      "height": 2100
+    }
+  },
+  {
+    "id": "egypt_casement_single",
+    "name": "Single Turn Window (Bathroom/Kitchen)",
+    "system_type": "casement",
+    "topology": {
+      "rows": 1,
+      "cols": 1,
+      "patterns": [["sash"]]
+    },
+    "constraints": {
+      "min_width": 400,
+      "max_width": 1000,
+      "min_height": 500,
+      "max_height": 1600,
+      "max_sash_ratio": 3.0,
+      "max_sash_weight_kg": 80,
+      "allowed_profile_systems": ["generic", "alumil_m11000", "caluminium_rock60"]
+    },
+    "defaults": {
+      "width": 600,
+      "height": 800
+    }
+  },
+  {
+    "id": "egypt_balcony_combo_A",
+    "name": "Fixed + Door (Living Room Balcony)",
+    "system_type": "casement",
+    "topology": {
+      "rows": 1,
+      "cols": 2,
+      "patterns": [["fixed", "sash"]]
+    },
+    "constraints": {
+      "min_width": 1400,
+      "max_width": 2600,
+      "min_height": 2000,
+      "max_height": 2600,
+      "cell_constraints": [
+        {
+          "col_index": 1,
+          "min_width": 700,
+          "max_width": 1000
+        }
+      ],
+      "allowed_profile_systems": ["generic", "alumil_m11000", "caluminium_balcony"]
+    },
+    "defaults": {
+      "width": 1800,
+      "height": 2200
+    }
+  }
+]
+
+

@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: detect-private-key
+      
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.7
+    hooks:
+      - id: bandit
+        args: ["-r", "python_backend/", "-ll", "--skip", "B101"]
+        
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.16.1
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+        
+  - repo: local
+    hooks:
+      - id: check-mlflow
+        name: Check for MLflow regressions
+        entry: bash
+        args: ["-c", "! grep -r 'mlflow' python_backend/ --include='*.py'"]
+        language: system
+        pass_filenames: false
+

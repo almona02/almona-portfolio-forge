@@ -75,9 +75,9 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           // Use only essential glob patterns to reduce sync errors
-          globPatterns: ['**/*.{js,css,html}'],
+          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
           globDirectory: 'dist',
-          navigateFallback: '/index.html',
+          navigateFallback: null, // Disable navigate fallback to prevent sw.js errors
           navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
           globIgnores: [
             '**/node_modules/**',
@@ -364,7 +364,10 @@ export default defineConfig(({ mode }) => {
               ) {
                 return 'react-vendor';
               }
-              // PDF libraries
+              // PDF libraries - ensure pako loads first
+              if (id.includes('pako')) {
+                return 'compression-vendor';
+              }
               if (id.includes('pdf-lib') || id.includes('pdfjs')) {
                 return 'pdf-vendor';
               }
@@ -478,7 +481,8 @@ export default defineConfig(({ mode }) => {
         "react-router-dom",
         "exceljs",
         "long", // Explicitly include long package for TensorFlow.js
-        "seedrandom" // Include seedrandom to fix require errors
+        "seedrandom", // Include seedrandom to fix require errors
+        "pako" // Include pako for PDF compression (must load before pdfjs)
       ],
       exclude: ["@google/generative-ai","@huggingface/inference","@tensorflow/tfjs","three"],
       // Force re-optimization to ensure long package is properly handled

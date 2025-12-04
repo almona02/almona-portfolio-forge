@@ -120,7 +120,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     { name: "Projects", path: "/fabricator/projects", icon: <Factory className="h-4 w-4" /> },
     { name: "Inventory", path: "/fabricator/inventory", icon: <Package className="h-4 w-4" /> },
     { name: "Profiles & Accessories", path: "/fabricator-workflow#inventory", icon: <Scissors className="h-4 w-4" /> },
-    { name: "Quick Reports", path: "/reports", icon: <FileText className="h-4 w-4" /> },
+    { name: "Reports Hub", path: "/fabricator/reports", icon: <BarChart3 className="h-4 w-4" /> },
     { name: "Machines", path: "/machines", icon: <Cpu className="h-4 w-4" /> },
     { name: "Settings & Prices", path: "/pricing-settings", icon: <Settings className="h-4 w-4" /> },
     { name: "Commercial Offers", path: "/offers", icon: <FileText className="h-4 w-4" /> },
@@ -133,7 +133,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     { name: "New Project", action: () => navigate('/fabricator-workflow?new=true'), icon: Zap },
     { name: "Machine Status", action: () => navigate('/machine-status'), icon: Factory },
     { name: "Inventory Check", action: () => navigate('/fabricator/inventory'), icon: Package },
-    { name: "Quality Reports", action: () => navigate('/quality-reports'), icon: Brain }
+    { name: "Reports Hub", action: () => navigate('/fabricator/reports'), icon: BarChart3 }
   ];
 
   // Global fabricator nav model – used by the search overlay

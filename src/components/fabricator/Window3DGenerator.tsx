@@ -44,6 +44,7 @@ import { track } from '@/lib/analytics';
 import { validateProjectWithConstraints, deriveSystemConstraintsFromProfiles, ValidationResult } from '@/lib/fabricatorValidation';
 import { generateModelGeometries, FrameGeometry, MiteredFrameData } from '@/lib/3d/windowGeometry';
 import { WindowUnit, Profile } from '@/types/fabricator';
+import { useAdvancedMaterials, useWindowPhysics } from '@/lib/3d';
 
 // Extend THREE with additional features if needed
 extend({ CameraControls });
@@ -52,90 +53,18 @@ extend({ CameraControls });
 // 3D HELPER & SUB-COMPONENTS
 // ============================================================================
 
-const MATERIAL_DATABASE = {
-  aluminum: {
-    metalness: 0.9,
-    roughness: 0.2,
-    envMapIntensity: 1.0,
-    clearcoat: 0.1,
-    clearcoatRoughness: 0.1
-  },
-  upvc: {
-    metalness: 0.1,
-    roughness: 0.5,
-    envMapIntensity: 0.4,
-    clearcoat: 0.05,
-    clearcoatRoughness: 0.3
-  },
-  wood: {
-    metalness: 0.0,
-    roughness: 0.8,
-    envMapIntensity: 0.2,
-    clearcoat: 0.1,
-    clearcoatRoughness: 0.4
-  },
-  steel: {
-    metalness: 0.8,
-    roughness: 0.3,
-    envMapIntensity: 1.2,
-    clearcoat: 0.1,
-    clearcoatRoughness: 0.1
-  }
-} as const;
-
-/**
- * Creates a PBR material for profiles based on type and color.
- * Now returns MeshPhysicalMaterial for more advanced effects.
- */
-const createProfileMaterial = (
-  materialType: string,
-  color: string,
-  clippingPlanes?: THREE.Plane[] | null
-): THREE.MeshPhysicalMaterial => {
-  const baseColor = new THREE.Color(color);
-  const materialProps = MATERIAL_DATABASE[materialType as keyof typeof MATERIAL_DATABASE] || MATERIAL_DATABASE.aluminum;
-  return new THREE.MeshPhysicalMaterial({
-    color: baseColor,
-    ...materialProps,
-    clippingPlanes: clippingPlanes || null,
-    clipShadows: true,
-    side: THREE.DoubleSide
-  });
-};
-
-/**
- * Creates a high-fidelity glass material.
- */
-const createGlassMaterial = (clippingPlanes?: THREE.Plane[] | null): THREE.MeshPhysicalMaterial => {
-  return new THREE.MeshPhysicalMaterial({
-    color: 0xffffff,
-    transparent: true,
-    opacity: 0.1,
-    roughness: 0.0,
-    metalness: 0.0,
-    transmission: 0.98,
-    thickness: 0.004,
-    ior: 1.52,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.0,
-    envMapIntensity: 1.0,
-    side: THREE.DoubleSide,
-    clippingPlanes: clippingPlanes || null,
-    clipShadows: true,
-  });
-};
-
 /**
  * Creates the material for spacers between glass panes.
+ * We keep this as a simple standard material; profiles and glass use advanced PBR.
  */
 const createSpacerMaterial = (clippingPlanes?: THREE.Plane[] | null): THREE.MeshStandardMaterial => {
-    return new THREE.MeshStandardMaterial({
-        color: 0x888888,
-        metalness: 0.9,
-        roughness: 0.3,
-        clippingPlanes: clippingPlanes || null,
-        clipShadows: true
-    });
+  return new THREE.MeshStandardMaterial({
+    color: 0x888888,
+    metalness: 0.9,
+    roughness: 0.3,
+    clippingPlanes: clippingPlanes || null,
+    clipShadows: true
+  });
 };
 
 /**
@@ -274,20 +203,60 @@ export function Window3DModel({
 }) {
     const groupRef = useRef<THREE.Group>(null!);
     const [modelData, setModelData] = useState<FrameGeometry | null>(null);
+    const sashRefs = useRef<THREE.Group[]>([]);
 
-    // --- Memoized Materials ---
+    // Advanced PBR materials with WebGL 2.0 shaders (with graceful fallback)
+    const { createMaterial } = useAdvancedMaterials({
+        useWebGL2Shaders: true,
+    });
+
+    // Performance & feature flags
+    const isHighQuality = windowUnit.overallWidth * windowUnit.overallHeight <= 7_000_000; // ~≤ 7 m²
+    const physicsEnabled = isHighQuality; // Disable physics for extremely large units
+
+    const {
+        isSetup: isPhysicsSetup,
+        start: startPhysics,
+        stop: stopPhysics,
+        openAllSashes,
+        closeAllSashes,
+    } = useWindowPhysics({
+        frameId: windowUnit.id || windowUnit.orderNumber || 'window-frame',
+        frameMesh: groupRef.current,
+        sashes: sashRefs.current.map((mesh, index) => ({
+            id: `${windowUnit.id || 'sash'}-${index}`,
+            mesh,
+            type: 'casement',
+        })),
+        enabled: physicsEnabled,
+    });
+
+    // --- Memoized Materials (Profiles & Glass use advanced PBR when available) ---
     const materials = useMemo(() => {
         if (!modelData) return null;
+
         const profile = modelData.frame.profile;
         const materialType = (profile.material?.toLowerCase() || 'aluminum');
         const color = profile.color || windowUnit.color || '#C0C0C0';
+
+        const isUPVC = materialType === 'upvc';
+
+        const frameMaterial = createMaterial(
+            isUPVC ? 'upvc' : 'aluminum',
+            { color }
+        );
+
+        const sashMaterial = frameMaterial;
+        const glassMaterial = createMaterial('glass', {});
+        const spacerMaterial = createSpacerMaterial(clippingPlanes);
+
         return {
-            frame: createProfileMaterial(materialType, color, clippingPlanes),
-            sash: createProfileMaterial(materialType, color, clippingPlanes),
-            glass: createGlassMaterial(clippingPlanes),
-            spacer: createSpacerMaterial(clippingPlanes),
+            frame: frameMaterial,
+            sash: sashMaterial,
+            glass: glassMaterial,
+            spacer: spacerMaterial,
         };
-    }, [modelData, windowUnit.color, clippingPlanes]);
+    }, [modelData, windowUnit.color, clippingPlanes, createMaterial]);
 
     // --- Geometry Generation Effect ---
     useEffect(() => {
@@ -304,12 +273,29 @@ export function Window3DModel({
         setModelData(geometrySpec);
 
         if (onModelReady && groupRef.current) {
-             onModelReady(groupRef.current);
+            onModelReady(groupRef.current);
         }
     }, [windowUnit, onModelReady]);
 
+    // --- Bridge animation flag to physics when enabled ---
+    useEffect(() => {
+        if (!physicsEnabled || !isPhysicsSetup) return;
+
+        if (isAnimating) {
+            startPhysics();
+            openAllSashes(1.0);
+        } else {
+            // Gently close and then stop simulation
+            closeAllSashes(1.0);
+            stopPhysics();
+        }
+    }, [physicsEnabled, isPhysicsSetup, isAnimating, startPhysics, stopPhysics, openAllSashes, closeAllSashes]);
+
     // --- Animation Frame Logic ---
     useFrame(() => {
+        // When physics is enabled, let Ammo.js drive the motion
+        if (physicsEnabled) return;
+
         if (!groupRef.current || !modelData || (!isAnimating && !explodedView)) return;
         
         // Simplified animation logic
@@ -352,6 +338,11 @@ export function Window3DModel({
             {/* Render Sashes */}
             {modelData.sashes.map((sash, sashIndex) => (
                 <group 
+                    ref={(el) => {
+                        if (el) {
+                            sashRefs.current[sashIndex] = el;
+                        }
+                    }}
                     key={`sash-group-${sashIndex}`}
                     userData={{
                         isAnimatableSash: true,
@@ -414,6 +405,7 @@ interface Window3DGeneratorProps {
   explodedView?: boolean;
   setExplodedView?: (value: boolean) => void;
   highlightDimension?: 'width' | 'height' | null;
+  mode?: 'standard' | 'pro';
 }
 
 // ============================================================================
@@ -682,6 +674,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     enableShadows: initialShadows = true,
     explodedView: initialExplodedView = false,
     setExplodedView,
+    mode: _mode = 'pro',
 }, ref) => {
     // --- State Management ---
     const [isAnimating, setIsAnimating] = useState(false);
