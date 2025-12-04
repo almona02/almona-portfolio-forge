@@ -22,7 +22,7 @@ jobs:
       - name: Python Security Scan
         run: |
           pip install pip-audit
-          pip-audit -r python_backend/requirements.txt --format json --output pip-audit-report.json
+          pip-audit --disable-pip --no-deps -r python_backend/requirements.txt --format json --output pip-audit-report.json
           
       - name: NPM Security Scan
         run: |
