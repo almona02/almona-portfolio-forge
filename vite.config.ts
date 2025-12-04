@@ -495,7 +495,9 @@ export default defineConfig(({ mode }) => {
               }
               
               // Three.js ecosystem - split from core three
+              // Include its-fine (React helper used by @react-three/fiber) to avoid landing in vendor
               if (
+                id.includes('its-fine') ||
                 id.includes('@react-spring/three') ||
                 id.includes('@react-three/xr') ||
                 id.includes('@use-gesture/react') ||
