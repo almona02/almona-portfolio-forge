@@ -129,13 +129,6 @@
     "enabled": true,
     "autoAlias": true
   },
-  "analytics": {
-    "enabled": true,
-    "webVitals": true
-  },
-  "speedInsights": {
-    "enabled": true
-  },
   "trailingSlash": false,
   "cleanUrls": false
 }
