@@ -26,7 +26,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Settings, Box, AlertCircle, Cpu, FileText, Wand2, Sparkles } from 'lucide-react';
 import { WindowUnit, Profile, WindowComponent, WindowGrid } from '@/types/fabricator';
-import { Window3DGenerator } from './Window3DGenerator'; 
+
+// Dynamic import for heavy 3D component
+const Window3DGenerator = React.lazy(() => import('./Window3DGenerator'));
+
 import { SystemPackSelector } from './SystemPackSelector'; 
 import { SmartDrawCanvas } from './SmartDrawCanvas'; 
 import { generateComponentsFromGrid } from '@/algorithms/smartDraw'; 
@@ -281,14 +284,21 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 <CardContent>
                                      <div className="w-full h-[600px] rounded-lg overflow-hidden border border-gray-800">
                                         {liveProject && (
-                                            <Window3DGenerator
-                                                windowUnit={liveProject}
-                                                profiles={profiles}
-                                                showControls={true}
-                                                presentationMode={false}
-                                                showErrorDetection={true}
-                                                mode={isPro3D ? 'pro' : 'standard'}
-                                            />
+                                            <React.Suspense fallback={
+                                                <div className="flex items-center justify-center h-96 bg-gray-900 rounded-lg">
+                                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+                                                    <span className="ml-3 text-white">Loading 3D Preview...</span>
+                                                </div>
+                                            }>
+                                                <Window3DGenerator
+                                                    windowUnit={liveProject}
+                                                    profiles={profiles}
+                                                    showControls={true}
+                                                    presentationMode={false}
+                                                    showErrorDetection={true}
+                                                    mode={isPro3D ? 'pro' : 'standard'}
+                                                />
+                                            </React.Suspense>
                                         )}
                                     </div>
                                 </CardContent>

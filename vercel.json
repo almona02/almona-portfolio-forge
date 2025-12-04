@@ -6,14 +6,25 @@
   "framework": "vite",
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [
         {
-          "type": "host",
+          "type": "header",
+          "key": "host",
           "value": "almona02.com"
         }
       ],
-      "destination": "https://www.almona02.com/:path*",
+      "destination": "https://www.almona02.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "/dealer-verification",
+      "destination": "/dealer-verification.html",
+      "permanent": true
+    },
+    {
+      "source": "/dealer-verification-en",
+      "destination": "/dealer-verification-en.html",
       "permanent": true
     }
   ],
@@ -72,13 +83,42 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate, max-age=0" },
-        { "key": "Pragma", "value": "no-cache" },
-        { "key": "Expires", "value": "0" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
-        { "key": "Link", "value": "<https://www.almona02.com/$1>; rel=\"canonical\"" }
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://connect.facebook.net https://www.google-analytics.com https://vercel.analytics https://vitals.vercel.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://api.vercel.com https://www.google-analytics.com https://analytics.google.com https://vercel.analytics; frame-src 'self' https://www.youtube.com https://player.vimeo.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains; preload"
+        },
+        {
+          "key": "Cross-Origin-Opener-Policy",
+          "value": "same-origin"
+        },
+        {
+          "key": "Cross-Origin-Resource-Policy",
+          "value": "same-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "geolocation=(), microphone=(), camera=(), fullscreen=(self)"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
       ]
     }
   ],
@@ -88,5 +128,14 @@
   "github": {
     "enabled": true,
     "autoAlias": true
-  }
+  },
+  "analytics": {
+    "enabled": true,
+    "webVitals": true
+  },
+  "speedInsights": {
+    "enabled": true
+  },
+  "trailingSlash": false,
+  "cleanUrls": false
 }

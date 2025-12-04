@@ -353,3 +353,98 @@ html {
     animation: none;
   }
 }
+
+/* Accessibility: Enhanced focus indicators for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Ensure buttons and links have sufficient contrast */
+.btn-primary,
+button[aria-label*="Navigate"],
+button[aria-label*="Open"],
+button[aria-label*="Close"],
+a[aria-label] {
+  --tw-ring-color: #f97316;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --bg: #000;
+    --fg: #fff;
+    --br: #fff;
+  }
+  
+  .dark {
+    --bg: #000;
+    --fg: #fff;
+    --br: #fff;
+  }
+  
+  .text-white {
+    color: #fff !important;
+    text-shadow: 0 0 2px #000;
+  }
+  
+  .bg-black,
+  .bg-gray-800,
+  .bg-slate-800 {
+    background-color: #000 !important;
+  }
+  
+  .border-white\/20 {
+    border-color: #fff !important;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .motion-reduce {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Ensure color contrast for gradient text */
+.text-gradient-orange {
+  /* Fallback for browsers without gradient support */
+  color: #f97316;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* High contrast focus for neon buttons */
+.neon-button:focus-visible {
+  box-shadow: 
+    0 0 0 3px rgba(249, 115, 22, 0.5),
+    0 0 0 6px rgba(0, 0, 0, 0.5);
+  outline: none;
+}

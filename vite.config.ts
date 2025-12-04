@@ -66,116 +66,116 @@ export default defineConfig(({ mode }) => {
           }
         }
       },
-      // Simplified PWA configuration for reliable builds
-      VitePWA({
-        registerType: "autoUpdate",
-        injectRegister: "auto",
-        devOptions: {
-          enabled: false // Disable in development to avoid build issues
-        },
-        workbox: {
-          // Use only essential glob patterns to reduce sync errors
-          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-          globDirectory: 'dist',
-          navigateFallback: null, // Disable navigate fallback to prevent sw.js errors
-          navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
-          globIgnores: [
-            '**/node_modules/**',
-            '**/sw.js',
-            '**/workbox-*.js',
-            '**/workbox-*.map',
-            '**/registerSW.js'
-          ],
-          cleanupOutdatedCaches: true,
-          skipWaiting: true,
-          clientsClaim: false,
-          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
-          
-          // Use runtime caching for better control
-          runtimeCaching: [
-            {
-              urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
-              handler: 'NetworkFirst',
-              options: {
-                cacheName: 'supabase-cache',
-                expiration: {
-                  maxEntries: 50,
-                  maxAgeSeconds: 5 * 60,
-                },
-                networkTimeoutSeconds: 10,
-              },
-            },
-            {
-              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-              handler: 'CacheFirst',
-              options: {
-                cacheName: 'google-fonts-cache',
-                expiration: {
-                  maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365
-                }
-              }
-            }
-          ]
-        },
-        includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg"],
-        manifest: {
-          name: "Almona Portfolio Forge - Industrial Machinery Solutions",
-          short_name: "Almona",
-          description: "Leading provider of industrial machinery, fabrication services, and technical solutions in Egypt and the Middle East. Now with offline support for service tickets.",
-          theme_color: "#f97316",
-          background_color: "#0d0f12",
-          display: "standalone",
-          orientation: "any",
-          start_url: "/",
-          scope: "/",
-          categories: ["business", "productivity", "utilities"],
-          lang: "ar",
-          dir: "rtl",
-          shortcuts: [
-            {
-              name: "Create Service Ticket",
-              short_name: "New Ticket",
-              description: "Create a new service ticket",
-              url: "/portal/tickets/new",
-              icons: [{ src: "/icons/ticket-icon.png", sizes: "96x96" }]
-            },
-            {
-              name: "Machine Health",
-              short_name: "Health",
-              description: "View machine health dashboard",
-              url: "/portal/health",
-              icons: [{ src: "/icons/health-icon.png", sizes: "96x96" }]
-            }
-          ],
-          icons: [
-            {
-              src: "/icons/pwa-192x192.png",
-              sizes: "192x192",
-              type: "image/png",
-              purpose: "any"
-            },
-            {
-              src: "/icons/pwa-512x512.png",
-              sizes: "512x512", 
-              type: "image/png",
-              purpose: "any"
-            },
-            {
-              src: "/icons/pwa-192x192.png",
-              sizes: "192x192",
-              type: "image/png",
-              purpose: "maskable"
-            },
-            {
-              src: "/icons/pwa-512x512.png",
-              sizes: "512x512",
-              type: "image/png", 
-              purpose: "maskable"
-            }
-          ]
-        }
-      }),
+      // Temporarily disabled PWA to isolate build issues
+      // VitePWA({
+      //   registerType: "autoUpdate",
+      //   injectRegister: "auto",
+      //   devOptions: {
+      //     enabled: false // Disable in development to avoid build issues
+      //   },
+      //   workbox: {
+      //     // Use only essential glob patterns to reduce sync errors
+      //     globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+      //     globDirectory: 'dist',
+      //     navigateFallback: null, // Disable navigate fallback to prevent sw.js errors
+      //     navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
+      //     globIgnores: [
+      //       '**/node_modules/**',
+      //       '**/sw.js',
+      //       '**/workbox-*.js',
+      //       '**/workbox-*.map',
+      //       '**/registerSW.js'
+      //     ],
+      //     cleanupOutdatedCaches: true,
+      //     skipWaiting: true,
+      //     clientsClaim: false,
+      //     maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+      //     
+      //     // Use runtime caching for better control
+      //     runtimeCaching: [
+      //       {
+      //         urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+      //         handler: 'NetworkFirst',
+      //         options: {
+      //           cacheName: 'supabase-cache',
+      //           expiration: {
+      //             maxEntries: 50,
+      //             maxAgeSeconds: 5 * 60,
+      //           },
+      //           networkTimeoutSeconds: 10,
+      //         },
+      //       },
+      //       {
+      //         urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+      //         handler: 'CacheFirst',
+      //         options: {
+      //           cacheName: 'google-fonts-cache',
+      //           expiration: {
+      //             maxEntries: 10,
+      //             maxAgeSeconds: 60 * 60 * 24 * 365
+      //           }
+      //         }
+      //       }
+      //     ],
+      //   },
+      //   includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg"],
+      //   manifest: {
+      //     name: "Almona Portfolio Forge - Industrial Machinery Solutions",
+      //     short_name: "Almona",
+      //     description: "Leading provider of industrial machinery, fabrication services, and technical solutions in Egypt and the Middle East. Now with offline support for service tickets.",
+      //     theme_color: "#f97316",
+      //     background_color: "#0d0f12",
+      //     display: "standalone",
+      //     orientation: "any",
+      //     start_url: "/",
+      //     scope: "/",
+      //     categories: ["business", "productivity", "utilities"],
+      //     lang: "ar",
+      //     dir: "rtl",
+      //     shortcuts: [
+      //       {
+      //         name: "Create Service Ticket",
+      //         short_name: "New Ticket",
+      //         description: "Create a new service ticket",
+      //         url: "/portal/tickets/new",
+      //         icons: [{ src: "/icons/ticket-icon.png", sizes: "96x96" }]
+      //       },
+      //       {
+      //         name: "Machine Health",
+      //         short_name: "Health",
+      //         description: "View machine health dashboard",
+      //         url: "/portal/health",
+      //         icons: [{ src: "/icons/health-icon.png", sizes: "96x96" }]
+      //       }
+      //     ],
+      //     icons: [
+      //       {
+      //         src: "/icons/pwa-192x192.png",
+      //         sizes: "192x192",
+      //         type: "image/png",
+      //         purpose: "any"
+      //       },
+      //       {
+      //         src: "/icons/pwa-512x512.png",
+      //         sizes: "512x512", 
+      //         type: "image/png",
+      //         purpose: "any"
+      //       },
+      //       {
+      //         src: "/icons/pwa-192x192.png",
+      //         sizes: "192x192",
+      //         type: "image/png",
+      //         purpose: "maskable"
+      //       },
+      //       {
+      //         src: "/icons/pwa-512x512.png",
+      //         sizes: "512x512",
+      //         type: "image/png", 
+      //         purpose: "maskable"
+      //       }
+      //     ]
+      //   }
+      // }),
       ...(isProduction && process.env.ANALYZE === 'true'
         ? [
             visualizer({
@@ -188,7 +188,7 @@ export default defineConfig(({ mode }) => {
             }),
           ]
         : []),
-          ],
+    ],
 
     resolve: {
       alias: {
@@ -318,162 +318,33 @@ export default defineConfig(({ mode }) => {
           
           // CORRECT: Use function format that returns string | undefined
           manualChunks: (id: string) => {
-            // CRITICAL: Check React FIRST - this ensures react-vendor is created first
-            if (id.includes('node_modules')) {
-              // React core packages - MUST be first check
-              if (
-                id.includes('/react/') || 
-                id.includes('/react-dom/') || 
-                id.includes('react/jsx-runtime') ||
-                id.includes('react/jsx-dev-runtime')
-              ) {
-                return 'react-vendor';
-              }
-              // React-dependent packages - must be with React
-              if (
-                id.includes('react-router') ||
-                id.includes('react-helmet') ||
-                id.includes('react-reconciler') ||
-                // id.includes('@react-three') || // Split Three out
-                id.includes('react-') ||
-                id.includes('/react') ||
-                id.includes('react-chartjs') ||
-                id.includes('@tanstack/react') ||
-                // id.includes('framer-motion') || // Split framer-motion out
-                id.includes('next-themes') ||
-                id.includes('sonner') ||
-                id.includes('zustand') ||
-                id.includes('embla-carousel-react') ||
-                id.includes('react-content-loader') ||
-                id.includes('react-day-picker') ||
-                id.includes('react-hook-form') ||
-                id.includes('react-i18next') ||
-                id.includes('react-media-recorder') ||
-                id.includes('react-resizable-panels') ||
-                id.includes('react-window') ||
-                id.includes('recharts') ||
-                id.includes('vaul') ||
-                // id.includes('lucide-react') || // Split lucide out
-                id.includes('cmdk') ||
-                id.includes('input-otp') ||
-                id.includes('markdown-to-jsx') ||
-                id.includes('@vercel/analytics/react') ||
-                id.includes('@radix-ui') ||
-                id.includes('@radix') ||
-                id.includes('chart.js')
-              ) {
-                return 'react-vendor';
-              }
-              // PDF libraries - ensure pako loads first
-              if (id.includes('pako')) {
-                return 'compression-vendor';
-              }
-              if (id.includes('pdf-lib') || id.includes('pdfjs')) {
-                return 'pdf-vendor';
-              }
-              // Pure Three.js library and React Three Fiber
-              if ((id.includes('/three/') && !id.includes('@react-three')) || id.includes('@react-three')) {
-                return 'three-vendor';
-              }
-              // Animation libraries
-              if (id.includes('framer-motion')) {
-                return 'animation-vendor';
-              }
-              // Icon libraries
-              if (id.includes('lucide-react')) {
-                return 'icons-vendor';
-              }
-              // Utility libraries (non-React)
-              if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
-                return 'utils-vendor';
-              }
-              // Pure JS utilities with no module dependencies
-              if (
-                id.includes('axios') ||
-                id.includes('exceljs') ||
-                id.includes('qrcode') ||
-                id.includes('file-saver') ||
-                id.includes('dompurify') ||
-                id.includes('jwt-decode') ||
-                id.includes('zxcvbn')
-              ) {
-                return 'vendor';
-              }
-              // Everything else goes to react-vendor to ensure proper loading order
-              return 'react-vendor';
+            // Vendor chunks - group common dependencies
+            if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router-dom')) {
+              return 'vendor';
             }
             
-            // Fabricator-specific chunks
-            if (id.includes('components/fabricator')) {
-              // Core Fabricator components
-              if (
-                id.includes('FabricatorWorkflowPro') ||
-                id.includes('FabricatorWorkspaceLayout') ||
-                id.includes('FabricatorWorkspaceContext')
-              ) {
-                return 'fabricator-core';
-              }
-              // Optimization engine and algorithms
-              if (
-                id.includes('CuttingOptimizationEngine') ||
-                id.includes('MassProductionDashboard') ||
-                id.includes('OptimizationEngine')
-              ) {
-                return 'fabricator-algorithms';
-              }
-              // Reporting components
-              if (
-                id.includes('CuttingListReport') ||
-                id.includes('AccessoriesReport') ||
-                id.includes('GlassReport') ||
-                id.includes('QuickReportsPanel')
-              ) {
-                return 'fabricator-reports';
-              }
-              // Inventory and profile management
-              if (
-                id.includes('InventoryDashboard') ||
-                id.includes('InventoryManagement') ||
-                id.includes('ProfileManagement') ||
-                id.includes('AccessoryManagement')
-              ) {
-                return 'fabricator-inventory';
-              }
-              // Other Fabricator components
-              return 'fabricator-components';
+            // UI vendor chunks
+            if (id.includes('node_modules/@radix-ui') || id.includes('node_modules/class-variance-authority') || 
+                id.includes('node_modules/clsx') || id.includes('node_modules/tailwind-merge')) {
+              return 'vendor-ui';
             }
             
-            // Algorithms directory
-            if (id.includes('algorithms/')) {
-              return 'fabricator-algorithms';
+            // Three.js related
+            if (id.includes('node_modules/three') || id.includes('node_modules/@react-three')) {
+              return 'vendor-three';
             }
             
-            // Fabricator context and workspace
-            if (
-              id.includes('context/FabricatorWorkspaceContext') ||
-              id.includes('lib/workspace/WorkspaceSyncService')
-            ) {
+            // Fabricator specific chunks
+            if (id.includes('@/components/fabricator') || id.includes('@/lib/fabricator') || id.includes('@/types/fabricator')) {
               return 'fabricator-core';
             }
             
-            // Export and reporting libraries
-            if (
-              id.includes('lib/exports/') ||
-              id.includes('lib/reports/')
-            ) {
-              return 'fabricator-reports';
+            // Analytics
+            if (id.includes('node_modules/@vercel/analytics') || id.includes('node_modules/@vercel/speed-insights') || 
+                id.includes('node_modules/react-google-analytics')) {
+              return 'analytics';
             }
             
-            // Route-specific chunks for better code splitting
-            if (id.includes('pages/Projects') || id.includes('components/fabricator/PositionsGrid')) {
-              return 'fabricator-projects';
-            }
-            
-            if (id.includes('components/fabricator/FabricatorWorkspaceLayout')) {
-              return 'fabricator-layout';
-            }
-            
-            // Default: no manual chunk (let Vite decide)
             return undefined;
           }
         },
