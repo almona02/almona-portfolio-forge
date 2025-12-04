@@ -447,7 +447,8 @@ export default defineConfig(({ mode }) => {
               }
               
               // TensorFlow - very large, should be lazy loaded
-              if (id.includes('@tensorflow/tfjs')) {
+              // CRITICAL: Consolidate ALL tensorflow packages into ml-vendor to prevent split initialization issues
+              if (id.includes('@tensorflow/')) {
                 return 'ml-vendor';
               }
               
