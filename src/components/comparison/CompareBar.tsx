@@ -20,7 +20,10 @@ const CompareBar: React.FC<CompareBarProps> = ({
   if (machines.length === 0) return null;
 
   return (
-    <div className="fixed bottom-3 left-2 right-2 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 bg-black/90 text-white/90 border border-white/10 backdrop-blur rounded-xl shadow-2xl p-3 sm:p-4 z-50 w-auto max-w-full sm:max-w-3xl animate-in fade-in slide-in-from-bottom-4">
+    <div
+      className="fixed left-2 right-2 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 top-[4.5rem] sm:top-[5.5rem] md:top-[6.25rem] lg:top-[6.5rem] bg-black/90 text-white/90 border border-white/10 backdrop-blur rounded-xl shadow-2xl p-3 sm:p-4 z-50 w-auto max-w-full sm:max-w-3xl animate-in fade-in slide-in-from-top-4 transition-all duration-200 opacity-20 hover:opacity-100 sm:opacity-40 sm:hover:opacity-100"
+      aria-label="Comparison bar (hover or tap to expand)"
+    >
       <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-3 sm:gap-4">
         <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
           {machines.map((machine) => (
@@ -55,7 +58,8 @@ const CompareBar: React.FC<CompareBarProps> = ({
             size="sm"
             onClick={onCompare}
             disabled={machines.length < 2}
-            className="bg-gradient-to-r from-orange-500 to-red-600 text-white hover:from-orange-400 hover:to-red-500 disabled:from-gray-600 disabled:to-gray-600 w-full"
+            aria-label="Open machine comparison"
+            className="w-full text-base sm:text-sm py-3 sm:py-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-600 text-white hover:from-orange-400 hover:to-red-500 disabled:from-gray-600 disabled:to-gray-600 shadow-lg shadow-orange-500/25 ring-1 ring-orange-400/60 hover:ring-orange-300/70 transition-all active:translate-y-[1px]"
           >
             <BarChart2 size={14} className="mr-1" />
             Compare ({machines.length})

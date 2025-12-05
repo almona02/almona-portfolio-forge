@@ -10,10 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Mail, Lock, Phone } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { FacebookLoginButton } from '@/components/auth/FacebookLoginButton';
-import { SmsOtpModal } from '@/components/auth/SmsOtpModal';
 
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
@@ -23,9 +21,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false); // kept for transition; will sync with actionLoading
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [showSmsOtpModal, setShowSmsOtpModal] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const { signIn: login, signInWithGoogle, user, actionLoading } = useAuth();
+  const { signIn: login, user, actionLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -80,32 +77,13 @@ const Login = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      await signInWithGoogle();
-      // Redirect will be handled by Supabase OAuth flow
-    } catch (error: any) {
-      setError(error.message || 'Google sign-in failed.');
-      toast.error(error.message || 'Google sign-in failed.');
-    }
-  };
-
-  const GoogleIcon = () => (
-    <svg className="w-5 h-5 mr-2" viewBox="0 0 48 48">
-      <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039L38.804 9.81C34.553 6.186 29.658 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" />
-      <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039L38.804 9.81C34.553 6.186 29.658 4 24 4C16.318 4 9.656 8.337 6.306 14.691z" />
-      <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
-      <path fill="#1976D2" d="M43.611 20.083H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C42.012 35.245 44 30.028 44 24c0-1.341-.138-2.65-.389-3.917z" />
-    </svg>
-  );
-
   return (
     <div className="flex flex-col min-h-screen bg-almona-dark">
       <main 
         className="flex-grow flex items-center justify-center p-4 bg-cover bg-center relative" 
         style={{ backgroundImage: "url('/images/machines/cutting-machine.jpg')" }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-almona-dark/80 via-transparent to-almona-dark/80" />
+        <div className="absolute inset-0 bg-gradient-to-br from-almona-dark/55 via-almona-dark/20 to-almona-dark/65 backdrop-blur-[1px]" />
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -113,9 +91,9 @@ const Login = () => {
           className="w-full max-w-md mx-auto backdrop-blur-lg bg-black/60 rounded-2xl shadow-2xl overflow-hidden"
         >
           <Card className="bg-transparent border-0 text-white">
-            <CardHeader className="text-center p-8">
+            <CardHeader className="text-center p-8 lg:mt-10">
               <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }}>
-                <CardTitle className="text-4xl font-bold text-gradient-orange">Welcome Back</CardTitle>
+                <CardTitle className="text-4xl font-bold text-gradient-orange">Welcome back, Fabricator</CardTitle>
               </motion.div>
               <CardDescription className="text-gray-300 pt-2">
                 Sign in to continue to Almona
@@ -193,24 +171,6 @@ const Login = () => {
                 </motion.div>
               </form>
               
-              <div className="my-6 flex items-center">
-                <div className="flex-grow border-t border-gray-600"></div>
-                <span className="mx-4 text-gray-400 text-sm">OR</span>
-                <div className="flex-grow border-t border-gray-600"></div>
-              </div>
-
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }} className="space-y-4">
-                <Button onClick={handleGoogleSignIn} variant="outline" className="w-full bg-transparent border-almona-light/30 hover:bg-almona-light/10 flex items-center justify-center">
-                  <GoogleIcon />
-                  Sign In with Google
-                </Button>
-                <FacebookLoginButton onSuccess={() => navigate('/')} />
-                <Button onClick={() => setShowSmsOtpModal(true)} variant="outline" className="w-full bg-transparent border-almona-light/30 hover:bg-almona-light/10 flex items-center justify-center">
-                  <Phone className="w-5 h-5 mr-2" />
-                  Login with Phone Number
-                </Button>
-              </motion.div>
-
               <div className="mt-8 text-center text-sm text-gray-400">
                 Don&apos;t have an account?{' '}
                 <a href="/register" className="font-medium text-almona-light hover:underline">
@@ -221,16 +181,6 @@ const Login = () => {
           </Card>
         </motion.div>
       </main>
-      {showSmsOtpModal && (
-        <SmsOtpModal
-          isOpen={showSmsOtpModal}
-          onClose={() => setShowSmsOtpModal(false)}
-          onSuccess={() => {
-            toast.success('Logged in successfully with phone number!');
-            navigate('/');
-          }}
-        />
-      )}
     </div>
   );
 };

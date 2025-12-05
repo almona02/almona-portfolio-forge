@@ -15,6 +15,7 @@ const YilmazTraining = () => {
       </Helmet>
 
       <main className="pt-24 pb-16 bg-gray-50 dark:bg-gray-950 min-h-screen">
+         <div id="top" className="sr-only" aria-hidden="true" />
          <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <h1 className="text-4xl font-bold mb-4">Authorized Yilmaz Training Center</h1>

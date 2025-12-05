@@ -216,6 +216,7 @@ const SpareParts = () => {
       message="يجب تسجيل الدخول للوصول إلى قطع الغيار"
     >
       <main className="flex-grow pt-20">
+        <div id="top" className="sr-only" aria-hidden="true" />
         <div className="container mx-auto px-4 py-8">
           {/* Hero Section */}
           <motion.div 

@@ -126,10 +126,10 @@ export const Register = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="w-full max-w-4xl mx-auto backdrop-blur-xl bg-black/50 rounded-3xl shadow-2xl overflow-hidden border border-almona-light/20"
+          className="w-full max-w-4xl mx-auto mt-6 sm:mt-8 lg:mt-12 backdrop-blur-xl bg-black/50 rounded-3xl shadow-2xl overflow-hidden border border-almona-light/20"
         >
           <Card className="bg-transparent border-0 text-white">
-            <CardHeader className="text-center p-8 pb-6">
+            <CardHeader className="text-center p-8 pb-6 lg:mt-10">
               <motion.div 
                 initial={{ y: -20, opacity: 0 }} 
                 animate={{ y: 0, opacity: 1 }} 

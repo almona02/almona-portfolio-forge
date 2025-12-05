@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, lazy, Suspense, startTransition } from "react";
+import { useState, useEffect, useCallback, useMemo, lazy, Suspense, startTransition, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Phone, CheckCircle, Award } from "lucide-react";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
@@ -38,6 +38,9 @@ const Hero = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [transitionProgress, setTransitionProgress] = useState(100);
+  const [isStatusVisible, setIsStatusVisible] = useState(true);
+  const statusHideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Memoize slides to prevent unnecessary re-renders
   const slides = useMemo(() => [
@@ -89,6 +92,40 @@ const Hero = () => {
 
     return () => clearInterval(interval);
   }, [activeSlide, slides.length, isTransitioning, goToSlide, isPaused]);
+
+  // Animate micro progress bar during slide transitions for smoother feedback
+  useEffect(() => {
+    if (!isTransitioning) {
+      setTransitionProgress(100);
+      return;
+    }
+
+    setTransitionProgress(0);
+    const frame = requestAnimationFrame(() => setTransitionProgress(100));
+
+    return () => cancelAnimationFrame(frame);
+  }, [isTransitioning, activeSlide]);
+
+  const scheduleStatusHide = useCallback((delay = 3200) => {
+    if (statusHideTimeout.current) {
+      clearTimeout(statusHideTimeout.current);
+    }
+    statusHideTimeout.current = setTimeout(() => setIsStatusVisible(false), delay);
+  }, []);
+
+  const showStatusWithAutoHide = useCallback((delay = 3200) => {
+    setIsStatusVisible(true);
+    scheduleStatusHide(delay);
+  }, [scheduleStatusHide]);
+
+  useEffect(() => {
+    showStatusWithAutoHide();
+    return () => {
+      if (statusHideTimeout.current) {
+        clearTimeout(statusHideTimeout.current);
+      }
+    };
+  }, [activeSlide, showStatusWithAutoHide]);
 
 
   // Keyboard navigation
@@ -307,33 +344,6 @@ const Hero = () => {
                 </div>
               </div>
 
-              {/* Slide Counter - Optimized for mobile */}
-              <div className="text-white/70 text-xs sm:text-sm font-medium">
-                <span className="sr-only">Slide</span>
-                {activeSlide + 1} / {slides.length}
-              </div>
-
-              {/* Navigation Arrows - Optimized for mobile */}
-              <div className="flex space-x-1.5 sm:space-x-2">
-                <button
-                  onClick={() => goToSlide(activeSlide === 0 ? slides.length - 1 : activeSlide - 1)}
-                  className="p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
-                  aria-label="Previous slide"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => goToSlide(activeSlide === slides.length - 1 ? 0 : activeSlide + 1)}
-                  className="p-1.5 sm:p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
-                  aria-label="Next slide"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -368,8 +378,21 @@ const Hero = () => {
 
       {/* Loading indicator for transition states */}
       {isTransitioning && (
-        <div className="absolute inset-0 z-[110] flex items-center justify-center bg-black/20">
-          <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="absolute inset-0 z-[110] flex items-center justify-center bg-black/35 backdrop-blur-[2px] transition-opacity duration-300">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-white/10 border border-white/15 shadow-xl shadow-orange-500/10">
+            <div className="flex flex-col gap-1">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+                Preparing next story
+              </span>
+              <div className="w-28 h-1.5 bg-white/15 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500 transition-all duration-500 ease-out"
+                  style={{ width: `${transitionProgress}%` }}
+                  aria-label="Slide transition in progress"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </section>

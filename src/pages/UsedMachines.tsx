@@ -118,6 +118,7 @@ const UsedMachines = () => {
       <MachineSEO machines={usedMachines} isListingPage={true} />
       
       <main className="flex-grow pt-20">
+        <div id="top" className="sr-only" aria-hidden="true" />
         <div className="container mx-auto px-4 py-8">
           <div className="mb-12 text-center bg-gradient-to-r from-orange-900 to-orange-700 py-12 px-4 rounded-xl">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
