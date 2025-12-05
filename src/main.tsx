@@ -217,6 +217,15 @@ window.addEventListener('error', (event) => {
     }
     return false;
   }
+
+  // Log unexpected errors with stack/position to aid release debugging
+  console.error('[GlobalError]', {
+    message: event.message,
+    filename: event.filename,
+    lineno: event.lineno,
+    colno: event.colno,
+    stack: event.error?.stack,
+  });
 }, true); // Use capture phase to catch errors early
 
 // Environment validation

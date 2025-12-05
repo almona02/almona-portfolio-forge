@@ -315,52 +315,6 @@ export default defineConfig(({ mode }) => {
           entryFileNames: `assets/[name]-[hash].js`,
           chunkFileNames: `assets/[name]-[hash].js`,
           assetFileNames: `assets/[name]-[hash].[ext]`,
-          
-          // CORRECT: Use function format that returns string | undefined
-          manualChunks: (id: string) => {
-            // SIMPLIFIED APPROACH: Group ALL React dependencies together
-            // This prevents circular dependency and initialization order issues
-            if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || 
-                id.includes('node_modules/react-router') || id.includes('node_modules/@radix-ui') || 
-                id.includes('node_modules/class-variance-authority') || 
-                id.includes('node_modules/clsx') || id.includes('node_modules/tailwind-merge') ||
-                id.includes('node_modules/framer-motion') || id.includes('node_modules/@react-three') ||
-                id.includes('node_modules/recharts') || id.includes('node_modules/react-chartjs-2')) {
-              return 'vendor';
-            }
-<<<<<<< Current (Your changes)
-
-          // Charting libraries
-          if (id.includes('node_modules/recharts') || id.includes('node_modules/chart.js')) {
-            return 'charts';
-            }
-            
-            // UI vendor chunks
-            if (id.includes('node_modules/@radix-ui') || id.includes('node_modules/class-variance-authority') || 
-                id.includes('node_modules/clsx') || id.includes('node_modules/tailwind-merge')) {
-              return 'vendor-ui';
-            }
-=======
->>>>>>> Incoming (Background Agent changes)
-            
-            // Pure Three.js (no React dependency) - separate chunk as it's huge
-            if (id.includes('node_modules/three/')) {
-              return 'three';
-            }
-            
-            // Fabricator specific chunks
-            if (id.includes('@/components/fabricator') || id.includes('@/lib/fabricator') || id.includes('@/types/fabricator')) {
-              return 'fabricator-core';
-            }
-            
-            // Analytics
-            if (id.includes('node_modules/@vercel/analytics') || id.includes('node_modules/@vercel/speed-insights') || 
-                id.includes('node_modules/react-google-analytics')) {
-              return 'analytics';
-            }
-            
-            return undefined;
-          }
         },
       },
     },
