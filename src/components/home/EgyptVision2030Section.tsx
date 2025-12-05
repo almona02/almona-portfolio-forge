@@ -59,30 +59,32 @@ export const EgyptVision2030Section = () => {
             </Button>
           </div>
           <div className="lg:w-1/2 relative">
-            {/* Egypt Vision 2030 Visual */}
-            <div className="aspect-video bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-3xl shadow-2xl flex items-center justify-center border border-slate-700/50 backdrop-blur-sm relative overflow-hidden group">
-              {/* Animated background rings */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-48 h-48 border border-orange-500/20 rounded-full animate-pulse" />
-                <div className="absolute w-64 h-64 border border-orange-500/10 rounded-full animate-pulse delay-300" />
-                <div className="absolute w-80 h-80 border border-orange-500/5 rounded-full animate-pulse delay-500" />
-              </div>
-              
-              <div className="text-center relative z-10">
-                <div className="text-7xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                  EG
+            <div className="w-full max-w-3xl mx-auto">
+              {/* Egypt Vision 2030 Visual */}
+              <div className="aspect-[4/3] md:aspect-video bg-gradient-to-br from-slate-800/80 to-slate-900/80 rounded-3xl shadow-2xl flex items-center justify-center border border-slate-700/60 ring-1 ring-orange-500/10 backdrop-blur-sm relative overflow-hidden group p-6 sm:p-8">
+                {/* Animated background rings */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-48 h-48 border border-orange-500/20 rounded-full animate-pulse" />
+                  <div className="absolute w-64 h-64 border border-orange-500/10 rounded-full animate-pulse delay-300" />
+                  <div className="absolute w-80 h-80 border border-orange-500/5 rounded-full animate-pulse delay-500" />
                 </div>
-                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">
-                  Egypt Vision 2030
+                
+                <div className="text-center relative z-10">
+                  <div className="text-5xl sm:text-6xl lg:text-7xl mb-3 sm:mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                    EG
+                  </div>
+                  <div className="text-lg sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">
+                    Egypt Vision 2030
+                  </div>
+                  <div className="text-xs sm:text-sm text-slate-400 mt-2 sm:mt-3">Sustainable Development Strategy</div>
                 </div>
-                <div className="text-sm text-slate-500 mt-2">Sustainable Development Strategy</div>
+                
+                {/* Corner accents */}
+                <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-orange-500/30 rounded-tl-lg" />
+                <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-orange-500/30 rounded-tr-lg" />
+                <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-orange-500/30 rounded-bl-lg" />
+                <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-orange-500/30 rounded-br-lg" />
               </div>
-              
-              {/* Corner accents */}
-              <div className="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-orange-500/30 rounded-tl-lg" />
-              <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-orange-500/30 rounded-tr-lg" />
-              <div className="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-orange-500/30 rounded-bl-lg" />
-              <div className="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-orange-500/30 rounded-br-lg" />
             </div>
           </div>
         </div>

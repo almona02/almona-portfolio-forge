@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { Logo } from '@/components/ui/Logo';
 import { 
   Factory, 
   Cpu, 
-  Zap, 
   Network, 
   Database, 
   Cloud, 
-  Shield, 
-  Settings,
-  TrendingUp,
-  Globe,
-  Smartphone,
-  Monitor
+  TrendingUp
 } from 'lucide-react';
 
 interface PrestigeLoaderProps {
@@ -171,132 +166,20 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
 
         {/* Main content container - Optimized spacing for mobile */}
         <div className="relative z-10 flex flex-col items-center justify-center text-center space-y-3 sm:space-y-6 md:space-y-8 px-4 sm:px-6 md:px-8 w-full max-w-full">
-            {/* Enhanced Logo with Industry 4.0 Elements */}
+          {/* Enhanced Logo with Industry 4.0 Elements */}
           <motion.div 
-            className="relative"
+            className="relative flex items-center justify-center"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            {/* Main logo container with animated logo - Optimized for mobile */}
-            <div className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-amber-400 via-orange-500 to-red-600 flex items-center justify-center shadow-2xl relative overflow-hidden">
-              {/* Animated Logo - Same as Navbar - Optimized sizing */}
-              <motion.div
-                className="w-14 h-14 sm:w-18 sm:h-18 md:w-20 md:h-20"
-                initial={{ rotate: 0, scale: 0.5 }}
-                animate={{ rotate: 360, scale: 1 }}
-                transition={{ 
-                  rotate: { duration: 2, repeat: Infinity, ease: "linear" },
-                  scale: { duration: 0.8, ease: "easeOut" }
-                }}
-              >
-                <svg 
-                  className="w-full h-full transition-transform duration-500" 
-                  viewBox="0 0 100 100" 
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {/* Outer glow effect */}
-                  <circle cx="50" cy="50" r="48" fill="url(#logoGradient)" opacity="0.15" />
-                  
-                  {/* Main disc body with metallic sheen */}
-                  <circle cx="50" cy="50" r="42" fill="url(#logoGradient)" />
-                  <circle cx="50" cy="50" r="42" fill="url(#metallicSheen)" opacity="0.3" />
-                  
-                  {/* Triple Chip Grind (TCG) Teeth - 24 teeth for aluminum cutting */}
-                  {[...Array(24)].map((_, i) => {
-                    const angle = (i * 15) - 90; // 15 degrees per tooth, start at top
-                    const x1 = 50 + 35 * Math.cos(angle * Math.PI / 180);
-                    const y1 = 50 + 35 * Math.sin(angle * Math.PI / 180);
-                    const x2 = 50 + 42 * Math.cos(angle * Math.PI / 180);
-                    const y2 = 50 + 42 * Math.sin(angle * Math.PI / 180);
-                    return (
-                      <line
-                        key={i}
-                        x1={x1}
-                        y1={y1}
-                        x2={x2}
-                        y2={y2}
-                        stroke="white"
-                        strokeWidth="1.5"
-                        opacity="0.8"
-                      />
-                    );
-                  })}
-                  
-                  {/* Center hole */}
-                  <circle cx="50" cy="50" r="8" fill="url(#centerGradient)" />
-                  <circle cx="50" cy="50" r="6" fill="url(#innerGradient)" />
-                  
-                  {/* Brand text */}
-                  <text
-                    x="50"
-                    y="75"
-                    textAnchor="middle"
-                    className="text-xs font-bold fill-white"
-                    opacity="0.9"
-                  >
-                    ALMONA
-                  </text>
-                  
-                  {/* Gradient definitions */}
-                  <defs>
-                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#FF5F1F" />
-                      <stop offset="50%" stopColor="#FF8C00" />
-                      <stop offset="100%" stopColor="#E14A00" />
-                    </linearGradient>
-                    <linearGradient id="metallicSheen" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#FFFFFF" />
-                      <stop offset="50%" stopColor="transparent" />
-                      <stop offset="100%" stopColor="#FFFFFF" />
-                    </linearGradient>
-                    <linearGradient id="centerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#2D2D2D" />
-                      <stop offset="100%" stopColor="#1A1A1A" />
-                    </linearGradient>
-                    <linearGradient id="innerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#404040" />
-                      <stop offset="100%" stopColor="#2D2D2D" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </motion.div>
-              
-              {/* Inner metallic shine */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent rounded-full"></div>
-              
-              {/* Reflective highlight */}
-              <div className="absolute top-2 left-2 w-8 h-8 bg-gradient-to-br from-white/40 to-transparent rounded-full blur-sm"></div>
-            </div>
-            
-            {/* Industry 4.0 Rotating Rings - Reduced opacity on mobile */}
-            <div className="absolute inset-0 w-32 h-32 sm:w-40 sm:h-40 border-2 border-transparent border-t-amber-400/40 sm:border-t-amber-400/60 border-r-orange-500/40 sm:border-r-orange-500/60 rounded-full animate-spin"></div>
-            <div className="absolute inset-0 w-36 h-36 sm:w-48 sm:h-48 border border-transparent border-b-orange-400/30 sm:border-b-orange-400/40 border-l-amber-500/30 sm:border-l-amber-500/40 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '4s' }}></div>
-            <div className="absolute inset-0 w-44 h-44 sm:w-56 sm:h-56 border border-transparent border-t-red-500/15 sm:border-t-red-500/20 border-b-amber-400/15 sm:border-b-amber-400/20 rounded-full animate-spin" style={{ animationDuration: '6s' }}></div>
-            
-            {/* Outer glow effects - Reduced on mobile */}
-            <div className="absolute inset-0 w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-amber-400/25 sm:from-amber-400/40 to-orange-500/25 sm:to-orange-500/40 blur-xl sm:blur-2xl animate-pulse"></div>
-            <div className="absolute inset-0 w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-br from-orange-500/15 sm:from-orange-500/20 to-red-600/15 sm:to-red-600/20 blur-2xl sm:blur-3xl animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-            
-            {/* Industry 4.0 Sparkle Effects */}
-            {[...Array(8)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-1 h-1 bg-white rounded-full"
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: [0, 1, 0], opacity: [0, 1, 0] }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  delay: i * 0.2,
-                  ease: "easeInOut"
-                }}
-                style={{
-                  left: `${20 + Math.cos((i * Math.PI * 2) / 8) * 35}px`,
-                  top: `${20 + Math.sin((i * Math.PI * 2) / 8) * 35}px`,
-                }}
-              />
-            ))}
+            <motion.div
+              className="relative"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+              <Logo className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32" />
+            </motion.div>
           </motion.div>
 
           {/* Industry 4.0 Welcome Text */}
@@ -308,17 +191,18 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
           >
             <motion.h1 
               className={cn(
-                "text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-black bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 bg-clip-text text-transparent",
-                "drop-shadow-2xl tracking-tight leading-tight px-2"
+                "text-xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-black bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 bg-clip-text text-transparent",
+                "drop-shadow-2xl tracking-tight leading-[1.1] px-2 py-[6mm] text-center max-w-4xl mx-auto"
               )}
               style={{
                 textShadow: '0 0 20px rgba(251, 191, 36, 0.4), 0 0 40px rgba(249, 115, 22, 0.2)',
-                filter: 'drop-shadow(0 0 15px rgba(251, 191, 36, 0.3))'
+                filter: 'drop-shadow(0 0 15px rgba(251, 191, 36, 0.3))',
+                textWrap: 'balance'
               }}
               animate={showWelcome ? { scale: [1, 1.05, 1] } : {}}
               transition={{ duration: 0.6, repeat: Infinity }}
             >
-              Welcome to Almona Forge
+              Welcome to Digitalization
             </motion.h1>
             
             <motion.div 

@@ -23,6 +23,7 @@ const FabricatorDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white pt-20">
+      <div id="top" className="sr-only" aria-hidden="true" />
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className={`mb-8 ${isRTLMode ? 'text-right' : 'text-left'}`}>

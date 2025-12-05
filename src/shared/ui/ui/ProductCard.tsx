@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/shared/ui/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/ui/card";
-import { ArrowRight, Download } from "lucide-react";
+import { ArrowRight, Download, X } from "lucide-react";
 import { Badge } from "@/shared/ui/ui/badge";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
@@ -83,16 +83,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               />
-              <div className="absolute top-2 right-2 flex gap-2 z-10">
-                <button
-                  type="button"
-                  className="px-3 py-1.5 rounded-md bg-black/60 text-white text-xs border border-white/20 hover:bg-black/50 transition"
-                  onClick={() => setShowVideo(false)}
-                  aria-label="Close video"
-                >
-                  Close
-                </button>
-              </div>
+              <button
+                type="button"
+                className="absolute top-3 right-3 inline-flex items-center justify-center h-9 w-9 rounded-full bg-white/90 text-slate-800 shadow-md shadow-black/20 ring-1 ring-white/70 hover:bg-white transition"
+                onClick={() => setShowVideo(false)}
+                aria-label="Close video"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </>
           ) : (
             <OptimizedImage

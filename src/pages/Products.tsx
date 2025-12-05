@@ -41,7 +41,7 @@ interface SourceMachineLike {
   airSpec?: { consumption?: string; pressure?: string };
   modelPath?: string;
 }
-import { Eye } from "lucide-react";
+import { Eye, X } from "lucide-react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import React, { useEffect, useState, Suspense, useCallback, useMemo } from "react";
 import { useSearchParams, useLocation } from "react-router-dom";
@@ -106,6 +106,7 @@ const Products = function ProductsPage() {
   const [quickViewProduct, setQuickViewProduct] = useState<Machine | null>(null);
   const [showConfigurator, setShowConfigurator] = useState(false);
   const [showNewsletter, setShowNewsletter] = useState(false);
+  const [isTourPlaying, setIsTourPlaying] = useState(false);
   const scrolled = useScrollThreshold(48);
 
   // Debounced filter handler for search performance
@@ -167,6 +168,29 @@ const Products = function ProductsPage() {
   useEffect(() => {
     loadComparisons();
   }, []);
+
+  // Listen for quick-view compare adds
+  useEffect(() => {
+    const handleAddToComparison = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      const product = detail?.product as Machine | undefined;
+      if (!product) return;
+      setSelectedMachines((prev) => {
+        if (prev.find((m) => m.id === product.id)) return prev;
+        if (prev.length >= 5) {
+          toast({
+            title: "Maximum reached",
+            description: "You can compare up to 5 machines at a time",
+            variant: "destructive",
+          });
+          return prev;
+        }
+        return [...prev, product];
+      });
+    };
+    window.addEventListener('addToComparison', handleAddToComparison as EventListener);
+    return () => window.removeEventListener('addToComparison', handleAddToComparison as EventListener);
+  }, [toast]);
 
   // Handle the custom event to open the 3D model dialog
   useEffect(() => {
@@ -410,7 +434,9 @@ const Products = function ProductsPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 onClick={() => setWizardOpen(true)}
-                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                aria-label="Open AI Machine Wizard"
+                title="Open AI Machine Wizard"
+                className="bg-orange-600 hover:bg-orange-700 text-white px-7 py-3 text-lg font-semibold shadow-md hover:shadow-lg transition-colors"
               >
                 🚀 AI Machine Wizard
               </Button>
@@ -731,32 +757,53 @@ const Products = function ProductsPage() {
               <div className="flex gap-3 pt-2">
                 <Button asChild className="bg-gradient-orange hover:bg-orange-600 text-white">
                   <a href="https://youtu.be/Q0i1AOCOUgo?si=boDqL2T7eFgtny4w" target="_blank" rel="noreferrer">
-                    Watch Factory Tour
+                    Roll out a Visit
                   </a>
                 </Button>
               </div>
             </div>
 
-            <div className="relative group overflow-hidden rounded-xl border border-gray-800 bg-slate-900/40">
+            <div className="relative group overflow-hidden rounded-xl border border-gray-800 bg-slate-900/40 aspect-video">
               <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/10 via-transparent to-blue-500/10 opacity-80 pointer-events-none" />
-              <img
-                src="/images/factory .png"
-                alt="YILMAZ Factory"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
-              />
-              <a
-                href="https://youtu.be/Q0i1AOCOUgo?si=boDqL2T7eFgtny4w"
-                target="_blank"
-                rel="noreferrer"
-                className="absolute inset-0 flex items-center justify-center"
-                aria-label="Play factory tour"
-              >
-                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/65 border border-orange-400/50 text-white text-sm backdrop-blur">
-                  <Eye className="h-4 w-4" />
-                  Play Tour
+              {!isTourPlaying ? (
+                <>
+                  <img
+                    src="/images/factory .png"
+                    alt="YILMAZ Factory"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsTourPlaying(true)}
+                    className="absolute inset-0 flex items-center justify-center"
+                    aria-label="Play factory tour inline"
+                  >
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/65 border border-orange-400/50 text-white text-sm backdrop-blur">
+                      <Eye className="h-4 w-4" />
+                      Play Tour
+                    </div>
+                  </button>
+                </>
+              ) : (
+                <div className="absolute inset-0">
+                  <iframe
+                    src="https://www.youtube.com/embed/Q0i1AOCOUgo?si=boDqL2T7eFgtny4w&autoplay=1&rel=0&modestbranding=1"
+                    title="Factory tour video"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsTourPlaying(false)}
+                    className="absolute top-3 right-3 inline-flex items-center justify-center h-9 w-9 rounded-full bg-white/90 text-slate-800 shadow-md shadow-black/20 ring-1 ring-white/70 hover:bg-white"
+                    aria-label="Close factory tour video"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
                 </div>
-              </a>
+              )}
             </div>
           </div>
         </div>

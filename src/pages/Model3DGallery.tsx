@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Model3DGallery as Model3DGalleryComponent } from '@/components/3d-model/Model3DGallery';
 import { EnhancedModel3DDialog } from '@/components/3d-model/EnhancedModel3DDialog';
@@ -18,6 +18,7 @@ import {
   Settings
 } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
+import { useLocation } from 'react-router-dom';
 
 import modelsData from '@/data/models.json';
 
@@ -28,6 +29,8 @@ export default function Model3DGalleryPage() {
   const [measurementUnit, setMeasurementUnit] = useState<'mm' | 'cm' | 'm' | 'in' | 'ft'>('mm');
   const [autoRotateEnabled, setAutoRotateEnabled] = useState(false);
   const { toast } = useToast();
+  const swiftxrRef = useRef<HTMLDivElement | null>(null);
+  const location = useLocation();
 
   const handleModelSelect = (model: any) => {
     setSelectedModel(model);
@@ -78,6 +81,16 @@ export default function Model3DGalleryPage() {
   const handleMeasurementExport = (measurements: any[]) => {
     console.log('Measurements exported:', measurements);
   };
+
+  // Center the SwiftXR section when navigating via hash from CTAs
+  useEffect(() => {
+    if (location.hash === '#swiftxr' && swiftxrRef.current) {
+      // Slight delay to allow layout/iframes to settle
+      requestAnimationFrame(() => {
+        swiftxrRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }
+  }, [location.hash]);
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 pt-24">
@@ -252,11 +265,12 @@ export default function Model3DGalleryPage() {
         {/* SwiftXR Iframe Section */}
         <motion.div
           id="swiftxr"
+          ref={swiftxrRef}
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="mt-12 mb-8"
+          className="mt-12 mb-8 scroll-mt-28"
         >
           <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700">
             <CardHeader>

@@ -23,7 +23,7 @@ export const ServicePackageGrid: React.FC<ServicePackageGridProps> = ({
           {t('services.service_packages')}
         </h2>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-          {t('services.choose_perfect_care_plan')}
+          Egypt-ready care plans for aluminium &amp; UPVC workshops—reliable SLAs, fast spares, and bilingual support.
         </p>
       </div>
 

@@ -45,55 +45,55 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
   className = ''
 }) => {
   const { t, language } = useLanguage();
+
+  const isArabic = language === 'ar';
+  const label = (en: string, ar: string) => (isArabic ? ar : en);
   
   // Package data based on packageId
   const packageData = {
     basic: {
-      title: t('services.basic_care_package'),
-      machines: t('services.basic_care_machines'),
-      price: t('services.basic_care_price'),
+      title: label('Starter Workshop Care', 'خدمة الورش المبتدئة'),
+      machines: label('1-3 machines · Cairo & Giza', '١-٣ ماكينات · القاهرة والجيزة'),
+      price: label('3,200 EGP / month', '٣٬٢٠٠ جم / شهر'),
       features: [
-        t('services.monthly_health_check'),
-        t('services.basic_spare_parts'),
-        t('services.phone_email_support'),
-        t('services.forty_eight_hour_response'),
-        t('services.two_training_sessions'),
-        t('services.digital_machine_passport')
+        label('Quarterly on-site health check (Cairo/Giza 48h)', 'زيارة فحص ربع سنوية (القاهرة/الجيزة خلال ٤٨ ساعة)'),
+        label('10% discount on core aluminium & UPVC spares', 'خصم ١٠٪ على قطع الغيار الأساسية للألومنيوم و UPVC'),
+        label('Phone/WhatsApp support in Arabic & English', 'دعم هاتف/واتساب بالعربية والإنجليزية'),
+        label('Calibration for common UPVC & aluminium cuts', 'معايرة للقصات الشائعة للألومنيوم و UPVC'),
+        label('Digital machine passport and service history', 'جواز صيانة رقمي وسجل زيارات')
       ],
-      actionText: t('services.get_started'),
+      actionText: label('Start with Starter', 'ابدأ بالخدمة الأساسية'),
       popular: false
     },
     professional: {
-      title: t('services.professional_care_package'),
-      machines: t('services.professional_care_machines'),
-      price: t('services.professional_care_price'),
+      title: label('Growth Factory Care', 'خدمة المصانع النامية'),
+      machines: label('4-10 machines · Multi-line', '٤-١٠ ماكينات · خطوط متعددة'),
+      price: label('7,200 EGP / month', '٧٬٢٠٠ جم / شهر'),
       features: [
-        t('services.weekly_remote_monitoring'),
-        t('services.priority_spare_parts'),
-        t('services.emergency_hotline'),
-        t('services.twenty_four_hour_onsite'),
-        t('services.four_training_sessions'),
-        t('services.production_optimization_advice'),
-        t('services.advanced_machine_diagnostics')
+        label('Monthly on-site preventive maintenance (24h Cairo/Giza, 48h Delta)', 'صيانة وقائية شهرية (٢٤ ساعة القاهرة/الجيزة، ٤٨ ساعة الدلتا)'),
+        label('Priority spares with 20% discount & local stock check', 'أولوية في قطع الغيار مع خصم ٢٠٪ ومخزون محلي'),
+        label('Operator refresh training twice a year', 'تدريب تحديث للمشغلين مرتين سنوياً'),
+        label('Remote diagnostics & firmware updates', 'تشخيصات عن بعد وتحديثات للبرمجيات'),
+        label('Production tuning for aluminium & UPVC lines', 'ضبط الإنتاج لخطوط الألومنيوم و UPVC'),
+        label('Emergency hotline in Arabic/English', 'خط طوارئ بالعربية والإنجليزية')
       ],
-      actionText: t('services.get_started'),
+      actionText: label('Choose Growth Care', 'اختر خدمة النمو'),
       popular: true
     },
     enterprise: {
-      title: t('services.enterprise_care_package'),
-      machines: t('services.enterprise_care_machines'),
-      price: t('services.custom_pricing'),
+      title: label('Enterprise Plant Care', 'خدمة المصانع الكبرى'),
+      machines: label('10+ machines · Multi-site Egypt', '١٠+ ماكينات · مواقع متعددة داخل مصر'),
+      price: label('14,500 EGP+ / month', '١٤٬٥٠٠ جم+ / شهر'),
       features: [
-        t('services.real_time_ai_predictive'),
-        t('services.dedicated_technical_team'),
-        t('services.four_hour_emergency_guarantee'),
-        t('services.forty_percent_spare_parts'),
-        t('services.unlimited_training_sessions'),
-        t('services.custom_production_reports'),
-        t('services.technology_upgrade_consulting'),
-        t('services.export_compliance_support')
+        label('4h emergency response Cairo/Giza, 8h nationwide', '٤ ساعات طوارئ القاهرة/الجيزة، ٨ ساعات لباقي المحافظات'),
+        label('Dedicated customer success engineer & quarterly QBR', 'مهندس مخصص ولقاء مراجعة ربع سنوي'),
+        label('Predictive maintenance with sensor insights', 'صيانة تنبؤية بتحليل الحساسات'),
+        label('30% discount on strategic spares & stocking plans', 'خصم ٣٠٪ على القطع الإستراتيجية وخطط التخزين'),
+        label('Unlimited operator trainings & safety refreshers', 'تدريبات غير محدودة للمشغلين وتحديثات السلامة'),
+        label('Line balancing & throughput optimization for aluminium/UPVC', 'موازنة الخطوط وتحسين الإنتاج للألومنيوم و UPVC'),
+        label('Compliance-ready reporting for exports and audits', 'تقارير جاهزة للتدقيق والتصدير')
       ],
-      actionText: t('services.contact_sales'),
+      actionText: label('Talk to Enterprise', 'تواصل مع فريق المؤسسات'),
       popular: false
     }
   }[packageId];
@@ -114,7 +114,7 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
     >
       {isPopular && (
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-          <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full">
+          <Badge variant="custom" className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg shadow-orange-500/40 border border-white/10 inline-flex items-center">
             <Star className="h-3 w-3 mr-1 fill-current" />
             {t('services.most_popular')}
           </Badge>

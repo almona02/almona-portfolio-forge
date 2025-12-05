@@ -1,13 +1,16 @@
 import * as React from "react";
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "secondary" | "outline";
+  variant?: "default" | "secondary" | "outline" | "custom";
 }
 
 export const Badge = ({ className, variant = "default", ...props }: BadgeProps) => {
+  const baseClasses = variant === "custom" ? "" : `badge ${variant}`;
+  const classes = [baseClasses, className].filter(Boolean).join(" ");
+
   return (
     <span
-      className={`badge ${variant} ${className || ''}`}
+      className={classes}
       {...props}
     />
   );

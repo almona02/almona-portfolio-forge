@@ -339,6 +339,7 @@ const Services = () => {
         keywords="industrial services, AI advisor, machine training, fabrication services, maintenance services Egypt"
       />
       <main className="flex-grow pt-20">
+        <div id="top" className="sr-only" aria-hidden="true" />
         <div className="container mx-auto px-4 py-12 fade-in-up">
         {/* View Toggle and Language Toggle */}
         <div className="flex justify-between items-center mb-6">
@@ -348,7 +349,9 @@ const Services = () => {
 
         {/* Conditional Rendering */}
         {viewMode === 'simple' ? (
-          <SimpleServicesView onPackageSelect={handlePackageSelection} />
+          <>
+            <SimpleServicesView onPackageSelect={handlePackageSelection} />
+          </>
         ) : (
           <>
             {/* Enhanced Hero Section with AI Focus */}

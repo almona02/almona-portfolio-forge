@@ -17,7 +17,7 @@ const ServicesSection = () => {
           <path d="M17 21v-6"></path>
         </svg>
       ),
-      path: "/services/sales"
+      path: "/shop#top"
     },
     {
       title: "Used Machines",
@@ -33,7 +33,7 @@ const ServicesSection = () => {
           <path d="M15 16h.01"></path>
         </svg>
       ),
-      path: "/usedmachines"
+      path: "/usedmachines#top"
     },
     {
       title: "Maintenance & Support",
@@ -43,7 +43,22 @@ const ServicesSection = () => {
           <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
         </svg>
       ),
-      path: "/services"
+      path: "/services#top"
+    },
+    {
+      title: "Tuning Studio",
+      description: "Fabricator Pro tuning for cut/optimize recipes, machine presets, and QA baselines.",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
+          <path d="M3 3v4a2 2 0 0 0 2 2h4"></path>
+          <path d="M21 3v4a2 2 0 0 1-2 2h-4"></path>
+          <path d="M3 21v-4a2 2 0 0 1 2-2h4"></path>
+          <path d="M21 21v-4a2 2 0 0 0-2-2h-4"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M12 9v3l1.5 1.5"></path>
+        </svg>
+      ),
+      path: "/fabricator#top"
     },
     {
       title: "Spare Parts",
@@ -55,7 +70,7 @@ const ServicesSection = () => {
           <line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
       ),
-      path: "/services/spare-parts"
+      path: "/services/spare-parts#top"
     },
     {
       title: "Technical Training",
@@ -70,7 +85,7 @@ const ServicesSection = () => {
           <path d="M8 18h8"></path>
         </svg>
       ),
-      path: "/services/training"
+      path: "/services/training#top"
     },
     {
       title: "Remnant Marketplace",
@@ -84,7 +99,7 @@ const ServicesSection = () => {
           <rect x="7" y="7" width="10" height="10" rx="2"></rect>
         </svg>
       ),
-      path: "/fabricator"
+      path: "/fabricator#top"
     },
     {
       title: "Analytics & Optimization",
@@ -99,7 +114,7 @@ const ServicesSection = () => {
           <circle cx="17" cy="8" r="1"></circle>
         </svg>
       ),
-      path: "/fabricator"
+      path: "/fabricator#top"
     }
   ];
 

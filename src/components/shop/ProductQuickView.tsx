@@ -102,6 +102,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
     setActionsTaken(prev => [...prev, 'compare_add']);
     quickViewAnalytics.trackQuickViewConversion(product, 'compare_add', conversionTime, 'quick_view_panel');
     toast.success('Added to comparison');
+    onClose();
   };
 
   const handle3DView = () => {

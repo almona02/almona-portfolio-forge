@@ -3,9 +3,9 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { ServicePackageGrid } from './ServicePackageGrid';
 import { PackageComparisonTable } from './PackageComparisonTable';
-import { PackageCalculator } from './PackageCalculator';
-import { CustomerStories } from './CustomerStories';
 import ServiceCoverageMap from './ServiceCoverageMap';
+import { CustomerStories } from './CustomerStories';
+import { PackageCalculator } from './PackageCalculator';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Factory, Users, Zap, CheckCircle2, Clock, Shield, TrendingUp } from 'lucide-react';
@@ -92,14 +92,15 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
 
   return (
     <div className={`space-y-20 ${className}`}>
-      {/* Hero Section */}
-      <section className="relative pt-12 pb-20 px-4">
+
+      {/* Premium Services Hero (top of page) */}
+      <section className="py-20 px-4 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-purple-500/10" />
         <div className="relative max-w-7xl mx-auto text-center">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-bold mb-6"
+            className="text-5xl md:text-6xl font-bold mb-6"
           >
             <span className="bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
               {t('services.premium_services')}
@@ -109,17 +110,16 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-xl md:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed"
+            className="text-xl md:text-2xl text-gray-300 mb-6 max-w-4xl mx-auto leading-relaxed"
           >
             {t('services.complete_care_solutions')}
           </motion.p>
           
-          {/* Stats */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-16"
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
           >
             {stats.map((stat, index) => (
               <div key={index} className="text-center p-6 bg-white/5 rounded-2xl backdrop-blur-sm border border-white/10">
@@ -134,48 +134,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
         </div>
       </section>
 
-      {/* Package Calculator */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <PackageCalculator onPackageRecommend={onPackageSelect} />
-        </div>
-      </section>
-
-      {/* Service Packages */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <ServicePackageGrid onPackageSelect={onPackageSelect} />
-        </div>
-      </section>
-
-      {/* Package Comparison Table */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <PackageComparisonTable />
-        </div>
-      </section>
-
-      {/* Service Coverage Map (Egypt/Turkey) */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold text-white">
-              {t('services.regional_service_coverage')}
-            </h2>
-            <p className="text-xl text-gray-400">{t('services.technician_locations_response_times')}</p>
-          </div>
-          <ServiceCoverageMap />
-        </div>
-      </section>
-
-      {/* Customer Success Stories */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <CustomerStories showFeaturedOnly={true} maxStories={3} />
-        </div>
-      </section>
-
-      {/* Service Categories */}
+      {/* Service Categories (moved up for quick scan before packages) */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -223,7 +182,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
         </div>
       </section>
 
-      {/* Process Steps */}
+      {/* Process Steps (How it works) */}
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -252,31 +211,46 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Service Packages */}
       <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-orange-500/10 to-purple-500/10 rounded-3xl p-12 border border-white/10 backdrop-blur-sm"
-          >
-            <h2 className="text-4xl font-bold text-white mb-4">
-              {t('services.ready_transform_fabrication_business')}
-            </h2>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              {t('services.join_hundreds_satisfied_fabricators')}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-xl text-lg">
-                {t('services.get_free_consultation_cta')}
-              </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-slate-900 px-8 py-3 rounded-xl text-lg">
-                {t('services.view_case_studies_cta')}
-              </Button>
-            </div>
-          </motion.div>
+        <div className="max-w-7xl mx-auto">
+          <ServicePackageGrid onPackageSelect={onPackageSelect} />
         </div>
       </section>
+
+      {/* Package Comparison Table */}
+      <section className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <PackageComparisonTable />
+        </div>
+      </section>
+
+      <section className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <PackageCalculator onPackageRecommend={onPackageSelect} />
+        </div>
+      </section>
+
+      {/* Service Coverage Map (Egypt/Turkey) */}
+      <section className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-4xl font-bold text-white">
+              {t('services.regional_service_coverage')}
+            </h2>
+            <p className="text-xl text-gray-400">{t('services.technician_locations_response_times')}</p>
+          </div>
+          <ServiceCoverageMap />
+        </div>
+      </section>
+
+      {/* Customer Success Stories */}
+      <section className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <CustomerStories showFeaturedOnly={true} maxStories={3} />
+        </div>
+      </section>
+
     </div>
   );
 };

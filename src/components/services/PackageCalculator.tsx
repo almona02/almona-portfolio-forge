@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Factory, Users, TrendingUp, Calculator, CheckCircle2, Star } from 'lucide-react';
+import { Factory, Users, TrendingUp, Calculator, CheckCircle2, Star, ShieldCheck, Gauge, Sparkles } from 'lucide-react';
 import { calculateTieredPrice, calculateDynamicPrice } from '@/lib/pricing';
 import { useExperiment } from '@/components/analytics/ABTestProvider';
 
@@ -217,11 +217,18 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
           transition={{ delay: 0.1 }}
         >
           <Card className="bg-slate-800/50 backdrop-blur-sm border border-white/10">
-            <CardHeader>
-              <CardTitle className="text-xl text-white flex items-center gap-2">
-                <Calculator className="h-5 w-5 text-orange-400" />
-                {t('services.business_information')}
-              </CardTitle>
+            <CardHeader className="pb-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-1">
+                  <CardTitle className="text-2xl text-white leading-tight flex items-center gap-2">
+                    <Calculator className="h-5 w-5 text-orange-300" />
+                    {t('services.business_information')}
+                  </CardTitle>
+                  <p className="text-sm text-slate-300/80">
+                    Professional intake wizard aligned to your project and SLA.
+                  </p>
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Machine Count */}
@@ -237,37 +244,14 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
                       step={1}
                       className="w-full"
                     />
-                    <div className="flex justify-between text-sm text-gray-400 mt-2">
-                      <span className="flex items-center gap-1">
-                        <div className="w-2 h-2 rounded-full bg-green-400"></div>
-                        1
-                      </span>
+                    <div className="flex items-center justify-between text-sm text-gray-400 mt-2">
                       <span className="font-semibold text-orange-400 bg-orange-400/10 px-3 py-1 rounded-full">
                         {inputs.machineCount} {language === 'ar' ? 'ماكينة' : 'machines'}
                       </span>
-                      <span className="flex items-center gap-1">
-                        <div className="w-2 h-2 rounded-full bg-red-400"></div>
-                        20+
+                      <span className="text-xs text-slate-400">
+                        Align to your installed base for precise sizing.
                       </span>
                     </div>
-                  </div>
-                  
-                  {/* Quick selection buttons */}
-                  <div className="flex gap-2 flex-wrap">
-                    {[1, 3, 5, 10, 15, 20].map(count => (
-                      <button
-                        key={count}
-                        type="button"
-                        onClick={() => handleInputChange('machineCount', count)}
-                        className={`px-3 py-1 rounded-full text-xs font-medium border transition-all duration-200 ${
-                          inputs.machineCount === count
-                            ? 'bg-orange-500/20 border-orange-400 text-orange-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]'
-                            : 'border-slate-600 text-gray-400 hover:border-orange-400/60 hover:text-orange-300'
-                        }`}
-                      >
-                        {count}
-                      </button>
-                    ))}
                   </div>
                 </div>
               </div>
@@ -392,23 +376,34 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
                 </Select>
               </div>
 
-              <Button 
-                onClick={handleCalculate}
-                disabled={isCalculating}
-                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-              >
-                {isCalculating ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Calculating...
-                  </>
-                ) : (
-                  <>
-                    <Calculator className="h-4 w-4 mr-2" />
-                    {t('services.get_recommendation')}
-                  </>
-                )}
-              </Button>
+              <div className="space-y-3 pt-2">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-slate-400">
+                  <span className="flex items-center gap-1 text-slate-300/80">
+                    <Sparkles className="h-4 w-4 text-orange-300" />
+                    Executive concierge available on request.
+                  </span>
+                  <span className="text-slate-400">
+                    Numbers refresh instantly as you refine the brief.
+                  </span>
+                </div>
+                <Button 
+                  onClick={handleCalculate}
+                  disabled={isCalculating}
+                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                >
+                  {isCalculating ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Calculating...
+                    </>
+                  ) : (
+                    <>
+                      <Calculator className="h-4 w-4 mr-2" />
+                      {t('services.get_recommendation')}
+                    </>
+                  )}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
@@ -421,11 +416,26 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
         >
           {recommendation ? (
             <Card className="bg-slate-800/50 backdrop-blur-sm border border-white/10">
-              <CardHeader>
-                <CardTitle className="text-xl text-white flex items-center gap-2">
-                  <Star className="h-5 w-5 text-yellow-400" />
-                  Recommended Package
-                </CardTitle>
+              <CardHeader className="space-y-3 pb-4 border-b border-white/5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <CardTitle className="text-xl text-white flex items-center gap-2">
+                      <Star className="h-5 w-5 text-yellow-400" />
+                      Recommended Package
+                    </CardTitle>
+                    <p className="text-sm text-slate-300/80">
+                      Board-ready summary with concierge rollout and financial rationale.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 justify-end">
+                    <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-100 border-yellow-500/30">
+                      Executive track
+                    </Badge>
+                    <Badge variant="outline" className="border-white/20 text-slate-100">
+                      Audit-ready
+                    </Badge>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Package Recommendation */}
@@ -449,6 +459,29 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
                     <Badge variant="secondary" className="bg-white/20 text-white">
                       {recommendation.confidence}% Match
                     </Badge>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 text-sm text-white">
+                    <div className="rounded-lg bg-black/10 border border-white/10 p-3 flex items-start gap-2">
+                      <ShieldCheck className="h-4 w-4 text-green-300 mt-0.5" />
+                      <div>
+                        <p className="text-xs text-white/70">Kickoff & governance</p>
+                        <p className="font-semibold">48h white-glove launch</p>
+                      </div>
+                    </div>
+                    <div className="rounded-lg bg-black/10 border border-white/10 p-3 flex items-start gap-2">
+                      <Gauge className="h-4 w-4 text-orange-200 mt-0.5" />
+                      <div>
+                        <p className="text-xs text-white/70">Reliability</p>
+                        <p className="font-semibold">99.5% monitored availability</p>
+                      </div>
+                    </div>
+                    <div className="rounded-lg bg-black/10 border border-white/10 p-3 flex items-start gap-2">
+                      <Sparkles className="h-4 w-4 text-yellow-200 mt-0.5" />
+                      <div>
+                        <p className="text-xs text-white/70">Executive cadence</p>
+                        <p className="font-semibold">Monthly impact review</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -475,8 +508,18 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
                     {recommendation.savings.toLocaleString()} EGP/year
                   </div>
                   <div className="text-sm text-green-300">
-                    Compared to individual service requests
+                    Board-level ROI view aligned to procurement and service continuity.
                   </div>
+                </div>
+
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
+                  <div className="flex items-center gap-2 font-semibold text-white">
+                    <ShieldCheck className="h-4 w-4 text-green-400" />
+                    Procurement-ready packet
+                  </div>
+                  <p className="mt-1 text-slate-300/80">
+                    Includes SLA highlights, escalation paths, and commercial guardrails your leadership can approve without rewrites.
+                  </p>
                 </div>
 
                 {/* Action Button */}
@@ -489,6 +532,9 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
                 >
                   Select {recommendation.packageId.charAt(0).toUpperCase() + recommendation.packageId.slice(1)} Care
                 </Button>
+                <p className="text-xs text-slate-400 text-center">
+                  Need a bespoke scope? We will craft an executive brief in under 24 hours.
+                </p>
               </CardContent>
             </Card>
           ) : (
@@ -498,6 +544,9 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
                   <Calculator className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p className="text-lg">{t('services.fill_business_details')}</p>
                   <p className="text-sm">{t('services.click_get_recommendation')}</p>
+                  <p className="text-xs text-slate-500 mt-3">
+                    Executive concierge available if you prefer a guided intake call.
+                  </p>
                 </div>
               </CardContent>
             </Card>
