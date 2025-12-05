@@ -66,7 +66,7 @@ export const LanguageSwitcher: React.FC<{
   if (variant === 'minimal-text') {
     return (
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger className="outline-none">
           <Button variant="outline" size="sm" className={className}>
             <span className="hidden sm:inline">{currentLang.nativeName}</span>
             <span className="sm:hidden">{currentLang.name}</span>
@@ -98,7 +98,7 @@ export const LanguageSwitcher: React.FC<{
   if (variant === 'compact') {
     return (
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger className="outline-none">
           <Button variant="outline" size="sm" className={className}>
             <Globe className="h-4 w-4 mr-2" />
             <span className="mr-2">{currentLang.flag}</span>
