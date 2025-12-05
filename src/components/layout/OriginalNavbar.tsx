@@ -42,7 +42,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
       items: [
         { name: "YILMAZ Machines", path: "/products/machines" },
         { name: "3D Configurator", path: "/products/configurator" },
-        { name: "AR Viewer", path: "/products/ar-viewer" },
+        { name: "AR Viewer", path: "/products/3d-gallery#swiftxr" },
       ]
     },
     { 

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/shared/ui/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import ProductCard from "@/shared/ui/ui/ProductCard";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Box } from "lucide-react";
 import { yilmazMachines } from "@/constants/yilmazMachines";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Machine } from "@/types";
@@ -17,45 +17,63 @@ const FeaturedProducts = () => {
     setActiveTab(value);
   };
 
-  // Get featured machines with proper typing
-  const featuredMachines = yilmazMachines.filter(machine => machine.featured).slice(0, 3);
-  
-  const machineProducts = featuredMachines.map((machine: Machine) => ({
+  // Curated feature order
+  const curatedNames = ["ALM 6510", "NCR 300", "CDC 600", "AIM 3410", "DC-421-PBS", "KP 180"];
+
+  const fallbackMachine: Machine = {
+    id: "aim-3410",
+    name: "AIM 3410",
+    description: "Aluminium profile machining center with multi-axis precision and CNC-controlled operations.",
+    imageUrl: "/placeholder.svg",
+    category: "processing-centers",
+    featured: true,
+    specifications: [
+      "Multi-axis CNC machining for aluminium profiles",
+      "Precision drilling, milling, and cutting in one pass",
+      "Servo-controlled positioning with automatic clamping"
+    ],
+    tags: ["CNC", "Aluminium", "Machining Center"],
+  } as Machine;
+
+  const kpFallback: Machine = {
+    id: "kp-180",
+    name: "KP 180",
+    description: "High-precision cutting / machining unit for aluminum profiles, built for reliable daily production.",
+    imageUrl: "/placeholder.svg",
+    category: "processing-centers",
+    featured: true,
+    specifications: [
+      "Precision cutting and drilling for aluminum profiles",
+      "Servo positioning with automatic clamping",
+      "Optimized for fast changeovers in workshop environments"
+    ],
+    tags: ["Aluminium", "Machining"],
+  } as Machine;
+
+  const findMachine = (name: string) => yilmazMachines.find(m => m.name.toLowerCase() === name.toLowerCase());
+
+  const curatedMachines = curatedNames
+    .map((name) => {
+      if (name === "AIM 3410") return findMachine(name) ?? fallbackMachine;
+      if (name === "KP 180") return findMachine(name) ?? kpFallback;
+      return findMachine(name) ?? null;
+    })
+    .filter(Boolean) as Machine[];
+
+  const machineProducts = curatedMachines.map((machine: Machine) => ({
     id: machine.id,
     title: machine.name,
     description: machine.description,
     imageUrl: machine.imageUrl,
-    features: machine.specifications.slice(0, 3),
+    features: machine.specifications?.slice(0, 3) ?? [],
     tags: machine.tags,
     badge: machine.certifications?.includes('CE') ? 'CE Certified' : undefined,
     specPdf: machine.specPdf,
     youtubeUrl: machine.youtubeUrl,
-    // Additional machine-specific data
     powerSpec: machine.powerSpec,
     dimensions: machine.dimensions,
     category: machine.category,
     safetyFeatures: machine.safetyFeatures
-  }));
-
-  // Get featured profiles with proper typing
-  const featuredProfiles: any[] = [];
-  
-  const profileProducts = featuredProfiles.map((profile: any) => ({
-    id: profile.id,
-    title: profile.name,
-    description: profile.description,
-    imageUrl: profile.imageUrl,
-    features: [
-      `Material: ${profile.material}`,
-      `Color: ${profile.color}`,
-      `Applications: ${profile.applications.join(', ')}`
-    ],
-    tags: [profile.material],
-    badge: profile.thermalProperties?.thermalBreak ? 'Thermal Break' : undefined,
-    // Additional profile-specific data
-    material: profile.material,
-    applications: profile.applications,
-    thermalProperties: profile.thermalProperties
   }));
 
   return (
@@ -91,9 +109,17 @@ const FeaturedProducts = () => {
               ))}
             </div>
             <div className="mt-8 sm:mt-10 md:mt-12 text-center">
-              <Button asChild className="bg-gradient-orange hover:bg-almona-orange-dark text-white text-xs sm:text-sm md:text-base px-4 py-2 sm:px-5 sm:py-2.5">
-                <Link to="/shop" className="flex items-center gap-2 justify-center">
-                  {t('common.actions.viewMore')} Machines
+              <Button
+                asChild
+                className="bg-gradient-orange hover:bg-almona-orange-dark text-white text-xs sm:text-sm md:text-base px-4 py-2 sm:px-5 sm:py-2.5"
+              >
+                <Link
+                  to="/products/3d-gallery#swiftxr"
+                  className="flex items-center gap-2 justify-center"
+                  aria-label="Open SwiftXR AR experience"
+                >
+                  <Box className="h-4 w-4 sm:h-5 sm:w-5" />
+                  TRY Me (AR)
                   <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Link>
               </Button>

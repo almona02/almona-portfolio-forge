@@ -52,7 +52,6 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
       specs: [
         { name: "Name", key: "name", type: "text" },
         { name: "Type", key: "type", type: "text" },
-        { name: "Release Date", key: "releaseDate", type: "date" },
       ]
     },
     {

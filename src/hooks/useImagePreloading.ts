@@ -103,7 +103,7 @@ export function useCriticalImagePreloading() {
   useEffect(() => {
     // Preload critical images immediately
     const criticalImages = [
-      { src: '/logo.png', options: { width: 200, height: 60, quality: 90 } },
+      { src: '/Screenshot%202025-12-05%20014011.png', options: { width: 200, height: 60, quality: 90 } },
       { src: '/images/hero-bg.jpg', options: { width: 1920, height: 1080, quality: 85 } },
       { src: '/images/placeholder-machine.jpg', options: { width: 400, height: 300, quality: 80 } }
     ];

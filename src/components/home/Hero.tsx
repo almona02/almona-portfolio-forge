@@ -157,7 +157,7 @@ const Hero = () => {
       />
 
       {/* Content - Optimized for mobile with proper spacing - Must be above background */}
-      <div className="relative z-[100] flex flex-col h-full">
+      <div className="relative z-[100] flex flex-col h-full mt-[1cm] lg:mt-[2cm]">
         {/* Main Content Area - Enhanced positioning for large screens */}
         <div className="flex-1 flex flex-col justify-center px-3 sm:px-4 md:px-6 lg:px-12 xl:px-20 2xl:px-32 container mx-auto py-12 sm:py-16 md:py-20 lg:py-24">
           {slides.map((slide, index) => (

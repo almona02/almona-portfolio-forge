@@ -11,7 +11,6 @@ import { UniqueProduct } from "../types/unique-product";
 // import { EgyptCertification } from "../types/shop";
 
 // Components
-import Footer from "../components/layout/Footer";
 import AiEquipmentAdvisor from "../components/shop/ai-advisor/AiEquipmentAdvisor";
 import { IndustrialProductCard } from "../components/shop/IndustrialProductCard";
 import { Skeleton } from "../shared/ui/ui/skeleton";
@@ -479,7 +478,6 @@ const ShopEnhanced = () => {
           <RecentlyViewedProducts />
         </div>
       </main>
-      <Footer />
 
       {showDurabilityModal && selectedDurabilityProduct && (
         <DurabilityDetailsModal

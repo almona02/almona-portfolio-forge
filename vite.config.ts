@@ -228,14 +228,8 @@ export default defineConfig(({ mode }) => {
       outDir: 'dist',
       assetsDir: 'assets',
       target: "esnext",
-      minify: isProduction ? "terser" : false,
+      minify: isProduction ? "esbuild" : false, // FIXED: Use esbuild instead of terser to avoid circular reference issues
       sourcemap: false, // Disable sourcemaps to speed up build
-      terserOptions: {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-        },
-      },
       // Note: react-vendor is intentionally large (3.9MB) to prevent module loading errors
       // This is acceptable as it contains React core and all React-dependent libraries
       chunkSizeWarningLimit: 5000, // Increased to accommodate react-vendor chunk
@@ -324,25 +318,34 @@ export default defineConfig(({ mode }) => {
           
           // CORRECT: Use function format that returns string | undefined
           manualChunks: (id: string) => {
-            // Vendor chunks - group common dependencies
-            if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || id.includes('node_modules/react-router-dom')) {
+            // SIMPLIFIED APPROACH: Group ALL React dependencies together
+            // This prevents circular dependency and initialization order issues
+            if (id.includes('node_modules/react') || id.includes('node_modules/react-dom') || 
+                id.includes('node_modules/react-router') || id.includes('node_modules/@radix-ui') || 
+                id.includes('node_modules/class-variance-authority') || 
+                id.includes('node_modules/clsx') || id.includes('node_modules/tailwind-merge') ||
+                id.includes('node_modules/framer-motion') || id.includes('node_modules/@react-three') ||
+                id.includes('node_modules/recharts') || id.includes('node_modules/react-chartjs-2')) {
               return 'vendor';
             }
+<<<<<<< Current (Your changes)
 
           // Charting libraries
           if (id.includes('node_modules/recharts') || id.includes('node_modules/chart.js')) {
             return 'charts';
-          }
+            }
             
             // UI vendor chunks
             if (id.includes('node_modules/@radix-ui') || id.includes('node_modules/class-variance-authority') || 
                 id.includes('node_modules/clsx') || id.includes('node_modules/tailwind-merge')) {
               return 'vendor-ui';
             }
+=======
+>>>>>>> Incoming (Background Agent changes)
             
-            // Three.js related
-            if (id.includes('node_modules/three') || id.includes('node_modules/@react-three')) {
-            return 'three';
+            // Pure Three.js (no React dependency) - separate chunk as it's huge
+            if (id.includes('node_modules/three/')) {
+              return 'three';
             }
             
             // Fabricator specific chunks

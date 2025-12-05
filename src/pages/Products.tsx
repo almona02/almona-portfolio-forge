@@ -325,7 +325,7 @@ const Products = function ProductsPage() {
     },
     {
       question: "What is the warranty coverage?",
-      answer: "All YILMAZ machines come with a comprehensive 2-year warranty covering parts and labor, with extended warranty options available."
+      answer: "All YILMAZ machines come with a comprehensive 1-year warranty covering parts and labor, with extended warranty options available."
     },
     {
       question: "Can I get a custom configuration?",
@@ -711,6 +711,53 @@ const Products = function ProductsPage() {
             >
               Subscribe
             </Button>
+          </div>
+        </div>
+
+        {/* Factory Prestige Card */}
+        <div className="bg-almona-darker/60 border border-gray-800 rounded-xl p-6 sm:p-8 mb-12 fade-in-up">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center">
+            <div className="space-y-3">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gradient-orange">Why Choose YILMAZ Machines?</h2>
+              <p className="text-gray-300 leading-relaxed">
+                Precision-built in our state-of-the-art factory with Industry 4.0 standards, digital QA, and
+                certified processes. See the production floor in action—exactly where your machines are born.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="text-xs border-orange-400/60 text-orange-300">Industry 4.0</Badge>
+                <Badge variant="outline" className="text-xs border-orange-400/60 text-orange-300">Digital QA</Badge>
+                <Badge variant="outline" className="text-xs border-orange-400/60 text-orange-300">CE Certified</Badge>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <Button asChild className="bg-gradient-orange hover:bg-orange-600 text-white">
+                  <a href="https://youtu.be/Q0i1AOCOUgo?si=boDqL2T7eFgtny4w" target="_blank" rel="noreferrer">
+                    Watch Factory Tour
+                  </a>
+                </Button>
+              </div>
+            </div>
+
+            <div className="relative group overflow-hidden rounded-xl border border-gray-800 bg-slate-900/40">
+              <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/10 via-transparent to-blue-500/10 opacity-80 pointer-events-none" />
+              <img
+                src="/images/factory .png"
+                alt="YILMAZ Factory"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
+              />
+              <a
+                href="https://youtu.be/Q0i1AOCOUgo?si=boDqL2T7eFgtny4w"
+                target="_blank"
+                rel="noreferrer"
+                className="absolute inset-0 flex items-center justify-center"
+                aria-label="Play factory tour"
+              >
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/65 border border-orange-400/50 text-white text-sm backdrop-blur">
+                  <Eye className="h-4 w-4" />
+                  Play Tour
+                </div>
+              </a>
+            </div>
           </div>
         </div>
 

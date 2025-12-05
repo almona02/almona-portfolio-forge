@@ -21,7 +21,7 @@ const ServicesSection = () => {
     },
     {
       title: "Used Machines",
-      description: "Browse and sell used aluminum and UPVC machines",
+      description: "Verified B2B used-machine marketplace with logistics support.",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
           <rect x="3" y="7" width="18" height="13" rx="2" ry="2"></rect>
@@ -73,27 +73,33 @@ const ServicesSection = () => {
       path: "/services/training"
     },
     {
-      title: "Profile Fabrication",
-      description: "Custom profile fabrication for your specific needs",
+      title: "Remnant Marketplace",
+      description: "B2B remnant exchange with verification, pricing, and logistics baked in.",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
-          <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
-          <polyline points="17 2 12 7 7 2"></polyline>
+          <path d="M3 3v5h5"></path>
+          <path d="M21 21v-5h-5"></path>
+          <path d="M3 21v-5h5"></path>
+          <path d="M21 3v5h-5"></path>
+          <rect x="7" y="7" width="10" height="10" rx="2"></rect>
         </svg>
       ),
-      path: "/services/fabrication"
+      path: "/fabricator"
     },
     {
-      title: "Consulting",
-      description: "Expert advice on machinery selection and workshop setup",
+      title: "Analytics & Optimization",
+      description: "Waste reduction (15–30%), OEE dashboards, and AI advisory for jobs.",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          <path d="M3 3v18h18"></path>
+          <path d="M7 14l3-3 2 2 5-5"></path>
+          <circle cx="7" cy="14" r="1"></circle>
+          <circle cx="10" cy="11" r="1"></circle>
+          <circle cx="12" cy="13" r="1"></circle>
+          <circle cx="17" cy="8" r="1"></circle>
         </svg>
       ),
-      path: "/services/consulting"
+      path: "/fabricator"
     }
   ];
 

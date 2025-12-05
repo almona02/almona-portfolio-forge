@@ -1,9 +1,18 @@
 
 import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const AboutSection = () => {
+  const navigate = useNavigate();
+
+  const handleAboutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    navigate("/about");
+    // Scroll to top after navigation
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <section className="py-10 sm:py-12 md:py-16 lg:py-20 bg-almona-dark-lighter">
       <div className="container mx-auto px-3 sm:px-4 md:px-6">
@@ -37,7 +46,7 @@ const AboutSection = () => {
               </div>
             </div>
             <Button asChild className="bg-gradient-orange hover:bg-almona-orange-dark text-white text-xs sm:text-sm md:text-base px-4 py-2 sm:px-5 sm:py-2.5">
-              <Link to="/about" className="flex items-center gap-2">
+              <Link to="/about" onClick={handleAboutClick} className="flex items-center gap-2">
                 Learn More About Us
                 <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
               </Link>
@@ -51,7 +60,7 @@ const AboutSection = () => {
               <div className="space-y-2 sm:space-y-3 md:space-y-4">
                 <div className="h-32 sm:h-36 md:h-40 bg-almona-dark-light rounded-lg overflow-hidden opacity-90 sm:opacity-100">
                   <img 
-                    src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7" 
+                    src="/images/hero01 (1).png" 
                     alt="ALMONA Workshop" 
                     className="w-full h-full object-cover"
                     loading="lazy"
@@ -59,7 +68,7 @@ const AboutSection = () => {
                 </div>
                 <div className="h-48 sm:h-56 md:h-64 bg-almona-dark-light rounded-lg overflow-hidden opacity-90 sm:opacity-100">
                   <img 
-                    src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d" 
+                    src="/images/hero01 (2).png" 
                     alt="ALMONA Team" 
                     className="w-full h-full object-cover"
                     loading="lazy"
@@ -69,7 +78,7 @@ const AboutSection = () => {
               <div className="space-y-2 sm:space-y-3 md:space-y-4 mt-4 sm:mt-6 md:mt-8">
                 <div className="h-48 sm:h-56 md:h-64 bg-almona-dark-light rounded-lg overflow-hidden opacity-90 sm:opacity-100">
                   <img 
-                    src="https://images.unsplash.com/photo-1518770660439-4636190af475" 
+                    src="/images/hero01 (3).png" 
                     alt="ALMONA Machines" 
                     className="w-full h-full object-cover"
                     loading="lazy"
@@ -77,7 +86,7 @@ const AboutSection = () => {
                 </div>
                 <div className="h-32 sm:h-36 md:h-40 bg-almona-dark-light rounded-lg overflow-hidden opacity-90 sm:opacity-100">
                   <img 
-                    src="https://images.unsplash.com/photo-1531297484001-80022131f5a1" 
+                    src="/images/hero01 (4).png" 
                     alt="ALMONA Office" 
                     className="w-full h-full object-cover"
                     loading="lazy"

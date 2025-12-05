@@ -25,9 +25,9 @@
         "alternateName": ["Almona Co.", "Almona Portfolio Forge"],
         "description": "الوكيل الرسمي المعتمد لماكينات يلماز (YILMAZ) التركية في مصر منذ عام 2000. تأسست الشركة عام 1991 كمزود رائد للحلول الصناعية. نقدم ماكينات تصنيع الألومنيوم والـ UPVC ومنصة Fabricator Pro للتصنيع الذكي Industry 4.0.",
         "url": "https://www.almona02.com",
-        "logo": "https://www.almona02.com/logo.png",
+        "logo": "https://www.almona02.com/Screenshot%202025-12-05%20014011.png",
         "image": [
-            "https://www.almona02.com/logo.png",
+            "https://www.almona02.com/Screenshot%202025-12-05%20014011.png",
             "https://www.almona02.com/images/yilmaz-authorized-certificate.jpg"
         ],
         "telephone": "+20 2 35856305",
@@ -164,16 +164,41 @@
             animation: fadeInDown 0.8s ease-out;
         }
 
-        .logo {
-            max-width: 180px;
+        .logo-frame {
+            display: inline-block;
             margin: 0 auto 20px;
+            padding: 12px 18px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(13,15,18,0.92), rgba(30,60,114,0.38), rgba(255,95,31,0.58));
+            box-shadow: 0 15px 35px rgba(0,0,0,0.18);
+            backdrop-filter: blur(4px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-frame::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 45%),
+                        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.06), transparent 50%);
+            pointer-events: none;
+        }
+
+        .logo {
+            max-width: 240px;
+            width: min(70vw, 240px);
+            height: auto;
+            margin: 0 auto;
             display: block;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-            transition: transform 0.3s ease;
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.16));
+            transition: transform 0.3s ease, filter 0.3s ease;
+            border-radius: 14px;
         }
 
         .logo:hover {
-            transform: scale(1.05);
+            transform: scale(1.03);
+            filter: drop-shadow(0 10px 18px rgba(0,0,0,0.22));
         }
 
         h1 {
@@ -481,7 +506,9 @@
 
     <div class="container">
         <header>
-            <img src="/logo.png" alt="Almona Logo" class="logo" onerror="this.style.display='none'">
+            <div class="logo-frame">
+                <img src="/Screenshot%202025-12-05%20014011.png" alt="Almona Logo" class="logo" onerror="this.style.display='none'">
+            </div>
             <h1>شركة المنى للاستيراد والتصدير والتوكيلات التجارية</h1>
             <div class="badge">الوكيل الرسمي المعتمد لماكينات يلماز في مصر | Official YILMAZ Authorized Dealer</div>
         </header>

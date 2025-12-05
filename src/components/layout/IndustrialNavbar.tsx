@@ -24,14 +24,10 @@ import {
   FileText,
   Calculator,
   Coins,
-  Box,
-  LogOut
+  Box
 } from 'lucide-react';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 
 interface IndustrialNavbarProps {
   user?: {
@@ -52,7 +48,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [notifications, setNotifications] = useState(3);
+  const [notifications] = useState(3);
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const navbarRef = useRef<HTMLElement>(null);
@@ -124,7 +120,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     { name: "Projects", path: "/fabricator/projects", icon: <Factory className="h-4 w-4" /> },
     { name: "Inventory", path: "/fabricator/inventory", icon: <Package className="h-4 w-4" /> },
     { name: "Profiles & Accessories", path: "/fabricator-workflow#inventory", icon: <Scissors className="h-4 w-4" /> },
-    { name: "Reports Hub", path: "/fabricator/reports", icon: <BarChart3 className="h-4 w-4" /> },
+    { name: "Quick Reports", path: "/reports", icon: <FileText className="h-4 w-4" /> },
     { name: "Machines", path: "/machines", icon: <Cpu className="h-4 w-4" /> },
     { name: "Settings & Prices", path: "/pricing-settings", icon: <Settings className="h-4 w-4" /> },
     { name: "Commercial Offers", path: "/offers", icon: <FileText className="h-4 w-4" /> },
@@ -137,7 +133,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     { name: "New Project", action: () => navigate('/fabricator-workflow?new=true'), icon: Zap },
     { name: "Machine Status", action: () => navigate('/machine-status'), icon: Factory },
     { name: "Inventory Check", action: () => navigate('/fabricator/inventory'), icon: Package },
-    { name: "Reports Hub", action: () => navigate('/fabricator/reports'), icon: BarChart3 }
+    { name: "Quality Reports", action: () => navigate('/quality-reports'), icon: Brain }
   ];
 
   // Global fabricator nav model – used by the search overlay
@@ -319,396 +315,447 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     );
   };
 
-  // Add ARIA roles and labels to the main navbar structure
-  const navigationItems = [
-    {
-      id: 'workflow',
-      label: 'AI Workflow',
-      icon: Factory,
-      href: '/fabricator-workflow#workflow',
-      description: 'End‑to‑end fabrication pipeline',
-      children: [
-        { id: 'measuring', label: 'Smart Measuring', icon: Ruler, href: '/fabricator-workflow#measuring', badge: 'AI' },
-        { id: 'design', label: 'Technical Design', icon: Settings, href: '/fabricator-workflow#design', badge: 'PRO' },
-        { id: 'preview3d', label: '3D Preview', icon: Box, href: '/fabricator-workflow#preview3d', badge: '3D' },
-        { id: 'optimization', label: 'Cutting Optimization', icon: Scissors, href: '/fabricator-workflow#optimization', badge: 'AI' },
-        { id: 'inventory', label: 'Inventory Check', icon: Package, href: '/fabricator-workflow#inventory' },
-        { id: 'production', label: 'Production Planning', icon: Factory, href: '/fabricator-workflow#production' },
-        { id: 'quality', label: 'Quality Control', icon: Zap, href: '/fabricator-workflow#quality' }
-      ]
-    },
-    {
-      id: 'projects',
-      label: 'Projects',
-      icon: Factory,
-      href: '/fabricator/projects',
-      description: 'Manage all window units and positions'
-    },
-    {
-      id: 'customers',
-      label: 'Customers',
-      icon: Users,
-      href: '/fabricator/customers',
-      description: 'Client management and portals'
-    },
-    {
-      id: 'inventory',
-      label: 'Inventory',
-      icon: Package,
-      href: '/fabricator/inventory',
-      description: 'Stock management and remnants',
-      badge: 'LIVE',
-      children: [
-        { id: 'profiles', label: 'Profiles & Accessories', icon: Scissors, href: '/fabricator-workflow#inventory' },
-        { id: 'machines', label: 'Machines', icon: Cpu, href: '/machines' },
-        { id: 'accounting', label: 'Accounting', icon: Coins, href: '/accounting' }
-      ]
-    },
-    {
-      id: 'commercial',
-      label: 'Commercial',
-      icon: Calculator,
-      description: 'Pricing and offers',
-      children: [
-        { id: 'offers', label: 'Commercial Offers', icon: FileText, href: '/offers' },
-        { id: 'pricing', label: 'Settings & Prices', icon: Calculator, href: '/pricing-settings' },
-        { id: 'cost-reports', label: 'Cost Reports', icon: BarChart3, href: '/cost-reports' }
-      ]
-    },
-    {
-      id: 'resources',
-      label: 'Resources',
-      icon: Package,
-      description: 'Production assets & machines',
-      children: [
-        { id: 'machines', label: 'Machines', icon: Cpu, href: '/machines' },
-        { id: 'accounting', label: 'Accounting', icon: Coins, href: '/accounting' }
-      ]
-    }
-  ];
-
-  const workflows = [
-    { id: 'measuring', label: 'Smart Measuring', icon: Ruler },
-    { id: 'design', label: 'Technical Design', icon: Settings },
-    { id: 'optimization', label: 'AI Optimization', icon: Sparkles },
-    { id: 'inventory', label: 'Inventory Check', icon: Package },
-    { id: 'production', label: 'Production', icon: Factory },
-    { id: 'quality', label: 'Quality Control', icon: Zap }
-  ];
-
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
-  const handleLogout = () => {
-    setIsUserMenuOpen(false);
-    // In a real app, you'd dispatch an action to clear auth state
-    // navigate('/login'); 
-  };
-
   return (
     <motion.header
       ref={navbarRef}
+      dir="ltr"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 200, damping: 25 }}
-      className={`industrial-nav fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950/90 backdrop-blur-xl border-b border-slate-700/50 shadow-2xl`}
-      role="banner"
-      aria-label="Main industrial navigation"
+      className={`fixed top-0 left-0 right-0 z-[200] transition-all duration-500 ${
+        isScrolled
+          ? 'bg-slate-950/95 backdrop-blur-xl border-b border-orange-500/30 shadow-2xl shadow-orange-500/10'
+          : 'bg-slate-950/90 backdrop-blur-lg border-b border-slate-800'
+      }`}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          
-          {/* Logo with proper ARIA */}
-          <Link 
-            to="/fabricator" 
-            className="flex items-center gap-3 group"
-            aria-label="Almona Fabricator Pro - Return to dashboard"
-          >
-            <motion.div 
-              className="relative"
-              whileHover={{ scale: 1.05 }}
-            >
-              <Factory className="h-8 w-8 text-orange-500 drop-shadow-lg" />
-              <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full blur opacity-20 animate-ping group-hover:opacity-30" />
-            </motion.div>
-            <div>
-              <h1 className="text-xl font-bold text-white tracking-tight">Fabricator Pro</h1>
-              <p className="text-xs text-slate-400 uppercase tracking-wider">Industrial OS</p>
-            </div>
-          </Link>
+      {/* Main Navbar Container */}
+      <div className="container mx-auto px-4 xl:px-6">
+        <div className="flex items-center justify-between h-16 gap-4">
+          {/* Left Section – Brand + workflow access */}
+          <div className="flex items-center gap-4 flex-shrink-0">
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="relative h-9 w-9 rounded-full bg-gradient-to-br from-orange-400 via-amber-300 to-sky-400 shadow-lg shadow-orange-500/40 flex items-center justify-center">
+                <Factory className="w-4 h-4 text-slate-950" />
+                <div className="absolute -inset-[1px] rounded-full border border-white/15" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold tracking-[0.18em] text-slate-300 uppercase">
+                  Almona
+                </span>
+                <span className="text-[11px] font-semibold text-slate-100">
+                  {cockpitOwner} Cockpit
+                </span>
+              </div>
+            </Link>
 
-          {/* Desktop Navigation with ARIA */}
-          <nav 
-            className="hidden md:flex items-center gap-1"
-            role="navigation"
-            aria-label="Main navigation"
-          >
-            {navigationItems.map((item, index) => (
-              <motion.div
-                key={item.id}
-                className="relative group"
-                whileHover={{ y: -1 }}
-                role="none"
+            {/* Workflow dropdown – easier to reach on wide screens */}
+            <motion.div className="relative hidden md:block">
+              <IndustrialButton
+                variant="secondary"
+                onClick={() => setActiveMenu(activeMenu === 'workflow' ? null : 'workflow')}
+                className="px-3 py-1.5 text-[11px] rounded-full"
               >
-                <Link
-                  to={item.href}
-                  className={cn(
-                    "industrial-nav-link flex items-center gap-2 py-2 px-4 rounded-lg transition-all duration-200 relative z-10",
-                    location.pathname === item.href && "active"
-                  )}
-                  aria-label={`Navigate to ${item.label}`}
-                  aria-current={location.pathname === item.href ? "page" : undefined}
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                  {item.badge && (
-                    <StatusBadge 
-                      status={item.badge} 
-                      efficiency={item.efficiency}
-                      aria-label={`${item.badge} status indicator`}
-                    />
-                  )}
-                </Link>
-                
-                {/* Dropdown with proper ARIA */}
-                {item.children && (
+                <Ruler className="w-3.5 h-3.5" />
+                <span className="hidden lg:inline">
+                  {workflowStages.find((s) => s.id === currentWorkflow)?.name || 'Smart Measuring'}
+                </span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform ${
+                    activeMenu === 'workflow' ? 'rotate-180' : ''
+                  }`}
+                />
+              </IndustrialButton>
+
+              <AnimatePresence>
+                {activeMenu === 'workflow' && (
                   <motion.div
-                    className="absolute left-0 top-full mt-2 w-64 bg-slate-800/95 backdrop-blur-xl rounded-xl border border-slate-700/50 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible pointer-events-none group-hover:pointer-events-auto transition-all duration-200 z-50"
-                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                    whileHover={{ opacity: 1, scale: 1, y: 0 }}
-                    role="menu"
-                    aria-label={`${item.label} submenu`}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full left-0 mt-2 w-64 bg-gray-800/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl shadow-orange-500/20 overflow-hidden z-50"
                   >
-                    <div className="py-2">
-                      {item.children.map((child) => (
+                    <div className="p-3 space-y-1">
+                      {workflowStages.map((stage) => {
+                        const isActive = currentWorkflow === stage.id;
+                        return (
+                          <button
+                            key={stage.id}
+                            type="button"
+                            onClick={() => {
+                              onWorkflowChange?.(stage.id);
+                              setActiveMenu(null);
+                            }}
+                            className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left text-[11px] transition-colors ${
+                              isActive
+                                ? 'bg-orange-500/90 text-slate-950'
+                                : 'text-slate-200 hover:bg-orange-500/10'
+                            }`}
+                          >
+                            <stage.icon className="w-3.5 h-3.5" />
+                            <span className="whitespace-nowrap">{stage.name}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </div>
+
+          {/* Center Section – status strip (visible on large screens) */}
+          <div className="hidden lg:flex items-center justify-center flex-1">
+            <div className="inline-flex items-center gap-4 rounded-full bg-slate-950/70 px-3 py-1.5 border border-slate-700/80 text-[11px]">
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-slate-300">System</span>
+                <span className="font-semibold text-emerald-300">Optimal</span>
+              </div>
+              <div className="h-4 w-px bg-slate-700" />
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+                <span className="text-slate-300">Efficiency</span>
+                <span className="font-semibold text-sky-300">92.5%</span>
+              </div>
+              <div className="h-4 w-px bg-slate-700" />
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                <span className="text-slate-300">Active Jobs</span>
+                <span className="font-semibold text-amber-300">12</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Section – search, menus, user */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Search Bar with global fabricator search overlay - Hidden on fabricator routes */}
+            {!location.pathname.startsWith('/fabricator') && (
+              <div className="hidden md:flex items-center relative">
+                <Search className="absolute left-3 w-4 h-4 text-slate-400 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search machines, orders..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 pr-3 py-2 rounded-full bg-slate-900/90 border border-slate-700 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400/60 w-60"
+                />
+              </div>
+            )}
+
+            {/* Language Switcher - Compact */}
+            <div className="hidden md:block">
+              <LanguageSwitcher variant="minimal-text" />
+            </div>
+
+            {/* Notifications */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative p-2 rounded-full bg-slate-900/90 border border-slate-700 text-slate-200 hover:border-orange-400/70 hover:text-white transition-all"
+            >
+              <Bell className="w-4 h-4" />
+              {notifications > 0 && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center"
+                >
+                  {notifications}
+                </motion.div>
+              )}
+            </motion.button>
+
+            {/* Business Navigation Dropdown */}
+            <motion.div className="relative">
+              <IndustrialButton
+                variant="secondary"
+                onClick={() => setActiveMenu(activeMenu === 'business' ? null : 'business')}
+                className="px-3 py-1.5 text-[11px] rounded-full"
+              >
+                <Workflow className="w-3.5 h-3.5" />
+                <span className="hidden lg:inline">Fabricator Menu</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform ${
+                    activeMenu === 'business' ? 'rotate-180' : ''
+                  }`}
+                />
+              </IndustrialButton>
+
+              <AnimatePresence>
+                {activeMenu === 'business' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full right-0 mt-2 w-[420px] bg-gray-800/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl shadow-orange-500/20 overflow-hidden z-50"
+                  >
+                    <div className="p-4 grid grid-cols-2 gap-2">
+                      {businessNav.map((item) => (
                         <Link
-                          key={child.id}
-                          to={child.href}
-                          className="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors w-full"
-                          role="menuitem"
-                          aria-label={`Navigate to ${child.label}`}
-                          onClick={() => setIsMobileMenuOpen(false)}
+                          key={item.name}
+                          to={item.path}
+                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-orange-500/10 transition-all duration-200"
+                          onClick={() => setActiveMenu(null)}
                         >
-                          <child.icon className="h-4 w-4 flex-shrink-0 text-orange-400" />
-                          <div className="min-w-0 flex-1">
-                            <p className="font-medium truncate">{child.label}</p>
-                            {child.description && (
-                              <p className="text-xs text-slate-400 truncate">{child.description}</p>
-                            )}
+                          <div className="text-orange-400">{item.icon}</div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-white truncate text-sm">{item.name}</div>
                           </div>
-                          {child.badge && (
-                            <StatusBadge 
-                              status={child.badge} 
-                              efficiency={child.efficiency}
-                              aria-label={`${child.badge} efficiency indicator`}
-                            />
-                          )}
                         </Link>
                       ))}
                     </div>
                   </motion.div>
                 )}
-              </motion.div>
-            ))}
-
-            {/* Workflow Switcher with ARIA */}
-            <div className="relative ml-4">
-              <Select 
-                value={currentWorkflow} 
-                onValueChange={(value) => {
-                  onWorkflowChange?.(value);
-                  setTimeout(() => {
-                    const element = document.getElementById(value);
-                    if (element) {
-                      element.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }, 100);
-                }}
-                aria-label="Switch current workflow module"
-              >
-                <SelectTrigger className="w-[180px] bg-slate-800/50 border-slate-600 text-white">
-                  <SelectValue placeholder="Select Workflow" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-800/95 backdrop-blur-xl border-slate-700/50">
-                  {workflows.map((workflow) => (
-                    <SelectItem 
-                      key={workflow.id} 
-                      value={workflow.id}
-                      className="text-white hover:bg-slate-700/50"
-                      aria-label={`Switch to ${workflow.label} workflow`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <workflow.icon className="h-4 w-4" />
-                        {workflow.label}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </nav>
-
-          {/* Right side controls with ARIA */}
-          <div className="flex items-center gap-2">
-            {/* Search button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-slate-400 hover:text-white hover:bg-slate-700/50"
-              aria-label="Open global search"
-              onClick={() => setIsSearchOpen(true)}
-            >
-              <Search className="h-5 w-5" />
-            </Button>
-
-            {/* Notifications button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="relative text-slate-400 hover:text-white hover:bg-slate-700/50"
-              aria-label="View notifications"
-              aria-haspopup="true"
-            >
-              <Bell className="h-5 w-5" />
-              {notifications > 0 && (
-                <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500" 
-                      aria-label={`${notifications} unread notifications`} />
-              )}
-            </Button>
-
-            {/* User menu with ARIA */}
-            <motion.div className="relative" whileHover={{ scale: 1.05 }}>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-700/50"
-                aria-label="Open user menu"
-                aria-haspopup="true"
-                aria-expanded={isUserMenuOpen}
-                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              >
-                <User className="h-5 w-5" />
-                <span className="hidden sm:inline">{user?.name || 'User'}</span>
-                <ChevronDown className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
-              </Button>
-
-              {/* User menu dropdown */}
-              <motion.div
-                className="absolute right-0 mt-2 w-48 bg-slate-800/95 backdrop-blur-xl rounded-xl border border-slate-700/50 shadow-2xl opacity-0 invisible pointer-events-none"
-                initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                animate={isUserMenuOpen ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.95, y: -10 }}
-                transition={{ duration: 0.15 }}
-                role="menu"
-                aria-label="User account menu"
-              >
-                <div className="py-1">
-                  <motion.div
-                    role="menuitem"
-                    className="px-4 py-2 text-sm text-slate-300 hover:bg-slate-700/50 cursor-pointer flex items-center gap-2"
-                    onClick={() => {
-                      // Profile action
-                      setIsUserMenuOpen(false);
-                    }}
-                    whileHover={{ x: 2 }}
-                    aria-label="View user profile"
-                  >
-                    <User className="h-4 w-4" />
-                    Profile
-                  </motion.div>
-                  
-                  <motion.div
-                    role="menuitem"
-                    className="px-4 py-2 text-sm text-slate-300 hover:bg-slate-700/50 cursor-pointer flex items-center gap-2 border-t border-slate-600"
-                    onClick={() => {
-                      // Settings action
-                      setIsUserMenuOpen(false);
-                    }}
-                    whileHover={{ x: 2 }}
-                    aria-label="Open settings"
-                  >
-                    <Settings className="h-4 w-4" />
-                    Settings
-                  </motion.div>
-
-                  <motion.div
-                    role="menuitem"
-                    className="px-4 py-2 text-sm text-slate-300 hover:bg-slate-700/50 cursor-pointer flex items-center gap-2 border-t border-slate-600"
-                    onClick={handleLogout}
-                    whileHover={{ x: 2 }}
-                    aria-label="Sign out of account"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Sign Out
-                  </motion.div>
-                </div>
-              </motion.div>
+              </AnimatePresence>
             </motion.div>
 
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="md:hidden text-slate-400 hover:text-white hover:bg-slate-700/50"
-              aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
-              aria-expanded={isMobileMenuOpen}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            {/* Fabrication Modules Dropdown */}
+            <motion.div className="relative">
+              <IndustrialButton
+                onClick={() => setActiveMenu(activeMenu === 'modules' ? null : 'modules')}
+                className="px-3 py-1.5 text-[11px] rounded-full"
+              >
+                <CircuitBoard className="w-3.5 h-3.5" />
+                <span className="hidden lg:inline">Modules</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform ${
+                    activeMenu === 'modules' ? 'rotate-180' : ''
+                  }`}
+                />
+              </IndustrialButton>
+
+              <AnimatePresence>
+                {activeMenu === 'modules' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full right-0 mt-2 w-96 bg-gray-800/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl shadow-orange-500/20 overflow-hidden z-50"
+                  >
+                    <div className="p-4">
+                      <h3 className="text-orange-400 font-bold mb-3 flex items-center gap-2">
+                        <Cpu className="w-4 h-4" />
+                        Fabrication Modules
+                      </h3>
+                      <div className="space-y-2">
+                        {fabricationModules.map((module) => (
+                          <Link
+                            key={module.name}
+                            to={module.path}
+                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-500/10 transition-all duration-200 group"
+                            onClick={() => setActiveMenu(null)}
+                          >
+                            <div className="text-orange-400 group-hover:scale-110 transition-transform">
+                              {module.icon}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <div className="font-medium text-white truncate">{module.name}</div>
+                                <StatusBadge status={module.status} efficiency={module.efficiency} />
+                              </div>
+                              <div className="text-sm text-gray-400 truncate">{module.description}</div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
+            {/* Quick Actions */}
+            <motion.div className="relative">
+              <IndustrialButton
+                variant="secondary"
+                onClick={() => setActiveMenu(activeMenu === 'actions' ? null : 'actions')}
+                className="px-3 py-1.5 text-[11px] rounded-full"
+              >
+                <Zap className="w-3.5 h-3.5" />
+                <span className="hidden lg:inline">Actions</span>
+              </IndustrialButton>
+
+              <AnimatePresence>
+                {activeMenu === 'actions' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full right-0 mt-2 w-64 bg-gray-800/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl shadow-orange-500/20 overflow-hidden z-50"
+                  >
+                    <div className="p-2">
+                      {quickActions.map((action) => (
+                        <button
+                          key={action.name}
+                          onClick={() => {
+                            action.action();
+                            setActiveMenu(null);
+                          }}
+                          className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-orange-500/10 transition-all duration-200 group"
+                        >
+                          <action.icon className="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform" />
+                          <span className="text-white font-medium">{action.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
+            {/* User Menu */}
+            <motion.div className="relative">
+              <IndustrialButton
+                variant="secondary"
+                onClick={() => setActiveMenu(activeMenu === 'user' ? null : 'user')}
+                className="px-3 py-1.5 text-[11px] rounded-full"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span className="hidden lg:inline">{user?.name || 'Operator'}</span>
+              </IndustrialButton>
+
+              <AnimatePresence>
+                {activeMenu === 'user' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full right-0 mt-2 w-48 bg-gray-800/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl shadow-orange-500/20 overflow-hidden z-50"
+                  >
+                    <div className="p-2">
+                      <div className="px-3 py-2 border-b border-gray-700">
+                        <div className="text-white font-medium">{user?.name || 'Operator'}</div>
+                        <div className="text-sm text-gray-400">
+                          {user?.email || 'operator@fabricator.com'}
+                        </div>
+                      </div>
+                      <button
+                        className="flex items-center gap-2 w-full p-3 rounded-lg hover:bg-orange-500/10 transition-all duration-200"
+                        onClick={() => {
+                          navigate('/fabricator/settings/branding');
+                          setActiveMenu(null);
+                        }}
+                      >
+                        <Settings className="w-4 h-4 text-orange-400" />
+                        <span className="text-white">Branding & Settings</span>
+                      </button>
+                      <button className="flex items-center gap-2 w-full p-3 rounded-lg hover:bg-red-500/10 transition-all duration-200 text-red-400">
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+
+            {/* Mobile Menu Button */}
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="lg:hidden p-2 rounded-full bg-slate-900/90 border border-slate-700 text-slate-300 hover:text-white hover:border-orange-400/70 transition-all"
             >
-              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </motion.button>
           </div>
         </div>
       </div>
 
-      {/* Mobile menu with proper ARIA */}
+      {/* Mobile Navigation */}
       <AnimatePresence>
-        {isMobileMenuOpen && (
+        {mobileOpen && (
           <motion.div
-            className="md:hidden"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            role="navigation"
-            aria-label="Mobile navigation menu"
+            className="lg:hidden bg-slate-950/95 backdrop-blur-xl border-t border-orange-500/30"
           >
-            <div className="bg-slate-900/95 backdrop-blur-xl border-t border-slate-700/50 px-4 py-4 space-y-2">
-              {navigationItems.map((item) => (
-                <div key={item.id} className="py-2">
-                  <Link
-                    to={item.href}
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-700/50 hover:text-white transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    aria-label={`Navigate to ${item.label}`}
+            <div className="container mx-auto px-4 py-4 max-h-[78vh] overflow-y-auto space-y-4">
+              {/* Mobile Workflow Navigation */}
+              <div className="grid grid-cols-2 gap-2">
+                {workflowStages.map((stage) => (
+                  <button
+                    key={stage.id}
+                    onClick={() => {
+                      onWorkflowChange?.(stage.id);
+                      setMobileOpen(false);
+                    }}
+                    className={`flex items-center gap-2 p-3 rounded-lg transition-all ${
+                      currentWorkflow === stage.id
+                        ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                        : 'bg-gray-800 text-gray-300 border border-gray-700 hover:text-white hover:border-orange-400/40'
+                    }`}
                   >
-                    <item.icon className="h-5 w-5 flex-shrink-0" />
-                    <span className="font-medium">{item.label}</span>
-                    {item.badge && (
-                      <StatusBadge 
-                        status={item.badge} 
-                        efficiency={item.efficiency}
-                        aria-label={`${item.badge} status indicator`}
-                      />
+                    <stage.icon className="w-4 h-4 flex-shrink-0" />
+                    <span className="text-sm font-medium text-left">{stage.name}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Mobile Quick Actions */}
+              <div className="grid grid-cols-2 gap-2">
+                {quickActions.map((action) => (
+                  <button
+                    key={action.name}
+                    onClick={() => {
+                      action.action();
+                      setMobileOpen(false);
+                    }}
+                    className="flex items-center gap-2 p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:text-white hover:border-orange-500/30 transition-all"
+                  >
+                    <action.icon className="w-4 h-4 text-orange-400 flex-shrink-0" />
+                    <span className="text-sm font-medium text-left">{action.name}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Mobile Navigation Links (scrollable) */}
+              <div className="space-y-2">
+                <div className="text-xs uppercase tracking-wider text-slate-500 font-semibold">Navigation</div>
+                {fabricatorNavItems.map((item) => (
+                  <div key={item.id} className="border border-slate-800/70 rounded-lg overflow-hidden">
+                    <Link
+                      to={item.path || '#'}
+                      className="flex items-center gap-3 px-3 py-3 text-slate-200 hover:bg-slate-800/70 transition-colors"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        if (item.path?.startsWith('/fabricator-workflow#')) {
+                          const id = item.path.split('#')[1];
+                          if (id) onWorkflowChange?.(id);
+                        }
+                      }}
+                    >
+                      <item.icon className="w-4 h-4 flex-shrink-0 text-orange-400" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium">{item.label}</div>
+                        {item.description && <div className="text-xs text-slate-400 truncate">{item.description}</div>}
+                      </div>
+                      <ChevronDown className="w-4 h-4 text-slate-500" />
+                    </Link>
+
+                    {item.children && item.children.length > 0 && (
+                      <div className="border-t border-slate-800/70 bg-slate-900/40">
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.id}
+                            to={child.path || '#'}
+                            className="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-slate-800/70 transition-colors"
+                            onClick={() => {
+                              setMobileOpen(false);
+                              if (child.path?.startsWith('/fabricator-workflow#')) {
+                                const id = child.path.split('#')[1];
+                                if (id) onWorkflowChange?.(id);
+                              }
+                            }}
+                          >
+                            <child.icon className="w-4 h-4 flex-shrink-0 text-orange-300" />
+                            <span className="text-sm">{child.label}</span>
+                          </Link>
+                        ))}
+                      </div>
                     )}
-                  </Link>
-                  
-                  {item.children && (
-                    <div className="ml-6 mt-2 space-y-1">
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.id}
-                          to={child.href}
-                          className="flex items-center gap-2 px-3 py-2 text-sm text-slate-400 hover:bg-slate-700/50 hover:text-white rounded transition-colors"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          aria-label={`Navigate to ${child.label}`}
-                        >
-                          <child.icon className="h-4 w-4" />
-                          <span>{child.label}</span>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+                  </div>
+                ))}
+              </div>
             </div>
           </motion.div>
         )}

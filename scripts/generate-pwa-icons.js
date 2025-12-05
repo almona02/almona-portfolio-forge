@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 // In a real project, you'd use a proper image processing library like sharp
 
 const publicDir = path.join(__dirname, '..', 'public');
-const logoPath = path.join(publicDir, 'logo.png');
+const logoPath = path.join(publicDir, 'Screenshot 2025-12-05 014011.png');
 
 // Check if logo exists
 if (!fs.existsSync(logoPath)) {
