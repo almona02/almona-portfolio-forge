@@ -219,31 +219,39 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
         {/* Compact Dropdown Trigger */}
         <motion.button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="w-full flex items-center justify-between p-3 bg-gray-800/90 md:bg-gray-800/50 rounded-lg border border-gray-700/50 hover:border-orange-500/50 transition-all duration-200 group"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          aria-label="Toggle AI Smart Categories"
+          className="relative w-full flex items-center justify-between p-4 rounded-xl border border-gray-700/60 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-800/70 hover:border-orange-500/60 shadow-[0_10px_40px_rgba(0,0,0,0.35)] overflow-hidden transition-all duration-200 group"
+          whileHover={{ scale: 1.01, y: -1 }}
+          whileTap={{ scale: 0.99 }}
         >
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Brain className="h-4 w-4 text-orange-400" />
-              <span className="font-medium text-white">Smart Categories</span>
+          <span className="absolute inset-0 bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="h-10 w-10 rounded-lg bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-300 shadow-inner">
+              <Brain className="h-5 w-5" />
             </div>
-            {selectedCategoryInfo && (
-              <div className="flex items-center gap-2">
-                <span className="text-lg">{selectedCategoryInfo.icon}</span>
-                <span className="text-sm text-gray-300">{selectedCategoryInfo.name}</span>
-                <Badge variant="secondary" className="text-xs bg-orange-500/20 text-orange-400">
-                  {categoryCounts[selectedCategory] || 0}
-                </Badge>
-              </div>
-            )}
+            <div className="flex flex-col">
+              <span className="text-[11px] uppercase tracking-[0.08em] text-orange-200">AI Smart Categories</span>
+              <span className="text-sm font-semibold text-white">
+                {selectedCategoryInfo ? `${selectedCategoryInfo.icon} ${selectedCategoryInfo.name}` : 'All Machines'}
+              </span>
+              <span className="text-[11px] text-gray-400">Industry 4.0 tuned filters</span>
+            </div>
           </div>
-          <motion.div
-            animate={{ rotate: isDropdownOpen ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <ChevronDown className="h-4 w-4 text-gray-400" />
-          </motion.div>
+          <div className="flex flex-col items-end gap-1 relative z-10">
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="text-xs bg-orange-500/15 text-orange-200 border border-orange-400/30">
+                {selectedCategoryInfo ? (categoryCounts[selectedCategory] || 0) : Object.values(categoryCounts).reduce((a, b) => a + b, 0)}
+              </Badge>
+              <motion.div
+                animate={{ rotate: isDropdownOpen ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+                className="rounded-full bg-gray-800/60 border border-gray-700 p-1 text-gray-300"
+              >
+                <ChevronDown className="h-4 w-4" />
+              </motion.div>
+            </div>
+            <span className="text-[11px] text-gray-400">Tap to personalize</span>
+          </div>
         </motion.button>
 
         {/* AI-Powered Dropdown */}

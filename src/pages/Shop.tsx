@@ -595,6 +595,7 @@ const Shop = () => {
         keywords="industrial machinery shop, YILMAZ machines, spare parts, custom fabrications"
       />
       <main className="flex-grow pt-20">
+        <div id="top" className="sr-only" aria-hidden="true" />
         {/* Hero Section */}
         <section 
           className="relative bg-gradient-to-br from-almona-dark to-almona-darker py-16 overflow-hidden fade-in-up"
