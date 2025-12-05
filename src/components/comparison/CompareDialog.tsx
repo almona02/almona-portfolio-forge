@@ -50,7 +50,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
           });
         } catch {
           // Fallback to regular logo
-          const res = await fetch('/logo.png');
+          const res = await fetch('/Screenshot%202025-12-05%20014011.png');
           const blob = await res.blob();
           logoDataUrl = await new Promise<string>((resolve, reject) => {
             const reader = new FileReader();
@@ -120,7 +120,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-  <DialogContent className="w-full max-w-full sm:max-w-6xl max-h-[90vh] overflow-y-auto print:max-w-none print:max-h-none">
+        <DialogContent className="w-full max-w-full sm:max-w-6xl max-h-[88vh] mt-4 sm:mt-10 overflow-y-auto print:max-w-none print:max-h-none">
           <DialogHeader>
             <div className="flex justify-between items-start">
               <div>

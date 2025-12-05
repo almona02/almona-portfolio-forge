@@ -86,6 +86,144 @@ const createPowerSpec = (powerStr: string): PowerSpecification => {
 
 export const yilmazMachines: Machine[] = [
   {
+    id: "aim-3410",
+    name: "AIM 3410",
+    description: "4-axis CNC aluminium profile machining center with 24,000 RPM electro spindle, 7+1 automatic tool magazine, and integrated saw operations.",
+    imageUrl: "/images/machines/AIM-3410_1.png",
+    specPdf: "/documents/specs/AIM-3410.pdf",
+    youtubeUrl: "https://youtu.be/qKC5xdpxKyY?si=0mTzSJphFoI_hmVZ",
+    modelPath: "/models/aim-3410.glb",
+    has3DModel: true,
+    category: "processing-centers",
+    subcategory: "profile-machining",
+    featured: true,
+    releaseDate: "2024-05-10",
+    type: "Aluminium Profile Machining Center",
+    powerSpec: {
+      voltage: "400V AC",
+      frequency: "50-60Hz",
+      phase: "3",
+      consumption: "11.5 kW",
+      amperage: "25A"
+    },
+    airSpec: {
+      consumption: "250 L/min",
+      pressure: "6-8 bar"
+    },
+    dimensions: {
+      width: "2000mm",
+      length: "5200mm",
+      height: "2200mm"
+    },
+    weight: {
+      net: "1430 kg",
+      gross: "1850 kg"
+    },
+    workingCapacity: {
+      x1: "3200mm",
+      y1: "225mm",
+      z1: "300mm"
+    },
+    spindleSpeed: "24,000 RPM",
+    cutterBits: "HSK-F63",
+    tags: ["CNC", "4-Axis", "Aluminium", "Profile Machining", "Automatic Tool Magazine", "Touch Screen", "Remote Support"],
+    specifications: [
+      "4-axis CNC motion with mobile bridge architecture",
+      "Automatic tool magazine: 7 cutters + 1 Ø180mm saw blade",
+      "Automatic clamp recognition and positioning",
+      "PLC-controlled spray tool cooling and cartridge lubrication (X/Y/Z)",
+      "15'' color touch screen with ISO G-code and AIMCAM support",
+      "Remote technical support and multi-language interface",
+      "Sound-insulated safety cabinet with LED lighting",
+      "Operator safety barrier and steel gantry construction",
+      "Axis speeds: X 60 m/min, Y 50 m/min, Z 50 m/min, A 72°/s",
+      "Saw unit: Ø180mm, Ø30mm bore, 3,000 RPM"
+    ],
+    standardAccessories: [
+      "AIMCAM software",
+      "Keyboard & mouse",
+      "Safety fence around machine",
+      "4x automatic profile clamps",
+      "1x pneumatic profile rest (left)",
+      "Chip pan in machine frame"
+    ],
+    optionalAccessories: [
+      "Second reference profile rest (right side)",
+      "Automatic tool length measurement",
+      "Special saw blade kit",
+      "Hand-held controller",
+      "Custom cutter tools and holders"
+    ],
+    certifications: ["CE", "ISO9001"],
+    safetyFeatures: ["TwoHandOperation", "AutomaticGuards", "EmergencyStop"],
+    egyptianCompliance: {
+      standard: "ES1109",
+      certificateNumber: "ES-AIM3410-2024",
+      issueDate: "2024-05-10"
+    }
+  },
+  {
+    id: "kp-180",
+    name: "KP 180",
+    description: "Hydraulic aluminium corner crimping machine with dual 5-ton heads, adjustable knives, and synchronized hydraulic pressing.",
+    imageUrl: "/images/machines/kp-180.png",
+    specPdf: "/documents/specs/KP-180-00021103.pdf",
+    youtubeUrl: "https://youtu.be/sy5hs4OIBkE?si=lTfXMq59M8afKqKU",
+    category: "corner-crimping",
+    subcategory: "hydraulic-crimping",
+    featured: true,
+    releaseDate: "2023-09-10",
+    type: "Hydraulic Aluminium Corner Crimping Machine",
+    powerSpec: {
+      voltage: "400V AC",
+      frequency: "50-60Hz",
+      phase: "3",
+      consumption: "1.14 kW"
+    },
+    airSpec: {
+      consumption: "10 L/min (hydraulic)",
+      pressure: "6-8 bar (max 100 bar)"
+    },
+    dimensions: {
+      width: "930mm",
+      length: "1100mm",
+      height: "1400mm"
+    },
+    weight: {
+      net: "436 kg",
+      gross: "436 kg"
+    },
+    workingCapacity: {
+      x1: "150mm", // width
+      y1: "185mm" // height
+    },
+    tags: ["Hydraulic", "Corner Crimping", "Aluminium"],
+    specifications: [
+      "Hydraulic crimping system with synchronized dual heads (2 x 5 tons)",
+      "Adjustable knives for profile shape/height",
+      "Steel construction table with precise stops and milimetric rulers",
+      "Hydraulic foot pedal for crimping; pneumatic pedal for clamps",
+      "Double-acting 90° bracing clamp returns under table after crimping",
+      "Polyamide protection plates to prevent profile scratches",
+      "Positioning cylinders close to workpiece to shorten cycle time",
+      "Max crimping height: 180 mm; max clamping: H185 x W150 mm",
+      "Minimum inner window dimension: 200 mm"
+    ],
+    standardAccessories: [
+      "2x profile support arms",
+      "Crimping knives: 3 mm, 5 mm, 7 mm (sets)",
+      "2x pneumatic vertical clamps",
+      "Allen keys (4 mm, 5 mm)"
+    ],
+    optionalAccessories: [
+      "Adjustable multi-knife set",
+      "Safety guard (H: 180 mm)",
+      "Special crimping knives"
+    ],
+    certifications: ["CE"],
+    safetyFeatures: ["EmergencyStop"]
+  },
+  {
     id: "ym-001",
     name: "ALM 6510",
     description: "Aluminium Profile Machining Center - 8-axis CNC servo control for milling, drilling, and cutting operations on four sides of profiles",
@@ -192,7 +330,7 @@ export const yilmazMachines: Machine[] = [
     description: "Full Automatic Double Head Mitre Saw Machine - Windows based industrial PC with 15'' LCD touch screen, automatic tilting to 90° and 45° inwards",
     imageUrl: "/images/machines/DC-421-PBS.jpg",
     specPdf: "/documents/specs/DC-421-PBS.pdf",
-    youtubeUrl: "https://www.youtube.com/watch?v=1B5elf1hDG4",
+    youtubeUrl: "https://youtu.be/sy5hs4OIBkE?si=szcbYEsauH_Zs3HK",
     category: "cutting-machines",
     featured: true,
     releaseDate: "2012-05-10",

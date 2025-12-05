@@ -4,13 +4,12 @@ import {
   Menu, 
   X, 
   ChevronDown, 
-  ShoppingCart, 
   User, 
   LogOut,
   Shield,
-  Globe,
   Workflow,
-  Factory
+  Factory,
+  Settings
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
@@ -31,14 +30,15 @@ interface NavItem {
   path: string;
   type: "link" | "dropdown";
   items?: { name: string; path: string; description?: string; icon?: string; featured?: boolean }[];
-  badge?: "NEW" | "AI" | "PRO" | "BETA";
+  badge?: "NEW" | "AI" | "PRO" | "BETA" | "SOON";
 }
 
-const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogout }) => {
+const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems = [], onLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
   
   const location = useLocation();
   const navbarRef = useRef<HTMLElement>(null);
@@ -86,7 +86,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
       items: [
         { name: "YILMAZ Machines", path: "/products/machines", description: "Industrial machinery solutions" },
         { name: "3D Configurator", path: "/products/configurator", description: "Customize in real-time" },
-        { name: "AR Viewer", path: "/products/ar-viewer", description: "See it in your space" },
+        { name: "AR Viewer", path: "/products/3d-gallery#swiftxr", description: "See it in your space" },
         { name: "3D Gallery", path: "/products/3d-gallery", description: "Interactive 3D model collection" },
       ]
     },
@@ -104,33 +104,9 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
       ]
     },
     { name: "Fabricator Pro", path: "/fabricator", type: "link", badge: "BETA" },
-    { name: "Smart Shop", path: "/shop", type: "link", badge: "NEW" },
+    { name: "Smart Shop", path: "/shop", type: "link", badge: "SOON" },
     { name: "About", path: "/about", type: "link" },
     { name: "Contact", path: "/contact", type: "link" },
-  ], []);
-
-  // Regions data
-  const regions = useMemo(() => [
-    { code: 'EG', name: 'Egypt', flag: '🇪🇬', currency: 'EGP' },
-    { code: 'TR', name: 'Turkey', flag: '🇹🇷', currency: 'TRY' },
-    { code: 'SA', name: 'Saudi Arabia', flag: '🇸🇦', currency: 'SAR' },
-    { code: 'AE', name: 'UAE', flag: '🇦🇪', currency: 'AED' },
-    { code: 'KW', name: 'Kuwait', flag: '🇰🇼', currency: 'KWD' },
-    { code: 'QA', name: 'Qatar', flag: '🇶🇦', currency: 'QAR' },
-    { code: 'BH', name: 'Bahrain', flag: '🇧🇭', currency: 'BHD' },
-    { code: 'OM', name: 'Oman', flag: '🇴🇲', currency: 'OMR' },
-    { code: 'JO', name: 'Jordan', flag: '🇯🇴', currency: 'JOD' },
-    { code: 'LB', name: 'Lebanon', flag: '🇱🇧', currency: 'LBP' },
-    { code: 'IQ', name: 'Iraq', flag: '🇮🇶', currency: 'IQD' },
-    { code: 'LY', name: 'Libya', flag: '🇱🇾', currency: 'LYD' },
-    { code: 'MA', name: 'Morocco', flag: '🇲🇦', currency: 'MAD' },
-    { code: 'TN', name: 'Tunisia', flag: '🇹🇳', currency: 'TND' },
-    { code: 'DZ', name: 'Algeria', flag: '🇩🇿', currency: 'DZD' },
-    { code: 'SD', name: 'Sudan', flag: '🇸🇩', currency: 'SDG' },
-    { code: 'ET', name: 'Ethiopia', flag: '🇪🇹', currency: 'ETB' },
-    { code: 'KE', name: 'Kenya', flag: '🇰🇪', currency: 'KES' },
-    { code: 'NG', name: 'Nigeria', flag: '🇳🇬', currency: 'NGN' },
-    { code: 'ZA', name: 'South Africa', flag: '🇿🇦', currency: 'ZAR' }
   ], []);
 
   // Simple dropdown handlers
@@ -158,6 +134,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
   const closeAllDropdowns = useCallback(() => {
     setActiveDropdown(null);
     setIsMobileMenuOpen(false);
+    setConfirmLogout(false);
     if (dropdownTimeoutRef.current) {
       clearTimeout(dropdownTimeoutRef.current);
     }
@@ -206,15 +183,22 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
     return location.pathname.startsWith(path);
   }, [location.pathname]);
 
-  // Badge styling
+  // Badge styling – harmonized colors and tighter font
   const getBadgeStyles = useCallback((badge: NavItem["badge"]) => {
-    const baseStyles = "text-xs px-1.5 py-0.5 rounded-full text-white font-bold";
+    const baseStyles = "text-[10px] px-2 py-0.5 rounded-full font-semibold tracking-tight shadow-sm";
     switch (badge) {
-      case "AI": return `${baseStyles} bg-gradient-to-r from-cyan-500 to-blue-500`;
-      case "PRO": return `${baseStyles} bg-gradient-to-r from-purple-500 to-pink-500`;
-      case "BETA": return `${baseStyles} bg-gradient-to-r from-purple-500 to-pink-500`;
-      case "NEW": return `${baseStyles} bg-gradient-to-r from-green-500 to-emerald-500`;
-      default: return baseStyles;
+      case "AI":
+        return `${baseStyles} text-white bg-gradient-to-r from-cyan-500 to-blue-500`;
+      case "PRO":
+        return `${baseStyles} text-white bg-gradient-to-r from-purple-500 to-pink-500`;
+      case "BETA":
+        return `${baseStyles} text-white bg-gradient-to-r from-purple-500 to-pink-500`;
+      case "SOON":
+        return `${baseStyles} text-white bg-gradient-to-r from-amber-500 to-orange-500`;
+      case "NEW":
+        return `${baseStyles} text-white bg-gradient-to-r from-green-500 to-emerald-500`;
+      default:
+        return `${baseStyles} text-white bg-slate-700`;
     }
   }, []);
 
@@ -284,6 +268,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
   return (
     <nav 
       ref={navbarRef}
+      dir="ltr"
       className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-200 ${
         isScrolled 
           ? "bg-black/95 border-b border-orange-500/30 shadow-2xl" 
@@ -396,89 +381,21 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
 
           {/* Right Side Actions */}
           <div className="hidden lg:flex items-center gap-1.5 xl:gap-2 2xl:gap-3 flex-shrink-0 ml-auto">
-            {/* Region */}
-            <div
-              className="relative"
-              onMouseEnter={() => handleDropdownEnter('region')}
-              onMouseLeave={() => handleDropdownLeave('region')}
-            >
-              <button
-                onClick={() => handleDropdownToggle('region')}
-                className="flex items-center gap-1.5 xl:gap-2 p-1.5 xl:p-2 2xl:p-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
-                aria-haspopup="true"
-                aria-expanded={activeDropdown === 'region'}
-                aria-label="Open region dropdown menu"
-              >
-                <Globe className="h-4 w-4 xl:h-4 xl:w-4 2xl:h-5 2xl:w-5" />
-                <span className="hidden xl:block text-xs 2xl:text-sm font-medium whitespace-nowrap">Region</span>
-                <ChevronDown className={`h-3 w-3 xl:h-3.5 xl:w-3.5 transition-transform ${activeDropdown === 'region' ? 'rotate-180' : ''}`} />
-              </button>
-
-              {activeDropdown === 'region' && (
-                  <div
-                    className="absolute right-0 top-full mt-2 w-72 xl:w-80 2xl:w-96 bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl overflow-hidden navbar-dropdown-enter"
-                    style={{ zIndex: 10000 }}
-                    onMouseEnter={() => handleDropdownEnter('region')}
-                    onMouseLeave={() => handleDropdownLeave('region')}
-                  >
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-white mb-3">Select Your Region</h3>
-                      <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto">
-                        {regions.map((region) => (
-                          <button
-                            key={region.code}
-                            className="flex items-center justify-between p-3 text-left hover:bg-white/5 rounded-lg transition-colors"
-                            onClick={() => {
-                              console.log('Selected region:', region);
-                              setActiveDropdown(null);
-                            }}
-                            aria-label={`Select ${region.name} region`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <span className="text-2xl">{region.flag}</span>
-                              <div>
-                                <div className="text-white font-medium">{region.name}</div>
-                                <div className="text-gray-400 text-sm">{region.currency}</div>
-                              </div>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-            </div>
-
-            {/* Quote Cart */}
-            <Link
-              to="/quote"
-              className="relative p-1.5 xl:p-2 2xl:p-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
-              onClick={closeAllDropdowns}
-              aria-label="Navigate to quote page"
-            >
-              <ShoppingCart className="h-4 w-4 xl:h-4 xl:w-4 2xl:h-5 2xl:w-5" />
-              {quoteItems.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-                  {Math.min(quoteItems.length, 99)}
-                </span>
-              )}
-            </Link>
-
             {/* User Menu */}
             {user ? (
-              <div className="relative">
+              <div className="relative z-50">
                 <button
                   onClick={() => handleDropdownToggle("user")}
-                  className="flex items-center gap-1.5 xl:gap-2 px-2 py-1.5 xl:px-2.5 xl:py-2 2xl:px-3 2xl:py-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
+                  className="flex items-center gap-1.5 xl:gap-2 px-2 py-1.5 xl:px-2.5 xl:py-2 2xl:px-3 2xl:py-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200 min-w-[44px] min-h-[44px] flex-shrink-0"
                   aria-haspopup="true"
                   aria-expanded={activeDropdown === "user"}
                   aria-label="Open user dropdown menu"
                 >
-                  <div className="w-6 h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs xl:text-xs 2xl:text-sm font-bold">
+                  <div className="w-6 h-6 xl:w-7 xl:h-7 2xl:w-8 2xl:h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white text-xs xl:text-xs 2xl:text-sm font-bold flex-shrink-0">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
-                  <span className="hidden xl:block text-xs 2xl:text-sm font-medium max-w-24 2xl:max-w-28 truncate">{user.name}</span>
-                  <ChevronDown className={`h-3 w-3 xl:h-3 xl:w-3 2xl:h-3.5 2xl:w-3.5 transition-transform ${activeDropdown === "user" ? "rotate-180" : ""}`} />
+                  {/* Hide email/name text on right side; keep avatar only */}
+                  <ChevronDown className={`h-3 w-3 xl:h-3 xl:w-3 2xl:h-3.5 2xl:w-3.5 transition-transform flex-shrink-0 ${activeDropdown === "user" ? "rotate-180" : ""}`} />
                 </button>
 
                 {activeDropdown === "user" && (
@@ -487,8 +404,10 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                       style={{ zIndex: 10000 }}
                     >
                       <div className="p-3 border-b border-orange-500/20">
-                        <div className="font-medium text-white">{user.name}</div>
-                        <div className="text-sm text-gray-400 truncate">{user.email}</div>
+                        <div className="font-medium text-white">{user.name || 'User'}</div>
+                        <div className="text-sm text-gray-400 truncate">
+                          {user.role === 'admin' ? 'Administrator' : user.role === 'user' ? 'User' : user.role || 'User'}
+                        </div>
                       </div>
                       <div className="p-2 space-y-1">
                         {user.role === "admin" && (
@@ -506,22 +425,44 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems = [], onLogo
                           to="/portal"
                           className="flex items-center gap-3 px-3 py-3 text-sm text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10 rounded-xl transition-all duration-200"
                           onClick={closeAllDropdowns}
-                          aria-label="Navigate to my portal"
+                          aria-label="Navigate to machine control"
                         >
-                          <User className="h-4 w-4" />
-                          <span>My Portal</span>
+                          <Factory className="h-4 w-4" />
+                          <span>Machine Control</span>
                         </Link>
-                        <button
-                          onClick={() => {
-                            onLogout?.();
-                            closeAllDropdowns();
-                          }}
-                          className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10 rounded-xl transition-all duration-200 text-left"
-                          aria-label="Logout"
-                        >
-                          <LogOut className="h-4 w-4" />
-                          <span>Logout</span>
-                        </button>
+
+                        {/* Removed Settings & Prices and Branding & Settings from dropdown */}
+                        {!confirmLogout ? (
+                          <button
+                            onClick={() => setConfirmLogout(true)}
+                            className="w-full flex items-center gap-3 px-3 py-3 text-sm text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-orange-500/10 hover:to-red-500/10 rounded-xl transition-all duration-200 text-left"
+                            aria-label="Logout"
+                          >
+                            <LogOut className="h-4 w-4" />
+                            <span>Logout</span>
+                          </button>
+                        ) : (
+                          <div className="w-full px-3 py-3 rounded-xl bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/30 space-y-2">
+                            <div className="text-sm text-white font-semibold">Confirm logout?</div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  onLogout?.();
+                                  closeAllDropdowns();
+                                }}
+                                className="flex-1 px-3 py-2 text-sm font-semibold text-white rounded-lg bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-colors"
+                              >
+                                Yes, logout
+                              </button>
+                              <button
+                                onClick={() => setConfirmLogout(false)}
+                                className="flex-1 px-3 py-2 text-sm font-semibold text-gray-200 rounded-lg border border-slate-700 hover:border-slate-500 hover:bg-slate-800 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

@@ -34,7 +34,6 @@ import {
   RotateCcw
 } from 'lucide-react';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import Footer from '@/components/layout/Footer';
 
 const systemsData = {
   upvc: {
@@ -1051,7 +1050,6 @@ const FabricationServices = () => {
         )}
       </AnimatePresence>
 
-      <Footer />
     </div>
   );
 };

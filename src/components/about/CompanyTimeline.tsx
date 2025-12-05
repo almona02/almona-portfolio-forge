@@ -11,6 +11,8 @@ interface Milestone {
   year: number;
   title: string;
   description: string;
+  details?: string[];
+  impact?: string[];
   media?: {
     type: 'image' | 'video';
     url: string;
@@ -58,17 +60,27 @@ const TimelineNode = ({ milestone, active, onClick }: { milestone: Milestone; ac
 };
 
 const MediaGallery = ({ media }: { media: Milestone['media'] }) => {
-  if (!media) return null;
+  if (!media || media.length === 0) {
+    return (
+      <div className="mt-4 rounded-lg border border-almona-light/10 bg-gradient-to-br from-almona-dark to-almona-dark/80 px-4 py-6 text-sm text-gray-400">
+        Media coming soon for this milestone.
+      </div>
+    );
+  }
 
   return (
-    <div className="grid grid-cols-2 gap-4 mt-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
       {media.map((item, index) => (
-        <div key={index} className="relative aspect-video bg-almona-dark rounded-lg overflow-hidden">
+        <div key={index} className="relative aspect-[4/3] sm:aspect-video bg-almona-dark rounded-lg overflow-hidden border border-almona-light/10">
           {item.type === 'image' ? (
             <img 
               src={item.url} 
-              alt="" 
+              alt={item.thumbnail ?? item.url} 
               className="w-full h-full object-cover"
+              loading="lazy"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).style.display = 'none';
+              }}
             />
           ) : (
             <video
@@ -76,6 +88,9 @@ const MediaGallery = ({ media }: { media: Milestone['media'] }) => {
               controls
               className="w-full h-full object-cover"
             />
+          )}
+          {!item.thumbnail && (
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/50" />
           )}
         </div>
       ))}
@@ -166,7 +181,7 @@ export const CompanyTimeline = () => {
         transition: 'opacity 0.5s ease'
       }}
     >
-      <div className="flex-1 h-[300px] sm:h-[400px] md:h-[450px] lg:h-[500px] bg-almona-dark rounded-lg sm:rounded-xl overflow-hidden">
+      <div className="flex-1 h-[320px] sm:h-[420px] md:h-[460px] lg:h-[520px] bg-gradient-to-br from-almona-dark to-almona-darker rounded-lg sm:rounded-xl overflow-hidden border border-almona-light/10 shadow-inner">
         <Canvas camera={{ position: [0, 5, 10], fov: 50 }}>
           <ambientLight intensity={0.5} />
           <pointLight position={[10, 10, 10]} />
@@ -189,7 +204,7 @@ export const CompanyTimeline = () => {
       </div>
 
       <div className="flex-1">
-        <ScrollArea className="h-[300px] sm:h-[400px] md:h-[450px] lg:h-[500px] pr-2 sm:pr-4">
+        <ScrollArea className="h-[320px] sm:h-[420px] md:h-[460px] lg:h-[520px] pr-2 sm:pr-4 bg-almona-dark/60 rounded-lg sm:rounded-xl border border-almona-light/10 p-3 sm:p-4">
           <div className="space-y-3 sm:space-y-4">
             <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white leading-tight">{activeMilestone.title}</h3>
             <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">{activeMilestone.description}</p>
@@ -201,7 +216,7 @@ export const CompanyTimeline = () => {
               />
             )}
 
-            {activeMilestone.media && <MediaGallery media={activeMilestone.media} />}
+            <MediaGallery media={activeMilestone.media} />
 
             <Tabs value="details" onValueChange={() => {}} className="mt-4 sm:mt-6">
               <TabsList className="grid w-full grid-cols-2 bg-almona-darker h-9 sm:h-10">
@@ -209,14 +224,30 @@ export const CompanyTimeline = () => {
                 <TabsTrigger value="impact" className="text-xs sm:text-sm">Impact</TabsTrigger>
               </TabsList>
               <TabsContent value="details" className="mt-3 sm:mt-4">
-                <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
-                  Additional details about this milestone would appear here.
-                </p>
+                {activeMilestone.details && activeMilestone.details.length > 0 ? (
+                  <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
+                    {activeMilestone.details.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
+                    Additional details about this milestone will be added soon.
+                  </p>
+                )}
               </TabsContent>
               <TabsContent value="impact" className="mt-3 sm:mt-4">
-                <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
-                  Impact metrics and statistics would appear here.
-                </p>
+                {activeMilestone.impact && activeMilestone.impact.length > 0 ? (
+                  <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
+                    {activeMilestone.impact.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">
+                    Impact highlights will be documented here.
+                  </p>
+                )}
               </TabsContent>
             </Tabs>
           </div>

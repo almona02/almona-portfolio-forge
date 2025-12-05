@@ -8,7 +8,6 @@ import { Textarea } from '@/shared/ui/ui/textarea';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
-import Footer from '@/components/layout/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
@@ -39,7 +38,6 @@ const SellUsedMachine = () => {
             <p className="text-xl">Loading...</p>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }

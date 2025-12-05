@@ -72,7 +72,10 @@ export const LanguageSwitcher: React.FC<{
             <span className="sm:hidden">{currentLang.name}</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align={isRTLMode ? 'start' : 'end'}>
+        <DropdownMenuContent
+          align={isRTLMode ? 'start' : 'end'}
+          className="bg-slate-900 text-white border border-slate-700 shadow-xl"
+        >
           {languages.map((lang) => (
             <DropdownMenuItem
               key={lang.code}
@@ -102,7 +105,10 @@ export const LanguageSwitcher: React.FC<{
             <span className="hidden sm:inline">{currentLang.nativeName}</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align={isRTLMode ? 'start' : 'end'}>
+        <DropdownMenuContent
+          align={isRTLMode ? 'start' : 'end'}
+          className="bg-slate-900 text-white border border-slate-700 shadow-xl"
+        >
           {languages.map((lang) => (
             <DropdownMenuItem
               key={lang.code}
