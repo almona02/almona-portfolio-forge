@@ -251,6 +251,7 @@ export default function Model3DGalleryPage() {
 
         {/* SwiftXR Iframe Section */}
         <motion.div
+          id="swiftxr"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -261,13 +262,10 @@ export default function Model3DGalleryPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
                 <Move3D className="w-5 h-5 text-orange-500" />
-                SwiftXR Interactive Experience
+                Yilmaz AR
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-400 mb-4 text-sm">
-                Experience our 3D models in an immersive SwiftXR environment with advanced AR capabilities.
-              </p>
               <SwiftXRIframe
                 title="Almona"
                 projectUrl="https://almona.swiftxr.site/almona"

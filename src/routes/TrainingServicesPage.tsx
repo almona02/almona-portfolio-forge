@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState, Suspense } from 'react';
-import Footer from '@/components/layout/Footer';
 import { aluminiumStages, upvcStages, trainingLevels, generateUpcomingCohorts, IconName } from '@/data/trainingPrograms';
 import { GraduationCap, Layers, Scissors, Thermometer, Settings, Zap, ShieldCheck, Gauge, Calendar, Star, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -176,7 +175,6 @@ const TrainingServicesPage: React.FC = () => {
         cohorts={cohorts}
         defaultValues={{ material, program: selectedProgram || '' }}
       />
-      <Footer />
     </div>
   );
 };

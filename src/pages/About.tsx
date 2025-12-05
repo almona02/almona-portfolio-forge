@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { Factory, Globe, Award, Target } from 'lucide-react';
-import Footer from '@/components/layout/Footer';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const About = () => {
@@ -187,11 +186,7 @@ const About = () => {
       </div>
 
       {/* Company Timeline Section - Full Width Below */}
-      <div className="fade-in-up mb-6 sm:mb-8 md:mb-10"
-        variants={itemVariants}
-        initial="hidden"
-        animate="visible"
-      >
+      <div className="fade-in-up mb-6 sm:mb-8 md:mb-10">
         <div className="relative w-full">
           <div className="absolute inset-0 bg-gradient-to-r from-almona-orange/20 to-almona-light/20 rounded-xl sm:rounded-2xl blur-xl -z-10"></div>
           <CompanyTimeline />
@@ -357,7 +352,6 @@ const About = () => {
       </div>
         </div>
       </main>
-      <Footer />
     </>
   );
 };

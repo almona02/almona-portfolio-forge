@@ -1,7 +1,8 @@
+import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/shared/ui/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/ui/card";
-import { ArrowRight, Download, PlayCircle } from "lucide-react";
+import { ArrowRight, Download } from "lucide-react";
 import { Badge } from "@/shared/ui/ui/badge";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
@@ -38,33 +39,86 @@ const ProductCard: React.FC<ProductCardProps> = ({
   specPdf,
   youtubeUrl
 }) => {
+  const [showVideo, setShowVideo] = useState(false);
+  const [isHover, setIsHover] = useState(false);
+  const videoContainerRef = useRef<HTMLDivElement | null>(null);
+
+  const embedUrl = useMemo(() => {
+    if (!youtubeUrl) return null;
+    try {
+      if (youtubeUrl.includes('youtube.com/watch')) {
+        const videoId = new URL(youtubeUrl).searchParams.get('v');
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : youtubeUrl;
+      }
+      if (youtubeUrl.includes('youtu.be/')) {
+        const id = youtubeUrl.split('youtu.be/')[1].split('?')[0];
+        return `https://www.youtube.com/embed/${id}`;
+      }
+      return youtubeUrl;
+    } catch {
+      return youtubeUrl;
+    }
+  }, [youtubeUrl]);
+
+  const autoplayUrl = useMemo(() => {
+    if (!embedUrl) return null;
+    const separator = embedUrl.includes("?") ? "&" : "?";
+    return `${embedUrl}${separator}autoplay=1&mute=1&rel=0`;
+  }, [embedUrl]);
+
   return (
-    <Card className={`bg-almona-dark-lighter border-gray-800 overflow-hidden hover:border-almona-orange/30 transition-all group ${isSelected ? 'ring-2 ring-almona-orange' : ''}`}>
+    <Card
+      className={`bg-almona-dark-lighter border-gray-800 overflow-hidden hover:border-almona-orange/30 transition-all group ${isSelected ? 'ring-2 ring-almona-orange' : ''}`}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+    >
       <div className="relative overflow-hidden">
-        <div className="absolute top-2 right-2 z-10">
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={(e) => onSelect?.(e.target.checked)}
-            className="h-5 w-5 rounded border-gray-300 text-almona-orange focus:ring-almona-orange"
-          />
+        {/* Badge removed during video playback / overlay */}
+        <div className="relative w-full aspect-[4/3] overflow-hidden" ref={videoContainerRef}>
+          {youtubeUrl && showVideo && (autoplayUrl ?? embedUrl) ? (
+            <>
+              <iframe
+                src={autoplayUrl ?? embedUrl}
+                title={title}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              />
+              <div className="absolute top-2 right-2 flex gap-2 z-10">
+                <button
+                  type="button"
+                  className="px-3 py-1.5 rounded-md bg-black/60 text-white text-xs border border-white/20 hover:bg-black/50 transition"
+                  onClick={() => setShowVideo(false)}
+                  aria-label="Close video"
+                >
+                  Close
+                </button>
+              </div>
+            </>
+          ) : (
+            <OptimizedImage
+              src={imageUrl}
+              alt={title}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+              quality={95}
+              format="auto"
+            />
+          )}
+
+          {youtubeUrl && !showVideo && isHover && (
+            <button
+              type="button"
+              className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] text-white transition-colors hover:bg-black/30"
+              onClick={() => setShowVideo(true)}
+              aria-label={`Play video for ${title}`}
+            >
+              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/30">
+                <span className="text-sm font-semibold">Play Video</span>
+              </div>
+            </button>
+          )}
         </div>
-        {badge && (
-          <span className="absolute top-4 left-0 bg-almona-orange text-white text-xs font-medium px-3 py-1 z-10">
-            {badge}
-          </span>
-        )}
-        <div className="relative w-full aspect-[4/3] overflow-hidden">
-          <OptimizedImage
-            src={imageUrl}
-            alt={title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
-            quality={85}
-            format="auto"
-          />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-almona-dark-default to-transparent opacity-50"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-almona-dark-default to-transparent opacity-50 pointer-events-none"></div>
       </div>
       
       <CardHeader className="pt-4 pb-2 px-4">
@@ -72,11 +126,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <h3 className="text-lg font-semibold text-white hover:text-almona-orange transition-colors">
             {title}
           </h3>
-          {youtubeUrl && (
-            <a href={youtubeUrl} target="_blank" rel="noopener noreferrer">
-              <PlayCircle className="w-5 h-5 text-almona-orange hover:text-almona-orange-dark transition-colors" />
-            </a>
-          )}
+          {/* Inline play trigger removed; use overlay only */}
 
         </div>
 

@@ -16,15 +16,10 @@ interface ConditionalNavbarProps {
 const ConditionalNavbar: React.FC<ConditionalNavbarProps> = (props) => {
   const location = useLocation();
 
-  // Define the paths where the industrial navbar should be displayed
-  // We treat the entire fabricator area as an "industrial cockpit":
-  // - /fabricator           → dashboard / overview
-  // - /fabricator-workflow  → AI workflow cockpit (plus any sub‑paths like /pro)
   const pathname = location.pathname;
   const isFabricatorRoute =
     pathname.startsWith('/fabricator') || pathname.startsWith('/fabricator-workflow');
 
-  // Determine which navbar to render based on the current path
   return isFabricatorRoute ? (
     <IndustrialNavbar {...props} />
   ) : (
