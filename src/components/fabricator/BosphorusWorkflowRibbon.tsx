@@ -223,27 +223,6 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                   />
                 )}
 
-                {/* Bridge tower stem with empire styling */}
-                <div className="absolute inset-x-8 top-8 bottom-2 pointer-events-none">
-                  <div
-                    className={`mx-auto h-full w-[3px] rounded-full ${
-                      isCurrent
-                        ? 'bg-gradient-to-b from-orange-400 via-orange-300 to-amber-400 shadow-[0_0_22px_rgba(248,113,22,0.9)]'
-                        : isCompleted
-                        ? 'bg-gradient-to-b from-emerald-400 via-emerald-300 to-emerald-400 shadow-[0_0_18px_rgba(16,185,129,0.8)]'
-                        : 'bg-gradient-to-b from-slate-500 via-slate-600 to-slate-700'
-                    }`}
-                  >
-                    {/* Empire pattern on tower */}
-                    {step.empire === 'ottoman' && (
-                      <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_45%,rgba(251,191,36,0.3)_50%,transparent_55%)] bg-[length:10px_10px]" />
-                    )}
-                    {step.empire === 'egyptian' && (
-                      <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_48%,rgba(245,158,11,0.2)_50%,transparent_52%)] bg-[length:8px_8px]" />
-                    )}
-                  </div>
-                </div>
-
                 {/* Step header with empire badge */}
                 <div className="flex items-center justify-between mb-3 relative z-10">
                   <div

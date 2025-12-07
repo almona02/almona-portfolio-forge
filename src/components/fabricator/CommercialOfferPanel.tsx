@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
@@ -21,6 +21,8 @@ import { loadQuoteForProject, saveQuoteForProject } from '@/modules/commercial/F
 import { PDFExportService } from '@/modules/reporting';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
+import { LayoutIconGenerator, type LayoutIconHandle } from './assets/LayoutIconGenerator';
 
 interface CommercialOfferPanelProps {
   project: WindowUnit | null;
@@ -42,7 +44,10 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
   const [quote, setQuote] = useState<Quote | null>(null);
   const [loadingQuote, setLoadingQuote] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
+  const [thumbnailGenerating, setThumbnailGenerating] = useState(false);
+  const [layoutThumbnailUrl, setLayoutThumbnailUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const layoutIconRef = useRef<LayoutIconHandle>(null);
 
   // Load existing quote or generate a base one when project/optimization change
   useEffect(() => {
@@ -96,10 +101,37 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
     }
   };
 
+  const captureAndUploadLayoutThumbnail = async (): Promise<string | null> => {
+    if (!project) return null;
+    try {
+      setThumbnailGenerating(true);
+      const dataUrl = await layoutIconRef.current?.capture();
+      if (!dataUrl) return null;
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const fileName = `${project.id}/layout-${Date.now()}.png`;
+      const { error } = await supabase
+        .storage
+        .from('layout-thumbnails')
+        .upload(fileName, blob, { cacheControl: '3600', upsert: true });
+      if (error) throw error;
+      const { data } = supabase.storage.from('layout-thumbnails').getPublicUrl(fileName);
+      const url = data.publicUrl;
+      setLayoutThumbnailUrl(url);
+      return url;
+    } catch (e) {
+      console.error('Failed to capture/upload layout thumbnail', e);
+      return null;
+    } finally {
+      setThumbnailGenerating(false);
+    }
+  };
+
   const handleGenerateOfferPdf = async () => {
     if (!project || !quote) return;
     try {
       setExportingPdf(true);
+      const thumbUrl = layoutThumbnailUrl || (await captureAndUploadLayoutThumbnail());
       const pdfService = new PDFExportService(branding);
 
       const blob = await pdfService.generateQuotationPDF(project, quote, {
@@ -109,6 +141,7 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
         includeGlazing: false,
         includeAssemblyGuide: false,
         include3DPreview: false,
+        layoutThumbnailUrl: thumbUrl || undefined,
       });
 
       const url = URL.createObjectURL(blob);
@@ -435,6 +468,18 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
           />
         </div>
 
+        {/* Hidden layout icon generator for thumbnail capture */}
+        <div className="hidden">
+          <LayoutIconGenerator
+            ref={layoutIconRef}
+            windowUnit={project}
+            width={1024}
+            height={1024}
+            widthMm={project.overallWidth || 1200}
+            heightMm={project.overallHeight || 1200}
+          />
+        </div>
+
         {/* Actions */}
         <div className="flex flex-col gap-2 pt-1">
           <Button
@@ -460,7 +505,7 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
             size="sm"
             className="w-full justify-center text-xs bg-orange-500 hover:bg-orange-600"
             onClick={handleGenerateOfferPdf}
-            disabled={!quote || exportingPdf}
+            disabled={!quote || exportingPdf || thumbnailGenerating}
           >
             {exportingPdf ? (
               <>

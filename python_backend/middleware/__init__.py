@@ -1,0 +1,2 @@
+# SmartScan middleware package
+

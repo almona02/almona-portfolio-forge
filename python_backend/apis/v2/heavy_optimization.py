@@ -103,7 +103,7 @@ class CuttingOptimizationRequest(BaseModel):
     APIs and can be used for both single‑project and cross‑project jobs.
     """
 
-    cuts: List<CutRequest] = Field(
+    cuts: List[CutRequest] = Field(
         ..., description="All required cuts across one or more projects"
     )
     stock: List[StockBarRequest] = Field(

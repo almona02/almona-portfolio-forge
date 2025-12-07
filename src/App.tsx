@@ -38,6 +38,8 @@ const AdvancedModelViewer = lazy(() => import("./pages/AdvancedModelViewer.tsx")
 
 // Test components - lazy loaded
 const LocalizationTest = lazy(() => import("./components/test/LocalizationTest.tsx"));
+const TestScannerPage = lazy(() => import("./pages/TestScanner.tsx"));
+const SmartScanAssembly = lazy(() => import("./pages/SmartScanAssembly.tsx"));
 
 // Shop and e-commerce - lazy loaded with prefetch
 const Shop = lazy(() => import("./pages/Shop"));
@@ -188,6 +190,8 @@ const App = () => (
                   
                   {/* Test routes */}
                   <Route path="/test/localization" element={<Suspense fallback={getLoadingComponent('/test/localization')}><LocalizationTest /></Suspense>} />
+                  <Route path="/test-scanner" element={<Suspense fallback={getLoadingComponent('/test-scanner')}><TestScannerPage /></Suspense>} />
+                  <Route path="/smart-scan" element={<Suspense fallback={getLoadingComponent('/smart-scan')}><SmartScanAssembly /></Suspense>} />
                   <Route path="/test/swiftxr" element={<Suspense fallback={getLoadingComponent('/test/swiftxr')}><SwiftXRTest /></Suspense>} />
                   
                   {/* Yilmaz Dealer Pages */}

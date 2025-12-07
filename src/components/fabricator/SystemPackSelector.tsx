@@ -16,11 +16,13 @@ import { SYSTEM_PACKS, SystemPack as DataSystemPack } from '@/data/systemPacks';
 interface SystemPackSelectorProps {
   category: 'aluminum_windows' | 'aluminum_doors' | 'curtain_walls' | 'upvc_windows' | 'upvc_doors';
   onSystemPackSelect: (systemPack: UISystemPack) => void;
+  allowedSystemPackIds?: string[];
 }
 
 export const SystemPackSelector: React.FC<SystemPackSelectorProps> = ({
   category,
   onSystemPackSelect,
+  allowedSystemPackIds,
 }) => {
   const [systemPacks, setSystemPacks] = useState<UISystemPack[]>([]);
 
@@ -69,8 +71,14 @@ export const SystemPackSelector: React.FC<SystemPackSelectorProps> = ({
     return 'aluminum_windows';
   };
 
-  // Filter system packs by category
-  const filteredPacks = systemPacks.filter((pack) => pack.category === category);
+  // Filter system packs by category and optional allowed shortlist
+  const filteredPacks = systemPacks
+    .filter((pack) => pack.category === category)
+    .filter((pack) =>
+      allowedSystemPackIds && allowedSystemPackIds.length
+        ? allowedSystemPackIds.includes(pack.id)
+        : true
+    );
 
   if (filteredPacks.length === 0) {
     return (
