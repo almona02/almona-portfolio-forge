@@ -40,6 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [confirmLogout, setConfirmLogout] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   
   const location = useLocation();
   const navbarRef = useRef<HTMLElement>(null);
@@ -136,10 +137,24 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
     setActiveDropdown(null);
     setIsMobileMenuOpen(false);
     setConfirmLogout(false);
+    setIsLoggingOut(false);
     if (dropdownTimeoutRef.current) {
       clearTimeout(dropdownTimeoutRef.current);
     }
   }, []);
+
+  const handleLogout = useCallback(async () => {
+    if (isLoggingOut) return;
+    try {
+      setIsLoggingOut(true);
+      await (onLogout ? onLogout() : signOut?.());
+    } catch (err) {
+      console.error("Logout failed", err);
+    } finally {
+      setIsLoggingOut(false);
+      closeAllDropdowns();
+    }
+  }, [isLoggingOut, onLogout, signOut, closeAllDropdowns]);
 
   // Scroll effect
   useEffect(() => {
@@ -384,13 +399,11 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
                             <div className="text-sm text-white font-semibold">Confirm logout?</div>
                             <div className="flex gap-2">
                               <button
-                                onClick={() => {
-                                  onLogout?.();
-                                  closeAllDropdowns();
-                                }}
-                                className="flex-1 px-3 py-2 text-sm font-semibold text-white rounded-lg bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-colors"
+                                onClick={handleLogout}
+                                disabled={isLoggingOut}
+                                className="flex-1 px-3 py-2 text-sm font-semibold text-white rounded-lg bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                               >
-                                Yes, logout
+                                {isLoggingOut ? "Logging out..." : "Yes, logout"}
                               </button>
                               <button
                                 onClick={() => setConfirmLogout(false)}

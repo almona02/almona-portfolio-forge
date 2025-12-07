@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Save, AlertTriangle } from "lucide-react";
 import { ScanResultData } from "@/services/smartScanApi";
 import type { Profile } from "@/types/fabricator";
@@ -45,6 +45,61 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
   );
   const [material, setMaterial] = useState<"aluminum" | "upvc" | "wood">(defaultMaterial);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [useManualScale, setUseManualScale] = useState(false);
+  const [manualWidth, setManualWidth] = useState(
+    scanData.dimensions.width_mm ? scanData.dimensions.width_mm.toFixed(1) : "",
+  );
+  const [manualHeight, setManualHeight] = useState(
+    scanData.dimensions.height_mm ? scanData.dimensions.height_mm.toFixed(1) : "",
+  );
+
+  const parseViewBoxPx = (viewBox: string) => {
+    const parts = viewBox.split(/\s+/).map((p) => parseFloat(p));
+    if (parts.length === 4 && parts.every((v) => Number.isFinite(v))) {
+      const [, , w, h] = parts;
+      return { width_px: w, height_px: h };
+    }
+    return { width_px: undefined, height_px: undefined };
+  };
+
+  const effectiveDimensions = useMemo(() => {
+    if (!useManualScale) return scanData.dimensions;
+
+    const widthVal = parseFloat(manualWidth);
+    const heightVal = parseFloat(manualHeight);
+    const { width_px, height_px } = parseViewBoxPx(scanData.view_box);
+
+    let scale = scanData.dimensions.scale_mm_per_px;
+    if (Number.isFinite(widthVal) && widthVal > 0 && Number.isFinite(width_px) && width_px! > 0) {
+      scale = widthVal / (width_px as number);
+    } else if (
+      Number.isFinite(heightVal) &&
+      heightVal > 0 &&
+      Number.isFinite(height_px) &&
+      height_px! > 0
+    ) {
+      scale = heightVal / (height_px as number);
+    }
+
+    const resolvedWidth =
+      Number.isFinite(widthVal) && widthVal > 0 ? widthVal : scanData.dimensions.width_mm;
+    const resolvedHeight =
+      Number.isFinite(heightVal) && heightVal > 0 ? heightVal : scanData.dimensions.height_mm;
+
+    return {
+      ...scanData.dimensions,
+      width_mm: resolvedWidth,
+      height_mm: resolvedHeight,
+      scale_mm_per_px: scale,
+      scale_source: "manual_verification",
+      enhanced_scale: {
+        method: "manual_verification",
+        scale_mm_per_px: scale,
+        confidence: 1.0,
+      },
+      scale_confidence: 1.0,
+    };
+  }, [useManualScale, manualWidth, manualHeight, scanData.dimensions, scanData.view_box]);
 
   const generateProfileData = (): Partial<Profile> => {
     const standardMatch = scanData.suggestions?.egyptian_standard_match;
@@ -61,16 +116,16 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
       name: finalName,
       profileRole: finalRole,
       material: finalMaterial,
-      width: scanData.dimensions.width_mm,
-      height: scanData.dimensions.height_mm,
+      width: effectiveDimensions.width_mm,
+      height: effectiveDimensions.height_mm,
       specifications: {
         geometry_config: {
           archetype: "scanned_custom",
-          width_mm: scanData.dimensions.width_mm,
-          height_mm: scanData.dimensions.height_mm,
+          width_mm: effectiveDimensions.width_mm,
+          height_mm: effectiveDimensions.height_mm,
           svg_path: scanData.svg_path,
           view_box: scanData.view_box,
-          scale_mm_per_px: scanData.dimensions.scale_mm_per_px,
+          scale_mm_per_px: effectiveDimensions.scale_mm_per_px,
           confidence_score: scanData.quality.confidence_score,
           ocr_data: scanData.technical_data,
           standard_match: standardMatch,
@@ -82,8 +137,8 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
           validation_notes: scanData.quality.validation_errors,
           detected_brands: scanData.technical_data?.detected_brands,
         },
-        width_mm: scanData.dimensions.width_mm,
-        height_mm: scanData.dimensions.height_mm,
+        width_mm: effectiveDimensions.width_mm,
+        height_mm: effectiveDimensions.height_mm,
       },
     };
   };
@@ -186,21 +241,76 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
             <div className="flex justify-between">
               <span className="text-zinc-400">Width:</span>
               <span className="font-mono text-white">
-                {scanData.dimensions.width_mm.toFixed(1)} mm
+                {effectiveDimensions.width_mm.toFixed(1)} mm
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Height:</span>
               <span className="font-mono text-white">
-                {scanData.dimensions.height_mm.toFixed(1)} mm
+                {effectiveDimensions.height_mm.toFixed(1)} mm
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-400">Scale Source:</span>
               <Badge variant="secondary" className="text-xs capitalize">
-                {scanData.dimensions.scale_source.replace("_", " ")}
+                {effectiveDimensions.scale_source.replace("_", " ")}
               </Badge>
             </div>
+          </div>
+
+          <div className="space-y-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/40">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-medium text-white">Scale verification</p>
+                <p className="text-xs text-zinc-500">
+                  Enter the true dimensions to override heuristic scale.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Label className="text-xs text-zinc-400">Override scale</Label>
+                <Button
+                  type="button"
+                  variant={useManualScale ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setUseManualScale((v) => !v)}
+                  className="text-xs"
+                >
+                  {useManualScale ? "On" : "Off"}
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <Label className="text-zinc-400 text-xs">True Width (mm)</Label>
+                <Input
+                  value={manualWidth}
+                  onChange={(e) => setManualWidth(e.target.value)}
+                  placeholder={scanData.dimensions.width_mm?.toFixed(1) || "e.g. 61"}
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  className="mt-1 bg-zinc-900 border-zinc-700"
+                  disabled={!useManualScale}
+                />
+              </div>
+              <div>
+                <Label className="text-zinc-400 text-xs">True Height (mm)</Label>
+                <Input
+                  value={manualHeight}
+                  onChange={(e) => setManualHeight(e.target.value)}
+                  placeholder={scanData.dimensions.height_mm?.toFixed(1) || "e.g. 81"}
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  className="mt-1 bg-zinc-900 border-zinc-700"
+                  disabled={!useManualScale}
+                />
+              </div>
+            </div>
+            <p className="text-[11px] text-amber-200/90">
+              Tip: Use the real measured width/height. Scale is recomputed from the SVG viewBox.
+            </p>
           </div>
         </div>
 
@@ -270,10 +380,17 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
       </div>
 
       <div className="flex justify-end gap-3 pt-4 border-t border-zinc-800">
-        <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isSubmitting}
+          className="text-gray-300 border-gray-600 hover:bg-gray-700"
+        >
           Cancel
         </Button>
         <Button
+          type="button"
           onClick={handleImport}
           disabled={isSubmitting}
           className="bg-green-600 hover:bg-green-500"

@@ -858,10 +858,11 @@ export const SmartScanUploader: React.FC = () => {
                 if (importWizardData.jobId) {
                   removeJob(importWizardData.jobId);
                 }
+                setImportWizardData({ isOpen: false });
                 toast.success("Profile imported and ready for tuning", {
-                  description: "Geometry tab is selected for adjustments",
+                  description: "Opening tuning studio for geometry adjustments",
                 });
-                navigate(`/fabricator/profiles/${profileId}/tune`, {
+                navigate(`/fabricator/profiles?tuning=studio&profileId=${profileId}`, {
                   state: { highlightGeometry: true, source: "smartscan" },
                 });
               }}

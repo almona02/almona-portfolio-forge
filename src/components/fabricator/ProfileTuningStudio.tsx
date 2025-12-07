@@ -114,6 +114,8 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
   const [isScanning, setIsScanning] = useState(false);
   const [authToken, setAuthToken] = useState('');
   const profileIconRef = useRef<ProfileIconHandle>(null);
+  const [isDirty, setIsDirty] = useState(false);
+  const dirtyInitRef = useRef(false);
 
   const specs = profile.specifications || {};
 
@@ -277,6 +279,46 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
     }
   }, [location.state]);
 
+  // Track unsaved changes across core config slices
+  useEffect(() => {
+    if (!dirtyInitRef.current) {
+      dirtyInitRef.current = true;
+      return;
+    }
+    setIsDirty(true);
+  }, [
+    geometryConfig,
+    cuttingConfig,
+    glazingConfig,
+    structuralConfig,
+    hardwareConfig,
+    costConfig,
+    qaConfig,
+    zones,
+    systemPackId,
+  ]);
+
+  // Warn on tab close/refresh when dirty
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (!isDirty) return;
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    if (isDirty) window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isDirty]);
+
+  const handleGuardedClose = () => {
+    if (isDirty) {
+      const confirmed = window.confirm(
+        'You have unsaved changes. Leave without saving?'
+      );
+      if (!confirmed) return;
+    }
+    onClose();
+  };
+
   const markAsTuned = async () => {
     try {
       setSavingStatus(true);
@@ -295,6 +337,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
 
       toast.success(`Profile "${profile.name}" marked as tuned`);
       onProfileUpdated?.();
+      setIsDirty(false);
     } catch (err) {
       console.error('Error marking profile as tuned:', err);
       toast.error('Failed to mark profile as tuned');
@@ -613,7 +656,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={onClose}
+                  onClick={handleGuardedClose}
                   className="border-gray-600 text-gray-200 hover:bg-gray-800"
                 >
                   <ArrowLeft className="h-4 w-4 mr-1" />

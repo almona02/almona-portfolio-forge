@@ -14,7 +14,7 @@ const TestScannerPage: React.FC = () => {
 
         <div className="space-y-8">
           <div className="bg-zinc-900/30 rounded-xl p-6 border border-zinc-800">
-            <h2 className="text-xl font-semibold text-white mb-4">SmartScan Uploader</h2>
+            <h2 className="text-xl font-semibold text-white mb-4">Almona Smart Scan</h2>
             <SmartScanUploader />
           </div>
 
