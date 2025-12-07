@@ -320,6 +320,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     <motion.header
       ref={navbarRef}
       dir="ltr"
+      style={{ direction: 'ltr' }}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: 'spring', stiffness: 200, damping: 25 }}
