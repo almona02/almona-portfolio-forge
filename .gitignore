@@ -36,6 +36,9 @@ __pycache__/
 .python-version
 venv/
 .venv/
+python_backend/venv/
+python_backend/venv-311/
+venv-311/
 
 # Generated reports
 duplicates-report.json
