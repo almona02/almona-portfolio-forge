@@ -8,7 +8,7 @@
  * - Marks profile as "tuned" in specifications for quick scanning
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -33,12 +33,19 @@ import {
   Wrench,
   Wallet,
   Activity,
+  Scan,
+  AlertCircle,
 } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import type { Profile } from '@/types/fabricator';
 import { CalibrationWizard } from './CalibrationWizard';
 import { MachiningZoneEditor, type MachiningZone } from './MachiningZoneEditor';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { ProfileIconGenerator, type ProfileIconHandle } from './assets/ProfileIconGenerator';
+import { ProfileScannerUploader } from './smartscan/ProfileScannerUploader';
+import SmartScanUploader from './smartscan/SmartScanUploader';
+import type { ProfileScanResult } from '@/services/scanApi';
 
 interface ProfileTuningStudioProps {
   profile: Profile;
@@ -49,18 +56,95 @@ interface ProfileTuningStudioProps {
 
 type TuningStatus = 'untuned' | 'in_progress' | 'tuned';
 
+type GeometryConfig = {
+  archetype: string;
+  wallThicknessMm: number;
+  glazingPocketDepthMm: number;
+  glazingPocketWidthMm: number;
+  thermalBreakWidthMm: number;
+  flangeWidthMm: number;
+  webOffsetMm: number;
+  source?: string;
+  svgPath?: string;
+  scannedWidth?: number;
+  scannedHeight?: number;
+};
+
 export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
   profile,
   userId,
   onClose,
   onProfileUpdated,
 }) => {
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState<
+    | 'calibration'
+    | 'cutting-rules'
+    | 'glazing'
+    | 'geometry'
+    | 'smartscan'
+    | 'structural'
+    | 'hardware'
+    | 'cost-erp'
+    | 'machining'
+    | 'summary'
+  >('calibration');
   const [savingStatus, setSavingStatus] = useState(false);
+  const [showImportBanner, setShowImportBanner] = useState(false);
   const [zones, setZones] = useState<MachiningZone[]>(
     ((profile.specifications as any)?.machiningZones as MachiningZone[]) || []
   );
+  const [geometryConfig, setGeometryConfig] = useState<GeometryConfig>(() => {
+    const geo = (profile.specifications as any)?.geometryConfig || {};
+    return {
+      archetype: geo.archetype || 'hollow_box',
+      wallThicknessMm: geo.wallThicknessMm ?? 1.5,
+      glazingPocketDepthMm: geo.glazingPocketDepthMm ?? 0,
+      glazingPocketWidthMm: geo.glazingPocketWidthMm ?? 0,
+      thermalBreakWidthMm: geo.thermalBreakWidthMm ?? 0,
+      flangeWidthMm: geo.flangeWidthMm ?? 0,
+      webOffsetMm: geo.webOffsetMm ?? 0,
+      source: geo.source,
+      svgPath: geo.svgPath,
+      scannedWidth: geo.scannedWidth,
+      scannedHeight: geo.scannedHeight,
+    };
+  });
+  const [scanResult, setScanResult] = useState<ProfileScanResult | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [authToken, setAuthToken] = useState('');
+  const profileIconRef = useRef<ProfileIconHandle>(null);
 
   const specs = profile.specifications || {};
+
+  const startScan = async () => {
+    try {
+      const { data } = await (supabase as any).auth.getSession();
+      const token = data?.session?.access_token || '';
+      if (!token) {
+        toast.error('Unable to start scan (missing auth token)');
+        return;
+      }
+      setAuthToken(token);
+      setIsScanning(true);
+    } catch (err) {
+      console.error('Failed to start scan', err);
+      toast.error('Unable to start scan');
+    }
+  };
+
+  const handleScanSuccess = (result: ProfileScanResult) => {
+    setScanResult(result);
+    setGeometryConfig((prev) => ({
+      ...prev,
+      source: 'scan',
+      svgPath: result.svgPath,
+      scannedWidth: result.dimensions.width_mm ?? result.dimensions.width_px,
+      scannedHeight: result.dimensions.height_mm ?? result.dimensions.height_px,
+    }));
+    setIsScanning(false);
+    toast.success('Scan imported into geometry');
+  };
 
   const [cuttingConfig, setCuttingConfig] = useState({
     borderExtraAllowanceMm: (specs as any)?.borderExtraAllowanceMm ?? '',
@@ -125,6 +209,26 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
     (profile.specifications as any)?.systemPackId ||
     'generic';
 
+  const uploadThumbnailFromCapture = async (): Promise<string | null> => {
+    try {
+      const dataUrl = await profileIconRef.current?.capture();
+      if (!dataUrl) return null;
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const fileName = `${userId}/${profile.id}-${Date.now()}.png`;
+      const { error } = await (supabase as any)
+        .storage
+        .from('profile-thumbnails')
+        .upload(fileName, blob, { cacheControl: '3600', upsert: true });
+      if (error) throw error;
+      const { data } = (supabase as any).storage.from('profile-thumbnails').getPublicUrl(fileName);
+      return data.publicUrl;
+    } catch (err) {
+      console.error('Thumbnail upload failed', err);
+      return null;
+    }
+  };
+
   const tuningStatus: TuningStatus = useMemo(() => {
     const specs = profile.specifications || {};
     const raw = (specs as any).tuningStatus as TuningStatus | undefined;
@@ -161,6 +265,17 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
         );
     }
   }, [tuningStatus]);
+
+  useEffect(() => {
+    if (location.state && (location.state as any).highlightGeometry) {
+      setActiveTab('geometry');
+      setShowImportBanner(true);
+      const timer = setTimeout(() => setShowImportBanner(false), 10000);
+      // Clear the state so it doesn't persist across refresh/navigation
+      window.history.replaceState({}, document.title);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
 
   const markAsTuned = async () => {
     try {
@@ -567,37 +682,49 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
 
               {/* Right columns: Tabs with embedded tools */}
               <div className="lg:col-span-2 h-full">
-                <Tabs defaultValue="calibration" className="h-full flex flex-col">
-                  <TabsList className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-8 mb-3 bg-gray-900/70 border border-gray-700">
-                    <TabsTrigger value="calibration" className="text-xs flex items-center gap-1">
+              <Tabs
+                value={activeTab}
+                onValueChange={(val) => setActiveTab(val as typeof activeTab)}
+                className="h-full flex flex-col"
+              >
+                <TabsList className="flex flex-wrap h-auto p-2 gap-1 bg-gray-900/70 border border-gray-700 mb-3 w-full justify-center">
+                    <TabsTrigger value="calibration" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Ruler className="h-3 w-3" />
                       Live Calibration
                     </TabsTrigger>
-                    <TabsTrigger value="cutting-rules" className="text-xs flex items-center gap-1">
+                    <TabsTrigger value="cutting-rules" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Settings className="h-3 w-3" />
                       Cutting Rules
                     </TabsTrigger>
-                    <TabsTrigger value="glazing" className="text-xs flex items-center gap-1">
+                    <TabsTrigger value="glazing" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Droplets className="h-3 w-3" />
                       Glazing & Seals
                     </TabsTrigger>
-                    <TabsTrigger value="structural" className="text-xs flex items-center gap-1">
+                    <TabsTrigger value="geometry" className="text-xs flex items-center gap-1 min-w-[110px]">
+                      <Sparkles className="h-3 w-3" />
+                      Geometry & Shape
+                    </TabsTrigger>
+                    <TabsTrigger value="smartscan" className="text-xs flex items-center gap-1 min-w-[110px]">
+                      <Scan className="h-3 w-3" />
+                      SmartScan
+                    </TabsTrigger>
+                    <TabsTrigger value="structural" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Shield className="h-3 w-3" />
                       Structural
                     </TabsTrigger>
-                    <TabsTrigger value="hardware" className="text-xs flex items-center gap-1">
+                    <TabsTrigger value="hardware" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Wrench className="h-3 w-3" />
                       Hardware
                     </TabsTrigger>
-                    <TabsTrigger value="cost-erp" className="text-xs flex items-center gap-1">
+                    <TabsTrigger value="cost-erp" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Wallet className="h-3 w-3" />
                       Cost & ERP
                     </TabsTrigger>
-                    <TabsTrigger value="machining" className="text-xs flex items-center gap-1">
+                    <TabsTrigger value="machining" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Settings className="h-3 w-3" />
                       Machining Zones
                     </TabsTrigger>
-                    <TabsTrigger value="summary" className="text-xs flex items-center gap-1">
+                    <TabsTrigger value="summary" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Sparkles className="h-3 w-3" />
                       Tuning Summary
                     </TabsTrigger>
@@ -1349,6 +1476,328 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               Save Glazing Rules
                             </Button>
                           </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="geometry" className="mt-0 space-y-4">
+                      {activeTab === "geometry" && showImportBanner && (
+                        <div className="mb-4 p-4 bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/30 rounded-xl">
+                          <div className="flex items-center gap-3">
+                            <AlertCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-green-400">SmartScan Import Ready</h4>
+                              <p className="text-sm text-zinc-400 mt-1">
+                                Your scanned profile has been imported. Review the geometry below and
+                                adjust as needed. The vector has been saved as the profile's geometry
+                                configuration.
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => setShowImportBanner(false)}
+                              className="text-zinc-500 hover:text-zinc-300 p-1"
+                              aria-label="Dismiss import banner"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <Card className="bg-gray-900/80 border-gray-700">
+                        <CardHeader>
+                          <CardTitle className="text-sm flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-purple-300" />
+                            Geometry & Shape
+                          </CardTitle>
+                          <CardDescription className="text-xs text-gray-400">
+                            Define archetype and key dimensions for procedural thumbnails (no CAD required).
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4 text-xs text-gray-200">
+                        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                          <div className="text-[11px] text-gray-400">
+                            Have a catalog photo? Run SmartScan to ingest the profile outline and dimensions.
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={startScan}
+                              disabled={savingStatus}
+                              className="bg-purple-500 hover:bg-purple-600 text-white"
+                            >
+                              Scan from Catalog Drawing
+                            </Button>
+                            {isScanning && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => setIsScanning(false)}
+                                className="text-gray-200"
+                              >
+                                Cancel
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+
+                        {isScanning && (
+                          <div className="border border-gray-700 rounded-lg p-3 bg-gray-950/80">
+                            <ProfileScannerUploader
+                              authToken={authToken}
+                              onScanSuccess={handleScanSuccess}
+                            />
+                          </div>
+                        )}
+
+                        {scanResult && (
+                          <div className="border border-gray-800 rounded-lg p-3 bg-gray-950/60">
+                            <div className="flex flex-col md:flex-row gap-4">
+                              <div className="w-32 h-32 border border-gray-700 rounded bg-gray-900 p-2">
+                                <svg
+                                  viewBox={`${scanResult.bbox.x} ${scanResult.bbox.y} ${scanResult.bbox.width} ${scanResult.bbox.height}`}
+                                  preserveAspectRatio="xMidYMid meet"
+                                  className="w-full h-full"
+                                >
+                                  <path d={scanResult.svgPath} fill="currentColor" />
+                                </svg>
+                              </div>
+                              <div className="text-[11px] space-y-1">
+                                <div className="text-gray-300 font-semibold">Last scan</div>
+                                <div>Width: {scanResult.dimensions.width_px} px</div>
+                                <div>Height: {scanResult.dimensions.height_px} px</div>
+                                <div>Vectorizer: {scanResult.vectorizer}</div>
+                                {scanResult.storage.svg_url && (
+                                  <div>
+                                    SVG:{" "}
+                                    <a
+                                      href={scanResult.storage.svg_url}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="text-blue-300 underline"
+                                    >
+                                      View asset
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div className="md:col-span-3">
+                              <label className="block mb-1 text-[11px] text-gray-300">
+                                Archetype
+                              </label>
+                              <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                                {['hollow_box', 'open_c', 'thermal_break', 'z_shape', 't_shape'].map((type) => (
+                                  <button
+                                    key={type}
+                                    type="button"
+                                    onClick={() => setGeometryConfig((prev) => ({ ...prev, archetype: type }))}
+                                    className={`p-2 rounded border text-center text-xs transition-all ${
+                                      geometryConfig.archetype === type
+                                        ? 'bg-purple-500/20 border-purple-500 text-purple-200'
+                                        : 'bg-gray-950 border-gray-800 text-gray-400 hover:border-gray-600'
+                                    }`}
+                                  >
+                                    <span className="capitalize">{type.replace('_', ' ')}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block mb-1 text-[11px] text-gray-300">
+                                Wall Thickness (mm)
+                              </label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                value={geometryConfig.wallThicknessMm}
+                                onChange={(e) =>
+                                  setGeometryConfig((prev) => ({
+                                    ...prev,
+                                    wallThicknessMm: parseFloat(e.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block mb-1 text-[11px] text-gray-300">
+                                Glazing Pocket Depth (mm)
+                              </label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                value={geometryConfig.glazingPocketDepthMm}
+                                onChange={(e) =>
+                                  setGeometryConfig((prev) => ({
+                                    ...prev,
+                                    glazingPocketDepthMm: parseFloat(e.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block mb-1 text-[11px] text-gray-300">
+                                Glazing Pocket Width (mm)
+                              </label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                value={geometryConfig.glazingPocketWidthMm}
+                                onChange={(e) =>
+                                  setGeometryConfig((prev) => ({
+                                    ...prev,
+                                    glazingPocketWidthMm: parseFloat(e.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block mb-1 text-[11px] text-gray-300">
+                                Thermal Break Width (mm)
+                              </label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                value={geometryConfig.thermalBreakWidthMm}
+                                onChange={(e) =>
+                                  setGeometryConfig((prev) => ({
+                                    ...prev,
+                                    thermalBreakWidthMm: parseFloat(e.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block mb-1 text-[11px] text-gray-300">
+                                Flange Width (mm)
+                              </label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                value={geometryConfig.flangeWidthMm}
+                                onChange={(e) =>
+                                  setGeometryConfig((prev) => ({
+                                    ...prev,
+                                    flangeWidthMm: parseFloat(e.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block mb-1 text-[11px] text-gray-300">
+                                Web Offset (mm)
+                              </label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                value={geometryConfig.webOffsetMm}
+                                onChange={(e) =>
+                                  setGeometryConfig((prev) => ({
+                                    ...prev,
+                                    webOffsetMm: parseFloat(e.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
+                            <div className="md:col-span-1">
+                              <h4 className="text-[11px] text-gray-300 mb-1">Thumbnail Preview</h4>
+                              <div className="border border-gray-700 rounded-lg p-3 bg-gray-950 flex flex-col items-center">
+                                <ProfileIconGenerator
+                                  ref={profileIconRef}
+                                  widthMm={profile.width}
+                                  heightMm={profile.height || profile.width}
+                                  wallThicknessMm={geometryConfig.wallThicknessMm}
+                                  glazingPocketDepthMm={geometryConfig.glazingPocketDepthMm}
+                                  glazingPocketWidthMm={geometryConfig.glazingPocketWidthMm}
+                                  flangeWidthMm={geometryConfig.flangeWidthMm}
+                                  className="w-24 h-24"
+                                />
+                                <p className="text-[10px] text-gray-500 mt-2 text-center">
+                                  Preview updates with geometry settings.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-end">
+                            <Button
+                              size="sm"
+                              onClick={async () => {
+                                try {
+                                  setSavingStatus(true);
+                                  const nextSpecs = {
+                                    ...(profile.specifications || {}),
+                                    geometryConfig,
+                                  };
+
+                                  const thumbnailUrl = await uploadThumbnailFromCapture();
+
+                                  const { error } = await (supabase as any)
+                                    .from('fabricator_profiles')
+                                    .update({
+                                      specifications: nextSpecs,
+                                      thumbnail_url: thumbnailUrl || (profile as any).thumbnail_url || null,
+                                    })
+                                    .eq('id', profile.id)
+                                    .eq('user_id', userId);
+                                  if (error) throw error;
+
+                                  if (thumbnailUrl) {
+                                    (profile as any).thumbnail_url = thumbnailUrl;
+                                    (profile as any).thumbnailUrl = thumbnailUrl;
+                                  }
+
+                                  toast.success('Geometry saved and thumbnail updated');
+                                  onProfileUpdated?.();
+                                } catch (err) {
+                                  console.error('Error saving geometry config:', err);
+                                  toast.error('Failed to save geometry/thumbnail');
+                                } finally {
+                                  setSavingStatus(false);
+                                }
+                              }}
+                              disabled={savingStatus}
+                              className="bg-purple-500 hover:bg-purple-600 text-white"
+                            >
+                              Save Geometry
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="smartscan" className="mt-0 space-y-4">
+                      <Card className="bg-gray-900/80 border-gray-700">
+                        <CardHeader>
+                          <CardTitle className="text-sm flex items-center gap-2">
+                            <Scan className="h-4 w-4 text-blue-400" />
+                            SmartScan Import
+                          </CardTitle>
+                          <CardDescription className="text-xs text-gray-400">
+                            Upload catalog images, PDFs, or DXF files. SmartScan will vectorize and
+                            extract dimensions automatically.
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <SmartScanUploader />
                         </CardContent>
                       </Card>
                     </TabsContent>

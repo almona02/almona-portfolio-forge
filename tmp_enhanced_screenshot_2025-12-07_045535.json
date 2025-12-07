@@ -1,0 +1,1 @@
+{"error":{"code":"HTTP_ERROR","message":"Enhanced scan failed: list index out of range","detail":"Enhanced scan failed: list index out of range","timestamp":"2025-12-07T03:38:49.111684Z","path":"/api/v2/smart-scan/enhanced","method":"POST","status_code":500}}

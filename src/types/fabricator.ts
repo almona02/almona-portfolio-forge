@@ -78,6 +78,8 @@ export interface WindowGrid {
   rows: number;
   cols: number;
   cells: GridCell[];
+  colWidths?: number[]; // relative proportions, length = cols
+  rowHeights?: number[]; // relative proportions, length = rows
 }
 
 export interface GridCell {
@@ -88,6 +90,7 @@ export interface GridCell {
   colSpan?: number;
   type: 'fixed' | 'sash' | 'panel' | 'empty' | 'sliding';
   componentId?: string; // Links to a specific component definition if needed
+  openingDirection?: 'left' | 'right' | 'top' | 'bottom';
 }
 
 export interface WindowComponent {
@@ -173,6 +176,8 @@ export interface Profile {
   width: number;
   height?: number;
   thickness?: number;
+  /** Optional thumbnail URL for visual assets */
+  thumbnailUrl?: string;
   color: string;
   costPerMeter: number;
   cuttingAllowance: number;

@@ -1,4 +1,6 @@
 pytest
+requests
+pytest
 httpx
 respx
 pytest-asyncio

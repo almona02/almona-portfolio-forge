@@ -4,7 +4,7 @@
  * v1: Manual input with visual reference (de-risked approach)
  */
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
@@ -14,6 +14,7 @@ import { Progress } from '@/shared/ui/ui/progress';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Upload, FileText, CheckCircle2, AlertCircle, ChevronRight, ChevronLeft } from 'lucide-react';
 import { ProfileCrossSectionViewer } from './ProfileCrossSectionViewer';
+import { ProfileIconGenerator, type ProfileIconHandle } from './assets/ProfileIconGenerator';
 import { KFactorCalculator } from './KFactorCalculator';
 import { profileDataSheetParser } from '@/lib/profile/ProfileDataSheetParser';
 import { profileDefinitionManager } from '@/lib/profile/ProfileDefinitionManager';
@@ -64,6 +65,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const profileIconRef = useRef<ProfileIconHandle>(null);
 
   const [formData, setFormData] = useState({
     profileCode: initialData?.profileCode || '',
@@ -161,6 +163,24 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
     }
   };
 
+  const uploadThumbnailFromDataUrl = async (dataUrl: string | null): Promise<string | null> => {
+    if (!dataUrl) return null;
+    try {
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const fileName = `${userId}/thumb-${Date.now()}.png`;
+      const { error } = await supabase.storage
+        .from('profile-thumbnails')
+        .upload(fileName, blob, { cacheControl: '3600', upsert: true });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from('profile-thumbnails').getPublicUrl(fileName);
+      return urlData.publicUrl;
+    } catch (err) {
+      console.error('Error uploading thumbnail:', err);
+      return null;
+    }
+  };
+
   // Handle annotation add
   const handleAnnotationAdd = (annotation: Omit<Annotation, 'id'>) => {
     const newAnnotation: Annotation = {
@@ -212,6 +232,8 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
     try {
       // Upload image if available
       const imageUrl = await uploadImageToStorage();
+      const thumbnailDataUrl = await profileIconRef.current?.capture();
+      const thumbnailUrl = await uploadThumbnailFromDataUrl(thumbnailDataUrl || null);
 
       // Create profile
       const profile = await profileDefinitionManager.createProfileFromDefinition({
@@ -220,6 +242,14 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
         annotations: annotations.length > 0 ? annotations : undefined,
         userId,
       });
+
+      if (thumbnailUrl) {
+        await supabase
+          .from('fabricator_profiles')
+          .update({ thumbnail_url: thumbnailUrl })
+          .eq('id', profile.id);
+        (profile as any).thumbnailUrl = thumbnailUrl;
+      }
 
       toast({
         title: 'Profile created',
@@ -466,6 +496,24 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   No image uploaded. Go back to step 1 to upload.
                 </div>
               )}
+            </div>
+
+            <div className="lg:col-span-2">
+              <h4 className="text-sm font-semibold text-gray-200 mb-2">Thumbnail Preview</h4>
+              <div className="border border-gray-700 rounded-lg p-3 bg-gray-900 flex flex-col items-center">
+                <ProfileIconGenerator
+                  ref={profileIconRef}
+                  widthMm={formData.width || 60}
+                  heightMm={formData.height || formData.width || 60}
+                  wallThicknessMm={formData.materialThickness || 1.5}
+                  glazingPocketDepthMm={0}
+                  glazingPocketWidthMm={0}
+                  className="w-24 h-24"
+                />
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  This preview is auto-captured and uploaded as the profile thumbnail.
+                </p>
+              </div>
             </div>
           </div>
         )}

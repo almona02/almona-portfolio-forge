@@ -80,39 +80,59 @@ export interface FrameGeometry {
 // ============================================================================
 
 /**
- * Generates a realistic 2D profile shape (a 'C' shape) instead of a simple box.
- * This is the foundation of our visual realism.
- * @param width The overall width of the profile (e.g., 50mm).
- * @param depth The overall depth/height of the profile (e.g., 50mm).
- * @param thickness The wall thickness (e.g., 1.5mm).
- * @returns An array of THREE.Vector2 defining the shape.
+ * Generates a realistic 2D profile shape (hollow box with pocket) with sane defaults,
+ * never a solid block. This prevents the "solid square" fallback when data is sparse.
  */
-export function createRealisticProfileShape(width: number, depth: number, thickness: number): THREE.Vector2[] {
+export function createRealisticProfileShape(
+    width: number,
+    depth: number,
+    thickness: number,
+    pocketDepth?: number,
+    pocketWidth?: number
+): THREE.Vector2[] {
     const w = width;
     const d = depth;
-    const t = thickness;
-
-    // Define the outer boundary
-    // We center the profile shape around (0,0) to make miter rotation easier
+    const t = thickness || 0.0016; // default to 1.6mm
     const hw = w / 2;
     const hd = d / 2;
 
-    // This is a simplified representation. A real implementation would parse
-    // complex DXF-like data for the profile shape. For our purpose, this is a huge step up.
-    // We return a closed shape (outer box) for the extrusion.
-    // The "hollow" part would typically be a hole in the shape, but for simple 
-    // rendering, a solid block with correct dimensions is often enough, 
-    // or we can define holes if we want true transparency.
-    // For the v6 engine, we start with a solid shape for robustness.
-    
-    const points: THREE.Vector2[] = [];
-    points.push(new THREE.Vector2(-hw, -hd));
-    points.push(new THREE.Vector2(hw, -hd));
-    points.push(new THREE.Vector2(hw, hd));
-    points.push(new THREE.Vector2(-hw, hd));
-    // Auto-closed by Shape
-    
-    return points;
+    // Outer rectangle
+    const outer: THREE.Vector2[] = [
+        new THREE.Vector2(-hw, -hd),
+        new THREE.Vector2(hw, -hd),
+        new THREE.Vector2(hw, hd),
+        new THREE.Vector2(-hw, hd)
+    ];
+
+    // Hollow cavity sized from thickness; keep at least 15% inset
+    const holeInset = Math.max(t * 1.2, Math.min(w, d) * 0.15);
+    const hiw = hw - holeInset;
+    const hid = hd - holeInset;
+    const inner: THREE.Vector2[] = [
+        new THREE.Vector2(-hiw, -hid),
+        new THREE.Vector2(hiw, -hid),
+        new THREE.Vector2(hiw, hid),
+        new THREE.Vector2(-hiw, hid)
+    ];
+
+    // Pocket notch (simple U-cut) to sit glass—optional but helps realism
+    const pocketD = pocketDepth ?? 0.015; // 15mm default
+    const pocketW = pocketWidth ?? w * 0.4; // 40% width pocket
+    const pocketHalf = pocketW / 2;
+    const pocketInset = t * 1.1;
+    const pocketY = -hd + pocketInset + pocketD; // from outer bottom up
+
+    // Represent pocket as a shallow cut at bottom
+    const pocket: THREE.Vector2[] = [
+        new THREE.Vector2(-pocketHalf, -hd + pocketInset),
+        new THREE.Vector2(pocketHalf, -hd + pocketInset),
+        new THREE.Vector2(pocketHalf, pocketY),
+        new THREE.Vector2(-pocketHalf, pocketY),
+    ];
+
+    (outer as any).hole = inner;
+    (outer as any).pocket = pocket;
+    return outer;
 }
 
 /**
@@ -208,8 +228,7 @@ export function createMiteredFrame(width: number, height: number, profile: Profi
     parts.push({
         shape: profile.shape,
         length: width,
-        // Position: y = top edge - half profile width (center of profile)
-        matrix: createMatrix([0, halfH - profileW / 2, 0], [0, 0, -Math.PI/2]), // Rotated to run horizontally
+        matrix: createMatrix([0, halfH - profileW / 2, 0], [0, 0, -Math.PI/2]),
     });
 
     // Bottom
@@ -266,35 +285,98 @@ export function generateModelGeometries(windowUnit: WindowUnit): FrameGeometry {
     const fixedSpacers: THREE.BufferGeometry[] = [];
 
     if (windowUnit.grid && windowUnit.grid.cells.length > 0) {
-        // Handle Grid Mode
-        const { rows, cols, cells } = windowUnit.grid;
-        const cellWidth = width / cols;
-        const cellHeight = height / rows;
+        // Handle Grid Mode with proportional widths/heights from SmartDrawCanvas
+        const { rows, cols, cells, colWidths, rowHeights } = windowUnit.grid;
+
+        const colVals = colWidths && colWidths.length === cols ? colWidths : Array(cols).fill(1);
+        const rowVals = rowHeights && rowHeights.length === rows ? rowHeights : Array(rows).fill(1);
+        const colTotal = colVals.reduce((a, b) => a + b, 0) || cols;
+        const rowTotal = rowVals.reduce((a, b) => a + b, 0) || rows;
+        const colSizes = colVals.map((v) => (v / colTotal) * width);
+        const rowSizes = rowVals.map((v) => (v / rowTotal) * height);
+
+        const colStarts: number[] = [];
+        const rowStarts: number[] = [];
+        colSizes.reduce((acc, w) => {
+            colStarts.push(acc);
+            return acc + w;
+        }, -width / 2);
+        rowSizes.reduce((acc, h) => {
+            rowStarts.push(acc);
+            return acc + h;
+        }, height / 2);
+
+        const sashInset = Math.min(frameProfile.width * 0.4, 0.01); // tighter fit than subtracting full profile width
+        const glassInset = Math.min(frameProfile.width * 0.25, 0.006);
+        const mullionGap = Math.min(0.008, frameProfile.width * 0.45);
+        const mullionDepth = Math.max(frameProfile.depth || 0.03, 0.02);
+
+        // Add mullion bars between columns/rows for visual separation
+        if (cols > 1) {
+            for (let c = 1; c < cols; c++) {
+                const x = colStarts[c];
+                const bar = new THREE.BoxGeometry(mullionGap, height - frameProfile.width * 2, mullionDepth);
+                bar.translate(x, 0, 0);
+                fixedSpacers.push(bar);
+            }
+        }
+        if (rows > 1) {
+            for (let r = 1; r < rows; r++) {
+                const y = rowStarts[r];
+                const bar = new THREE.BoxGeometry(width - frameProfile.width * 2, mullionGap, mullionDepth);
+                bar.translate(0, y, 0);
+                fixedSpacers.push(bar);
+            }
+        }
 
         cells.forEach(cell => {
             if (cell.type === 'empty') return;
 
-            const cellX = -width / 2 + cell.col * cellWidth + cellWidth / 2;
-            const cellY = height / 2 - cell.row * cellHeight - cellHeight / 2;
+            const cellW = colSizes[cell.col];
+            const cellH = rowSizes[cell.row];
+            const cellX = colStarts[cell.col] + cellW / 2;
+            const cellY = rowStarts[cell.row] - cellH / 2;
             
             const isSash = cell.type === 'sash' || (cell as any).type === 'sliding';
 
             if (isSash) {
-                // Reduce size for frame thickness
-                const sashW = cellWidth - frameProfile.width * 2;
-                const sashH = cellHeight - frameProfile.width * 2; // Simple reduction
-                const sashParts = createMiteredFrame(sashW, sashH, sashProfile);
+                const sashW = Math.max(0.05, cellW - sashInset * 2);
+                const sashH = Math.max(0.05, cellH - sashInset * 2);
+
+                // Build a hollow sash frame (outer shape + hole)
+                const frameThickness = Math.min(0.06, Math.min(sashW, sashH) * 0.18); // ~60mm or 18% of span
+                const outer = [
+                    new THREE.Vector2(-sashW / 2, -sashH / 2),
+                    new THREE.Vector2(sashW / 2, -sashH / 2),
+                    new THREE.Vector2(sashW / 2, sashH / 2),
+                    new THREE.Vector2(-sashW / 2, sashH / 2),
+                ];
+                const inner = [
+                    new THREE.Vector2(-sashW / 2 + frameThickness, -sashH / 2 + frameThickness),
+                    new THREE.Vector2(sashW / 2 - frameThickness, -sashH / 2 + frameThickness),
+                    new THREE.Vector2(sashW / 2 - frameThickness, sashH / 2 - frameThickness),
+                    new THREE.Vector2(-sashW / 2 + frameThickness, sashH / 2 - frameThickness),
+                ];
+                const shape = new THREE.Shape(outer);
+                shape.holes.push(new THREE.Path(inner));
+
+                const sashFrameGeom = new THREE.ExtrudeGeometry(shape, { depth: frameProfile.depth, bevelEnabled: false });
+
+                const glassW = Math.max(0.02, sashW - frameThickness * 2 - glassInset * 2);
+                const glassH = Math.max(0.02, sashH - frameThickness * 2 - glassInset * 2);
+                const glassGeom = new THREE.BoxGeometry(glassW, glassH, 0.006);
+                glassGeom.translate(0, 0, -0.006); // recess glass for depth
                 
-                // Glass
-                const glassW = sashW - sashProfile.width * 2;
-                const glassH = sashH - sashProfile.width * 2;
-                const glassGeom = new THREE.BoxGeometry(glassW, glassH, 0.004);
-                
-                // Spacers
-                const spacerGeom = new THREE.BoxGeometry(glassW - 0.02, glassH - 0.02, 0.01); // Simple box spacer
+                const spacerGeom = new THREE.BoxGeometry(Math.max(0.01, glassW - 0.01), Math.max(0.01, glassH - 0.01), 0.01);
 
                 sashes.push({
-                    parts: sashParts,
+                    parts: [
+                        {
+                            shape: outer,
+                            length: frameProfile.depth,
+                            matrix: new THREE.Matrix4(),
+                        },
+                    ],
                     glass: [glassGeom], 
                     spacers: [spacerGeom],
                     openingPath: { 
@@ -302,20 +384,19 @@ export function generateModelGeometries(windowUnit: WindowUnit): FrameGeometry {
                         rotation: new THREE.Euler(0, 0, 0),
                     }
                 });
-            } else if (cell.type === 'fixed') {
-                // Fixed Panel
-                const glassW = cellWidth - frameProfile.width * 2;
-                const glassH = cellHeight - frameProfile.width * 2;
-                const glassGeom = new THREE.BoxGeometry(glassW, glassH, 0.004);
-                glassGeom.translate(cellX, cellY, 0);
+            } else if (cell.type === 'fixed' || cell.type === 'panel') {
+                const inset = Math.min(frameProfile.width * 0.4, 0.01);
+                const glassW = Math.max(0.02, cellW - inset * 2);
+                const glassH = Math.max(0.02, cellH - inset * 2);
+                const glassGeom = new THREE.BoxGeometry(glassW, glassH, 0.006);
+                glassGeom.translate(cellX, cellY, -0.006);
                 fixedGlass.push(glassGeom);
                 
-                // Spacer
-                const spacerGeom = new THREE.BoxGeometry(glassW - 0.02, glassH - 0.02, 0.01);
+                const spacerGeom = new THREE.BoxGeometry(Math.max(0.01, glassW - 0.01), Math.max(0.01, glassH - 0.01), 0.01);
                 spacerGeom.translate(cellX, cellY, 0);
                 fixedSpacers.push(spacerGeom);
             }
-            // 'panel' type can be handled similarly or as opaque glass
+            // 'empty' already skipped
         });
 
     } else {

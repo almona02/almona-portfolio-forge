@@ -121,6 +121,10 @@ class AccessoryResponse(AccessoryBase):
         from_attributes = True
 
 
+class ProfileThumbnailPayload(BaseModel):
+    thumbnail_url: str = Field(..., description="Public URL for the profile thumbnail")
+
+
 class CompatibilityRequest(BaseModel):
     profile_id: str
     accessory_id: str
@@ -343,6 +347,42 @@ async def update_profile(
     except Exception as e:
         logger.error(f"Error updating profile: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to update profile: {str(e)}")
+
+
+@router.post("/profiles/{profile_id}/thumbnail")
+async def upload_profile_thumbnail(
+    request: Request,
+    profile_id: str,
+    payload: ProfileThumbnailPayload,
+    user: Dict[str, Any] = Depends(get_current_user),
+    supabase = Depends(get_industrial_supabase),
+):
+    """
+    Attach a thumbnail URL to a profile record. The asset should already be in profile-thumbnails storage.
+    """
+    try:
+        async with supabase:
+            user_id = user.get("sub") or user.get("user_id")
+            if not user_id:
+                raise HTTPException(status_code=401, detail="User ID not found in token")
+
+            result = (
+                supabase.table("fabricator_profiles")
+                .update({"thumbnail_url": payload.thumbnail_url})
+                .eq("id", profile_id)
+                .eq("user_id", user_id)
+                .execute()
+            )
+
+            if not result.data:
+                raise HTTPException(status_code=404, detail="Profile not found or access denied")
+
+            return {"thumbnail_url": payload.thumbnail_url}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to update profile thumbnail: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to update profile thumbnail")
 
 
 @router.delete("/profiles/{profile_id}", status_code=204)

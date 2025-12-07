@@ -4,6 +4,17 @@ import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Progress } from '@/shared/ui/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/shared/ui/ui/alert-dialog';
 import { WindowUnit } from '@/types/fabricator';
 import type { OptimizationOptions } from '@/integrations/cnc/CNCController';
 import {
@@ -19,6 +30,7 @@ import {
   BarChart3,
   Layers,
   Clock,
+  X,
 } from 'lucide-react';
 
 interface MassProductionDashboardProps {
@@ -26,6 +38,7 @@ interface MassProductionDashboardProps {
   projects: WindowUnit[];
   /** Authenticated user id used for remnant operations. */
   userId: string;
+  onClose?: () => void;
 }
 
 /**
@@ -39,6 +52,7 @@ interface MassProductionDashboardProps {
 export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = ({
   projects,
   userId,
+  onClose,
 }) => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [options, setOptions] = useState<OptimizationOptions>({
@@ -144,8 +158,8 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
       {/* Header */}
       <Card className="bg-gray-900/80 border-gray-800 shadow-xl">
         <CardHeader className="pb-3">
-          <div className="flex items-center justify-between gap-4">
-            <div>
+          <div className="flex items-start justify-between gap-4">
+            <div className="pt-1">
               <CardTitle className="flex items-center gap-2 text-xl font-semibold">
                 <Sparkles className="h-5 w-5 text-orange-400" />
                 Mass Production Optimizer
@@ -172,6 +186,39 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                 </p>
               </div>
             )}
+            <div className="flex items-start">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="hover:bg-red-500/15 hover:text-red-400"
+                    aria-label="Exit mass production"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="bg-gray-900 border-orange-500/30">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-orange-400">Exit Mass Production?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      You have unsaved optimization batches. Leaving now will discard the current queue configuration.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="border-gray-700">Stay Here</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        if (onClose) onClose();
+                        else window.history.back();
+                      }}
+                      className="bg-red-600 hover:bg-red-700 text-white"
+                    >
+                      Exit & Discard
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </div>
         </CardHeader>
       </Card>

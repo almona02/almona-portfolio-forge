@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Minus, Columns, Rows } from 'lucide-react';
+import { Columns, Rows, List, ChevronUp, ChevronDown } from 'lucide-react';
 import { WindowGrid, GridCell } from '@/types/fabricator';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +20,27 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
 }) => {
   // Local state to track the "active" cell for styling
   const [hoveredCell, setHoveredCell] = useState<string | null>(null);
+  const [colWidthsInput, setColWidthsInput] = useState('');
+  const [rowHeightsInput, setRowHeightsInput] = useState('');
+  const [offsetX, setOffsetX] = useState(0);
+  const [offsetY, setOffsetY] = useState(0);
+
+  // Keep inputs in sync when grid changes (e.g., cols/rows adjusted)
+  useEffect(() => {
+    if (grid.colWidths && grid.colWidths.length === grid.cols) {
+      setColWidthsInput(grid.colWidths.join(','));
+    } else if (!colWidthsInput) {
+      setColWidthsInput('');
+    }
+  }, [grid.cols, grid.colWidths]);
+
+  useEffect(() => {
+    if (grid.rowHeights && grid.rowHeights.length === grid.rows) {
+      setRowHeightsInput(grid.rowHeights.join(','));
+    } else if (!rowHeightsInput) {
+      setRowHeightsInput('');
+    }
+  }, [grid.rows, grid.rowHeights]);
 
   // Initialize grid if empty (fallback safety)
   useEffect(() => {
@@ -65,11 +86,24 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   const handleCellClick = (cellId: string) => {
     const newCells = grid.cells.map(cell => {
       if (cell.id === cellId) {
-        // Cycle types: Fixed -> Sash -> Sliding -> Panel -> Empty -> Fixed
-        const types = ['fixed', 'sash', 'sliding', 'panel', 'empty'] as const;
-        const currentIndex = types.indexOf(cell.type as any);
-        const nextType = types[(currentIndex + 1) % types.length];
-        return { ...cell, type: nextType };
+        // Cycle: Fixed -> Sash(left) -> Sash(right) -> Sliding -> Panel -> Empty -> Fixed
+        const cycle = ['fixed', 'sash-left', 'sash-right', 'sliding', 'panel', 'empty'] as const;
+        const currentKey =
+          cell.type === 'sash' && cell.openingDirection === 'right'
+            ? 'sash-right'
+            : cell.type === 'sash'
+            ? 'sash-left'
+            : (cell.type as any);
+        const currentIndex = cycle.indexOf(currentKey as any);
+        const nextKey = cycle[(currentIndex + 1) % cycle.length];
+
+        if (nextKey === 'sash-left') {
+          return { ...cell, type: 'sash', openingDirection: 'left' };
+        }
+        if (nextKey === 'sash-right') {
+          return { ...cell, type: 'sash', openingDirection: 'right' };
+        }
+        return { ...cell, type: nextKey as any, openingDirection: undefined };
       }
       return cell;
     });
@@ -81,9 +115,15 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   const svgWidth = 1000;
   const svgHeight = (height / width) * 1000;
   
-  // Calculate cell dimensions
-  const cellWidth = svgWidth / grid.cols;
-  const cellHeight = svgHeight / grid.rows;
+  // Calculate cell dimensions using proportional widths/heights if provided
+  const colWeights = grid.colWidths && grid.colWidths.length === grid.cols ? grid.colWidths : Array(grid.cols).fill(1);
+  const rowWeights = grid.rowHeights && grid.rowHeights.length === grid.rows ? grid.rowHeights : Array(grid.rows).fill(1);
+  const totalColWeight = colWeights.reduce((a, b) => a + b, 0) || grid.cols;
+  const totalRowWeight = rowWeights.reduce((a, b) => a + b, 0) || grid.rows;
+  const colStarts = colWeights.map((_, idx) => (colWeights.slice(0, idx).reduce((a, b) => a + b, 0) / totalColWeight) * svgWidth + offsetX);
+  const rowStarts = rowWeights.map((_, idx) => (rowWeights.slice(0, idx).reduce((a, b) => a + b, 0) / totalRowWeight) * svgHeight + offsetY);
+  const colWidthsPx = colWeights.map((w) => (w / totalColWeight) * svgWidth);
+  const rowHeightsPx = rowWeights.map((w) => (w / totalRowWeight) * svgHeight);
 
   // ENHANCED VISUALS: Upgrade the styling functions
     const getCellFill = (type: string, isHovered: boolean) => {
@@ -109,54 +149,142 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
     };
 
   return (
-    <div className={cn("flex flex-col gap-4", className)}>
+    <div className={cn("flex flex-col gap-4 items-center", className)}>
       {/* Controls Toolbar */}
-      <div className="flex items-center justify-between bg-gray-900/50 p-2 rounded-lg border border-gray-800">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Columns className="h-4 w-4 text-gray-400" />
-            <span className="text-xs text-gray-400 uppercase">Cols</span>
-            <div className="flex items-center bg-gray-800 rounded">
+      <div className="flex flex-col gap-3 bg-gray-900/50 p-3 rounded-lg border border-gray-800 items-center w-full max-w-4xl">
+        {/* Row 1: Cols / Rows */}
+        <div className="flex flex-wrap justify-center gap-3 w-full">
+          <div className="flex flex-col items-center gap-1.5 bg-gray-800 rounded px-3 py-2 w-[96px]" title="Vertical divisions (sashes)">
+            <Columns className="h-5 w-5 text-gray-100" />
+            <div className="flex items-center gap-2">
               <button 
                 onClick={() => updateGridStructure(grid.rows, Math.max(1, grid.cols - 1))}
-                className="p-1 hover:bg-gray-700 text-white transition-colors"
+                className="p-1 hover:bg-gray-700 text-white transition-colors rounded"
+                aria-label="Decrease columns"
               >
-                <Minus className="h-3 w-3" />
+                <ChevronDown className="h-3 w-3" />
               </button>
-              <span className="w-6 text-center text-sm font-mono">{grid.cols}</span>
+              <span className="text-sm font-mono text-gray-200">{grid.cols}</span>
               <button 
-                onClick={() => updateGridStructure(grid.rows, Math.min(6, grid.cols + 1))}
-                className="p-1 hover:bg-gray-700 text-white transition-colors"
+                onClick={() => updateGridStructure(grid.rows, Math.min(12, grid.cols + 1))}
+                className="p-1 hover:bg-gray-700 text-white transition-colors rounded"
+                aria-label="Increase columns"
               >
-                <Plus className="h-3 w-3" />
+                <ChevronUp className="h-3 w-3" />
               </button>
             </div>
           </div>
 
-          <div className="w-px h-6 bg-gray-800" />
-
-          <div className="flex items-center gap-2">
-            <Rows className="h-4 w-4 text-gray-400" />
-            <span className="text-xs text-gray-400 uppercase">Rows</span>
-            <div className="flex items-center bg-gray-800 rounded">
+          <div className="flex flex-col items-center gap-1.5 bg-gray-800 rounded px-3 py-2 w-[96px]" title="Horizontal divisions (mullions)">
+            <Rows className="h-5 w-5 text-gray-100" />
+            <div className="flex items-center gap-2">
               <button 
                 onClick={() => updateGridStructure(Math.max(1, grid.rows - 1), grid.cols)}
-                className="p-1 hover:bg-gray-700 text-white transition-colors"
+                className="p-1 hover:bg-gray-700 text-white transition-colors rounded"
+                aria-label="Decrease rows"
               >
-                <Minus className="h-3 w-3" />
+                <ChevronDown className="h-3 w-3" />
               </button>
-              <span className="w-6 text-center text-sm font-mono">{grid.rows}</span>
+              <span className="text-sm font-mono text-gray-200">{grid.rows}</span>
               <button 
-                onClick={() => updateGridStructure(Math.min(4, grid.rows + 1), grid.cols)}
-                className="p-1 hover:bg-gray-700 text-white transition-colors"
+                onClick={() => updateGridStructure(Math.min(8, grid.rows + 1), grid.cols)}
+                className="p-1 hover:bg-gray-700 text-white transition-colors rounded"
+                aria-label="Increase rows"
               >
-                <Plus className="h-3 w-3" />
+                <ChevronUp className="h-3 w-3" />
               </button>
             </div>
           </div>
         </div>
 
-        <div className="text-xs text-gray-500 font-mono">
+        {/* Row 2: Absolute measures */}
+        <div className="flex flex-wrap justify-center gap-3 w-full">
+          <div className="flex flex-col gap-1 w-52" title="Comma-separated widths for each column (e.g. mm)">
+            <div className="flex items-center gap-2 text-gray-300">
+              <List className="h-4 w-4" />
+              <button
+                onClick={() => {
+                  const equal = Array(grid.cols).fill(1);
+                  setColWidthsInput(equal.join(','));
+                  onGridChange({ ...grid, colWidths: equal });
+                }}
+                className="ml-auto text-[10px] px-2 py-1 bg-gray-800 border border-gray-700 rounded hover:border-orange-500"
+                title="Set all columns equal"
+              >
+                =
+              </button>
+            </div>
+            <input
+              type="text"
+              value={colWidthsInput}
+              onChange={(e) => setColWidthsInput(e.target.value)}
+              onBlur={() => {
+                const parts = colWidthsInput.split(',').map((p) => parseFloat(p.trim())).filter((n) => !Number.isNaN(n) && n > 0);
+                if (parts.length === grid.cols) {
+                  onGridChange({ ...grid, colWidths: parts });
+                } else if (!colWidthsInput.trim()) {
+                  onGridChange({ ...grid, colWidths: undefined });
+                }
+              }}
+              placeholder="600,800,600"
+              className="w-full bg-gray-800 border border-gray-700 text-xs text-white rounded px-3 py-2 focus:outline-none focus:border-orange-500"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1 w-52" title="Comma-separated heights for each row (e.g. mm)">
+            <div className="flex items-center gap-2 text-gray-300">
+              <List className="h-4 w-4" />
+              <button
+                onClick={() => {
+                  const equal = Array(grid.rows).fill(1);
+                  setRowHeightsInput(equal.join(','));
+                  onGridChange({ ...grid, rowHeights: equal });
+                }}
+                className="ml-auto text-[10px] px-2 py-1 bg-gray-800 border border-gray-700 rounded hover:border-orange-500"
+                title="Set all rows equal"
+              >
+                =
+              </button>
+            </div>
+            <input
+              type="text"
+              value={rowHeightsInput}
+              onChange={(e) => setRowHeightsInput(e.target.value)}
+              onBlur={() => {
+                const parts = rowHeightsInput.split(',').map((p) => parseFloat(p.trim())).filter((n) => !Number.isNaN(n) && n > 0);
+                if (parts.length === grid.rows) {
+                  onGridChange({ ...grid, rowHeights: parts });
+                } else if (!rowHeightsInput.trim()) {
+                  onGridChange({ ...grid, rowHeights: undefined });
+                }
+              }}
+              placeholder="400,1100"
+              className="w-full bg-gray-800 border border-gray-700 text-xs text-white rounded px-3 py-2 focus:outline-none focus:border-orange-500"
+            />
+          </div>
+        </div>
+
+        {/* Row 3: Offsets */}
+        <div className="flex flex-wrap justify-center gap-3 w-full">
+          <input
+            type="number"
+            value={offsetX}
+            onChange={(e) => setOffsetX(parseInt(e.target.value) || 0)}
+            placeholder="Offset left"
+            className="w-32 bg-gray-800 border border-gray-700 text-xs text-white rounded px-3 py-2 focus:outline-none focus:border-orange-500"
+            title="Shift all columns from the left edge"
+          />
+          <input
+            type="number"
+            value={offsetY}
+            onChange={(e) => setOffsetY(parseInt(e.target.value) || 0)}
+            placeholder="Offset top"
+            className="w-32 bg-gray-800 border border-gray-700 text-xs text-white rounded px-3 py-2 focus:outline-none focus:border-orange-500"
+            title="Shift all rows from the top edge"
+          />
+        </div>
+
+        <div className="text-xs text-gray-400 font-mono">
           {grid.cols}x{grid.rows} Grid
         </div>
       </div>
@@ -171,100 +299,138 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
              preserveAspectRatio="xMidYMid meet"
           >
              {/* Add a subtle background grid */}
-            {Array.from({ length: grid.cols - 1 }).map((_, i) => (
-                <line key={`v-${i}`} x1={(i + 1) * (svgWidth / grid.cols)} y1="0" x2={(i + 1) * (svgWidth / grid.cols)} y2={svgHeight} stroke="#374151" strokeWidth="0.5" strokeDasharray="10 10"/>
+            {colStarts.slice(1).map((xPos, i) => (
+              <line
+                key={`v-${i}`}
+                x1={xPos}
+                y1="0"
+                x2={xPos}
+                y2={svgHeight}
+                stroke="#374151"
+                strokeWidth="0.5"
+                strokeDasharray="10 10"
+              />
             ))}
-            {Array.from({ length: grid.rows - 1 }).map((_, i) => (
-                <line key={`h-${i}`} x1="0" y1={(i + 1) * (svgHeight / grid.rows)} x2={svgWidth} y2={(i + 1) * (svgHeight / grid.rows)} stroke="#374151" strokeWidth="0.5" strokeDasharray="10 10"/>
+            {rowStarts.slice(1).map((yPos, i) => (
+              <line
+                key={`h-${i}`}
+                x1="0"
+                y1={yPos}
+                x2={svgWidth}
+                y2={yPos}
+                stroke="#374151"
+                strokeWidth="0.5"
+                strokeDasharray="10 10"
+              />
             ))}
 
             {/* Render Cells */}
-            {grid.cells.map((cell) => (
-              <g 
-                key={cell.id}
-                onClick={() => handleCellClick(cell.id)}
-                onMouseEnter={() => setHoveredCell(cell.id)}
-                onMouseLeave={() => setHoveredCell(null)}
-                className="cursor-pointer transition-opacity hover:opacity-80"
-              >
-                {/* Cell Rect */}
-                <rect
-                  x={cell.col * cellWidth}
-                  y={cell.row * cellHeight}
-                  width={cellWidth}
-                  height={cellHeight}
-                  fill={getCellFill(cell.type, hoveredCell === cell.id)}
-                  stroke={getCellStroke(cell.type)}
-                  strokeWidth={hoveredCell === cell.id ? 4 : 1.5}
-                  strokeDasharray={cell.type === 'empty' ? '10 10' : 'none'}
-                  className="transition-all duration-150"
-                />
+            {grid.cells.map((cell) => {
+              const x = colStarts[cell.col];
+              const y = rowStarts[cell.row];
+              const w = colWidthsPx[cell.col];
+              const h = rowHeightsPx[cell.row];
 
-                {/* Cell Type Label/Icon */}
-                <text
-                  x={cell.col * cellWidth + cellWidth / 2}
-                  y={cell.row * cellHeight + cellHeight / 2}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fill="white"
-                  fontSize={Math.min(cellWidth, cellHeight) * 0.2}
-                  fontWeight="bold"
-                  className="pointer-events-none select-none opacity-50"
+              return (
+                <g 
+                  key={cell.id}
+                  onClick={() => handleCellClick(cell.id)}
+                  onMouseEnter={() => setHoveredCell(cell.id)}
+                  onMouseLeave={() => setHoveredCell(null)}
+                  className="cursor-pointer transition-opacity hover:opacity-80"
                 >
-                  {cell.type.toUpperCase()}
-                </text>
+                  {/* Cell Rect */}
+                  <rect
+                    x={x}
+                    y={y}
+                    width={w}
+                    height={h}
+                    fill={getCellFill(cell.type, hoveredCell === cell.id)}
+                    stroke={getCellStroke(cell.type)}
+                    strokeWidth={hoveredCell === cell.id ? 4 : 1.5}
+                    strokeDasharray={cell.type === 'empty' ? '10 10' : 'none'}
+                    className="transition-all duration-150"
+                  />
 
-                {/* Sash Triangle Indicator (if sash) */}
-                {cell.type === 'sash' && (
-                  <path
-                    d={`
-                      M ${cell.col * cellWidth} ${cell.row * cellHeight} 
-                      L ${cell.col * cellWidth + cellWidth} ${cell.row * cellHeight + cellHeight / 2} 
-                      L ${cell.col * cellWidth} ${cell.row * cellHeight + cellHeight}
-                    `}
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="1"
-                    strokeOpacity="0.3"
-                  />
-                )}
-                
-                {/* Sliding Arrow Indicator (if sliding) */}
-                {cell.type === 'sliding' && (
-                   <g>
-                     <path
-                        d={`
-                          M ${cell.col * cellWidth + cellWidth * 0.2} ${cell.row * cellHeight + cellHeight * 0.5} 
-                          L ${cell.col * cellWidth + cellWidth * 0.8} ${cell.row * cellHeight + cellHeight * 0.5}
-                          L ${cell.col * cellWidth + cellWidth * 0.7} ${cell.row * cellHeight + cellHeight * 0.4}
-                          M ${cell.col * cellWidth + cellWidth * 0.8} ${cell.row * cellHeight + cellHeight * 0.5}
-                          L ${cell.col * cellWidth + cellWidth * 0.7} ${cell.row * cellHeight + cellHeight * 0.6}
-                        `}
-                        fill="none"
-                        stroke="white"
-                        strokeWidth="2"
-                        strokeOpacity="0.6"
-                     />
-                   </g>
-                )}
-                
-                {/* Cross for Panel */}
-                {cell.type === 'panel' && (
-                  <path
-                    d={`
-                      M ${cell.col * cellWidth} ${cell.row * cellHeight} 
-                      L ${cell.col * cellWidth + cellWidth} ${cell.row * cellHeight + cellHeight}
-                      M ${cell.col * cellWidth + cellWidth} ${cell.row * cellHeight}
-                      L ${cell.col * cellWidth} ${cell.row * cellHeight + cellHeight}
-                    `}
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="1"
-                    strokeOpacity="0.1"
-                  />
-                )}
-              </g>
-            ))}
+                  {/* Cell Type Label/Icon */}
+                  <text
+                    x={x + w / 2}
+                    y={y + h / 2}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="white"
+                    fontSize={Math.min(w, h) * 0.16}
+                    fontWeight="bold"
+                    className="pointer-events-none select-none opacity-50"
+                  >
+                    {cell.type === 'sash'
+                      ? cell.openingDirection === 'right'
+                        ? 'SASH →'
+                        : 'SASH ←'
+                      : cell.type.toUpperCase()}
+                  </text>
+
+                  {/* Sash Triangle Indicator (hinge vs handle) */}
+                  {cell.type === 'sash' && (
+                    <path
+                      d={`
+                        M ${cell.openingDirection === 'right' ? x + w * 0.2 : x + w * 0.8} ${y + h * 0.2} 
+                        L ${cell.openingDirection === 'right' ? x + w * 0.8 : x + w * 0.2} ${y + h / 2} 
+                        L ${cell.openingDirection === 'right' ? x + w * 0.2 : x + w * 0.8} ${y + h * 0.8}
+                      `}
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="1.5"
+                      strokeOpacity="0.6"
+                    />
+                  )}
+                  
+                  {/* Sliding Arrow Indicator (left/right panel) */}
+                  {cell.type === 'sliding' && (
+                    <g>
+                      {(() => {
+                        const isLeftPanel = cell.col < grid.cols / 2;
+                        const dir = isLeftPanel ? -1 : 1;
+                        const startX = x + w / 2;
+                        const endX = startX + dir * (w * 0.25);
+                        const midY = y + h / 2;
+                        return (
+                          <path
+                            d={`
+                              M ${startX} ${midY}
+                              L ${endX} ${midY}
+                              L ${endX - dir * w * 0.08} ${midY - h * 0.08}
+                              M ${endX} ${midY}
+                              L ${endX - dir * w * 0.08} ${midY + h * 0.08}
+                            `}
+                            fill="none"
+                            stroke="white"
+                            strokeWidth="2"
+                            strokeOpacity="0.7"
+                          />
+                        );
+                      })()}
+                    </g>
+                  )}
+                  
+                  {/* Cross for Panel */}
+                  {cell.type === 'panel' && (
+                    <path
+                      d={`
+                        M ${x} ${y} 
+                        L ${x + w} ${y + h}
+                        M ${x + w} ${y}
+                        L ${x} ${y + h}
+                      `}
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="1"
+                      strokeOpacity="0.1"
+                    />
+                  )}
+                </g>
+              );
+            })}
 
             {/* Outer Frame Border */}
             <rect 
@@ -277,22 +443,22 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
             />
           </svg>
           
-           {/* Legend Overlay */}
-        <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur p-2 rounded text-[10px] text-gray-300 flex flex-col gap-1 pointer-events-none">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-blue-500/50 border border-blue-500" /> Fixed
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500/50 border border-green-500" /> Sash
-          </div>
-           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-yellow-500/50 border border-yellow-500" /> Sliding
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-gray-500/50 border border-gray-500" /> Panel
-          </div>
         </div>
+      </div>
 
+      {/* Legend Overlay moved below */}
+      <div className="flex flex-wrap gap-3 text-[10px] text-gray-300 bg-black/40 border border-gray-800 rounded p-2">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-blue-500/50 border border-blue-500" /> Fixed
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-green-500/50 border border-green-500" /> Sash
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-yellow-500/50 border border-yellow-500" /> Sliding
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-gray-500/50 border border-gray-500" /> Panel
         </div>
       </div>
     </div>

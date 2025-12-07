@@ -4,8 +4,11 @@ V2 API application factory.
 Creates a FastAPI application specifically for v2 APIs with enhanced middleware
 including rate limiting, security headers, and request validation.
 """
-from fastapi import FastAPI
+from typing import cast
+
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.types import ExceptionHandler
 
 from apis.v2.routers import router as v2_router
 from apis.v2.middleware import (
@@ -41,9 +44,10 @@ from core.middleware import (
     ErrorHandlingMiddleware,
     RequestLoggingMiddleware
 )
+from middleware.smartscan_logger import SmartScanLoggingMiddleware
+from apis import health as health_router
 from core.config import settings
 from fastapi.exceptions import RequestValidationError
-from fastapi import HTTPException
 
 
 def create_v2_app() -> FastAPI:
@@ -74,6 +78,7 @@ def create_v2_app() -> FastAPI:
 
     # 3. Request logging
     app.add_middleware(RequestLoggingMiddleware)
+    app.add_middleware(SmartScanLoggingMiddleware)
 
     # 4. Rate limiting (if enabled)
     if is_rate_limiting_enabled():
@@ -90,29 +95,68 @@ def create_v2_app() -> FastAPI:
     app.add_middleware(SecurityHeadersMiddleware)
 
     # 7. CORS (innermost)
+    # CORS: allow typical local dev ports plus env overrides
     origins = (
         settings.ALLOWED_ORIGINS.split(",")
         if settings.ALLOWED_ORIGINS
-        else ["*"]
+        else [
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://localhost:5173",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:3001",
+            "http://127.0.0.1:5173",
+            "http://localhost:8002",
+            "http://127.0.0.1:8002",
+        ]
     )
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=origins if origins != ["*"] else ["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
 
     # Register error handlers
-    app.add_exception_handler(V2APIError, v2_error_handler)
     app.add_exception_handler(
-        RequestValidationError, v2_validation_error_handler
+        V2APIError,
+        cast(ExceptionHandler, v2_error_handler),  # type: ignore[arg-type]
     )
-    app.add_exception_handler(HTTPException, v2_http_exception_handler)
-    app.add_exception_handler(Exception, v2_general_exception_handler)
+    app.add_exception_handler(
+        RequestValidationError,
+        cast(ExceptionHandler, v2_validation_error_handler),
+    )
+    app.add_exception_handler(
+        HTTPException,
+        cast(ExceptionHandler, v2_http_exception_handler),
+    )
+    app.add_exception_handler(
+        Exception,
+        cast(ExceptionHandler, v2_general_exception_handler),
+    )
 
     # Include v2 router
     app.include_router(v2_router)
+
+    # SmartScan routers (optional, guarded import)
+    try:
+        from apis.v2 import (
+            smart_scan,
+            smart_scan_enhanced,
+            smart_scan_assembly,
+        )
+
+        app.include_router(smart_scan.router)
+        app.include_router(smart_scan_enhanced.router)
+        app.include_router(smart_scan_assembly.router)
+    except Exception as exc:  # pragma: no cover - defensive
+        import logging
+
+        logging.getLogger(__name__).warning(
+            "SmartScan routers not loaded: %s",
+            exc,
+        )
 
     # Include cached endpoints router
     from apis.v2.cached_endpoints import router as cached_router
@@ -121,6 +165,9 @@ def create_v2_app() -> FastAPI:
     # Include background tasks router
     from apis.v2.background_tasks import router as tasks_router
     app.include_router(tasks_router)
+
+    # Enhanced SmartScan health endpoints (prefixed to avoid clashes)
+    app.include_router(health_router.router, prefix="/health")
 
     # Add v2-specific endpoints
     @app.get("/health")

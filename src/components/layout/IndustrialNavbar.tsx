@@ -131,6 +131,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
   // Quick actions for operators
   const quickActions = [
     { name: "New Project", action: () => navigate('/fabricator-workflow?new=true'), icon: Zap },
+    { name: "Profile Tuning Studio", action: () => navigate('/fabricator/profiles?tuning=studio'), icon: Sparkles },
     { name: "Machine Status", action: () => navigate('/machine-status'), icon: Factory },
     { name: "Inventory Check", action: () => navigate('/fabricator/inventory'), icon: Package },
     { name: "Quality Reports", action: () => navigate('/quality-reports'), icon: Brain }

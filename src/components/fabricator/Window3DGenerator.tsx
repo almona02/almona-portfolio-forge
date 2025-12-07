@@ -72,20 +72,18 @@ const createSpacerMaterial = (clippingPlanes?: THREE.Plane[] | null): THREE.Mesh
  */
 function MiteredFramePart({ part, material, enableShadows }: { part: MiteredFrameData, material: THREE.Material, enableShadows: boolean }) {
     const geometry = useMemo(() => {
-        const shape = new THREE.Shape(part.shape);
+        const shape = new THREE.Shape(part.shape as any);
+        // If a hole is provided on the shape, add it for hollow profiles
+        if ((part.shape as any).hole) {
+            const holePath = new THREE.Path((part.shape as any).hole);
+            shape.holes.push(holePath);
+        }
         const extrudeSettings = {
             steps: 1,
             depth: part.length,
             bevelEnabled: false,
         };
         const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        
-        // Extrude creates geometry along Z axis starting at 0.
-        // We assume part.matrix handles positioning/rotation of this extruded piece.
-        // However, ExtrudeGeometry usually extrudes in +Z direction.
-        // If our miter logic assumes centering, we might need to center it on Z.
-        // For now we assume the matrix handles everything.
-        
         geom.applyMatrix4(part.matrix);
         return geom;
     }, [part]);
@@ -241,13 +239,28 @@ export function Window3DModel({
 
         const isUPVC = materialType === 'upvc';
 
-        const frameMaterial = createMaterial(
-            isUPVC ? 'upvc' : 'aluminum',
-            { color }
-        );
+        const frameMaterial = createMaterial(isUPVC ? 'upvc' : 'aluminum', { 
+            color,
+            metalness: 0.7,
+            roughness: 0.25,
+            envMapIntensity: 1.2,
+        });
 
         const sashMaterial = frameMaterial;
-        const glassMaterial = createMaterial('glass', {});
+        const glassMaterial = createMaterial('glass', {
+            color: '#aaccff',
+            metalness: 0.1,
+            roughness: 0.05,
+            transmission: 0.95,
+            thickness: 0.01,
+            ior: 1.52,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0,
+            transparent: true,
+            opacity: 0.25,
+            envMapIntensity: 1.5,
+            side: THREE.DoubleSide,
+        });
         const spacerMaterial = createSpacerMaterial(clippingPlanes);
 
         return {
@@ -363,6 +376,11 @@ export function Window3DModel({
                     {sash.spacers.map((spacerGeom, i) => (
                         <mesh key={`spacer-${sashIndex}-${i}`} geometry={spacerGeom} material={materials.spacer} castShadow={enableShadows} />
                     ))}
+                    {/* Handle placeholder: darker, longer grip for better contrast */}
+                    <mesh position={[0, 0, 0.025]} castShadow={enableShadows} receiveShadow={enableShadows}>
+                      <boxGeometry args={[0.02, 0.12, 0.015]} />
+                      <meshStandardMaterial color="#2d2d2d" metalness={0.8} roughness={0.2} />
+                    </mesh>
                 </group>
             ))}
 
@@ -688,10 +706,23 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     const [isExporting, setIsExporting] = useState(false);
     const [exportFormat, setExportFormat] = useState<'GLB' | 'STL' | 'OBJ'>('GLB');
     const [_isFullscreen, setIsFullscreen] = useState(false);
+    const [controlsVisible, setControlsVisible] = useState(false);
 
     const modelRef = useRef<THREE.Group>(null!);
     const glRef = useRef<any>(null);
     const controlsRef = useRef<any>(null); // For CameraControls
+    const controlsCardRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const handleClick = (e: MouseEvent) => {
+            if (!controlsVisible) return;
+            if (controlsCardRef.current && !controlsCardRef.current.contains(e.target as Node)) {
+                setControlsVisible(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, [controlsVisible]);
 
     // --- Business Logic ---
     const constraints = useMemo(() => deriveSystemConstraintsFromProfiles(profiles || []), [profiles]);
@@ -841,8 +872,11 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                     antialias: true, 
                     alpha: true, 
                     preserveDrawingBuffer: true, 
-                    localClippingEnabled: true 
+                    localClippingEnabled: true,
+                    powerPreference: 'high-performance'
                 }}
+                dpr={[1, 1.5]}
+                frameloop="demand"
                 camera={{ position: [0, 0, 3], fov: 50 }}
                 performance={{ min: 0.5 }}
                 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
@@ -914,27 +948,43 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
 
             {/* --- UI OVERLAYS --- */}
             {showControls && (
-                <WindowControls
-                    isAnimating={isAnimating}
-                    setIsAnimating={setIsAnimating}
-                    animationProgress={animationProgress}
-                    setAnimationProgress={setAnimationProgress}
-                    showMeasurements={showMeasurements}
-                    setShowMeasurements={setShowMeasurements}
-                    exportFormat={exportFormat}
-                    setExportFormat={setExportFormat}
-                    exportModel={exportModel}
-                    toggleFullscreen={toggleFullscreen}
-                    windowUnit={windowUnit}
-                    controlsRef={controlsRef}
-                    quality={quality}
-                    setQuality={setQuality}
-                    enableShadows={enableShadows}
-                    setEnableShadows={setEnableShadows}
-                    isExporting={isExporting}
-                    sectionViewEnabled={sectionViewEnabled}
-                    setSectionViewEnabled={setSectionViewEnabled}
-                />
+                <>
+                  {!controlsVisible && (
+                    <div className="absolute top-4 right-4 z-10">
+                      <button
+                        className="px-3 py-1 rounded bg-gray-900/80 border border-gray-700 text-xs text-gray-200 hover:border-orange-500"
+                        onClick={() => setControlsVisible(true)}
+                      >
+                        3D Controls
+                      </button>
+                    </div>
+                  )}
+                  {controlsVisible && (
+                    <div ref={controlsCardRef}>
+                      <WindowControls
+                        isAnimating={isAnimating}
+                        setIsAnimating={setIsAnimating}
+                        animationProgress={animationProgress}
+                        setAnimationProgress={setAnimationProgress}
+                        showMeasurements={showMeasurements}
+                        setShowMeasurements={setShowMeasurements}
+                        exportFormat={exportFormat}
+                        setExportFormat={setExportFormat}
+                        exportModel={exportModel}
+                        toggleFullscreen={toggleFullscreen}
+                        windowUnit={windowUnit}
+                        controlsRef={controlsRef}
+                        quality={quality}
+                        setQuality={setQuality}
+                        enableShadows={enableShadows}
+                        setEnableShadows={setEnableShadows}
+                        isExporting={isExporting}
+                        sectionViewEnabled={sectionViewEnabled}
+                        setSectionViewEnabled={setSectionViewEnabled}
+                      />
+                    </div>
+                  )}
+                </>
             )}
              {showControls && (
                 <div className="absolute bottom-4 left-4 z-10">

@@ -1,4 +1,5 @@
 import React, { Suspense, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +18,9 @@ const ProfilesPage: React.FC = () => {
   const { t } = useTranslation('fabricator');
   const { user } = useAuth();
   const [refetchTrigger, setRefetchTrigger] = useState(0);
+  const [searchParams] = useSearchParams();
+  const autoOpenTuning = searchParams.get('tuning') === 'studio';
+  const tuningProfileId = searchParams.get('profileId') || searchParams.get('profile_id');
 
   const {
     data: profiles = [],
@@ -115,6 +119,8 @@ const ProfilesPage: React.FC = () => {
               initialProfiles={profiles}
               onProfilesUpdate={handleProfilesUpdate}
               skipInitialLoad={true} // Tell ProfileManagement to use initialProfiles instead of loading
+              autoOpenTuning={autoOpenTuning}
+              initialTuningProfileId={tuningProfileId || undefined}
             />
           </Suspense>
         </CardContent>

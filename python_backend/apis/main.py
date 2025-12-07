@@ -135,7 +135,14 @@ app.add_middleware(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "http://localhost:3000",  # Development
+        "http://localhost:3001",  # Development
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
         "http://localhost:5173",  # Development
+        "http://127.0.0.1:5173",
+        "http://localhost:8002",
+        "http://127.0.0.1:8002",
         "https://www.almona02.com",  # Production domain
         "https://almona-portfolio-forge.vercel.app",  # Vercel domain
         "https://almona-portfolio-forge-kz44hknh6.vercel.app",

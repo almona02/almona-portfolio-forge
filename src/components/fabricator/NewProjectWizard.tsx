@@ -33,7 +33,10 @@ export interface ProjectHeaderMeta {
   orderNumber?: string;
   orderDate?: string;
   projectType?: ProjectType;
+  /** Optional default/system pack for backward compatibility */
   systemPackId?: string;
+  /** Optional shortlist of allowed system packs for this project */
+  allowedSystemPackIds?: string[];
 }
 
 interface NewProjectWizardProps {
@@ -70,8 +73,9 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
   const [orderDate, setOrderDate] = useState(initialMeta?.orderDate ?? '');
   const [projectType, setProjectType] = useState<ProjectType | undefined>(initialMeta?.projectType);
   const [showProjectTypeSelection, setShowProjectTypeSelection] = useState(!initialMeta?.projectType);
-  const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>(
-    initialMeta?.systemPackId || ''
+  const [selectedSystemPackIds, setSelectedSystemPackIds] = useState<string[]>(
+    initialMeta?.allowedSystemPackIds ||
+      (initialMeta?.systemPackId ? [initialMeta.systemPackId] : [])
   );
 
   // Pre-select system pack based on project type
@@ -86,7 +90,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
             p.meta.name.toUpperCase().includes(suggestedSystem.toUpperCase())
         );
         if (pack) {
-          setSelectedSystemPackId(pack.meta.id);
+          setSelectedSystemPackIds([pack.meta.id]);
         }
       }
     }
@@ -128,6 +132,8 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
 
   const handleCreate = () => {
     if (!canSubmit) return;
+    const primarySystem = selectedSystemPackIds[0];
+
     onSubmit({
       clientName: clientName.trim(),
       projectName: projectName.trim(),
@@ -139,13 +145,28 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
       orderNumber: orderNumber.trim() || undefined,
       orderDate: orderDate || undefined,
       projectType,
-      systemPackId: selectedSystemPackId || undefined,
+      systemPackId: primarySystem || undefined,
+      allowedSystemPackIds: selectedSystemPackIds.length ? selectedSystemPackIds : undefined,
     });
   };
 
   const handleProjectTypeSelect = (type: ProjectType) => {
     setProjectType(type);
     setShowProjectTypeSelection(false);
+  };
+
+  const getPackStats = (pack: (typeof SYSTEM_PACKS)[number]) => {
+    const profilesList = (pack as any).windowSystemSpec?.profiles_cutting_list;
+    const accessoriesList = (pack as any).windowSystemSpec?.accessories_list;
+    const profileCount = Array.isArray(profilesList) ? profilesList.length : 0;
+    const accessoryCount = Array.isArray(accessoriesList) ? accessoriesList.length : 0;
+    return { profileCount, accessoryCount };
+  };
+
+  const togglePack = (id: string) => {
+    setSelectedSystemPackIds((prev) =>
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+    );
   };
 
   return (
@@ -205,6 +226,61 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
             )}
 
             <div className="space-y-4 mt-2">
+          <div className="space-y-2">
+            <Label className="text-xs flex items-center gap-1">
+              Project System Packs (multi-select)
+              <span className="text-[10px] text-gray-500">(use to shortlist relevant systems)</span>
+            </Label>
+            <div className="grid grid-cols-1 gap-2 max-h-[260px] overflow-y-auto pr-1">
+              {SYSTEM_PACKS.map((pack) => {
+                const stats = getPackStats(pack);
+                const isSelected = selectedSystemPackIds.includes(pack.meta.id);
+                return (
+                  <button
+                    key={pack.meta.id}
+                    type="button"
+                    onClick={() => togglePack(pack.meta.id)}
+                    className={`w-full text-left p-3 rounded border transition-all ${
+                      isSelected
+                        ? 'border-orange-500 bg-orange-500/10 shadow-[0_0_8px_rgba(249,115,22,0.15)]'
+                        : 'border-gray-800 hover:bg-gray-800/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${
+                            isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-600 bg-gray-900'
+                          }`}
+                        >
+                          {isSelected && (
+                            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                        <div>
+                          <p className={`text-sm font-semibold ${isSelected ? 'text-orange-100' : 'text-gray-100'}`}>
+                            {pack.meta.name}
+                          </p>
+                          <p className="text-[11px] text-gray-400">{pack.meta.brands?.join(', ')}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 items-center">
+                        <Badge variant="outline" className="text-[10px] border-gray-700">
+                          {stats.profileCount} Profiles
+                        </Badge>
+                        <Badge variant="outline" className="text-[10px] border-gray-700">
+                          {stats.accessoryCount} Accessories
+                        </Badge>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label className="text-xs flex items-center gap-1">

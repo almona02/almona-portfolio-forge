@@ -7,6 +7,12 @@ Almona Portfolio Forge is a full-stack industrial machinery platform centered ar
 
 **The Intelligent Core**: Fabricator Pro is not just a workflow system—it's a **self-learning platform** with a predictive AI core. The system operates on a continuous improvement loop: **Define** (profiles from data sheets), **Control** (optimization strategy), **Calibrate** (K-factor precision), **Reflect** (personal analytics), **Learn** (data collection), and **Predict** (AI suggestions). This virtuous cycle transforms the platform from a static tool into an intelligent partner that learns from every user action and continuously improves its predictions.
 
+### Recent UX / Visual Improvements (Dec 2025)
+- Project setup now supports multi-select system packs (shortlist); the first selection remains the legacy default.
+- Technical Design (EngineeringBay) shows an Active System header with a shortlist-only dropdown and hover hint; no more grid “shopping.”
+- 3D engine: hollow sash frames with recessed, PBR glass (transparent/tinted), improved handles; glass no longer appears as solid blocks.
+- SmartDraw: per-cell sash direction cycle, sliding arrows, proportion-based sizing, and cleaner controls.
+
 ## 🇪🇬 Alignment with Egypt Vision 2030 & Digital Egypt Strategy
 
 ### National Strategic Alignment
@@ -1859,6 +1865,18 @@ A massive overhaul of the Fabricator Pro module focusing on visual fidelity, dat
   - Workshop metrics and benchmarking APIs
   - OEE tracking and operator performance
   - Real-time dashboard updates
+
+## SmartScan runtime dependencies and limits
+
+- Poppler (for pdf2image). On Windows set `POPPLER_PATH` (e.g.
+  `C:\poppler\Library\bin`) and add it to `PATH`.
+- Potrace/potracer (for bitmap-to-SVG). Install the binary and ensure it is on
+  `PATH`.
+- Tesseract OCR (pytesseract fallback) and/or EasyOCR (Python package).
+- Supported formats: JPG, PNG, BMP, TIFF, WEBP, PDF (first 3 pages), DXF
+  (rendered via ezdxf/matplotlib). DWG is not supported.
+- Limits enforced: max upload 50 MB; image dimensions must be within validated
+  bounds; empty/invalid files are rejected.
 
 ---
 
