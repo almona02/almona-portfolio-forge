@@ -222,6 +222,7 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
     <nav 
       ref={navbarRef}
       dir="ltr"
+      style={{ direction: "ltr" }}
       className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-200 ${
         isScrolled 
           ? "bg-black/95 border-b border-orange-500/30 shadow-2xl" 
