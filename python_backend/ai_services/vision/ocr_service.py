@@ -180,6 +180,38 @@ class TechnicalOCRService:
         morphed = cv2.dilate(adaptive, kernel, iterations=1)
         return morphed
 
+    def _preprocess_for_engineering_text(self, image: np.ndarray) -> np.ndarray:
+        """
+        Engineering-focused preprocessing to boost numeric OCR:
+        - Remove light grid lines
+        - Enhance contrast
+        - Preserve thin strokes for decimals/units
+        """
+        gray = (
+            cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            if len(image.shape) == 3
+            else image.copy()
+        )
+
+        # Remove horizontal/vertical light grid lines often present in drawings
+        horizontal_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 1))
+        vertical_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 25))
+        horizontal_lines = cv2.morphologyEx(gray, cv2.MORPH_OPEN, horizontal_kernel)
+        vertical_lines = cv2.morphologyEx(gray, cv2.MORPH_OPEN, vertical_kernel)
+        no_lines = cv2.subtract(gray, horizontal_lines)
+        no_lines = cv2.subtract(no_lines, vertical_lines)
+
+        # Contrast enhance and light denoise
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        enhanced = clahe.apply(no_lines)
+        denoised = cv2.bilateralFilter(enhanced, 9, 75, 75)
+
+        # Clean binary for OCR
+        _, binary = cv2.threshold(
+            denoised, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
+        )
+        return binary
+
     def _extract_text(self, image: np.ndarray) -> List[str]:
         """
         Extract text from image using enhanced preprocessing and
@@ -215,6 +247,8 @@ class TechnicalOCRService:
 
             pre = self._preprocess_for_ocr(image)
             pre_aggressive = self._preprocess_for_ocr_aggressive(image)
+            pre_engineering = self._preprocess_for_engineering_text(image)
+
             configs = [
                 ("--psm 6 --oem 3", pre, 0),
                 ("--psm 11 --oem 3", pre, 1),
@@ -222,6 +256,12 @@ class TechnicalOCRService:
                 ("--psm 3 --oem 3", pre, 3),
                 ("--psm 6 --oem 3", pre_aggressive, 4),
                 ("--psm 11 --oem 3", pre_aggressive, 5),
+                # Engineering-optimized: whitelist numerics/units and keep small decimals
+                (
+                    "--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789.,:/XxMmcmMM ",
+                    pre_engineering,
+                    6,
+                ),
             ]
             for cfg, img_src, _idx in configs:
                 text = pytesseract.image_to_string(img_src, config=cfg)

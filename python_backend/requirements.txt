@@ -5,12 +5,20 @@ pydantic==2.9.0
 pydantic-settings==2.1.0
 
 # Computer Vision
-opencv-python-headless==4.8.1.78
+# Pinned to satisfy albumentations>=4.9.0.80 requirement
+opencv-python-headless==4.10.0.84
 potracer
 
 # Machine Learning
 ultralytics==8.3.40
 requests==2.32.5
+easyocr==1.7.1
+# Explicitly pinning the wrapper
+pytesseract==0.3.10
+
+# ML Frameworks
+tensorflow==2.17.1
+albumentations==1.4.18
 
 # Database
 supabase==2.8.0
@@ -22,6 +30,9 @@ asyncpg==0.30.0
 python-jose[cryptography]==3.4.0
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.20
+PyJWT==2.9.0
+pip-audit==2.10.0
+bandit==1.7.10
 
 # Background Tasks
 celery==5.3.4
@@ -36,7 +47,8 @@ opentelemetry-instrumentation-fastapi==0.42b0
 opentelemetry-instrumentation-requests==0.42b0
 opentelemetry-instrumentation-psycopg2==0.42b0
 opentelemetry-exporter-jaeger==1.21.0
-opentelemetry-exporter-prometheus==1.12.0rc1
+# FIXED: Updated from yanked 1.12.0rc1 to SDK 1.21.0 compatible version
+opentelemetry-exporter-prometheus==0.42b0
 opentelemetry-instrumentation-logging==0.42b0
 opentelemetry-semantic-conventions==0.42b0
 
@@ -49,8 +61,6 @@ pillow==10.4.0
 numpy==1.26.4
 locust==2.32.1
 respx==0.21.1
-
-# Performance Testing
 psutil==5.9.6
 
 # Development
@@ -59,25 +69,12 @@ isort==5.12.0
 flake8==6.1.0
 mypy==1.7.1
 
-# ML frameworks required by part detection models
-# Updated to 2.17.1 for Python 3.12 compatibility
-tensorflow==2.17.1
-albumentations==1.4.18
-
 # Production
 gunicorn==22.0.0
-
-# Flask (legacy v2 blueprints used by tests)
 Flask==3.0.3
 Flask-Limiter==3.7.0
-PyJWT==2.9.0
 
-# Security Tools
-pip-audit==2.10.0
-bandit==1.7.10
-
-# AI & CNC Integration (Fabricator Pro)
-# Updated ONNX to 1.17.0 to fix security vulnerabilities (Dependabot alerts #114, #116, #117)
+# AI & CNC Integration
 onnx==1.17.0
 onnxruntime==1.20.0
 ortools==9.8.3296
