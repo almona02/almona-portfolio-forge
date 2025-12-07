@@ -3,6 +3,9 @@ import numpy as np
 import logging
 from typing import Optional, Dict, Any
 
+from ai_services.vision.white_balance import apply_gray_world_white_balance
+from ai_services.vision.binarization_numpy import sauvola_numpy, niblack_numpy
+
 logger = logging.getLogger(__name__)
 
 # Potrace / potracer fallback
@@ -42,14 +45,21 @@ class ProfileScanner:
 
         denoised = cv2.bilateralFilter(gray, 9, 75, 75)
 
-        binary = cv2.adaptiveThreshold(
-            denoised,
-            255,
-            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-            cv2.THRESH_BINARY_INV,
-            11,
-            2,
-        )
+        # Choose binarization strategy based on contrast
+        contrast = denoised.std()
+        if contrast < 25:
+            # Low contrast: use Sauvola to preserve faint lines/text
+            binary = sauvola_numpy(denoised, window_size=25, k=0.2)
+            binary = 255 - binary  # invert to match expected foreground=white
+        else:
+            binary = cv2.adaptiveThreshold(
+                denoised,
+                255,
+                cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                cv2.THRESH_BINARY_INV,
+                11,
+                2,
+            )
 
         kernel = np.ones((3, 3), np.uint8)
         cleaned = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
@@ -122,6 +132,16 @@ class ProfileScanner:
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         if img is None:
             raise ValueError("Could not decode image")
+
+        # Downsample very large images to avoid OOM/perf issues
+        if img.shape[0] > 4000 or img.shape[1] > 4000:
+            scale = 3000 / max(img.shape[0], img.shape[1])
+            new_size = (int(img.shape[1] * scale), int(img.shape[0] * scale))
+            img = cv2.resize(img, new_size)
+            logger.info("Downsampled large image to %sx%s", new_size[0], new_size[1])
+
+        # Apply white balance to normalize lighting before further processing
+        img = apply_gray_world_white_balance(img)
 
         if img.shape[0] > self.MAX_IMAGE_DIMENSION or img.shape[1] > self.MAX_IMAGE_DIMENSION:
             raise ValueError(
