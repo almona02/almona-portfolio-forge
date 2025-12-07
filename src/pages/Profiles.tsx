@@ -1,11 +1,12 @@
 import React, { Suspense, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/lib/supabase';
 import type { Profile } from '@/types/fabricator';
 import { Card, CardContent } from '@/shared/ui/ui/card';
+import { Button } from '@/shared/ui/ui/button';
 import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates';
 
 const ProfileManagement = React.lazy(() =>
@@ -111,6 +112,31 @@ const ProfilesPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Profiles</h1>
+          <p className="text-sm text-gray-400">
+            Register new profiles directly from Smart Scan or Assembly, then manage them here.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            asChild
+            className="bg-orange-500 text-white hover:bg-orange-600"
+            variant="default"
+          >
+            <Link to="/test-scanner">Launch Smart Scan</Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            className="border-orange-400 text-orange-200 hover:bg-orange-500/10"
+          >
+            <Link to="/smart-scan-assembly">Assembly Scan</Link>
+          </Button>
+        </div>
+      </div>
+
       <Card className="bg-slate-800/50 border-slate-700/50">
         <CardContent className="p-6">
           <Suspense fallback={<FabricatorProjectSkeleton />}>

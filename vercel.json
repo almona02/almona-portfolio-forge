@@ -12,6 +12,8 @@
     { "source": "/yilmaz-machines-egypt-en", "destination": "/yilmaz-machines-egypt-en.html" },
     { "source": "/fabricator-pro-software", "destination": "/fabricator-pro-software.html" },
     { "source": "/fabricator-pro-software-en", "destination": "/fabricator-pro-software-en.html" },
+    { "source": "/test-scanner", "destination": "/index.html" },
+    { "source": "/test-scanner/(.*)", "destination": "/index.html" },
     { "source": "/products/machines", "destination": "/index.html" },
     { "source": "/products/machines/", "destination": "/index.html" },
     { "source": "/products/(.*)", "destination": "/index.html" },

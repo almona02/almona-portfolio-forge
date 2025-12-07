@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Dict, Any, Optional, Literal, Union
 from enum import Enum
 from datetime import datetime
@@ -29,6 +29,8 @@ class PartDetectionResponseData(BaseModel):
     image_info: ImageInfo
     model_info: ModelInfo
 
+    # Allow fields with model_ prefix under Pydantic v2
+    model_config = ConfigDict(protected_namespaces=())
  
 class PartDetectionResponse(BaseModel):
     success: bool
@@ -138,7 +140,7 @@ class SupportTicketCreate(BaseModel):
     payload: UnifiedTicketBase
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "category": "support",
                 "payload": {
@@ -185,7 +187,7 @@ class PreventiveMaintenanceTicketCreate(BaseModel):
     )
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "category": "preventive_maintenance",
                 "payload": {
@@ -269,7 +271,7 @@ class TicketResponse(BaseModel):
     updated_at: datetime = Field(..., description="Last update timestamp", example="2024-01-15T14:45:00Z")
     
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "id": "550e8400-e29b-41d4-a716-446655440001",
                 "ticket_number": "TKT-2024-001234",
