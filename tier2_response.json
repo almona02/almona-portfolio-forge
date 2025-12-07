@@ -1,0 +1,55 @@
+{
+  "svgPath": "M 41 102 L 146 450 L 681 410 L 760 610 L 714 803 L 772 612 L 695 314 L 760 113 L 706 265 L 631 264 L 629 70 L 525 120 L 521 266 L 320 266 L 258 103 L 211 180 L 301 124 L 301 266 L 57 271 Z",
+  "dimensions": {
+    "width_px": 733,
+    "height_px": 734,
+    "aspect_ratio": 0.9986376021798365,
+    "width_mm": 81.09865954738453,
+    "height_mm": 81.20929891920906,
+    "scale_used": 0.11063937182453551
+  },
+  "bbox": {
+    "x": 40,
+    "y": 70,
+    "width": 733,
+    "height": 734
+  },
+  "quality": {
+    "blur_score": 729.0313722673243,
+    "contrast": 61.53189248460504,
+    "fill_ratio": 0.16151094553378115
+  },
+  "vectorizer": "contour",
+  "scaleDetection": {
+    "detected": true,
+    "scale_mm_per_px": 0.11063937182453551,
+    "confidence": 0.68,
+    "reference_line": {
+      "start": [
+        876,
+        97
+      ],
+      "end": [
+        464,
+        90
+      ]
+    },
+    "detected_label": "45.59",
+    "debug_info": {
+      "method": "median",
+      "samples": 1,
+      "dimensions": 3,
+      "lines": 188,
+      "associations": 3,
+      "scale_candidates": [
+        0.11063937182453551
+      ],
+      "outliers": []
+    },
+    "suggestion_text": "Moderate confidence: 0.1106 mm/px detected. Please verify."
+  },
+  "storage": {
+    "photo_url": null,
+    "svg_url": null
+  }
+}

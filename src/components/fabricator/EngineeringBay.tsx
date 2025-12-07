@@ -30,11 +30,14 @@ import { WindowUnit, Profile, WindowComponent, WindowGrid } from '@/types/fabric
 // Dynamic import for heavy 3D component
 const Window3DGenerator = React.lazy(() => import('./Window3DGenerator'));
 
-import { SystemPackSelector } from './SystemPackSelector'; 
 import { SmartDrawCanvas } from './SmartDrawCanvas'; 
 import { generateComponentsFromGrid } from '@/algorithms/smartDraw'; 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateDesign } from '@/lib/fabricator/ConstraintEngine';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Label } from '@/shared/ui/ui/label';
+import { Layers } from 'lucide-react';
 
 interface EngineeringBayProps {
     project: WindowUnit | null;
@@ -237,21 +240,85 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 <CardHeader>
                                     <CardTitle className="text-base flex items-center gap-2">
                                         <Settings className="h-4 w-4 text-gray-400"/>
-                                        System & Layout
+                                        System Configuration
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    <SystemPackSelector 
-                                        category="aluminum_windows" // This can be dynamic
-                                        onSystemPackSelect={handleSystemPackSelect}
-                                    />
-                                     {activeSystemPackId && (
-                                        <Alert variant="default" className="border-green-500/50 bg-green-900/30 text-green-200">
-                                            <AlertDescription className="text-xs">
-                                                Active System: <strong>{activeSystemPackId}</strong>. Constraints and profiles are now filtered.
-                                            </AlertDescription>
-                                        </Alert>
+                                    <div className="space-y-2">
+                                        <Label className="text-xs text-gray-300">Active System</Label>
+                                        {activeSystemPackId && (
+                                            <div className="text-[11px] text-gray-400" title={(() => {
+                                                const pack = SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId);
+                                                return pack ? `${pack.meta.name} (${pack.meta.brands?.join(', ') || 'Brand'})` : activeSystemPackId;
+                                            })()}>
+                                                {(() => {
+                                                    const pack = SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId);
+                                                    return pack ? `${pack.meta.name} • ${pack.meta.brands?.join(', ') || 'Brand'}` : activeSystemPackId;
+                                                })()}
+                                            </div>
+                                        )}
+                                        <Select
+                                            value={activeSystemPackId}
+                                            onValueChange={handleSystemPackSelect}
+                                        >
+                                            <SelectTrigger className="h-9 bg-gray-950 border-gray-700 text-xs text-gray-100 focus:ring-orange-500/20">
+                                                <SelectValue placeholder="Select System" />
+                                            </SelectTrigger>
+                                        <SelectContent className="bg-gray-900 border-gray-700 text-gray-200">
+                                            {(
+                                                (project as any)?.allowedSystemPackIds?.length
+                                                    ? SYSTEM_PACKS.filter((p) =>
+                                                        (project as any)?.allowedSystemPackIds?.includes(p.meta.id)
+                                                      )
+                                                    : SYSTEM_PACKS
+                                            ).map((pack) => (
+                                                <SelectItem
+                                                    key={pack.meta.id}
+                                                    value={pack.meta.id}
+                                                    className="text-xs focus:bg-gray-800"
+                                                    title={pack.meta.name}
+                                                >
+                                                    <div className="flex items-center gap-2" title={pack.meta.name}>
+                                                        <span className="font-medium">{pack.meta.name}</span>
+                                                        <Badge variant="outline" className="text-[9px] h-4 px-1 border-gray-600 text-gray-400">
+                                                            {(pack as any).meta?.type || 'system'}
+                                                        </Badge>
+                                                    </div>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    {activeSystemPackId && (
+                                        <div className="grid grid-cols-2 gap-2 bg-gray-950/50 rounded p-2 border border-gray-800/50">
+                                            <div className="flex items-center gap-2">
+                                                <Layers className="h-3 w-3 text-blue-400" />
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] text-gray-500">Profiles</span>
+                                                    <span className="text-xs font-mono text-gray-300">
+                                                        {(SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId) as any)?.windowSystemSpec?.profiles_cutting_list?.length || 0}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Box className="h-3 w-3 text-orange-400" />
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] text-gray-500">Parts</span>
+                                                    <span className="text-xs font-mono text-gray-300">
+                                                        {(SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId) as any)?.windowSystemSpec?.accessories_list?.length || 0}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     )}
+
+                                    <Alert variant="default" className="border-blue-500/40 bg-blue-900/20 text-blue-100">
+                                        <AlertDescription className="text-xs">
+                                            System constraints and presets are applied automatically to SmartDraw and 3D.
+                                        </AlertDescription>
+                                    </Alert>
+
                                     <Button onClick={handleSuggestLayout} variant="outline" className="w-full">
                                         <Wand2 className="h-4 w-4 mr-2"/>
                                         Suggest AI Layout

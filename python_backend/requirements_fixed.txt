@@ -1,0 +1,25 @@
+# TensorFlow compatibility
+tensorflow==2.20.0  # Stable for Python 3.11/3.12
+# For Python 3.13, install with --pre or loosen pin:
+# tensorflow>=2.20.0rc0
+
+# OCR and image processing
+easyocr==1.7.1
+opencv-python==4.10.0.84
+Pillow==10.3.0
+numpy==1.26.4
+scikit-image==0.23.2
+
+# Web framework
+fastapi==0.110.1
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9
+
+# Data processing
+pydantic==2.6.3
+pandas==2.2.2
+
+# Utilities
+python-dotenv==1.0.1
+pytz==2024.1
+

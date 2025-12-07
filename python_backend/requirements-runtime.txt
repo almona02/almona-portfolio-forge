@@ -37,6 +37,8 @@ requests>=2.31.0
 # Image Processing
 pillow==10.4.0
 numpy==1.26.4
+opencv-python-headless==4.8.1.78
+potracer
 
 # OpenTelemetry
 opentelemetry-semantic-conventions==0.42b0

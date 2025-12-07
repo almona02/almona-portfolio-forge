@@ -108,6 +108,10 @@ interface ProfileManagementProps {
   initialProfiles?: Profile[];
   /** If true, skip initial load and use initialProfiles instead */
   skipInitialLoad?: boolean;
+  /** When true, auto-open the Tuning Studio once profiles load */
+  autoOpenTuning?: boolean;
+  /** Optional profile ID to auto-open in the Tuning Studio */
+  initialTuningProfileId?: string;
 }
 
 export const ProfileManagement: React.FC<ProfileManagementProps> = ({
@@ -115,6 +119,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   userId,
   initialProfiles,
   skipInitialLoad = false,
+  autoOpenTuning = false,
+  initialTuningProfileId,
 }) => {
   const { t } = useTranslation('fabricator');
   const [profiles, setProfiles] = useState<Profile[]>(initialProfiles || []);
@@ -141,6 +147,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>('custom');
   const [tuningProfile, setTuningProfile] = useState<Profile | null>(null);
   const [tuningFilter, setTuningFilter] = useState<'all' | 'tuned' | 'in_progress' | 'untuned'>('all');
+  const autoTuningOpenedRef = useRef(false);
 
   const getTuningStatus = (profile: Profile): 'untuned' | 'in_progress' | 'tuned' => {
     const specs = profile.specifications || {};
@@ -515,6 +522,22 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       setFilteredProfiles(initialProfiles);
     }
   }, [initialProfiles, skipInitialLoad]);
+
+  // Auto-open tuning studio when requested (via query params) after profiles are loaded
+  useEffect(() => {
+    if (!autoOpenTuning || autoTuningOpenedRef.current) return;
+    if (!hasLoadedOnce && !skipInitialLoad) return;
+    if (profiles.length === 0) return;
+
+    const targetProfile =
+      (initialTuningProfileId && profiles.find((p) => p.id === initialTuningProfileId)) ||
+      profiles[0];
+
+    if (targetProfile) {
+      setTuningProfile(targetProfile);
+      autoTuningOpenedRef.current = true;
+    }
+  }, [autoOpenTuning, initialTuningProfileId, profiles, hasLoadedOnce, skipInitialLoad]);
 
   // Helper function to get system packs for category
   const getSystemPacksForCategory = (category: string): SystemPack[] => {

@@ -2,11 +2,13 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
 import { useJobsStore } from '@/store/jobsStore';
 import { WindowUnit } from '@/types/fabricator';
 import { supabase } from '@/lib/supabase';
-import { Factory, Sparkles, AlertCircle } from 'lucide-react';
+import { Factory, Sparkles, AlertCircle, ArrowRight, Wand2, CheckCircle2, Loader2 } from 'lucide-react';
 import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
+import { useNavigate } from 'react-router-dom';
 
 const MassProductionDashboard = React.lazy(() =>
   import('@/components/fabricator/MassProductionDashboard').then((m) => ({
@@ -26,9 +28,11 @@ const MassProductionDashboard = React.lazy(() =>
  */
 export const FabricatorWorkflowPro: React.FC = () => {
   const { jobs } = useJobsStore();
+  const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
   const [userError, setUserError] = useState<string | null>(null);
+  const [optStatus, setOptStatus] = useState<'idle' | 'running' | 'complete'>('idle');
 
   useEffect(() => {
     const resolveUser = async () => {
@@ -60,6 +64,13 @@ export const FabricatorWorkflowPro: React.FC = () => {
   const optimizedJobs: WindowUnit[] = jobs.filter(
     (job) => job.optimization && job.optimization.cuttingPlan.length > 0,
   );
+
+  const handleOptimize = async () => {
+    if (optStatus === 'running') return;
+    setOptStatus('running');
+    // TODO: wire to real optimization trigger; for now simulate async
+    setTimeout(() => setOptStatus('complete'), 1500);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white pt-20">
@@ -136,6 +147,38 @@ export const FabricatorWorkflowPro: React.FC = () => {
             />
           }
         >
+          {/* Optimization CTA */}
+          <div className="flex flex-wrap items-center gap-3 p-4 bg-gray-900/60 border border-gray-800 rounded-lg">
+            <Button
+              size="lg"
+              onClick={handleOptimize}
+              disabled={optStatus === 'running'}
+              className={`relative overflow-hidden transition-all ${
+                optStatus === 'complete'
+                  ? 'bg-emerald-600 hover:bg-emerald-700'
+                  : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+            >
+              {optStatus === 'running' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {optStatus === 'idle' && <Wand2 className="mr-2 h-4 w-4" />}
+              {optStatus === 'complete' && <CheckCircle2 className="mr-2 h-4 w-4" />}
+              {optStatus === 'idle' && 'Start AI Optimization'}
+              {optStatus === 'running' && 'Optimizing & Generating G-Code...'}
+              {optStatus === 'complete' && 'Optimization Complete'}
+            </Button>
+
+            {optStatus === 'complete' && (
+              <Button
+                size="lg"
+                className="bg-orange-500 hover:bg-orange-600 animate-in fade-in slide-in-from-left-4"
+                onClick={() => navigate('/fabricator/production')}
+              >
+                Go to Production Command
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            )}
+          </div>
+
           {userId ? (
             <MassProductionDashboard projects={optimizedJobs} userId={userId} />
           ) : (

@@ -7,6 +7,7 @@
 let PDFDocument: any, rgb: any, StandardFonts: any;
 import { WindowUnit, OptimizationResult, CuttingPlan } from '@/types/fabricator';
 import { Quote } from '@/modules/commercial/QuotingEngine';
+import { supabase } from '@/lib/supabase';
 
 export interface CompanyBranding {
   logo?: string; // Base64 or URL
@@ -28,6 +29,7 @@ export interface PDFOptions {
   includeAccessories?: boolean;
   includeGlazing?: boolean;
   includeAssemblyGuide?: boolean;
+  layoutThumbnailUrl?: string;
 }
 
 export class PDFExportService {
@@ -65,6 +67,68 @@ export class PDFExportService {
     this.pageNumber = 1;
   }
 
+  private async embedImageFromUrl(url: string) {
+    try {
+      const res = await fetch(url);
+      const buffer = await res.arrayBuffer();
+      try {
+        return await this.pdfDoc.embedPng(buffer);
+      } catch {
+        return await this.pdfDoc.embedJpg(buffer);
+      }
+    } catch {
+      return null;
+    }
+  }
+
+  private async drawImageBlock(url: string, label: string, width = 80, height = 80) {
+    const image = await this.embedImageFromUrl(url);
+    if (!image) return;
+
+    if (this.currentY > this.pageHeight - height - 80) {
+      this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
+      this.currentY = this.margin;
+      this.pageNumber++;
+    }
+
+    this.currentPage.drawImage(image, {
+      x: this.margin,
+      y: this.pageHeight - this.currentY - height,
+      width,
+      height,
+    });
+
+    this.currentPage.drawText(label, {
+      x: this.margin + width + 10,
+      y: this.pageHeight - this.currentY - 20,
+      size: 10,
+      font: this.font,
+      color: rgb(0.3, 0.3, 0.3),
+    });
+
+    this.currentY += height + 20;
+  }
+
+  private async resolveProfileThumbnail(project: WindowUnit): Promise<string | null> {
+    try {
+      const ids =
+        project.components
+          ?.map((c: any) => c?.profile?.id)
+          .filter((id?: string) => !!id) || [];
+      if (!ids.length) return null;
+      const { data, error } = await supabase
+        .from('fabricator_profiles')
+        .select('id, thumbnail_url')
+        .in('id', ids)
+        .limit(ids.length);
+      if (error || !data || !data.length) return null;
+      const found = data.find((row: any) => row.thumbnail_url);
+      return (found && found.thumbnail_url) || null;
+    } catch {
+      return null;
+    }
+  }
+
   /**
    * Generate Project Quotation PDF
    */
@@ -82,6 +146,10 @@ export class PDFExportService {
     // Project Information
     await this.addSectionTitle('Project Quotation');
     await this.addProjectInfo(project, quote);
+    if (options.layoutThumbnailUrl) {
+      await this.addSectionTitle('Design Summary');
+      await this.drawImageBlock(options.layoutThumbnailUrl, 'Layout thumbnail', 120, 120);
+    }
 
     // Scope & Technical Summary
     if (quote.projectScope || quote.technicalSummary) {
@@ -118,12 +186,23 @@ export class PDFExportService {
     await this.initialize();
     this.currentY = this.margin;
 
+    const fallbackProfileThumb = await this.resolveProfileThumbnail(project);
+
     // Header
     await this.addHeader();
 
     // Project Information
     await this.addSectionTitle('Cutting List');
     await this.addProjectInfo(project);
+    const profileThumb =
+      (project.components && project.components[0] && (project.components[0].profile as any)?.thumbnailUrl) ||
+      (project.components && project.components[0] && (project.components[0].profile as any)?.thumbnail_url) ||
+      fallbackProfileThumb ||
+      null;
+    if (profileThumb) {
+      await this.addSectionTitle('Profile Visual');
+      await this.drawImageBlock(profileThumb, 'Profile thumbnail');
+    }
 
     // Cutting Plans
     await this.addSectionTitle('Cutting Plans');
