@@ -55,6 +55,12 @@ WORKDIR /app
 # Copy application code
 COPY . .
 
+# Download SR model for preprocessing
+RUN mkdir -p /app/models && \
+    curl -L https://github.com/opencv/opencv_contrib/raw/4.x/modules/dnn_superres/models/FSRCNN_x2.pb \
+         -o /app/models/FSRCNN_x2.pb --retry 3 && \
+    echo "FSRCNN_x2.pb $(sha256sum /app/models/FSRCNN_x2.pb | cut -d' ' -f1)" > /app/models/checksums.txt
+
 # Create logs directory
 RUN mkdir -p /app/logs && chown -R appuser:appuser /app
 
