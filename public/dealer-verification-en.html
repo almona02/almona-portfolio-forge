@@ -63,12 +63,51 @@
                 "@type": "Product",
                 "name": "YILMAZ CNC Machines",
                 "description": "CNC routers, cutting machines, processing centers for aluminium and UPVC fabrication",
+                "image": [
+                    "https://almona02.com/images/machines/cutting-machine.jpg",
+                    "https://almona02.com/images/yilmaz-authorized-certificate.jpg"
+                ],
                 "offers": {
                     "@type": "Offer",
                     "price": "0",
                     "priceCurrency": "EGP",
                     "availability": "https://schema.org/InStock",
-                    "url": "https://almona02.com/dealer-verification-en"
+                    "url": "https://almona02.com/dealer-verification-en",
+                    "shippingDetails": {
+                        "@type": "OfferShippingDetails",
+                        "shippingRate": {
+                            "@type": "MonetaryAmount",
+                            "value": "0",
+                            "currency": "EGP"
+                        },
+                        "shippingDestination": {
+                            "@type": "DefinedRegion",
+                            "addressCountry": "EG"
+                        },
+                        "deliveryTime": {
+                            "@type": "ShippingDeliveryTime",
+                            "handlingTime": {
+                                "@type": "QuantitativeValue",
+                                "minValue": 1,
+                                "maxValue": 2,
+                                "unitCode": "DAY"
+                            },
+                            "transitTime": {
+                                "@type": "QuantitativeValue",
+                                "minValue": 2,
+                                "maxValue": 7,
+                                "unitCode": "DAY"
+                            }
+                        }
+                    },
+                    "hasMerchantReturnPolicy": {
+                        "@type": "MerchantReturnPolicy",
+                        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+                        "merchantReturnDays": 30,
+                        "returnMethod": "https://schema.org/ReturnByMail",
+                        "returnFees": "https://schema.org/FreeReturn",
+                        "inStoreReturnsOffered": false
+                    }
                 }
             },
             {
