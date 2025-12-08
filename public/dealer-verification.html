@@ -20,19 +20,21 @@
     <!-- Primary Structured Data -->
     <script type="application/ld+json">
     {
-        "@context": "https://schema.org",
-        "@type": ["LocalBusiness", "Organization"],
-        "name": "شركة المنى للاستيراد والتصدير والتوكيلات التجارية",
-        "alternateName": ["Almona Co.", "Almona Portfolio Forge"],
-        "description": "الوكيل الرسمي المعتمد لماكينات يلماز (YILMAZ) التركية في مصر منذ عام 2000. تأسست الشركة عام 1991 كمزود رائد للحلول الصناعية. نقدم ماكينات تصنيع الألومنيوم والـ UPVC ومنصة Fabricator Pro للتصنيع الذكي Industry 4.0.",
-        "url": "https://www.almona02.com",
-        "logo": "https://www.almona02.com/logo.png",
-        "image": [
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": ["LocalBusiness", "Organization"],
+          "name": "شركة المنى للاستيراد والتصدير والتوكيلات التجارية",
+          "alternateName": ["Almona Co.", "Almona Portfolio Forge"],
+          "description": "الوكيل الرسمي المعتمد لماكينات يلماز (YILMAZ) التركية في مصر منذ عام 2000. تأسست الشركة عام 1991 كمزود رائد للحلول الصناعية. نقدم ماكينات تصنيع الألومنيوم والـ UPVC ومنصة Fabricator Pro للتصنيع الذكي Industry 4.0.",
+          "url": "https://www.almona02.com",
+          "logo": "https://www.almona02.com/logo.png",
+          "image": [
             "https://www.almona02.com/logo.png",
             "https://www.almona02.com/images/yilmaz-authorized-certificate.jpg"
-        ],
-        "telephone": "+202-35856305",
-        "address": {
+          ],
+          "telephone": "+202-35856305",
+          "address": {
             "@type": "PostalAddress",
             "streetAddress": "13ب/18 شارع طارق بن زياد، التعاون",
             "addressLocality": "الهرم",
@@ -40,56 +42,60 @@
             "postalCode": "12111",
             "addressCountry": "EG",
             "addressCountryCode": "EG"
-        },
-        "geo": {
+          },
+          "geo": {
             "@type": "GeoCoordinates",
             "latitude": "29.9850",
             "longitude": "31.1326"
-        },
-        "priceRange": "$$$",
-        "openingHours": [
+          },
+          "priceRange": "$$$",
+          "openingHours": [
             "Mo-Su 09:00-19:00",
             "Fr Closed"
-        ],
-        "foundingDate": "1991",
-        "brand": {
+          ],
+          "foundingDate": "1991",
+          "brand": {
             "@type": "Brand",
             "name": "YILMAZ Makina",
             "url": "https://yilmazmachines.com.tr",
             "description": "شركة تركية رائدة في تصنيع ماكينات الألومنيوم والـ UPVC منذ 1970"
-        },
-        "offers": {
-            "@type": "AggregateOffer",
-            "offerCount": 2,
-            "offers": [
-                {
-                    "@type": "Offer",
-                    "itemOffered": {
-                        "@type": "Product",
-                        "name": "ماكينات تصنيع الألومنيوم والـ UPVC (CNC وخطوط الإنتاج)",
-                        "description": "ماكينات راوتر، مقصات، ومراكز تشغيل متخصصة لتصنيع الألومنيوم والـ UPVC"
-                    },
-                    "availability": "https://schema.org/InStock",
-                    "url": "https://www.almona02.com/dealer-verification"
-                },
-                {
-                    "@type": "Offer",
-                    "itemOffered": {
-                        "@type": "SoftwareApplication",
-                        "name": "Fabricator Pro Platform",
-                        "applicationCategory": "Manufacturing Software",
-                        "operatingSystem": "Web Browser",
-                        "description": "منصة متكاملة بتقنية الذكاء الاصطناعي لتصميم وتصنيع الألومنيوم والـ UPVC"
-                    },
-                    "availability": "https://schema.org/InStock",
-                    "url": "https://www.almona02.com/fabricator-pro-software"
-                }
-            ]
-        },
-        "areaServed": {
+          },
+          "areaServed": {
             "@type": "Country",
             "name": "Egypt"
+          }
+        },
+        {
+          "@type": "Product",
+          "name": "آلات تصنيع الألومنيوم (خطوط الإنتاج)",
+          "description": "آلات راوتر، مقصات، ومراكز تشغيل متخصصة لتصنيع الألومنيوم",
+          "brand": {
+            "@type": "Brand",
+            "name": "YILMAZ Makina"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EGP",
+            "availability": "https://schema.org/InStock",
+            "url": "https://www.almona02.com/dealer-verification"
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Fabricator Pro Platform",
+          "applicationCategory": "Manufacturing Software",
+          "operatingSystem": "Web Browser",
+          "description": "منصة متكاملة بتقنية الذكاء الاصطناعي لتصميم وتصنيع الألومنيوم والـ UPVC",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EGP",
+            "availability": "https://schema.org/InStock",
+            "url": "https://www.almona02.com/fabricator-pro-software"
+          }
         }
+      ]
     }
     </script>
     
@@ -539,24 +545,20 @@
                             <li><strong>العنوان:</strong> 13ب/18 شارع طارق بن زياد، التعاون، الهرم، الجيزة</li>
             <li><strong>التليفون:</strong> <span dir="ltr">+202-35856305</span></li>
             <li><strong>البريد الإلكتروني:</strong> <a href="mailto:Almona02@yahoo.com">Almona02@yahoo.com</a></li>
-            <li><strong>ساعات العمل:</strong> 9 am - 7 pm (الجمعة مغلق)</li>
+            <li><strong>ساعات العمل:</strong> طوال أيام الأسبوع عدا الجمعة من التاسعة صباحاً حتى السابعة مساءً</li>
                         </ul>
                     </div>
                     
                     <div class="verification-card">
                         <h3>🔧 المنتجات والخدمات</h3>
                         <ul>
-                            <li>ماكينات تصنيع الألومنيوم والـ UPVC (CNC وخطوط الإنتاج)</li>
+                        <li>آلات تصنيع الألومنيوم (خطوط الإنتاج)</li>
                             <li>منصة Fabricator Pro الذكية</li>
                             <li>قطع غيار أصلية معتمدة</li>
                             <li>صيانة وخدمة ما بعد البيع</li>
                             <li>تدريب المشغلين والمهندسين</li>
                             <li>استشارات فنية متخصصة</li>
                         </ul>
-                        <p class="text-sm" style="color:#4b5563; margin-top:10px; line-height:1.7;">
-                            تشمل حلولنا: مناشير تركي، مناشير دبل ودبل هيد، ديسك يلماز/يلمز للألومنيوم،
-                            فرايز وفريزات احترافية، وعدة الألومنيوم والالوميتال للورش والمصانع.
-                        </p>
                     </div>
                 </div>
                 
@@ -599,9 +601,10 @@
             </main>
             
             <footer>
-                <p>© 2024 شركة المنى للاستيراد والتصدير والتوكيلات التجارية. جميع الحقوق محفوظة.</p>
+                <p>جميع الحقوق محفوظة - شركة المنى للإستيراد والتصدير والتوكيلات التجارية</p>
+                <p style="margin-top: 10px; font-size: 0.9rem; color: #999;">تأسست عام 1991 | وكيل يلماز المعتمد منذ 2000</p>
+                <p>2025 ©</p>
                 <p>YILMAZ® علامة تجارية مسجلة لشركة YILMAZ Makina Sanayi ve Ticaret A.Ş. - تركيا</p>
-                <p style="margin-top: 10px; font-size: 0.85rem; color: #999;">تأسست عام 1991 | وكيل يلماز المعتمد منذ 2000</p>
             </footer>
         </div>
     </div>
