@@ -69,6 +69,10 @@
           "@type": "Product",
           "name": "آلات تصنيع الألومنيوم (خطوط الإنتاج)",
           "description": "آلات راوتر، مقصات، ومراكز تشغيل متخصصة لتصنيع الألومنيوم",
+          "image": [
+            "https://www.almona02.com/images/machines/cutting-machine.jpg",
+            "https://www.almona02.com/images/yilmaz-authorized-certificate.jpg"
+          ],
           "brand": {
             "@type": "Brand",
             "name": "YILMAZ Makina"
@@ -78,7 +82,42 @@
             "price": "0",
             "priceCurrency": "EGP",
             "availability": "https://schema.org/InStock",
-            "url": "https://www.almona02.com/dealer-verification"
+            "url": "https://www.almona02.com/dealer-verification",
+            "shippingDetails": {
+              "@type": "OfferShippingDetails",
+              "shippingRate": {
+                "@type": "MonetaryAmount",
+                "value": "0",
+                "currency": "EGP"
+              },
+              "shippingDestination": {
+                "@type": "DefinedRegion",
+                "addressCountry": "EG"
+              },
+              "deliveryTime": {
+                "@type": "ShippingDeliveryTime",
+                "handlingTime": {
+                  "@type": "QuantitativeValue",
+                  "minValue": 1,
+                  "maxValue": 2,
+                  "unitCode": "DAY"
+                },
+                "transitTime": {
+                  "@type": "QuantitativeValue",
+                  "minValue": 2,
+                  "maxValue": 7,
+                  "unitCode": "DAY"
+                }
+              }
+            },
+            "hasMerchantReturnPolicy": {
+              "@type": "MerchantReturnPolicy",
+              "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+              "merchantReturnDays": 30,
+              "returnMethod": "https://schema.org/ReturnByMail",
+              "returnFees": "https://schema.org/FreeReturn",
+              "inStoreReturnsOffered": false
+            }
           }
         },
         {
