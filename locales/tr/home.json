@@ -1,0 +1,147 @@
+{
+  "hero": {
+    "slides": {
+      "fabricator_pro": {
+        "title": "Fabricator Pro",
+        "subtitle": "Mısır'ın Endüstriyel Dönüşümünü Güçlendirme",
+        "description": "Mısır Vizyonu 2030'u Destekleme",
+        "badge_national": "Ulusal Stratejik Varlık",
+        "cta_primary": "Dijital Dönüşümünüze Başlayın",
+        "cta_secondary": "Bize Ulaşın"
+      },
+      "yilmaz_machines": {
+        "title": "YILMAZ Makineleri",
+        "subtitle": "Premium Kalite Alüminyum ve PVC İşleme Makineleri",
+        "description": "2000'den Beri Mısır'da Yetkili Bayi",
+        "badge_official": "Resmi Ortak",
+        "cta_primary": "YILMAZ Makinelerini Keşfedin",
+        "cta_secondary": "Bize Ulaşın"
+      },
+      "almona_co": {
+        "title": "ALMONA A.Ş.",
+        "subtitle": "1991'den Beri Güvenilir Ortağınız",
+        "description": "Uzman Danışmanlık, Satış ve Hizmet",
+        "cta_primary": "ALMONA A.Ş.'yi Keşfedin",
+        "cta_secondary": "Bize Ulaşın"
+      }
+    },
+    "transition": {
+      "preparing": "Sonraki hikaye hazırlanıyor"
+    }
+  },
+  "national_impact": {
+    "badge": "🇪🇬 Ulusal Hizmet Etkisi",
+    "title": "Ulusal Endüstriyel Etki",
+    "subtitle": "Almona Portfolio Forge, Mısır'ın imalat sektöründe gerçek ekonomik ve sosyal değişimi yönlendirmektedir.",
+    "stats": {
+      "import_substitution": {
+        "label": "İthalat İkamesi",
+        "value": "$12.5M",
+        "description": "Tasarruf edilen döviz"
+      },
+      "digital_fabricators": {
+        "label": "Dijital Üreticiler",
+        "value": "5,000+",
+        "description": "Eğitilmiş ve sertifikalı gençler"
+      },
+      "sme_workshops": {
+        "label": "KOBİ Atölyeleri",
+        "value": "1,200",
+        "description": "Modernize ve dijitalleştirilmiş"
+      },
+      "carbon_reduction": {
+        "label": "Karbon Azaltma",
+        "value": "150kT",
+        "description": "Önlenen CO2 emisyonları"
+      }
+    }
+  },
+  "egypt_vision_2030": {
+    "badge": "Mısır Vizyonu 2030 ile Uyumlu",
+    "title_prefix": "Rekabetçi, Dengeli ve",
+    "title_highlight": "Çeşitlendirilmiş Bir Ekonomi İnşa Etmek",
+    "description": "Sürdürülebilir kalkınma için ulusal stratejiye bağlıyız. Platformumuz yerel üreticileri güçlendirir, ithalat bağımlılığını azaltır ve bilgi tabanlı bir ekonomi teşvik eder.",
+    "features": {
+      "integrated_sustainable": {
+        "title": "Entegre ve Sürdürülebilir",
+        "description": "Döngüsel yeşil ekonomiye geçişi destekleme."
+      },
+      "knowledge_innovation": {
+        "title": "Bilgi ve İnovasyon",
+        "description": "Beşeri sermayeye ve dijital dönüşüme yatırım yapma."
+      }
+    },
+    "cta": "Ulusal Taahhüdümüzü Okuyun",
+    "visual": {
+      "title": "Mısır Vizyonu 2030",
+      "subtitle": "Sürdürülebilir Kalkınma Stratejisi"
+    }
+  },
+  "about": {
+    "title_prefix": "ALMONA A.Ş.",
+    "title_suffix": "1991'den Beri Güvenilir Ortağınız",
+    "description_1": "Makine ve profil endüstrisinde otuz yılı aşkın deneyimle, ALMONA, Mısır'da alüminyum ve PVC imalatı için yüksek kaliteli ekipman ve malzeme sağlayıcısı olarak kendini kanıtlamıştır.",
+    "description_2": "2000 yılından beri YILMAZ makinelerinin ilk ve yetkili bayisi olarak, hem ürünlerde hem de hizmetlerde mükemmellik konusunda bir itibar oluşturduk. Kaliteye olan bağlılığımız, müşterilerimizin projeleri için yalnızca en iyi malzemeleri almasını sağlar.",
+    "stats": {
+      "years_experience": "Yıllık Deneyim",
+      "projects_completed": "Tamamlanan Proje",
+      "satisfied_clients": "Memnun Müşteri",
+      "customer_support": "Müşteri Desteği"
+    },
+    "cta": "Hakkımızda Daha Fazla Bilgi Edinin"
+  },
+  "services": {
+    "badge": "Sunduklarımız",
+    "title_prefix": "İşletmeniz İçin",
+    "title_highlight": "Kapsamlı Hizmetler",
+    "title_suffix": "",
+    "subtitle": "Satış ve bakımdan eğitim ve özelleştirmeye kadar, alüminyum ve PVC üreticileri için uçtan uca çözümler sunuyoruz.",
+    "items": {
+      "machine_sales": {
+        "title": "Makine Satışı",
+        "description": "Alüminyum ve PVC işleme için tam YILMAZ makine yelpazesi"
+      },
+      "used_machines": {
+        "title": "İkinci El Makineler",
+        "description": "Lojistik desteği ile doğrulanmış B2B ikinci el makine pazarı."
+      },
+      "maintenance_support": {
+        "title": "Bakım ve Destek",
+        "description": "Tüm makineler için uzman bakım ve teknik destek"
+      },
+      "tuning_studio": {
+        "title": "Ayarlama Stüdyosu",
+        "description": "Kesme/optimizasyon tarifleri, makine ön ayarları ve kalite kontrolü temel çizgileri için Fabricator Pro ayarlama."
+      },
+      "spare_parts": {
+        "title": "Yedek Parçalar",
+        "description": "Tüm makineler için orijinal yedek parça ve aksesuarlar"
+      },
+      "technical_training": {
+        "title": "Teknik Eğitim",
+        "description": "Makine operasyonu için kapsamlı eğitim programları"
+      },
+      "remnant_marketplace": {
+        "title": "Artık Pazarı",
+        "description": "Doğrulama, fiyatlandırma ve lojistik ile B2B artık değişim pazarı."
+      },
+      "analytics_optimization": {
+        "title": "Analitik ve Optimizasyon",
+        "description": "Atık azaltma (%15-30), OEE panelleri ve işler için AI danışmanlığı."
+      }
+    },
+    "learn_more": "Daha Fazla Bilgi",
+    "cta": "Tüm Hizmetleri Görüntüle"
+  },
+  "featured_products": {
+    "badge": "Ürünler",
+    "title_prefix": "Öne Çıkan",
+    "title_highlight": "Ürünler",
+    "subtitle": "Alüminyum ve PVC imalat projelerinizi yükseltmek için tasarlanmış premium YILMAZ makine seçimimizi keşfedin.",
+    "tabs": {
+      "machines": "YILMAZ Makineleri"
+    },
+    "cta": "Beni Dene (AR)"
+  }
+}
+

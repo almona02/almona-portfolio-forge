@@ -1,6 +1,15 @@
 # Multi-stage build for production-ready Python API
 FROM python:3.11-slim AS builder
 
+# FIX: Debian Slim mirror stability
+ARG APT_MIRROR=https://deb.debian.org
+RUN if [ ! -f /etc/apt/sources.list ] || [ ! -s /etc/apt/sources.list ]; then \
+    echo "deb ${APT_MIRROR}/debian stable main" > /etc/apt/sources.list && \
+    echo "deb ${APT_MIRROR}/debian-security stable-security main" >> /etc/apt/sources.list && \
+    echo "deb ${APT_MIRROR}/debian stable-updates main" >> /etc/apt/sources.list; \
+fi
+RUN apt-get update --allow-releaseinfo-change || apt-get update || true
+
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -9,7 +18,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # Install system dependencies needed for building wheels and OpenCV
 # Added libtesseract-dev for proper pytesseract compilation
-RUN apt-get update && apt-get install -y \
+RUN if [ -f /etc/apt/sources.list ]; then sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list; fi && \
+    if [ -f /etc/apt/sources.list.d/debian.sources ]; then sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources; fi && \
+    apt-get update --allow-releaseinfo-change || apt-get update || true && \
+    apt-get install -y --fix-missing \
     build-essential \
     libpq-dev \
     libgl1 \
@@ -42,6 +54,15 @@ RUN python -c "import pytesseract; print('✅ Pytesseract found')" && \
 # Production stage
 FROM python:3.11-slim AS production
 
+# FIX: Debian Slim mirror stability
+ARG APT_MIRROR=https://deb.debian.org
+RUN if [ ! -f /etc/apt/sources.list ] || [ ! -s /etc/apt/sources.list ]; then \
+    echo "deb ${APT_MIRROR}/debian stable main" > /etc/apt/sources.list && \
+    echo "deb ${APT_MIRROR}/debian-security stable-security main" >> /etc/apt/sources.list && \
+    echo "deb ${APT_MIRROR}/debian stable-updates main" >> /etc/apt/sources.list; \
+fi
+RUN apt-get update --allow-releaseinfo-change || apt-get update || true
+
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -52,7 +73,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # Install runtime dependencies
 # We include tesseract-ocr-eng explicitly to ensure English data is present
-RUN apt-get update && apt-get install -y \
+RUN if [ -f /etc/apt/sources.list ]; then sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list; fi && \
+    if [ -f /etc/apt/sources.list.d/debian.sources ]; then sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources; fi && \
+    apt-get update --allow-releaseinfo-change || apt-get update || true && \
+    apt-get install -y --fix-missing \
     libpq5 \
     curl \
     libgl1 \

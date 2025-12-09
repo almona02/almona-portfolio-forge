@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from apis.v1 import router as v1_router
 from apis.v2.app import v2_app
+from apis.v2 import business, assembly_intelligence
 from core.security_middleware import setup_security_middleware
 from core.middleware import (
     RateLimitMiddleware,
@@ -157,6 +158,10 @@ app.add_middleware(
 
 # Routers
 app.include_router(v1_router, prefix="/api/v1")
+# Business intelligence endpoints (pilot)
+app.include_router(business.router)
+# Assembly intelligence endpoints
+app.include_router(assembly_intelligence.router)
 
 # Mount v2 app as a sub-application to preserve v2-specific middleware
 app.mount("/api/v2", v2_app)

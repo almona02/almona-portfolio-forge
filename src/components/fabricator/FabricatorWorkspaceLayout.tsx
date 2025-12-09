@@ -92,10 +92,10 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
           <div className={`flex flex-col md:flex-row items-start md:items-center justify-between gap-4 py-4 ${isRTLMode ? 'flex-row-reverse' : ''}`}>
             <div className="space-y-1">
               <h1 className={`text-xl md:text-2xl font-bold text-white ${isRTLMode ? 'text-right' : 'text-left'}`}>
-                {workspaceOwner} {t('workspace.title', 'Production Workspace')}
+                {t('workspace.title_prefix', 'Your Company Name')} {t('workspace.title', 'Industrial Operations Workspace')}
               </h1>
               <p className={`text-slate-400 text-xs md:text-sm mt-4 ${isRTLMode ? 'text-right' : 'text-left'}`}>
-                {t('workspace.subtitle', 'Heavy-duty Almona cockpit for projects, customers, inventory and commercial flows — state preserved across tabs.')}
+                {t('workspace.subtitle', 'Enterprise-grade Almona cockpit for projects, customers, inventory, and commercial flows — stateful, auditable, and optimized for heavy fabrication workloads.')}
               </p>
             </div>
 

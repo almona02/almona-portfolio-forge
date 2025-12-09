@@ -4,6 +4,7 @@ import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { WindowUnit, Profile, WindowComponent } from '@/types/fabricator';
 import { EngineeringBay } from './EngineeringBay';
 import { Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface DesignInterfaceProps {
   project: WindowUnit | null;
@@ -42,10 +43,11 @@ export const DesignInterface: React.FC<DesignInterfaceProps> = ({
   // onSmartDrawApply, // Unused in EngineeringBay flow as it handles completion internally
   onHardwareUpdate,
 }) => {
+  const { t } = useTranslation('fabricator');
   const hasInventory = profiles && profiles.length > 0;
 
   const defaultProjectLabel = useMemo(() => {
-    if (!project) return 'No active project – complete Smart Measuring first.';
+    if (!project) return t('design_interface.no_project', 'No active project – complete Smart Measuring first.');
     const areaM2 =
       project.overallWidth && project.overallHeight
         ? (project.overallWidth * project.overallHeight) / 1_000_000
@@ -53,7 +55,7 @@ export const DesignInterface: React.FC<DesignInterfaceProps> = ({
     return `${project.orderNumber} · ${project.overallWidth.toFixed(0)} × ${project.overallHeight.toFixed(
       0,
     )} mm${areaM2 > 0 ? ` · ${areaM2.toFixed(2)} m²` : ''}`;
-  }, [project]);
+  }, [project, t]);
 
   return (
     <div className="space-y-4">
@@ -63,7 +65,7 @@ export const DesignInterface: React.FC<DesignInterfaceProps> = ({
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold">
               <Sparkles className="h-4 w-4 text-orange-400" />
-              Design Workspace – Engineering Bay
+              {t('design_interface.title', 'Design Workspace – Engineering Bay')}
             </CardTitle>
             <div className="flex flex-col md:items-end gap-1">
               <p className="text-[11px] text-gray-400 truncate max-w-xs">
@@ -71,7 +73,7 @@ export const DesignInterface: React.FC<DesignInterfaceProps> = ({
               </p>
               {project && relatedPositions && relatedPositions.length > 1 && onSelectPosition && (
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-gray-400">Pose in order</span>
+                  <span className="text-[11px] text-gray-400">{t('design_interface.pose_in_order', 'Pose in order')}</span>
                   <select
                     className="h-7 rounded-md bg-gray-900 border border-gray-700 text-[11px] px-2 text-gray-100"
                     value={project.id}
@@ -94,8 +96,7 @@ export const DesignInterface: React.FC<DesignInterfaceProps> = ({
       {!hasInventory && (
         <Alert className="bg-yellow-900/20 border-yellow-500">
           <AlertDescription className="text-xs">
-            Inventory profiles are not loaded yet. Smart Draw and the engineering bay
-            work best once profile data is available from the Inventory tab.
+            {t('design_interface.inventory_not_loaded', 'Inventory profiles are not loaded yet. Smart Draw and the engineering bay work best once profile data is available from the Inventory tab.')}
           </AlertDescription>
         </Alert>
       )}

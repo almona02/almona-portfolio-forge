@@ -17,6 +17,7 @@ import { validateMeasurements, ValidationError, getConstraintsForSystemPack } fr
 import { SmartDrawCanvas } from './SmartDrawCanvas';
 import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
 import { ProductionLabel } from './ProductionLabel';
+import { useTranslation } from 'react-i18next';
 
 // Lazy load Window3DGenerator to improve initial load performance
 const Window3DGenerator = React.lazy(() => import('./Window3DGenerator').then(module => ({ default: module.Window3DGenerator })));
@@ -34,6 +35,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   systemPackId,
   region,
 }) => {
+  const { t } = useTranslation('fabricator');
   const [measurements, setMeasurements] = useState({
     // Default professional stub dimensions – can be refined per system later.
     width: '1200',
@@ -88,11 +90,11 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
   // Defined Steps
   const STEPS = [
-    { id: 'system', title: 'System Configuration', icon: Factory },
-    { id: 'dimensions', title: 'Dimensions & Layout', icon: Ruler },
-    { id: 'specs', title: 'Glass & Specs', icon: Box },
-    { id: 'location', title: 'Location Context', icon: CheckCircle2 },
-    { id: 'verify', title: 'Verification', icon: ShieldCheck },
+    { id: 'system', title: t('smart_measuring.steps.system', 'System Configuration'), icon: Factory },
+    { id: 'dimensions', title: t('smart_measuring.steps.dimensions', 'Dimensions & Layout'), icon: Ruler },
+    { id: 'specs', title: t('smart_measuring.steps.specs', 'Glass & Specs'), icon: Box },
+    { id: 'location', title: t('smart_measuring.steps.location', 'Location Context'), icon: CheckCircle2 },
+    { id: 'verify', title: t('smart_measuring.steps.verify', 'Verification'), icon: ShieldCheck },
   ];
 
   // Generate preview window unit from measurements for 3D visualization
@@ -409,7 +411,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="md:col-span-1">
-                      <Label className="text-[11px]">System Pack</Label>
+                      <Label className="text-[11px]">{t('smart_measuring.system_config.title', 'System Pack')}</Label>
                       <Select
                         value={selectedSystemPackId}
                         onValueChange={(value) => setSelectedSystemPackId(value)}
@@ -435,7 +437,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     <div className="md:col-span-2 space-y-3">
                       {systemPackRoleOptions.length === 0 ? (
                         <p className="text-[11px] text-gray-400">
-                          This system does not yet expose detailed profile roles.
+                          {t('smart_measuring.system_config.no_roles', 'This system does not yet expose detailed profile roles.')}
                         </p>
                       ) : (
                         systemPackRoleOptions.map((role) => {
@@ -482,7 +484,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     <Alert className="bg-blue-900/20 border-blue-500 text-blue-200">
                       <Sparkles className="h-4 w-4" />
                       <AlertDescription>
-                        AI Recommendation: Based on your region (Egypt), <strong>ROCK 60</strong> is the optimal choice.
+                        {t('smart_measuring.system_config.ai_recommendation', 'AI Recommendation: Based on your region (Egypt), <strong>ROCK 60</strong> is the optimal choice.', { strong: (chunks) => <strong>{chunks}</strong> })}
                       </AlertDescription>
                     </Alert>
                   )}
@@ -494,7 +496,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 <div className="space-y-6">
                   <div className="group">
                     <Label className="text-xs uppercase tracking-widest text-gray-500 group-focus-within:text-orange-400 transition-colors">
-                      Total Width (mm)
+                      {t('smart_measuring.dimensions.width', 'Total Width (mm)')}
                     </Label>
                     <div className="relative mt-2">
                       <Input 
@@ -516,7 +518,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   
                   <div className="group">
                     <Label className="text-xs uppercase tracking-widest text-gray-500 group-focus-within:text-orange-400 transition-colors">
-                      Total Height (mm)
+                      {t('smart_measuring.dimensions.height', 'Total Height (mm)')}
                     </Label>
                     <div className="relative mt-2">
                       <Input 
@@ -540,7 +542,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     <div className="flex items-center justify-between">
                       <Label className="flex items-center gap-2 cursor-pointer">
                         <Grid3X3 className="h-4 w-4 text-orange-400" />
-                        <span>Grid / Multi-Unit Mode</span>
+                        <span>{t('smart_measuring.dimensions.grid_mode', 'Grid / Multi-Unit Mode')}</span>
                       </Label>
                       <Toggle 
                         pressed={isGridMode} 
@@ -548,14 +550,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         className="data-[state=on]:bg-orange-600"
                         size="sm"
                       >
-                        {isGridMode ? 'On' : 'Off'}
+                        {isGridMode ? t('profile_import_tool.on', 'On') : t('profile_import_tool.off', 'Off')}
                       </Toggle>
                     </div>
 
                     {isGridMode ? (
                       <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                          <p className="text-xs text-gray-400">
-                           Design complex multi-unit windows by defining rows and columns. Click cells on the grid below to change their type.
+                           {t('smart_measuring.dimensions.grid_description', 'Design complex multi-unit windows by defining rows and columns. Click cells on the grid below to change their type.')}
                          </p>
                          <SmartDrawCanvas 
                             width={Number(measurements.width) || 1000}
@@ -567,45 +569,45 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       </div>
                     ) : (
                       <div>
-                        <Label htmlFor="windowType">Window Type & Layout</Label>
+                        <Label htmlFor="windowType">{t('smart_measuring.dimensions.window_type', 'Window Type & Layout')}</Label>
                         <Select value={measurements.windowType} onValueChange={(value) => handleInputChange('windowType', value)}>
                           <SelectTrigger className={`bg-gray-800 border-gray-600 ${getFieldError('windowType') ? 'border-red-500' : ''}`}>
-                            <SelectValue placeholder="Select window or door layout" />
+                            <SelectValue placeholder={t('smart_measuring.dimensions.window_type_placeholder', 'Select window or door layout')} />
                           </SelectTrigger>
                           <SelectContent className="bg-gray-800 border-gray-600 text-white z-50 space-y-1">
-                            <div className="px-2 pt-1 text-xs uppercase tracking-wide text-gray-400">Sliding Windows</div>
+                            <div className="px-2 pt-1 text-xs uppercase tracking-wide text-gray-400">{t('smart_measuring.dimensions.sliding_windows', 'Sliding Windows')}</div>
                             <SelectItem value="sliding_window_2sash" className="bg-gray-800 hover:bg-gray-700 text-white">
-                              Sliding Window – 2 Sash
+                              {t('smart_measuring.dimensions.sliding_2sash', 'Sliding Window – 2 Sash')}
                             </SelectItem>
                             <SelectItem value="sliding_window_4sash" className="bg-gray-800 hover:bg-gray-700 text-white">
-                              Sliding Window – 4 Sash
+                              {t('smart_measuring.dimensions.sliding_4sash', 'Sliding Window – 4 Sash')}
                             </SelectItem>
                             <SelectItem value="sliding_window_3sash_center_fixed" className="bg-gray-800 hover:bg-gray-700 text-white">
-                              Sliding Window – 3 Sash (Center Fixed)
+                              {t('smart_measuring.dimensions.sliding_3sash_center', 'Sliding Window – 3 Sash (Center Fixed)')}
                             </SelectItem>
-                            <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Casement / Tilt & Turn</div>
+                            <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">{t('smart_measuring.dimensions.casement_tilt', 'Casement / Tilt & Turn')}</div>
                             <SelectItem value="casement" className="bg-gray-800 hover:bg-gray-700 text-white">
-                              Casement – Single
+                              {t('smart_measuring.dimensions.casement_single', 'Casement – Single')}
                             </SelectItem>
                             <SelectItem value="casement_double" className="bg-gray-800 hover:bg-gray-700 text-white">
-                              Casement – Double (Left / Right)
+                              {t('smart_measuring.dimensions.casement_double', 'Casement – Double (Left / Right)')}
                             </SelectItem>
                             <SelectItem value="tilt_turn" className="bg-gray-800 hover:bg-gray-700 text-white">
-                              Tilt &amp; Turn
+                              {t('smart_measuring.dimensions.tilt_turn', 'Tilt & Turn')}
                             </SelectItem>
-                            <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Doors</div>
+                            <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">{t('smart_measuring.dimensions.doors', 'Doors')}</div>
                             <SelectItem value="sliding_door_2panel" className="bg-gray-800 hover:bg-gray-700 text-white">
-                              Sliding Door – 2 Panel
+                              {t('smart_measuring.dimensions.sliding_door_2panel', 'Sliding Door – 2 Panel')}
                             </SelectItem>
                             <SelectItem value="casement_door" className="bg-gray-800 hover:bg-gray-700 text-white">
-                              Casement Door (Single / Double)
+                              {t('smart_measuring.dimensions.casement_door', 'Casement Door (Single / Double)')}
                             </SelectItem>
-                            <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">Fixed & Combinations</div>
+                            <div className="px-2 pt-2 text-xs uppercase tracking-wide text-gray-400">{t('smart_measuring.dimensions.fixed_combinations', 'Fixed & Combinations')}</div>
                             <SelectItem value="fixed_window" className="bg-gray-800 hover:bg-gray-700 text-white">
-                              Fixed Window
+                              {t('smart_measuring.dimensions.fixed_window', 'Fixed Window')}
                             </SelectItem>
                             <SelectItem value="fixed_with_side_casements" className="bg-gray-800 hover:bg-gray-700 text-white">
-                              Fixed + Side Casements
+                              {t('smart_measuring.dimensions.fixed_side_casements', 'Fixed + Side Casements')}
                             </SelectItem>
                           </SelectContent>
                         </Select>
@@ -623,7 +625,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="glazingType">Glazing Type</Label>
+                      <Label htmlFor="glazingType">{t('smart_measuring.specs.glazing_type', 'Glazing Type')}</Label>
                       <Select
                         value={measurements.glazingType}
                         onValueChange={(value) => handleInputChange('glazingType', value)}
@@ -634,17 +636,17 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                             getFieldError('glazingType') ? 'border-red-500' : ''
                           }`}
                         >
-                          <SelectValue placeholder="Select glazing type" />
+                          <SelectValue placeholder={t('smart_measuring.specs.glazing_type_placeholder', 'Select glazing type')} />
                         </SelectTrigger>
                         <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
                           <SelectItem value="single" className="bg-gray-800 hover:bg-gray-700 text-white">
-                            Single
+                            {t('smart_measuring.specs.single', 'Single')}
                           </SelectItem>
                           <SelectItem value="double" className="bg-gray-800 hover:bg-gray-700 text-white">
-                            Double
+                            {t('smart_measuring.specs.double', 'Double')}
                           </SelectItem>
                           <SelectItem value="triple" className="bg-gray-800 hover:bg-gray-700 text-white">
-                            Triple
+                            {t('smart_measuring.specs.triple', 'Triple')}
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -653,7 +655,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       )}
                     </div>
                     <div>
-                      <Label htmlFor="glassColor">Glass Color / Tint</Label>
+                      <Label htmlFor="glassColor">{t('smart_measuring.specs.glass_color', 'Glass Color / Tint')}</Label>
                       <Select
                         value={measurements.glassColor}
                         onValueChange={(value) => handleInputChange('glassColor', value)}
@@ -664,23 +666,23 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                             getFieldError('glassColor') ? 'border-red-500' : ''
                           }`}
                         >
-                          <SelectValue placeholder="Clear, Green, Bronze..." />
+                          <SelectValue placeholder={t('smart_measuring.specs.glass_color_placeholder', 'Clear, Green, Bronze...')} />
                         </SelectTrigger>
                         <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
                           <SelectItem value="clear" className="bg-gray-800 hover:bg-gray-700 text-white">
-                            Clear
+                            {t('smart_measuring.specs.clear', 'Clear')}
                           </SelectItem>
                           <SelectItem value="green" className="bg-gray-800 hover:bg-gray-700 text-white">
-                            Green
+                            {t('smart_measuring.specs.green', 'Green')}
                           </SelectItem>
                           <SelectItem value="blue" className="bg-gray-800 hover:bg-gray-700 text-white">
-                            Blue
+                            {t('smart_measuring.specs.blue', 'Blue')}
                           </SelectItem>
                           <SelectItem value="bronze" className="bg-gray-800 hover:bg-gray-700 text-white">
-                            Bronze
+                            {t('smart_measuring.specs.bronze', 'Bronze')}
                           </SelectItem>
                           <SelectItem value="grey" className="bg-gray-800 hover:bg-gray-700 text-white">
-                            Grey
+                            {t('smart_measuring.specs.grey', 'Grey')}
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -691,7 +693,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   </div>
 
                   <div>
-                    <Label htmlFor="flyScreenType">Flyscreen Type</Label>
+                    <Label htmlFor="flyScreenType">{t('smart_measuring.specs.fly_screen', 'Flyscreen Type')}</Label>
                     <Select
                       value={measurements.flyScreenType}
                       onValueChange={(value) => handleInputChange('flyScreenType', value)}
@@ -702,20 +704,20 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                           getFieldError('flyScreenType') ? 'border-red-500' : ''
                         }`}
                       >
-                        <SelectValue placeholder="Select flyscreen type" />
+                        <SelectValue placeholder={t('smart_measuring.specs.fly_screen_placeholder', 'Select flyscreen type')} />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
                         <SelectItem value="none" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          None
+                          {t('smart_measuring.specs.none', 'None')}
                         </SelectItem>
                         <SelectItem value="plisee" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Plisse
+                          {t('smart_measuring.specs.plisse', 'Plisse')}
                         </SelectItem>
                         <SelectItem value="fixed" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Fixed
+                          {t('smart_measuring.specs.fixed', 'Fixed')}
                         </SelectItem>
                         <SelectItem value="sliding" className="bg-gray-800 hover:bg-gray-700 text-white">
-                          Sliding
+                          {t('smart_measuring.specs.sliding', 'Sliding')}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -725,16 +727,16 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   </div>
 
                   <div>
-                    <Label htmlFor="color">Color</Label>
+                    <Label htmlFor="color">{t('smart_measuring.specs.color', 'Color')}</Label>
                     <Select value={measurements.color} onValueChange={(value) => handleInputChange('color', value)}>
                       <SelectTrigger className="bg-gray-800 border-gray-600">
-                        <SelectValue placeholder="Select color" />
+                        <SelectValue placeholder={t('smart_measuring.specs.color_placeholder', 'Select color')} />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800 border-gray-600 text-white z-50">
-                        <SelectItem value="Silver" className="bg-gray-800 hover:bg-gray-700 text-white">Silver</SelectItem>
-                        <SelectItem value="White" className="bg-gray-800 hover:bg-gray-700 text-white">White</SelectItem>
-                        <SelectItem value="Black" className="bg-gray-800 hover:bg-gray-700 text-white">Black</SelectItem>
-                        <SelectItem value="Bronze" className="bg-gray-800 hover:bg-gray-700 text-white">Bronze</SelectItem>
+                        <SelectItem value="Silver" className="bg-gray-800 hover:bg-gray-700 text-white">{t('smart_measuring.specs.silver', 'Silver')}</SelectItem>
+                        <SelectItem value="White" className="bg-gray-800 hover:bg-gray-700 text-white">{t('smart_measuring.specs.white', 'White')}</SelectItem>
+                        <SelectItem value="Black" className="bg-gray-800 hover:bg-gray-700 text-white">{t('smart_measuring.specs.black', 'Black')}</SelectItem>
+                        <SelectItem value="Bronze" className="bg-gray-800 hover:bg-gray-700 text-white">{t('smart_measuring.specs.bronze_color', 'Bronze')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -745,69 +747,69 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               {currentStep === 3 && (
                 <div className="space-y-3">
                   <p className="text-[11px] text-gray-400 uppercase tracking-wide">
-                    Location / Pose details (optional)
+                    {t('smart_measuring.location.title', 'Location / Pose details (optional)')}
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                     <div>
-                      <Label className="text-[11px]">Building / Block</Label>
+                      <Label className="text-[11px]">{t('smart_measuring.location.building_block', 'Building / Block')}</Label>
                       <Input
                         value={measurements.buildingBlock}
                         onChange={(e) => handleInputChange('buildingBlock', e.target.value)}
-                        placeholder="Block A"
+                        placeholder={t('smart_measuring.location.building_block_placeholder', 'Block A')}
                         className="h-8 bg-gray-800 border-gray-600"
                       />
                     </div>
                     <div>
-                      <Label className="text-[11px]">Flat / Unit</Label>
+                      <Label className="text-[11px]">{t('smart_measuring.location.unit_apartment', 'Flat / Unit')}</Label>
                       <Input
                         value={measurements.unitOrApartment}
                         onChange={(e) => handleInputChange('unitOrApartment', e.target.value)}
-                        placeholder="Flat 12"
+                        placeholder={t('smart_measuring.location.unit_apartment_placeholder', 'Flat 12')}
                         className="h-8 bg-gray-800 border-gray-600"
                       />
                     </div>
                     <div>
-                      <Label className="text-[11px]">Floor</Label>
+                      <Label className="text-[11px]">{t('smart_measuring.location.floor', 'Floor')}</Label>
                       <Input
                         value={measurements.floor}
                         onChange={(e) => handleInputChange('floor', e.target.value)}
-                        placeholder="3"
+                        placeholder={t('smart_measuring.location.floor_placeholder', '3')}
                         className="h-8 bg-gray-800 border-gray-600"
                       />
                     </div>
                     <div>
-                      <Label className="text-[11px]">Room / Zone</Label>
+                      <Label className="text-[11px]">{t('smart_measuring.location.room_zone', 'Room / Zone')}</Label>
                       <Input
                         value={measurements.roomOrZone}
                         onChange={(e) => handleInputChange('roomOrZone', e.target.value)}
-                        placeholder="Living, Bedroom..."
+                        placeholder={t('smart_measuring.location.room_zone_placeholder', 'Living, Bedroom...')}
                         className="h-8 bg-gray-800 border-gray-600"
                       />
                     </div>
                     <div>
-                      <Label className="text-[11px]">Elevation</Label>
+                      <Label className="text-[11px]">{t('smart_measuring.location.elevation', 'Elevation')}</Label>
                       <Input
                         value={measurements.elevation}
                         onChange={(e) => handleInputChange('elevation', e.target.value)}
-                        placeholder="North, Street, Garden..."
+                        placeholder={t('smart_measuring.location.elevation_placeholder', 'North, Street, Garden...')}
                         className="h-8 bg-gray-800 border-gray-600"
                       />
                     </div>
                     <div>
-                      <Label className="text-[11px]">Window Index</Label>
+                      <Label className="text-[11px]">{t('smart_measuring.location.window_index', 'Window Index')}</Label>
                       <Input
                         value={measurements.windowIndex}
                         onChange={(e) => handleInputChange('windowIndex', e.target.value)}
-                        placeholder="W1, W2..."
+                        placeholder={t('smart_measuring.location.window_index_placeholder', 'W1, W2...')}
                         className="h-8 bg-gray-800 border-gray-600"
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <Label className="text-[11px]">Remarks</Label>
+                      <Label className="text-[11px]">{t('smart_measuring.location.remarks', 'Remarks')}</Label>
                       <Input
                         value={measurements.remarks}
                         onChange={(e) => handleInputChange('remarks', e.target.value)}
-                        placeholder="Any special note for this pose"
+                        placeholder={t('smart_measuring.location.remarks_placeholder', 'Any special note for this pose')}
                         className="h-8 bg-gray-800 border-gray-600"
                       />
                     </div>
@@ -821,29 +823,28 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
                     <div className="flex justify-between items-start mb-2">
                       <h3 className="text-orange-400 font-semibold flex items-center gap-2">
-                        <ShieldCheck className="h-5 w-5" /> Trust but Verify
+                        <ShieldCheck className="h-5 w-5" /> {t('smart_measuring.verification.trust_verify', 'Trust but Verify')}
                       </h3>
                       <Badge variant="outline" className="bg-green-900/30 text-green-400 border-green-800">
-                        Calibration Accuracy: 98%
+                        {t('smart_measuring.verification.calibration_accuracy', 'Calibration Accuracy: 98%')}
                       </Badge>
                     </div>
                     <p className="text-xs text-gray-300 mb-4">
-                      The system has calculated cut dimensions based on your inputs and profile calibration data.
-                      Please verify these critical dimensions against site conditions to prevent waste.
+                      {t('smart_measuring.verification.description', 'The system has calculated cut dimensions based on your inputs and profile calibration data. Please verify these critical dimensions against site conditions to prevent waste.')}
                     </p>
                     
                     <div className="space-y-3 text-sm bg-black/20 p-3 rounded border border-gray-800">
                        <div className="flex justify-between items-center">
-                         <span className="text-gray-400">Overall Width Input:</span>
+                         <span className="text-gray-400">{t('smart_measuring.verification.overall_width', 'Overall Width Input:')}</span>
                          <span className="font-mono text-white text-base">{measurements.width} mm</span>
                        </div>
                        <div className="flex justify-between items-center">
-                         <span className="text-gray-400">Deduction (K-Factor):</span>
+                         <span className="text-gray-400">{t('smart_measuring.verification.deduction', 'Deduction (K-Factor):')}</span>
                          <span className="font-mono text-red-400">- 6 mm</span> 
                        </div>
                        <div className="h-px bg-gray-700 my-1" />
                        <div className="flex justify-between items-center font-bold">
-                         <span className="text-orange-400">Calculated Cut Length:</span>
+                         <span className="text-orange-400">{t('smart_measuring.verification.calculated_cut', 'Calculated Cut Length:')}</span>
                          <span className="font-mono text-green-400 text-lg">{Number(measurements.width) - 6} mm</span>
                        </div>
                     </div>
@@ -857,7 +858,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       className="border-orange-500 data-[state=checked]:bg-orange-500 data-[state=checked]:text-black"
                     />
                     <label htmlFor="verify" className="text-sm text-gray-200 cursor-pointer select-none font-medium">
-                      I verify these dimensions match site requirements and accept responsibility for production.
+                      {t('smart_measuring.verification.confirm_text', 'I verify these dimensions match site requirements and accept responsibility for production.')}
                     </label>
                   </div>
                 </div>
@@ -869,7 +870,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         {/* Footer Navigation */}
         <div className="p-4 border-t border-gray-800 flex justify-between bg-gray-900">
           <Button variant="ghost" disabled={currentStep === 0} onClick={prevStep}>
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+            <ArrowLeft className="mr-2 h-4 w-4" /> {t('smart_measuring.actions.previous', 'Back')}
           </Button>
           
           {currentStep === STEPS.length - 1 ? (
@@ -881,7 +882,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   onClick={() => setShowLabel(true)}
                   className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
                 >
-                  <QrCode className="mr-2 h-4 w-4" /> Print Label
+                  <QrCode className="mr-2 h-4 w-4" /> {t('smart_measuring.actions.print_label', 'Print Label')}
                 </Button>
               )}
 
@@ -895,12 +896,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     : 'bg-gray-700 text-gray-400 cursor-not-allowed'}
                 `}
               >
-                Finalize Design <CheckCircle2 className="ml-2 h-4 w-4" />
+                {t('smart_measuring.actions.complete', 'Finalize Design')} <CheckCircle2 className="ml-2 h-4 w-4" />
               </Button>
             </div>
           ) : (
             <Button onClick={nextStep} className="bg-orange-600 hover:bg-orange-500 text-white">
-              Next Step <ArrowRight className="ml-2 h-4 w-4" />
+              {t('smart_measuring.actions.next', 'Next Step')} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           )}
         </div>
@@ -915,7 +916,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             onPressedChange={setExplodedView}
             className="bg-black/50 backdrop-blur text-white data-[state=on]:bg-orange-600"
           >
-            <Layers className="h-4 w-4 mr-2" /> Explode
+            <Layers className="h-4 w-4 mr-2" /> {t('window_3d_generator.explode', 'Explode')}
           </Toggle>
         </div>
 
@@ -925,7 +926,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             <div className="w-full h-full min-h-[500px] flex items-center justify-center text-gray-500">
               <div className="flex flex-col items-center gap-2">
                 <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs">Loading 3D Engine...</span>
+                <span className="text-xs">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</span>
               </div>
             </div>
           }>

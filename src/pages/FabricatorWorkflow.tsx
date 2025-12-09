@@ -21,6 +21,7 @@ import {
   Search,
   BarChart3,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // NOTE: Heavy Fabricator Pro modules are lazy‑loaded per tab to keep
 // initial bundle size and TTI low for heavy‑duty usage.
@@ -194,6 +195,7 @@ export const FabricatorWorkflow: React.FC = () => {
     email?: string | null;
     phone?: string | null;
   } } | null) || null;
+  const { t } = useTranslation(['fabricator', 'translation']);
   const {
     jobs,
     selectedJobId,
@@ -316,13 +318,48 @@ export const FabricatorWorkflow: React.FC = () => {
   });
 
   const workflowSteps = [
-    { id: 'measuring', name: 'Smart Measuring', icon: Ruler, description: 'Digital measurement capture' },
-    { id: 'design', name: 'Technical Design', icon: Settings, description: 'Component specification' },
-    { id: 'preview3d', name: '3D Preview', icon: Box, description: 'Visual model preview' },
-    { id: 'optimization', name: 'Cutting Optimization', icon: Scissors, description: 'Material optimization' },
-    { id: 'inventory', name: 'Inventory Check', icon: Package, description: 'Stock management' },
-    { id: 'production', name: 'Production Planning', icon: Factory, description: 'Scheduling & machining' },
-    { id: 'quality', name: 'Quality Control', icon: Zap, description: 'Inspection & validation' }
+    {
+      id: 'measuring',
+      name: t('fabricator:workflow.steps.measuring.name', 'Smart Measuring'),
+      icon: Ruler,
+      description: t('fabricator:workflow.steps.measuring.description', 'Digital measurement capture'),
+    },
+    {
+      id: 'design',
+      name: t('fabricator:workflow.steps.design.name', 'Technical Design'),
+      icon: Settings,
+      description: t('fabricator:workflow.steps.design.description', 'Component specification'),
+    },
+    {
+      id: 'preview3d',
+      name: t('fabricator:workflow.steps.preview3d.name', '3D Preview'),
+      icon: Box,
+      description: t('fabricator:workflow.steps.preview3d.description', 'Visual model preview'),
+    },
+    {
+      id: 'optimization',
+      name: t('fabricator:workflow.steps.optimization.name', 'Cutting Optimization'),
+      icon: Scissors,
+      description: t('fabricator:workflow.steps.optimization.description', 'Material optimization'),
+    },
+    {
+      id: 'inventory',
+      name: t('fabricator:workflow.steps.inventory.name', 'Inventory Check'),
+      icon: Package,
+      description: t('fabricator:workflow.steps.inventory.description', 'Stock management'),
+    },
+    {
+      id: 'production',
+      name: t('fabricator:workflow.steps.production.name', 'Production Planning'),
+      icon: Factory,
+      description: t('fabricator:workflow.steps.production.description', 'Scheduling & machining'),
+    },
+    {
+      id: 'quality',
+      name: t('fabricator:workflow.steps.quality.name', 'Quality Control'),
+      icon: Zap,
+      description: t('fabricator:workflow.steps.quality.description', 'Inspection & validation'),
+    },
   ];
 
   // Get current step index for progress tracking
@@ -978,27 +1015,24 @@ export const FabricatorWorkflow: React.FC = () => {
                   </div>
                   <div className="space-y-1">
                     <div className="text-xs font-semibold tracking-[0.2em] text-orange-300/80 uppercase">
-                      FABRICATOR PRO
+                      {t('fabricator:workflow.header.fabricator_pro', 'FABRICATOR PRO')}
                     </div>
                     <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-orange-400 via-red-400 to-red-500 bg-clip-text text-transparent">
-                      AI WORKFLOW v4.0
+                      {t('fabricator:workflow.header.ai_workflow', 'AI WORKFLOW v4.0')}
                     </h1>
                   </div>
                 </div>
                 <p className="text-sm md:text-base text-gray-300 max-w-xl leading-relaxed">
-                  Smart aluminum & UPVC fabrication pipeline: 
-                  <span className="text-orange-300"> Smart Measuring</span>, 
-                  <span className="text-orange-300"> Technical Design</span>, 
-                  <span className="text-orange-300"> AI Optimization</span>, 
-                  <span className="text-orange-300"> Inventory</span>, 
-                  <span className="text-orange-300"> Production</span>, 
-                  <span className="text-orange-300"> Quality Control</span>.
+                  {t(
+                    'fabricator:workflow.tagline',
+                    'Smart aluminum & UPVC fabrication pipeline: Smart Measuring, Technical Design, AI Optimization, Inventory, Production, Quality Control.',
+                  )}
                 </p>
                 {activeWorkshopLabel && (
                   <div className="inline-flex items-center gap-2 rounded-full bg-gray-900/80 border border-orange-500/40 px-3 py-1 text-[11px] text-orange-200">
                     <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     <span className="uppercase tracking-[0.18em] text-orange-300/90">
-                      Workshop
+                      {t('fabricator:workflow.workshop_label', 'Workshop')}
                     </span>
                     <span className="font-medium text-orange-100 truncate max-w-[220px] md:max-w-xs">
                       {activeWorkshopLabel}
@@ -1012,16 +1046,22 @@ export const FabricatorWorkflow: React.FC = () => {
                 <div className="grid grid-cols-3 gap-3 mb-3">
                   <Card className="bg-gray-900/70 border-gray-700">
                     <CardContent className="py-3 px-4">
-                      <div className="text-[10px] uppercase tracking-wide text-gray-400">System</div>
+                      <div className="text-[10px] uppercase tracking-wide text-gray-400">
+                        {t('fabricator:workflow.status.system', 'System')}
+                      </div>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="inline-flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="text-sm font-semibold text-emerald-300">Optimal</span>
+                        <span className="text-sm font-semibold text-emerald-300">
+                          {t('fabricator:workflow.status.optimal', 'Optimal')}
+                        </span>
                       </div>
                     </CardContent>
                   </Card>
                   <Card className="bg-gray-900/70 border-gray-700">
                     <CardContent className="py-3 px-4">
-                      <div className="text-[10px] uppercase tracking-wide text-gray-400">Efficiency</div>
+                      <div className="text-[10px] uppercase tracking-wide text-gray-400">
+                        {t('fabricator:workflow.status.efficiency', 'Efficiency')}
+                      </div>
                       <div className="flex items-baseline gap-1 mt-1">
                         <span className="text-sm font-semibold text-orange-300">92.5%</span>
                       </div>
@@ -1029,7 +1069,9 @@ export const FabricatorWorkflow: React.FC = () => {
                   </Card>
                   <Card className="bg-gray-900/70 border-gray-700">
                     <CardContent className="py-3 px-4">
-                      <div className="text-[10px] uppercase tracking-wide text-gray-400">Active Jobs</div>
+                      <div className="text-[10px] uppercase tracking-wide text-gray-400">
+                        {t('fabricator:workflow.status.active_jobs', 'Active Jobs')}
+                      </div>
                       <div className="flex items-baseline gap-1 mt-1">
                         <span className="text-sm font-semibold text-blue-300">12</span>
                       </div>
@@ -1041,7 +1083,10 @@ export const FabricatorWorkflow: React.FC = () => {
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder="Search machines, orders..."
+                    placeholder={t(
+                      'fabricator:workflow.search_placeholder',
+                      'Search machines, orders...',
+                    )}
                     className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl bg-gray-900/70 border border-gray-700 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/60 focus:border-orange-500/60"
                   />
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
@@ -1059,7 +1104,7 @@ export const FabricatorWorkflow: React.FC = () => {
                         setActiveTab('measuring');
                       }}
                     >
-                      New Project
+                    {t('fabricator:project.new_project', 'New Project')}
                     </Button>
                   </Suspense>
                   {projectMeta && (
@@ -1087,7 +1132,7 @@ export const FabricatorWorkflow: React.FC = () => {
                     onClick={() => navigate('/fabricator-workflow/pro')}
                   >
                     <Factory className="h-3 w-3 mr-1" />
-                    Mass Production
+                    {t('fabricator:workflow.mass_production_cta', 'Mass Production')}
                   </Button>
                 </div>
               </div>
@@ -1103,16 +1148,19 @@ export const FabricatorWorkflow: React.FC = () => {
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 p-4 md:p-6 bg-gray-900/40 rounded-xl border border-gray-800">
               <div className="space-y-1">
                 <p className="text-[11px] uppercase tracking-[0.25em] text-gray-500">
-                  MODULE
+                  {t('fabricator:workflow.module_label', 'MODULE')}
                 </p>
                 <h2 className="text-xl md:text-2xl font-semibold text-gray-100 flex items-center gap-2">
-                  <span>Fabricator Workflow Pro</span>
+                  <span>{t('fabricator:workflow.title', 'Fabricator Workflow Pro')}</span>
                   <Badge variant="outline" className="border-orange-500/40 text-orange-300 bg-orange-500/10 text-[10px] uppercase tracking-wide">
-                    End-to-End
+                    {t('fabricator:workflow.badge_end_to_end', 'End-to-End')}
                   </Badge>
                 </h2>
                 <p className="text-xs md:text-sm text-gray-400">
-                  Complete project lifecycle from measurement to optimization, inventory, production, and quality.
+                  {t(
+                    'fabricator:workflow.module_description',
+                    'Complete project lifecycle from measurement to optimization, inventory, production, and quality.',
+                  )}
                 </p>
               </div>
               
@@ -1671,9 +1719,9 @@ export const FabricatorWorkflow: React.FC = () => {
                     </div>
                     <div className="flex-1">
                       <div>
-                        AI-Powered Cutting Optimization
+                        {t('cutting_optimization.title', 'AI-Powered Cutting Optimization')}
                         <CardDescription className="text-lg text-gray-300 mt-1">
-                          Advanced algorithms for material optimization, waste reduction, and cost efficiency
+                          {t('cutting_optimization.description', 'Advanced algorithms for material optimization, waste reduction, and cost efficiency')}
                         </CardDescription>
                       </div>
                       <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -1684,10 +1732,10 @@ export const FabricatorWorkflow: React.FC = () => {
                           onClick={() => navigate('/fabricator-workflow/pro')}
                         >
                           <Factory className="h-3 w-3 mr-1" />
-                          Mass Production
+                          {t('cutting_optimization.mass_production', 'Mass Production')}
                         </Button>
                         <span className="text-[11px] text-gray-400">
-                          Open Mass Production Cockpit to batch-optimize across all optimized jobs.
+                          {t('cutting_optimization.open_mass_production', 'Open Mass Production Cockpit to batch-optimize across all optimized jobs.')}
                         </span>
                       </div>
                     </div>

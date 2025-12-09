@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 interface IndustrialNavbarProps {
   user?: {
@@ -44,6 +45,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
   currentWorkflow = 'measuring',
   onWorkflowChange
 }) => {
+  const { t } = useTranslation(['fabricator', 'translation']);
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -61,80 +63,80 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
 
   // Workflow stages for quick navigation
   const workflowStages = [
-    { id: 'measuring', name: 'Smart Measuring', icon: Ruler, status: 'active' },
-    { id: 'design', name: 'Technical Design', icon: Settings, status: 'pending' },
-    { id: 'optimization', name: 'AI Optimization', icon: Sparkles, status: 'pending' },
-    { id: 'inventory', name: 'Inventory Check', icon: Package, status: 'pending' },
-    { id: 'production', name: 'Production', icon: Factory, status: 'pending' },
-    { id: 'quality', name: 'Quality Control', icon: Zap, status: 'pending' }
+    { id: 'measuring', name: t('fabricator:workflow.steps.measuring.name', 'Smart Measuring'), icon: Ruler, status: 'active' },
+    { id: 'design', name: t('fabricator:workflow.steps.design.name', 'Technical Design'), icon: Settings, status: 'pending' },
+    { id: 'optimization', name: t('fabricator:workflow.steps.optimization.name', 'AI Optimization'), icon: Sparkles, status: 'pending' },
+    { id: 'inventory', name: t('fabricator:workflow.steps.inventory.name', 'Inventory Check'), icon: Package, status: 'pending' },
+    { id: 'production', name: t('fabricator:workflow.steps.production.name', 'Production'), icon: Factory, status: 'pending' },
+    { id: 'quality', name: t('fabricator:workflow.steps.quality.name', 'Quality Control'), icon: Zap, status: 'pending' }
   ];
 
   // Fabrication modules with real-time status
   const fabricationModules = [
     {
-      name: "Cutting Optimization",
+      name: t('fabricator:navbar.fabrication_modules.cutting_optimization.name', 'Cutting Optimization'),
       path: "/fabricator-workflow#optimization",
       icon: <Scissors className="h-4 w-4" />,
       status: "optimal",
       efficiency: "92.5%",
-      description: "AI-powered material nesting"
+      description: t('fabricator:navbar.fabrication_modules.cutting_optimization.description', 'AI-powered material nesting')
     },
     {
-      name: "Machine Control",
+      name: t('fabricator:navbar.fabrication_modules.machine_control.name', 'Machine Control'),
       path: "/machines",
       icon: <Cpu className="h-4 w-4" />,
       status: "running",
       efficiency: "87.2%",
-      description: "Real-time CNC interface"
+      description: t('fabricator:navbar.fabrication_modules.machine_control.description', 'Real-time CNC interface')
     },
     {
-      name: "Production Scheduler",
+      name: t('fabricator:navbar.fabrication_modules.production_scheduler.name', 'Production Scheduler'),
       path: "/fabricator-workflow#production",
       icon: <Workflow className="h-4 w-4" />,
       status: "optimal",
       efficiency: "94.1%",
-      description: "Smart job sequencing"
+      description: t('fabricator:navbar.fabrication_modules.production_scheduler.description', 'Smart job sequencing')
     },
     {
-      name: "Quality Control AI",
+      name: t('fabricator:navbar.fabrication_modules.quality_control_ai.name', 'Quality Control AI'),
       path: "/fabricator/quality",
       icon: <Brain className="h-4 w-4" />,
       status: "monitoring",
       efficiency: "96.3%",
-      description: "Computer vision inspection"
+      description: t('fabricator:navbar.fabrication_modules.quality_control_ai.description', 'Computer vision inspection')
     },
     {
-      name: "Real-time Analytics",
+      name: t('fabricator:navbar.fabrication_modules.real_time_analytics.name', 'Real-time Analytics'),
       path: "/fabricator/analytics",
       icon: <BarChart3 className="h-4 w-4" />,
       status: "active",
       efficiency: "100%",
-      description: "Live performance metrics"
+      description: t('fabricator:navbar.fabrication_modules.real_time_analytics.description', 'Live performance metrics')
     }
   ];
 
   // Business navigation: customers, projects, inventory, etc.
   const businessNav = [
     // Prefer fabricator‑scoped aliases so operators stay inside the cockpit
-    { name: "Customers", path: "/fabricator/customers", icon: <Users className="h-4 w-4" /> },
-    { name: "Projects", path: "/fabricator/projects", icon: <Factory className="h-4 w-4" /> },
-    { name: "Inventory", path: "/fabricator/inventory", icon: <Package className="h-4 w-4" /> },
-    { name: "Profiles & Accessories", path: "/fabricator-workflow#inventory", icon: <Scissors className="h-4 w-4" /> },
-    { name: "Quick Reports", path: "/reports", icon: <FileText className="h-4 w-4" /> },
-    { name: "Machines", path: "/machines", icon: <Cpu className="h-4 w-4" /> },
-    { name: "Settings & Prices", path: "/pricing-settings", icon: <Settings className="h-4 w-4" /> },
-    { name: "Commercial Offers", path: "/offers", icon: <FileText className="h-4 w-4" /> },
-    { name: "Cost Reports", path: "/cost-reports", icon: <Calculator className="h-4 w-4" /> },
-    { name: "Accounting", path: "/accounting", icon: <Coins className="h-4 w-4" /> },
+    { name: t('fabricator:navbar.business_nav.customers', 'Customers'), path: "/fabricator/customers", icon: <Users className="h-4 w-4" /> },
+    { name: t('fabricator:navbar.business_nav.projects', 'Projects'), path: "/fabricator/projects", icon: <Factory className="h-4 w-4" /> },
+    { name: t('fabricator:navbar.business_nav.inventory', 'Inventory'), path: "/fabricator/inventory", icon: <Package className="h-4 w-4" /> },
+    { name: t('fabricator:navbar.business_nav.profiles', 'Profiles & Accessories'), path: "/fabricator-workflow#inventory", icon: <Scissors className="h-4 w-4" /> },
+    { name: t('fabricator:navbar.business_nav.quick_reports', 'Quick Reports'), path: "/reports", icon: <FileText className="h-4 w-4" /> },
+    { name: t('fabricator:navbar.business_nav.machines', 'Machines'), path: "/machines", icon: <Cpu className="h-4 w-4" /> },
+    { name: t('fabricator:navbar.business_nav.settings_prices', 'Settings & Prices'), path: "/pricing-settings", icon: <Settings className="h-4 w-4" /> },
+    { name: t('fabricator:navbar.business_nav.commercial_offers', 'Commercial Offers'), path: "/offers", icon: <FileText className="h-4 w-4" /> },
+    { name: t('fabricator:navbar.business_nav.cost_reports', 'Cost Reports'), path: "/cost-reports", icon: <Calculator className="h-4 w-4" /> },
+    { name: t('fabricator:navbar.business_nav.accounting', 'Accounting'), path: "/accounting", icon: <Coins className="h-4 w-4" /> },
   ];
 
   // Quick actions for operators
   const quickActions = [
-    { name: "New Project", action: () => navigate('/fabricator-workflow?new=true'), icon: Zap },
-    { name: "Profile Tuning Studio", action: () => navigate('/fabricator/profiles?tuning=studio'), icon: Sparkles },
-    { name: "Machine Status", action: () => navigate('/machine-status'), icon: Factory },
-    { name: "Inventory Check", action: () => navigate('/fabricator/inventory'), icon: Package },
-    { name: "Quality Reports", action: () => navigate('/quality-reports'), icon: Brain }
+    { name: t('fabricator:navbar.quick_actions.new_project', 'New Project'), action: () => navigate('/fabricator-workflow?new=true'), icon: Zap },
+    { name: t('fabricator:navbar.quick_actions.profile_tuning', 'Profile Tuning Studio'), action: () => navigate('/fabricator/profiles?tuning=studio'), icon: Sparkles },
+    { name: t('fabricator:navbar.quick_actions.machine_status', 'Machine Status'), action: () => navigate('/machine-status'), icon: Factory },
+    { name: t('fabricator:navbar.quick_actions.inventory_check', 'Inventory Check'), action: () => navigate('/fabricator/inventory'), icon: Package },
+    { name: t('fabricator:navbar.quick_actions.quality_reports', 'Quality Reports'), action: () => navigate('/quality-reports'), icon: Brain }
   ];
 
   // Global fabricator nav model – used by the search overlay
@@ -270,11 +272,12 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     };
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+    const statusLabel = t(`fabricator:navbar.status.${status}`, status);
 
     return (
       <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs border ${config.bg} ${config.border} ${config.color}`}>
         <div className={`w-1.5 h-1.5 rounded-full ${config.bg} ${config.color} animate-pulse`} />
-        {efficiency ? `${status} • ${efficiency}` : status}
+        {efficiency ? `${statusLabel} • ${efficiency}` : statusLabel}
       </div>
     );
   };
@@ -475,7 +478,9 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                 className="px-3 py-1.5 text-[11px] rounded-full"
               >
                 <Workflow className="w-3.5 h-3.5" />
-                <span className="hidden lg:inline">Fabricator Menu</span>
+                <span className="hidden lg:inline">
+                  {t('fabricator:navbar.fabricator_menu', 'Fabricator Menu')}
+                </span>
                 <ChevronDown
                   className={`w-3.5 h-3.5 transition-transform ${
                     activeMenu === 'business' ? 'rotate-180' : ''
@@ -518,7 +523,9 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                 className="px-3 py-1.5 text-[11px] rounded-full"
               >
                 <CircuitBoard className="w-3.5 h-3.5" />
-                <span className="hidden lg:inline">Modules</span>
+                <span className="hidden lg:inline">
+                  {t('fabricator:navbar.modules_label', 'Modules')}
+                </span>
                 <ChevronDown
                   className={`w-3.5 h-3.5 transition-transform ${
                     activeMenu === 'modules' ? 'rotate-180' : ''
@@ -537,7 +544,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                     <div className="p-4">
                       <h3 className="text-orange-400 font-bold mb-3 flex items-center gap-2">
                         <Cpu className="w-4 h-4" />
-                        Fabrication Modules
+                        {t('fabricator:navbar.fabrication_modules_title', 'Fabrication Modules')}
                       </h3>
                       <div className="space-y-2">
                         {fabricationModules.map((module) => (
@@ -574,7 +581,9 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                 className="px-3 py-1.5 text-[11px] rounded-full"
               >
                 <Zap className="w-3.5 h-3.5" />
-                <span className="hidden lg:inline">Actions</span>
+                <span className="hidden lg:inline">
+                  {t('fabricator:navbar.actions_label', 'Actions')}
+                </span>
               </IndustrialButton>
 
               <AnimatePresence>

@@ -37,6 +37,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { Profile } from '@/types/fabricator';
 import { CalibrationWizard } from './CalibrationWizard';
 import { MachiningZoneEditor, type MachiningZone } from './MachiningZoneEditor';
@@ -76,6 +77,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
   onClose,
   onProfileUpdated,
 }) => {
+  const { t } = useTranslation('fabricator');
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<
     | 'calibration'
@@ -248,25 +250,25 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
         return (
           <Badge className="bg-emerald-500/15 text-emerald-300 border-emerald-500/50 flex items-center gap-1">
             <CheckCircle2 className="h-3 w-3" />
-            Tuned for Production
+            {t('profile_tuning_studio.status.tuned', 'Tuned for Production')}
           </Badge>
         );
       case 'in_progress':
         return (
           <Badge className="bg-blue-500/15 text-blue-300 border-blue-500/50 flex items-center gap-1">
             <Sparkles className="h-3 w-3" />
-            Tuning in Progress
+            {t('profile_tuning_studio.status.in_progress', 'Tuning in Progress')}
           </Badge>
         );
       default:
         return (
           <Badge className="bg-yellow-500/15 text-yellow-300 border-yellow-500/50 flex items-center gap-1">
             <AlertTriangle className="h-3 w-3" />
-            Not Tuned Yet
+            {t('profile_tuning_studio.status.untuned', 'Not Tuned Yet')}
           </Badge>
         );
     }
-  }, [tuningStatus]);
+  }, [tuningStatus, t]);
 
   useEffect(() => {
     if (location.state && (location.state as any).highlightGeometry) {
@@ -642,7 +644,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                 </div>
                 <div>
                   <CardTitle className="text-lg md:text-xl flex items-center gap-2">
-                    Profile Tuning Studio
+                    {t('profile_tuning_studio.title', 'Profile Tuning Studio')}
                     {statusBadge}
                   </CardTitle>
                   <CardDescription className="text-xs md:text-sm text-gray-300 mt-1">
@@ -660,7 +662,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                   className="border-gray-600 text-gray-200 hover:bg-gray-800"
                 >
                   <ArrowLeft className="h-4 w-4 mr-1" />
-                  Back
+                  {t('profile_tuning_studio.actions.back', 'Back')}
                 </Button>
                 <Button
                   size="sm"
@@ -669,7 +671,9 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                   className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
                   <CheckCircle2 className="h-4 w-4 mr-1" />
-                  {tuningStatus === 'tuned' ? 'Already Tuned' : 'Mark as Tuned'}
+                  {tuningStatus === 'tuned' 
+                    ? t('profile_tuning_studio.actions.already_tuned', 'Already Tuned')
+                    : t('profile_tuning_studio.actions.mark_as_tuned', 'Mark as Tuned')}
                 </Button>
               </div>
             </div>
@@ -683,30 +687,28 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm flex items-center gap-2">
                       <Settings className="h-4 w-4 text-orange-400" />
-                      Tuning Overview
+                      {t('profile_tuning_studio.overview.title', 'Tuning Overview')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2 text-xs text-gray-300">
                     <p>
-                      <span className="font-semibold text-gray-200">Role:</span>{' '}
+                      <span className="font-semibold text-gray-200">{t('profile_tuning_studio.overview.role', 'Role')}:</span>{' '}
                       {profile.profileRole || (profile.specifications as any)?.profileRole || 'Frame'}
                     </p>
                     <p>
-                      <span className="font-semibold text-gray-200">System Pack:</span>{' '}
+                      <span className="font-semibold text-gray-200">{t('profile_tuning_studio.overview.system_pack', 'System Pack')}:</span>{' '}
                       {systemPackId}
                     </p>
                     <p>
-                      <span className="font-semibold text-gray-200">Twin Code:</span>{' '}
+                      <span className="font-semibold text-gray-200">{t('profile_tuning_studio.overview.twin_code', 'Twin Code')}:</span>{' '}
                       {(profile.specifications as any)?.internalCode || profile.id.slice(0, 8)}
                     </p>
                     <p>
-                      <span className="font-semibold text-gray-200">Supplier Code:</span>{' '}
+                      <span className="font-semibold text-gray-200">{t('profile_tuning_studio.overview.supplier_code', 'Supplier Code')}:</span>{' '}
                       {(profile.specifications as any)?.supplierCode || '—'}
                     </p>
                     <p className="mt-2 text-[11px] text-gray-400">
-                      Use the tabs on the right to calibrate cutting (K-factors), define machining
-                      zones, and validate production accuracy. Once you are confident, mark this
-                      profile as tuned.
+                      {t('profile_tuning_studio.overview.description', 'Use the tabs on the right to calibrate cutting (K-factors), define machining zones, and validate production accuracy. Once you are confident, mark this profile as tuned.')}
                     </p>
                   </CardContent>
                 </Card>
@@ -715,9 +717,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                   <AlertDescription className="flex gap-2">
                     <Wand2 className="h-4 w-4 mt-0.5 text-orange-300" />
                     <span>
-                      Tuning is per-profile and per-system. Repeat the process for each critical
-                      frame/sash profile in your ROCK 60, JUMBO 100, or Caluminium packs to reach
-                      Titanium‑grade reliability.
+                      {t('profile_tuning_studio.alert.message', 'Tuning is per-profile and per-system. Repeat the process for each critical frame/sash profile in your ROCK 60, JUMBO 100, or Caluminium packs to reach Titanium‑grade reliability.')}
                     </span>
                   </AlertDescription>
                 </Alert>
@@ -733,43 +733,43 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                 <TabsList className="flex flex-wrap h-auto p-2 gap-1 bg-gray-900/70 border border-gray-700 mb-3 w-full justify-center">
                     <TabsTrigger value="calibration" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Ruler className="h-3 w-3" />
-                      Live Calibration
+                      {t('profile_tuning_studio.tabs.calibration', 'Live Calibration')}
                     </TabsTrigger>
                     <TabsTrigger value="cutting-rules" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Settings className="h-3 w-3" />
-                      Cutting Rules
+                      {t('profile_tuning_studio.tabs.cutting_rules', 'Cutting Rules')}
                     </TabsTrigger>
                     <TabsTrigger value="glazing" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Droplets className="h-3 w-3" />
-                      Glazing & Seals
+                      {t('profile_tuning_studio.tabs.glazing', 'Glazing & Seals')}
                     </TabsTrigger>
                     <TabsTrigger value="geometry" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Sparkles className="h-3 w-3" />
-                      Geometry & Shape
+                      {t('profile_tuning_studio.tabs.geometry', 'Geometry & Shape')}
                     </TabsTrigger>
                     <TabsTrigger value="smartscan" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Scan className="h-3 w-3" />
-                      SmartScan
+                      {t('profile_tuning_studio.tabs.smartscan', 'SmartScan')}
                     </TabsTrigger>
                     <TabsTrigger value="structural" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Shield className="h-3 w-3" />
-                      Structural
+                      {t('profile_tuning_studio.tabs.structural', 'Structural')}
                     </TabsTrigger>
                     <TabsTrigger value="hardware" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Wrench className="h-3 w-3" />
-                      Hardware
+                      {t('profile_tuning_studio.tabs.hardware', 'Hardware')}
                     </TabsTrigger>
                     <TabsTrigger value="cost-erp" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Wallet className="h-3 w-3" />
-                      Cost & ERP
+                      {t('profile_tuning_studio.tabs.cost_erp', 'Cost & ERP')}
                     </TabsTrigger>
                     <TabsTrigger value="machining" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Settings className="h-3 w-3" />
-                      Machining Zones
+                      {t('profile_tuning_studio.tabs.machining', 'Machining Zones')}
                     </TabsTrigger>
                     <TabsTrigger value="summary" className="text-xs flex items-center gap-1 min-w-[110px]">
                       <Sparkles className="h-3 w-3" />
-                      Tuning Summary
+                      {t('profile_tuning_studio.tabs.summary', 'Tuning Summary')}
                     </TabsTrigger>
                   </TabsList>
 
@@ -787,21 +787,19 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                         <CardHeader>
                           <CardTitle className="text-sm flex items-center gap-2">
                             <Settings className="h-4 w-4 text-orange-400" />
-                            Cutting, Joints & Scrap Policy
+                            {t('profile_tuning_studio.cutting_rules.title', 'Cutting, Joints & Scrap Policy')}
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 text-xs text-gray-200">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                               <p className="text-[11px] text-gray-400">
-                                Joint allowances are extra mm applied at each corner or joint before
-                                optimization. Use positive values to intentionally overshoot and let
-                                assembly trim; use 0 for “exact math”.
+                                {t('profile_tuning_studio.cutting_rules.joint_allowance_desc', 'Joint allowances are extra mm applied at each corner or joint before optimization. Use positive values to intentionally overshoot and let assembly trim; use 0 for "exact math".')}
                               </p>
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    45° Miter Joint (+mm)
+                                    {t('profile_tuning_studio.cutting_rules.miter45_joint', '45° Miter Joint (+mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -818,7 +816,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    90° Butt Joint (+mm)
+                                    {t('profile_tuning_studio.cutting_rules.butt90_joint', '90° Butt Joint (+mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -835,7 +833,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    T‑Joint Allowance (+mm)
+                                    {t('profile_tuning_studio.cutting_rules.t_joint', 'T‑Joint Allowance (+mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -852,7 +850,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Mullion/Transom Joint (+mm)
+                                    {t('profile_tuning_studio.cutting_rules.mullion_joint', 'Mullion/Transom Joint (+mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -872,7 +870,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                             <div className="space-y-3">
                               <div>
                                 <label className="block mb-1 text-[11px] text-gray-300">
-                                  Extra Allowance for Border Frames (mm)
+                                  {t('profile_tuning_studio.cutting_rules.border_allowance', 'Extra Allowance for Border Frames (mm)')}
                                 </label>
                                 <input
                                   type="number"
@@ -887,14 +885,13 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                   }
                                 />
                                 <p className="mt-1 text-[11px] text-gray-400">
-                                  Used when frame has external borders (e.g. +5mm for plaster
-                                  tolerance).
+                                  {t('profile_tuning_studio.cutting_rules.border_allowance_desc', 'Used when frame has external borders (e.g. +5mm for plaster tolerance).')}
                                 </p>
                               </div>
                               <div className="grid grid-cols-3 gap-3">
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Preferred Bar Length (mm)
+                                    {t('profile_tuning_studio.cutting_rules.preferred_bar_length', 'Preferred Bar Length (mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -911,7 +908,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Min Usable Offcut (mm)
+                                    {t('profile_tuning_studio.cutting_rules.min_offcut', 'Min Usable Offcut (mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -928,7 +925,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Round Cuts to (mm)
+                                    {t('profile_tuning_studio.cutting_rules.round_cuts', 'Round Cuts to (mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -946,7 +943,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               </div>
                               <div>
                                 <label className="block mb-1 text-[11px] text-gray-300">
-                                  Corner Technology
+                                  {t('profile_tuning_studio.cutting_rules.corner_technology', 'Corner Technology')}
                                 </label>
                                 <select
                                   className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
@@ -958,10 +955,10 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                     }))
                                   }
                                 >
-                                  <option value="crimped">Crimped Corner</option>
-                                  <option value="cleated">Cleated</option>
-                                  <option value="welded">Welded (PVC/Steel)</option>
-                                  <option value="cut_only">Cut‑Only / Manual Assembly</option>
+                                  <option value="crimped">{t('profile_tuning_studio.cutting_rules.corner_tech_options.crimped', 'Crimped Corner')}</option>
+                                  <option value="cleated">{t('profile_tuning_studio.cutting_rules.corner_tech_options.cleated', 'Cleated')}</option>
+                                  <option value="welded">{t('profile_tuning_studio.cutting_rules.corner_tech_options.welded', 'Welded (PVC/Steel)')}</option>
+                                  <option value="cut_only">{t('profile_tuning_studio.cutting_rules.corner_tech_options.cut_only', 'Cut‑Only / Manual Assembly')}</option>
                                 </select>
                               </div>
                             </div>
@@ -973,7 +970,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               disabled={savingStatus}
                               className="bg-orange-500 hover:bg-orange-600 text-white"
                             >
-                              Save Cutting Rules
+                              {t('profile_tuning_studio.cutting_rules.save', 'Save Cutting Rules')}
                             </Button>
                           </div>
                         </CardContent>
@@ -985,7 +982,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                         <CardHeader>
                           <CardTitle className="text-sm flex items-center gap-2">
                             <Shield className="h-4 w-4 text-teal-300" />
-                            Structural Limits & Physics Class
+                            {t('profile_tuning_studio.structural.title', 'Structural Limits & Physics Class')}
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 text-xs text-gray-200">
@@ -994,7 +991,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Max Frame Span (mm)
+                                    {t('profile_tuning_studio.structural.max_frame_span', 'Max Frame Span (mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -1011,7 +1008,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Max Mullion Span (mm)
+                                    {t('profile_tuning_studio.structural.max_mullion_span', 'Max Mullion Span (mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -1028,7 +1025,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Max Unit Width (mm)
+                                    {t('profile_tuning_studio.structural.max_unit_width', 'Max Unit Width (mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -1045,7 +1042,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Max Unit Height (mm)
+                                    {t('profile_tuning_studio.structural.max_unit_height', 'Max Unit Height (mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -1062,16 +1059,14 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                               </div>
                               <p className="text-[11px] text-gray-400">
-                                These limits are used to warn when a window or frame dimension
-                                exceeds the safe span for this profile (based on supplier tables or
-                                your own experience).
+                                {t('profile_tuning_studio.structural.limits_desc', 'These limits are used to warn when a window or frame dimension exceeds the safe span for this profile (based on supplier tables or your own experience).')}
                               </p>
                             </div>
                             <div className="space-y-3">
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Max Sash Width (mm)
+                                    {t('profile_tuning_studio.structural.max_sash_width', 'Max Sash Width (mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -1088,7 +1083,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Max Sash Height (mm)
+                                    {t('profile_tuning_studio.structural.max_sash_height', 'Max Sash Height (mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -1105,7 +1100,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Max Sash Weight (kg)
+                                    {t('profile_tuning_studio.structural.max_sash_weight', 'Max Sash Weight (kg)')}
                                   </label>
                                   <input
                                     type="number"
@@ -1122,7 +1117,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Physics Stiffness Class
+                                    {t('profile_tuning_studio.structural.physics_stiffness', 'Physics Stiffness Class')}
                                   </label>
                                   <select
                                     className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
@@ -1134,20 +1129,20 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                       }))
                                     }
                                   >
-                                    <option value="standard">Standard</option>
-                                    <option value="stiff">Stiff / Heavy Duty</option>
-                                    <option value="flexible">Flexible / Light</option>
+                                    <option value="standard">{t('profile_tuning_studio.structural.stiffness_options.standard', 'Standard')}</option>
+                                    <option value="stiff">{t('profile_tuning_studio.structural.stiffness_options.stiff', 'Stiff / Heavy Duty')}</option>
+                                    <option value="flexible">{t('profile_tuning_studio.structural.stiffness_options.flexible', 'Flexible / Light')}</option>
                                   </select>
                                 </div>
                               </div>
                               <div>
                                 <label className="block mb-1 text-[11px] text-gray-300">
-                                  Structural Notes
+                                  {t('profile_tuning_studio.structural.structural_notes', 'Structural Notes')}
                                 </label>
                                 <textarea
                                   rows={3}
                                   className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
-                                  placeholder="e.g. Balcony door use only with reinforcement; wind zone C not recommended."
+                                  placeholder={t('profile_tuning_studio.structural.structural_notes_placeholder', 'e.g. Balcony door use only with reinforcement; wind zone C not recommended.')}
                                   value={structuralConfig.structuralNotes}
                                   onChange={(e) =>
                                     setStructuralConfig((prev) => ({
@@ -1166,7 +1161,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               disabled={savingStatus}
                               className="bg-teal-500 hover:bg-teal-600 text-white"
                             >
-                              Save Structural Rules
+                              {t('profile_tuning_studio.structural.save', 'Save Structural Rules')}
                             </Button>
                           </div>
                         </CardContent>
@@ -1178,7 +1173,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                         <CardHeader>
                           <CardTitle className="text-sm flex items-center gap-2">
                             <Wrench className="h-4 w-4 text-amber-300" />
-                            Hardware Families & Packs
+                            {t('profile_tuning_studio.hardware.title', 'Hardware Families & Packs')}
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 text-xs text-gray-200">
@@ -1186,12 +1181,12 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                             <div className="space-y-3">
                               <div>
                                 <label className="block mb-1 text-[11px] text-gray-300">
-                                  Primary Hinge Family
+                                  {t('profile_tuning_studio.hardware.primary_hinge', 'Primary Hinge Family')}
                                 </label>
                                 <input
                                   type="text"
                                   className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
-                                  placeholder="e.g. Roto NT, GU, generic"
+                                  placeholder={t('profile_tuning_studio.hardware.primary_hinge_placeholder', 'e.g. Roto NT, GU, generic')}
                                   value={hardwareConfig.primaryHingeFamily}
                                   onChange={(e) =>
                                     setHardwareConfig((prev) => ({
@@ -1203,12 +1198,12 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               </div>
                               <div>
                                 <label className="block mb-1 text-[11px] text-gray-300">
-                                  Primary Lock Family
+                                  {t('profile_tuning_studio.hardware.primary_lock', 'Primary Lock Family')}
                                 </label>
                                 <input
                                   type="text"
                                   className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
-                                  placeholder="e.g. multipoint A, sliding lock B"
+                                  placeholder={t('profile_tuning_studio.hardware.primary_lock_placeholder', 'e.g. multipoint A, sliding lock B')}
                                   value={hardwareConfig.primaryLockFamily}
                                   onChange={(e) =>
                                     setHardwareConfig((prev) => ({
@@ -1222,12 +1217,12 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                             <div className="space-y-3">
                               <div>
                                 <label className="block mb-1 text-[11px] text-gray-300">
-                                  Preferred Handle Family
+                                  {t('profile_tuning_studio.hardware.preferred_handle', 'Preferred Handle Family')}
                                 </label>
                                 <input
                                   type="text"
                                   className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
-                                  placeholder="e.g. Alumil series X, generic lever"
+                                  placeholder={t('profile_tuning_studio.hardware.preferred_handle_placeholder', 'e.g. Alumil series X, generic lever')}
                                   value={hardwareConfig.preferredHandleFamily}
                                   onChange={(e) =>
                                     setHardwareConfig((prev) => ({
@@ -1239,12 +1234,12 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               </div>
                               <div>
                                 <label className="block mb-1 text-[11px] text-gray-300">
-                                  Hardware Pack Tags (comma‑separated)
+                                  {t('profile_tuning_studio.hardware.hardware_pack_tags', 'Hardware Pack Tags (comma‑separated)')}
                                 </label>
                                 <input
                                   type="text"
                                   className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
-                                  placeholder="e.g. bathroom_turn, balcony_slider, jumbo_door"
+                                  placeholder={t('profile_tuning_studio.hardware.hardware_pack_placeholder', 'e.g. bathroom_turn, balcony_slider, jumbo_door')}
                                   value={hardwareConfig.hardwarePackTagsText}
                                   onChange={(e) =>
                                     setHardwareConfig((prev) => ({
@@ -1254,8 +1249,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                   }
                                 />
                                 <p className="mt-1 text-[11px] text-gray-400">
-                                  These tags will later map to predefined hardware & machining packs
-                                  (hinges, locks, screws) for this profile.
+                                  {t('profile_tuning_studio.hardware.hardware_pack_desc', 'These tags will later map to predefined hardware & machining packs (hinges, locks, screws) for this profile.')}
                                 </p>
                               </div>
                             </div>
@@ -1267,7 +1261,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               disabled={savingStatus}
                               className="bg-amber-500 hover:bg-amber-600 text-white"
                             >
-                              Save Hardware Presets
+                              {t('profile_tuning_studio.hardware.save', 'Save Hardware Presets')}
                             </Button>
                           </div>
                         </CardContent>
@@ -1279,7 +1273,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                         <CardHeader>
                           <CardTitle className="text-sm flex items-center gap-2">
                             <Wallet className="h-4 w-4 text-lime-300" />
-                            Cost Model & ERP Mapping
+                            {t('profile_tuning_studio.cost_erp.title', 'Cost Model & ERP Mapping')}
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 text-xs text-gray-200">
@@ -1288,7 +1282,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Aluminum Price (per kg)
+                                    {t('profile_tuning_studio.cost_erp.aluminum_price', 'Aluminum Price (per kg)')}
                                   </label>
                                   <input
                                     type="number"
@@ -1305,7 +1299,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Machining Cost / Operation
+                                    {t('profile_tuning_studio.cost_erp.machining_cost', 'Machining Cost / Operation')}
                                   </label>
                                   <input
                                     type="number"
@@ -1322,7 +1316,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Coating Cost / m²
+                                    {t('profile_tuning_studio.cost_erp.coating_cost', 'Coating Cost / m²')}
                                   </label>
                                   <input
                                     type="number"
@@ -1339,7 +1333,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Scrap Cost / kg
+                                    {t('profile_tuning_studio.cost_erp.scrap_cost', 'Scrap Cost / kg')}
                                   </label>
                                   <input
                                     type="number"
@@ -1356,19 +1350,18 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                               </div>
                               <p className="text-[11px] text-gray-400">
-                                These fields let the optimizer and reports estimate true production
-                                cost per meter for this profile, including coatings and machining.
+                                {t('profile_tuning_studio.cost_erp.cost_desc', 'These fields let the optimizer and reports estimate true production cost per meter for this profile, including coatings and machining.')}
                               </p>
                             </div>
                             <div className="space-y-3">
                               <div>
                                 <label className="block mb-1 text-[11px] text-gray-300">
-                                  ERP Item Code
+                                  {t('profile_tuning_studio.cost_erp.erp_item_code', 'ERP Item Code')}
                                 </label>
                                 <input
                                   type="text"
                                   className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
-                                  placeholder="e.g. ERP-ALU-6001"
+                                  placeholder={t('profile_tuning_studio.cost_erp.erp_item_placeholder', 'e.g. ERP-ALU-6001')}
                                   value={costConfig.erpItemCode}
                                   onChange={(e) =>
                                     setCostConfig((prev) => ({
@@ -1380,12 +1373,12 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               </div>
                               <div>
                                 <label className="block mb-1 text-[11px] text-gray-300">
-                                  Warehouse Location
+                                  {t('profile_tuning_studio.cost_erp.warehouse_location', 'Warehouse Location')}
                                 </label>
                                 <input
                                   type="text"
                                   className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
-                                  placeholder="e.g. Rack A3, Level 2"
+                                  placeholder={t('profile_tuning_studio.cost_erp.warehouse_placeholder', 'e.g. Rack A3, Level 2')}
                                   value={costConfig.warehouseLocation}
                                   onChange={(e) =>
                                     setCostConfig((prev) => ({
@@ -1404,7 +1397,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               disabled={savingStatus}
                               className="bg-lime-500 hover:bg-lime-600 text-white"
                             >
-                              Save Cost & ERP
+                              {t('profile_tuning_studio.cost_erp.save', 'Save Cost & ERP')}
                             </Button>
                           </div>
                         </CardContent>
@@ -1416,7 +1409,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                         <CardHeader>
                           <CardTitle className="text-sm flex items-center gap-2">
                             <Droplets className="h-4 w-4 text-blue-300" />
-                            Glazing Thickness, Gaskets & Packages
+                            {t('profile_tuning_studio.glazing.title', 'Glazing Thickness, Gaskets & Packages')}
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 text-xs text-gray-200">
@@ -1425,7 +1418,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Glazing Min (mm)
+                                    {t('profile_tuning_studio.glazing.glazing_min', 'Glazing Min (mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -1442,7 +1435,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                                 <div>
                                   <label className="block mb-1 text-[11px] text-gray-300">
-                                    Glazing Max (mm)
+                                    {t('profile_tuning_studio.glazing.glazing_max', 'Glazing Max (mm)')}
                                   </label>
                                   <input
                                     type="number"
@@ -1459,15 +1452,13 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 </div>
                               </div>
                               <p className="text-[11px] text-gray-400">
-                                These limits are used to validate glass packages and prevent
-                                impossible glazing combinations for this profile (e.g. too thick IGU
-                                for the bead).
+                                {t('profile_tuning_studio.glazing.glazing_limits_desc', 'These limits are used to validate glass packages and prevent impossible glazing combinations for this profile (e.g. too thick IGU for the bead).')}
                               </p>
                             </div>
                             <div className="space-y-3">
                               <div>
                                 <label className="block mb-1 text-[11px] text-gray-300">
-                                  Target Gasket Compression (mm)
+                                  {t('profile_tuning_studio.glazing.gasket_compression', 'Target Gasket Compression (mm)')}
                                 </label>
                                 <input
                                   type="number"
@@ -1482,13 +1473,12 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                   }
                                 />
                                 <p className="mt-1 text-[11px] text-gray-400">
-                                  Typical values are 1.5–2.0mm for good sealing without crushing
-                                  the gasket.
+                                  {t('profile_tuning_studio.glazing.gasket_compression_desc', 'Typical values are 1.5–2.0mm for good sealing without crushing the gasket.')}
                                 </p>
                               </div>
                               <div>
                                 <label className="block mb-1 text-[11px] text-gray-300">
-                                  Allowed Glass Packages (comma‑separated)
+                                  {t('profile_tuning_studio.glazing.allowed_glass_packages', 'Allowed Glass Packages (comma‑separated)')}
                                 </label>
                                 <input
                                   type="text"
@@ -1503,8 +1493,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                   }
                                 />
                                 <p className="mt-1 text-[11px] text-gray-400">
-                                  Used by the design engine to propose only compatible glass
-                                  structures for this profile.
+                                  {t('profile_tuning_studio.glazing.allowed_glass_desc', 'Used by the design engine to propose only compatible glass structures for this profile.')}
                                 </p>
                               </div>
                             </div>
@@ -1516,7 +1505,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               disabled={savingStatus}
                               className="bg-blue-500 hover:bg-blue-600 text-white"
                             >
-                              Save Glazing Rules
+                              {t('profile_tuning_studio.glazing.save', 'Save Glazing Rules')}
                             </Button>
                           </div>
                         </CardContent>
@@ -1529,11 +1518,9 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                           <div className="flex items-center gap-3">
                             <AlertCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
                             <div className="flex-1">
-                              <h4 className="font-semibold text-green-400">SmartScan Import Ready</h4>
+                              <h4 className="font-semibold text-green-400">{t('profile_tuning_studio.geometry.import_banner.title', 'SmartScan Import Ready')}</h4>
                               <p className="text-sm text-zinc-400 mt-1">
-                                Your scanned profile has been imported. Review the geometry below and
-                                adjust as needed. The vector has been saved as the profile's geometry
-                                configuration.
+                                {t('profile_tuning_studio.geometry.import_banner.message', 'Your scanned profile has been imported. Review the geometry below and adjust as needed. The vector has been saved as the profile\'s geometry configuration.')}
                               </p>
                             </div>
                             <button
@@ -1550,16 +1537,16 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                         <CardHeader>
                           <CardTitle className="text-sm flex items-center gap-2">
                             <Sparkles className="h-4 w-4 text-purple-300" />
-                            Geometry & Shape
+                            {t('profile_tuning_studio.geometry.title', 'Geometry & Shape')}
                           </CardTitle>
                           <CardDescription className="text-xs text-gray-400">
-                            Define archetype and key dimensions for procedural thumbnails (no CAD required).
+                            {t('profile_tuning_studio.geometry.description', 'Define archetype and key dimensions for procedural thumbnails (no CAD required).')}
                           </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4 text-xs text-gray-200">
                         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                           <div className="text-[11px] text-gray-400">
-                            Have a catalog photo? Run SmartScan to ingest the profile outline and dimensions.
+                            {t('profile_tuning_studio.geometry.scan_prompt', 'Have a catalog photo? Run SmartScan to ingest the profile outline and dimensions.')}
                           </div>
                           <div className="flex gap-2">
                             <Button
@@ -1568,7 +1555,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               disabled={savingStatus}
                               className="bg-purple-500 hover:bg-purple-600 text-white"
                             >
-                              Scan from Catalog Drawing
+                              {t('profile_tuning_studio.geometry.scan_button', 'Scan from Catalog Drawing')}
                             </Button>
                             {isScanning && (
                               <Button
@@ -1577,7 +1564,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 onClick={() => setIsScanning(false)}
                                 className="text-gray-200"
                               >
-                                Cancel
+                                {t('profile_tuning_studio.geometry.cancel', 'Cancel')}
                               </Button>
                             )}
                           </div>
@@ -1630,7 +1617,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <div className="md:col-span-3">
                               <label className="block mb-1 text-[11px] text-gray-300">
-                                Archetype
+                                {t('profile_tuning_studio.geometry.archetype', 'Archetype')}
                               </label>
                               <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                                 {['hollow_box', 'open_c', 'thermal_break', 'z_shape', 't_shape'].map((type) => (
@@ -1644,7 +1631,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                         : 'bg-gray-950 border-gray-800 text-gray-400 hover:border-gray-600'
                                     }`}
                                   >
-                                    <span className="capitalize">{type.replace('_', ' ')}</span>
+                                    <span>{t(`profile_tuning_studio.geometry.archetype_options.${type}`, type.replace('_', ' '))}</span>
                                   </button>
                                 ))}
                               </div>
@@ -1652,7 +1639,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
 
                             <div>
                               <label className="block mb-1 text-[11px] text-gray-300">
-                                Wall Thickness (mm)
+                                {t('profile_tuning_studio.geometry.wall_thickness', 'Wall Thickness (mm)')}
                               </label>
                               <input
                                 type="number"
@@ -1670,7 +1657,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
 
                             <div>
                               <label className="block mb-1 text-[11px] text-gray-300">
-                                Glazing Pocket Depth (mm)
+                                {t('profile_tuning_studio.geometry.glazing_pocket_depth', 'Glazing Pocket Depth (mm)')}
                               </label>
                               <input
                                 type="number"
@@ -1688,7 +1675,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
 
                             <div>
                               <label className="block mb-1 text-[11px] text-gray-300">
-                                Glazing Pocket Width (mm)
+                                {t('profile_tuning_studio.geometry.glazing_pocket_width', 'Glazing Pocket Width (mm)')}
                               </label>
                               <input
                                 type="number"
@@ -1706,7 +1693,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
 
                             <div>
                               <label className="block mb-1 text-[11px] text-gray-300">
-                                Thermal Break Width (mm)
+                                {t('profile_tuning_studio.geometry.thermal_break_width', 'Thermal Break Width (mm)')}
                               </label>
                               <input
                                 type="number"
@@ -1724,7 +1711,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
 
                             <div>
                               <label className="block mb-1 text-[11px] text-gray-300">
-                                Flange Width (mm)
+                                {t('profile_tuning_studio.geometry.flange_width', 'Flange Width (mm)')}
                               </label>
                               <input
                                 type="number"
@@ -1742,7 +1729,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
 
                             <div>
                               <label className="block mb-1 text-[11px] text-gray-300">
-                                Web Offset (mm)
+                                {t('profile_tuning_studio.geometry.web_offset', 'Web Offset (mm)')}
                               </label>
                               <input
                                 type="number"
@@ -1761,7 +1748,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
 
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
                             <div className="md:col-span-1">
-                              <h4 className="text-[11px] text-gray-300 mb-1">Thumbnail Preview</h4>
+                              <h4 className="text-[11px] text-gray-300 mb-1">{t('profile_tuning_studio.geometry.thumbnail_preview', 'Thumbnail Preview')}</h4>
                               <div className="border border-gray-700 rounded-lg p-3 bg-gray-950 flex flex-col items-center">
                                 <ProfileIconGenerator
                                   ref={profileIconRef}
@@ -1774,7 +1761,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                   className="w-24 h-24"
                                 />
                                 <p className="text-[10px] text-gray-500 mt-2 text-center">
-                                  Preview updates with geometry settings.
+                                  {t('profile_tuning_studio.geometry.preview_updates', 'Preview updates with geometry settings.')}
                                 </p>
                               </div>
                             </div>
@@ -1820,7 +1807,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               disabled={savingStatus}
                               className="bg-purple-500 hover:bg-purple-600 text-white"
                             >
-                              Save Geometry
+                              {t('profile_tuning_studio.geometry.save', 'Save Geometry')}
                             </Button>
                           </div>
                         </CardContent>
@@ -1832,11 +1819,10 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                         <CardHeader>
                           <CardTitle className="text-sm flex items-center gap-2">
                             <Scan className="h-4 w-4 text-blue-400" />
-                            SmartScan Import
+                            {t('profile_tuning_studio.smartscan.title', 'SmartScan Import')}
                           </CardTitle>
                           <CardDescription className="text-xs text-gray-400">
-                            Upload catalog images, PDFs, or DXF files. SmartScan will vectorize and
-                            extract dimensions automatically.
+                            {t('profile_tuning_studio.smartscan.description', 'Upload catalog images, PDFs, or DXF files. SmartScan will vectorize and extract dimensions automatically.')}
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -1859,16 +1845,15 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                         <CardHeader>
                           <CardTitle className="text-sm flex items-center gap-2">
                             <Sparkles className="h-4 w-4 text-emerald-400" />
-                            Tuning Status & Confidence
+                            {t('profile_tuning_studio.summary.title', 'Tuning Status & Confidence')}
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-2 text-xs text-gray-300">
                           <p>
-                            Current status: <span className="font-semibold">{tuningStatus}</span>
+                            {t('profile_tuning_studio.summary.current_status', 'Current status')}: <span className="font-semibold">{tuningStatus}</span>
                           </p>
                           <p>
-                            This panel will surface calibration analytics and test results (cut
-                            deviations, confidence scores) as they accumulate over real jobs.
+                            {t('profile_tuning_studio.summary.description', 'This panel will surface calibration analytics and test results (cut deviations, confidence scores) as they accumulate over real jobs.')}
                           </p>
                         </CardContent>
                       </Card>
@@ -1877,14 +1862,14 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                           <CardHeader>
                             <CardTitle className="text-sm flex items-center gap-2">
                               <Activity className="h-4 w-4 text-sky-300" />
-                              QA Tolerances
+                              {t('profile_tuning_studio.summary.qa_tolerances', 'QA Tolerances')}
                             </CardTitle>
                           </CardHeader>
                           <CardContent className="space-y-3 text-xs text-gray-300">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                               <div>
                                 <span className="block text-[11px] text-gray-400 mb-1">
-                                  Cut Tolerance (±mm)
+                                  {t('profile_tuning_studio.summary.cut_tolerance', 'Cut Tolerance (±mm)')}
                                 </span>
                                 <span className="font-semibold">
                                   {qaConfig.cutToleranceMm || '—'}
@@ -1892,7 +1877,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               </div>
                               <div>
                                 <span className="block text-[11px] text-gray-400 mb-1">
-                                  Assembly Tolerance (±mm)
+                                  {t('profile_tuning_studio.summary.assembly_tolerance', 'Assembly Tolerance (±mm)')}
                                 </span>
                                 <span className="font-semibold">
                                   {qaConfig.assemblyToleranceMm || '—'}
@@ -1900,10 +1885,10 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               </div>
                               <div>
                                 <span className="block text-[11px] text-gray-400 mb-1">
-                                  Notes
+                                  {t('profile_tuning_studio.summary.qa_notes', 'Notes')}
                                 </span>
                                 <span className="font-semibold">
-                                  {qaConfig.qaNotes || 'No QA notes yet'}
+                                  {qaConfig.qaNotes || t('profile_tuning_studio.summary.no_qa_notes', 'No QA notes yet')}
                                 </span>
                               </div>
                             </div>
@@ -1914,7 +1899,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                 disabled={savingStatus}
                                 className="bg-sky-500 hover:bg-sky-600 text-white"
                               >
-                                Edit & Save QA Tolerances
+                                {t('profile_tuning_studio.summary.edit_qa', 'Edit & Save QA Tolerances')}
                               </Button>
                             </div>
                           </CardContent>

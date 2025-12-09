@@ -7,7 +7,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/ui/ui/button';
-import { Globe } from 'lucide-react';
+import { Globe, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +25,8 @@ interface Language {
 
 const languages: Language[] = [
   { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
-  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇪🇬' },
+  { code: 'ar-EG', name: 'Arabic (Egypt)', nativeName: 'العربية (مصر)', flag: '🇪🇬' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🌐' },
   { code: 'tr', name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷' },
 ];
 
@@ -34,120 +35,95 @@ export const LanguageSwitcher: React.FC<{
   className?: string;
 }> = ({ variant = 'default', className = '' }) => {
   const { i18n } = useTranslation();
-  const currentLang = languages.find((lang) => lang.code === i18n.language) || languages[0];
+  const [isOpen, setIsOpen] = React.useState(false);
+  const currentLang =
+    languages.find(
+      (lang) => i18n.language === lang.code || i18n.language.startsWith(lang.code),
+    ) || languages[0];
   const isRTLMode = isRTL(i18n.language);
 
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
+    setIsOpen(false);
     // RTL is automatically handled by i18n.ts languageChanged event
   };
 
+  const renderMenu = (showFlag: boolean, textVariant: 'native' | 'name' | 'both') => (
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className={`${className} group relative overflow-hidden transition-all duration-200 font-semibold text-xs xl:text-xs 2xl:text-sm`}
+        >
+          <span className="relative z-10 flex items-center gap-1.5 xl:gap-2">
+            {textVariant === 'both' && <Globe className="h-3.5 w-3.5 xl:h-4 xl:w-4 transition-transform group-hover:rotate-12" />}
+            {showFlag && <span className="text-base xl:text-lg leading-none">{currentLang.flag}</span>}
+            {textVariant === 'native' && (
+              <>
+                <span className="hidden sm:inline">{currentLang.nativeName}</span>
+                <span className="sm:hidden">{currentLang.name}</span>
+              </>
+            )}
+            {textVariant === 'name' && <span>{currentLang.name}</span>}
+            {textVariant === 'both' && <span className="hidden sm:inline">{currentLang.nativeName}</span>}
+            <ChevronDown className={`h-3 w-3 xl:h-3.5 xl:w-3.5 2xl:h-4 2xl:w-4 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+          </span>
+          {/* Hover gradient overlay */}
+          <span className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align={isRTLMode ? 'start' : 'end'}
+        className="bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl overflow-hidden min-w-[180px] p-1"
+      >
+        {languages.map((lang) => {
+          const isActive = i18n.language === lang.code || i18n.language.startsWith(lang.code);
+          return (
+            <DropdownMenuItem
+              key={lang.code}
+              onClick={() => handleLanguageChange(lang.code)}
+              className={`
+                flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer
+                ${isActive 
+                  ? 'text-orange-400 bg-gradient-to-r from-orange-500/10 to-red-500/10' 
+                  : 'text-gray-300 hover:text-white hover:bg-white/5'
+                }
+                group/item
+              `}
+            >
+              {showFlag && (
+                <span className="text-lg leading-none flex-shrink-0 transition-transform group-hover/item:scale-110">
+                  {lang.flag}
+                </span>
+              )}
+              <span className="flex-1 font-medium text-sm">{lang.nativeName}</span>
+              {isActive && (
+                <span className="ml-auto text-orange-400 font-bold text-sm flex-shrink-0">
+                  ✓
+                </span>
+              )}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
   if (variant === 'minimal') {
-    return (
-      <div className={`flex gap-1 ${className}`}>
-        {languages.map((lang) => (
-          <button
-            key={lang.code}
-            onClick={() => handleLanguageChange(lang.code)}
-            className={`px-2 py-1 rounded text-sm transition ${
-              i18n.language === lang.code
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600'
-            }`}
-            title={lang.name}
-          >
-            {lang.flag}
-          </button>
-        ))}
-      </div>
-    );
+    return renderMenu(true, 'name');
   }
 
   if (variant === 'minimal-text') {
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger className="outline-none">
-          <Button variant="outline" size="sm" className={className}>
-            <span className="hidden sm:inline">{currentLang.nativeName}</span>
-            <span className="sm:hidden">{currentLang.name}</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align={isRTLMode ? 'start' : 'end'}
-          className="bg-slate-900 text-white border border-slate-700 shadow-xl"
-        >
-          {languages.map((lang) => (
-            <DropdownMenuItem
-              key={lang.code}
-              onClick={() => handleLanguageChange(lang.code)}
-              className={`flex items-center gap-2 ${
-                i18n.language === lang.code ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-              }`}
-            >
-              <span>{lang.nativeName}</span>
-              {i18n.language === lang.code && (
-                <span className="ml-auto text-blue-600">✓</span>
-              )}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
+    return renderMenu(false, 'native');
   }
 
   if (variant === 'compact') {
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger className="outline-none">
-          <Button variant="outline" size="sm" className={className}>
-            <Globe className="h-4 w-4 mr-2" />
-            <span className="mr-2">{currentLang.flag}</span>
-            <span className="hidden sm:inline">{currentLang.nativeName}</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align={isRTLMode ? 'start' : 'end'}
-          className="bg-slate-900 text-white border border-slate-700 shadow-xl"
-        >
-          {languages.map((lang) => (
-            <DropdownMenuItem
-              key={lang.code}
-              onClick={() => handleLanguageChange(lang.code)}
-              className={`flex items-center gap-2 ${
-                i18n.language === lang.code ? 'bg-blue-50 dark:bg-blue-900/20' : ''
-              }`}
-            >
-              <span>{lang.flag}</span>
-              <span>{lang.nativeName}</span>
-              {i18n.language === lang.code && (
-                <span className="ml-auto text-blue-600">✓</span>
-              )}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
+    return renderMenu(true, 'both');
   }
 
-  // Default variant - horizontal buttons
-  return (
-    <div className={`flex gap-2 items-center ${className}`}>
-      {languages.map((lang) => (
-        <button
-          key={lang.code}
-          onClick={() => handleLanguageChange(lang.code)}
-          className={`px-4 py-2 rounded-lg transition-all ${
-            i18n.language === lang.code
-              ? 'bg-blue-600 text-white shadow-md'
-              : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200'
-          }`}
-        >
-          <span className="mr-2">{lang.flag}</span>
-          {lang.nativeName}
-        </button>
-      ))}
-    </div>
-  );
+  // Default variant
+  return renderMenu(true, 'native');
 };
 
 export default LanguageSwitcher;

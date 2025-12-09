@@ -37,6 +37,7 @@ import { FabricatorAccessory, Profile } from '@/types/fabricator';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates';
+import { useTranslation } from 'react-i18next';
 
 interface AccessoryManagementProps {
   onAccessoriesUpdate?: (accessories: FabricatorAccessory[]) => void;
@@ -49,6 +50,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
   profiles = [],
   userId,
 }) => {
+  const { t } = useTranslation('fabricator');
   const [accessories, setAccessories] = useState<FabricatorAccessory[]>([]);
   const [filteredAccessories, setFilteredAccessories] = useState<FabricatorAccessory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -695,7 +697,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Package className="h-5 w-5 text-orange-400" />
-              Accessory Management ({accessories.length})
+              {t('accessory_management.title', { count: accessories.length, defaultValue: `Accessory Management (${accessories.length})` })}
             </CardTitle>
             <div className="flex gap-2">
               <Button
@@ -705,7 +707,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                 disabled={accessories.length === 0}
               >
                 <Download className="h-4 w-4 mr-2" />
-                Export JSON
+                {t('accessory_management.export_json', 'Export JSON')}
               </Button>
               <Button
                 variant="outline"
@@ -714,13 +716,13 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                 disabled={accessories.length === 0}
               >
                 <Download className="h-4 w-4 mr-2" />
-                Export CSV
+                {t('accessory_management.export_csv', 'Export CSV')}
               </Button>
               <label>
                 <Button variant="outline" size="sm" asChild>
                   <span>
                     <Upload className="h-4 w-4 mr-2" />
-                    Import JSON
+                    {t('accessory_management.import_json', 'Import JSON')}
                   </span>
                 </Button>
                 <input
@@ -732,7 +734,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
               </label>
               <Button variant="outline" size="sm" onClick={loadAccessories}>
                 <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
+                {t('accessory_management.refresh', 'Refresh')}
               </Button>
               <Button
                 variant={compatibilityMode ? 'default' : 'outline'}
@@ -740,7 +742,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                 onClick={() => setCompatibilityMode(!compatibilityMode)}
               >
                 <Link2 className="h-4 w-4 mr-2" />
-                Compatibility Mode
+                {t('accessory_management.compatibility_mode', 'Compatibility Mode')}
               </Button>
             </div>
           </div>
@@ -754,7 +756,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Search accessories..."
+                placeholder={t('accessory_management.search_placeholder', 'Search accessories...')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -762,17 +764,17 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
             </div>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="Filter by Type" />
+                <SelectValue placeholder={t('accessory_management.filter_by_type', 'Filter by Type')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="hinge">Hinge</SelectItem>
-                <SelectItem value="lock">Lock</SelectItem>
-                <SelectItem value="handle">Handle</SelectItem>
-                <SelectItem value="seal">Seal</SelectItem>
-                <SelectItem value="spacer">Spacer</SelectItem>
-                <SelectItem value="corner">Corner</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
+                <SelectItem value="all">{t('accessory_management.all_types', 'All Types')}</SelectItem>
+                <SelectItem value="hinge">{t('accessory_management.types.hinge', 'Hinge')}</SelectItem>
+                <SelectItem value="lock">{t('accessory_management.types.lock', 'Lock')}</SelectItem>
+                <SelectItem value="handle">{t('accessory_management.types.handle', 'Handle')}</SelectItem>
+                <SelectItem value="seal">{t('accessory_management.types.seal', 'Seal')}</SelectItem>
+                <SelectItem value="spacer">{t('accessory_management.types.spacer', 'Spacer')}</SelectItem>
+                <SelectItem value="corner">{t('accessory_management.types.corner', 'Corner')}</SelectItem>
+                <SelectItem value="other">{t('accessory_management.types.other', 'Other')}</SelectItem>
               </SelectContent>
             </Select>
             {compatibilityMode && profiles.length > 0 && (
@@ -781,7 +783,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                 onValueChange={setSelectedProfileForCompatibility}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select Profile for Compatibility" />
+                  <SelectValue placeholder={t('accessory_management.select_profile_compatibility', 'Select Profile for Compatibility')} />
                 </SelectTrigger>
                 <SelectContent>
                   {profiles.map((p) => (
@@ -801,21 +803,21 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             {editingId ? <Edit2 className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
-            {editingId ? 'Edit Accessory' : 'Add New Accessory'}
+            {editingId ? t('accessory_management.edit_title', 'Edit Accessory') : t('accessory_management.add_title', 'Add New Accessory')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Accessory Name *</Label>
+              <Label>{t('accessory_management.form.name', 'Accessory Name *')}</Label>
               <Input
                 value={formData.name || ''}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Multi-point Lock System"
+                placeholder={t('accessory_management.form.name_placeholder', 'e.g., Multi-point Lock System')}
               />
             </div>
             <div>
-              <Label>Type *</Label>
+              <Label>{t('accessory_management.form.type', 'Type *')}</Label>
               <Select
                 value={formData.type}
                 onValueChange={(value) => setFormData({ ...formData, type: value as FabricatorAccessory['type'] })}
@@ -824,34 +826,34 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="hinge">Hinge</SelectItem>
-                  <SelectItem value="lock">Lock</SelectItem>
-                  <SelectItem value="handle">Handle</SelectItem>
-                  <SelectItem value="seal">Seal</SelectItem>
-                  <SelectItem value="spacer">Spacer</SelectItem>
-                  <SelectItem value="corner">Corner</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="hinge">{t('accessory_management.types.hinge', 'Hinge')}</SelectItem>
+                  <SelectItem value="lock">{t('accessory_management.types.lock', 'Lock')}</SelectItem>
+                  <SelectItem value="handle">{t('accessory_management.types.handle', 'Handle')}</SelectItem>
+                  <SelectItem value="seal">{t('accessory_management.types.seal', 'Seal')}</SelectItem>
+                  <SelectItem value="spacer">{t('accessory_management.types.spacer', 'Spacer')}</SelectItem>
+                  <SelectItem value="corner">{t('accessory_management.types.corner', 'Corner')}</SelectItem>
+                  <SelectItem value="other">{t('accessory_management.types.other', 'Other')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Category</Label>
+              <Label>{t('accessory_management.form.category', 'Category')}</Label>
               <Input
                 value={formData.category || ''}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                placeholder="e.g., Security, Standard"
+                placeholder={t('accessory_management.form.category_placeholder', 'e.g., Security, Standard')}
               />
             </div>
             <div>
-              <Label>SKU</Label>
+              <Label>{t('accessory_management.form.sku', 'SKU')}</Label>
               <Input
                 value={formData.sku || ''}
                 onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                placeholder="Product SKU"
+                placeholder={t('accessory_management.form.sku_placeholder', 'Product SKU')}
               />
             </div>
             <div>
-              <Label>Base Cost ($)</Label>
+              <Label>{t('accessory_management.form.base_cost', 'Base Cost ($)')}</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -868,7 +870,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Markup (%)</Label>
+              <Label>{t('accessory_management.form.markup', 'Markup (%)')}</Label>
               <Input
                 type="number"
                 step="0.1"
@@ -885,7 +887,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
               />
             </div>
             <div>
-              <Label>Unit Price ($)</Label>
+              <Label>{t('accessory_management.form.unit_price', 'Unit Price ($)')}</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -894,27 +896,32 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                 className="bg-gray-700"
               />
               <p className="text-xs text-gray-400 mt-1">
-                Calculated: ${formData.baseCost || 0} × (1 + {formData.markupPercentage || 30}%) = ${formData.unitPrice?.toFixed(2) || '0.00'}
+                {t('accessory_management.form.calculated', {
+                  base: formData.baseCost || 0,
+                  markup: formData.markupPercentage || 30,
+                  price: formData.unitPrice?.toFixed(2) || '0.00',
+                  defaultValue: `Calculated: $${formData.baseCost || 0} × (1 + ${formData.markupPercentage || 30}%) = $${formData.unitPrice?.toFixed(2) || '0.00'}`
+                })}
               </p>
             </div>
             <div>
-              <Label>Supplier</Label>
+              <Label>{t('accessory_management.form.supplier', 'Supplier')}</Label>
               <Input
                 value={formData.supplier || ''}
                 onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
-                placeholder="Supplier name"
+                placeholder={t('accessory_management.form.supplier_placeholder', 'Supplier name')}
               />
             </div>
             <div className="col-span-2">
-              <Label>Description</Label>
+              <Label>{t('accessory_management.form.description', 'Description')}</Label>
               <Input
                 value={formData.description || ''}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Accessory description"
+                placeholder={t('accessory_management.form.description_placeholder', 'Accessory description')}
               />
             </div>
             <div className="col-span-2">
-              <Label>Compatible Materials</Label>
+              <Label>{t('accessory_management.form.compatible_materials', 'Compatible Materials')}</Label>
               <div className="flex gap-2 mt-2">
                 {['aluminum', 'upvc', 'wood'].map((material) => (
                   <div key={material} className="flex items-center gap-2">
@@ -930,13 +937,13 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                         });
                       }}
                     />
-                    <Label className="text-sm capitalize">{material}</Label>
+                    <Label className="text-sm">{t(`accessory_management.materials.${material}`, material.charAt(0).toUpperCase() + material.slice(1))}</Label>
                   </div>
                 ))}
               </div>
             </div>
             <div className="col-span-2">
-              <Label>Region</Label>
+              <Label>{t('accessory_management.form.region', 'Region')}</Label>
               <div className="flex gap-2 mt-2">
                 {['turkey', 'egypt', 'global'].map((region) => (
                   <div key={region} className="flex items-center gap-2">
@@ -952,7 +959,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                         });
                       }}
                     />
-                    <Label className="text-sm capitalize">{region}</Label>
+                    <Label className="text-sm">{t(`accessory_management.regions.${region}`, region.charAt(0).toUpperCase() + region.slice(1))}</Label>
                   </div>
                 ))}
               </div>
@@ -968,10 +975,10 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                   className="bg-orange-500 hover:bg-orange-600"
                 >
                   <Save className="h-4 w-4 mr-2" />
-                  {saving ? 'Updating...' : 'Update Accessory'}
+                  {saving ? t('accessory_management.updating', 'Updating...') : t('accessory_management.update', 'Update Accessory')}
                 </Button>
                 <Button variant="outline" onClick={resetForm}>
-                  Cancel
+                  {t('accessory_management.cancel', 'Cancel')}
                 </Button>
               </>
             ) : (
@@ -981,7 +988,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                 className="bg-orange-500 hover:bg-orange-600"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                {saving ? 'Adding...' : 'Add Accessory'}
+                {saving ? t('accessory_management.adding', 'Adding...') : t('accessory_management.add', 'Add Accessory')}
               </Button>
             )}
           </div>

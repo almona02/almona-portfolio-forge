@@ -11,18 +11,74 @@
     "quantity": "Quantity",
     "total": "Total"
   },
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "fabricator_pro": "Fabricator Pro",
+    "smart_shop": "Smart Shop",
+    "products": {
+      "title": "Products",
+      "yilmaz_machines": {
+        "name": "YILMAZ Machines",
+        "description": "Industrial machinery solutions"
+      },
+      "3d_configurator": {
+        "name": "3D Configurator",
+        "description": "Customize in real-time"
+      },
+      "ar_viewer": {
+        "name": "AR Viewer",
+        "description": "See it in your space"
+      },
+      "3d_gallery": {
+        "name": "3D Gallery",
+        "description": "Interactive 3D model collection"
+      }
+    },
+    "services": {
+      "title": "Services",
+      "all_services": {
+        "name": "All Services",
+        "description": "Complete AI-powered services overview"
+      },
+      "ai_equipment_advisor": {
+        "name": "AI Equipment Advisor",
+        "description": "Smart recommendations"
+      },
+      "machine_sales": {
+        "name": "Machine Sales",
+        "description": "Best deals guaranteed"
+      },
+      "technical_training": {
+        "name": "Technical Training",
+        "description": "Expert-led sessions"
+      },
+      "fabrication_services": {
+        "name": "Fabrication Services",
+        "description": "Precision engineering"
+      }
+    }
+  },
   "auth": {
     "email": "Email",
     "password": "Password",
     "confirm_password": "Confirm Password",
     "forgot_password": "Forgot password?",
     "sign_in": "Sign in",
+    "signing_in": "Signing In...",
     "sign_up": "Create account",
     "name": "Name",
     "phone": "Phone",
     "company": "Company",
     "sector": "Sector",
-    "workshop_location": "Workshop Location"
+    "workshop_location": "Workshop Location",
+    "welcome_back": "Welcome back, Fabricator",
+    "sign_in_to_continue": "Sign in to continue to Almona",
+    "remember_me": "Remember me on this browser",
+    "dont_have_account": "Don't have an account?",
+    "email_placeholder": "you@example.com",
+    "password_placeholder": "••••••••"
   },
   "3d": {
     "interactive": {

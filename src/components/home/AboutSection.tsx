@@ -2,8 +2,10 @@
 import { ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const AboutSection = () => {
+  const { t } = useTranslation('home');
   const navigate = useNavigate();
 
   const handleAboutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -19,35 +21,35 @@ const AboutSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 lg:gap-12 items-center">
           <div>
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 md:mb-6 leading-tight">
-              <span className="text-gradient-orange">ALMONA Co.</span> - Your Trusted Partner Since 1991
+              <span className="text-gradient-orange">{t('about.title_prefix')}</span> - {t('about.title_suffix')}
             </h2>
             <p className="text-gray-300/90 sm:text-gray-300 mb-3 sm:mb-4 md:mb-6 text-xs sm:text-sm md:text-base leading-relaxed">
-              With over three decades of experience in the machinery and profile industry, ALMONA has established itself as a leading provider of high-quality equipment and materials for aluminum and UPVC fabrication in Egypt.
+              {t('about.description_1')}
             </p>
             <p className="text-gray-300/90 sm:text-gray-300 mb-3 sm:mb-4 md:mb-6 text-xs sm:text-sm md:text-base leading-relaxed">
-              As the first and authorized dealer of YILMAZ machines since 2000, we&apos;ve built a reputation for excellence in both products and services. Our commitment to quality ensures our clients receive only the best materials for their projects.
+              {t('about.description_2')}
             </p>
             <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6 md:mb-8">
               <div className="bg-almona-dark p-2.5 sm:p-3 md:p-4 rounded-lg border border-gray-800/80 sm:border-gray-800">
                 <div className="text-almona-orange text-lg sm:text-xl md:text-2xl font-bold">30+</div>
-                <div className="text-gray-400/90 sm:text-gray-400 text-[10px] sm:text-xs md:text-sm">Years of Experience</div>
+                <div className="text-gray-400/90 sm:text-gray-400 text-[10px] sm:text-xs md:text-sm">{t('about.stats.years_experience')}</div>
               </div>
               <div className="bg-almona-dark p-2.5 sm:p-3 md:p-4 rounded-lg border border-gray-800/80 sm:border-gray-800">
                 <div className="text-almona-orange text-lg sm:text-xl md:text-2xl font-bold">1000+</div>
-                <div className="text-gray-400/90 sm:text-gray-400 text-[10px] sm:text-xs md:text-sm">Projects Completed</div>
+                <div className="text-gray-400/90 sm:text-gray-400 text-[10px] sm:text-xs md:text-sm">{t('about.stats.projects_completed')}</div>
               </div>
               <div className="bg-almona-dark p-2.5 sm:p-3 md:p-4 rounded-lg border border-gray-800/80 sm:border-gray-800">
                 <div className="text-almona-orange text-lg sm:text-xl md:text-2xl font-bold">500+</div>
-                <div className="text-gray-400/90 sm:text-gray-400 text-[10px] sm:text-xs md:text-sm">Satisfied Clients</div>
+                <div className="text-gray-400/90 sm:text-gray-400 text-[10px] sm:text-xs md:text-sm">{t('about.stats.satisfied_clients')}</div>
               </div>
               <div className="bg-almona-dark p-2.5 sm:p-3 md:p-4 rounded-lg border border-gray-800/80 sm:border-gray-800">
                 <div className="text-almona-orange text-lg sm:text-xl md:text-2xl font-bold">24/7</div>
-                <div className="text-gray-400/90 sm:text-gray-400 text-[10px] sm:text-xs md:text-sm">Customer Support</div>
+                <div className="text-gray-400/90 sm:text-gray-400 text-[10px] sm:text-xs md:text-sm">{t('about.stats.customer_support')}</div>
               </div>
             </div>
             <Button asChild className="bg-gradient-orange hover:bg-almona-orange-dark text-white text-xs sm:text-sm md:text-base px-4 py-2 sm:px-5 sm:py-2.5">
               <Link to="/about" onClick={handleAboutClick} className="flex items-center gap-2">
-                Learn More About Us
+                {t('about.cta')}
                 <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
               </Link>
             </Button>
