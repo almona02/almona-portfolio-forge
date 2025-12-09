@@ -37,7 +37,7 @@ def cache_key_generator(func: Callable, *args, **kwargs) -> str:
     key_parts.extend(str(arg) for arg in args)
     key_parts.extend(f"{k}={v}" for k, v in sorted(kwargs.items()))
     key_string = ":".join(key_parts)
-    return f"cache:{hashlib.md5(key_string.encode()).hexdigest()}"
+    return f"cache:{hashlib.sha256(key_string.encode()).hexdigest()}"
 
 
 def cached(

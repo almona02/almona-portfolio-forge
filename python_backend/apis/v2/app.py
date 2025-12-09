@@ -110,12 +110,24 @@ def create_v2_app() -> FastAPI:
             "http://127.0.0.1:8002",
         ]
     )
+    # Security: Never allow wildcard origins in production
+    # Filter out any "*" values and use explicit origins only
+    safe_origins = [origin for origin in origins if origin != "*"]
+    if not safe_origins:
+        # Fallback to default safe origins if none configured
+        safe_origins = [
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:3001",
+        ]
+    
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins if origins != ["*"] else ["*"],
+        allow_origins=safe_origins,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+        allow_headers=["Content-Type", "Authorization", "X-API-Key", "X-Requested-With"],
     )
 
     # Register error handlers
