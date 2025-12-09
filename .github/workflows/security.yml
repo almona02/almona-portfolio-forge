@@ -26,8 +26,13 @@ jobs:
           
       - name: NPM Security Scan
         run: |
-          cd frontend
-          npm audit --audit-level=high --json > ../npm-audit-report.json
+          if [ -d "frontend" ]; then
+            cd frontend
+            npm audit --audit-level=high --json > ../npm-audit-report.json
+          else
+            echo "frontend directory not found; skipping npm audit."
+            echo "{}" > npm-audit-report.json
+          fi
           
       - name: Upload Security Reports
         uses: actions/upload-artifact@v4
