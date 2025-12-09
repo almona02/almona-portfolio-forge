@@ -7,6 +7,7 @@ from functools import wraps
 import jwt
 from datetime import datetime, timedelta
 import os
+import math
 from ai_services.part_detection.v2.inference import run_inference_v2, batch_inference
 from ai_services.part_detection.v2.model import PartDetectionModelV2
 
@@ -33,6 +34,25 @@ def validate_api_key(api_key: str) -> bool:
     valid_keys = os.getenv('VALID_API_KEYS', '').split(',')
     return api_key in valid_keys
 
+
+def _sanitize_confidence(raw_value):
+    """
+    Safely parse a confidence value from user input.
+    Guards against NaN/Inf injection and clamps to [0, 1].
+    """
+    try:
+        if raw_value is None:
+            return 0.7
+        s = str(raw_value).strip().lower()
+        if s in {"nan", "+nan", "-nan", "inf", "+inf", "-inf"}:
+            return 0.7
+        val = float(s)
+        if math.isnan(val) or math.isinf(val):
+            return 0.7
+        return max(0.0, min(1.0, val))
+    except Exception:
+        return 0.7
+
 @part_detection_bp.route('/detect', methods=['POST'])
 @limiter.limit("10 per minute")
 @require_api_key
@@ -51,8 +71,8 @@ def detect_parts():
         with tempfile.NamedTemporaryFile(suffix='.jpg', delete=False) as tmp_file:
             image_file.save(tmp_file.name)
             
-            # Run inference
-            confidence = float(request.form.get('confidence', 0.7))
+            # Run inference with sanitized confidence
+            confidence = _sanitize_confidence(request.form.get('confidence', '0.7'))
             results = run_inference_v2(tmp_file.name, confidence)
             
             # Clean up
@@ -89,7 +109,7 @@ def batch_detect_parts():
                 file.save(tmp_file.name)
                 image_paths.append(tmp_file.name)
         
-        confidence = float(request.form.get('confidence', 0.7))
+        confidence = _sanitize_confidence(request.form.get('confidence', '0.7'))
         results = batch_inference(image_paths, confidence)
         
         # Clean up
