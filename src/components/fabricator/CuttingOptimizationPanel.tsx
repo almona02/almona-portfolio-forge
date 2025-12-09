@@ -34,6 +34,7 @@ import {
   HeavyStockInput,
 } from '@/lib/api/pythonHeavyClient';
 import { unifiedOptimize } from '@/lib/api/unifiedOptimizer';
+import { useTranslation } from 'react-i18next';
 
 // Types
 interface CutPiece {
@@ -84,6 +85,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
   profiles = [],
   onExportGCode,
 }) => {
+  const { t } = useTranslation('fabricator');
   // Cut Pieces State
   const [cutPieces, setCutPieces] = useState<CutPiece[]>([
     { id: '1', length: 1200, quantity: 4, material: 'aluminum', profile: '60mm', priority: 1, label: 'Frame Top' },
@@ -134,7 +136,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
   // Run optimization (mock implementation - would call backend in production)
   const runOptimization = useCallback(async () => {
     if (cutPieces.length === 0) {
-      toast.error('Add at least one cut piece to optimize');
+      toast.error(t('cutting_optimization.add_cut_error', 'Add at least one cut piece to optimize'));
       return;
     }
 
@@ -242,9 +244,9 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
 
         setOptimizationResult(mappedResult);
         toast.success(
-          `Python optimization complete: ${(overallUtilization * 100).toFixed(
-            1,
-          )}% utilization`,
+          t('cutting_optimization.python_complete', 'Python optimization complete: {utilization}% utilization', {
+            utilization: (overallUtilization * 100).toFixed(1)
+          }),
         );
       } else {
         const { local } = result;
@@ -269,32 +271,32 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
 
         setOptimizationResult(mappedResult);
         toast.success(
-          `Local optimization complete: ${local.metrics.overallUtilization.toFixed(
-            1,
-          )}% utilization`,
+          t('cutting_optimization.local_complete', 'Local optimization complete: {utilization}% utilization', {
+            utilization: local.metrics.overallUtilization.toFixed(1)
+          }),
         );
       }
     } catch (error) {
       console.error('Optimization error:', error);
-      toast.error('Optimization failed');
+      toast.error(t('cutting_optimization.optimization_failed', 'Optimization failed'));
     } finally {
       setIsOptimizing(false);
     }
-  }, [cutPieces, stockPieces, selectedStrategy, kerfWidth, minRemnant]);
+  }, [cutPieces, stockPieces, selectedStrategy, kerfWidth, minRemnant, t]);
   
   // Export G-code
   const handleExportGCode = useCallback(() => {
     if (!optimizationResult) {
-      toast.error('Run optimization first');
+      toast.error(t('cutting_optimization.run_first_error', 'Run optimization first'));
       return;
     }
     
     if (onExportGCode) {
       onExportGCode(optimizationResult);
     } else {
-      toast.success('G-code export initiated');
+      toast.success(t('cutting_optimization.export_initiated', 'G-code export initiated'));
     }
-  }, [optimizationResult, onExportGCode]);
+  }, [optimizationResult, onExportGCode, t]);
   
   // Calculate totals
   const totalCuts = cutPieces.reduce((sum, p) => sum + p.quantity, 0);
@@ -306,10 +308,10 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Scissors className="w-5 h-5 text-blue-400" />
-          Cutting Optimization
+          {t('cutting_optimization.panel_title', 'Cutting Optimization')}
         </CardTitle>
         <CardDescription>
-          Optimize material usage and minimize waste with AI-powered algorithms
+          {t('cutting_optimization.panel_description', 'Optimize material usage and minimize waste with AI-powered algorithms')}
         </CardDescription>
       </CardHeader>
       
@@ -318,25 +320,25 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
           <TabsList className="grid w-full grid-cols-3 bg-gray-800">
             <TabsTrigger value="cuts" className="text-xs">
               <Package className="w-3 h-3 mr-1" />
-              Cut Pieces
+              {t('cutting_optimization.tabs.cuts', 'Cut Pieces')}
             </TabsTrigger>
             <TabsTrigger value="stock" className="text-xs">
               <BarChart3 className="w-3 h-3 mr-1" />
-              Stock
+              {t('cutting_optimization.tabs.stock', 'Stock')}
             </TabsTrigger>
             <TabsTrigger value="optimize" className="text-xs">
               <Zap className="w-3 h-3 mr-1" />
-              Optimize
+              {t('cutting_optimization.tabs.optimize', 'Optimize')}
             </TabsTrigger>
           </TabsList>
           
           {/* Cut Pieces Tab */}
           <TabsContent value="cuts" className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium">Cut List</span>
+              <span className="text-sm font-medium">{t('cutting_optimization.cut_list', 'Cut List')}</span>
               <Button size="sm" variant="outline" onClick={addCutPiece}>
                 <Plus className="w-3 h-3 mr-1" />
-                Add Cut
+                {t('cutting_optimization.add_cut', 'Add Cut')}
               </Button>
             </div>
             
@@ -347,7 +349,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                   className="p-3 bg-gray-800 rounded-lg grid grid-cols-12 gap-2 items-center"
                 >
                   <div className="col-span-3">
-                    <Label className="text-[10px] text-gray-400">Length (mm)</Label>
+                    <Label className="text-[10px] text-gray-400">{t('cutting_optimization.length', 'Length (mm)')}</Label>
                     <Input
                       type="number"
                       value={piece.length}
@@ -356,7 +358,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                     />
                   </div>
                   <div className="col-span-2">
-                    <Label className="text-[10px] text-gray-400">Qty</Label>
+                    <Label className="text-[10px] text-gray-400">{t('cutting_optimization.quantity', 'Qty')}</Label>
                     <Input
                       type="number"
                       value={piece.quantity}
@@ -365,7 +367,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                     />
                   </div>
                   <div className="col-span-3">
-                    <Label className="text-[10px] text-gray-400">Label</Label>
+                    <Label className="text-[10px] text-gray-400">{t('cutting_optimization.label', 'Label')}</Label>
                     <Input
                       value={piece.label}
                       onChange={(e) => updateCutPiece(piece.id, 'label', e.target.value)}
@@ -373,7 +375,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                     />
                   </div>
                   <div className="col-span-2">
-                    <Label className="text-[10px] text-gray-400">Priority</Label>
+                    <Label className="text-[10px] text-gray-400">{t('cutting_optimization.priority', 'Priority')}</Label>
                     <Select
                       value={piece.priority.toString()}
                       onValueChange={(v) => updateCutPiece(piece.id, 'priority', Number(v))}
@@ -382,9 +384,9 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1">High</SelectItem>
-                        <SelectItem value="2">Medium</SelectItem>
-                        <SelectItem value="3">Low</SelectItem>
+                        <SelectItem value="1">{t('cutting_optimization.priority_high', 'High')}</SelectItem>
+                        <SelectItem value="2">{t('cutting_optimization.priority_medium', 'Medium')}</SelectItem>
+                        <SelectItem value="3">{t('cutting_optimization.priority_low', 'Low')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -403,8 +405,8 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
             </div>
             
             <div className="flex justify-between text-xs text-gray-400 pt-2 border-t border-gray-700">
-              <span>Total cuts: {totalCuts}</span>
-              <span>Total length: {totalCutLength.toLocaleString()} mm</span>
+              <span>{t('cutting_optimization.total_cuts', 'Total cuts: {count}', { count: totalCuts })}</span>
+              <span>{t('cutting_optimization.total_length', 'Total length: {length} mm', { length: totalCutLength.toLocaleString() })}</span>
             </div>
           </TabsContent>
           
@@ -421,25 +423,25 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                       <span className="font-medium text-sm">{stock.length}mm</span>
                       {stock.isRemnant && (
                         <Badge variant="outline" className="text-[10px] bg-orange-500/10 text-orange-300 border-orange-500/40">
-                          Remnant
+                          {t('cutting_optimization.remnant', 'Remnant')}
                         </Badge>
                       )}
                     </div>
                     <Badge variant="secondary" className="text-xs">
-                      {stock.quantity} available
+                      {t('cutting_optimization.available', '{count} available', { count: stock.quantity })}
                     </Badge>
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-xs text-gray-400">
-                    <span>Material: {stock.material}</span>
-                    <span>Profile: {stock.profile}</span>
-                    <span>Cost: ${stock.cost}</span>
+                    <span>{t('cutting_optimization.material', 'Material: {material}', { material: stock.material })}</span>
+                    <span>{t('cutting_optimization.profile', 'Profile: {profile}', { profile: stock.profile })}</span>
+                    <span>{t('cutting_optimization.cost', 'Cost: ${cost}', { cost: stock.cost })}</span>
                   </div>
                 </div>
               ))}
             </div>
             
             <div className="flex justify-between text-xs text-gray-400 pt-2 border-t border-gray-700">
-              <span>Total stock: {totalStockLength.toLocaleString()} mm</span>
+              <span>{t('cutting_optimization.total_stock', 'Total stock: {length} mm', { length: totalStockLength.toLocaleString() })}</span>
             </div>
           </TabsContent>
           
@@ -447,20 +449,20 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
           <TabsContent value="optimize" className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-xs">Strategy</Label>
+                <Label className="text-xs">{t('cutting_optimization.strategy', 'Strategy')}</Label>
                 <Select value={selectedStrategy} onValueChange={setSelectedStrategy}>
                   <SelectTrigger className="h-9">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="genetic">Genetic Algorithm (Best)</SelectItem>
-                    <SelectItem value="best-fit">Best-Fit Decreasing</SelectItem>
-                    <SelectItem value="first-fit">First-Fit Decreasing</SelectItem>
+                    <SelectItem value="genetic">{t('cutting_optimization.strategy_genetic', 'Genetic Algorithm (Best)')}</SelectItem>
+                    <SelectItem value="best-fit">{t('cutting_optimization.strategy_best_fit', 'Best-Fit Decreasing')}</SelectItem>
+                    <SelectItem value="first-fit">{t('cutting_optimization.strategy_first_fit', 'First-Fit Decreasing')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label className="text-xs">Kerf Width (mm)</Label>
+                <Label className="text-xs">{t('cutting_optimization.kerf_width', 'Kerf Width (mm)')}</Label>
                 <Input
                   type="number"
                   value={kerfWidth}
@@ -478,12 +480,12 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
               {isOptimizing ? (
                 <>
                   <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                  Optimizing...
+                  {t('cutting_optimization.optimizing', 'Optimizing...')}
                 </>
               ) : (
                 <>
                   <Zap className="w-4 h-4 mr-2" />
-                  Run Optimization
+                  {t('cutting_optimization.run_optimization', 'Run Optimization')}
                 </>
               )}
             </Button>
@@ -499,7 +501,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                       <div className="text-xl font-bold text-green-400">
                         {(optimizationResult.summary.overallUtilization * 100).toFixed(1)}%
                       </div>
-                      <div className="text-[10px] text-gray-400">Utilization</div>
+                      <div className="text-[10px] text-gray-400">{t('cutting_optimization.utilization', 'Utilization')}</div>
                     </div>
                   </Card>
                   <Card className="bg-gray-800 border-gray-700 p-3">
@@ -507,7 +509,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                       <div className="text-xl font-bold">
                         {optimizationResult.summary.stockPiecesUsed}
                       </div>
-                      <div className="text-[10px] text-gray-400">Bars Used</div>
+                      <div className="text-[10px] text-gray-400">{t('cutting_optimization.bars_used', 'Bars Used')}</div>
                     </div>
                   </Card>
                   <Card className="bg-gray-800 border-gray-700 p-3">
@@ -515,7 +517,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                       <div className="text-xl font-bold text-red-400">
                         {optimizationResult.summary.totalWaste.toFixed(0)}
                       </div>
-                      <div className="text-[10px] text-gray-400">Waste (mm)</div>
+                      <div className="text-[10px] text-gray-400">{t('cutting_optimization.waste', 'Waste (mm)')}</div>
                     </div>
                   </Card>
                   <Card className="bg-gray-800 border-gray-700 p-3">
@@ -523,21 +525,21 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                       <div className="text-xl font-bold text-blue-400">
                         ${optimizationResult.summary.estimatedSavings.toFixed(2)}
                       </div>
-                      <div className="text-[10px] text-gray-400">Savings</div>
+                      <div className="text-[10px] text-gray-400">{t('cutting_optimization.savings', 'Savings')}</div>
                     </div>
                   </Card>
                 </div>
                 
                 {/* Cutting Plans Visualization */}
                 <div className="space-y-2">
-                  <span className="text-sm font-medium">Cutting Plans</span>
+                  <span className="text-sm font-medium">{t('cutting_optimization.cutting_plans', 'Cutting Plans')}</span>
                   {optimizationResult.plans.slice(0, 3).map((plan, idx) => (
                     <div key={idx} className="p-2 bg-gray-800 rounded">
                       <div className="flex justify-between text-xs mb-1">
                         <span className="flex items-center gap-1">
-                          Stock #{idx + 1}
+                          {t('cutting_optimization.stock_number', 'Stock #{number}', { number: idx + 1 })}
                           {plan.isRemnant && (
-                            <Badge variant="outline" className="text-[8px] h-4">Remnant</Badge>
+                            <Badge variant="outline" className="text-[8px] h-4">{t('cutting_optimization.remnant', 'Remnant')}</Badge>
                           )}
                         </span>
                         <span>{(plan.utilization * 100).toFixed(1)}%</span>
@@ -574,7 +576,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
                   className="w-full"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  Export G-code
+                  {t('cutting_optimization.export_gcode', 'Export G-code')}
                 </Button>
               </>
             )}

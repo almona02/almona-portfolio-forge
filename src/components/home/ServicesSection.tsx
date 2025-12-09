@@ -2,12 +2,15 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const ServicesSection = () => {
+  const { t } = useTranslation('home');
+  
   const services = [
     {
-      title: "Machine Sales",
-      description: "Full range of YILMAZ machines for aluminum and UPVC processing",
+      title: t('services.items.machine_sales.title'),
+      description: t('services.items.machine_sales.description'),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
           <path d="M2 9V5c0-1 .9-2 2-2h3.95c1 0 1.9.45 2.5 1.22L12 6l1.55-1.78c.6-.77 1.5-1.22 2.5-1.22H20c1 0 2 .9 2 2v4"></path>
@@ -20,8 +23,8 @@ const ServicesSection = () => {
       path: "/shop#top"
     },
     {
-      title: "Used Machines",
-      description: "Verified B2B used-machine marketplace with logistics support.",
+      title: t('services.items.used_machines.title'),
+      description: t('services.items.used_machines.description'),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
           <rect x="3" y="7" width="18" height="13" rx="2" ry="2"></rect>
@@ -36,8 +39,8 @@ const ServicesSection = () => {
       path: "/usedmachines#top"
     },
     {
-      title: "Maintenance & Support",
-      description: "Expert maintenance and technical support for all machinery",
+      title: t('services.items.maintenance_support.title'),
+      description: t('services.items.maintenance_support.description'),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
           <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
@@ -46,8 +49,8 @@ const ServicesSection = () => {
       path: "/services#top"
     },
     {
-      title: "Tuning Studio",
-      description: "Fabricator Pro tuning for cut/optimize recipes, machine presets, and QA baselines.",
+      title: t('services.items.tuning_studio.title'),
+      description: t('services.items.tuning_studio.description'),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
           <path d="M3 3v4a2 2 0 0 0 2 2h4"></path>
@@ -61,8 +64,8 @@ const ServicesSection = () => {
       path: "/fabricator#top"
     },
     {
-      title: "Spare Parts",
-      description: "Genuine spare parts and accessories for all machines",
+      title: t('services.items.spare_parts.title'),
+      description: t('services.items.spare_parts.description'),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
           <path d="M9 17H7A5 5 0 0 1 7 7h2"></path>
@@ -73,8 +76,8 @@ const ServicesSection = () => {
       path: "/services/spare-parts#top"
     },
     {
-      title: "Technical Training",
-      description: "Comprehensive training programs for machine operation",
+      title: t('services.items.technical_training.title'),
+      description: t('services.items.technical_training.description'),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
           <path d="M18 8a6 6 0 0 0-6-6"></path>
@@ -88,8 +91,8 @@ const ServicesSection = () => {
       path: "/services/training#top"
     },
     {
-      title: "Remnant Marketplace",
-      description: "B2B remnant exchange with verification, pricing, and logistics baked in.",
+      title: t('services.items.remnant_marketplace.title'),
+      description: t('services.items.remnant_marketplace.description'),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
           <path d="M3 3v5h5"></path>
@@ -102,8 +105,8 @@ const ServicesSection = () => {
       path: "/fabricator#top"
     },
     {
-      title: "Analytics & Optimization",
-      description: "Waste reduction (15–30%), OEE dashboards, and AI advisory for jobs.",
+      title: t('services.items.analytics_optimization.title'),
+      description: t('services.items.analytics_optimization.description'),
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-almona-orange">
           <path d="M3 3v18h18"></path>
@@ -122,12 +125,12 @@ const ServicesSection = () => {
     <section className="py-10 sm:py-12 md:py-16 lg:py-20 bg-gradient-dark">
       <div className="container mx-auto px-3 sm:px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 md:mb-12 lg:mb-16">
-          <span className="text-almona-orange font-medium text-xs sm:text-sm md:text-base opacity-90 sm:opacity-100">What We Offer</span>
+          <span className="text-almona-orange font-medium text-xs sm:text-sm md:text-base opacity-90 sm:opacity-100">{t('services.badge')}</span>
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mt-2 mb-2 sm:mb-3 md:mb-4 leading-tight px-2">
-            Comprehensive <span className="text-gradient-orange">Services</span> for Your Business
+            {t('services.title_prefix')} <span className="text-gradient-orange">{t('services.title_highlight')}</span> {t('services.title_suffix')}
           </h2>
           <p className="text-gray-400/90 sm:text-gray-400 text-xs sm:text-sm md:text-base px-3 sm:px-4">
-            From sales and maintenance to training and customization, we provide end-to-end solutions for aluminum and UPVC fabricators.
+            {t('services.subtitle')}
           </p>
         </div>
 
@@ -148,7 +151,7 @@ const ServicesSection = () => {
                 {service.description}
               </p>
               <div className="flex items-center text-almona-orange font-medium text-xs sm:text-sm">
-                <span>Learn More</span>
+                <span>{t('services.learn_more')}</span>
                 <ArrowRight className="ml-2 h-3 w-3 sm:h-4 sm:w-4 transform group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
@@ -158,7 +161,7 @@ const ServicesSection = () => {
         <div className="mt-8 sm:mt-10 md:mt-12 text-center">
           <Button asChild className="bg-gradient-orange hover:bg-almona-orange-dark text-white text-xs sm:text-sm md:text-base px-4 py-2 sm:px-5 sm:py-2.5">
             <Link to="/services" className="flex items-center gap-2 justify-center">
-              View All Services
+              {t('services.cta')}
               <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
             </Link>
           </Button>

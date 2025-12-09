@@ -12,10 +12,12 @@ import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 
 const Login = () => {
+  const { t } = useTranslation('translation');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false); // kept for transition; will sync with actionLoading
@@ -93,10 +95,10 @@ const Login = () => {
           <Card className="bg-transparent border-0 text-white">
             <CardHeader className="text-center p-8 lg:mt-10">
               <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2, duration: 0.5 }}>
-                <CardTitle className="text-4xl font-bold text-gradient-orange">Welcome back, Fabricator</CardTitle>
+                <CardTitle className="text-4xl font-bold text-gradient-orange">{t('auth.welcome_back', 'Welcome back, Fabricator')}</CardTitle>
               </motion.div>
               <CardDescription className="text-gray-300 pt-2">
-                Sign in to continue to Almona
+                {t('auth.sign_in_to_continue', 'Sign in to continue to Almona')}
               </CardDescription>
             </CardHeader>
             <CardContent className="p-8">
@@ -110,13 +112,13 @@ const Login = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.5 }}>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">{t('auth.email', 'Email')}</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                       <Input
                         id="email"
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder={t('auth.email_placeholder', 'you@example.com')}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
@@ -127,13 +129,13 @@ const Login = () => {
                 </motion.div>
                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4, duration: 0.5 }}>
                   <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">{t('auth.password', 'Password')}</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                       <Input
                         id="password"
                         type={showPassword ? 'text' : 'password'}
-                        placeholder="••••••••"
+                        placeholder={t('auth.password_placeholder', '••••••••')}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
@@ -157,24 +159,24 @@ const Login = () => {
                       onCheckedChange={(checked) => setRememberMe(checked === true)}
                     />
                     <Label htmlFor="remember-me" className="text-sm text-gray-300">
-                      Remember me on this browser
+                      {t('auth.remember_me', 'Remember me on this browser')}
                     </Label>
                   </div>
                   <a href="#" className="text-sm text-almona-light hover:underline">
-                    Forgot password?
+                    {t('auth.forgot_password', 'Forgot password?')}
                   </a>
                 </div>
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }}>
                   <Button type="submit" className="w-full bg-gradient-orange hover:bg-almona-orange-dark text-white font-bold py-3" disabled={loading || actionLoading}>
-                    {loading || actionLoading ? 'Signing In...' : 'Sign In'}
+                    {loading || actionLoading ? t('auth.signing_in', 'Signing In...') : t('auth.sign_in', 'Sign In')}
                   </Button>
                 </motion.div>
               </form>
               
               <div className="mt-8 text-center text-sm text-gray-400">
-                Don&apos;t have an account?{' '}
+                {t('auth.dont_have_account', "Don't have an account?")}{' '}
                 <a href="/register" className="font-medium text-almona-light hover:underline">
-                  Sign up
+                  {t('auth.sign_up', 'Sign up')}
                 </a>
               </div>
             </CardContent>

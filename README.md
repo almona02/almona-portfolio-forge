@@ -13,6 +13,24 @@ Almona Portfolio Forge is a full-stack industrial machinery platform centered ar
 - 3D engine: hollow sash frames with recessed, PBR glass (transparent/tinted), improved handles; glass no longer appears as solid blocks.
 - SmartDraw: per-cell sash direction cycle, sliding arrows, proportion-based sizing, and cleaner controls.
 
+## 🎯 Accuracy Tiers & Production Readiness (Pilot)
+
+### 🥇 Gold: Certified CAD Import (Production Ready)
+- 100% accuracy on DXF/DWG via `ezdxf`; computes area, perimeter, weight.
+- Egyptian compliance checks for profile dimensions.
+- Business intelligence live: predictive cost engine, ERP bridge (mock/odoo-ready), Egyptian e-invoice XML builder.
+- Audit trail in Supabase; pilot container `almona-pilot` verified.
+
+### 🥈 Silver: SmartScan / OCR (Beta)
+- Image/PDF ingestion pipeline with Tesseract/EasyOCR; available for testing.
+- SmartScan/assembly flows present; calibration improves accuracy over time.
+- Recommended for estimates and legacy drawings; not for financial-grade results.
+
+### 🥉 Bronze: Manual Entry
+- Always available for traditional workshops; constraint validation and onboarding aids.
+
+Pilot focus: use Gold (CAD-first) for launch trust and financial workflows; Silver is optional for R&D/estimation.
+
 ## 🇪🇬 Alignment with Egypt Vision 2030 & Digital Egypt Strategy
 
 ### National Strategic Alignment

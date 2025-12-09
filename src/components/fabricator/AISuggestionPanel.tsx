@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Sparkles, CheckCircle2, X, TrendingUp, AlertTriangle, Loader2 } from 'lucide-react';
 import { calibrationLearner, type PredictionInput, type PredictionResult } from '@/lib/ml/CalibrationLearner';
 import type { Profile } from '@/types/fabricator';
+import { useTranslation } from 'react-i18next';
 
 interface AISuggestionPanelProps {
   profile: Profile;
@@ -30,6 +31,7 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
   onSuggestionIgnored,
   userId,
 }) => {
+  const { t } = useTranslation('fabricator');
   const [prediction, setPrediction] = useState<PredictionResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [feedbackGiven, setFeedbackGiven] = useState(false);
@@ -126,7 +128,7 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
             <Loader2 className="h-5 w-5 animate-spin text-blue-400" />
-            <span className="text-gray-300">Analyzing calibration patterns...</span>
+            <span className="text-gray-300">{t('calibration_wizard.ai.analyzing', 'Analyzing calibration patterns...')}</span>
           </div>
         </CardContent>
       </Card>
@@ -140,9 +142,9 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
           <div className="flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-yellow-400" />
             <div className="flex-1">
-              <p className="text-sm text-gray-300">AI Model Training</p>
+              <p className="text-sm text-gray-300">{t('calibration_wizard.ai.training_title', 'AI Model Training')}</p>
               <p className="text-xs text-gray-400">
-                The AI is learning from calibration data. Suggestions will appear once enough data is collected.
+                {t('calibration_wizard.ai.training_desc', 'The AI is learning from calibration data. Suggestions will appear once enough data is collected.')}
               </p>
             </div>
           </div>

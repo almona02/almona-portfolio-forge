@@ -16,6 +16,7 @@ import { Settings, TrendingUp, Package, Clock, Info, Save } from 'lucide-react';
 import { OptimizationPresets, type OptimizationStrategy } from '@/lib/optimization/OptimizationPresets';
 import { supabase } from '@/lib/supabase';
 import type { Profile } from '@/types/fabricator';
+import { useTranslation } from 'react-i18next';
 
 interface OptimizationEqualizerProps {
   userId: string;
@@ -50,6 +51,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
   onStrategyChange,
   initialStrategy,
 }) => {
+  const { t } = useTranslation('fabricator');
   const [selectedPreset, setSelectedPreset] = useState<string>('balanced');
   const [strategy, setStrategy] = useState<OptimizationStrategy>(
     initialStrategy || OptimizationPresets.getPreset('balanced')
@@ -195,17 +197,17 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
     <Card className="bg-gray-800/50 border-gray-700">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Settings className="h-5 w-5 text-purple-400" /> Optimization Strategy Equalizer
+          <Settings className="h-5 w-5 text-purple-400" /> {t('optimization_equalizer.title', 'Optimization Strategy Equalizer')}
         </CardTitle>
         <CardDescription className="text-gray-400">
-          Fine-tune optimization parameters to match your production needs
+          {t('optimization_equalizer.description', 'Fine-tune optimization parameters to match your production needs')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Strategy Preset Selector */}
         <div>
           <Label htmlFor="strategy-preset" className="text-gray-300 mb-2 block">
-            Optimization Strategy
+            {t('optimization_equalizer.optimization_strategy', 'Optimization Strategy')}
           </Label>
           <Select value={selectedPreset} onValueChange={handlePresetChange}>
             <SelectTrigger id="strategy-preset" className="bg-gray-900 border-gray-600 text-white">
@@ -233,7 +235,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
             <div className="flex items-center justify-between mb-2">
               <Label className="text-gray-300 flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-green-400" />
-                Waste Reduction
+                {t('optimization_equalizer.waste_reduction', 'Waste Reduction')}
               </Label>
               <Badge variant="outline" className="text-green-400 border-green-500/30">
                 {strategy.wasteReductionWeight}%
@@ -248,7 +250,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
               className="w-full"
             />
             <p className="text-xs text-gray-400 mt-1">
-              Prioritize minimizing material waste. Higher values reduce waste but may increase cut complexity.
+              {t('optimization_equalizer.waste_reduction_desc', 'Prioritize minimizing material waste. Higher values reduce waste but may increase cut complexity.')}
             </p>
           </div>
 
@@ -256,7 +258,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
             <div className="flex items-center justify-between mb-2">
               <Label className="text-gray-300 flex items-center gap-2">
                 <Package className="h-4 w-4 text-blue-400" />
-                Remnant Usage
+                {t('optimization_equalizer.remnant_usage', 'Remnant Usage')}
               </Label>
               <Badge variant="outline" className="text-blue-400 border-blue-500/30">
                 {strategy.remnantUsageWeight}%
@@ -271,7 +273,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
               className="w-full"
             />
             <p className="text-xs text-gray-400 mt-1">
-              Prioritize using existing remnants from previous jobs. Higher values increase remnant reuse.
+              {t('optimization_equalizer.remnant_usage_desc', 'Prioritize using existing remnants from previous jobs. Higher values increase remnant reuse.')}
             </p>
           </div>
 
@@ -279,7 +281,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
             <div className="flex items-center justify-between mb-2">
               <Label className="text-gray-300 flex items-center gap-2">
                 <Settings className="h-4 w-4 text-orange-400" />
-                Cut Complexity
+                {t('optimization_equalizer.cut_complexity', 'Cut Complexity')}
               </Label>
               <Badge variant="outline" className="text-orange-400 border-orange-500/30">
                 {strategy.cutComplexityWeight}%
@@ -294,7 +296,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
               className="w-full"
             />
             <p className="text-xs text-gray-400 mt-1">
-              Balance between simple cuts (faster) and complex optimization (more efficient).
+              {t('optimization_equalizer.cut_complexity_desc', 'Balance between simple cuts (faster) and complex optimization (more efficient).')}
             </p>
           </div>
 
@@ -302,7 +304,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
             <div className="flex items-center justify-between mb-2">
               <Label className="text-gray-300 flex items-center gap-2">
                 <Clock className="h-4 w-4 text-purple-400" />
-                Production Speed
+                {t('optimization_equalizer.production_speed', 'Production Speed')}
               </Label>
               <Badge variant="outline" className="text-purple-400 border-purple-500/30">
                 {strategy.productionSpeedWeight}%
@@ -317,7 +319,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
               className="w-full"
             />
             <p className="text-xs text-gray-400 mt-1">
-              Prioritize faster optimization and fewer cuts. Higher values reduce optimization time.
+              {t('optimization_equalizer.production_speed_desc', 'Prioritize faster optimization and fewer cuts. Higher values reduce optimization time.')}
             </p>
           </div>
         </div>
@@ -328,19 +330,19 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
           <AlertDescription>
             <div className="grid grid-cols-3 gap-4 mt-2">
               <div>
-                <p className="text-xs text-gray-400">Estimated Waste</p>
+                <p className="text-xs text-gray-400">{t('optimization_equalizer.estimated_waste', 'Estimated Waste')}</p>
                 <p className="text-lg font-semibold text-yellow-400">
                   {estimatedImpact.estimatedWastePercentage.toFixed(1)}%
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400">Est. Bars Used</p>
+                <p className="text-xs text-gray-400">{t('optimization_equalizer.est_bars_used', 'Est. Bars Used')}</p>
                 <p className="text-lg font-semibold text-blue-400">
                   ~{estimatedImpact.estimatedBarsUsed}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400">Est. Opt. Time</p>
+                <p className="text-xs text-gray-400">{t('optimization_equalizer.est_opt_time', 'Est. Opt. Time')}</p>
                 <p className="text-lg font-semibold text-green-400">
                   ~{estimatedImpact.estimatedOptimizationTime.toFixed(1)}s
                 </p>
@@ -351,11 +353,11 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
 
         {/* Material Constraints */}
         <div className="p-4 bg-gray-900 rounded-lg border border-gray-700">
-          <h4 className="text-sm font-semibold text-gray-300 mb-3">Material Constraints</h4>
+          <h4 className="text-sm font-semibold text-gray-300 mb-3">{t('optimization_equalizer.material_constraints', 'Material Constraints')}</h4>
           <div className="space-y-3">
             <div>
               <Label htmlFor="min-remnant" className="text-gray-300 text-sm">
-                Minimum Remnant Length (mm)
+                {t('optimization_equalizer.min_remnant_length', 'Minimum Remnant Length (mm)')}
               </Label>
               <input
                 id="min-remnant"
@@ -367,12 +369,12 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
                 max={1000}
               />
               <p className="text-xs text-gray-400 mt-1">
-                Remnants shorter than this will not be considered for reuse
+                {t('optimization_equalizer.min_remnant_desc', 'Remnants shorter than this will not be considered for reuse')}
               </p>
             </div>
             <div>
               <Label htmlFor="max-remnant-age" className="text-gray-300 text-sm">
-                Maximum Remnant Age (days)
+                {t('optimization_equalizer.max_remnant_age', 'Maximum Remnant Age (days)')}
               </Label>
               <input
                 id="max-remnant-age"
@@ -384,7 +386,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
                 max={365}
               />
               <p className="text-xs text-gray-400 mt-1">
-                Remnants older than this will be excluded from optimization
+                {t('optimization_equalizer.max_remnant_desc', 'Remnants older than this will be excluded from optimization')}
               </p>
             </div>
           </div>
@@ -399,7 +401,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
             className="flex-1 border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
           >
             <Save className="h-4 w-4 mr-2" />
-            Save Strategy
+            {t('optimization_equalizer.save_strategy', 'Save Strategy')}
           </Button>
           <Button
             onClick={handleSetAsDefault}
@@ -407,7 +409,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
             variant="outline"
             className="flex-1 border-green-500/30 text-green-400 hover:bg-green-500/10"
           >
-            Set as Default
+            {t('optimization_equalizer.set_as_default', 'Set as Default')}
           </Button>
         </div>
       </CardContent>

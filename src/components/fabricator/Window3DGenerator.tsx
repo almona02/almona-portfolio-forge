@@ -45,6 +45,7 @@ import { validateProjectWithConstraints, deriveSystemConstraintsFromProfiles, Va
 import { generateModelGeometries, FrameGeometry, MiteredFrameData } from '@/lib/3d/windowGeometry';
 import { WindowUnit, Profile } from '@/types/fabricator';
 import { useAdvancedMaterials, useWindowPhysics } from '@/lib/3d';
+import { useTranslation } from 'react-i18next';
 
 // Extend THREE with additional features if needed
 extend({ CameraControls });
@@ -131,7 +132,7 @@ function SectionViewGizmo({ plane, setPlane }: { plane: THREE.Plane, setPlane: (
             >
                 <div className="flex items-center gap-2 p-2 bg-gray-900/80 rounded-full border border-orange-500 text-white select-none whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2">
                     <Scissors className="h-4 w-4 text-orange-400" />
-                    <span className="text-xs font-mono">Section: {(-plane.constant * 1000).toFixed(0)}mm</span>
+                    <span className="text-xs font-mono">{t('window_3d_generator.section_label', 'Section: {position}mm', { position: (-plane.constant * 1000).toFixed(0) })}</span>
                 </div>
             </div>
         </Html>
@@ -450,6 +451,7 @@ function WindowControls({
   sectionViewEnabled,
   setSectionViewEnabled,
 }: any) {
+    const { t } = useTranslation('fabricator');
     // Using simple any type for props to save space as implementation is identical to before
     // but with section view added.
     
@@ -460,7 +462,7 @@ function WindowControls({
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-orange-400" />
-              3D Controls
+              {t('window_3d_generator.3d_controls', '3D Controls')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -482,7 +484,7 @@ function WindowControls({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    {isAnimating ? 'Pause Animation' : 'Play Animation'}
+                    {isAnimating ? t('window_3d_generator.pause_animation', 'Pause Animation') : t('window_3d_generator.play_animation', 'Play Animation')}
                   </TooltipContent>
                 </Tooltip>
 
@@ -500,7 +502,7 @@ function WindowControls({
                       <RotateCcw className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Reset View</TooltipContent>
+                  <TooltipContent>{t('window_3d_generator.reset_view', 'Reset View')}</TooltipContent>
                 </Tooltip>
               </div>
               
@@ -527,7 +529,7 @@ function WindowControls({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {showMeasurements ? 'Hide Measurements' : 'Show Measurements'}
+                  {showMeasurements ? t('window_3d_generator.hide_measurements', 'Hide Measurements') : t('window_3d_generator.show_measurements', 'Show Measurements')}
                 </TooltipContent>
               </Tooltip>
 
@@ -544,7 +546,7 @@ function WindowControls({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    {sectionViewEnabled ? 'Disable Section View' : 'Enable Section View'}
+                    {sectionViewEnabled ? t('window_3d_generator.disable_section_view', 'Disable Section View') : t('window_3d_generator.enable_section_view', 'Enable Section View')}
                   </TooltipContent>
                 </Tooltip>
               )}
@@ -553,16 +555,16 @@ function WindowControls({
             {/* Quality Settings */}
             {setQuality && (
               <div className="space-y-2 pt-2 border-t border-gray-700">
-                <label className="text-xs text-gray-400 font-medium">Quality</label>
+                <label className="text-xs text-gray-400 font-medium">{t('window_3d_generator.quality', 'Quality')}</label>
                 <Select value={quality} onValueChange={(v: any) => setQuality(v)}>
                   <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-xs">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 border-gray-600">
-                    <SelectItem value="low" className="text-xs">Low Performance</SelectItem>
-                    <SelectItem value="medium" className="text-xs">Balanced</SelectItem>
-                    <SelectItem value="high" className="text-xs">High Quality</SelectItem>
-                    <SelectItem value="ultra" className="text-xs">Ultra</SelectItem>
+                    <SelectItem value="low" className="text-xs">{t('window_3d_generator.low_performance', 'Low Performance')}</SelectItem>
+                    <SelectItem value="medium" className="text-xs">{t('window_3d_generator.balanced', 'Balanced')}</SelectItem>
+                    <SelectItem value="high" className="text-xs">{t('window_3d_generator.high_quality', 'High Quality')}</SelectItem>
+                    <SelectItem value="ultra" className="text-xs">{t('window_3d_generator.ultra', 'Ultra')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -582,7 +584,7 @@ function WindowControls({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {enableShadows ? 'Disable Shadows' : 'Enable Shadows'}
+                  {enableShadows ? t('window_3d_generator.disable_shadows', 'Disable Shadows') : t('window_3d_generator.enable_shadows', 'Enable Shadows')}
                 </TooltipContent>
               </Tooltip>
             )}
@@ -614,11 +616,11 @@ function WindowControls({
                     ) : (
                       <Download className="h-4 w-4 mr-2" />
                     )}
-                    Export {exportFormat}
+                    {t('window_3d_generator.export', 'Export')} {exportFormat}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  Export 3D Model
+                  {t('window_3d_generator.export_model', 'Export 3D Model')}
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -633,10 +635,10 @@ function WindowControls({
                   className="w-full"
                 >
                   <Maximize2 className="h-4 w-4 mr-2" />
-                  Fullscreen
+                  {t('window_3d_generator.fullscreen', 'Fullscreen')}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Toggle Fullscreen Mode</TooltipContent>
+              <TooltipContent>{t('window_3d_generator.toggle_fullscreen', 'Toggle Fullscreen Mode')}</TooltipContent>
             </Tooltip>
           </CardContent>
         </Card>
@@ -651,7 +653,7 @@ function WindowControls({
                     <Home className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Reset Camera</TooltipContent>
+                <TooltipContent>{t('window_3d_generator.reset_camera', 'Reset Camera')}</TooltipContent>
               </Tooltip>
 
               <Tooltip>
@@ -660,7 +662,7 @@ function WindowControls({
                     <ZoomIn className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Zoom In</TooltipContent>
+                <TooltipContent>{t('window_3d_generator.zoom_in', 'Zoom In')}</TooltipContent>
               </Tooltip>
 
               <Tooltip>
@@ -669,7 +671,7 @@ function WindowControls({
                     <ZoomOut className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Zoom Out</TooltipContent>
+                <TooltipContent>{t('window_3d_generator.zoom_out', 'Zoom Out')}</TooltipContent>
               </Tooltip>
             </div>
           </CardContent>
@@ -694,6 +696,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     setExplodedView,
     mode: _mode = 'pro',
 }, ref) => {
+    const { t } = useTranslation('fabricator');
     // --- State Management ---
     const [isAnimating, setIsAnimating] = useState(false);
     const [animationProgress, setAnimationProgress] = useState(0);
@@ -859,8 +862,8 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                 <Card className="bg-gray-900/95 border-orange-500 shadow-2xl">
                     <CardContent className="p-6 text-center">
                     <Download className="h-8 w-8 text-orange-400 mx-auto mb-4 animate-bounce" />
-                    <h3 className="text-lg font-semibold text-white mb-2">Exporting Model</h3>
-                    <p className="text-gray-400 text-sm mb-4">Preparing {exportFormat} file...</p>
+                    <h3 className="text-lg font-semibold text-white mb-2">{t('window_3d_generator.exporting_model', 'Exporting Model')}</h3>
+                    <p className="text-gray-400 text-sm mb-4">{t('window_3d_generator.preparing_file', 'Preparing {format} file...', { format: exportFormat })}</p>
                     </CardContent>
                 </Card>
                 </div>
@@ -885,7 +888,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                     gl.setClearColor(0x000000, 0);
                 }}
             >
-                <Suspense fallback={<Html center><div className="text-white">Loading...</div></Html>}>
+                <Suspense fallback={<Html center><div className="text-white">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</div></Html>}>
                     {/* --- SCENE SETUP --- */}
                     <Environment preset="apartment" />
                     <ambientLight intensity={0.6} />
@@ -955,7 +958,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                         className="px-3 py-1 rounded bg-gray-900/80 border border-gray-700 text-xs text-gray-200 hover:border-orange-500"
                         onClick={() => setControlsVisible(true)}
                       >
-                        3D Controls
+                        {t('window_3d_generator.3d_controls', '3D Controls')}
                       </button>
                     </div>
                   )}
@@ -993,22 +996,22 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                         <div className="flex items-center gap-4 text-xs text-gray-400">
                             <div className="flex items-center gap-1">
                             <Layers className="h-3 w-3" />
-                            <span className="capitalize">{quality} Quality</span>
+                            <span>{t('window_3d_generator.quality_label', '{quality} Quality', { quality: quality.charAt(0).toUpperCase() + quality.slice(1) })}</span>
                             </div>
                             <div className="flex items-center gap-1">
                             {enableShadows ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
-                            <span>Shadows {enableShadows ? 'On' : 'Off'}</span>
+                            <span>{enableShadows ? t('window_3d_generator.shadows_on', 'Shadows On') : t('window_3d_generator.shadows_off', 'Shadows Off')}</span>
                             </div>
                             {sectionViewEnabled && (
                             <div className="flex items-center gap-1 text-orange-400">
                                 <Scissors className="h-3 w-3" />
-                                <span>Section View</span>
+                                <span>{t('window_3d_generator.section_view', 'Section View')}</span>
                             </div>
                             )}
                             {validation.errors.length > 0 && (
                             <div className="flex items-center gap-1 text-red-400">
                                 <AlertTriangle className="h-3 w-3" />
-                                <span>{validation.errors.length} Issues</span>
+                                <span>{t('window_3d_generator.issues', '{count} Issues', { count: validation.errors.length })}</span>
                             </div>
                             )}
                         </div>
@@ -1025,7 +1028,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                     onPressedChange={setExplodedView}
                     className="bg-black/50 backdrop-blur text-white data-[state=on]:bg-orange-600"
                   >
-                    <Layers className="h-4 w-4 mr-2" /> Explode
+                    <Layers className="h-4 w-4 mr-2" /> {t('window_3d_generator.explode', 'Explode')}
                   </Toggle>
                 </div>
               )}

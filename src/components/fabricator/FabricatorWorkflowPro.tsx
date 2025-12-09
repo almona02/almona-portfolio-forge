@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase';
 import { Factory, Sparkles, AlertCircle, ArrowRight, Wand2, CheckCircle2, Loader2 } from 'lucide-react';
 import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const MassProductionDashboard = React.lazy(() =>
   import('@/components/fabricator/MassProductionDashboard').then((m) => ({
@@ -27,6 +28,7 @@ const MassProductionDashboard = React.lazy(() =>
  * many WindowUnit positions.
  */
 export const FabricatorWorkflowPro: React.FC = () => {
+  const { t } = useTranslation('fabricator');
   const { jobs } = useJobsStore();
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
@@ -86,14 +88,13 @@ export const FabricatorWorkflowPro: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-[11px] font-semibold tracking-[0.25em] text-orange-300/80 uppercase">
-                    Fabricator Workflow Pro
+                    {t('workflow_pro.title', 'FABRICATOR WORKFLOW PRO')}
                   </div>
                   <CardTitle className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-orange-400 via-red-400 to-red-500 bg-clip-text text-transparent">
-                    Mass Production Cockpit
+                    {t('workflow_pro.mass_production_cockpit', 'Mass Production Cockpit')}
                   </CardTitle>
                   <CardDescription className="text-xs md:text-sm text-gray-300 mt-1">
-                    Cross‑project optimisation using GA + remnant‑aware cutting, built for
-                    high‑volume workshops.
+                    {t('workflow_pro.description', 'Cross‑project optimisation using GA + remnant‑aware cutting, built for high‑volume workshops.')}
                   </CardDescription>
                 </div>
               </div>
@@ -103,12 +104,13 @@ export const FabricatorWorkflowPro: React.FC = () => {
                   className="bg-blue-500/15 border-blue-500/40 text-[11px] text-blue-300"
                 >
                   <Sparkles className="h-3 w-3 mr-1" />
-                  {optimizedJobs.length} optimised job
-                  {optimizedJobs.length === 1 ? '' : 's'}
+                  {optimizedJobs.length} {optimizedJobs.length === 1 
+                    ? t('workflow_pro.optimised_jobs', 'optimised job')
+                    : t('workflow_pro.optimised_jobs_plural', 'optimised jobs')}
                 </Badge>
                 {userId && (
                   <p className="text-[11px] text-gray-400">
-                    User:{' '}
+                    {t('workflow_pro.user', 'User')}:{' '}
                     <span className="font-mono text-gray-200">
                       {userId.slice(0, 4)}…{userId.slice(-4)}
                     </span>
@@ -123,8 +125,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
           <Alert variant="destructive" className="bg-red-900/25 border-red-500">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription className="text-sm">
-              {userError} Mass production mode requires a logged‑in Supabase user so remnant
-              usage can be tracked correctly.
+              {userError} {t('workflow_pro.user_error', 'Mass production mode requires a logged‑in Supabase user so remnant usage can be tracked correctly.')}
             </AlertDescription>
           </Alert>
         )}
@@ -132,8 +133,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
         {!isLoadingUser && !userId && !userError && (
           <Alert className="bg-yellow-900/20 border-yellow-500">
             <AlertDescription className="text-sm">
-              No authenticated user detected. Please sign in to enable remnant‑aware mass
-              optimisation.
+              {t('workflow_pro.no_auth', 'No authenticated user detected. Please sign in to enable remnant‑aware mass optimisation.')}
             </AlertDescription>
           </Alert>
         )}
@@ -141,9 +141,9 @@ export const FabricatorWorkflowPro: React.FC = () => {
         <Suspense
           fallback={
             <FabricatorLoader 
-              stage="Loading Mass Production Dashboard…" 
+              stage={t('workflow_pro.loading_dashboard', 'Loading Mass Production Dashboard…')} 
               progress={0}
-              message="Initializing workspace..."
+              message={t('workflow_pro.initializing_workspace', 'Initializing workspace...')}
             />
           }
         >
@@ -162,9 +162,9 @@ export const FabricatorWorkflowPro: React.FC = () => {
               {optStatus === 'running' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {optStatus === 'idle' && <Wand2 className="mr-2 h-4 w-4" />}
               {optStatus === 'complete' && <CheckCircle2 className="mr-2 h-4 w-4" />}
-              {optStatus === 'idle' && 'Start AI Optimization'}
-              {optStatus === 'running' && 'Optimizing & Generating G-Code...'}
-              {optStatus === 'complete' && 'Optimization Complete'}
+              {optStatus === 'idle' && t('workflow_pro.start_ai_optimization', 'Start AI Optimization')}
+              {optStatus === 'running' && t('workflow_pro.optimizing_generating', 'Optimizing & Generating G-Code...')}
+              {optStatus === 'complete' && t('workflow_pro.optimization_complete', 'Optimization Complete')}
             </Button>
 
             {optStatus === 'complete' && (
@@ -173,7 +173,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
                 className="bg-orange-500 hover:bg-orange-600 animate-in fade-in slide-in-from-left-4"
                 onClick={() => navigate('/fabricator/production')}
               >
-                Go to Production Command
+                {t('workflow_pro.go_to_production', 'Go to Production Command')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             )}
@@ -184,7 +184,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
           ) : (
             <Card className="bg-gray-900/70 border-gray-800">
               <CardContent className="p-6 text-sm text-gray-300">
-                Mass production optimisation is disabled until a user is authenticated.
+                {t('workflow_pro.disabled_until_auth', 'Mass production optimisation is disabled until a user is authenticated.')}
               </CardContent>
             </Card>
           )}

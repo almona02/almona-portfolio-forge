@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Calculator, Info, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { kFactorEngine, type KFactorCalculationParams } from '@/lib/calibration/KFactorEngine';
 import type { Profile } from '@/types/fabricator';
+import { useTranslation } from 'react-i18next';
 
 interface KFactorCalculatorProps {
   profile?: Profile;
@@ -28,6 +29,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
   initialKFactor,
   initialJointType = 'miter_45',
 }) => {
+  const { t } = useTranslation('fabricator');
   const [profileWidth, setProfileWidth] = useState<number>(profile?.width || 60);
   const [profileHeight, setProfileHeight] = useState<number>(profile?.height || profile?.width || 40);
   const [materialThickness, setMaterialThickness] = useState<number>(profile?.thickness || 1.5);
@@ -89,10 +91,10 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
     <Card className="bg-gray-800/50 border-gray-700">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Calculator className="h-5 w-5 text-blue-400" /> K-Factor Calculator
+          <Calculator className="h-5 w-5 text-blue-400" /> {t('calibration_wizard.k_factor.title', 'K-Factor Calculator')}
         </CardTitle>
         <CardDescription className="text-gray-400">
-          Calculate cutting deductions for accurate miter joints
+          {t('calibration_wizard.k_factor.description', 'Calculate cutting deductions for accurate miter joints')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -100,7 +102,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="profile-width" className="text-gray-300">
-              Profile Width (mm)
+              {t('calibration_wizard.k_factor.profile_width', 'Profile Width (mm)')}
             </Label>
             <Input
               id="profile-width"
@@ -113,7 +115,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
           </div>
           <div>
             <Label htmlFor="material-thickness" className="text-gray-300">
-              Material Thickness (mm)
+              {t('calibration_wizard.k_factor.material_thickness', 'Material Thickness (mm)')}
             </Label>
             <Input
               id="material-thickness"
@@ -129,18 +131,18 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
         {/* Joint Type Selection */}
         <div>
           <Label htmlFor="joint-type" className="text-gray-300">
-            Joint Type
+            {t('calibration_wizard.k_factor.joint_type', 'Joint Type')}
           </Label>
           <Select value={jointType} onValueChange={handleJointTypeChange}>
             <SelectTrigger id="joint-type" className="mt-1 bg-gray-900 border-gray-600 text-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-gray-800 border-gray-700">
-              <SelectItem value="miter_45">45° Miter Joint (Frame corners)</SelectItem>
-              <SelectItem value="butt_90">90° Butt Joint (Mullion connections)</SelectItem>
-              <SelectItem value="t_joint">T-Joint (Mullion to frame)</SelectItem>
-              <SelectItem value="l_joint">L-Joint (Corner reinforcements)</SelectItem>
-              <SelectItem value="custom">Custom Angle</SelectItem>
+              <SelectItem value="miter_45">{t('calibration_wizard.k_factor.miter45', '45° Miter Joint (Frame corners)')}</SelectItem>
+              <SelectItem value="butt_90">{t('calibration_wizard.k_factor.butt', '90° Butt Joint (Mullion connections)')}</SelectItem>
+              <SelectItem value="t_joint">{t('calibration_wizard.k_factor.t_joint', 'T-Joint (Mullion to frame)')}</SelectItem>
+              <SelectItem value="l_joint">{t('calibration_wizard.k_factor.l_joint', 'L-Joint (Corner reinforcements)')}</SelectItem>
+              <SelectItem value="custom">{t('calibration_wizard.k_factor.custom', 'Custom Angle')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -149,7 +151,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
         {jointType === 'custom' && (
           <div>
             <Label htmlFor="custom-angle" className="text-gray-300">
-              Cut Angle (degrees)
+              {t('calibration_wizard.k_factor.cut_angle', 'Cut Angle (degrees)')}
             </Label>
             <Input
               id="custom-angle"
@@ -171,7 +173,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
         {/* K-Factor Result Display */}
         <div className="p-4 bg-gray-900 rounded-lg border border-gray-700">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-400">Calculated K-Factor</span>
+            <span className="text-sm text-gray-400">{t('calibration_wizard.k_factor.calculated', 'Calculated K-Factor')}</span>
             {validation && (
               <div className="flex items-center gap-1">
                 {validation.isValid ? (
@@ -198,7 +200,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
           <div className="flex items-start gap-2">
             <Info className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
             <div className="flex-1">
-              <p className="text-xs text-gray-400 mb-1">Formula:</p>
+              <p className="text-xs text-gray-400 mb-1">{t('calibration_wizard.k_factor.formula', 'Formula:')}</p>
               <pre className="text-xs text-gray-300 whitespace-pre-wrap font-mono">
                 {kFactorResult.formula}
               </pre>
@@ -210,15 +212,15 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
         {/* Test Cut Simulation */}
         <div className="p-4 bg-gray-900 rounded-lg border border-gray-700">
           <Label htmlFor="test-dimension" className="text-gray-300 mb-2 block">
-            Test Cut Simulation
+            {t('calibration_wizard.k_factor.test_simulation', 'Test Cut Simulation')}
           </Label>
           <p className="text-xs text-gray-400 mb-3">
-            Enter your desired final dimension to see the required cut length
+            {t('calibration_wizard.k_factor.test_simulation_desc', 'Enter your desired final dimension to see the required cut length')}
           </p>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="final-dimension" className="text-xs text-gray-400">
-                Final Dimension (mm)
+                {t('calibration_wizard.k_factor.final_dimension', 'Final Dimension (mm)')}
               </Label>
               <Input
                 id="final-dimension"
@@ -231,7 +233,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
             </div>
             <div>
               <Label htmlFor="cut-length" className="text-xs text-gray-400">
-                Cut Length (mm)
+                {t('calibration_wizard.k_factor.cut_length', 'Cut Length (mm)')}
               </Label>
               <div className="mt-1 p-2 bg-gray-800 border border-gray-600 rounded text-white font-semibold">
                 {testCutLength !== null ? `${testCutLength.toFixed(2)} mm` : '—'}
@@ -241,11 +243,14 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
           {testCutLength !== null && calculatedKFactor !== null && (
             <div className="mt-3 p-2 bg-blue-500/10 border border-blue-500/30 rounded">
               <p className="text-xs text-blue-300">
-                To achieve {testFinalDimension}mm final dimension, cut at{' '}
-                <span className="font-bold">{testCutLength.toFixed(2)}mm</span>
+                {t('calibration_wizard.k_factor.achievement', {
+                  final: testFinalDimension,
+                  cut: testCutLength.toFixed(2),
+                  defaultValue: `To achieve ${testFinalDimension}mm final dimension, cut at ${testCutLength.toFixed(2)}mm`
+                })}
                 {calculatedKFactor < 0 && (
                   <span className="block mt-1 text-gray-400">
-                    (Deduction: {Math.abs(calculatedKFactor).toFixed(2)}mm)
+                    ({t('calibration_wizard.k_factor.deduction', 'Deduction')}: {Math.abs(calculatedKFactor).toFixed(2)}mm)
                   </span>
                 )}
               </p>
@@ -260,7 +265,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
             className="w-full bg-blue-500 hover:bg-blue-600 text-white"
             disabled={calculatedKFactor === null || (validation && !validation.isValid)}
           >
-            Apply K-Factor
+            {t('calibration_wizard.k_factor.apply', 'Apply K-Factor')}
           </Button>
         )}
       </CardContent>

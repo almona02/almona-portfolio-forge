@@ -43,6 +43,11 @@ function deepMerge<T extends TranslationTree, S extends TranslationTree>(target:
   return result as T & S;
 }
 
+// Alias Egyptian Arabic to base Arabic resources if dedicated files are absent
+if (discoveredResources['ar'] && !discoveredResources['ar-EG']) {
+  discoveredResources['ar-EG'] = deepMerge({}, discoveredResources['ar']);
+}
+
 // Comprehensive Arabic-first translations
 const arTranslations = {
   common: {
@@ -875,6 +880,7 @@ Object.assign(trTranslations, {
   // Build base inline resources (legacy structure under single "translation" namespace)
   const baseResources: Record<string, Record<string, TranslationTree>> = {
     ar: { translation: arTranslations },
+    'ar-EG': { translation: arTranslations },
     en: { translation: enTranslations },
     tr: { translation: trTranslations }
   };
@@ -915,7 +921,10 @@ Object.assign(trTranslations, {
     });
 
   // Direction handling (RTL for Arabic, LTR for Turkish and English)
-  export const isRTL = (lng: string) => ['ar', 'fa', 'he', 'ur'].includes(lng);
+  export const isRTL = (lng: string) => {
+    const code = lng?.toLowerCase() || '';
+    return ['ar', 'fa', 'he', 'ur'].some(prefix => code.startsWith(prefix));
+  };
   i18n.on('languageChanged', (lng) => {
     if (typeof document !== 'undefined') {
       document.documentElement.dir = isRTL(lng) ? 'rtl' : 'ltr';

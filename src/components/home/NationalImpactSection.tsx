@@ -1,35 +1,38 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, Users, Building2, Globe } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const NationalImpactSection = () => {
+  const { t } = useTranslation('home');
+  
   const stats = [
     {
-      label: "Import Substitution",
-      value: "$12.5M",
+      label: t('national_impact.stats.import_substitution.label'),
+      value: t('national_impact.stats.import_substitution.value'),
       icon: <TrendingUp className="h-8 w-8 text-orange-500" />,
-      desc: "Foreign currency saved",
+      desc: t('national_impact.stats.import_substitution.description'),
       gradient: "from-orange-500/20 to-amber-500/10"
     },
     {
-      label: "Digital Fabricators",
-      value: "5,000+",
+      label: t('national_impact.stats.digital_fabricators.label'),
+      value: t('national_impact.stats.digital_fabricators.value'),
       icon: <Users className="h-8 w-8 text-orange-400" />,
-      desc: "Youth trained & certified",
+      desc: t('national_impact.stats.digital_fabricators.description'),
       gradient: "from-orange-400/20 to-yellow-500/10"
     },
     {
-      label: "SME Workshops",
-      value: "1,200",
+      label: t('national_impact.stats.sme_workshops.label'),
+      value: t('national_impact.stats.sme_workshops.value'),
       icon: <Building2 className="h-8 w-8 text-amber-500" />,
-      desc: "Modernized & digitized",
+      desc: t('national_impact.stats.sme_workshops.description'),
       gradient: "from-amber-500/20 to-orange-500/10"
     },
     {
-      label: "Carbon Reduction",
-      value: "150kT",
+      label: t('national_impact.stats.carbon_reduction.label'),
+      value: t('national_impact.stats.carbon_reduction.value'),
       icon: <Globe className="h-8 w-8 text-emerald-500" />,
-      desc: "CO2 emissions prevented",
+      desc: t('national_impact.stats.carbon_reduction.description'),
       gradient: "from-emerald-500/20 to-teal-500/10"
     }
   ];
@@ -45,13 +48,13 @@ export const NationalImpactSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <span className="inline-block px-4 py-1.5 bg-orange-500/10 border border-orange-500/30 text-orange-400 text-sm font-semibold rounded-full mb-4">
-            🇪🇬 National Service Impact
+            {t('national_impact.badge')}
           </span>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            National Industrial Impact
+            {t('national_impact.title')}
           </h2>
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            Almona Portfolio Forge is driving real economic and social change across Egypt's manufacturing sector.
+            {t('national_impact.subtitle')}
           </p>
         </div>
         

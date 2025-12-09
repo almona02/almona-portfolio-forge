@@ -26,6 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Settings, Box, AlertCircle, Cpu, FileText, Wand2, Sparkles } from 'lucide-react';
 import { WindowUnit, Profile, WindowComponent, WindowGrid } from '@/types/fabricator';
+import { useTranslation } from 'react-i18next';
 
 // Dynamic import for heavy 3D component
 const Window3DGenerator = React.lazy(() => import('./Window3DGenerator'));
@@ -51,6 +52,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     onDesignComplete,
     profiles,
 }) => {
+    const { t } = useTranslation('fabricator');
     // --- State Management ---
     const [currentGrid, setCurrentGrid] = useState<WindowGrid>({ rows: 1, cols: 1, cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }]});
     const [activeSystemPackId, setActiveSystemPackId] = useState<string | null>(null);
@@ -156,9 +158,9 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                 <Card className="bg-gray-700/50 border-gray-600">
                 <CardContent className="p-8 text-center">
                     <Settings className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No Project Data</h3>
+                    <h3 className="text-lg font-semibold mb-2">{t('engineering_bay.no_project_data', 'No Project Data')}</h3>
                     <p className="text-gray-400">
-                    Please complete the measurement phase first to create a project.
+                    {t('engineering_bay.complete_measurement', 'Please complete the measurement phase first to create a project.')}
                     </p>
                 </CardContent>
                 </Card>
@@ -174,14 +176,14 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                     <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center gap-3">
                             <Cpu className="h-6 w-6 text-orange-400" />
-                            <span className="text-xl">Engineering Bay</span>
+                            <span className="text-xl">{t('engineering_bay.title', 'Engineering Bay')}</span>
                         </CardTitle>
                         {liveProject && (
                              <Button
                                 onClick={handleSubmit}
                                 className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
                             >
-                                Confirm Design & Proceed to Optimization
+                                {t('engineering_bay.confirm_design', 'Confirm Design & Proceed to Optimization')}
                             </Button>
                         )}
                     </div>
@@ -191,7 +193,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                     <div className="flex items-center justify-between mb-4 gap-2">
                         <div className="flex items-center gap-2 text-xs text-gray-400">
                             <Sparkles className="h-4 w-4 text-orange-400" />
-                            <span>3D Engine Mode</span>
+                            <span>{t('engineering_bay.3d_engine_mode', '3D Engine Mode')}</span>
                         </div>
                         <div className="inline-flex rounded-md border border-gray-700 bg-gray-900/60 p-1 text-[11px]">
                             <button
@@ -203,7 +205,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         : 'text-gray-400 hover:text-gray-200'
                                 }`}
                             >
-                                Standard 3D
+                                {t('engineering_bay.standard_3d', 'Standard 3D')}
                             </button>
                             <button
                                 type="button"
@@ -214,7 +216,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                         : 'text-gray-400 hover:text-gray-200'
                                 }`}
                             >
-                                Pro 3D
+                                {t('engineering_bay.pro_3d', 'Pro 3D')}
                             </button>
                         </div>
                     </div>
@@ -222,7 +224,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                     <Alert className="bg-blue-900/30 border-blue-500/50 mb-6">
                         <AlertCircle className="h-4 w-4" />
                         <AlertDescription className="text-sm">
-                            Use the controls to define the window structure. The 3D model and Bill of Materials will update in real-time.
+                            {t('engineering_bay.instructions', 'Use the controls to define the window structure. The 3D model and Bill of Materials will update in real-time.')}
                         </AlertDescription>
                     </Alert>
 
@@ -240,12 +242,12 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 <CardHeader>
                                     <CardTitle className="text-base flex items-center gap-2">
                                         <Settings className="h-4 w-4 text-gray-400"/>
-                                        System Configuration
+                                        {t('engineering_bay.system_configuration', 'System Configuration')}
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="space-y-2">
-                                        <Label className="text-xs text-gray-300">Active System</Label>
+                                        <Label className="text-xs text-gray-300">{t('engineering_bay.active_system', 'Active System')}</Label>
                                         {activeSystemPackId && (
                                             <div className="text-[11px] text-gray-400" title={(() => {
                                                 const pack = SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId);
@@ -262,7 +264,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             onValueChange={handleSystemPackSelect}
                                         >
                                             <SelectTrigger className="h-9 bg-gray-950 border-gray-700 text-xs text-gray-100 focus:ring-orange-500/20">
-                                                <SelectValue placeholder="Select System" />
+                                                <SelectValue placeholder={t('engineering_bay.select_system', 'Select System')} />
                                             </SelectTrigger>
                                         <SelectContent className="bg-gray-900 border-gray-700 text-gray-200">
                                             {(
@@ -295,7 +297,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             <div className="flex items-center gap-2">
                                                 <Layers className="h-3 w-3 text-blue-400" />
                                                 <div className="flex flex-col">
-                                                    <span className="text-[10px] text-gray-500">Profiles</span>
+                                                    <span className="text-[10px] text-gray-500">{t('engineering_bay.profiles', 'Profiles')}</span>
                                                     <span className="text-xs font-mono text-gray-300">
                                                         {(SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId) as any)?.windowSystemSpec?.profiles_cutting_list?.length || 0}
                                                     </span>
@@ -304,7 +306,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             <div className="flex items-center gap-2">
                                                 <Box className="h-3 w-3 text-orange-400" />
                                                 <div className="flex flex-col">
-                                                    <span className="text-[10px] text-gray-500">Parts</span>
+                                                    <span className="text-[10px] text-gray-500">{t('engineering_bay.parts', 'Parts')}</span>
                                                     <span className="text-xs font-mono text-gray-300">
                                                         {(SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId) as any)?.windowSystemSpec?.accessories_list?.length || 0}
                                                     </span>
@@ -315,19 +317,19 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
                                     <Alert variant="default" className="border-blue-500/40 bg-blue-900/20 text-blue-100">
                                         <AlertDescription className="text-xs">
-                                            System constraints and presets are applied automatically to SmartDraw and 3D.
+                                            {t('engineering_bay.system_constraints', 'System constraints and presets are applied automatically to SmartDraw and 3D.')}
                                         </AlertDescription>
                                     </Alert>
 
                                     <Button onClick={handleSuggestLayout} variant="outline" className="w-full">
                                         <Wand2 className="h-4 w-4 mr-2"/>
-                                        Suggest AI Layout
+                                        {t('engineering_bay.suggest_ai_layout', 'Suggest AI Layout')}
                                     </Button>
                                 </CardContent>
                             </Card>
 
                             <Card className="bg-gray-900/50">
-                                <CardHeader><CardTitle className="text-base">Structure</CardTitle></CardHeader>
+                                <CardHeader><CardTitle className="text-base">{t('engineering_bay.structure', 'Structure')}</CardTitle></CardHeader>
                                 <CardContent>
                                     <SmartDrawCanvas
                                         width={project.overallWidth}
@@ -345,7 +347,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                 <CardHeader>
                                     <CardTitle className="text-base flex items-center gap-2">
                                         <Box className="h-4 w-4 text-gray-400"/>
-                                        Live Digital Twin (Apex Engine v6.0)
+                                        {t('engineering_bay.live_digital_twin', 'Live Digital Twin (Apex Engine v6.0)')}
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
@@ -354,7 +356,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                             <React.Suspense fallback={
                                                 <div className="flex items-center justify-center h-96 bg-gray-900 rounded-lg">
                                                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-                                                    <span className="ml-3 text-white">Loading 3D Preview...</span>
+                                                    <span className="ml-3 text-white">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</span>
                                                 </div>
                                             }>
                                                 <Window3DGenerator
@@ -381,7 +383,7 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <FileText className="h-5 w-5 text-orange-400" />
-                            Real-time Bill of Materials
+                            {t('engineering_bay.bill_of_materials', 'Real-time Bill of Materials')}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">

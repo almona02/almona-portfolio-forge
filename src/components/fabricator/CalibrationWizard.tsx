@@ -19,6 +19,7 @@ import { profileDefinitionManager } from '@/lib/profile/ProfileDefinitionManager
 import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
 import { personalAnalytics } from '@/lib/analytics/PersonalAnalytics';
 import { AISuggestionPanel } from './AISuggestionPanel';
+import { useTranslation } from 'react-i18next';
 
 interface CalibrationWizardProps {
   profile: Profile;
@@ -33,6 +34,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
   onCalibrationComplete,
   userId,
 }) => {
+  const { t } = useTranslation('fabricator');
   const [step, setStep] = useState(1);
   const [calibration, setCalibration] = useState<Partial<CuttingCalibration>>({
     profileId: profile.id,
@@ -241,20 +243,20 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
-            Calibration Wizard: {profile.name}
+            {t('calibration_wizard.title', 'Calibration Wizard')}: {profile.name}
           </CardTitle>
           <CardDescription>
-            {systemPack?.name || systemPackId} - {profile.type} profile
+            {systemPack?.name || systemPackId} - {profile.type} {t('calibration_wizard.profile', 'profile')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="k-factor" className="w-full">
             <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="k-factor">K-Factor</TabsTrigger>
-              <TabsTrigger value="basic">Basic</TabsTrigger>
-              <TabsTrigger value="allowances">Allowances</TabsTrigger>
-              <TabsTrigger value="strokes">Strokes</TabsTrigger>
-              <TabsTrigger value="variations">Variations</TabsTrigger>
+              <TabsTrigger value="k-factor">{t('calibration_wizard.tabs.k_factor', 'K-Factor')}</TabsTrigger>
+              <TabsTrigger value="basic">{t('calibration_wizard.tabs.basic', 'Basic')}</TabsTrigger>
+              <TabsTrigger value="allowances">{t('calibration_wizard.tabs.allowances', 'Allowances')}</TabsTrigger>
+              <TabsTrigger value="strokes">{t('calibration_wizard.tabs.strokes', 'Strokes')}</TabsTrigger>
+              <TabsTrigger value="variations">{t('calibration_wizard.tabs.variations', 'Variations')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="k-factor" className="space-y-4">
@@ -326,7 +328,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
             <TabsContent value="basic" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="lengthModifier">Length Modifier (mm)</Label>
+                  <Label htmlFor="lengthModifier">{t('calibration_wizard.basic.length_modifier', 'Length Modifier (mm)')}</Label>
                   <Input
                     id="lengthModifier"
                     type="number"
@@ -336,7 +338,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="bladeWidthCompensation">Blade Width Compensation (mm)</Label>
+                  <Label htmlFor="bladeWidthCompensation">{t('calibration_wizard.basic.blade_width', 'Blade Width Compensation (mm)')}</Label>
                   <Input
                     id="bladeWidthCompensation"
                     type="number"
@@ -351,7 +353,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
             <TabsContent value="allowances" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="basicCutting">Basic Cutting Allowance (mm)</Label>
+                  <Label htmlFor="basicCutting">{t('calibration_wizard.allowances.basic_cutting', 'Basic Cutting Allowance (mm)')}</Label>
                   <Input
                     id="basicCutting"
                     type="number"
@@ -361,7 +363,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="miter45Extra">Miter 45° Extra (mm)</Label>
+                  <Label htmlFor="miter45Extra">{t('calibration_wizard.allowances.miter45', 'Miter 45° Extra (mm)')}</Label>
                   <Input
                     id="miter45Extra"
                     type="number"
@@ -371,7 +373,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="thermalBreakCompensation">Thermal Break Compensation (mm)</Label>
+                  <Label htmlFor="thermalBreakCompensation">{t('calibration_wizard.allowances.thermal_break', 'Thermal Break Compensation (mm)')}</Label>
                   <Input
                     id="thermalBreakCompensation"
                     type="number"
@@ -381,7 +383,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="grainDirectionFactor">Grain Direction Factor</Label>
+                  <Label htmlFor="grainDirectionFactor">{t('calibration_wizard.allowances.grain_direction', 'Grain Direction Factor')}</Label>
                   <Input
                     id="grainDirectionFactor"
                     type="number"
@@ -396,7 +398,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
             <TabsContent value="strokes" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="sawBladeThickness">Saw Blade Thickness (mm)</Label>
+                  <Label htmlFor="sawBladeThickness">{t('calibration_wizard.strokes.saw_blade', 'Saw Blade Thickness (mm)')}</Label>
                   <Input
                     id="sawBladeThickness"
                     type="number"
@@ -406,7 +408,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="machiningTolerance">Machining Tolerance (mm)</Label>
+                  <Label htmlFor="machiningTolerance">{t('calibration_wizard.strokes.machining_tolerance', 'Machining Tolerance (mm)')}</Label>
                   <Input
                     id="machiningTolerance"
                     type="number"
@@ -416,7 +418,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="cornerClearance">Corner Clearance (mm)</Label>
+                  <Label htmlFor="cornerClearance">{t('calibration_wizard.strokes.corner_clearance', 'Corner Clearance (mm)')}</Label>
                   <Input
                     id="cornerClearance"
                     type="number"
@@ -431,7 +433,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
             <TabsContent value="variations" className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="temperatureExpansion">Temperature Expansion (mm/°C)</Label>
+                  <Label htmlFor="temperatureExpansion">{t('calibration_wizard.variations.temperature', 'Temperature Expansion (mm/°C)')}</Label>
                   <Input
                     id="temperatureExpansion"
                     type="number"
@@ -441,7 +443,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="materialFlexibility">Material Flexibility Factor</Label>
+                  <Label htmlFor="materialFlexibility">{t('calibration_wizard.variations.material_flexibility', 'Material Flexibility Factor')}</Label>
                   <Input
                     id="materialFlexibility"
                     type="number"
@@ -451,7 +453,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="assemblyClearance">Assembly Clearance (mm)</Label>
+                  <Label htmlFor="assemblyClearance">{t('calibration_wizard.variations.assembly_clearance', 'Assembly Clearance (mm)')}</Label>
                   <Input
                     id="assemblyClearance"
                     type="number"
@@ -467,12 +469,12 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
           {/* Real-time Simulation */}
           <Card className="mt-6">
             <CardHeader>
-              <CardTitle className="text-lg">Real-time Cut Simulation</CardTitle>
+              <CardTitle className="text-lg">{t('calibration_wizard.simulation.title', 'Real-time Cut Simulation')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="simBaseLength">Base Length (mm)</Label>
+                  <Label htmlFor="simBaseLength">{t('calibration_wizard.simulation.base_length', 'Base Length (mm)')}</Label>
                   <Input
                     id="simBaseLength"
                     type="number"
@@ -484,7 +486,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="simAngle">Angle (°)</Label>
+                  <Label htmlFor="simAngle">{t('calibration_wizard.simulation.angle', 'Angle (°)')}</Label>
                   <Select
                     onValueChange={(value) => {
                       const length = parseFloat(
@@ -503,7 +505,7 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="simTemperature">Temperature (°C)</Label>
+                  <Label htmlFor="simTemperature">{t('calibration_wizard.simulation.temperature', 'Temperature (°C)')}</Label>
                   <Input
                     id="simTemperature"
                     type="number"
@@ -526,17 +528,17 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
               {simulationResult && (
                 <div className="grid grid-cols-2 gap-4 p-4 bg-gray-900 rounded-lg">
                   <div>
-                    <div className="text-sm text-gray-400">Expected Length</div>
+                    <div className="text-sm text-gray-400">{t('calibration_wizard.test_results.expected', 'Expected Length')}</div>
                     <div className="text-2xl font-bold">{simulationResult.baseLength.toFixed(2)} mm</div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-400">Adjusted Length</div>
+                    <div className="text-sm text-gray-400">{t('calibration_wizard.simulation.adjusted_length', 'Adjusted Length')}</div>
                     <div className="text-2xl font-bold text-green-400">
                       {simulationResult.adjustedLength.toFixed(2)} mm
                     </div>
                   </div>
                   <div className="col-span-2">
-                    <div className="text-sm text-gray-400 mb-2">Applied Adjustments:</div>
+                    <div className="text-sm text-gray-400 mb-2">{t('calibration_wizard.simulation.adjustments', 'Applied Adjustments:')}</div>
                     <ul className="list-disc list-inside space-y-1">
                       {simulationResult.adjustments.map((adj, idx) => (
                         <li key={idx} className="text-sm">{adj}</li>
@@ -553,17 +555,17 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
-                Test Results & Learning
+                {t('calibration_wizard.test_results.title', 'Test Results & Learning')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="testExpected">Expected Length (mm)</Label>
+                  <Label htmlFor="testExpected">{t('calibration_wizard.test_results.expected', 'Expected Length (mm)')}</Label>
                   <Input id="testExpected" type="number" step="0.1" />
                 </div>
                 <div>
-                  <Label htmlFor="testActual">Actual Length (mm)</Label>
+                  <Label htmlFor="testActual">{t('calibration_wizard.test_results.actual', 'Actual Length (mm)')}</Label>
                   <Input id="testActual" type="number" step="0.1" />
                 </div>
                 <div className="flex items-end">
@@ -582,19 +584,19 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
                       }
                     }}
                   >
-                    Add Test
+                    {t('calibration_wizard.test_results.add_test', 'Add Test')}
                   </Button>
                 </div>
               </div>
 
               {testResults.length > 0 && (
                 <div className="mt-4">
-                  <div className="text-sm font-semibold mb-2">Historical Test Results:</div>
+                  <div className="text-sm font-semibold mb-2">{t('calibration_wizard.test_results.historical', 'Historical Test Results:')}</div>
                   <div className="space-y-2">
                     {testResults.map((result, idx) => (
                       <div key={idx} className="flex justify-between items-center p-2 bg-gray-900 rounded">
                         <span className="text-sm">
-                          Expected: {result.expectedLength.toFixed(2)}mm → Actual: {result.actualLength.toFixed(2)}mm
+                          {t('calibration_wizard.test_results.expected_label', 'Expected')}: {result.expectedLength.toFixed(2)}mm → {t('calibration_wizard.test_results.actual_label', 'Actual')}: {result.actualLength.toFixed(2)}mm
                         </span>
                         <span
                           className={`text-sm font-semibold ${
@@ -614,10 +616,10 @@ export const CalibrationWizard: React.FC<CalibrationWizardProps> = React.memo(({
 
           <div className="flex justify-end gap-2 mt-6">
             <Button variant="outline" onClick={() => setStep(step - 1)} disabled={step === 1}>
-              Previous
+              {t('calibration_wizard.actions.previous', 'Previous')}
             </Button>
             <Button onClick={saveCalibration} className="bg-orange-500 hover:bg-orange-600">
-              Save Calibration
+              {t('calibration_wizard.actions.save', 'Save Calibration')}
             </Button>
           </div>
         </CardContent>
