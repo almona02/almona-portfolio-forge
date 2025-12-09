@@ -28,5 +28,8 @@ mypy==1.7.1
 bandit==1.7.10
 pip-audit==2.10.0
 
+# Background tasks (needed for imports in tests)
+celery==5.3.4
+
 # CAD / image processing (lightweight; inherits ezdxf pin from production)
 
