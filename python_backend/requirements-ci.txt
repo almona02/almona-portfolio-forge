@@ -30,5 +30,9 @@ pip-audit==2.10.0
 # Background tasks (needed for imports in tests)
 celery==5.3.4
 
+# Redis (needed for cache imports in tests)
+redis[hiredis]==5.0.1
+hiredis==2.3.2
+
 # CAD / image processing (lightweight; inherits ezdxf pin from production)
 
