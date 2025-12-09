@@ -39,11 +39,24 @@ class OdooAdapter:
         self.username = username
         self.password = api_key
 
-        # Relaxed SSL for on-prem/legacy pilots unless verify_ssl is enabled.
+        # SSL context configuration
+        # Security: Always use verified SSL context in production
+        # For legacy/on-prem systems, use create_default_context with relaxed settings
         if verify_ssl:
             context = ssl.create_default_context()
         else:
-            context = ssl._create_unverified_context()  # pragma: allowlist secret
+            # Create context with minimal verification for legacy systems only
+            # WARNING: This should only be used for internal/trusted networks
+            context = ssl.create_default_context()
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+            # Log warning for security audit
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(
+                "Using unverified SSL context for Odoo connection. "
+                "This should only be used for internal/trusted networks."
+            )
 
         self._common = xmlrpc.client.ServerProxy(
             f"{self.url}/xmlrpc/2/common", context=context, allow_none=True

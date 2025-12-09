@@ -1,0 +1,31 @@
+# CI-friendly requirements (CPU-only, no heavy GPU/ML wheels)
+# Includes runtime deps plus test/security tools without TensorFlow/ultralytics/onnx.
+
+-r requirements-runtime.txt
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-timeout==2.2.0
+pytest-mock==3.12.0
+locust==2.32.1
+respx==0.21.1
+psutil==5.9.6
+
+# Linting/formatting
+black==24.10.0
+isort==5.12.0
+flake8==6.1.0
+mypy==1.7.1
+
+# Security tools
+bandit==1.7.10
+pip-audit==2.10.0
+
+# CAD / image processing (lightweight)
+ezdxf==1.1.4
+pillow==10.4.0
+numpy==1.26.4
+opencv-python-headless==4.8.1.78
+potracer==0.0.4
+

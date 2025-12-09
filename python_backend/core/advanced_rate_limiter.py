@@ -76,7 +76,8 @@ class AdvancedRateLimiter:
         # For API keys
         api_key = request.headers.get("x-api-key")
         if api_key:
-            return f"api_key:{api_key}"
+            # Hash API key to prevent XSS via formatted string return
+            return f"api_key:{hashlib.sha256(api_key.encode()).hexdigest()[:16]}"
         
         # Fallback to IP + user agent hash
         key_str = f"{client_ip}:{user_agent}"
