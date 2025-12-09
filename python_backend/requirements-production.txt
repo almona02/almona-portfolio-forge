@@ -30,7 +30,7 @@ albumentations==1.4.18
 
 # Utilities
 python-magic==0.4.27
-pydantic==2.5.0
+pydantic==2.7.4
 pydantic-settings==2.1.0
 
 # Production monitoring
