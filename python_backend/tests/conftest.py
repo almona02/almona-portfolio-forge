@@ -2,14 +2,29 @@ import pytest
 import tempfile
 import os
 import sys
+import types
+import importlib.machinery
 from PIL import Image
 import numpy as np
 from unittest.mock import Mock
 from fastapi.testclient import TestClient
 
-# Mock ML models before importing the app to avoid long load times
+
+def _stub_module(name: str):
+    """Install a lightweight stub module with a valid __spec__ to prevent import errors."""
+    mod = types.ModuleType(name)
+    mod.__spec__ = importlib.machinery.ModuleSpec(name, loader=None)
+    sys.modules[name] = mod
+
+
+# Mock heavy/unused ML deps before importing the app to avoid long load times and tf spec errors
 sys.modules['ultralytics'] = Mock()
-sys.modules['tensorflow'] = Mock()
+_stub_module('tensorflow')
+_stub_module('torchvision')
+_stub_module('torchvision.transforms')
+_stub_module('torchvision.ops')
+_stub_module('torchvision.models')
+_stub_module('easyocr')
 
 # Import after mocking to avoid long load times
 from apis.main import app  # noqa: E402
