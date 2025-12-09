@@ -34,5 +34,8 @@ celery==5.3.4
 redis[hiredis]==5.0.1
 hiredis==2.3.2
 
+# Flask limiter (needed for part_detection imports in tests)
+flask-limiter==3.7.0
+
 # CAD / image processing (lightweight; inherits ezdxf pin from production)
 
