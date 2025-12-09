@@ -4,16 +4,23 @@ import asyncio
 import time
 import threading
 from contextlib import asynccontextmanager
-from typing import Dict, Optional, Any, List
+from typing import Dict, Optional, Any, List, TYPE_CHECKING, cast
 from dataclasses import dataclass, field
 from datetime import datetime
 from collections import deque
 
-from supabase import create_client
+if TYPE_CHECKING:
+    from supabase import create_client as supabase_create_client  # type: ignore
+else:  # pragma: no cover - runtime import
+    try:
+        from supabase import create_client as supabase_create_client  # type: ignore
+    except Exception:
+        supabase_create_client = None  # type: ignore
+
 from core.config import settings
 from core.monitoring import record_database_metrics, get_structured_logger
 
-logger = get_structured_logger(__name__)
+logger = cast(Any, get_structured_logger(__name__))
 
 
 @dataclass
@@ -57,6 +64,8 @@ class PoolStats:
     slow_queries_count: int
     error_rate: float
     uptime_seconds: float
+    pool_utilization: float
+    last_health_check: float
 
 
 class SupabaseConnectionPool:
@@ -98,9 +107,12 @@ class SupabaseConnectionPool:
             return
             
         try:
+            if supabase_create_client is None:
+                raise RuntimeError("Supabase client is not installed or failed to import.")
+
             for i in range(self.max_connections):
                 connection_id = f"conn_{i}_{int(time.time())}"
-                client = create_client(
+                client = supabase_create_client(
                     settings.SUPABASE_URL,
                     settings.SUPABASE_SERVICE_KEY
                 )
@@ -255,7 +267,9 @@ class SupabaseConnectionPool:
         
         # All retries exhausted
         logger.error(f"Query failed after {self.max_retries} retries: {last_error}")
-        raise last_error
+        if last_error is not None:
+            raise last_error
+        raise RuntimeError("Query failed with unknown error after retries.")
     
     def record_query_metrics(self, metrics: QueryMetrics):
         """Record query performance metrics with enhanced tracking."""
@@ -342,6 +356,8 @@ class SupabaseConnectionPool:
                     else self.max_connections
                 )
                 unhealthy_connections = 0
+                utilization = 0.0
+                now_ts = time.time()
                 return PoolStats(
                     total_connections=self.max_connections,
                     active_connections=0,
@@ -354,7 +370,9 @@ class SupabaseConnectionPool:
                     avg_response_time_ms=0.0,
                     slow_queries_count=0,
                     error_rate=0.0,
-                    uptime_seconds=time.time() - self._start_time
+                    uptime_seconds=now_ts - self._start_time,
+                    pool_utilization=utilization,
+                    last_health_check=now_ts
                 )
             
             total_queries = len(self._metrics)
@@ -362,16 +380,21 @@ class SupabaseConnectionPool:
             failed_queries = total_queries - successful_queries
             avg_duration = sum(m.duration_ms for m in self._metrics) / total_queries
             slow_queries = sum(1 for m in self._metrics if m.duration_ms > self.slow_query_threshold)
+            now_ts = time.time()
             
             # Connection health stats
             healthy_connections = sum(
                 1 for h in self._connection_health.values() if h.is_healthy
             )
             unhealthy_connections = len(self._connection_health) - healthy_connections
+            active = self.max_connections - self._pool.qsize()
+            utilization = (
+                active / self.max_connections if self.max_connections > 0 else 0.0
+            )
             
             return PoolStats(
                 total_connections=self.max_connections,
-                active_connections=self.max_connections - self._pool.qsize(),
+                active_connections=active,
                 idle_connections=self._pool.qsize(),
                 healthy_connections=healthy_connections,
                 unhealthy_connections=unhealthy_connections,
@@ -383,7 +406,9 @@ class SupabaseConnectionPool:
                 error_rate=(
                     failed_queries / total_queries if total_queries > 0 else 0.0
                 ),
-                uptime_seconds=time.time() - self._start_time
+                uptime_seconds=now_ts - self._start_time,
+                pool_utilization=utilization,
+                last_health_check=now_ts
             )
     
     def get_detailed_metrics(self, limit: int = 100) -> List[Dict[str, Any]]:
