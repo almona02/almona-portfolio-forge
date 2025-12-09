@@ -41,4 +41,5 @@ flask-limiter==3.7.0
 PyJWT==2.9.0
 
 # CAD / image processing (lightweight; inherits ezdxf pin from production)
+albumentations==1.4.18
 
