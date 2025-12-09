@@ -4,11 +4,10 @@ V2 API application factory.
 Creates a FastAPI application specifically for v2 APIs with enhanced middleware
 including rate limiting, security headers, and request validation.
 """
-from typing import cast
+from typing import cast, Callable, Awaitable
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.types import ExceptionHandler
 
 from apis.v2.routers import router as v2_router
 from apis.v2.middleware import (
@@ -48,6 +47,9 @@ from middleware.smartscan_logger import SmartScanLoggingMiddleware
 from apis import health as health_router
 from core.config import settings
 from fastapi.exceptions import RequestValidationError
+
+# Local alias to avoid starlette.types dependency changes
+ExceptionHandler = Callable[[Request, Exception], Awaitable[Response]]
 
 
 def create_v2_app() -> FastAPI:
