@@ -52,11 +52,14 @@ jobs:
         with:
           config: p/python
           
-      - name: Check for MLflow regressions
+      - name: Check for MLflow regressions (imports only)
         run: |
-          if grep -r "mlflow" python_backend/ --include="*.py"; then
-            echo "::error::MLflow found in codebase!"
+          # Flag only real imports of mlflow (not comments/tests/docs)
+          if rg --no-heading --glob '*.py' --pcre2 '^\s*(from|import)\s+mlflow' python_backend; then
+            echo "::error::MLflow import found in codebase!"
             exit 1
+          else
+            echo "No MLflow imports found."
           fi
           
   security-headers:
