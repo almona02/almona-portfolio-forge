@@ -77,7 +77,13 @@ def setup_security_middleware(app: FastAPI):
     """Configure all security middleware"""
     
     # Add TrustedHostMiddleware (adjust allowed hosts as needed)
-    allowed_hosts = ["localhost", "127.0.0.1", "almona.com", "*.almona.com"]
+    allowed_hosts = [
+        "localhost",
+        "127.0.0.1",
+        "almona.com",
+        "*.almona.com",
+        "testserver",  # allow FastAPI TestClient host to avoid 400 in tests
+    ]
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
     
     # Add security headers
