@@ -28,7 +28,7 @@ class TestAPIEndpoints:
         """Test root endpoint"""
         response = client.get("/")
         assert response.status_code == 200
-        assert response.json()["message"] == "Almona AI Services API"
+        assert response.json()["message"] == "Almona Industrial API"
 
     def test_get_models(self):
         """Test get models endpoint"""
