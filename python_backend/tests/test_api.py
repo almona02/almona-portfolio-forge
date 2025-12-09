@@ -25,6 +25,8 @@ class TestAPIEndpoints:
             failed_queries=0,
             avg_response_time_ms=50.0,
             error_rate=0.0,
+            slow_queries_count=0,
+            uptime_seconds=123.0,
             pool_utilization=0.2,
             last_health_check=time.time()
         )
