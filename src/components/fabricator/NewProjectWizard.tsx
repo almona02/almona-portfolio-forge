@@ -17,6 +17,7 @@ import { supabase } from '@/lib/supabase';
 import type { Database, SectorType } from '@/types/database';
 import { ProjectCockpit, type ProjectType, getProjectTypeConfig } from './ProjectCockpit';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { useTranslation } from 'react-i18next';
 
 type FabricatorCustomerRow = Database['public']['Tables']['fabricator_customers']['Row'];
 
@@ -57,6 +58,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
   onSubmit,
   initialMeta,
 }) => {
+  const { t } = useTranslation('fabricator');
   const [clientName, setClientName] = useState(initialMeta?.clientName ?? '');
   const [projectName, setProjectName] = useState(initialMeta?.projectName ?? '');
   const [siteName, setSiteName] = useState(initialMeta?.siteName ?? '');
@@ -175,11 +177,10 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg">
             <Factory className="h-5 w-5 text-orange-400" />
-            New Project – Professional Header
+            {t('new_project_wizard.title', 'New Project – Professional Header')}
           </DialogTitle>
           <DialogDescription className="text-xs text-gray-400">
-            Define client, site and system before measuring. This mirrors how mature technical
-            offices structure projects and ensures consistent reports and exports.
+            {t('new_project_wizard.description', 'Define client, site and system before measuring. This mirrors how mature technical offices structure projects and ensures consistent reports and exports.')}
           </DialogDescription>
         </DialogHeader>
 
@@ -195,7 +196,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                   onClick={() => setShowProjectTypeSelection(false)}
                   className="bg-orange-500 hover:bg-orange-600"
                 >
-                  Continue to Project Details
+                  {t('new_project_wizard.continue_to_details', 'Continue to Project Details')}
                 </Button>
               </div>
             )}
@@ -207,7 +208,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-orange-300">
-                      Project Type: {getProjectTypeConfig(projectType)?.name}
+                      {t('new_project_wizard.project_type', 'Project Type: {name}', { name: getProjectTypeConfig(projectType)?.name || '' })}
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
                       {getProjectTypeConfig(projectType)?.description}
@@ -219,7 +220,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                     onClick={() => setShowProjectTypeSelection(true)}
                     className="text-xs"
                   >
-                    Change
+                    {t('new_project_wizard.change', 'Change')}
                   </Button>
                 </div>
               </div>
@@ -228,8 +229,8 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
             <div className="space-y-4 mt-2">
           <div className="space-y-2">
             <Label className="text-xs flex items-center gap-1">
-              Project System Packs (multi-select)
-              <span className="text-[10px] text-gray-500">(use to shortlist relevant systems)</span>
+              {t('new_project_wizard.project_system_packs', 'Project System Packs (multi-select)')}
+              <span className="text-[10px] text-gray-500">({t('new_project_wizard.use_to_shortlist', 'use to shortlist relevant systems')})</span>
             </Label>
             <div className="grid grid-cols-1 gap-2 max-h-[260px] overflow-y-auto pr-1">
               {SYSTEM_PACKS.map((pack) => {
@@ -268,10 +269,10 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                       </div>
                       <div className="flex gap-2 items-center">
                         <Badge variant="outline" className="text-[10px] border-gray-700">
-                          {stats.profileCount} Profiles
+                          {stats.profileCount} {t('new_project_wizard.profiles', 'Profiles')}
                         </Badge>
                         <Badge variant="outline" className="text-[10px] border-gray-700">
-                          {stats.accessoryCount} Accessories
+                          {stats.accessoryCount} {t('new_project_wizard.accessories', 'Accessories')}
                         </Badge>
                       </div>
                     </div>
@@ -285,12 +286,12 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
             <div>
               <Label className="text-xs flex items-center gap-1">
                 <Users className="h-3 w-3 text-orange-400" />
-                Client / Company *
+                {t('new_project_wizard.client_company', 'Client / Company *')}
               </Label>
               {customers.length > 0 && (
                 <div className="mb-1">
                   <Label className="text-[10px] text-gray-400">
-                    Select from saved customers
+                    {t('new_project_wizard.select_from_saved', 'Select from saved customers')}
                   </Label>
                   <Select
                     value={selectedCustomerId}
@@ -304,7 +305,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                     }}
                   >
                     <SelectTrigger className="h-7 text-[11px] bg-gray-800 border-gray-700 mt-0.5">
-                      <SelectValue placeholder="Choose saved customer (optional)" />
+                      <SelectValue placeholder={t('new_project_wizard.choose_saved', 'Choose saved customer (optional)')} />
                     </SelectTrigger>
                     <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-64">
                       {customers.map((c) => (
@@ -324,16 +325,16 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
               <Input
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
-                placeholder="e.g. ABC Aluminium"
+                placeholder={t('new_project_wizard.client_placeholder', 'e.g. ABC Aluminium')}
                 className="h-8 text-xs bg-gray-800 border-gray-700"
               />
             </div>
             <div>
-              <Label className="text-xs">Project Name *</Label>
+              <Label className="text-xs">{t('new_project_wizard.project_name', 'Project Name *')}</Label>
               <Input
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
-                placeholder="e.g. Cairo Compound – Tower B"
+                placeholder={t('new_project_wizard.project_placeholder', 'e.g. Cairo Compound – Tower B')}
                 className="h-8 text-xs bg-gray-800 border-gray-700"
               />
             </div>
@@ -342,39 +343,39 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
           <div>
             <Label className="text-xs flex items-center gap-1">
               <MapPin className="h-3 w-3 text-blue-400" />
-              Site / Address
+              {t('new_project_wizard.site_address', 'Site / Address')}
             </Label>
             <Input
               value={siteName}
               onChange={(e) => setSiteName(e.target.value)}
-              placeholder="e.g. New Cairo, Plot 17"
+              placeholder={t('new_project_wizard.site_placeholder', 'e.g. New Cairo, Plot 17')}
               className="h-8 text-xs bg-gray-800 border-gray-700"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs">Contact Phone</Label>
+              <Label className="text-xs">{t('new_project_wizard.contact_phone', 'Contact Phone')}</Label>
               <Input
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
-                placeholder="+20..."
+                placeholder={t('new_project_wizard.phone_placeholder', '+20...')}
                 className="h-8 text-xs bg-gray-800 border-gray-700"
               />
             </div>
             <div>
-              <Label className="text-xs">Order Number (optional)</Label>
+              <Label className="text-xs">{t('new_project_wizard.order_number', 'Order Number (optional)')}</Label>
               <Input
                 value={orderNumber}
                 onChange={(e) => setOrderNumber(e.target.value)}
-                placeholder="Your internal order no."
+                placeholder={t('new_project_wizard.order_placeholder', 'Your internal order no.')}
                 className="h-8 text-xs bg-gray-800 border-gray-700"
               />
             </div>
           </div>
 
           <div>
-            <Label className="text-xs">Order Date</Label>
+            <Label className="text-xs">{t('new_project_wizard.order_date', 'Order Date')}</Label>
             <Input
               type="date"
               value={orderDate}
@@ -385,7 +386,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs">Currency</Label>
+              <Label className="text-xs">{t('new_project_wizard.currency', 'Currency')}</Label>
               <Select value={currency} onValueChange={(v) => setCurrency(v)}>
                 <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
                   <SelectValue />
@@ -401,7 +402,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
               </Select>
             </div>
             <div>
-              <Label className="text-xs">Region</Label>
+              <Label className="text-xs">{t('new_project_wizard.region', 'Region')}</Label>
               <Select
                 value={region}
                 onValueChange={(v) => {
@@ -435,7 +436,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                 className="text-xs"
                 onClick={() => onOpenChange(false)}
               >
-                Cancel
+                {t('new_project_wizard.cancel', 'Cancel')}
               </Button>
               <Button
                 type="button"
@@ -443,7 +444,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                 disabled={!canSubmit}
                 onClick={handleCreate}
               >
-                Create Project & Start Measuring
+                {t('new_project_wizard.create_project', 'Create Project & Start Measuring')}
               </Button>
             </>
           )}

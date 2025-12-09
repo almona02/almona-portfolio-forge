@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui
 import { Factory, Flame, MapPin, Award, TrendingUp, ChevronDown } from 'lucide-react';
 import type { Profile, WindowUnit, OptimizationResult } from '@/types/fabricator';
 import type { ProjectHeaderMeta } from './NewProjectWizard';
+import { useTranslation } from 'react-i18next';
 
 interface AnatolianCockpitProps {
   inventory: Profile[];
@@ -79,6 +80,7 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
   totalSteps,
   projectMeta,
 }) => {
+  const { t } = useTranslation(['fabricator', 'translation']);
   const defaultBrand =
     (projectMeta && BRANDS_BY_REGION[projectMeta.region]) || BRANDS_BY_REGION.turkey;
 
@@ -148,7 +150,9 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Factory className="h-4 w-4 text-orange-400" />
-              <span className="text-sm font-semibold text-orange-100">Local System Intelligence</span>
+              <span className="text-sm font-semibold text-orange-100">
+                {t('fabricator:navbar.local_system_intelligence', 'Local System Intelligence')}
+              </span>
             </div>
             <ChevronDown 
               className={`h-4 w-4 text-slate-400 transition-transform duration-200 ${
@@ -157,7 +161,10 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
             />
           </div>
           <p className="text-xs text-slate-300/80 mt-1">
-            Dynamic preference suggestions for Turkish & Egyptian system houses – tuned to your active region.
+            {t(
+              'fabricator:navbar.local_system_intelligence_desc',
+              'Dynamic preference suggestions for Turkish & Egyptian system houses – tuned to your active region.',
+            )}
           </p>
         </div>
       </CollapsibleTrigger>
@@ -168,11 +175,13 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold text-orange-100">
             <Factory className="h-4 w-4 text-orange-400" />
-            Local System Intelligence
+            {t('fabricator:navbar.local_system_intelligence', 'Local System Intelligence')}
           </CardTitle>
           <CardDescription className="text-xs text-slate-300/80">
-            Dynamic preference suggestions for Turkish & Egyptian system houses – tuned to your
-            active region.
+            {t(
+              'fabricator:navbar.local_system_intelligence_desc',
+              'Dynamic preference suggestions for Turkish & Egyptian system houses – tuned to your active region.',
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 text-xs">

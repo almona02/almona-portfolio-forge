@@ -6,7 +6,7 @@ celery_app = Celery(
     "ai_services",
     broker=settings.REDIS_URL,
     backend=settings.REDIS_URL,
-    include=["ai_services.part_detection.tasks"]
+    include=["ai_services.part_detection.tasks", "tasks.erp_tasks"]
 )
 
 celery_app.conf.update(
@@ -18,6 +18,9 @@ celery_app.conf.update(
     task_track_started=True,
     task_time_limit=30 * 60,  # 30 minutes
     task_soft_time_limit=25 * 60,  # 25 minutes
+    task_routes={
+        "erp.dispatch_invoice": {"queue": "erp"},
+    },
     worker_prefetch_multiplier=1,
     worker_max_tasks_per_child=1000,
 )

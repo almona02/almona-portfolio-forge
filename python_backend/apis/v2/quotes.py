@@ -1,24 +1,31 @@
+# flake8: noqa
+
 from fastapi import APIRouter, Depends, Query, Request
-from typing import List
+from typing import Any, Dict, List, Optional
+import logging
 
 from supabase import Client  # type: ignore
-from models.api_v2_models import (
-    QuoteLookupResponse,
-    QuoteSummary,
-)
+from models.api_v2_models import QuoteLookupResponse, QuoteSummary
 from fastapi import Body
 from pydantic import BaseModel, Field
-from typing import Optional, List as _List
+from typing import List as _List
 from apis.v2.deps import get_supabase
 from apis.v2.services.quote_service import QuoteService
 from apis.v2.core.errors import (
     QuoteValidationError,
-    QuoteNotFoundError,
     QuoteAlreadyExistsError,
     handle_supabase_error,
     create_error_context,
-    COMMON_ERROR_RESPONSES
+    COMMON_ERROR_RESPONSES,
 )
+from core.business.cost_engine import PredictiveCostEngine
+from tasks.erp_tasks import dispatch_invoice_task
+
+logger = logging.getLogger(__name__)
+try:
+    from celery import current_app as celery_app
+except Exception:  # pragma: no cover - celery optional
+    celery_app = None
 
 
 class QuoteItem(BaseModel):
@@ -111,6 +118,21 @@ class QuoteCreateRequest(BaseModel):
         description="Any special requirements or notes",
         example="Installation must be completed during weekend hours due to production schedule."
     )
+    region: Optional[str] = Field(
+        default=None,
+        description="Region code for compliance/ERP (e.g., EG)",
+        example="EG",
+    )
+    currency: Optional[str] = Field(
+        default="EGP",
+        description="Currency code for pricing/ERP",
+        example="EGP",
+    )
+    customer_tax_id: Optional[str] = Field(
+        default=None,
+        description="Customer tax/VAT ID for ERP dispatch",
+        example="EG123456789",
+    )
     related_service_ticket_id: Optional[str] = Field(
         default=None,
         description="Link to an existing service_ticket if any",
@@ -120,6 +142,22 @@ class QuoteCreateRequest(BaseModel):
         None,
         description="ID of the machine this quote is related to",
         example="550e8400-e29b-41d4-a716-446655440000"
+    )
+    dispatch_to_erp: bool = Field(
+        default=False,
+        description="If true, enqueue ERP invoice dispatch after creation",
+    )
+    ai_costing: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="AI costing payload to send to ERP (total_cost, vat_amount, margin, etc.)",
+    )
+    optimization_signals: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Optimization signals for predictive costing (material_requirements_kg, machine_time_hours, labor_hours, remnant_utilization_kg)",
+    )
+    compliance_data: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Compliance payload (e.g., tax ids) for ERP dispatch",
     )
     
     class Config:
@@ -164,6 +202,36 @@ class QuoteCreateResponse(BaseModel):
     total_amount: Optional[float]
     related_service_ticket_id: Optional[str]
     created_at: str
+    erp_task_id: Optional[str] = Field(default=None, description="Celery task id for ERP dispatch")
+    erp_idempotency_key: Optional[str] = Field(default=None, description="Idempotency key used for ERP audit log")
+    ai_costing: Optional[Dict[str, Any]] = Field(default=None, description="Computed or provided AI costing snapshot")
+
+
+class ErpDispatchRequest(BaseModel):
+    quote_data: Dict[str, Any] = Field(
+        ...,
+        description="Quote payload (must include quote_number or id and items)",
+    )
+    ai_costing: Dict[str, Any] = Field(
+        ...,
+        description="AI costing payload (total_cost, vat_amount, margin, etc.)",
+    )
+    compliance_data: Optional[Dict[str, Any]] = Field(
+        default=None, description="Regional compliance data (e.g., tax ids)"
+    )
+    backend_type: Optional[str] = Field(
+        default=None, description="Override ERP backend (e.g., 'odoo', 'mock')"
+    )
+    idempotency_key: Optional[str] = Field(
+        default=None,
+        description="Idempotency key to reuse an existing ERP transaction",
+    )
+
+
+class ErpDispatchResponse(BaseModel):
+    task_id: str
+    idempotency_key: str
+    status: str = Field(description="Immediate task enqueue status")
 
 
 router = APIRouter(prefix="/quotes", tags=["Quotes"])
@@ -307,4 +375,158 @@ def create_quote(
         )
         raise handle_supabase_error(exc, "create_quote_with_items", context)
 
-    return QuoteCreateResponse(**result)
+    response_payload = dict(result)
+
+    # Celery availability warning (non-blocking)
+    if payload.dispatch_to_erp and celery_app:
+        try:
+            inspector = celery_app.control.inspect()
+            active = inspector.active() or {}
+            if not active:
+                logger.warning("No active Celery workers detected for ERP dispatch")
+        except Exception as exc:  # pragma: no cover - best effort
+            logger.warning("Celery health check failed: %s", exc)
+
+    # Compute predictive costing if signals provided and not already supplied
+    computed_costing: Optional[Dict[str, Any]] = None
+    if payload.optimization_signals and not payload.ai_costing:
+        engine = PredictiveCostEngine()
+        total_price = 0.0
+        for item in payload.products:
+            if item.unit_price is not None:
+                total_price += item.unit_price * item.quantity
+        for item in payload.services:
+            if item.unit_price is not None:
+                total_price += item.unit_price * item.quantity
+        computed_costing = engine.calculate_pre_flight_margin(
+            {"total_price": total_price, "currency": payload.currency},
+            payload.optimization_signals,
+        )
+        response_payload["ai_costing"] = computed_costing
+
+    # Optional ERP dispatch hook
+    ai_costing_payload = payload.ai_costing or computed_costing
+    if payload.dispatch_to_erp:
+        # Guard against bad data
+        should_dispatch = True
+        reason = ""
+
+        total_cost = (ai_costing_payload or {}).get("total_cost", 0)
+        margin_pct = (ai_costing_payload or {}).get("projected_margin_percent", 0)
+
+        if not ai_costing_payload:
+            should_dispatch = False
+            reason = "missing_ai_costing"
+        elif total_cost is None or float(total_cost) <= 0:
+            should_dispatch = False
+            reason = "zero_total_cost"
+        elif margin_pct is not None and float(margin_pct) < -20:
+            should_dispatch = False
+            reason = "extreme_negative_margin"
+        elif not (payload.company or payload.contact_name):
+            should_dispatch = False
+            reason = "missing_customer_name"
+
+        if should_dispatch:
+            quote_items: List[Dict[str, Any]] = []
+            for item in payload.products:
+                quote_items.append(
+                    {
+                        "name": item.product_id or "product",
+                        "qty": item.quantity,
+                        "price": item.unit_price,
+                    }
+                )
+            for item in payload.services:
+                quote_items.append(
+                    {
+                        "name": item.service_id or "service",
+                        "qty": item.quantity,
+                        "price": item.unit_price,
+                    }
+                )
+
+            quote_payload = {
+                "id": result["id"],
+                "quote_number": result["quote_number"],
+                "customer_name": payload.company or payload.contact_name,
+                "customer_tax_id": payload.customer_tax_id,
+                "region": payload.region,
+                "currency": payload.currency,
+                "items": quote_items,
+            }
+
+            idempotency_key = f"invoice-{result['id']}-{result.get('quote_number')}"
+
+            try:
+                task = dispatch_invoice_task.delay(
+                    quote_payload,
+                    ai_costing_payload,
+                    payload.compliance_data,
+                    idempotency_key,
+                    None,
+                )
+                response_payload["erp_task_id"] = task.id
+                response_payload["erp_idempotency_key"] = idempotency_key
+            except Exception as exc:  # pragma: no cover - dispatch failure
+                logger.error("Failed to enqueue ERP dispatch: %s", exc, exc_info=True)
+                response_payload["erp_task_id"] = "FAILED_ENQUEUE"
+                response_payload["erp_idempotency_key"] = idempotency_key
+                response_payload["erp_error"] = str(exc)
+        else:
+            response_payload["erp_task_id"] = f"SKIPPED_{reason}"
+            response_payload["erp_idempotency_key"] = None
+
+    return QuoteCreateResponse(**response_payload)
+
+
+@router.post(
+    "/dispatch-erp",
+    response_model=ErpDispatchResponse,
+    status_code=202,
+    summary="Dispatch quote invoice to ERP (async)",
+    description="Enqueue ERP invoice dispatch with audit logging. Uses Celery + ErpBridge.",
+)
+def dispatch_quote_to_erp(
+    payload: ErpDispatchRequest = Body(...),
+):
+    """
+    Enqueue ERP dispatch task. Requires Celery workers running.
+    """
+    task = dispatch_invoice_task.delay(
+        payload.quote_data,
+        payload.ai_costing,
+        payload.compliance_data,
+        payload.idempotency_key,
+        payload.backend_type,
+    )
+    return ErpDispatchResponse(
+        task_id=task.id,
+        idempotency_key=payload.idempotency_key
+        or f"pending-{payload.quote_data.get('id') or payload.quote_data.get('quote_number', 'unknown')}",
+        status="queued",
+    )
+
+
+@router.get(
+    "/erp-status/{quote_id}",
+    summary="Fetch ERP dispatch status for a quote",
+    description="Returns recent ERP transaction log entries for the given quote_id.",
+)
+def get_erp_status(
+    quote_id: str,
+    supabase: Client = Depends(get_supabase),
+):
+    try:
+        resp = (
+            supabase.table("erp_transaction_log")
+            .select("*")
+            .eq("quote_id", quote_id)
+            .order("created_at", desc=True)
+            .limit(10)
+            .execute()
+        )
+        entries = getattr(resp, "data", []) or []
+        return {"quote_id": quote_id, "entries": entries}
+    except Exception as exc:
+        raise handle_supabase_error(exc, "fetch_erp_status", {"quote_id": quote_id})

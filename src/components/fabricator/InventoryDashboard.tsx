@@ -58,6 +58,7 @@ import { supabase } from '@/lib/supabase';
 import { Rock60PricingSetup } from '@/components/fabricator/Rock60PricingSetup';
 import { PurchaseWizard } from '@/components/fabricator/PurchaseWizard';
 import { ROCK60_WINDOW_SYSTEM_TEMPLATE, JUMBO100_WINDOW_SYSTEM_SPEC, SYSTEM_PACKS } from '@/data/systemPacks';
+import { useTranslation } from 'react-i18next';
 
 // System-pack specific paint color options (can be expanded per catalog)
 const PACK_COLOR_OPTIONS: Record<
@@ -200,6 +201,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   project,
   userId,
 }) => {
+  const { t } = useTranslation('fabricator');
   const { state: workspaceState } = useFabricatorWorkspace();
   const searchQuery = workspaceState.globalSearchQuery || '';
   const [activeTab, setActiveTab] = useState('overview');
@@ -977,8 +979,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       {/* Header with Actions */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Inventory Dashboard</h2>
-          <p className="text-gray-400">Comprehensive inventory and remnant management</p>
+          <h2 className="text-2xl font-bold">{t('inventory_dashboard.title', 'Inventory Intelligence Hub')}</h2>
+          <p className="text-gray-400">{t('inventory_dashboard.description', 'Centralized inventory management with real-time analytics, remnant optimization, and AI-powered stock predictions for Turkish & Egyptian markets.')}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -1044,7 +1046,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Low Stock</p>
+                <p className="text-sm text-gray-400">{t('inventory_dashboard.low_stock', 'Low Stock')}</p>
                 <p className="text-2xl font-bold text-orange-400">{lowStockCount}</p>
               </div>
               <AlertTriangle className="h-8 w-8 text-orange-400 opacity-50" />
@@ -1068,7 +1070,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Total Value</p>
+                <p className="text-sm text-gray-400">{t('inventory_dashboard.total_value', 'Total Value')}</p>
                 <p className="text-2xl font-bold text-purple-400">
                   ${totalValue.toFixed(2)}
                 </p>
@@ -1143,19 +1145,19 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="remnants">Remnants</TabsTrigger>
+          <TabsTrigger value="overview">{t('inventory_dashboard.tabs.overview', 'Overview')}</TabsTrigger>
+          <TabsTrigger value="remnants">{t('inventory_dashboard.tabs.remnants', 'Remnants')}</TabsTrigger>
           <TabsTrigger value="alerts">
-            Alerts
+            {t('inventory_dashboard.tabs.alerts', 'Alerts')}
             {stockAlerts.length > 0 && (
               <Badge variant="destructive" className="ml-2">
                 {stockAlerts.length}
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="purchases">Purchases</TabsTrigger>
+          <TabsTrigger value="history">{t('inventory_dashboard.tabs.history', 'History')}</TabsTrigger>
+          <TabsTrigger value="analytics">{t('inventory_dashboard.tabs.analytics', 'Analytics')}</TabsTrigger>
+          <TabsTrigger value="purchases">{t('inventory_dashboard.tabs.purchases', 'Purchases')}</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -1170,9 +1172,9 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     onCheckedChange={setUseRemnantsFirst}
                   />
                   <div>
-                    <Label className="text-base font-semibold">Use Remnants First</Label>
+                    <Label className="text-base font-semibold">{t('inventory_dashboard.use_remnants_first', 'Use Remnants First')}</Label>
                     <p className="text-sm text-gray-400">
-                      Automatically match and use available remnants before cutting new stock
+                      {t('inventory_dashboard.use_remnants_desc', 'Automatically match and use available remnants before cutting new stock')}
                     </p>
                   </div>
                 </div>

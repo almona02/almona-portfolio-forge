@@ -1,3 +1,4 @@
+# flake8: noqa
 """
 Comprehensive health check system for Kubernetes deployment.
 """
@@ -86,9 +87,8 @@ class DatabaseHealthCheck(HealthCheck):
         
         # Test actual query
         async with pool.get_client() as client:
-            result = await asyncio.wait_for(
-                client.table('profiles').select('id').limit(1).execute(),
-                timeout=5.0
+            await asyncio.to_thread(
+                lambda: client.table('profiles').select('id').limit(1).execute()
             )
         
         self.details = {
@@ -130,9 +130,8 @@ class ExternalServicesHealthCheck(HealthCheck):
         try:
             pool = get_connection_pool()
             async with pool.get_client() as client:
-                await asyncio.wait_for(
-                    client.table('profiles').select('id').limit(1).execute(),
-                    timeout=3.0
+                await asyncio.to_thread(
+                    lambda: client.table('profiles').select('id').limit(1).execute()
                 )
             services_status["supabase"] = "healthy"
         except Exception as e:

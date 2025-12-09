@@ -1,7 +1,8 @@
 {
   "workspace": {
-    "title": "مساحة العمل الإنتاجية",
-    "subtitle": "قمرة قيادة المونة الثقيلة للمشاريع والعملاء والمخزون والتدفقات التجارية — الحالة محفوظة عبر التبويبات.",
+    "title_prefix": "Your Company Name",
+    "title": "مساحة عمليات صناعية متقدمة",
+    "subtitle": "قمرة ألمونا المؤسسية للمشاريع والعملاء والمخزون والتدفقات التجارية — حالة محفوظة، قابلة للتدقيق، ومحسّنة لأعباء العمل التصنيعية الثقيلة.",
     "tabs": {
       "projects": "المشاريع",
       "customers": "العملاء",
@@ -42,11 +43,130 @@
   "workflow": {
     "title": "سير عمل المصنع المحترف",
     "subtitle": "سير عمل الذكاء الاصطناعي الإصدار 4.0",
+    "tagline": "منظومة تصنيع ذكية للألومنيوم وUPVC: قياس ذكي، تصميم فني، تحسين بالذكاء الاصطناعي، المخزون، الإنتاج، ضبط الجودة.",
+    "workshop_label": "الورشة",
     "header": {
       "fabricator_pro": "FABRICATOR PRO",
       "ai_workflow": "سير عمل الذكاء الاصطناعي الإصدار 4.0",
       "workflow_pro": "سير عمل المصنع المحترف"
     },
+    "status": {
+      "system": "النظام",
+      "optimal": "مثالي",
+      "efficiency": "الكفاءة",
+      "active_jobs": "الوظائف النشطة"
+    },
+    "search_placeholder": "ابحث عن الماكينات أو الطلبات...",
+    "mass_production_cta": "الإنتاج الكمي",
+    "module_label": "وحدة",
+    "badge_end_to_end": "شامل من البداية إلى النهاية",
+    "module_description": "دورة مشروع متكاملة من القياس إلى التحسين، المخزون، الإنتاج وضبط الجودة.",
+    "steps": {
+      "measuring": {
+        "name": "القياس الذكي",
+        "description": "التقاط القياسات رقمياً"
+      },
+      "design": {
+        "name": "التصميم الفني",
+        "description": "تحديد المكونات والاتصالات"
+      },
+      "preview3d": {
+        "name": "معاينة ثلاثية الأبعاد",
+        "description": "معاينة نموذج بصري"
+      },
+      "optimization": {
+        "name": "تحسين القطع",
+        "description": "تحسين المادة وتقليل الفاقد"
+      },
+      "inventory": {
+        "name": "فحص المخزون",
+        "description": "إدارة المخزون والمواءمة"
+      },
+      "production": {
+        "name": "تخطيط الإنتاج",
+        "description": "الجدولة والتشغيل على الماكينات"
+      },
+      "quality": {
+        "name": "مراقبة الجودة",
+        "description": "الفحص والتحقق"
+      }
+    },
+  "navbar": {
+    "fabricator_menu": "قائمة المصنع",
+    "modules_label": "الوحدات",
+    "fabrication_modules_title": "وحدات التصنيع",
+    "actions_label": "الإجراءات",
+    "status": {
+      "optimal": "مثالي",
+      "running": "يعمل",
+      "monitoring": "قيد المراقبة",
+      "active": "نشط",
+      "pending": "قيد الانتظار"
+    },
+    "fabrication_modules": {
+      "cutting_optimization": {
+        "name": "تحسين القطع",
+        "description": "ترصيف مواد بالذكاء الاصطناعي"
+      },
+      "machine_control": {
+        "name": "التحكم في الماكينة",
+        "description": "واجهة CNC لحظية"
+      },
+      "production_scheduler": {
+        "name": "مجدول الإنتاج",
+        "description": "جدولة ذكية للمهام"
+      },
+      "quality_control_ai": {
+        "name": "ذكاء جودة",
+        "description": "فحص بالرؤية الحاسوبية"
+      },
+      "real_time_analytics": {
+        "name": "تحليلات لحظية",
+        "description": "مؤشرات أداء حية"
+      }
+    },
+    "quick_actions": {
+      "new_project": "مشروع جديد",
+      "profile_tuning": "استوديو ضبط القطاعات",
+      "machine_status": "حالة الماكينة",
+      "inventory_check": "فحص المخزون",
+      "quality_reports": "تقارير الجودة"
+    },
+    "local_system_intelligence": "ذكاء الأنظمة المحلي",
+    "local_system_intelligence_desc": "اقتراحات تفضيلات ديناميكية لبيوت الأنظمة التركية والمصرية مضبوطة حسب منطقتك النشطة.",
+    "business_nav": {
+      "customers": "العملاء",
+      "projects": "المشاريع",
+      "inventory": "المخزون",
+      "profiles": "القطاعات والملحقات",
+      "quick_reports": "تقارير سريعة",
+      "machines": "الماكينات",
+      "settings_prices": "الإعدادات والأسعار",
+      "commercial_offers": "العروض التجارية",
+      "cost_reports": "تقارير التكاليف",
+      "accounting": "المحاسبة"
+    }
+  },
+  "workspace": {
+    "tabs": {
+      "projects": "المشاريع",
+      "profiles": "القطاعات",
+      "inventory": "المخزون",
+      "commercial": "تجاري",
+      "analytics": "التحليلات",
+      "reports": "التقارير",
+      "settings": "الإعدادات"
+    },
+    "search": {
+      "placeholder": "ابحث في المخزون، القطاعات، الطلبات، المشاريع..."
+    },
+    "badges": {
+      "active": "نشط"
+    },
+    "title_prefix": "Your Company Name",
+    "title": "مساحة عمليات صناعية متقدمة",
+    "subtitle": "قمرة ألمونا المؤسسية للمشاريع والعملاء والمخزون والتدفقات التجارية — حالة محفوظة، قابلة للتدقيق، ومحسّنة لأعباء العمل التصنيعية الثقيلة."
+  },
     "measuring": "القياس",
     "smart_measuring": "واجهة القياس الذكية",
     "design": "التصميم",
@@ -300,6 +420,799 @@
     "try_yourself": "جرب بنفسك:",
     "step_of": "الخطوة {current} من {total}",
     "complete_percent": "{percent}% مكتمل"
+  },
+  "profile_dxf_importer": {
+    "title": "أداة استيراد القطاعات من ملفات DXF",
+    "description": "استيراد هندسة القطاع من ملفات DXF",
+    "upload_file": "رفع ملف DXF",
+    "processing": "جارٍ معالجة ملف DXF...",
+    "extracting": "جارٍ استخراج بيانات القطاع...",
+    "success": "تم استيراد القطاع بنجاح",
+    "error": "خطأ في استيراد ملف DXF",
+    "file_name": "اسم الملف",
+    "file_size": "حجم الملف",
+    "imported_at": "تاريخ الاستيراد",
+    "dxf_imported": "مستورد من DXF",
+    "preview_snippet": "معاينة المقتطف"
+  },
+  "profile_tuning_studio": {
+    "title": "استوديو ضبط القطاعات",
+    "subtitle": "قمرة قيادة متقدمة لضبط القطاعات",
+    "tabs": {
+      "calibration": "المعايرة المباشرة",
+      "cutting_rules": "قواعد القطع",
+      "glazing": "الزجاج والأختام",
+      "geometry": "الهندسة والشكل",
+      "smartscan": "المسح الذكي",
+      "structural": "الهيكلية",
+      "hardware": "الأجهزة",
+      "cost_erp": "التكلفة ونظام ERP",
+      "machining": "مناطق التشغيل",
+      "summary": "ملخص الضبط"
+    },
+    "status": {
+      "tuned": "مضبوط للإنتاج",
+      "in_progress": "الضبط قيد التنفيذ",
+      "untuned": "لم يتم الضبط بعد"
+    },
+    "overview": {
+      "title": "نظرة عامة على الضبط",
+      "role": "الدور",
+      "system_pack": "مجموعة النظام",
+      "twin_code": "رمز التوأم",
+      "supplier_code": "رمز المورد",
+      "description": "استخدم التبويبات على اليمين لمعايرة القطع (عوامل K)، وتحديد مناطق التشغيل، والتحقق من دقة الإنتاج. بمجرد أن تكون واثقاً، قم بتمييز هذا القطاع كمضبوط."
+    },
+    "alert": {
+      "message": "الضبط يكون لكل قطاع ولكل نظام. كرر العملية لكل قطاع إطار/صاج حرج في مجموعات ROCK 60 أو JUMBO 100 أو Caluminium للوصول إلى موثوقية من مستوى التيتانيوم."
+    },
+    "cutting_rules": {
+      "title": "القطع والمفاصل وسياسة الخردة",
+      "miter45_joint": "مفصل ميتري 45° (+مم)",
+      "butt90_joint": "مفصل مستقيم 90° (+مم)",
+      "t_joint": "بدل مفصل T (+مم)",
+      "mullion_joint": "مفصل العمود/العتبة (+مم)",
+      "border_allowance": "بدل إضافي للإطارات الحدودية (مم)",
+      "border_allowance_desc": "يُستخدم عندما يكون للإطار حدود خارجية (مثل +5مم لتسامح الجص).",
+      "preferred_bar_length": "طول القضيب المفضل (مم)",
+      "min_offcut": "أقل مخلف قابل للاستخدام (مم)",
+      "round_cuts": "تقريب القطع إلى (مم)",
+      "corner_technology": "تقنية الزاوية",
+      "corner_tech_options": {
+        "crimped": "زاوية مضغوطة",
+        "cleated": "مشدودة",
+        "welded": "ملحومة (PVC/الصلب)",
+        "cut_only": "قطع فقط / تجميع يدوي"
+      },
+      "joint_allowance_desc": "بدلات المفاصل هي مم إضافية تُطبق عند كل زاوية أو مفصل قبل التحسين. استخدم قيماً موجبة للتقصير المتعمد والسماح للتجميع بالقص؛ استخدم 0 للرياضيات الدقيقة.",
+      "save": "حفظ قواعد القطع"
+    },
+    "glazing": {
+      "title": "سماكة الزجاج والأختام والحزم",
+      "glazing_min": "الحد الأدنى للزجاج (مم)",
+      "glazing_max": "الحد الأقصى للزجاج (مم)",
+      "gasket_compression": "ضغط الختم المستهدف (مم)",
+      "gasket_compression_desc": "القيم النموذجية هي 1.5–2.0مم لإحكام جيد دون سحق الختم.",
+      "allowed_glass_packages": "حزم الزجاج المسموحة (مفصولة بفواصل)",
+      "allowed_glass_desc": "يستخدمها محرك التصميم لاقتراح هياكل زجاجية متوافقة فقط لهذا القطاع.",
+      "glazing_limits_desc": "تُستخدم هذه الحدود للتحقق من حزم الزجاج ومنع تركيبات الزجاج المستحيلة لهذا القطاع (مثل IGU سميك جداً للخرز).",
+      "save": "حفظ قواعد الزجاج"
+    },
+    "geometry": {
+      "title": "الهندسة والشكل",
+      "description": "تحديد النموذج الأولي والأبعاد الرئيسية للمصغرات الإجرائية (لا حاجة لـ CAD).",
+      "scan_prompt": "لديك صورة كتالوج؟ قم بتشغيل SmartScan لاستيعاب مخطط القطاع وأبعاده.",
+      "scan_button": "مسح من رسم الكتالوج",
+      "cancel": "إلغاء",
+      "archetype": "النموذج الأولي",
+      "archetype_options": {
+        "hollow_box": "صندوق مجوف",
+        "open_c": "C مفتوح",
+        "thermal_break": "كسر حراري",
+        "z_shape": "شكل Z",
+        "t_shape": "شكل T"
+      },
+      "wall_thickness": "سماكة الجدار (مم)",
+      "glazing_pocket_depth": "عمق جيب الزجاج (مم)",
+      "glazing_pocket_width": "عرض جيب الزجاج (مم)",
+      "thermal_break_width": "عرض الكسر الحراري (مم)",
+      "flange_width": "عرض الحافة (مم)",
+      "web_offset": "إزاحة الويب (مم)",
+      "thumbnail_preview": "معاينة المصغرة",
+      "preview_updates": "تحديث المعاينة مع إعدادات الهندسة.",
+      "save": "حفظ الهندسة",
+      "import_banner": {
+        "title": "استيراد SmartScan جاهز",
+        "message": "تم استيراد القطاع الممسوح. راجع الهندسة أدناه واضبطها حسب الحاجة. تم حفظ المتجه كتكوين هندسة القطاع."
+      }
+    },
+    "smartscan": {
+      "title": "استيراد SmartScan",
+      "description": "قم برفع صور الكتالوج أو ملفات PDF أو DXF. سيقوم SmartScan بتحويلها إلى متجهات واستخراج الأبعاد تلقائياً."
+    },
+    "structural": {
+      "title": "الحدود الهيكلية وفئة الفيزياء",
+      "max_frame_span": "أقصى امتداد للإطار (مم)",
+      "max_mullion_span": "أقصى امتداد للعمود (مم)",
+      "max_sash_width": "أقصى عرض للصاج (مم)",
+      "max_sash_height": "أقصى ارتفاع للصاج (مم)",
+      "max_sash_weight": "أقصى وزن للصاج (كجم)",
+      "max_unit_width": "أقصى عرض للوحدة (مم)",
+      "max_unit_height": "أقصى ارتفاع للوحدة (مم)",
+      "physics_stiffness": "فئة صلابة الفيزياء",
+      "stiffness_options": {
+        "standard": "قياسي",
+        "stiff": "قاسي / ثقيل",
+        "flexible": "مرن / خفيف"
+      },
+      "structural_notes": "ملاحظات هيكلية",
+      "structural_notes_placeholder": "مثال: باب الشرفة للاستخدام مع التعزيز فقط؛ منطقة الرياح C غير موصى بها.",
+      "limits_desc": "تُستخدم هذه الحدود للتحذير عندما يتجاوز بُعد النافذة أو الإطار الامتداد الآمن لهذا القطاع (بناءً على جداول المورد أو خبرتك الخاصة).",
+      "save": "حفظ القواعد الهيكلية"
+    },
+    "hardware": {
+      "title": "عائلات الأجهزة والحزم",
+      "primary_hinge": "عائلة المفصل الأساسية",
+      "primary_hinge_placeholder": "مثال: Roto NT، GU، عام",
+      "primary_lock": "عائلة القفل الأساسية",
+      "primary_lock_placeholder": "مثال: متعدد النقاط A، قفل منزلق B",
+      "preferred_handle": "عائلة المقبض المفضلة",
+      "preferred_handle_placeholder": "مثال: Alumil سلسلة X، رافعة عامة",
+      "hardware_pack_tags": "علامات حزمة الأجهزة (مفصولة بفواصل)",
+      "hardware_pack_placeholder": "مثال: bathroom_turn، balcony_slider، jumbo_door",
+      "hardware_pack_desc": "ستقوم هذه العلامات لاحقاً بالربط مع حزم الأجهزة والتشغيل المحددة مسبقاً (المفاصل، الأقفال، البراغي) لهذا القطاع.",
+      "save": "حفظ إعدادات الأجهزة"
+    },
+    "cost_erp": {
+      "title": "نموذج التكلفة وربط نظام ERP",
+      "aluminum_price": "سعر الألومنيوم (لكل كجم)",
+      "machining_cost": "تكلفة التشغيل / العملية",
+      "coating_cost": "تكلفة الطلاء / م²",
+      "scrap_cost": "تكلفة الخردة / كجم",
+      "erp_item_code": "رمز عنصر ERP",
+      "erp_item_placeholder": "مثال: ERP-ALU-6001",
+      "warehouse_location": "موقع المستودع",
+      "warehouse_placeholder": "مثال: رف A3، المستوى 2",
+      "cost_desc": "تسمح هذه الحقول لمحرك التحسين والتقارير بتقدير تكلفة الإنتاج الحقيقية لكل متر لهذا القطاع، بما في ذلك الطلاء والتشغيل.",
+      "save": "حفظ التكلفة ونظام ERP"
+    },
+    "machining": {
+      "title": "مناطق التشغيل",
+      "description": "تحديد مناطق التشغيل لهذا القطاع"
+    },
+    "summary": {
+      "title": "حالة الضبط والثقة",
+      "current_status": "الحالة الحالية",
+      "qa_tolerances": "تسامحات ضمان الجودة",
+      "cut_tolerance": "تسامح القطع (±مم)",
+      "assembly_tolerance": "تسامح التجميع (±مم)",
+      "qa_notes": "ملاحظات",
+      "no_qa_notes": "لا توجد ملاحظات ضمان جودة بعد",
+      "edit_qa": "تحرير وحفظ تسامحات ضمان الجودة",
+      "description": "ستعرض هذه اللوحة تحليلات المعايرة ونتائج الاختبار (انحرافات القطع، درجات الثقة) مع تراكمها على الوظائف الحقيقية."
+    },
+    "actions": {
+      "back": "رجوع",
+      "mark_as_tuned": "تمييز كمضبوط",
+      "already_tuned": "مضبوط بالفعل"
+    }
+  },
+  "profile_import_tool": {
+    "title": "أداة استيراد القطاعات الذكية",
+    "description": "استيراد القطاعات من تنسيقات متعددة مع تعلم عامل K المدعوم بالذكاء الاصطناعي",
+    "tabs": {
+      "import": "استيراد",
+      "kfactor": "عامل K بالذكاء الاصطناعي",
+      "settings": "الإعدادات"
+    },
+    "upload": {
+      "title": "أسقط الملفات هنا أو انقر للرفع",
+      "description": "يدعم DXF، DWG، SVG، PDF، PNG، JPG",
+      "processing": "معالجة",
+      "processing_file": "معالجة {file}...",
+      "extracted_profiles": "القطاعات المستخرجة ({count})",
+      "select_all": "تحديد الكل",
+      "clear": "مسح",
+      "import_profiles": "استيراد {count} قطاع(ات)",
+      "clear_all": "مسح الكل",
+      "files_skipped": "تم تخطي {count} ملف (تنسيق غير مدعوم)",
+      "processing_error": "فشل معالجة {file}",
+      "extracted_success": "تم استخراج {count} قطاع من {filesCount} ملف",
+      "imported_success": "تم استيراد {count} قطاع إلى المخزون",
+      "confidence": "الثقة",
+      "k_factor_suggestion": "اقتراح عامل K"
+    },
+    "kfactor": {
+      "title": "تعلم عامل K الذكي",
+      "description": "اقتراحات عامل K المدعومة بالذكاء الاصطناعي بناءً على قياسات DXF/DWG المستوردة",
+      "auto_optimize": "تحسين تلقائي للكل",
+      "auto_optimize_desc": "تطبيق اقتراحات عامل K تلقائياً",
+      "features": {
+        "precision": {
+          "title": "التعلم الدقيق",
+          "description": "يتعلم من قياساتك الفعلية لتحسين الاقتراحات"
+        },
+        "similarity": {
+          "title": "مطابقة القطاعات المتشابهة",
+          "description": "يجد قطاعات متشابهة لاقتراح عوامل K مثالية"
+        },
+        "hints": {
+          "title": "نصائح وإرشادات",
+          "description": "يوفر المنطق لكل اقتراح عامل K"
+        },
+        "collective": {
+          "title": "التعلم الجماعي",
+          "description": "يتحسن مع مرور الوقت من ملاحظات الإنتاج"
+        }
+      },
+      "recent_learnings": "التعلمات الأخيرة",
+      "k_factor": "عامل K",
+      "deviation": "الانحراف",
+      "verified": "متحقق",
+      "pending": "قيد الانتظار",
+      "on": "تشغيل",
+      "off": "إيقاف"
+    },
+    "settings": {
+      "pricing": {
+        "title": "تكوين التسعير",
+        "aluminum_price": "سعر الألومنيوم / كجم",
+        "aluminum_price_placeholder": "مثال: 6.50",
+        "markup": "الهامش (%)",
+        "markup_placeholder": "مثال: 30",
+        "update_global": "تحديث التسعير العالمي",
+        "update_button": "تحديث التسعير العالمي",
+        "updated": "تم تحديث التسعير العالمي"
+      },
+      "import": {
+        "title": "إعدادات الاستيراد",
+        "kfactor_learning": "تعلم عامل K",
+        "kfactor_learning_desc": "تفعيل اقتراحات عامل K بالذكاء الاصطناعي",
+        "enabled": "مفعل",
+        "disabled": "معطل"
+      }
+    },
+    "wizard": {
+      "profile_created": "تم إنشاء القطاع \"{name}\" بنجاح"
+    }
+  },
+  "profile_scanner_uploader": {
+    "title": "ماسح رسومات هندسية بمساعدة الذكاء الاصطناعي",
+    "beta": "تجريبي",
+    "steps": {
+      "select": "1. اختيار الصورة",
+      "scale": "2. تكوين المقياس",
+      "results": "3. نتائج المسح"
+    },
+    "upload": {
+      "title": "انقر أو اسحب الصورة للرفع",
+      "formats": "التنسيقات المدعومة: JPG، PNG، BMP (تصدير PDF/DWG/DXF إلى صورة)",
+      "max_size": "الحد الأقصى للحجم: 10 ميجابايت؛ رسم واحد في كل مرة",
+      "selected_file": "الملف المحدد",
+      "change": "تغيير"
+    },
+    "scale": {
+      "auto_detect": "اكتشاف المقياس تلقائياً من الرسم",
+      "auto_detect_tooltip": "سيحاول الذكاء الاصطناعي اكتشاف المقياس من تسميات الأبعاد في الصورة",
+      "manual_scale": "عامل المقياس اليدوي:",
+      "manual_scale_unit": "(مم لكل بكسل)",
+      "manual_scale_example": "مثال: 0.1 يعني 1 بكسل = 0.1 مم (شائع في الرسومات الهندسية)",
+      "ai_active": "اكتشاف مقياس الذكاء الاصطناعي نشط",
+      "ai_active_desc": "سيحاول النظام اكتشاف المقياس من تسميات الأبعاد. إذا نجح، سيتم مطالبتك بالتأكيد."
+    },
+    "processing": {
+      "title": "جارٍ المعالجة...",
+      "uploading": "جارٍ رفع الصورة...",
+      "ocr": "تشغيل OCR...",
+      "detecting": "اكتشاف المقياس...",
+      "vectorizing": "تحويل القطاع إلى متجه..."
+    },
+    "results": {
+      "scale_applied": "تم تطبيق المقياس",
+      "detected_by_ai": "تم اكتشافه بواسطة الذكاء الاصطناعي",
+      "manually_specified": "محدد يدوياً",
+      "quality_assessment": "تقييم الجودة",
+      "auto_scale_detected": "تم اكتشاف المقياس التلقائي",
+      "properly_scaled": "مقياس صحيح",
+      "dimension_labels": "تسميات الأبعاد",
+      "present": "موجود",
+      "missing": "مفقود",
+      "image_quality": "جودة الصورة",
+      "good": "جيد",
+      "fair": "عادل",
+      "extracted_dimensions": "الأبعاد المستخرجة (مم)",
+      "performance": "الأداء",
+      "processing_time": "وقت المعالجة",
+      "timestamp": "الطابع الزمني",
+      "view_raw": "عرض استجابة API الخام"
+    },
+    "actions": {
+      "scan_ai": "مسح مع اكتشاف الذكاء الاصطناعي",
+      "scan_manual": "مسح مع مقياس يدوي",
+      "scan_another": "مسح رسم آخر",
+      "download_svg": "تنزيل SVG",
+      "view_debug": "عرض التصحيح",
+      "new_scan": "مسح جديد"
+    },
+    "scale_modal": {
+      "title": "نتيجة اكتشاف المقياس",
+      "detected_scale": "المقياس المكتشف",
+      "reference_label": "تسمية المرجع",
+      "suggestion": "اقتراح",
+      "what_this_means": "ماذا يعني هذا:",
+      "high_confidence": "اكتشف الذكاء الاصطناعي مقياساً بثقة عالية. يمكنك تطبيقه تلقائياً بأمان.",
+      "medium_confidence": "اكتشف الذكاء الاصطناعي مقياساً بثقة متوسطة. يرجى التحقق من القيمة المكتشفة قبل التطبيق.",
+      "low_confidence": "اكتشف الذكاء الاصطناعي مقياساً بثقة منخفضة. يُنصح بالتحقق اليدوي.",
+      "advanced_details": "تفاصيل متقدمة",
+      "samples": "العينات",
+      "detected_dimensions": "الأبعاد المكتشفة",
+      "lines": "الخطوط",
+      "associations": "الارتباطات",
+      "method": "الطريقة",
+      "enter_manually": "إدخال المقياس يدوياً",
+      "apply_auto": "تطبيق المقياس المكتشف تلقائياً",
+      "use_detected": "استخدام المقياس المكتشف"
+    },
+    "errors": {
+      "invalid_file": "ملف غير صالح",
+      "invalid_file_desc": "يرجى رفع ملف صورة (JPG، PNG، إلخ)",
+      "no_file": "لم يتم اختيار ملف",
+      "no_file_desc": "يرجى اختيار ملف صورة أولاً",
+      "scan_failed": "فشل المسح",
+      "svg_not_available": "SVG غير متاح",
+      "svg_not_available_desc": "لم يتم العثور على رابط ملف SVG في النتائج",
+      "no_scale": "لم يتم اكتشاف مقياس",
+      "no_scale_desc": "لم يتمكن الذكاء الاصطناعي من اكتشاف مقياس. يرجى إدخال المقياس يدوياً.",
+      "low_confidence": "اكتشاف بثقة منخفضة",
+      "low_confidence_desc": "اكتشف الذكاء الاصطناعي مقياساً بثقة منخفضة. يرجى إدخال المقياس يدوياً."
+    }
+  },
+  "calibration_wizard": {
+    "title": "معالج المعايرة",
+    "description": "لوحة معايرة بصرية مع محاكاة في الوقت الفعلي",
+    "steps": {
+      "profile_setup": "إعداد القطاع",
+      "test_cuts": "قطع الاختبار",
+      "measurements": "القياسات",
+      "adjustments": "التعديلات",
+      "validation": "التحقق"
+    },
+    "k_factor": {
+      "title": "حاسبة عامل K",
+      "miter45": "ميتري 45°",
+      "miter90": "ميتري 90°",
+      "butt": "مفصل مستقيم"
+    },
+    "test_results": {
+      "title": "نتائج الاختبار",
+      "expected": "الطول المتوقع",
+      "actual": "الطول الفعلي",
+      "difference": "الفرق",
+      "test_date": "تاريخ الاختبار"
+    },
+    "simulation": {
+      "title": "محاكاة القطع",
+      "base_length": "الطول الأساسي",
+      "adjusted_length": "الطول المعدل",
+      "adjustments": "التعديلات"
+    },
+    "quick_insight": {
+      "title": "رؤية سريعة",
+      "based_on_tests": "بناءً على {count} اختبارات سابقة، متوسط الدقة: {accuracy}مم.",
+      "high_confidence": "معايرة بثقة عالية.",
+      "consider_more_tests": "فكر في إجراء المزيد من الاختبارات لدقة أفضل."
+    },
+    "actions": {
+      "save": "حفظ المعايرة",
+      "reset": "إعادة تعيين",
+      "next": "التالي",
+      "previous": "السابق"
+    }
+  },
+  "smart_measuring": {
+    "title": "واجهة القياس الذكية",
+    "description": "التقاط القياس الرقمي مع التحقق من الأبعاد بمساعدة الذكاء الاصطناعي",
+    "steps": {
+      "system": "تكوين النظام",
+      "dimensions": "الأبعاد والتخطيط",
+      "specs": "الزجاج والمواصفات",
+      "location": "سياق الموقع",
+      "verify": "التحقق"
+    },
+    "system_config": {
+      "title": "اختر مجموعة النظام",
+      "description": "اختر مجموعة النظام لوحدة النافذة هذه"
+    },
+    "dimensions": {
+      "title": "أبعاد النافذة",
+      "width": "العرض (مم)",
+      "height": "الارتفاع (مم)",
+      "window_type": "نوع النافذة",
+      "grid_mode": "وضع الشبكة",
+      "standard_mode": "الوضع القياسي"
+    },
+    "specs": {
+      "title": "الزجاج والمواصفات",
+      "glazing_type": "نوع الزجاج",
+      "glass_color": "لون الزجاج",
+      "fly_screen": "نوع شبكة الذباب"
+    },
+    "location": {
+      "title": "سياق الموقع",
+      "flat_number": "رقم الشقة",
+      "building_block": "كتلة المبنى",
+      "floor": "الطابق",
+      "unit_apartment": "الوحدة/الشقة",
+      "elevation": "الارتفاع",
+      "room_zone": "الغرفة/المنطقة",
+      "window_index": "فهرس النافذة",
+      "remarks": "ملاحظات"
+    },
+    "verification": {
+      "title": "التحقق",
+      "confirm": "تأكيد القياسات",
+      "edit": "تحرير القياسات"
+    },
+    "actions": {
+      "next": "التالي",
+      "previous": "السابق",
+      "complete": "إكمال القياس",
+      "scan": "مسح بالكاميرا",
+      "verify": "التحقق من الأبعاد"
+    },
+    "validation": {
+      "errors": "أخطاء التحقق",
+      "warnings": "تحذيرات"
+    }
+  },
+  "design_interface": {
+    "title": "مساحة التصميم – خليج الهندسة",
+    "description": "مساحة تصميم موحدة تجمع بين EngineeringBay و SmartDrawCanvas",
+    "no_project": "لا يوجد مشروع نشط – أكمل القياس الذكي أولاً.",
+    "no_inventory": "لم يتم تحميل قطاعات المخزون بعد. يعمل Smart Draw وخليج الهندسة بشكل أفضل بمجرد توفر بيانات القطاع من تبويب المخزون.",
+    "pose_selector": "الموضع في الطلب"
+  },
+  "profile_definition_wizard": {
+    "title": "تحديد القطاع من ورقة البيانات",
+    "description": "إنشاء قطاع جديد من ورقة البيانات التقنية للمورد",
+    "steps": {
+      "upload": "الخطوة 1 من 3: رفع ورقة البيانات التقنية",
+      "info": "الخطوة 2 من 3: معلومات القطاع",
+      "review": "الخطوة 3 من 3: المراجعة والإنشاء"
+    },
+    "upload": {
+      "title": "رفع ورقة البيانات التقنية",
+      "description": "انقر للرفع أو اسحب وأفلت PNG أو JPG أو PDF (الحد الأقصى 10 ميجابايت)",
+      "instruction": "ارفع صورة مقطع عرضي من ورقة البيانات التقنية. ستدخل الأبعاد يدوياً في الخطوة التالية."
+    },
+    "form": {
+      "profile_code": "رمز القطاع *",
+      "system_name": "اسم النظام *",
+      "width": "العرض (مم) *",
+      "height": "الارتفاع (مم) *",
+      "material_thickness": "سماكة المادة (مم) *",
+      "weight_per_meter": "الوزن لكل متر (كجم/م) *",
+      "role": "الدور *",
+      "material": "مادة الإطار *",
+      "no_image": "لم يتم رفع صورة. ارجع إلى الخطوة 1 للرفع.",
+      "visual_reference": "مرجع بصري",
+      "preview_captured": "تم التقاط هذه المعاينة ورفعها تلقائياً كصورة مصغرة للقطاع."
+    },
+    "actions": {
+      "cancel": "إلغاء",
+      "next": "التالي",
+      "back": "ارجع إلى الخطوة 1 للرفع",
+      "create": "إنشاء القطاع"
+    }
+  },
+  "smart_draw_tool": {
+    "title": "الرسم الذكي – تخطيط الواجهة",
+    "total_mullions": "إجمالي القواطع بين الأول والأخير",
+    "mullions_count": "{count} قاطع عمودي{plural} في المدى النشط.",
+    "equal_spacing": "تباعد متساوٍ داخل المدى النشط",
+    "spacing_between": "{spacing} مم بين القواطع",
+    "adjust_mullions": "اضبط القواطع لحساب التباعد",
+    "current_span": "المدى والألواح الحالية",
+    "span_panels": "مدى {span} مم، {panels} لوح{plural}",
+    "drag_to_define": "اسحب القواطع الأولى/الأخيرة لتحديد المدى",
+    "approx_panel_width": "عرض اللوح التقريبي بين الأول/الأخير: {width} مم",
+    "add_horizontal": "إضافة قاطع أفقي ثابت (عتبة)",
+    "position_from_sill": "الموضع من العتبة (مم)",
+    "location": "الموقع",
+    "in_frame": "في الإطار (قبل الورقة)",
+    "inside_sash": "داخل الورقة (اللوح)",
+    "use_slider": "استخدم المنزلق أو اسحب",
+    "orange_mullions": "القواطع البرتقالية",
+    "for_fine_tuning": "للضبط الدقيق.",
+    "auto_mullions": "قواطع تلقائية (النظام)",
+    "drag_instructions_start": "اسحب",
+    "orange": "البرتقالية",
+    "drag_instructions_end": "القواطع (الأول/الأخير) لتحديد المدى النشط. يتم تباعد القواطع المتوسطة تلقائياً.",
+    "layout_ready": "التخطيط يلبي قيود النظام الحالية. جاهز للتصدير إلى التحسين.",
+    "apply_layout": "تطبيق التخطيط على المشروع",
+    "no_project": "لم يتم تحميل مشروع. أكمل القياس الذكي أولاً.",
+    "system_min_panel": "الحد الأدنى لعرض اللوح في النظام: {width} مم",
+    "preset_info": "الإعداد المسبق ({system}): ألواح {min}–{max} مم، نموذجي {typical} مم (±10مم نطاق راحة)"
+  },
+  "engineering_bay": {
+    "title": "قسم الهندسة",
+    "confirm_design": "تأكيد التصميم والمتابعة إلى التحسين",
+    "3d_engine_mode": "وضع محرك ثلاثي الأبعاد",
+    "standard_3d": "ثلاثي الأبعاد قياسي",
+    "pro_3d": "ثلاثي الأبعاد محترف",
+    "instructions": "استخدم عناصر التحكم لتحديد هيكل النافذة. سيتحدث النموذج ثلاثي الأبعاد وقائمة المواد في الوقت الفعلي.",
+    "system_configuration": "تكوين النظام",
+    "active_system": "النظام النشط",
+    "select_system": "اختر النظام",
+    "profiles": "القطاعات",
+    "parts": "الأجزاء",
+    "system_constraints": "يتم تطبيق قيود النظام والإعدادات المسبقة تلقائياً على الرسم الذكي وثلاثي الأبعاد.",
+    "suggest_ai_layout": "اقتراح تخطيط بالذكاء الاصطناعي",
+    "structure": "الهيكل",
+    "live_digital_twin": "التوأم الرقمي المباشر (محرك Apex الإصدار 6.0)",
+    "loading_3d": "جاري تحميل معاينة ثلاثية الأبعاد...",
+    "bill_of_materials": "قائمة المواد في الوقت الفعلي",
+    "no_project_data": "لا توجد بيانات مشروع",
+    "complete_measurement": "يرجى إكمال مرحلة القياس أولاً لإنشاء مشروع."
+  },
+  "new_project_wizard": {
+    "title": "مشروع جديد – رأس احترافي",
+    "description": "حدد العميل والموقع والنظام قبل القياس. يعكس هذا كيفية تنظيم المكاتب التقنية الناضجة للمشاريع ويضمن التقارير والتصديرات المتسقة.",
+    "project_type": "نوع المشروع: {name}",
+    "change": "تغيير",
+    "project_system_packs": "حزم نظام المشروع (اختيار متعدد)",
+    "use_to_shortlist": "(استخدم لاختيار الأنظمة ذات الصلة)",
+    "profiles": "القطاعات",
+    "accessories": "الملحقات",
+    "client_company": "العميل / الشركة *",
+    "select_from_saved": "اختر من العملاء المحفوظين",
+    "choose_saved": "اختر عميل محفوظ (اختياري)",
+    "client_placeholder": "مثال: ABC للألمنيوم",
+    "project_name": "اسم المشروع *",
+    "project_placeholder": "مثال: مجمع القاهرة – برج ب",
+    "site_address": "الموقع / العنوان",
+    "site_placeholder": "مثال: القاهرة الجديدة، قطعة 17",
+    "contact_phone": "هاتف الاتصال",
+    "phone_placeholder": "+20...",
+    "order_number": "رقم الطلب (اختياري)",
+    "order_placeholder": "رقم طلبك الداخلي",
+    "order_date": "تاريخ الطلب",
+    "currency": "العملة",
+    "region": "المنطقة",
+    "continue_to_details": "المتابعة إلى تفاصيل المشروع",
+    "cancel": "إلغاء",
+    "create_project": "إنشاء المشروع وبدء القياس"
+  },
+  "window_3d_generator": {
+    "3d_controls": "عناصر تحكم ثلاثية الأبعاد",
+    "play_animation": "تشغيل الرسوم المتحركة",
+    "pause_animation": "إيقاف الرسوم المتحركة",
+    "reset_view": "إعادة تعيين العرض",
+    "show_measurements": "إظهار القياسات",
+    "hide_measurements": "إخفاء القياسات",
+    "enable_section_view": "تمكين عرض المقطع",
+    "disable_section_view": "تعطيل عرض المقطع",
+    "quality": "الجودة",
+    "low_performance": "أداء منخفض",
+    "balanced": "متوازن",
+    "high_quality": "جودة عالية",
+    "ultra": "فائق",
+    "enable_shadows": "تمكين الظلال",
+    "disable_shadows": "تعطيل الظلال",
+    "export": "تصدير",
+    "export_model": "تصدير النموذج ثلاثي الأبعاد",
+    "toggle_fullscreen": "تبديل وضع ملء الشاشة",
+    "fullscreen": "ملء الشاشة",
+    "reset_camera": "إعادة تعيين الكاميرا",
+    "zoom_in": "تكبير",
+    "zoom_out": "تصغير",
+    "exporting_model": "جاري تصدير النموذج",
+    "preparing_file": "جاري إعداد ملف {format}...",
+    "quality_label": "جودة {quality}",
+    "shadows_on": "الظلال مفعلة",
+    "shadows_off": "الظلال معطلة",
+    "section_view": "عرض المقطع",
+    "issues": "{count} مشكلة",
+    "explode": "تفجير",
+    "section_label": "المقطع: {position}مم"
+  },
+  "optimization_equalizer": {
+    "title": "معادل استراتيجية التحسين",
+    "description": "ضبط معاملات التحسين لتتناسب مع احتياجات الإنتاج الخاصة بك",
+    "optimization_strategy": "استراتيجية التحسين",
+    "waste_reduction": "تقليل النفايات",
+    "waste_reduction_desc": "إعطاء الأولوية لتقليل نفايات المواد. القيم الأعلى تقلل النفايات ولكن قد تزيد تعقيد القطع.",
+    "remnant_usage": "استخدام المخلفات",
+    "remnant_usage_desc": "إعطاء الأولوية لاستخدام المخلفات الموجودة من الوظائف السابقة. القيم الأعلى تزيد إعادة استخدام المخلفات.",
+    "cut_complexity": "تعقيد القطع",
+    "cut_complexity_desc": "التوازن بين القطع البسيطة (أسرع) والتحسين المعقد (أكثر كفاءة).",
+    "production_speed": "سرعة الإنتاج",
+    "production_speed_desc": "إعطاء الأولوية للتحسين الأسرع وعدد أقل من القطع. القيم الأعلى تقلل وقت التحسين.",
+    "estimated_waste": "النفايات المقدرة",
+    "est_bars_used": "عدد القضبان المقدر",
+    "est_opt_time": "وقت التحسين المقدر",
+    "material_constraints": "قيود المواد",
+    "min_remnant_length": "الحد الأدنى لطول المخلفات (مم)",
+    "min_remnant_desc": "لن يتم اعتبار المخلفات الأقصر من هذا لإعادة الاستخدام",
+    "max_remnant_age": "الحد الأقصى لعمر المخلفات (أيام)",
+    "max_remnant_desc": "سيتم استبعاد المخلفات الأقدم من هذا من التحسين",
+    "save_strategy": "حفظ الاستراتيجية",
+    "set_as_default": "تعيين كافتراضي"
+  },
+  "cutting_optimization": {
+    "title": "تحسين القطع المدعوم بالذكاء الاصطناعي",
+    "description": "خوارزميات متقدمة لتحسين المواد وتقليل النفايات وكفاءة التكلفة",
+    "mass_production": "الإنتاج الضخم",
+    "open_mass_production": "افتح قمرة الإنتاج الضخم لتحسين الدفعات عبر جميع الوظائف المحسّنة.",
+    "panel_title": "تحسين القطع",
+    "panel_description": "تحسين استخدام المواد وتقليل النفايات باستخدام خوارزميات مدعومة بالذكاء الاصطناعي",
+    "tabs": {
+      "cuts": "قطع القطع",
+      "stock": "المخزون",
+      "optimize": "تحسين"
+    },
+    "cut_list": "قائمة القطع",
+    "add_cut": "إضافة قطع",
+    "length": "الطول (مم)",
+    "quantity": "الكمية",
+    "label": "التسمية",
+    "priority": "الأولوية",
+    "priority_high": "عالية",
+    "priority_medium": "متوسطة",
+    "priority_low": "منخفضة",
+    "total_cuts": "إجمالي القطع: {count}",
+    "total_length": "إجمالي الطول: {length} مم",
+    "remnant": "مخلفات",
+    "available": "{count} متاح",
+    "material": "المادة: {material}",
+    "profile": "القطاع: {profile}",
+    "cost": "التكلفة: ${cost}",
+    "total_stock": "إجمالي المخزون: {length} مم",
+    "strategy": "الاستراتيجية",
+    "strategy_genetic": "الخوارزمية الجينية (الأفضل)",
+    "strategy_best_fit": "أفضل ملاءمة تنازلي",
+    "strategy_first_fit": "أول ملاءمة تنازلي",
+    "kerf_width": "عرض القطع (مم)",
+    "optimizing": "جاري التحسين...",
+    "run_optimization": "تشغيل التحسين",
+    "utilization": "الاستخدام",
+    "bars_used": "القضبان المستخدمة",
+    "waste": "النفايات (مم)",
+    "savings": "التوفير",
+    "cutting_plans": "خطط القطع",
+    "stock_number": "المخزون #{number}",
+    "export_gcode": "تصدير كود G",
+    "add_cut_error": "أضف قطعة قطع واحدة على الأقل للتحسين",
+    "run_first_error": "قم بتشغيل التحسين أولاً",
+    "export_initiated": "تم بدء تصدير كود G",
+    "optimization_failed": "فشل التحسين",
+    "python_complete": "اكتمل التحسين في Python: {utilization}% استخدام",
+    "local_complete": "اكتمل التحسين المحلي: {utilization}% استخدام"
+  },
+  "workflow_pro": {
+    "title": "سير عمل المصنع المحترف",
+    "mass_production_cockpit": "قمرة الإنتاج الضخم",
+    "description": "تحسين عبر المشاريع باستخدام الخوارزمية الجينية + القطع الواعي للمخلفات، مصمم للورش عالية الحجم.",
+    "optimised_jobs": "وظيفة محسّنة",
+    "optimised_jobs_plural": "وظائف محسّنة",
+    "user": "المستخدم",
+    "start_ai_optimization": "بدء التحسين بالذكاء الاصطناعي",
+    "optimizing_generating": "جاري التحسين وإنشاء كود G...",
+    "optimization_complete": "اكتمل التحسين",
+    "go_to_production": "الانتقال إلى أمر الإنتاج",
+    "loading_dashboard": "جاري تحميل لوحة الإنتاج الضخم…",
+    "initializing_workspace": "تهيئة مساحة العمل...",
+    "user_error": "يتطلب وضع الإنتاج الضخم مستخدم Supabase مسجلاً الدخول حتى يمكن تتبع استخدام المخلفات بشكل صحيح.",
+    "no_auth": "لم يتم اكتشاف مستخدم مصادق. يرجى تسجيل الدخول لتمكين التحسين الضخم الواعي للمخلفات.",
+    "disabled_until_auth": "تم تعطيل تحسين الإنتاج الضخم حتى يتم مصادقة المستخدم."
+  },
+  "profiles": {
+    "launch_smart_scan": "تشغيل المسح الذكي",
+    "assembly_scan": "مسح التجميع",
+    "register_description": "سجّل القطاعات الجديدة مباشرة من المسح الذكي أو التجميع، ثم أدرها هنا."
+  },
+  "smart_scan_assembly": {
+    "title": "مسح التجميع الذكي",
+    "description": "ارفع رسومات الورشة لاكتشاف هيكل التجميع وتأكيد أدوار المكونات.",
+    "upload_drawing": "رفع الرسم",
+    "analyze_assembly": "تحليل التجميع",
+    "selected": "المحدد",
+    "scan_failed": "فشل المسح",
+    "failed_to_confirm": "فشل تأكيد التجميع"
+  },
+  "production_command": {
+    "title": "مركز قيادة الإنتاج",
+    "description": "راجع الخطة المحسّنة بالذكاء الاصطناعي، واعرض القطع بصرياً، وأرسل إلى الإنتاج.",
+    "generating_plan": "جاري إنشاء خطة القطع",
+    "ai_optimizing": "الذكاء الاصطناعي يحسّن استخدام المواد...",
+    "no_optimization": "لا توجد بيانات تحسين",
+    "complete_design": "أكمل مرحلة التصميم لتوليد تحسين القطع.",
+    "efficiency": "الكفاءة",
+    "waste": "النفايات",
+    "production_time": "وقت الإنتاج",
+    "total_cost": "التكلفة الإجمالية",
+    "visual_cutting_plan": "خطة القطع البصرية",
+    "utilization": "{value}% الاستخدام",
+    "dispatch_to_production": "الإرسال إلى الإنتاج",
+    "cnc_machine_integration": "تكامل آلة CNC",
+    "target_machine": "آلة Yilmaz المستهدفة:",
+    "gcode_preview": "معاينة كود G",
+    "cut_tooltip": "قطع: {length}مم @ {angle}°",
+    "for_component": "للمكون: {componentId}",
+    "waste_tooltip": "النفايات: {length}مم",
+    "export_pdf": "تصدير قائمة القطع PDF",
+    "generate_gcode": "إنشاء وتنزيل كود G",
+    "send_to_machine": "إرسال المهمة إلى الآلة",
+    "success": "نجح",
+    "error": "خطأ",
+    "gcode_generated": "تم إنشاء كود G بنجاح.",
+    "pdf_downloaded": "تم تنزيل تقرير القطع PDF.",
+    "job_sent": "تم إرسال المهمة إلى Yilmaz {machine}.",
+    "unknown_error": "حدث خطأ غير معروف."
+  },
+  "personal_analytics": {
+    "title": "لوحة تحليل البيانات الشخصية",
+    "description": "رؤى من بيانات المعايرة الخاصة بك لتحسين الدقة والكفاءة",
+    "refresh": "تحديث",
+    "loading": "جاري تحميل التحليلات...",
+    "tabs": {
+      "insights": "الرؤى الرئيسية",
+      "strategies": "أداء الاستراتيجية",
+      "profiles": "صحة الملف الشخصي",
+      "trends": "اتجاهات الكفاءة"
+    },
+    "no_insights": "لا توجد رؤى متاحة بعد. أكمل قياسات المعايرة لرؤية التوصيات المخصصة.",
+    "no_strategies": "لا توجد بيانات أداء استراتيجية متاحة.",
+    "no_strategies_desc": "استخدم استراتيجيات مختلفة لرؤية المقارنات.",
+    "no_profiles": "لا توجد بيانات صحة ملف شخصي متاحة.",
+    "no_profiles_desc": "ابدأ بمعايرة الملفات الشخصية لرؤية الرؤى هنا.",
+    "no_trends": "لا توجد بيانات اتجاهات كفاءة متاحة.",
+    "no_trends_desc": "أكمل المزيد من اختبارات المعايرة لرؤية الاتجاهات.",
+    "period_week": "أسبوع",
+    "period_month": "شهر",
+    "health_excellent": "ممتاز",
+    "health_good": "جيد",
+    "health_needs_attention": "يحتاج إلى انتباه",
+    "health_critical": "حرج"
+  },
+  "inventory_dashboard": {
+    "title": "مركز ذكاء المخزون",
+    "description": "إدارة المخزون المركزية مع التحليلات في الوقت الفعلي، وتحسين المخلفات، وتوقعات المخزون المدعومة بالذكاء الاصطناعي للأسواق التركية والمصرية.",
+    "tabs": {
+      "overview": "نظرة عامة",
+      "remnants": "المخلفات",
+      "alerts": "التنبيهات",
+      "history": "السجل",
+      "analytics": "التحليلات",
+      "purchases": "المشتريات"
+    },
+    "use_remnants_first": "استخدم المخلفات أولاً",
+    "use_remnants_desc": "تطابق واستخدم المخلفات المتاحة تلقائياً قبل قطع المخزون الجديد",
+    "enabled": "مفعل",
+    "all_materials": "جميع المواد",
+    "systems": "الأنظمة:",
+    "all": "الكل",
+    "pricing_setup_required": "إعداد التسعير مطلوب",
+    "set_base_prices": "تعيين الأسعار الأساسية لعناصر {system}: القطاعات، الزجاج، الأجهزة، والأختام.",
+    "select_system_first": "الإعداد الأول: يرجى مراجعة وملء الأسعار قبل استخدام {system} للعروض.",
+    "daily_aluminum_price": "سعر الألومنيوم اليومي",
+    "price_per_kg": "السعر لكل كيلوغرام (USD)",
+    "auto_calculates": "يحسب تلقائياً أسعار الإطار، الورقة، وعناصر القطاع الأخرى بناءً على الوزن.",
+    "workspace": "مساحة العمل:",
+    "last_sync": "آخر مزامنة:",
+    "just_now": "الآن",
+    "live_data": "بيانات مباشرة",
+    "total_items": "إجمالي العناصر",
+    "tuned_items": "العناصر المضبوطة",
+    "low_stock": "مخزون منخفض",
+    "out_of_stock": "نفد المخزون",
+    "total_value": "القيمة الإجمالية"
+  },
+  "design_interface": {
+    "title": "مساحة عمل التصميم – قمرة الهندسة",
+    "no_project": "لا يوجد مشروع نشط – أكمل القياس الذكي أولاً.",
+    "pose_in_order": "الوضع في الطلب",
+    "inventory_not_loaded": "لم يتم تحميل ملفات المخزون بعد. يعمل Smart Draw وقمرة الهندسة بشكل أفضل بمجرد توفر بيانات القطاع من تبويب المخزون."
   }
 }
 

@@ -26,6 +26,7 @@ import {
 } from '@/algorithms/smartDraw';
 import type { SystemConstraints } from '@/lib/fabricatorValidation';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { useTranslation } from 'react-i18next';
 
 interface SmartDrawExportPayload {
   layout: SmartDrawLayout;
@@ -77,6 +78,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
   defaultMullionProfileId,
   onApplyLayout,
 }) => {
+  const { t } = useTranslation('fabricator');
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [dragTarget, setDragTarget] = useState<DragTarget>(null);
 
@@ -372,7 +374,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(
-        'No project loaded. Complete Smart Measuring first.',
+        t('smart_draw_tool.no_project', 'No project loaded. Complete Smart Measuring first.'),
         displayWidth / 2,
         displayHeight / 2,
       );
@@ -632,7 +634,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
         <div className="flex items-center gap-2">
           <LayoutGrid className="h-5 w-5 text-orange-400" />
           <CardTitle className="text-sm font-semibold">
-            Smart Draw – Facade Layout
+            {t('smart_draw_tool.title', 'Smart Draw – Facade Layout')}
           </CardTitle>
         </div>
         {project && (
@@ -646,7 +648,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
         {/* Controls */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <Label className="text-xs text-gray-300">Total Mullions between First &amp; Last</Label>
+            <Label className="text-xs text-gray-300">{t('smart_draw_tool.total_mullions', 'Total Mullions between First & Last')}</Label>
             <Slider
               min={2}
               max={8}
@@ -656,11 +658,14 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
               className="mt-2"
             />
             <p className="text-[11px] text-gray-400 mt-1">
-              {totalMullions} vertical bar{totalMullions > 1 ? 's' : ''} in the active span.
+              {t('smart_draw_tool.mullions_count', '{count} vertical bar{plural} in the active span.', {
+                count: totalMullions,
+                plural: totalMullions > 1 ? 's' : ''
+              })}
             </p>
           </div>
           <div>
-            <Label className="text-xs text-gray-300">Equal Spacing within Active Span</Label>
+            <Label className="text-xs text-gray-300">{t('smart_draw_tool.equal_spacing', 'Equal Spacing within Active Span')}</Label>
             <p
               className={`text-sm mt-2 ${
                 spacingToleranceStatus === 'error'
@@ -671,37 +676,40 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
               }`}
             >
               {spanAndSpacing.spacingMm > 0
-                ? `${spanAndSpacing.spacingMm.toFixed(0)} mm between mullions`
-                : 'Adjust mullions to compute spacing'}
+                ? t('smart_draw_tool.spacing_between', '{spacing} mm between mullions', { spacing: spanAndSpacing.spacingMm.toFixed(0) })
+                : t('smart_draw_tool.adjust_mullions', 'Adjust mullions to compute spacing')}
             </p>
               {activePackPreset ? (
                 <p className="text-[11px] text-gray-500">
-                  {`Preset (${project?.systemPackId?.toUpperCase()}): panels ${activePackPreset.minPanelWidthMm.toFixed(
-                    0,
-                  )}–${activePackPreset.maxPanelWidthMm.toFixed(0)} mm, typical ${activePackPreset.typicalPanelWidthsMm
-                    .map((v) => v.toFixed(0))
-                    .join(', ')} mm (±10mm comfort band)`}
+                  {t('smart_draw_tool.preset_info', 'Preset ({system}): panels {min}–{max} mm, typical {typical} mm (±10mm comfort band)', {
+                    system: project?.systemPackId?.toUpperCase() || '',
+                    min: activePackPreset.minPanelWidthMm.toFixed(0),
+                    max: activePackPreset.maxPanelWidthMm.toFixed(0),
+                    typical: activePackPreset.typicalPanelWidthsMm.map((v) => v.toFixed(0)).join(', ')
+                  })}
                 </p>
               ) : (
                 constraints?.minWidthMm && (
                   <p className="text-[11px] text-gray-500">
-                    System min panel width: {constraints.minWidthMm.toFixed(0)} mm
+                    {t('smart_draw_tool.system_min_panel', 'System min panel width: {width} mm', { width: constraints.minWidthMm.toFixed(0) })}
                   </p>
                 )
               )}
           </div>
           <div>
-            <Label className="text-xs text-gray-300">Current Span &amp; Panels</Label>
+            <Label className="text-xs text-gray-300">{t('smart_draw_tool.current_span', 'Current Span & Panels')}</Label>
             <p className="text-sm text-gray-100 mt-2">
               {spanAndSpacing.spanMm > 0
-                ? `${spanAndSpacing.spanMm.toFixed(0)} mm span, ${
-                    mullionsMm.length + 1
-                  } panel${mullionsMm.length + 1 > 1 ? 's' : ''}`
-                : 'Drag first / last mullions to define span'}
+                ? t('smart_draw_tool.span_panels', '{span} mm span, {panels} panel{plural}', {
+                    span: spanAndSpacing.spanMm.toFixed(0),
+                    panels: mullionsMm.length + 1,
+                    plural: mullionsMm.length + 1 > 1 ? 's' : ''
+                  })
+                : t('smart_draw_tool.drag_to_define', 'Drag first / last mullions to define span')}
             </p>
             {spacingPerPanel > 0 && (
               <p className="text-[11px] text-gray-500">
-                Approx. panel width between first / last: {spacingPerPanel.toFixed(0)} mm
+                {t('smart_draw_tool.approx_panel_width', 'Approx. panel width between first / last: {width} mm', { width: spacingPerPanel.toFixed(0) })}
               </p>
             )}
           </div>
@@ -716,13 +724,13 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
               onCheckedChange={(checked) => setEnableHorizontal(checked === true)}
             />
             <Label htmlFor="enable-horizontal" className="text-xs text-gray-300">
-              Add fixed horizontal mullion (transom)
+              {t('smart_draw_tool.add_horizontal', 'Add fixed horizontal mullion (transom)')}
             </Label>
           </div>
           {enableHorizontal && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px]">
               <div>
-                <Label className="text-[11px] text-gray-300">Position from sill (mm)</Label>
+                <Label className="text-[11px] text-gray-300">{t('smart_draw_tool.position_from_sill', 'Position from sill (mm)')}</Label>
                 <Input
                   type="number"
                   value={horizontalPositionMm ?? ''}
@@ -740,7 +748,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
                 />
               </div>
               <div>
-                <Label className="text-[11px] text-gray-300">Location</Label>
+                <Label className="text-[11px] text-gray-300">{t('smart_draw_tool.location', 'Location')}</Label>
                 <Select
                   value={horizontalLocation}
                   onValueChange={(v) => setHorizontalLocation(v as 'frame' | 'sash')}
@@ -749,8 +757,8 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-900 border-gray-700 text-xs">
-                    <SelectItem value="frame">In frame (before sash)</SelectItem>
-                    <SelectItem value="sash">Inside sash (leaf)</SelectItem>
+                    <SelectItem value="frame">{t('smart_draw_tool.in_frame', 'In frame (before sash)')}</SelectItem>
+                    <SelectItem value="sash">{t('smart_draw_tool.inside_sash', 'Inside sash (leaf)')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -761,8 +769,9 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
         {/* Quick actions */}
         <div className="flex items-center justify-between text-[11px] text-gray-400">
           <span>
-            Use the slider or drag the{' '}
-            <span className="text-orange-400 font-semibold">orange mullions</span> for fine‑tuning.
+            {t('smart_draw_tool.use_slider', 'Use the slider or drag the')}{' '}
+            <span className="text-orange-400 font-semibold">{t('smart_draw_tool.orange_mullions', 'orange mullions')}</span>{' '}
+            {t('smart_draw_tool.for_fine_tuning', 'for fine‑tuning.')}
           </span>
           <Button
             type="button"
@@ -772,7 +781,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
             onClick={applySystemDefaultLayout}
             disabled={!project || !overallWidth}
           >
-            Auto mullions (system)
+            {t('smart_draw_tool.auto_mullions', 'Auto mullions (system)')}
           </Button>
         </div>
 
@@ -787,8 +796,9 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
             onPointerLeave={handlePointerUp}
           />
           <p className="text-[11px] text-gray-500 mt-2">
-            Drag the <span className="text-orange-400 font-semibold">orange</span> mullions (first / last)
-            to define the active span. Intermediate mullions are auto-spaced.
+            {t('smart_draw_tool.drag_instructions_start', 'Drag the')}{' '}
+            <span className="text-orange-400 font-semibold">{t('smart_draw_tool.orange', 'orange')}</span>{' '}
+            {t('smart_draw_tool.drag_instructions_end', 'mullions (first / last) to define the active span. Intermediate mullions are auto-spaced.')}
           </p>
         </div>
 
@@ -812,7 +822,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
         {spanAndSpacing.errors.length === 0 && validation.isValid && mullionsMm.length > 0 && (
           <Alert className="bg-emerald-900/20 border-emerald-500">
             <AlertDescription className="text-sm text-emerald-100">
-              Layout satisfies current system constraints. Ready for export to optimization.
+              {t('smart_draw_tool.layout_ready', 'Layout satisfies current system constraints. Ready for export to optimization.')}
             </AlertDescription>
           </Alert>
         )}
@@ -825,7 +835,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
             disabled={!project || mullionsMm.length === 0 || !onApplyLayout}
             onClick={handleApplyLayout}
           >
-            Apply Layout to Project
+            {t('smart_draw_tool.apply_layout', 'Apply Layout to Project')}
           </Button>
         </div>
       </CardContent>

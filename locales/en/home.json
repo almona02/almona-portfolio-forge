@@ -1,0 +1,147 @@
+{
+  "hero": {
+    "slides": {
+      "fabricator_pro": {
+        "title": "Fabricator Pro",
+        "subtitle": "Empowering Egypt's Industrial Transformation",
+        "description": "Supporting Egypt Vision 2030",
+        "badge_national": "National Strategic Asset",
+        "cta_primary": "Start Your Digital Transformation",
+        "cta_secondary": "Contact Us"
+      },
+      "yilmaz_machines": {
+        "title": "YILMAZ Machines",
+        "subtitle": "Premium Quality Aluminium & PVC Processing Machines",
+        "description": "Authorized Dealer in Egypt Since 2000",
+        "badge_official": "Official Partner",
+        "cta_primary": "Explore YILMAZ Machines",
+        "cta_secondary": "Contact Us"
+      },
+      "almona_co": {
+        "title": "ALMONA Co.",
+        "subtitle": "Your Trusted Partner Since 1991",
+        "description": "Expert Consultation, Sales & Service",
+        "cta_primary": "Explore ALMONA Co.",
+        "cta_secondary": "Contact Us"
+      }
+    },
+    "transition": {
+      "preparing": "Preparing next story"
+    }
+  },
+  "national_impact": {
+    "badge": "🇪🇬 National Service Impact",
+    "title": "National Industrial Impact",
+    "subtitle": "Almona Portfolio Forge is driving real economic and social change across Egypt's manufacturing sector.",
+    "stats": {
+      "import_substitution": {
+        "label": "Import Substitution",
+        "value": "$12.5M",
+        "description": "Foreign currency saved"
+      },
+      "digital_fabricators": {
+        "label": "Digital Fabricators",
+        "value": "5,000+",
+        "description": "Youth trained & certified"
+      },
+      "sme_workshops": {
+        "label": "SME Workshops",
+        "value": "1,200",
+        "description": "Modernized & digitized"
+      },
+      "carbon_reduction": {
+        "label": "Carbon Reduction",
+        "value": "150kT",
+        "description": "CO2 emissions prevented"
+      }
+    }
+  },
+  "egypt_vision_2030": {
+    "badge": "Aligned with Egypt Vision 2030",
+    "title_prefix": "Building a Competitive, Balanced, and",
+    "title_highlight": "Diversified Economy",
+    "description": "We are committed to the national strategy for sustainable development. Our platform empowers local manufacturers, reduces import dependency, and fosters a knowledge-based economy.",
+    "features": {
+      "integrated_sustainable": {
+        "title": "Integrated & Sustainable",
+        "description": "Supporting the transition to a circular green economy."
+      },
+      "knowledge_innovation": {
+        "title": "Knowledge & Innovation",
+        "description": "Investing in human capital and digital transformation."
+      }
+    },
+    "cta": "Read Our National Pledge",
+    "visual": {
+      "title": "Egypt Vision 2030",
+      "subtitle": "Sustainable Development Strategy"
+    }
+  },
+  "about": {
+    "title_prefix": "ALMONA Co.",
+    "title_suffix": "Your Trusted Partner Since 1991",
+    "description_1": "With over three decades of experience in the machinery and profile industry, ALMONA has established itself as a leading provider of high-quality equipment and materials for aluminum and UPVC fabrication in Egypt.",
+    "description_2": "As the first and authorized dealer of YILMAZ machines since 2000, we've built a reputation for excellence in both products and services. Our commitment to quality ensures our clients receive only the best materials for their projects.",
+    "stats": {
+      "years_experience": "Years of Experience",
+      "projects_completed": "Projects Completed",
+      "satisfied_clients": "Satisfied Clients",
+      "customer_support": "Customer Support"
+    },
+    "cta": "Learn More About Us"
+  },
+  "services": {
+    "badge": "What We Offer",
+    "title_prefix": "Comprehensive",
+    "title_highlight": "Services",
+    "title_suffix": "for Your Business",
+    "subtitle": "From sales and maintenance to training and customization, we provide end-to-end solutions for aluminum and UPVC fabricators.",
+    "items": {
+      "machine_sales": {
+        "title": "Machine Sales",
+        "description": "Full range of YILMAZ machines for aluminum and UPVC processing"
+      },
+      "used_machines": {
+        "title": "Used Machines",
+        "description": "Verified B2B used-machine marketplace with logistics support."
+      },
+      "maintenance_support": {
+        "title": "Maintenance & Support",
+        "description": "Expert maintenance and technical support for all machinery"
+      },
+      "tuning_studio": {
+        "title": "Tuning Studio",
+        "description": "Fabricator Pro tuning for cut/optimize recipes, machine presets, and QA baselines."
+      },
+      "spare_parts": {
+        "title": "Spare Parts",
+        "description": "Genuine spare parts and accessories for all machines"
+      },
+      "technical_training": {
+        "title": "Technical Training",
+        "description": "Comprehensive training programs for machine operation"
+      },
+      "remnant_marketplace": {
+        "title": "Remnant Marketplace",
+        "description": "B2B remnant exchange with verification, pricing, and logistics baked in."
+      },
+      "analytics_optimization": {
+        "title": "Analytics & Optimization",
+        "description": "Waste reduction (15–30%), OEE dashboards, and AI advisory for jobs."
+      }
+    },
+    "learn_more": "Learn More",
+    "cta": "View All Services"
+  },
+  "featured_products": {
+    "badge": "Products",
+    "title_prefix": "Featured",
+    "title_highlight": "Products",
+    "subtitle": "Discover our selection of premium YILMAZ machines, designed to elevate your aluminum and UPVC fabrication projects.",
+    "tabs": {
+      "machines": "YILMAZ Machines"
+    },
+    "cta": "TRY Me (AR)"
+  }
+}
+

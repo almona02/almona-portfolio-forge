@@ -38,6 +38,7 @@ import { ProductionPreviewDialog } from './ProductionPreviewDialog';
 import { MachineValidator } from '@/integrations/yilmaz/MachineValidator';
 import { PDFExportService } from '@/modules/reporting';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
+import { useTranslation } from 'react-i18next';
 
 interface ProductionCommandProps {
     project: WindowUnit | null;
@@ -81,8 +82,8 @@ const StockBarVisualization: React.FC<{ plan: CuttingPlan }> = ({ plan }) => {
                                 </div>
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>Cut: {cut.length}mm @ {cut.angle}°</p>
-                                <p>For Component: {cut.componentId}</p>
+                                <p>{t('production_command.cut_tooltip', 'Cut: {length}mm @ {angle}°', { length: cut.length, angle: cut.angle })}</p>
+                                <p>{t('production_command.for_component', 'For Component: {componentId}', { componentId: cut.componentId })}</p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -99,7 +100,7 @@ const StockBarVisualization: React.FC<{ plan: CuttingPlan }> = ({ plan }) => {
                                 </div>
                             </TooltipTrigger>
                              <TooltipContent>
-                                <p>Waste: {wasteLength.toFixed(0)}mm</p>
+                                <p>{t('production_command.waste_tooltip', 'Waste: {length}mm', { length: wasteLength.toFixed(0) })}</p>
                              </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -124,6 +125,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
     isGenerating,
     profiles = [],
 }) => {
+    const { t } = useTranslation('fabricator');
     // --- State Management ---
     const [selectedMachine, setSelectedMachine] = useState<YilmazMachineModel>('AIM-7510');
     const [isProcessing, setIsProcessing] = useState(false);
@@ -265,20 +267,20 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
             switch (pendingAction) {
                 case 'gcode':
                     await handleGenerateGCode();
-                    resultMessage = "G-code generated successfully.";
+                    resultMessage = t('production_command.gcode_generated', 'G-code generated successfully.');
                     break;
                 case 'report':
                     await handleExportCuttingReport();
-                    resultMessage = "PDF Cutting Report downloaded.";
+                    resultMessage = t('production_command.pdf_downloaded', 'PDF Cutting Report downloaded.');
                     break;
                 case 'send':
                     await handleSendToMachine();
-                    resultMessage = `Job sent to Yilmaz ${selectedMachine}.`;
+                    resultMessage = t('production_command.job_sent', 'Job sent to Yilmaz {machine}.', { machine: selectedMachine });
                     break;
             }
             setLastActionResult({ success: true, message: resultMessage });
         } catch (error: any) {
-            setLastActionResult({ success: false, message: error.message || 'An unknown error occurred.' });
+            setLastActionResult({ success: false, message: error.message || t('production_command.unknown_error', 'An unknown error occurred.') });
         } finally {
             setIsProcessing(false);
             setPendingAction(null);
@@ -291,8 +293,8 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
             <Card className="bg-gray-700/50 border-gray-600">
                 <CardContent className="p-8 text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-400 mx-auto mb-4"></div>
-                    <h3 className="text-lg font-semibold mb-2">Generating Cutting Plan</h3>
-                    <p className="text-gray-400">AI is optimizing your material usage...</p>
+                    <h3 className="text-lg font-semibold mb-2">{t('production_command.generating_plan', 'Generating Cutting Plan')}</h3>
+                    <p className="text-gray-400">{t('production_command.ai_optimizing', 'AI is optimizing your material usage...')}</p>
                 </CardContent>
             </Card>
         );
@@ -303,8 +305,8 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
             <Card className="bg-gray-700/50 border-gray-600">
                 <CardContent className="p-8 text-center">
                     <Scissors className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">No Optimization Data</h3>
-                    <p className="text-gray-400">Complete the design phase to generate cutting optimization.</p>
+                    <h3 className="text-lg font-semibold mb-2">{t('production_command.no_optimization', 'No Optimization Data')}</h3>
+                    <p className="text-gray-400">{t('production_command.complete_design', 'Complete the design phase to generate cutting optimization.')}</p>
                 </CardContent>
             </Card>
         );
@@ -316,10 +318,10 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                  <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
                         <Scissors className="h-6 w-6 text-orange-400" />
-                        Production Command Center
+                        {t('production_command.title', 'Production Command Center')}
                     </CardTitle>
                     <AlertDescription className="text-gray-400">
-                        Review the AI-optimized plan, visualize the cuts, and dispatch to production.
+                        {t('production_command.description', 'Review the AI-optimized plan, visualize the cuts, and dispatch to production.')}
                     </AlertDescription>
                 </CardHeader>
             </Card>
@@ -340,7 +342,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                     <CardContent className="p-4 text-center">
                         <TrendingUp className="h-8 w-8 text-green-400 mx-auto mb-2" />
                         <div className="text-2xl font-bold text-green-400">{optimization.nestingEfficiency.toFixed(1)}%</div>
-                        <div className="text-sm text-gray-400">Efficiency</div>
+                        <div className="text-sm text-gray-400">{t('production_command.efficiency', 'Efficiency')}</div>
                     </CardContent>
                 </Card>
 
@@ -348,7 +350,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                     <CardContent className="p-4 text-center">
                         <Package className="h-8 w-8 text-blue-400 mx-auto mb-2" />
                         <div className="text-2xl font-bold text-blue-400">{optimization.wastePercentage.toFixed(1)}%</div>
-                        <div className="text-sm text-gray-400">Waste</div>
+                        <div className="text-sm text-gray-400">{t('production_command.waste', 'Waste')}</div>
                     </CardContent>
                 </Card>
 
@@ -356,7 +358,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                     <CardContent className="p-4 text-center">
                         <Clock className="h-8 w-8 text-yellow-400 mx-auto mb-2" />
                         <div className="text-2xl font-bold text-yellow-400">{optimization.estimatedProductionTime.toFixed(1)}m</div>
-                        <div className="text-sm text-gray-400">Production Time</div>
+                        <div className="text-sm text-gray-400">{t('production_command.production_time', 'Production Time')}</div>
                     </CardContent>
                 </Card>
 
@@ -364,7 +366,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                     <CardContent className="p-4 text-center">
                         <DollarSign className="h-8 w-8 text-orange-400 mx-auto mb-2" />
                         <div className="text-2xl font-bold text-orange-400">${optimization.costBreakdown.totalCost.toFixed(0)}</div>
-                        <div className="text-sm text-gray-400">Total Cost</div>
+                        <div className="text-sm text-gray-400">{t('production_command.total_cost', 'Total Cost')}</div>
                     </CardContent>
                 </Card>
             </div>
@@ -372,7 +374,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
             {/* --- 3. VISUAL CUTTING PLAN --- */}
             <Card className="bg-gray-800/30 border-gray-700">
                 <CardHeader>
-                    <CardTitle className="text-base">Visual Cutting Plan</CardTitle>
+                    <CardTitle className="text-base">{t('production_command.visual_cutting_plan', 'Visual Cutting Plan')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     {optimization.cuttingPlan.map((plan, index) => (
@@ -380,7 +382,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                             <div className="flex justify-between items-baseline mb-2">
                                 <h4 className="font-semibold text-gray-200">{plan.profile.name}</h4>
                                 <Badge variant="outline" className="font-mono text-xs">
-                                    {plan.utilization?.toFixed(1)}% Utilization
+                                    {t('production_command.utilization', '{value}% Utilization', { value: plan.utilization?.toFixed(1) })}
                                 </Badge>
                             </div>
                             <StockBarVisualization plan={plan} />
@@ -392,14 +394,14 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
             {/* --- 4. DISPATCH TO PRODUCTION --- */}
             <Card className="bg-gray-800/30 border-gray-700" id="dispatch-section">
                 <CardHeader>
-                     <CardTitle className="text-base">Dispatch to Production</CardTitle>
+                     <CardTitle className="text-base">{t('production_command.dispatch_to_production', 'Dispatch to Production')}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Side: CNC Machine Control */}
                     <div className="space-y-4">
-                        <h3 className="font-semibold text-gray-300">CNC Machine Integration</h3>
+                        <h3 className="font-semibold text-gray-300">{t('production_command.cnc_machine_integration', 'CNC Machine Integration')}</h3>
                         <div>
-                            <label className="text-sm font-medium text-gray-400">Target Yilmaz Machine:</label>
+                            <label className="text-sm font-medium text-gray-400">{t('production_command.target_machine', 'Target Yilmaz Machine:')}</label>
                             <Select value={selectedMachine} onValueChange={(val) => setSelectedMachine(val as YilmazMachineModel)}>
                                 <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-white">
                                     <SelectValue />
@@ -416,7 +418,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
 
                         {gCodePreview && (
                              <div>
-                                <label className="text-sm font-medium text-gray-400 mb-2 block">G-Code Preview</label>
+                                <label className="text-sm font-medium text-gray-400 mb-2 block">{t('production_command.gcode_preview', 'G-Code Preview')}</label>
                                 <pre className="p-4 bg-black/50 rounded-md text-xs text-green-300 font-mono overflow-auto max-h-48 border border-gray-700">
                                     <code>{gCodePreview.substring(0, 1000)}...</code>
                                 </pre>
@@ -426,7 +428,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                         {lastActionResult && (
                             <Alert variant={lastActionResult.success ? 'default' : 'destructive'} className={lastActionResult.success ? "bg-green-900/30 border-green-500/50" : "bg-red-900/30 border-red-500/50"}>
                                 <AlertCircle className="h-4 w-4" />
-                                <AlertTitle>{lastActionResult.success ? "Success" : "Error"}</AlertTitle>
+                                <AlertTitle>{lastActionResult.success ? t('production_command.success', 'Success') : t('production_command.error', 'Error')}</AlertTitle>
                                 <AlertDescription>{lastActionResult.message}</AlertDescription>
                             </Alert>
                         )}
@@ -435,13 +437,13 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                     {/* Right Side: Action Buttons */}
                     <div className="bg-gray-900/50 p-6 rounded-lg border border-gray-700 flex flex-col justify-center space-y-4">
                         <Button onClick={() => confirmAndExecute('report')} disabled={isProcessing} variant="outline" size="lg">
-                            <Download className="h-4 w-4 mr-2"/> Export PDF Cutting List
+                            <Download className="h-4 w-4 mr-2"/> {t('production_command.export_pdf', 'Export PDF Cutting List')}
                         </Button>
                         <Button onClick={() => confirmAndExecute('gcode')} disabled={isProcessing} variant="outline" size="lg">
-                            <Code className="h-4 w-4 mr-2"/> Generate & Download G-Code
+                            <Code className="h-4 w-4 mr-2"/> {t('production_command.generate_gcode', 'Generate & Download G-Code')}
                         </Button>
                          <Button onClick={() => confirmAndExecute('send')} disabled={isProcessing || !gCodePreview} size="lg" className="bg-orange-600 hover:bg-orange-700 text-white shadow-lg">
-                            <Send className="h-4 w-4 mr-2"/> Send Job to Machine
+                            <Send className="h-4 w-4 mr-2"/> {t('production_command.send_to_machine', 'Send Job to Machine')}
                         </Button>
                     </div>
                 </CardContent>

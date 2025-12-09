@@ -6,12 +6,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import ProductCard from "@/shared/ui/ui/ProductCard";
 import { ArrowRight, Box } from "lucide-react";
 import { yilmazMachines } from "@/constants/yilmazMachines";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "react-i18next";
 import { Machine } from "@/types";
 
 const FeaturedProducts = () => {
   const [activeTab, setActiveTab] = useState("machines");
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('home');
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -80,13 +80,12 @@ const FeaturedProducts = () => {
     <section className="py-12 sm:py-16 md:py-20 bg-almona-dark">
       <div className="container mx-auto px-3 sm:px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 md:mb-12">
-          <span className="text-almona-orange font-medium text-xs sm:text-sm md:text-base opacity-90 sm:opacity-100">{t('common.navigation.products')}</span>
+          <span className="text-almona-orange font-medium text-xs sm:text-sm md:text-base opacity-90 sm:opacity-100">{t('featured_products.badge')}</span>
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mt-2 mb-2 sm:mb-3 md:mb-4 leading-tight px-2">
-            Featured <span className="text-gradient-orange">Products</span>
+            {t('featured_products.title_prefix')} <span className="text-gradient-orange">{t('featured_products.title_highlight')}</span>
           </h2>
           <p className="text-gray-400/90 sm:text-gray-400 text-xs sm:text-sm md:text-base px-3 sm:px-4">
-            Discover our selection of premium YILMAZ machines, 
-            designed to elevate your aluminum and UPVC fabrication projects.
+            {t('featured_products.subtitle')}
           </p>
         </div>
 
@@ -97,7 +96,7 @@ const FeaturedProducts = () => {
                 value="machines" 
                 className={`${activeTab === "machines" ? "text-white" : "text-gray-400"} px-4 sm:px-5 md:px-6 text-xs sm:text-sm md:text-base`}
               >
-                YILMAZ Machines
+                {t('featured_products.tabs.machines')}
               </TabsTrigger>
             </TabsList>
           </div>
@@ -119,7 +118,7 @@ const FeaturedProducts = () => {
                   aria-label="Open SwiftXR AR experience"
                 >
                   <Box className="h-4 w-4 sm:h-5 sm:w-5" />
-                  TRY Me (AR)
+                  {t('featured_products.cta')}
                   <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Link>
               </Button>

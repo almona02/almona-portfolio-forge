@@ -1,8 +1,10 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const EgyptVision2030Section = () => {
+  const { t } = useTranslation('home');
   return (
     <section className="py-20 bg-gradient-to-b from-slate-950 to-slate-900 relative overflow-hidden">
       {/* Background decorative elements */}
@@ -16,16 +18,16 @@ export const EgyptVision2030Section = () => {
           <div className="lg:w-1/2">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-orange-500/20 to-amber-500/10 border border-orange-500/30 text-orange-400 text-sm font-semibold rounded-full mb-6">
               <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-              Aligned with Egypt Vision 2030
+              {t('egypt_vision_2030.badge')}
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
-              Building a Competitive, Balanced, and{' '}
+              {t('egypt_vision_2030.title_prefix')}{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">
-                Diversified Economy
+                {t('egypt_vision_2030.title_highlight')}
               </span>
             </h2>
             <p className="text-lg text-slate-400 mb-8 leading-relaxed">
-              We are committed to the national strategy for sustainable development. Our platform empowers local manufacturers, reduces import dependency, and fosters a knowledge-based economy.
+              {t('egypt_vision_2030.description')}
             </p>
             <div className="space-y-5 mb-10">
               <div className="flex items-start gap-4 group">
@@ -34,9 +36,9 @@ export const EgyptVision2030Section = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-white group-hover:text-orange-400 transition-colors">
-                    Integrated & Sustainable
+                    {t('egypt_vision_2030.features.integrated_sustainable.title')}
                   </h4>
-                  <p className="text-slate-500">Supporting the transition to a circular green economy.</p>
+                  <p className="text-slate-500">{t('egypt_vision_2030.features.integrated_sustainable.description')}</p>
                 </div>
               </div>
               <div className="flex items-start gap-4 group">
@@ -45,16 +47,16 @@ export const EgyptVision2030Section = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-white group-hover:text-orange-400 transition-colors">
-                    Knowledge & Innovation
+                    {t('egypt_vision_2030.features.knowledge_innovation.title')}
                   </h4>
-                  <p className="text-slate-500">Investing in human capital and digital transformation.</p>
+                  <p className="text-slate-500">{t('egypt_vision_2030.features.knowledge_innovation.description')}</p>
                 </div>
               </div>
             </div>
             <Button 
               className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold px-6 py-3 h-auto shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300 group"
             >
-              Read Our National Pledge
+              {t('egypt_vision_2030.cta')}
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -74,9 +76,9 @@ export const EgyptVision2030Section = () => {
                     EG
                   </div>
                   <div className="text-lg sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">
-                    Egypt Vision 2030
+                    {t('egypt_vision_2030.visual.title')}
                   </div>
-                  <div className="text-xs sm:text-sm text-slate-400 mt-2 sm:mt-3">Sustainable Development Strategy</div>
+                  <div className="text-xs sm:text-sm text-slate-400 mt-2 sm:mt-3">{t('egypt_vision_2030.visual.subtitle')}</div>
                 </div>
                 
                 {/* Corner accents */}

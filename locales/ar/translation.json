@@ -1,6 +1,6 @@
 {
   "common": {
-    "welcome": "أهلاً وسهلاً بك في المونة للحلول الصناعية",
+    "welcome": "أهلاً وسهلاً بك في المُنى للحلول الصناعية",
     "products": "المعدات الصناعية",
     "services": "الخدمات التقنية",
     "contact": "اتصل بنا",
@@ -37,7 +37,14 @@
     "confirm_password": "تأكيد كلمة المرور",
     "forgot_password": "نسيت كلمة المرور؟",
     "sign_in": "تسجيل الدخول",
+    "signing_in": "جاري تسجيل الدخول...",
     "sign_up": "إنشاء حساب",
+    "welcome_back": "مرحباً بعودتك، المصنع",
+    "sign_in_to_continue": "سجّل الدخول للمتابعة إلى ألمونا",
+    "remember_me": "تذكرني على هذا المتصفح",
+    "dont_have_account": "ليس لديك حساب؟",
+    "email_placeholder": "you@example.com",
+    "password_placeholder": "••••••••",
     "name": "الاسم الكامل",
     "phone": "رقم الهاتف",
     "company": "اسم الشركة",
@@ -64,7 +71,51 @@
     "maintenance": "خدمات الصيانة",
     "support": "الدعم التقني",
     "quotes": "طلبات العروض",
-    "customer_portal": "بوابة العملاء"
+    "customer_portal": "بوابة العملاء",
+    "fabricator_pro": "فابريكيتور برو",
+    "smart_shop": "المتجر الذكي",
+    "products": {
+      "title": "المنتجات",
+      "yilmaz_machines": {
+        "name": "آلات يلماز",
+        "description": "حلول الآلات الصناعية"
+      },
+      "3d_configurator": {
+        "name": "مكوّن ثلاثي الأبعاد",
+        "description": "تخصيص في الوقت الفعلي"
+      },
+      "ar_viewer": {
+        "name": "عارض الواقع المعزز",
+        "description": "شاهده في مساحتك"
+      },
+      "3d_gallery": {
+        "name": "معرض ثلاثي الأبعاد",
+        "description": "مجموعة نماذج ثلاثية الأبعاد تفاعلية"
+      }
+    },
+    "services": {
+      "title": "الخدمات",
+      "all_services": {
+        "name": "جميع الخدمات",
+        "description": "نظرة عامة شاملة على الخدمات المدعومة بالذكاء الاصطناعي"
+      },
+      "ai_equipment_advisor": {
+        "name": "مستشار المعدات بالذكاء الاصطناعي",
+        "description": "توصيات ذكية"
+      },
+      "machine_sales": {
+        "name": "بيع الآلات",
+        "description": "أفضل الصفقات مضمونة"
+      },
+      "technical_training": {
+        "name": "التدريب التقني",
+        "description": "جلسات بقيادة خبراء"
+      },
+      "fabrication_services": {
+        "name": "خدمات التصنيع",
+        "description": "هندسة دقيقة"
+      }
+    }
   },
   "actions": {
     "viewMore": "عرض التفاصيل",

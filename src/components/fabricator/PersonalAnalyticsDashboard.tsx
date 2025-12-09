@@ -24,6 +24,7 @@ import {
 import { personalAnalytics, type CalibrationInsight, type StrategyPerformance, type ProfileHealth, type EfficiencyTrend } from '@/lib/analytics/PersonalAnalytics';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { VirtualizedAnalyticsList } from './VirtualizedAnalyticsList';
+import { useTranslation } from 'react-i18next';
 
 interface PersonalAnalyticsDashboardProps {
   userId: string;
@@ -32,6 +33,7 @@ interface PersonalAnalyticsDashboardProps {
 export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProps> = ({
   userId,
 }) => {
+  const { t } = useTranslation('fabricator');
   const [insights, setInsights] = useState<CalibrationInsight[]>([]);
   const [strategyPerformance, setStrategyPerformance] = useState<StrategyPerformance[]>([]);
   const [profileHealth, setProfileHealth] = useState<ProfileHealth[]>([]);
@@ -95,7 +97,7 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
       <Card className="bg-gray-800/50 border-gray-700">
         <CardContent className="p-8 text-center">
           <RefreshCw className="h-8 w-8 animate-spin text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-400">Loading analytics...</p>
+          <p className="text-gray-400">{t('personal_analytics.loading', 'Loading analytics...')}</p>
         </CardContent>
       </Card>
     );
@@ -109,10 +111,10 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2 text-xl">
-                <BarChart3 className="h-6 w-6 text-purple-400" /> Personal Analytics Dashboard
+                <BarChart3 className="h-6 w-6 text-purple-400" /> {t('personal_analytics.title', 'Personal Analytics Dashboard')}
               </CardTitle>
               <CardDescription className="text-gray-400 mt-1">
-                Insights from your calibration data to improve accuracy and efficiency
+                {t('personal_analytics.description', 'Insights from your calibration data to improve accuracy and efficiency')}
               </CardDescription>
             </div>
             <Button
@@ -122,7 +124,7 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
               className="text-gray-300 border-gray-600 hover:bg-gray-700"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
+              {t('personal_analytics.refresh', 'Refresh')}
             </Button>
           </div>
         </CardHeader>
@@ -160,9 +162,9 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
         <CardContent className="pt-4">
           <Tabs defaultValue="profiles" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="profiles">Profile Health</TabsTrigger>
-          <TabsTrigger value="strategies">Strategy Performance</TabsTrigger>
-          <TabsTrigger value="trends">Efficiency Trends</TabsTrigger>
+          <TabsTrigger value="profiles">{t('personal_analytics.tabs.profiles', 'Profile Health')}</TabsTrigger>
+          <TabsTrigger value="strategies">{t('personal_analytics.tabs.strategies', 'Strategy Performance')}</TabsTrigger>
+          <TabsTrigger value="trends">{t('personal_analytics.tabs.trends', 'Efficiency Trends')}</TabsTrigger>
         </TabsList>
 
         {/* Profile Health Tab */}
@@ -178,8 +180,8 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
               {profileHealth.length === 0 ? (
                 <div className="text-center py-8 text-gray-400">
                   <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No calibration data available yet.</p>
-                  <p className="text-sm mt-2">Start calibrating profiles to see insights here.</p>
+                  <p>{t('personal_analytics.no_profiles', 'No profile health data available.')}</p>
+                  <p className="text-sm mt-2">{t('personal_analytics.no_profiles_desc', 'Start calibrating profiles to see insights here.')}</p>
                 </div>
               ) : (
                 <VirtualizedAnalyticsList
@@ -215,7 +217,11 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
                           variant="outline"
                           className={getHealthStatusColor(profile.healthStatus)}
                         >
-                          {profile.healthStatus.replace('_', ' ')}
+                          {profile.healthStatus === 'excellent' ? t('personal_analytics.health_excellent', 'Excellent') :
+                           profile.healthStatus === 'good' ? t('personal_analytics.health_good', 'Good') :
+                           profile.healthStatus === 'needs_attention' ? t('personal_analytics.health_needs_attention', 'Needs Attention') :
+                           profile.healthStatus === 'critical' ? t('personal_analytics.health_critical', 'Critical') :
+                           profile.healthStatus.replace('_', ' ')}
                         </Badge>
                       </div>
                       <p className="text-sm text-gray-400 mt-2">{profile.recommendation}</p>
@@ -240,8 +246,8 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
               {strategyPerformance.length === 0 ? (
                 <div className="text-center py-8 text-gray-400">
                   <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No strategy performance data available yet.</p>
-                  <p className="text-sm mt-2">Use different strategies to see comparisons.</p>
+                  <p>{t('personal_analytics.no_strategies', 'No strategy performance data available.')}</p>
+                  <p className="text-sm mt-2">{t('personal_analytics.no_strategies_desc', 'Use different strategies to see comparisons.')}</p>
                 </div>
               ) : (
                 <VirtualizedAnalyticsList
@@ -303,14 +309,14 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
                     size="sm"
                     onClick={() => setSelectedPeriod('week')}
                   >
-                    Week
+                    {t('personal_analytics.period_week', 'Week')}
                   </Button>
                   <Button
                     variant={selectedPeriod === 'month' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedPeriod('month')}
                   >
-                    Month
+                    {t('personal_analytics.period_month', 'Month')}
                   </Button>
                 </div>
               </div>
@@ -319,8 +325,8 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
               {efficiencyTrends.length === 0 ? (
                 <div className="text-center py-8 text-gray-400">
                   <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No trend data available yet.</p>
-                  <p className="text-sm mt-2">Complete more calibration tests to see trends.</p>
+                  <p>{t('personal_analytics.no_trends', 'No efficiency trend data available.')}</p>
+                  <p className="text-sm mt-2">{t('personal_analytics.no_trends_desc', 'Complete more calibration tests to see trends.')}</p>
                 </div>
               ) : (
                 <VirtualizedAnalyticsList

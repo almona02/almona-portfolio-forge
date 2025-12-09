@@ -7,8 +7,10 @@ import { AssemblyReview } from "@/components/assembly/AssemblyReview";
 import { scanAssembly, confirmAssembly } from "@/services/smartScanApi";
 import type { AssemblyResponse, AssemblyComponent } from "@/types/assembly";
 import { Loader2, Upload } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const SmartScanAssembly: React.FC = () => {
+  const { t } = useTranslation('fabricator');
   const [file, setFile] = useState<File | null>(null);
   const [assemblyData, setAssemblyData] = useState<AssemblyResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +31,7 @@ const SmartScanAssembly: React.FC = () => {
       const result = await scanAssembly(file);
       setAssemblyData(result);
     } catch (err: any) {
-      setError(err?.message || "Assembly scan failed");
+      setError(err?.message || t('smart_scan_assembly.scan_failed', 'Assembly scan failed'));
     } finally {
       setIsLoading(false);
     }
@@ -42,22 +44,22 @@ const SmartScanAssembly: React.FC = () => {
       setAssemblyData(null);
       setFile(null);
     } catch (err: any) {
-      setError(err?.message || "Failed to confirm assembly");
+      setError(err?.message || t('smart_scan_assembly.failed_to_confirm', 'Failed to confirm assembly'));
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Smart Assembly Scan</h1>
+        <h1 className="text-3xl font-bold">{t('smart_scan_assembly.title', 'Smart Assembly Scan')}</h1>
         <p className="text-gray-600 mt-2">
-          Upload shop drawings to detect assembly structure and confirm component roles.
+          {t('smart_scan_assembly.description', 'Upload shop drawings to detect assembly structure and confirm component roles.')}
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Upload Drawing</CardTitle>
+          <CardTitle>{t('smart_scan_assembly.upload_drawing', 'Upload Drawing')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
@@ -65,17 +67,17 @@ const SmartScanAssembly: React.FC = () => {
             <Button onClick={handleScan} disabled={!file || isLoading} className="gap-2">
               {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
               <Upload className="h-4 w-4" />
-              Analyze Assembly
+              {t('smart_scan_assembly.analyze_assembly', 'Analyze Assembly')}
             </Button>
           </div>
           {file && (
             <div className="text-sm text-gray-600">
-              Selected: <span className="font-medium">{file.name}</span>
+              {t('smart_scan_assembly.selected', 'Selected')}: <span className="font-medium">{file.name}</span>
             </div>
           )}
           {error && (
             <Alert variant="destructive">
-              <AlertTitle>Scan failed</AlertTitle>
+              <AlertTitle>{t('smart_scan_assembly.scan_failed', 'Scan failed')}</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}

@@ -1,7 +1,8 @@
 {
   "workspace": {
-    "title": "Üretim Çalışma Alanı",
-    "subtitle": "Projeler, müşteriler, envanter ve ticari akışlar için ağır hizmet Almona kokpiti — durum sekmeler arasında korunur.",
+    "title_prefix": "Your Company Name",
+    "title": "Endüstriyel Operasyon Çalışma Alanı",
+    "subtitle": "Projeler, müşteriler, envanter ve ticari akışlar için kurumsal seviye Almona kokpiti — durum korunur, denetlenebilir ve ağır üretim iş yüklerine göre optimize edilmiştir.",
     "tabs": {
       "projects": "Projeler",
       "customers": "Müşteriler",
@@ -42,11 +43,130 @@
   "workflow": {
     "title": "Fabricator İş Akışı Pro",
     "subtitle": "AI İŞ AKIŞI v4.0",
+    "tagline": "Akıllı alüminyum ve UPVC üretim hattı: Akıllı Ölçüm, Teknik Tasarım, Yapay Zeka Optimizasyonu, Envanter, Üretim, Kalite Kontrol.",
+    "workshop_label": "Atölye",
     "header": {
       "fabricator_pro": "FABRICATOR PRO",
       "ai_workflow": "AI İŞ AKIŞI v4.0",
       "workflow_pro": "Fabricator İş Akışı Pro"
     },
+    "status": {
+      "system": "Sistem",
+      "optimal": "Optimal",
+      "efficiency": "Verimlilik",
+      "active_jobs": "Aktif İşler"
+    },
+    "search_placeholder": "Makineleri, siparişleri ara...",
+    "mass_production_cta": "Seri Üretim",
+    "module_label": "MODÜL",
+    "badge_end_to_end": "Uçtan Uca",
+    "module_description": "Ölçümden optimizasyona, envantere, üretime ve kaliteye kadar uçtan uca proje yaşam döngüsü.",
+    "steps": {
+      "measuring": {
+        "name": "Akıllı Ölçüm",
+        "description": "Dijital ölçü yakalama"
+      },
+      "design": {
+        "name": "Teknik Tasarım",
+        "description": "Bileşen tanımları"
+      },
+      "preview3d": {
+        "name": "3B Önizleme",
+        "description": "Görsel model önizleme"
+      },
+      "optimization": {
+        "name": "Kesim Optimizasyonu",
+        "description": "Malzeme ve fire optimizasyonu"
+      },
+      "inventory": {
+        "name": "Envanter Kontrolü",
+        "description": "Stok yönetimi ve eşleştirme"
+      },
+      "production": {
+        "name": "Üretim Planlama",
+        "description": "Planlama ve makine işlemleri"
+      },
+      "quality": {
+        "name": "Kalite Kontrol",
+        "description": "Muayene ve doğrulama"
+      }
+    },
+  "navbar": {
+    "fabricator_menu": "Fabricator Menüsü",
+    "modules_label": "Modüller",
+    "fabrication_modules_title": "Üretim Modülleri",
+    "actions_label": "İşlemler",
+    "status": {
+      "optimal": "Optimal",
+      "running": "Çalışıyor",
+      "monitoring": "İzlemede",
+      "active": "Aktif",
+      "pending": "Beklemede"
+    },
+    "fabrication_modules": {
+      "cutting_optimization": {
+        "name": "Kesim Optimizasyonu",
+        "description": "Yapay zekâ destekli malzeme yerleşimi"
+      },
+      "machine_control": {
+        "name": "Makine Kontrolü",
+        "description": "Gerçek zamanlı CNC arayüzü"
+      },
+      "production_scheduler": {
+        "name": "Üretim Zamanlayıcısı",
+        "description": "Akıllı iş sıralaması"
+      },
+      "quality_control_ai": {
+        "name": "Kalite Kontrol AI",
+        "description": "Bilgisayarla görme denetimi"
+      },
+      "real_time_analytics": {
+        "name": "Canlı Analitik",
+        "description": "Canlı performans metrikleri"
+      }
+    },
+    "quick_actions": {
+      "new_project": "Yeni Proje",
+      "profile_tuning": "Profil Ayarlama Stüdyosu",
+      "machine_status": "Makine Durumu",
+      "inventory_check": "Envanter Kontrolü",
+      "quality_reports": "Kalite Raporları"
+    },
+    "local_system_intelligence": "Yerel Sistem Zekâsı",
+    "local_system_intelligence_desc": "Türkiye ve Mısır sistem evleri için bölgeye göre ayarlı dinamik tercih önerileri.",
+    "business_nav": {
+      "customers": "Müşteriler",
+      "projects": "Projeler",
+      "inventory": "Envanter",
+      "profiles": "Profiller ve Aksesuarlar",
+      "quick_reports": "Hızlı Raporlar",
+      "machines": "Makineler",
+      "settings_prices": "Ayarlar ve Fiyatlar",
+      "commercial_offers": "Ticari Teklifler",
+      "cost_reports": "Maliyet Raporları",
+      "accounting": "Muhasebe"
+    }
+  },
+  "workspace": {
+    "tabs": {
+      "projects": "Projeler",
+      "profiles": "Profiller",
+      "inventory": "Envanter",
+      "commercial": "Ticari",
+      "analytics": "Analitik",
+      "reports": "Raporlar",
+      "settings": "Ayarlar"
+    },
+    "search": {
+      "placeholder": "Envanter, profiller, siparişler, projeler ara..."
+    },
+    "badges": {
+      "active": "Aktif"
+    },
+    "title_prefix": "Your Company Name",
+    "title": "Endüstriyel Operasyon Çalışma Alanı",
+    "subtitle": "Projeler, müşteriler, envanter ve ticari akışlar için kurumsal seviye Almona kokpiti — durum korunur, denetlenebilir ve ağır üretim iş yüklerine göre optimize edilmiştir."
+  },
     "measuring": "Ölçüm",
     "smart_measuring": "Akıllı Ölçüm Arayüzü",
     "design": "Tasarım",
@@ -300,6 +420,799 @@
     "try_yourself": "Kendiniz deneyin:",
     "step_of": "Adım {current} / {total}",
     "complete_percent": "%{percent} Tamamlandı"
+  },
+  "profile_dxf_importer": {
+    "title": "DXF Profil İçe Aktarıcı",
+    "description": "DXF dosyalarından profil geometrisini içe aktar",
+    "upload_file": "DXF Dosyası Yükle",
+    "processing": "DXF dosyası işleniyor...",
+    "extracting": "Profil verileri çıkarılıyor...",
+    "success": "Profil başarıyla içe aktarıldı",
+    "error": "DXF dosyası içe aktarma hatası",
+    "file_name": "Dosya Adı",
+    "file_size": "Dosya Boyutu",
+    "imported_at": "İçe Aktarma Tarihi",
+    "dxf_imported": "DXF'den İçe Aktarıldı",
+    "preview_snippet": "Önizleme Parçası"
+  },
+  "profile_tuning_studio": {
+    "title": "Profil Ayarlama Stüdyosu",
+    "subtitle": "Profilleri ayarlamak için prestij seviyesi kokpit",
+    "tabs": {
+      "calibration": "Canlı Kalibrasyon",
+      "cutting_rules": "Kesim Kuralları",
+      "glazing": "Cam ve Contalar",
+      "geometry": "Geometri ve Şekil",
+      "smartscan": "SmartScan",
+      "structural": "Yapısal",
+      "hardware": "Donanım",
+      "cost_erp": "Maliyet ve ERP",
+      "machining": "İşleme Bölgeleri",
+      "summary": "Ayarlama Özeti"
+    },
+    "status": {
+      "tuned": "Üretim İçin Ayarlanmış",
+      "in_progress": "Ayarlama Devam Ediyor",
+      "untuned": "Henüz Ayarlanmadı"
+    },
+    "overview": {
+      "title": "Ayarlama Genel Bakış",
+      "role": "Rol",
+      "system_pack": "Sistem Paketi",
+      "twin_code": "İkiz Kod",
+      "supplier_code": "Tedarikçi Kodu",
+      "description": "Sağdaki sekmeleri kullanarak kesimi (K-faktörleri) kalibre edin, işleme bölgelerini tanımlayın ve üretim doğruluğunu doğrulayın. Emin olduktan sonra bu profili ayarlanmış olarak işaretleyin."
+    },
+    "alert": {
+      "message": "Ayarlama profil ve sistem bazlıdır. ROCK 60, JUMBO 100 veya Caluminium paketlerinizdeki her kritik çerçeve/kanat profili için işlemi tekrarlayarak Titanyum seviyesi güvenilirliğe ulaşın."
+    },
+    "cutting_rules": {
+      "title": "Kesim, Eklemler ve Hurda Politikası",
+      "miter45_joint": "45° Pah Eklem (+mm)",
+      "butt90_joint": "90° Düz Eklem (+mm)",
+      "t_joint": "T Eklem Payı (+mm)",
+      "mullion_joint": "Dikme/Lintel Eklem (+mm)",
+      "border_allowance": "Kenar Çerçeveler İçin Ekstra Pay (mm)",
+      "border_allowance_desc": "Çerçeve dış kenarlara sahip olduğunda kullanılır (örn. sıva toleransı için +5mm).",
+      "preferred_bar_length": "Tercih Edilen Çubuk Uzunluğu (mm)",
+      "min_offcut": "Min Kullanılabilir Artık (mm)",
+      "round_cuts": "Kesimleri Yuvarla (mm)",
+      "corner_technology": "Köşe Teknolojisi",
+      "corner_tech_options": {
+        "crimped": "Kıvrımlı Köşe",
+        "cleated": "Kelepçeli",
+        "welded": "Kaynaklı (PVC/Çelik)",
+        "cut_only": "Sadece Kesim / Manuel Montaj"
+      },
+      "joint_allowance_desc": "Eklem payları, optimizasyondan önce her köşe veya eklemde uygulanan ekstra mm'dir. Kasıtlı olarak aşmak için pozitif değerler kullanın ve montajın kırpmasına izin verin; \"kesin matematik\" için 0 kullanın.",
+      "save": "Kesim Kurallarını Kaydet"
+    },
+    "glazing": {
+      "title": "Cam Kalınlığı, Contalar ve Paketler",
+      "glazing_min": "Min Cam (mm)",
+      "glazing_max": "Max Cam (mm)",
+      "gasket_compression": "Hedef Conta Sıkıştırması (mm)",
+      "gasket_compression_desc": "Contayı ezmeden iyi sızdırmazlık için tipik değerler 1.5–2.0mm'dir.",
+      "allowed_glass_packages": "İzin Verilen Cam Paketleri (virgülle ayrılmış)",
+      "allowed_glass_desc": "Tasarım motoru tarafından bu profil için yalnızca uyumlu cam yapıları önermek için kullanılır.",
+      "glazing_limits_desc": "Bu limitler, cam paketlerini doğrulamak ve bu profil için imkansız cam kombinasyonlarını önlemek için kullanılır (örn. boncuk için çok kalın IGU).",
+      "save": "Cam Kurallarını Kaydet"
+    },
+    "geometry": {
+      "title": "Geometri ve Şekil",
+      "description": "Prosedürel küçük resimler için arketip ve ana boyutları tanımlayın (CAD gerekmez).",
+      "scan_prompt": "Katalog fotoğrafınız var mı? Profil şemasını ve boyutlarını almak için SmartScan'i çalıştırın.",
+      "scan_button": "Katalog Çiziminden Tara",
+      "cancel": "İptal",
+      "archetype": "Arketip",
+      "archetype_options": {
+        "hollow_box": "İçi Boş Kutu",
+        "open_c": "Açık C",
+        "thermal_break": "Termal Kırılma",
+        "z_shape": "Z Şekli",
+        "t_shape": "T Şekli"
+      },
+      "wall_thickness": "Duvar Kalınlığı (mm)",
+      "glazing_pocket_depth": "Cam Cebi Derinliği (mm)",
+      "glazing_pocket_width": "Cam Cebi Genişliği (mm)",
+      "thermal_break_width": "Termal Kırılma Genişliği (mm)",
+      "flange_width": "Flanş Genişliği (mm)",
+      "web_offset": "Ağ Ofseti (mm)",
+      "thumbnail_preview": "Küçük Resim Önizlemesi",
+      "preview_updates": "Önizleme geometri ayarlarıyla güncellenir.",
+      "save": "Geometriyi Kaydet",
+      "import_banner": {
+        "title": "SmartScan İçe Aktarma Hazır",
+        "message": "Taranan profiliniz içe aktarıldı. Aşağıdaki geometriyi gözden geçirin ve gerektiği gibi ayarlayın. Vektör, profilin geometri yapılandırması olarak kaydedildi."
+      }
+    },
+    "smartscan": {
+      "title": "SmartScan İçe Aktarma",
+      "description": "Katalog görüntülerini, PDF'leri veya DXF dosyalarını yükleyin. SmartScan otomatik olarak vektörleştirecek ve boyutları çıkaracaktır."
+    },
+    "structural": {
+      "title": "Yapısal Limitler ve Fizik Sınıfı",
+      "max_frame_span": "Max Çerçeve Açıklığı (mm)",
+      "max_mullion_span": "Max Dikme Açıklığı (mm)",
+      "max_sash_width": "Max Kanat Genişliği (mm)",
+      "max_sash_height": "Max Kanat Yüksekliği (mm)",
+      "max_sash_weight": "Max Kanat Ağırlığı (kg)",
+      "max_unit_width": "Max Ünite Genişliği (mm)",
+      "max_unit_height": "Max Ünite Yüksekliği (mm)",
+      "physics_stiffness": "Fizik Sertlik Sınıfı",
+      "stiffness_options": {
+        "standard": "Standart",
+        "stiff": "Sert / Ağır Hizmet",
+        "flexible": "Esnek / Hafif"
+      },
+      "structural_notes": "Yapısal Notlar",
+      "structural_notes_placeholder": "örn. Balkon kapısı yalnızca güçlendirme ile kullanın; rüzgar bölgesi C önerilmez.",
+      "limits_desc": "Bu limitler, bir pencere veya çerçeve boyutunun bu profil için güvenli açıklığı aştığında uyarmak için kullanılır (tedarikçi tablolarına veya kendi deneyiminize göre).",
+      "save": "Yapısal Kuralları Kaydet"
+    },
+    "hardware": {
+      "title": "Donanım Aileleri ve Paketler",
+      "primary_hinge": "Birincil Menteşe Ailesi",
+      "primary_hinge_placeholder": "örn. Roto NT, GU, genel",
+      "primary_lock": "Birincil Kilit Ailesi",
+      "primary_lock_placeholder": "örn. çok noktalı A, sürgülü kilit B",
+      "preferred_handle": "Tercih Edilen Kol Ailesi",
+      "preferred_handle_placeholder": "örn. Alumil serisi X, genel kolu",
+      "hardware_pack_tags": "Donanım Paketi Etiketleri (virgülle ayrılmış)",
+      "hardware_pack_placeholder": "örn. bathroom_turn, balcony_slider, jumbo_door",
+      "hardware_pack_desc": "Bu etiketler daha sonra bu profil için önceden tanımlanmış donanım ve işleme paketlerine (menteşeler, kilitler, vidalar) eşlenecektir.",
+      "save": "Donanım Ön Ayarlarını Kaydet"
+    },
+    "cost_erp": {
+      "title": "Maliyet Modeli ve ERP Eşleme",
+      "aluminum_price": "Alüminyum Fiyatı (kg başına)",
+      "machining_cost": "İşleme Maliyeti / İşlem",
+      "coating_cost": "Kaplama Maliyeti / m²",
+      "scrap_cost": "Hurda Maliyeti / kg",
+      "erp_item_code": "ERP Öğe Kodu",
+      "erp_item_placeholder": "örn. ERP-ALU-6001",
+      "warehouse_location": "Depo Konumu",
+      "warehouse_placeholder": "örn. Raf A3, Seviye 2",
+      "cost_desc": "Bu alanlar, optimizatör ve raporların bu profil için gerçek üretim maliyetini metre başına tahmin etmesine olanak tanır, kaplamalar ve işleme dahil.",
+      "save": "Maliyet ve ERP'yi Kaydet"
+    },
+    "machining": {
+      "title": "İşleme Bölgeleri",
+      "description": "Bu profil için işleme bölgelerini tanımlayın"
+    },
+    "summary": {
+      "title": "Ayarlama Durumu ve Güven",
+      "current_status": "Mevcut durum",
+      "qa_tolerances": "KG Toleransları",
+      "cut_tolerance": "Kesim Toleransı (±mm)",
+      "assembly_tolerance": "Montaj Toleransı (±mm)",
+      "qa_notes": "Notlar",
+      "no_qa_notes": "Henüz KG notu yok",
+      "edit_qa": "KG Toleranslarını Düzenle ve Kaydet",
+      "description": "Bu panel, gerçek işler üzerinde biriktikçe kalibrasyon analitiğini ve test sonuçlarını (kesim sapmaları, güven skorları) yüzeye çıkaracaktır."
+    },
+    "actions": {
+      "back": "Geri",
+      "mark_as_tuned": "Ayarlanmış Olarak İşaretle",
+      "already_tuned": "Zaten Ayarlanmış"
+    }
+  },
+  "profile_import_tool": {
+    "title": "Akıllı Profil İçe Aktarma Aracı",
+    "description": "AI destekli K-faktör öğrenmesi ile birden fazla formattan profil içe aktar",
+    "tabs": {
+      "import": "İçe Aktar",
+      "kfactor": "K-Faktör AI",
+      "settings": "Ayarlar"
+    },
+    "upload": {
+      "title": "Dosyaları buraya bırakın veya yüklemek için tıklayın",
+      "description": "DXF, DWG, SVG, PDF, PNG, JPG destekler",
+      "processing": "İşleniyor",
+      "processing_file": "{file} işleniyor...",
+      "extracted_profiles": "Çıkarılan Profiller ({count})",
+      "select_all": "Tümünü Seç",
+      "clear": "Temizle",
+      "import_profiles": "{count} Profil(ler) İçe Aktar",
+      "clear_all": "Tümünü Temizle",
+      "files_skipped": "{count} dosya atlandı (desteklenmeyen format)",
+      "processing_error": "{file} işlenemedi",
+      "extracted_success": "{filesCount} dosyadan {count} profil çıkarıldı",
+      "imported_success": "{count} profil envantere aktarıldı",
+      "confidence": "güven",
+      "k_factor_suggestion": "K-Faktör Önerisi"
+    },
+    "kfactor": {
+      "title": "Akıllı K-Faktör Öğrenme",
+      "description": "İçe aktarılan DXF/DWG ölçümlerine dayalı AI destekli K-faktör önerileri",
+      "auto_optimize": "Tümünü Otomatik Optimize Et",
+      "auto_optimize_desc": "K-faktör önerilerini otomatik olarak uygula",
+      "features": {
+        "precision": {
+          "title": "Hassas Öğrenme",
+          "description": "Önerileri iyileştirmek için gerçek ölçümlerinizden öğrenir"
+        },
+        "similarity": {
+          "title": "Benzer Profil Eşleştirme",
+          "description": "Optimal K-faktörleri önermek için benzer profiller bulur"
+        },
+        "hints": {
+          "title": "İpuçları ve Öneriler",
+          "description": "Her K-faktör önerisi için mantık sağlar"
+        },
+        "collective": {
+          "title": "Toplu Öğrenme",
+          "description": "Üretim geri bildirimlerinden zamanla iyileşir"
+        }
+      },
+      "recent_learnings": "Son Öğrenmeler",
+      "k_factor": "K-Faktör",
+      "deviation": "Sapma",
+      "verified": "Doğrulandı",
+      "pending": "Beklemede",
+      "on": "AÇIK",
+      "off": "KAPALI"
+    },
+    "settings": {
+      "pricing": {
+        "title": "Fiyatlandırma Yapılandırması",
+        "aluminum_price": "Alüminyum Fiyatı / Kg",
+        "aluminum_price_placeholder": "örn. 6.50",
+        "markup": "İşaretleme (%)",
+        "markup_placeholder": "örn. 30",
+        "update_global": "Global Fiyatlandırmayı Güncelle",
+        "update_button": "Global Fiyatlandırmayı Güncelle",
+        "updated": "Global fiyatlandırma güncellendi"
+      },
+      "import": {
+        "title": "İçe Aktarma Ayarları",
+        "kfactor_learning": "K-Faktör Öğrenme",
+        "kfactor_learning_desc": "AI K-faktör önerilerini etkinleştir",
+        "enabled": "Etkin",
+        "disabled": "Devre Dışı"
+      }
+    },
+    "wizard": {
+      "profile_created": "Profil \"{name}\" başarıyla oluşturuldu"
+    }
+  },
+  "profile_scanner_uploader": {
+    "title": "AI Destekli Mühendislik Çizimi Tarayıcı",
+    "beta": "BETA",
+    "steps": {
+      "select": "1. Görüntü Seç",
+      "scale": "2. Ölçek Yapılandırması",
+      "results": "3. Tarama Sonuçları"
+    },
+    "upload": {
+      "title": "Yüklemek için tıklayın veya görüntüyü sürükleyin",
+      "formats": "Desteklenen formatlar: JPG, PNG, BMP (PDF/DWG/DXF'yi görüntüye aktarın)",
+      "max_size": "Maks boyut: 10MB; her seferinde bir çizim",
+      "selected_file": "Seçilen Dosya",
+      "change": "Değiştir"
+    },
+    "scale": {
+      "auto_detect": "Çizimden ölçeği otomatik algıla",
+      "auto_detect_tooltip": "AI görüntüdeki boyut etiketlerinden ölçeği algılamaya çalışacaktır",
+      "manual_scale": "Manuel Ölçek Faktörü:",
+      "manual_scale_unit": "(piksel başına mm)",
+      "manual_scale_example": "Örnek: 0.1, 1 piksel = 0.1 mm anlamına gelir (mühendislik çizimleri için yaygın)",
+      "ai_active": "AI Ölçek Algılama Aktif",
+      "ai_active_desc": "Sistem boyut etiketlerinden ölçeği algılamaya çalışacaktır. Başarılı olursa, onaylamanız istenecektir."
+    },
+    "processing": {
+      "title": "İşleniyor...",
+      "uploading": "Görüntü yükleniyor...",
+      "ocr": "OCR çalıştırılıyor...",
+      "detecting": "Ölçek algılanıyor...",
+      "vectorizing": "Profil vektörleştiriliyor..."
+    },
+    "results": {
+      "scale_applied": "Ölçek Uygulandı",
+      "detected_by_ai": "AI tarafından algılandı",
+      "manually_specified": "Manuel olarak belirtildi",
+      "quality_assessment": "Kalite Değerlendirmesi",
+      "auto_scale_detected": "Otomatik ölçek algılandı",
+      "properly_scaled": "Düzgün ölçeklendi",
+      "dimension_labels": "Boyut etiketleri",
+      "present": "Mevcut",
+      "missing": "Eksik",
+      "image_quality": "Görüntü kalitesi",
+      "good": "İyi",
+      "fair": "Orta",
+      "extracted_dimensions": "Çıkarılan Boyutlar (mm)",
+      "performance": "Performans",
+      "processing_time": "İşleme Süresi",
+      "timestamp": "Zaman Damgası",
+      "view_raw": "Ham API Yanıtını Görüntüle"
+    },
+    "actions": {
+      "scan_ai": "AI Algılama ile Tara",
+      "scan_manual": "Manuel Ölçek ile Tara",
+      "scan_another": "Başka Bir Çizim Tara",
+      "download_svg": "SVG İndir",
+      "view_debug": "Hata Ayıklamayı Görüntüle",
+      "new_scan": "Yeni Tarama"
+    },
+    "scale_modal": {
+      "title": "Ölçek Algılama Sonucu",
+      "detected_scale": "Algılanan Ölçek",
+      "reference_label": "Referans Etiketi",
+      "suggestion": "Öneri",
+      "what_this_means": "Bu ne anlama geliyor:",
+      "high_confidence": "AI yüksek güvenle bir ölçek algıladı. Bunu otomatik olarak güvenle uygulayabilirsiniz.",
+      "medium_confidence": "AI orta güvenle bir ölçek algıladı. Lütfen uygulamadan önce algılanan değeri doğrulayın.",
+      "low_confidence": "AI düşük güvenle bir ölçek algıladı. Manuel doğrulama önerilir.",
+      "advanced_details": "Gelişmiş Detaylar",
+      "samples": "Örnekler",
+      "detected_dimensions": "Algılanan Boyutlar",
+      "lines": "Çizgiler",
+      "associations": "İlişkilendirmeler",
+      "method": "Yöntem",
+      "enter_manually": "Ölçeği Manuel Gir",
+      "apply_auto": "Otomatik Algılanan Ölçeği Uygula",
+      "use_detected": "Algılanan Ölçeği Kullan"
+    },
+    "errors": {
+      "invalid_file": "Geçersiz Dosya",
+      "invalid_file_desc": "Lütfen bir görüntü dosyası yükleyin (JPG, PNG, vb.)",
+      "no_file": "Dosya Seçilmedi",
+      "no_file_desc": "Lütfen önce bir görüntü dosyası seçin",
+      "scan_failed": "Tarama Başarısız",
+      "svg_not_available": "SVG Mevcut Değil",
+      "svg_not_available_desc": "Sonuçlarda SVG dosya URL'si bulunamadı",
+      "no_scale": "Ölçek Algılanmadı",
+      "no_scale_desc": "AI bir ölçek algılayamadı. Lütfen ölçeği manuel olarak girin.",
+      "low_confidence": "Düşük Güven Algılama",
+      "low_confidence_desc": "AI düşük güvenle bir ölçek algıladı. Lütfen ölçeği manuel olarak girin."
+    }
+  },
+  "calibration_wizard": {
+    "title": "Kalibrasyon Sihirbazı",
+    "description": "Gerçek zamanlı simülasyonlu görsel kalibrasyon panosu",
+    "steps": {
+      "profile_setup": "Profil Kurulumu",
+      "test_cuts": "Test Kesimleri",
+      "measurements": "Ölçümler",
+      "adjustments": "Ayarlamalar",
+      "validation": "Doğrulama"
+    },
+    "k_factor": {
+      "title": "K-Faktör Hesaplayıcı",
+      "miter45": "45° Pah",
+      "miter90": "90° Pah",
+      "butt": "Düz Eklem"
+    },
+    "test_results": {
+      "title": "Test Sonuçları",
+      "expected": "Beklenen Uzunluk",
+      "actual": "Gerçek Uzunluk",
+      "difference": "Fark",
+      "test_date": "Test Tarihi"
+    },
+    "simulation": {
+      "title": "Kesim Simülasyonu",
+      "base_length": "Temel Uzunluk",
+      "adjusted_length": "Ayarlanmış Uzunluk",
+      "adjustments": "Ayarlamalar"
+    },
+    "quick_insight": {
+      "title": "Hızlı İçgörü",
+      "based_on_tests": "{count} önceki teste dayanarak, ortalama doğruluk: {accuracy}mm.",
+      "high_confidence": "Yüksek güven kalibrasyonu.",
+      "consider_more_tests": "Daha iyi doğruluk için daha fazla test çalıştırmayı düşünün."
+    },
+    "actions": {
+      "save": "Kalibrasyonu Kaydet",
+      "reset": "Sıfırla",
+      "next": "İleri",
+      "previous": "Önceki"
+    }
+  },
+  "smart_measuring": {
+    "title": "Akıllı Ölçüm Arayüzü",
+    "description": "AI destekli boyut doğrulama ile dijital ölçüm yakalama",
+    "steps": {
+      "system": "Sistem Yapılandırması",
+      "dimensions": "Boyutlar ve Düzen",
+      "specs": "Cam ve Özellikler",
+      "location": "Konum Bağlamı",
+      "verify": "Doğrulama"
+    },
+    "system_config": {
+      "title": "Sistem Paketi Seç",
+      "description": "Bu pencere ünitesi için sistem paketini seçin"
+    },
+    "dimensions": {
+      "title": "Pencere Boyutları",
+      "width": "Genişlik (mm)",
+      "height": "Yükseklik (mm)",
+      "window_type": "Pencere Tipi",
+      "grid_mode": "Izgara Modu",
+      "standard_mode": "Standart Mod"
+    },
+    "specs": {
+      "title": "Cam ve Özellikler",
+      "glazing_type": "Cam Tipi",
+      "glass_color": "Cam Rengi",
+      "fly_screen": "Sineklik Tipi"
+    },
+    "location": {
+      "title": "Konum Bağlamı",
+      "flat_number": "Daire Numarası",
+      "building_block": "Bina Bloğu",
+      "floor": "Kat",
+      "unit_apartment": "Ünite/Daire",
+      "elevation": "Yükseklik",
+      "room_zone": "Oda/Bölge",
+      "window_index": "Pencere İndeksi",
+      "remarks": "Notlar"
+    },
+    "verification": {
+      "title": "Doğrulama",
+      "confirm": "Ölçümleri Onayla",
+      "edit": "Ölçümleri Düzenle"
+    },
+    "actions": {
+      "next": "İleri",
+      "previous": "Önceki",
+      "complete": "Ölçümü Tamamla",
+      "scan": "Kamera ile Tara",
+      "verify": "Boyutları Doğrula"
+    },
+    "validation": {
+      "errors": "Doğrulama Hataları",
+      "warnings": "Uyarılar"
+    }
+  },
+  "design_interface": {
+    "title": "Tasarım Çalışma Alanı – Mühendislik Koyu",
+    "description": "EngineeringBay ve SmartDrawCanvas'ı birleştiren birleşik tasarım çalışma alanı",
+    "no_project": "Aktif proje yok – önce Akıllı Ölçümü tamamlayın.",
+    "no_inventory": "Envanter profilleri henüz yüklenmedi. Envanter sekmesinden profil verileri mevcut olduğunda Smart Draw ve mühendislik koyu en iyi şekilde çalışır.",
+    "pose_selector": "Sıradaki pozisyon"
+  },
+  "profile_definition_wizard": {
+    "title": "Veri Sayfasından Profil Tanımla",
+    "description": "Tedarikçi teknik veri sayfasından yeni profil oluştur",
+    "steps": {
+      "upload": "3 Adımdan 1: Teknik Veri Sayfasını Yükle",
+      "info": "3 Adımdan 2: Profil Bilgileri",
+      "review": "3 Adımdan 3: İnceleme ve Oluşturma"
+    },
+    "upload": {
+      "title": "Teknik Veri Sayfasını Yükle",
+      "description": "Yüklemek için tıklayın veya PNG, JPG veya PDF'yi sürükleyip bırakın (maks 10MB)",
+      "instruction": "Teknik veri sayfasından bir kesit görüntüsü yükleyin. Bir sonraki adımda boyutları manuel olarak gireceksiniz."
+    },
+    "form": {
+      "profile_code": "Profil Kodu *",
+      "system_name": "Sistem Adı *",
+      "width": "Genişlik (mm) *",
+      "height": "Yükseklik (mm) *",
+      "material_thickness": "Malzeme Kalınlığı (mm) *",
+      "weight_per_meter": "Metre Başına Ağırlık (kg/m) *",
+      "role": "Rol *",
+      "material": "Çerçeve Malzemesi *",
+      "no_image": "Görüntü yüklenmedi. Yüklemek için 1. adıma geri dönün.",
+      "visual_reference": "Görsel Referans",
+      "preview_captured": "Bu önizleme otomatik olarak yakalanır ve profil küçük resmi olarak yüklenir."
+    },
+    "actions": {
+      "cancel": "İptal",
+      "next": "İleri",
+      "back": "Yüklemek için 1. adıma geri dön",
+      "create": "Profil Oluştur"
+    }
+  },
+  "smart_draw_tool": {
+    "title": "Akıllı Çizim – Cephe Düzeni",
+    "total_mullions": "İlk ve Son Arasındaki Toplam Dikey Çıta",
+    "mullions_count": "Aktif açıklıkta {count} dikey çıta{plural}.",
+    "equal_spacing": "Aktif Açıklık İçinde Eşit Aralık",
+    "spacing_between": "Çıtalar arası {spacing} mm",
+    "adjust_mullions": "Aralığı hesaplamak için çıtaları ayarlayın",
+    "current_span": "Mevcut Açıklık ve Paneller",
+    "span_panels": "{span} mm açıklık, {panels} panel{plural}",
+    "drag_to_define": "Açıklığı tanımlamak için ilk/son çıtaları sürükleyin",
+    "approx_panel_width": "İlk/son arası yaklaşık panel genişliği: {width} mm",
+    "add_horizontal": "Sabit yatay çıta (transom) ekle",
+    "position_from_sill": "Eşikten konum (mm)",
+    "location": "Konum",
+    "in_frame": "Çerçevede (kanat öncesi)",
+    "inside_sash": "Kanat içinde (yaprak)",
+    "use_slider": "İnce ayar için kaydırıcıyı kullanın veya",
+    "orange_mullions": "turuncu çıtaları",
+    "for_fine_tuning": "sürükleyin.",
+    "auto_mullions": "Otomatik çıtalar (sistem)",
+    "drag_instructions_start": "Aktif açıklığı tanımlamak için",
+    "orange": "turuncu",
+    "drag_instructions_end": "çıtaları (ilk/son) sürükleyin. Ara çıtalar otomatik olarak aralıklıdır.",
+    "layout_ready": "Düzen mevcut sistem kısıtlamalarını karşılıyor. Optimizasyona aktarılmaya hazır.",
+    "apply_layout": "Düzeni Projeye Uygula",
+    "no_project": "Proje yüklenmedi. Önce Akıllı Ölçümü tamamlayın.",
+    "system_min_panel": "Sistem minimum panel genişliği: {width} mm",
+    "preset_info": "Ön ayar ({system}): paneller {min}–{max} mm, tipik {typical} mm (±10mm rahatlık bandı)"
+  },
+  "engineering_bay": {
+    "title": "Mühendislik Bölümü",
+    "confirm_design": "Tasarımı Onayla ve Optimizasyona Geç",
+    "3d_engine_mode": "3D Motor Modu",
+    "standard_3d": "Standart 3D",
+    "pro_3d": "Pro 3D",
+    "instructions": "Pencere yapısını tanımlamak için kontrolleri kullanın. 3D model ve Malzeme Listesi gerçek zamanlı olarak güncellenecektir.",
+    "system_configuration": "Sistem Yapılandırması",
+    "active_system": "Aktif Sistem",
+    "select_system": "Sistem Seç",
+    "profiles": "Profiller",
+    "parts": "Parçalar",
+    "system_constraints": "Sistem kısıtlamaları ve ön ayarlar otomatik olarak SmartDraw ve 3D'ye uygulanır.",
+    "suggest_ai_layout": "AI Düzeni Öner",
+    "structure": "Yapı",
+    "live_digital_twin": "Canlı Dijital İkiz (Apex Motor v6.0)",
+    "loading_3d": "3D Önizleme Yükleniyor...",
+    "bill_of_materials": "Gerçek Zamanlı Malzeme Listesi",
+    "no_project_data": "Proje Verisi Yok",
+    "complete_measurement": "Lütfen önce bir proje oluşturmak için ölçüm aşamasını tamamlayın."
+  },
+  "new_project_wizard": {
+    "title": "Yeni Proje – Profesyonel Başlık",
+    "description": "Ölçmeden önce müşteri, site ve sistemi tanımlayın. Bu, olgun teknik ofislerin projeleri nasıl yapılandırdığını yansıtır ve tutarlı raporlar ve dışa aktarmalar sağlar.",
+    "project_type": "Proje Türü: {name}",
+    "change": "Değiştir",
+    "project_system_packs": "Proje Sistem Paketleri (çoklu seçim)",
+    "use_to_shortlist": "(ilgili sistemleri kısa listeye almak için kullanın)",
+    "profiles": "Profiller",
+    "accessories": "Aksesuarlar",
+    "client_company": "Müşteri / Şirket *",
+    "select_from_saved": "Kaydedilmiş müşterilerden seç",
+    "choose_saved": "Kaydedilmiş müşteri seç (isteğe bağlı)",
+    "client_placeholder": "örn. ABC Alüminyum",
+    "project_name": "Proje Adı *",
+    "project_placeholder": "örn. Kahire Sitesi – B Kulesi",
+    "site_address": "Site / Adres",
+    "site_placeholder": "örn. Yeni Kahire, Parsel 17",
+    "contact_phone": "İletişim Telefonu",
+    "phone_placeholder": "+90...",
+    "order_number": "Sipariş Numarası (isteğe bağlı)",
+    "order_placeholder": "İç sipariş numaranız",
+    "order_date": "Sipariş Tarihi",
+    "currency": "Para Birimi",
+    "region": "Bölge",
+    "continue_to_details": "Proje Detaylarına Devam Et",
+    "cancel": "İptal",
+    "create_project": "Proje Oluştur ve Ölçmeye Başla"
+  },
+  "window_3d_generator": {
+    "3d_controls": "3D Kontroller",
+    "play_animation": "Animasyonu Oynat",
+    "pause_animation": "Animasyonu Duraklat",
+    "reset_view": "Görünümü Sıfırla",
+    "show_measurements": "Ölçümleri Göster",
+    "hide_measurements": "Ölçümleri Gizle",
+    "enable_section_view": "Kesit Görünümünü Etkinleştir",
+    "disable_section_view": "Kesit Görünümünü Devre Dışı Bırak",
+    "quality": "Kalite",
+    "low_performance": "Düşük Performans",
+    "balanced": "Dengeli",
+    "high_quality": "Yüksek Kalite",
+    "ultra": "Ultra",
+    "enable_shadows": "Gölgeleri Etkinleştir",
+    "disable_shadows": "Gölgeleri Devre Dışı Bırak",
+    "export": "Dışa Aktar",
+    "export_model": "3D Modeli Dışa Aktar",
+    "toggle_fullscreen": "Tam Ekran Modunu Değiştir",
+    "fullscreen": "Tam Ekran",
+    "reset_camera": "Kamerayı Sıfırla",
+    "zoom_in": "Yakınlaştır",
+    "zoom_out": "Uzaklaştır",
+    "exporting_model": "Model Dışa Aktarılıyor",
+    "preparing_file": "{format} dosyası hazırlanıyor...",
+    "quality_label": "{quality} Kalite",
+    "shadows_on": "Gölgeler Açık",
+    "shadows_off": "Gölgeler Kapalı",
+    "section_view": "Kesit Görünümü",
+    "issues": "{count} Sorun",
+    "explode": "Patlat",
+    "section_label": "Kesit: {position}mm"
+  },
+  "optimization_equalizer": {
+    "title": "Optimizasyon Stratejisi Ekolayzırı",
+    "description": "Üretim ihtiyaçlarınıza uyacak şekilde optimizasyon parametrelerini ince ayarlayın",
+    "optimization_strategy": "Optimizasyon Stratejisi",
+    "waste_reduction": "Atık Azaltma",
+    "waste_reduction_desc": "Malzeme atığını en aza indirmeye öncelik verin. Daha yüksek değerler atığı azaltır ancak kesme karmaşıklığını artırabilir.",
+    "remnant_usage": "Artık Kullanımı",
+    "remnant_usage_desc": "Önceki işlerden mevcut artıkları kullanmaya öncelik verin. Daha yüksek değerler artık yeniden kullanımını artırır.",
+    "cut_complexity": "Kesme Karmaşıklığı",
+    "cut_complexity_desc": "Basit kesimler (daha hızlı) ve karmaşık optimizasyon (daha verimli) arasında denge.",
+    "production_speed": "Üretim Hızı",
+    "production_speed_desc": "Daha hızlı optimizasyon ve daha az kesime öncelik verin. Daha yüksek değerler optimizasyon süresini azaltır.",
+    "estimated_waste": "Tahmini Atık",
+    "est_bars_used": "Tahmini Kullanılan Çubuklar",
+    "est_opt_time": "Tahmini Opt. Süre",
+    "material_constraints": "Malzeme Kısıtlamaları",
+    "min_remnant_length": "Minimum Artık Uzunluğu (mm)",
+    "min_remnant_desc": "Bundan daha kısa artıklar yeniden kullanım için dikkate alınmayacaktır",
+    "max_remnant_age": "Maksimum Artık Yaşı (gün)",
+    "max_remnant_desc": "Bundan daha eski artıklar optimizasyondan hariç tutulacaktır",
+    "save_strategy": "Stratejiyi Kaydet",
+    "set_as_default": "Varsayılan Olarak Ayarla"
+  },
+  "cutting_optimization": {
+    "title": "AI Destekli Kesim Optimizasyonu",
+    "description": "Malzeme optimizasyonu, atık azaltma ve maliyet verimliliği için gelişmiş algoritmalar",
+    "mass_production": "Toplu Üretim",
+    "open_mass_production": "Tüm optimize edilmiş işler arasında toplu optimizasyon için Toplu Üretim Kokpitini açın.",
+    "panel_title": "Kesim Optimizasyonu",
+    "panel_description": "AI destekli algoritmalarla malzeme kullanımını optimize edin ve atığı en aza indirin",
+    "tabs": {
+      "cuts": "Kesim Parçaları",
+      "stock": "Stok",
+      "optimize": "Optimize Et"
+    },
+    "cut_list": "Kesim Listesi",
+    "add_cut": "Kesim Ekle",
+    "length": "Uzunluk (mm)",
+    "quantity": "Miktar",
+    "label": "Etiket",
+    "priority": "Öncelik",
+    "priority_high": "Yüksek",
+    "priority_medium": "Orta",
+    "priority_low": "Düşük",
+    "total_cuts": "Toplam kesim: {count}",
+    "total_length": "Toplam uzunluk: {length} mm",
+    "remnant": "Artık",
+    "available": "{count} mevcut",
+    "material": "Malzeme: {material}",
+    "profile": "Profil: {profile}",
+    "cost": "Maliyet: ${cost}",
+    "total_stock": "Toplam stok: {length} mm",
+    "strategy": "Strateji",
+    "strategy_genetic": "Genetik Algoritma (En İyi)",
+    "strategy_best_fit": "En İyi Uyum Azalan",
+    "strategy_first_fit": "İlk Uyum Azalan",
+    "kerf_width": "Kesim Genişliği (mm)",
+    "optimizing": "Optimize Ediliyor...",
+    "run_optimization": "Optimizasyonu Çalıştır",
+    "utilization": "Kullanım",
+    "bars_used": "Kullanılan Çubuklar",
+    "waste": "Atık (mm)",
+    "savings": "Tasarruf",
+    "cutting_plans": "Kesim Planları",
+    "stock_number": "Stok #{number}",
+    "export_gcode": "G-kodu Dışa Aktar",
+    "add_cut_error": "Optimize etmek için en az bir kesim parçası ekleyin",
+    "run_first_error": "Önce optimizasyonu çalıştırın",
+    "export_initiated": "G-kodu dışa aktarma başlatıldı",
+    "optimization_failed": "Optimizasyon başarısız oldu",
+    "python_complete": "Python optimizasyonu tamamlandı: {utilization}% kullanım",
+    "local_complete": "Yerel optimizasyon tamamlandı: {utilization}% kullanım"
+  },
+  "workflow_pro": {
+    "title": "FABRICATOR İŞ AKIŞI PRO",
+    "mass_production_cockpit": "Toplu Üretim Kokpiti",
+    "description": "GA + artık bilinçli kesme kullanarak projeler arası optimizasyon, yüksek hacimli atölyeler için tasarlandı.",
+    "optimised_jobs": "optimize edilmiş iş",
+    "optimised_jobs_plural": "optimize edilmiş işler",
+    "user": "Kullanıcı",
+    "start_ai_optimization": "AI Optimizasyonunu Başlat",
+    "optimizing_generating": "Optimize Ediliyor ve G-Kodu Oluşturuluyor...",
+    "optimization_complete": "Optimizasyon Tamamlandı",
+    "go_to_production": "Üretim Komutuna Git",
+    "loading_dashboard": "Toplu Üretim Panosu Yükleniyor…",
+    "initializing_workspace": "Çalışma alanı başlatılıyor...",
+    "user_error": "Toplu üretim modu, artık kullanımının doğru şekilde takip edilebilmesi için giriş yapmış bir Supabase kullanıcısı gerektirir.",
+    "no_auth": "Kimliği doğrulanmış kullanıcı tespit edilmedi. Artık bilinçli toplu optimizasyonu etkinleştirmek için lütfen giriş yapın.",
+    "disabled_until_auth": "Kullanıcı kimliği doğrulanana kadar toplu üretim optimizasyonu devre dışı bırakıldı."
+  },
+  "profiles": {
+    "launch_smart_scan": "Akıllı Taramayı Başlat",
+    "assembly_scan": "Montaj Taraması",
+    "register_description": "Yeni profilleri doğrudan Akıllı Tarama veya Montaj'dan kaydedin, ardından burada yönetin."
+  },
+  "smart_scan_assembly": {
+    "title": "Akıllı Montaj Taraması",
+    "description": "Montaj yapısını tespit etmek ve bileşen rollerini onaylamak için atölye çizimlerini yükleyin.",
+    "upload_drawing": "Çizim Yükle",
+    "analyze_assembly": "Montajı Analiz Et",
+    "selected": "Seçildi",
+    "scan_failed": "Tarama başarısız",
+    "failed_to_confirm": "Montaj onaylanamadı"
+  },
+  "production_command": {
+    "title": "Üretim Komuta Merkezi",
+    "description": "AI ile optimize edilmiş planı inceleyin, kesimleri görselleştirin ve üretime gönderin.",
+    "generating_plan": "Kesim Planı Oluşturuluyor",
+    "ai_optimizing": "AI malzeme kullanımınızı optimize ediyor...",
+    "no_optimization": "Optimizasyon Verisi Yok",
+    "complete_design": "Kesim optimizasyonunu oluşturmak için tasarım aşamasını tamamlayın.",
+    "efficiency": "Verimlilik",
+    "waste": "Atık",
+    "production_time": "Üretim Süresi",
+    "total_cost": "Toplam Maliyet",
+    "visual_cutting_plan": "Görsel Kesim Planı",
+    "utilization": "{value}% Kullanım",
+    "dispatch_to_production": "Üretime Gönder",
+    "cnc_machine_integration": "CNC Makine Entegrasyonu",
+    "target_machine": "Hedef Yilmaz Makinesi:",
+    "gcode_preview": "G-Kodu Önizleme",
+    "cut_tooltip": "Kesim: {length}mm @ {angle}°",
+    "for_component": "Bileşen İçin: {componentId}",
+    "waste_tooltip": "Atık: {length}mm",
+    "export_pdf": "PDF Kesim Listesi Dışa Aktar",
+    "generate_gcode": "G-Kodu Oluştur ve İndir",
+    "send_to_machine": "İşi Makineye Gönder",
+    "success": "Başarılı",
+    "error": "Hata",
+    "gcode_generated": "G-kodu başarıyla oluşturuldu.",
+    "pdf_downloaded": "PDF Kesim Raporu indirildi.",
+    "job_sent": "İş Yilmaz {machine} makinesine gönderildi.",
+    "unknown_error": "Bilinmeyen bir hata oluştu."
+  },
+  "personal_analytics": {
+    "title": "Kişisel Analitik Panosu",
+    "description": "Doğruluk ve verimliliği artırmak için kalibrasyon verilerinizden içgörüler",
+    "refresh": "Yenile",
+    "loading": "Analitikler yükleniyor...",
+    "tabs": {
+      "insights": "Ana İçgörüler",
+      "strategies": "Strateji Performansı",
+      "profiles": "Profil Sağlığı",
+      "trends": "Verimlilik Trendleri"
+    },
+    "no_insights": "Henüz içgörü yok. Kişiselleştirilmiş önerileri görmek için kalibrasyon ölçümlerini tamamlayın.",
+    "no_strategies": "Strateji performans verisi mevcut değil.",
+    "no_strategies_desc": "Karşılaştırmaları görmek için farklı stratejiler kullanın.",
+    "no_profiles": "Profil sağlık verisi mevcut değil.",
+    "no_profiles_desc": "İçgörüleri görmek için profilleri kalibre etmeye başlayın.",
+    "no_trends": "Verimlilik trend verisi mevcut değil.",
+    "no_trends_desc": "Trendleri görmek için daha fazla kalibrasyon testi tamamlayın.",
+    "period_week": "Hafta",
+    "period_month": "Ay",
+    "health_excellent": "Mükemmel",
+    "health_good": "İyi",
+    "health_needs_attention": "Dikkat Gerekiyor",
+    "health_critical": "Kritik"
+  },
+  "inventory_dashboard": {
+    "title": "Envanter Zeka Merkezi",
+    "description": "Türk ve Mısır pazarları için gerçek zamanlı analitik, artık optimizasyonu ve AI destekli stok tahminleri ile merkezi envanter yönetimi.",
+    "tabs": {
+      "overview": "Genel Bakış",
+      "remnants": "Artıklar",
+      "alerts": "Uyarılar",
+      "history": "Geçmiş",
+      "analytics": "Analitikler",
+      "purchases": "Satın Almalar"
+    },
+    "use_remnants_first": "Önce Artıkları Kullan",
+    "use_remnants_desc": "Yeni stok kesmeden önce mevcut artıkları otomatik olarak eşleştirin ve kullanın",
+    "enabled": "Etkin",
+    "all_materials": "Tüm Malzemeler",
+    "systems": "Sistemler:",
+    "all": "Tümü",
+    "pricing_setup_required": "Fiyatlandırma Kurulumu Gerekli",
+    "set_base_prices": "{system} öğeleri için temel fiyatları ayarlayın: profiller, cam, donanım ve contalar.",
+    "select_system_first": "İlk kurulum: {system} teklifleri için kullanmadan önce lütfen fiyatları gözden geçirin ve doldurun.",
+    "daily_aluminum_price": "Günlük Alüminyum Fiyatı",
+    "price_per_kg": "Kilogram başına fiyat (USD)",
+    "auto_calculates": "Ağırlığa göre çerçeve, kanat ve diğer profil öğelerinin fiyatlarını otomatik olarak hesaplar.",
+    "workspace": "Çalışma Alanı:",
+    "last_sync": "Son Senkronizasyon:",
+    "just_now": "Şimdi",
+    "live_data": "Canlı Veri",
+    "total_items": "Toplam Öğe",
+    "tuned_items": "Ayarlanmış Öğeler",
+    "low_stock": "Düşük Stok",
+    "out_of_stock": "Stokta Yok",
+    "total_value": "Toplam Değer"
+  },
+  "design_interface": {
+    "title": "Tasarım Çalışma Alanı – Mühendislik Koyu",
+    "no_project": "Aktif proje yok – önce Akıllı Ölçümü tamamlayın.",
+    "pose_in_order": "Sıradaki pozisyon",
+    "inventory_not_loaded": "Envanter profilleri henüz yüklenmedi. Envanter sekmesinden profil verileri mevcut olduğunda Smart Draw ve mühendislik koyu en iyi şekilde çalışır."
   }
 }
 

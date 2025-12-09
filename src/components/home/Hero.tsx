@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Phone, CheckCircle, Award } from "lucide-react";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 // Lazy load the heavy background component to improve LCP
 const EgyptianIndustrialHero = lazy(() => import("./EgyptianIndustrialHero").then(module => ({ default: module.EgyptianIndustrialHero })));
@@ -35,6 +36,7 @@ const LazyBackground = () => {
 };
 
 const Hero = () => {
+  const { t } = useTranslation('home');
   const [activeSlide, setActiveSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -46,30 +48,30 @@ const Hero = () => {
   const slides = useMemo(() => [
     {
       id: 1,
-      title: "Fabricator Pro",
-      subtitle: "Empowering Egypt's Industrial Transformation",
-      description: "Supporting Egypt Vision 2030",
+      title: t('hero.slides.fabricator_pro.title'),
+      subtitle: t('hero.slides.fabricator_pro.subtitle'),
+      description: t('hero.slides.fabricator_pro.description'),
       link: "/fabricator-workflow",
       badge: true,
       nationalFocus: true
     },
     {
       id: 2,
-      title: "YILMAZ Machines",
-      subtitle: "Premium Quality Aluminium & PVC Processing Machines",
-      description: "Authorized Dealer in Egypt Since 2000",
+      title: t('hero.slides.yilmaz_machines.title'),
+      subtitle: t('hero.slides.yilmaz_machines.subtitle'),
+      description: t('hero.slides.yilmaz_machines.description'),
       link: "/yilmaz-machines-egypt",
       badge: true
     },
     {
       id: 3,
-      title: "ALMONA Co.",
-      subtitle: "Your Trusted Partner Since 1991",
-      description: "Expert Consultation, Sales & Service",
+      title: t('hero.slides.almona_co.title'),
+      subtitle: t('hero.slides.almona_co.subtitle'),
+      description: t('hero.slides.almona_co.description'),
       link: "/about",
       badge: false
     },
-  ], []);
+  ], [t]);
 
   // Enhanced slide transition with smooth animation control
   const goToSlide = useCallback((index: number) => {
@@ -224,12 +226,12 @@ const Hero = () => {
                       {slide.nationalFocus ? (
                         <>
                           <CheckCircle className="w-4 h-4" />
-                          <span className="text-sm font-semibold uppercase tracking-wide">National Strategic Asset</span>
+                          <span className="text-sm font-semibold uppercase tracking-wide">{t('hero.slides.fabricator_pro.badge_national')}</span>
                         </>
                       ) : (
                         <>
                           <Award className="w-4 h-4" />
-                          <span className="text-sm font-semibold uppercase tracking-wide">Official Partner</span>
+                          <span className="text-sm font-semibold uppercase tracking-wide">{t('hero.slides.yilmaz_machines.badge_official')}</span>
                         </>
                       )}
                     </div>
@@ -280,7 +282,7 @@ const Hero = () => {
                         to={slide.link} 
                         className="flex items-center justify-center gap-2"
                       >
-                        {slide.nationalFocus ? "Start Your Digital Transformation" : `Explore ${slide.title}`}
+                        {slide.nationalFocus ? t('hero.slides.fabricator_pro.cta_primary') : slide.id === 2 ? t('hero.slides.yilmaz_machines.cta_primary') : t('hero.slides.almona_co.cta_primary')}
                         <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
                       </Link>
                     </NeonButton>
@@ -297,7 +299,7 @@ const Hero = () => {
                         className="flex items-center justify-center gap-2"
                       >
                         <Phone className="h-4 w-4 sm:h-5 sm:w-5" />
-                        Contact Us
+                        {t('hero.slides.fabricator_pro.cta_secondary')}
                       </Link>
                     </NeonButton>
                   </div>
@@ -379,11 +381,11 @@ const Hero = () => {
       {/* Loading indicator for transition states */}
       {isTransitioning && (
         <div className="absolute inset-0 z-[110] flex items-center justify-center bg-black/35 backdrop-blur-[2px] transition-opacity duration-300">
-          <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-white/10 border border-white/15 shadow-xl shadow-orange-500/10">
-            <div className="flex flex-col gap-1">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
-                Preparing next story
-              </span>
+            <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-white/10 border border-white/15 shadow-xl shadow-orange-500/10">
+              <div className="flex flex-col gap-1">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+                  {t('hero.transition.preparing')}
+                </span>
               <div className="w-28 h-1.5 bg-white/15 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500 transition-all duration-500 ease-out"

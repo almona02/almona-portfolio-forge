@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Logo } from "@/components/ui/Logo";
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 interface NavbarUser {
   name: string;
@@ -35,6 +37,7 @@ interface NavItem {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems = [], onLogout }) => {
+  const { t } = useTranslation('translation');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -80,36 +83,36 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
 
   // Navigation configuration
   const navItems = useMemo<NavItem[]>(() => [
-    { name: "Home", path: "/", type: "link" },
+    { name: t('navigation.home', 'Home'), path: "/", type: "link" },
     { 
-      name: "Products", 
+      name: t('navigation.products.title', 'Products'), 
       path: "/products", 
       type: "dropdown",
       items: [
-        { name: "YILMAZ Machines", path: "/products/machines", description: "Industrial machinery solutions" },
-        { name: "3D Configurator", path: "/products/configurator", description: "Customize in real-time" },
-        { name: "AR Viewer", path: "/products/3d-gallery#swiftxr", description: "See it in your space" },
-        { name: "3D Gallery", path: "/products/3d-gallery", description: "Interactive 3D model collection" },
+        { name: t('navigation.products.yilmaz_machines.name', 'YILMAZ Machines'), path: "/products/machines", description: t('navigation.products.yilmaz_machines.description', 'Industrial machinery solutions') },
+        { name: t('navigation.products.3d_configurator.name', '3D Configurator'), path: "/products/configurator", description: t('navigation.products.3d_configurator.description', 'Customize in real-time') },
+        { name: t('navigation.products.ar_viewer.name', 'AR Viewer'), path: "/products/3d-gallery#swiftxr", description: t('navigation.products.ar_viewer.description', 'See it in your space') },
+        { name: t('navigation.products.3d_gallery.name', '3D Gallery'), path: "/products/3d-gallery", description: t('navigation.products.3d_gallery.description', 'Interactive 3D model collection') },
       ]
     },
     { 
-      name: "Services", 
+      name: t('navigation.services.title', 'Services'), 
       path: "/services", 
       type: "dropdown",
       badge: "PRO",
       items: [
-        { name: "All Services", path: "/services", description: "Complete AI-powered services overview" },
-        { name: "AI Equipment Advisor", path: "/services/ai-advisor", description: "Smart recommendations" },
-        { name: "Machine Sales", path: "/services/sales", description: "Best deals guaranteed" },
-        { name: "Technical Training", path: "/services/training", description: "Expert-led sessions" },
-        { name: "Fabrication Services", path: "/fabrication-services", description: "Precision engineering" }
+        { name: t('navigation.services.all_services.name', 'All Services'), path: "/services", description: t('navigation.services.all_services.description', 'Complete AI-powered services overview') },
+        { name: t('navigation.services.ai_equipment_advisor.name', 'AI Equipment Advisor'), path: "/services/ai-advisor", description: t('navigation.services.ai_equipment_advisor.description', 'Smart recommendations') },
+        { name: t('navigation.services.machine_sales.name', 'Machine Sales'), path: "/services/sales", description: t('navigation.services.machine_sales.description', 'Best deals guaranteed') },
+        { name: t('navigation.services.technical_training.name', 'Technical Training'), path: "/services/training", description: t('navigation.services.technical_training.description', 'Expert-led sessions') },
+        { name: t('navigation.services.fabrication_services.name', 'Fabrication Services'), path: "/fabrication-services", description: t('navigation.services.fabrication_services.description', 'Precision engineering') }
       ]
     },
-    { name: "Fabricator Pro", path: "/fabricator", type: "link", badge: "BETA" },
-    { name: "Smart Shop", path: "/shop", type: "link", badge: "SOON" },
-    { name: "About", path: "/about", type: "link" },
-    { name: "Contact", path: "/contact", type: "link" },
-  ], []);
+    { name: t('navigation.fabricator_pro', 'Fabricator Pro'), path: "/fabricator", type: "link", badge: "BETA" },
+    { name: t('navigation.smart_shop', 'Smart Shop'), path: "/shop", type: "link", badge: "SOON" },
+    { name: t('navigation.about', 'About'), path: "/about", type: "link" },
+    { name: t('navigation.contact', 'Contact'), path: "/contact", type: "link" },
+  ], [t]);
 
   // Simple dropdown handlers
   const handleDropdownToggle = useCallback((name: string) => {
@@ -335,6 +338,12 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
 
           {/* Right Side Actions */}
           <div className="hidden lg:flex items-center gap-1.5 xl:gap-2 2xl:gap-3 flex-shrink-0 ml-auto">
+            {/* Language Switcher */}
+            <LanguageSwitcher 
+              variant="minimal" 
+              className="border-gray-700/50 hover:border-orange-500/50 text-gray-300 hover:text-white bg-transparent hover:bg-white/5 rounded-xl px-2.5 py-1.5 xl:px-3 xl:py-2 2xl:px-3.5 2xl:py-2 backdrop-blur-sm" 
+            />
+            
             {/* User Menu */}
             {user ? (
               <div className="relative z-50">
@@ -523,6 +532,14 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
 
                 {/* Mobile User Actions */}
                 <div className="pt-4 border-t border-orange-500/30 mt-4">
+                  {/* Language Switcher - Mobile */}
+                  <div className="px-2 mb-4">
+                    <LanguageSwitcher 
+                      variant="minimal" 
+                      className="w-full border-gray-700/50 hover:border-orange-500/50 text-gray-300 hover:text-white bg-transparent hover:bg-white/5 rounded-xl px-4 py-3 justify-center backdrop-blur-sm transition-all duration-200" 
+                    />
+                  </div>
+                  
                   {user ? (
                     <div className="space-y-2 px-2">
                       <div className="px-4 py-3 text-gray-300 border border-orange-500/20 rounded-xl">

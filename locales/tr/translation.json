@@ -37,7 +37,14 @@
     "confirm_password": "Şifreyi Onayla",
     "forgot_password": "Şifremi unuttum?",
     "sign_in": "Giriş Yap",
+    "signing_in": "Giriş yapılıyor...",
     "sign_up": "Hesap Oluştur",
+    "welcome_back": "Tekrar hoş geldin, Fabricator",
+    "sign_in_to_continue": "Almona'ya devam etmek için giriş yapın",
+    "remember_me": "Bu tarayıcıda beni hatırla",
+    "dont_have_account": "Hesabınız yok mu?",
+    "email_placeholder": "you@example.com",
+    "password_placeholder": "••••••••",
     "name": "Ad Soyad",
     "phone": "Telefon",
     "company": "Firma Adı",
@@ -64,7 +71,51 @@
     "maintenance": "Bakım Hizmetleri",
     "support": "Teknik Destek",
     "quotes": "Teklif Talepleri",
-    "customer_portal": "Müşteri Portalı"
+    "customer_portal": "Müşteri Portalı",
+    "fabricator_pro": "Fabricator Pro",
+    "smart_shop": "Akıllı Mağaza",
+    "products": {
+      "title": "Ürünler",
+      "yilmaz_machines": {
+        "name": "YILMAZ Makineleri",
+        "description": "Endüstriyel makine çözümleri"
+      },
+      "3d_configurator": {
+        "name": "3D Yapılandırıcı",
+        "description": "Gerçek zamanlı özelleştirme"
+      },
+      "ar_viewer": {
+        "name": "AR Görüntüleyici",
+        "description": "Kendi alanınızda görün"
+      },
+      "3d_gallery": {
+        "name": "3D Galeri",
+        "description": "Etkileşimli 3D model koleksiyonu"
+      }
+    },
+    "services": {
+      "title": "Hizmetler",
+      "all_services": {
+        "name": "Tüm Hizmetler",
+        "description": "AI destekli hizmetlerin kapsamlı genel bakışı"
+      },
+      "ai_equipment_advisor": {
+        "name": "AI Ekipman Danışmanı",
+        "description": "Akıllı öneriler"
+      },
+      "machine_sales": {
+        "name": "Makine Satışı",
+        "description": "En iyi fırsatlar garanti"
+      },
+      "technical_training": {
+        "name": "Teknik Eğitim",
+        "description": "Uzman liderliğindeki oturumlar"
+      },
+      "fabrication_services": {
+        "name": "İmalat Hizmetleri",
+        "description": "Hassas mühendislik"
+      }
+    }
   },
   "actions": {
     "viewMore": "Detayları Görüntüle",

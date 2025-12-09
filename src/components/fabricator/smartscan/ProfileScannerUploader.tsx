@@ -30,6 +30,7 @@ import type {
   ProfileScanResult,
   ScaleDetectionResult,
 } from "@/types/scan";
+import { useTranslation } from "react-i18next";
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -49,6 +50,7 @@ const ScaleSuggestionModal: React.FC<ScaleSuggestionModalProps> = ({
   onManual,
   onCancel,
 }) => {
+  const { t } = useTranslation('fabricator');
   const { scale_mm_per_px, confidence, detected_label, suggestion_text, debug_info } =
     scaleDetection;
 
@@ -63,9 +65,9 @@ const ScaleSuggestionModal: React.FC<ScaleSuggestionModalProps> = ({
 
   const getConfidenceText = () => {
     const conf = (confidence || 0) * 100;
-    if (isHighConfidence) return `High (${conf.toFixed(0)}%)`;
-    if (isMediumConfidence) return `Medium (${conf.toFixed(0)}%)`;
-    return `Low (${conf.toFixed(0)}%)`;
+    if (isHighConfidence) return t('profile_scanner_uploader.scale_modal.confidence_high', { percent: conf.toFixed(0), defaultValue: `High (${conf.toFixed(0)}%)` });
+    if (isMediumConfidence) return t('profile_scanner_uploader.scale_modal.confidence_medium', { percent: conf.toFixed(0), defaultValue: `Medium (${conf.toFixed(0)}%)` });
+    return t('profile_scanner_uploader.scale_modal.confidence_low', { percent: conf.toFixed(0), defaultValue: `Low (${conf.toFixed(0)}%)` });
   };
 
   return (
@@ -79,7 +81,7 @@ const ScaleSuggestionModal: React.FC<ScaleSuggestionModalProps> = ({
           ) : (
             <WarningOutlined style={{ color: "#ff4d4f" }} />
           )}
-          <span>Scale Detection Result</span>
+          <span>{t('profile_scanner_uploader.scale_modal.title', 'Scale Detection Result')}</span>
         </Space>
       }
       open={visible}
@@ -87,7 +89,7 @@ const ScaleSuggestionModal: React.FC<ScaleSuggestionModalProps> = ({
       onCancel={onCancel}
       footer={[
         <Button key="manual" onClick={onManual}>
-          Enter Scale Manually
+          {t('profile_scanner_uploader.scale_modal.enter_manually', 'Enter Scale Manually')}
         </Button>,
         <Button
           key="confirm"
@@ -95,14 +97,14 @@ const ScaleSuggestionModal: React.FC<ScaleSuggestionModalProps> = ({
           onClick={() => scale_mm_per_px && onConfirm(scale_mm_per_px)}
           icon={isHighConfidence ? <CheckCircleOutlined /> : <WarningOutlined />}
         >
-          {isHighConfidence ? "Apply Auto-Detected Scale" : "Use Detected Scale"}
+          {isHighConfidence ? t('profile_scanner_uploader.scale_modal.apply_auto', 'Apply Auto-Detected Scale') : t('profile_scanner_uploader.scale_modal.use_detected', 'Use Detected Scale')}
         </Button>,
       ]}
     >
       <Space direction="vertical" size="middle" style={{ width: "100%" }}>
         <Card size="small">
           <Descriptions column={1} size="small">
-            <Descriptions.Item label="Detected Scale">
+            <Descriptions.Item label={t('profile_scanner_uploader.scale_modal.detected_scale', 'Detected Scale')}>
               <Space>
                 <Text strong style={{ fontSize: "16px" }}>
                   {scale_mm_per_px?.toFixed(6)} mm/px
@@ -111,11 +113,11 @@ const ScaleSuggestionModal: React.FC<ScaleSuggestionModalProps> = ({
               </Space>
             </Descriptions.Item>
             {detected_label && (
-              <Descriptions.Item label="Reference Label">
+              <Descriptions.Item label={t('profile_scanner_uploader.scale_modal.reference_label', 'Reference Label')}>
                 <Tag color="blue">{detected_label} mm</Tag>
               </Descriptions.Item>
             )}
-            <Descriptions.Item label="Suggestion">
+            <Descriptions.Item label={t('profile_scanner_uploader.scale_modal.suggestion', 'Suggestion')}>
               <Text
                 type={
                   isHighConfidence
@@ -125,20 +127,20 @@ const ScaleSuggestionModal: React.FC<ScaleSuggestionModalProps> = ({
                     : "danger"
                 }
               >
-                {suggestion_text || "No suggestion available"}
+                {suggestion_text || t('profile_scanner_uploader.scale_modal.no_suggestion', 'No suggestion available')}
               </Text>
             </Descriptions.Item>
           </Descriptions>
         </Card>
 
         <Alert
-          message="What this means:"
+          message={t('profile_scanner_uploader.scale_modal.what_this_means', 'What this means:')}
           description={
             isHighConfidence
-              ? "The AI detected a scale with high confidence. You can safely apply it automatically."
+              ? t('profile_scanner_uploader.scale_modal.high_confidence_desc', 'The AI detected a scale with high confidence. You can safely apply it automatically.')
               : isMediumConfidence
-              ? "The AI detected a scale with moderate confidence. Please verify the detected value before applying."
-              : "The AI detected a scale with low confidence. Manual verification is recommended."
+              ? t('profile_scanner_uploader.scale_modal.medium_confidence_desc', 'The AI detected a scale with moderate confidence. Please verify the detected value before applying.')
+              : t('profile_scanner_uploader.scale_modal.low_confidence_desc', 'The AI detected a scale with low confidence. Manual verification is recommended.')
           }
           type={isHighConfidence ? "success" : isMediumConfidence ? "warning" : "error"}
           showIcon
@@ -146,22 +148,22 @@ const ScaleSuggestionModal: React.FC<ScaleSuggestionModalProps> = ({
 
         {debug_info && (
           <Collapse size="small">
-            <Panel header="Advanced Details" key="debug">
+            <Panel header={t('profile_scanner_uploader.scale_modal.advanced_details', 'Advanced Details')} key="debug">
               <Descriptions column={1} size="small">
-                <Descriptions.Item label="Samples">
+                <Descriptions.Item label={t('profile_scanner_uploader.scale_modal.samples', 'Samples')}>
                   {debug_info.samples || 0}
                 </Descriptions.Item>
-                <Descriptions.Item label="Detected Dimensions">
+                <Descriptions.Item label={t('profile_scanner_uploader.scale_modal.detected_dimensions', 'Detected Dimensions')}>
                   {debug_info.dimensions || 0}
                 </Descriptions.Item>
-                <Descriptions.Item label="Lines">
+                <Descriptions.Item label={t('profile_scanner_uploader.scale_modal.lines', 'Lines')}>
                   {debug_info.lines || 0}
                 </Descriptions.Item>
-                <Descriptions.Item label="Associations">
+                <Descriptions.Item label={t('profile_scanner_uploader.scale_modal.associations', 'Associations')}>
                   {debug_info.associations || 0}
                 </Descriptions.Item>
                 {debug_info.method && (
-                  <Descriptions.Item label="Method">
+                  <Descriptions.Item label={t('profile_scanner_uploader.scale_modal.method', 'Method')}>
                     {debug_info.method}
                   </Descriptions.Item>
                 )}
@@ -187,6 +189,7 @@ export function ProfileScannerUploader({
   onScanSuccess,
   includeDebugOverlay = true,
 }: ProfileScannerUploaderProps) {
+  const { t } = useTranslation('fabricator');
   const [uploading, setUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [scaleFactor, setScaleFactor] = useState<number | null>(0.1);
@@ -223,18 +226,18 @@ export function ProfileScannerUploader({
           setShowScaleSuggestion(true);
         } else {
           notification.warning({
-            message: "Low Confidence Detection",
+            message: t('profile_scanner_uploader.errors.low_confidence_title', 'Low Confidence Detection'),
             description:
               detection.suggestion_text ||
-              "AI detected a scale with low confidence. Please enter scale manually.",
+              t('profile_scanner_uploader.errors.low_confidence_desc', 'AI detected a scale with low confidence. Please enter scale manually.'),
             duration: 5,
           });
           setManualScaleMode(true);
         }
       } else {
         notification.info({
-          message: "No Scale Detected",
-          description: "AI could not detect a scale. Please enter scale manually.",
+          message: t('profile_scanner_uploader.errors.no_scale_title', 'No Scale Detected'),
+          description: t('profile_scanner_uploader.errors.no_scale_desc', 'AI could not detect a scale. Please enter scale manually.'),
           duration: 5,
         });
         setManualScaleMode(true);
@@ -246,10 +249,11 @@ export function ProfileScannerUploader({
     if (detection.scale_mm_per_px) {
       setScaleFactor(detection.scale_mm_per_px);
       notification.success({
-        message: "Scale Auto-Detected",
-        description: `High confidence scale applied: ${detection.scale_mm_per_px.toFixed(
-          6,
-        )} mm/px`,
+        message: t('profile_scanner_uploader.scale_modal.auto_detected', 'Scale Auto-Detected'),
+        description: t('profile_scanner_uploader.scale_modal.auto_detected_desc', {
+          scale: detection.scale_mm_per_px.toFixed(6),
+          defaultValue: `High confidence scale applied: ${detection.scale_mm_per_px.toFixed(6)} mm/px`
+        }),
         duration: 3,
       });
     }
@@ -258,8 +262,8 @@ export function ProfileScannerUploader({
   const handleFileSelect = (incoming: File) => {
     if (!incoming.type.startsWith("image/")) {
       notification.error({
-        message: "Invalid File",
-        description: "Please upload an image file (JPG, PNG, etc.)",
+        message: t('profile_scanner_uploader.errors.invalid_file', 'Invalid File'),
+        description: t('profile_scanner_uploader.errors.invalid_file_desc', 'Please upload an image file (JPG, PNG, etc.)'),
       });
       return false;
     }
@@ -270,8 +274,8 @@ export function ProfileScannerUploader({
   const handleScan = async () => {
     if (!file) {
       notification.error({
-        message: "No File Selected",
-        description: "Please select an image file first",
+        message: t('profile_scanner_uploader.errors.no_file', 'No File Selected'),
+        description: t('profile_scanner_uploader.errors.no_file_desc', 'Please select an image file first'),
       });
       return;
     }
@@ -307,7 +311,7 @@ export function ProfileScannerUploader({
     } catch (err: any) {
       setError(err.message);
       notification.error({
-        message: "Scan Failed",
+        message: t('profile_scanner_uploader.errors.scan_failed', 'Scan Failed'),
         description: err.message,
         duration: 6,
       });
@@ -321,8 +325,11 @@ export function ProfileScannerUploader({
     setShowScaleSuggestion(false);
     setScaleSuggestion(null);
     notification.success({
-      message: "Scale Applied",
-      description: `Using detected scale: ${scale.toFixed(6)} mm/px`,
+      message: t('profile_scanner_uploader.scale_modal.scale_applied', 'Scale Applied'),
+      description: t('profile_scanner_uploader.scale_modal.scale_applied_desc', {
+        scale: scale.toFixed(6),
+        defaultValue: `Using detected scale: ${scale.toFixed(6)} mm/px`
+      }),
       duration: 3,
     });
     setManualScaleMode(false);
@@ -354,8 +361,8 @@ export function ProfileScannerUploader({
       window.open(url, "_blank");
     } else {
       notification.warning({
-        message: "SVG Not Available",
-        description: "SVG file URL not found in results",
+        message: t('profile_scanner_uploader.errors.svg_not_available', 'SVG Not Available'),
+        description: t('profile_scanner_uploader.errors.svg_not_available_desc', 'SVG file URL not found in results'),
       });
     }
   };
@@ -372,8 +379,8 @@ export function ProfileScannerUploader({
       title={
         <Space>
           <ScanOutlined />
-          <span>AI-Assisted Engineering Drawing Scanner</span>
-          <Tag color="blue">BETA</Tag>
+          <span>{t('profile_scanner_uploader.title', 'AI-Assisted Engineering Drawing Scanner')}</span>
+          <Tag color="blue">{t('profile_scanner_uploader.beta', 'BETA')}</Tag>
         </Space>
       }
       extra={
@@ -381,16 +388,16 @@ export function ProfileScannerUploader({
           <Space>
             {result.storageUrls?.svg_url && (
               <Button icon={<DownloadOutlined />} onClick={handleDownloadSVG} size="small">
-                Download SVG
+                {t('profile_scanner_uploader.actions.download_svg', 'Download SVG')}
               </Button>
             )}
             {result.storageUrls?.debug_overlay_url && (
               <Button icon={<EyeOutlined />} onClick={handleViewDebug} size="small">
-                View Debug
+                {t('profile_scanner_uploader.actions.view_debug', 'View Debug')}
               </Button>
             )}
             <Button icon={<ReloadOutlined />} onClick={handleReset} size="small">
-              New Scan
+              {t('profile_scanner_uploader.actions.new_scan', 'New Scan')}
             </Button>
           </Space>
         )
@@ -399,7 +406,7 @@ export function ProfileScannerUploader({
     >
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
         {!file ? (
-          <Card size="small" title="1. Select Image">
+          <Card size="small" title={t('profile_scanner_uploader.steps.select', '1. Select Image')}>
             <Upload.Dragger
               accept="image/*"
               beforeUpload={handleFileSelect}
@@ -408,11 +415,11 @@ export function ProfileScannerUploader({
             >
               <Space direction="vertical" size="middle" style={{ padding: "40px 0" }}>
                 <UploadOutlined style={{ fontSize: 48, color: "#1890ff" }} />
-                <Text strong>Click or drag image to upload</Text>
+                <Text strong>{t('profile_scanner_uploader.upload.title', 'Click or drag image to upload')}</Text>
                 <Text type="secondary">
-                  Supported formats: JPG, PNG, BMP (export PDF/DWG/DXF to image)
+                  {t('profile_scanner_uploader.upload.formats', 'Supported formats: JPG, PNG, BMP (export PDF/DWG/DXF to image)')}
                 </Text>
-                <Text type="secondary">Max size: 10MB; one drawing at a time</Text>
+                <Text type="secondary">{t('profile_scanner_uploader.upload.max_size', 'Max size: 10MB; one drawing at a time')}</Text>
               </Space>
             </Upload.Dragger>
             <input
@@ -424,19 +431,19 @@ export function ProfileScannerUploader({
             />
           </Card>
         ) : (
-          <Card size="small" title="Selected File">
+          <Card size="small" title={t('profile_scanner_uploader.upload.selected_file', 'Selected File')}>
             <Space align="start">
               <Text strong>{file.name}</Text>
               <Text type="secondary">({(file.size / 1024 / 1024).toFixed(2)} MB)</Text>
               <Button size="small" onClick={() => setFile(null)}>
-                Change
+                {t('profile_scanner_uploader.upload.change', 'Change')}
               </Button>
             </Space>
           </Card>
         )}
 
         {file && !result && (
-          <Card size="small" title="2. Scale Configuration">
+          <Card size="small" title={t('profile_scanner_uploader.steps.scale', '2. Scale Configuration')}>
             <Space direction="vertical" size="middle" style={{ width: "100%" }}>
               <Space>
                 <input
@@ -451,8 +458,8 @@ export function ProfileScannerUploader({
                 />
                 <label htmlFor="autoDetectScale">
                   <Space size="small">
-                    <Text strong>Auto-detect scale from drawing</Text>
-                    <Tooltip title="AI will attempt to detect scale from dimension labels in the image">
+                    <Text strong>{t('profile_scanner_uploader.scale.auto_detect', 'Auto-detect scale from drawing')}</Text>
+                    <Tooltip title={t('profile_scanner_uploader.scale.auto_detect_tooltip', 'AI will attempt to detect scale from dimension labels in the image')}>
                       <InfoCircleOutlined style={{ color: "#1890ff" }} />
                     </Tooltip>
                   </Space>
@@ -462,8 +469,8 @@ export function ProfileScannerUploader({
               {(!autoDetectScale || manualScaleMode) && (
                 <Space direction="vertical" size="small" style={{ width: "100%" }}>
                   <Space>
-                    <Text strong>Manual Scale Factor:</Text>
-                    <Text type="secondary">(mm per pixel)</Text>
+                    <Text strong>{t('profile_scanner_uploader.scale.manual_scale', 'Manual Scale Factor:')}</Text>
+                    <Text type="secondary">{t('profile_scanner_uploader.scale.manual_scale_unit', '(mm per pixel)')}</Text>
                   </Space>
                   <InputNumber
                     value={scaleFactor ?? undefined}
@@ -477,15 +484,15 @@ export function ProfileScannerUploader({
                     addonAfter="mm/px"
                   />
                   <Text type="secondary">
-                    Example: 0.1 means 1 pixel = 0.1 mm (common for engineering drawings)
+                    {t('profile_scanner_uploader.scale.manual_scale_example', 'Example: 0.1 means 1 pixel = 0.1 mm (common for engineering drawings)')}
                   </Text>
                 </Space>
               )}
 
               {autoDetectScale && !manualScaleMode && (
                 <Alert
-                  message="AI Scale Detection Active"
-                  description="The system will attempt to detect scale from dimension labels. If successful, you'll be prompted to confirm."
+                  message={t('profile_scanner_uploader.scale.ai_active', 'AI Scale Detection Active')}
+                  description={t('profile_scanner_uploader.scale.ai_active_desc', 'The system will attempt to detect scale from dimension labels. If successful, you\'ll be prompted to confirm.')}
                   type="info"
                   showIcon
                 />
@@ -497,13 +504,13 @@ export function ProfileScannerUploader({
         {uploading && (
           <Card size="small">
             <Space direction="vertical" style={{ width: "100%" }}>
-              <Text strong>Processing...</Text>
+              <Text strong>{t('profile_scanner_uploader.processing.title', 'Processing...')}</Text>
               <Progress percent={progress} status="active" />
               <Text type="secondary">
-                {progress < 30 && "Uploading image..."}
-                {progress >= 30 && progress < 60 && "Running OCR..."}
-                {progress >= 60 && progress < 90 && "Detecting scale..."}
-                {progress >= 90 && "Vectorizing profile..."}
+                {progress < 30 && t('profile_scanner_uploader.processing.uploading', 'Uploading image...')}
+                {progress >= 30 && progress < 60 && t('profile_scanner_uploader.processing.ocr', 'Running OCR...')}
+                {progress >= 60 && progress < 90 && t('profile_scanner_uploader.processing.detecting', 'Detecting scale...')}
+                {progress >= 90 && t('profile_scanner_uploader.processing.vectorizing', 'Vectorizing profile...')}
               </Text>
             </Space>
           </Card>
@@ -511,7 +518,7 @@ export function ProfileScannerUploader({
 
         {error && (
           <Alert
-            message="Scan Error"
+            message={t('profile_scanner_uploader.errors.scan_error', 'Scan Error')}
             description={error}
             type="error"
             showIcon
@@ -521,17 +528,17 @@ export function ProfileScannerUploader({
         )}
 
         {result && (
-          <Card size="small" title="3. Scan Results">
+          <Card size="small" title={t('profile_scanner_uploader.steps.results', '3. Scan Results')}>
             <Space direction="vertical" size="middle" style={{ width: "100%" }}>
               <Alert
-                message="Scale Applied"
+                message={t('profile_scanner_uploader.results.scale_applied', 'Scale Applied')}
                 description={
                   <Space direction="vertical" size="small">
                     <Text strong>
                       {result.dimensions.scale_used?.toFixed(6) ?? "N/A"} mm/px
                     </Text>
                     <Text type="secondary">
-                      {result.scaleDetection?.detected ? "Detected by AI" : "Manually specified"}
+                      {result.scaleDetection?.detected ? t('profile_scanner_uploader.results.detected_by_ai', 'Detected by AI') : t('profile_scanner_uploader.results.manually_specified', 'Manually specified')}
                     </Text>
                   </Space>
                 }
@@ -540,34 +547,34 @@ export function ProfileScannerUploader({
               />
 
               {result.qualityFlags && (
-                <Card size="small" title="Quality Assessment">
+                <Card size="small" title={t('profile_scanner_uploader.results.quality_assessment', 'Quality Assessment')}>
                   <Descriptions column={2} size="small">
-                    <Descriptions.Item label="Auto-scale detected">
+                    <Descriptions.Item label={t('profile_scanner_uploader.results.auto_scale_detected', 'Auto-scale detected')}>
                       {result.qualityFlags.auto_scale_detected ? (
-                        <Tag color="green">Yes</Tag>
+                        <Tag color="green">{t('profile_scanner_uploader.results.yes', 'Yes')}</Tag>
                       ) : (
-                        <Tag color="red">No</Tag>
+                        <Tag color="red">{t('profile_scanner_uploader.results.no', 'No')}</Tag>
                       )}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Properly scaled">
+                    <Descriptions.Item label={t('profile_scanner_uploader.results.properly_scaled', 'Properly scaled')}>
                       {result.qualityFlags.is_properly_scaled ? (
-                        <Tag color="green">Yes</Tag>
+                        <Tag color="green">{t('profile_scanner_uploader.results.yes', 'Yes')}</Tag>
                       ) : (
-                        <Tag color="red">No</Tag>
+                        <Tag color="red">{t('profile_scanner_uploader.results.no', 'No')}</Tag>
                       )}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Dimension labels">
+                    <Descriptions.Item label={t('profile_scanner_uploader.results.dimension_labels', 'Dimension labels')}>
                       {result.qualityFlags.has_dimension_labels ? (
-                        <Tag color="green">Present</Tag>
+                        <Tag color="green">{t('profile_scanner_uploader.results.present', 'Present')}</Tag>
                       ) : (
-                        <Tag color="red">Missing</Tag>
+                        <Tag color="red">{t('profile_scanner_uploader.results.missing', 'Missing')}</Tag>
                       )}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Image quality">
+                    <Descriptions.Item label={t('profile_scanner_uploader.results.image_quality', 'Image quality')}>
                       {result.qualityFlags.is_high_contrast ? (
-                        <Tag color="green">Good</Tag>
+                        <Tag color="green">{t('profile_scanner_uploader.results.good', 'Good')}</Tag>
                       ) : (
-                        <Tag color="orange">Fair</Tag>
+                        <Tag color="orange">{t('profile_scanner_uploader.results.fair', 'Fair')}</Tag>
                       )}
                     </Descriptions.Item>
                   </Descriptions>
@@ -575,7 +582,7 @@ export function ProfileScannerUploader({
               )}
 
               {result.dimensions.mm && Object.keys(result.dimensions.mm).length > 0 && (
-                <Card size="small" title="Extracted Dimensions (mm)">
+                <Card size="small" title={t('profile_scanner_uploader.results.extracted_dimensions', 'Extracted Dimensions (mm)')}>
                   <Space wrap>
                     {Object.entries(result.dimensions.mm).map(([key, value]) => (
                       <Tag key={key} color="blue">
@@ -586,12 +593,12 @@ export function ProfileScannerUploader({
                 </Card>
               )}
 
-              <Card size="small" title="Performance">
+              <Card size="small" title={t('profile_scanner_uploader.results.performance', 'Performance')}>
                 <Descriptions column={2} size="small">
-                  <Descriptions.Item label="Processing Time">
+                  <Descriptions.Item label={t('profile_scanner_uploader.results.processing_time', 'Processing Time')}>
                     {result.processing_time_ms ?? "N/A"} ms
                   </Descriptions.Item>
-                  <Descriptions.Item label="Timestamp">
+                  <Descriptions.Item label={t('profile_scanner_uploader.results.timestamp', 'Timestamp')}>
                     {result.timestamp
                       ? new Date(result.timestamp).toLocaleString()
                       : "N/A"}
@@ -600,7 +607,7 @@ export function ProfileScannerUploader({
               </Card>
 
               <Collapse size="small">
-                <Panel header="View Raw API Response" key="raw">
+                <Panel header={t('profile_scanner_uploader.results.view_raw', 'View Raw API Response')} key="raw">
                   <pre style={{ fontSize: "12px", maxHeight: "300px", overflow: "auto" }}>
                     {JSON.stringify(result, null, 2)}
                   </pre>
@@ -620,7 +627,7 @@ export function ProfileScannerUploader({
               size="large"
               style={{ minWidth: 200 }}
             >
-              {autoDetectScale ? "Scan with AI Detection" : "Scan with Manual Scale"}
+              {autoDetectScale ? t('profile_scanner_uploader.actions.scan_ai', 'Scan with AI Detection') : t('profile_scanner_uploader.actions.scan_manual', 'Scan with Manual Scale')}
             </Button>
           </Space>
         )}
@@ -628,7 +635,7 @@ export function ProfileScannerUploader({
         {result && (
           <Space style={{ width: "100%", justifyContent: "center" }}>
             <Button onClick={handleReset} icon={<ReloadOutlined />}>
-              Scan Another Drawing
+              {t('profile_scanner_uploader.actions.scan_another', 'Scan Another Drawing')}
             </Button>
           </Space>
         )}

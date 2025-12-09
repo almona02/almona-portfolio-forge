@@ -48,6 +48,7 @@ import { AluminumPricingCalculator } from '@/lib/pricing/AluminumPricingCalculat
 import type { Profile } from '@/types/fabricator';
 import { toast } from 'sonner';
 import { ProfileDefinitionWizard } from './ProfileDefinitionWizard';
+import { useTranslation } from 'react-i18next';
 
 // ============================================================================
 // Types & Interfaces
@@ -178,6 +179,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
   workshopId,
   existingProfiles = [],
 }) => {
+  const { t } = useTranslation('fabricator');
   // File upload state
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -226,7 +228,10 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
 
       if (validFiles.length !== files.length) {
         toast.warning(
-          `${files.length - validFiles.length} files skipped (unsupported format)`
+          t('profile_import_tool.upload.files_skipped', {
+            count: files.length - validFiles.length,
+            defaultValue: `${files.length - validFiles.length} files skipped (unsupported format)`
+          })
         );
       }
 
@@ -287,7 +292,10 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
         }
       } catch (error) {
         console.error(`Error processing ${file.name}:`, error);
-        toast.error(`Failed to process ${file.name}`);
+        toast.error(t('profile_import_tool.upload.processing_error', {
+          file: file.name,
+          defaultValue: `Failed to process ${file.name}`
+        }));
       }
 
       setProgress(((i + 1) / files.length) * 100);
@@ -299,7 +307,11 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
     setProgress(100);
 
     if (newProfiles.length > 0) {
-      toast.success(`Extracted ${newProfiles.length} profiles from ${files.length} files`);
+      toast.success(t('profile_import_tool.upload.extracted_success', {
+        count: newProfiles.length,
+        filesCount: files.length,
+        defaultValue: `Extracted ${newProfiles.length} profiles from ${files.length} files`
+      }));
       
       // Auto-select all if auto-optimize is on
       if (autoOptimizeAll) {
@@ -932,7 +944,10 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
     );
 
     onProfilesImported(imported);
-    toast.success(`Imported ${imported.length} profiles into inventory`);
+    toast.success(t('profile_import_tool.upload.imported_success', {
+      count: imported.length,
+      defaultValue: `Imported ${imported.length} profiles into inventory`
+    }));
 
     // Clear imported profiles
     setExtractedProfiles((prev) =>
@@ -1026,10 +1041,10 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Sparkles className="h-5 w-5 text-yellow-400" />
-            Smart Profile Import Tool
+            {t('profile_import_tool.title', 'Smart Profile Import Tool')}
           </CardTitle>
           <CardDescription className="text-gray-300">
-            Import profiles from multiple formats with AI-powered K-factor learning
+            {t('profile_import_tool.description', 'Import profiles from multiple formats with AI-powered K-factor learning')}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -1038,15 +1053,15 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
         <TabsList className="grid w-full grid-cols-3 bg-gray-800">
           <TabsTrigger value="import" className="text-xs">
             <Upload className="w-3 h-3 mr-1" />
-            Import
+            {t('profile_import_tool.tabs.import', 'Import')}
           </TabsTrigger>
           <TabsTrigger value="kfactor" className="text-xs">
             <Brain className="w-3 h-3 mr-1" />
-            K-Factor AI
+            {t('profile_import_tool.tabs.kfactor', 'K-Factor AI')}
           </TabsTrigger>
           <TabsTrigger value="settings" className="text-xs">
             <Settings className="w-3 h-3 mr-1" />
-            Settings
+            {t('profile_import_tool.tabs.settings', 'Settings')}
           </TabsTrigger>
         </TabsList>
 
@@ -1060,9 +1075,9 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-sm font-medium mb-2">Drop files here or click to upload</h3>
+                <h3 className="text-sm font-medium mb-2">{t('profile_import_tool.upload.title', 'Drop files here or click to upload')}</h3>
                 <p className="text-xs text-gray-400 mb-4">
-                  Supports DXF, DWG, SVG, PDF, PNG, JPG
+                  {t('profile_import_tool.upload.description', 'Supports DXF, DWG, SVG, PDF, PNG, JPG')}
                 </p>
                 <div className="flex flex-wrap justify-center gap-2">
                   {(['dxf', 'dwg', 'svg', 'pdf', 'png', 'jpg'] as SupportedFileType[]).map(
@@ -1093,7 +1108,10 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
-                    <span className="text-sm">Processing {currentProcessingFile}...</span>
+                    <span className="text-sm">{t('profile_import_tool.upload.processing_file', {
+                      file: currentProcessingFile,
+                      defaultValue: `Processing ${currentProcessingFile}...`
+                    })}</span>
                   </div>
                   <Progress value={progress} className="h-2" />
                 </div>
@@ -1108,14 +1126,16 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <Package className="h-4 w-4 text-green-400" />
-                    Extracted Profiles ({extractedProfiles.length})
+                    {t('profile_import_tool.upload.extracted_profiles', {
+                      count: extractedProfiles.length
+                    })}
                   </CardTitle>
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" onClick={selectAllProfiles}>
-                      Select All
+                      {t('profile_import_tool.upload.select_all', 'Select All')}
                     </Button>
                     <Button size="sm" variant="outline" onClick={clearSelection}>
-                      Clear
+                      {t('profile_import_tool.upload.clear', 'Clear')}
                     </Button>
                   </div>
                 </div>
@@ -1164,7 +1184,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                                       : 'bg-red-500/10 text-red-300 border-red-500/40'
                                 }`}
                               >
-                                {Math.round(profile.confidence * 100)}% confidence
+                                {Math.round(profile.confidence * 100)}% {t('profile_import_tool.upload.confidence', 'confidence')}
                               </Badge>
                             </div>
                             <div className="grid grid-cols-4 gap-2 text-[11px] text-gray-400">
@@ -1189,7 +1209,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                                 <div className="flex items-center gap-2 mb-1">
                                   <Brain className="h-3 w-3 text-purple-400" />
                                   <span className="text-purple-300 font-medium">
-                                    K-Factor Suggestion
+                                    {t('profile_import_tool.upload.k_factor_suggestion', 'K-Factor Suggestion')}
                                   </span>
                                 </div>
                                 <div className="grid grid-cols-3 gap-2 text-gray-300">
@@ -1229,9 +1249,10 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                     disabled={selectedProfiles.size === 0 && extractedProfiles.length === 0}
                   >
                     <Package className="h-4 w-4 mr-2" />
-                    Import{' '}
-                    {selectedProfiles.size > 0 ? selectedProfiles.size : extractedProfiles.length}{' '}
-                    Profile{(selectedProfiles.size || extractedProfiles.length) !== 1 ? 's' : ''}
+                    {t('profile_import_tool.upload.import_profiles', {
+                      count: selectedProfiles.size > 0 ? selectedProfiles.size : extractedProfiles.length,
+                      defaultValue: `Import ${selectedProfiles.size > 0 ? selectedProfiles.size : extractedProfiles.length} Profile(s)`
+                    })}
                   </Button>
                   <Button
                     variant="outline"
@@ -1240,7 +1261,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                       setSelectedProfiles(new Set());
                     }}
                   >
-                    Clear All
+                    {t('profile_import_tool.upload.clear_all', 'Clear All')}
                   </Button>
                 </div>
               </CardContent>
@@ -1254,10 +1275,10 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Brain className="h-4 w-4 text-purple-400" />
-                Smart K-Factor Learning
+                {t('profile_import_tool.kfactor.title', 'Smart K-Factor Learning')}
               </CardTitle>
               <CardDescription className="text-xs">
-                AI-powered K-factor suggestions based on imported DXF/DWG measurements
+                {t('profile_import_tool.kfactor.description', 'AI-powered K-factor suggestions based on imported DXF/DWG measurements')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -1266,9 +1287,9 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                 <div className="flex items-center gap-3">
                   <Zap className="h-5 w-5 text-yellow-400" />
                   <div>
-                    <div className="text-sm font-medium">Auto-Optimize All</div>
+                    <div className="text-sm font-medium">{t('profile_import_tool.kfactor.auto_optimize', 'Auto-Optimize All')}</div>
                     <div className="text-xs text-gray-400">
-                      Automatically apply K-factor suggestions
+                      {t('profile_import_tool.kfactor.auto_optimize_desc', 'Automatically apply K-factor suggestions')}
                     </div>
                   </div>
                 </div>
@@ -1278,7 +1299,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                   onClick={() => setAutoOptimizeAll(!autoOptimizeAll)}
                   className={autoOptimizeAll ? 'bg-yellow-500 hover:bg-yellow-600' : ''}
                 >
-                  {autoOptimizeAll ? 'ON' : 'OFF'}
+                  {autoOptimizeAll ? t('profile_import_tool.kfactor.on', 'ON') : t('profile_import_tool.kfactor.off', 'OFF')}
                 </Button>
               </div>
 
@@ -1287,37 +1308,37 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                 <div className="p-3 bg-gray-800 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <Target className="h-4 w-4 text-blue-400" />
-                    <span className="text-xs font-medium">Precision Learning</span>
+                    <span className="text-xs font-medium">{t('profile_import_tool.kfactor.features.precision.title', 'Precision Learning')}</span>
                   </div>
                   <p className="text-[10px] text-gray-400">
-                    Learns from your actual measurements to improve suggestions
+                    {t('profile_import_tool.kfactor.features.precision.description', 'Learns from your actual measurements to improve suggestions')}
                   </p>
                 </div>
                 <div className="p-3 bg-gray-800 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <TrendingUp className="h-4 w-4 text-green-400" />
-                    <span className="text-xs font-medium">Similar Profile Matching</span>
+                    <span className="text-xs font-medium">{t('profile_import_tool.kfactor.features.similarity.title', 'Similar Profile Matching')}</span>
                   </div>
                   <p className="text-[10px] text-gray-400">
-                    Finds similar profiles to suggest optimal K-factors
+                    {t('profile_import_tool.kfactor.features.similarity.description', 'Finds similar profiles to suggest optimal K-factors')}
                   </p>
                 </div>
                 <div className="p-3 bg-gray-800 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <Lightbulb className="h-4 w-4 text-yellow-400" />
-                    <span className="text-xs font-medium">Hints & Tips</span>
+                    <span className="text-xs font-medium">{t('profile_import_tool.kfactor.features.hints.title', 'Hints & Tips')}</span>
                   </div>
                   <p className="text-[10px] text-gray-400">
-                    Provides reasoning for each K-factor suggestion
+                    {t('profile_import_tool.kfactor.features.hints.description', 'Provides reasoning for each K-factor suggestion')}
                   </p>
                 </div>
                 <div className="p-3 bg-gray-800 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <History className="h-4 w-4 text-orange-400" />
-                    <span className="text-xs font-medium">Collective Learning</span>
+                    <span className="text-xs font-medium">{t('profile_import_tool.kfactor.features.collective.title', 'Collective Learning')}</span>
                   </div>
                   <p className="text-[10px] text-gray-400">
-                    Improves over time from production feedback
+                    {t('profile_import_tool.kfactor.features.collective.description', 'Improves over time from production feedback')}
                   </p>
                 </div>
               </div>
@@ -1325,16 +1346,16 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
               {/* Learned K-Factors History */}
               {learnedKFactors.length > 0 && (
                 <div className="space-y-2">
-                  <div className="text-sm font-medium">Recent Learnings</div>
+                  <div className="text-sm font-medium">{t('profile_import_tool.kfactor.recent_learnings', 'Recent Learnings')}</div>
                   <div className="max-h-40 overflow-y-auto space-y-1">
                     {learnedKFactors.slice(-5).map((learning, idx) => (
                       <div
                         key={idx}
                         className="p-2 bg-gray-800 rounded text-xs flex items-center justify-between"
                       >
-                        <span>K-Factor: {learning.measuredKFactor.toFixed(3)}</span>
+                        <span>{t('profile_import_tool.kfactor.k_factor', 'K-Factor')}: {learning.measuredKFactor.toFixed(3)}</span>
                         <span className="text-gray-400">
-                          Deviation: {(learning.deviation * 100).toFixed(1)}%
+                          {t('profile_import_tool.kfactor.deviation', 'Deviation')}: {(learning.deviation * 100).toFixed(1)}%
                         </span>
                         <Badge
                           variant="outline"
@@ -1344,7 +1365,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                               : 'bg-yellow-500/10 text-yellow-300'
                           }`}
                         >
-                          {learning.isVerified ? 'Verified' : 'Pending'}
+                          {learning.isVerified ? t('profile_import_tool.kfactor.verified', 'Verified') : t('profile_import_tool.kfactor.pending', 'Pending')}
                         </Badge>
                       </div>
                     ))}
@@ -1361,13 +1382,13 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <DollarSign className="h-4 w-4 text-green-400" />
-                Pricing Configuration
+                {t('profile_import_tool.settings.pricing.title', 'Pricing Configuration')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs">Aluminum Price / Kg</Label>
+                  <Label className="text-xs">{t('profile_import_tool.settings.pricing.aluminum_price', 'Aluminum Price / Kg')}</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -1376,11 +1397,11 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                       const v = parseFloat(e.target.value);
                       setAluminumPrice(Number.isNaN(v) ? 0 : v);
                     }}
-                    placeholder="e.g., 6.50"
+                    placeholder={t('profile_import_tool.settings.pricing.aluminum_price_placeholder', 'e.g., 6.50')}
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Markup (%)</Label>
+                  <Label className="text-xs">{t('profile_import_tool.settings.pricing.markup', 'Markup (%)')}</Label>
                   <Input
                     type="number"
                     step="0.1"
@@ -1389,19 +1410,19 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                       const v = parseFloat(e.target.value);
                       setMarkupPercentage(Number.isNaN(v) ? 0 : v);
                     }}
-                    placeholder="e.g., 30"
+                    placeholder={t('profile_import_tool.settings.pricing.markup_placeholder', 'e.g., 30')}
                   />
                 </div>
               </div>
               <Button
                 onClick={() => {
                   AluminumPricingCalculator.updateGlobalPricing(aluminumPrice, { markupPercentage });
-                  toast.success('Global pricing updated');
+                  toast.success(t('profile_import_tool.settings.pricing.updated', 'Global pricing updated'));
                 }}
                 className="bg-green-600 hover:bg-green-700 text-xs"
               >
                 <DollarSign className="h-4 w-4 mr-1" />
-                Update Global Pricing
+                {t('profile_import_tool.settings.pricing.update_button', 'Update Global Pricing')}
               </Button>
             </CardContent>
           </Card>
@@ -1410,14 +1431,14 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Settings className="h-4 w-4 text-blue-400" />
-                Import Settings
+                {t('profile_import_tool.settings.import.title', 'Import Settings')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
                 <div>
-                  <div className="text-sm font-medium">K-Factor Learning</div>
-                  <div className="text-xs text-gray-400">Enable AI K-factor suggestions</div>
+                  <div className="text-sm font-medium">{t('profile_import_tool.settings.import.k_factor_learning', 'K-Factor Learning')}</div>
+                  <div className="text-xs text-gray-400">{t('profile_import_tool.settings.import.k_factor_learning_desc', 'Enable AI K-factor suggestions')}</div>
                 </div>
                 <Button
                   variant={kFactorLearningEnabled ? 'default' : 'outline'}
@@ -1425,7 +1446,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                   onClick={() => setKFactorLearningEnabled(!kFactorLearningEnabled)}
                   className={kFactorLearningEnabled ? 'bg-purple-500 hover:bg-purple-600' : ''}
                 >
-                  {kFactorLearningEnabled ? 'Enabled' : 'Disabled'}
+                  {kFactorLearningEnabled ? t('profile_import_tool.settings.import.enabled', 'Enabled') : t('profile_import_tool.settings.import.disabled', 'Disabled')}
                 </Button>
               </div>
             </CardContent>
@@ -1445,7 +1466,10 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
           }}
           userId={userId}
           onProfileCreated={(profile) => {
-            toast.success(`Profile "${profile.name}" created successfully`);
+            toast.success(t('profile_import_tool.wizard.profile_created', {
+              name: profile.name,
+              defaultValue: `Profile "${profile.name}" created successfully`
+            }));
             onProfilesImported([profile]);
             setWizardOpen(false);
             setWizardPrefillData(null);

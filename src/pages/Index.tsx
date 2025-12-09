@@ -11,7 +11,7 @@ const Index = () => {
   // Note: document.title removed in favor of SEO component management
   
   return (
-    <main className="flex-grow overflow-x-hidden">
+    <main dir="ltr" className="flex-grow overflow-x-hidden text-left">
       <Hero />
       <NationalImpactSection />
       <EgyptVision2030Section />

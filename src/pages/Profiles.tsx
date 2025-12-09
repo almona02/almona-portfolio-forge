@@ -116,7 +116,7 @@ const ProfilesPage: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-white">Profiles</h1>
           <p className="text-sm text-gray-400">
-            Register new profiles directly from Smart Scan or Assembly, then manage them here.
+            {t('profiles.register_description', 'Register new profiles directly from Smart Scan or Assembly, then manage them here.')}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -125,14 +125,14 @@ const ProfilesPage: React.FC = () => {
             className="bg-orange-500 text-white hover:bg-orange-600"
             variant="default"
           >
-            <Link to="/test-scanner">Launch Smart Scan</Link>
+            <Link to="/test-scanner">{t('profiles.launch_smart_scan', 'Launch Smart Scan')}</Link>
           </Button>
           <Button
             asChild
             variant="outline"
             className="border-orange-400 text-orange-200 hover:bg-orange-500/10"
           >
-            <Link to="/smart-scan-assembly">Assembly Scan</Link>
+            <Link to="/smart-scan-assembly">{t('profiles.assembly_scan', 'Assembly Scan')}</Link>
           </Button>
         </div>
       </div>
