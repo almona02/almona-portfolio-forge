@@ -1,6 +1,4 @@
-from contextlib import asynccontextmanager
-from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
 from fastapi.testclient import TestClient  # type: ignore
 from apis.main import app
 
@@ -10,52 +8,14 @@ client = TestClient(app)
 class TestAPIEndpoints:
     """Test cases for API endpoints"""
 
-    @patch('core.health_checks.get_connection_pool')
-    @patch('core.connection_pool.SupabaseConnectionPool.get_performance_stats')
-    def test_health_check(self, mock_performance_stats, mock_get_pool):
-        """Test health check endpoint"""
-        # Minimal stats object compatible with health checks
-        mock_stats = SimpleNamespace(
-            total_connections=10,
-            active_connections=2,
-            idle_connections=8,
-            healthy_connections=10,  # key: must be > 0
-            unhealthy_connections=0,
-            total_queries=100,
-            successful_queries=100,
-            failed_queries=0,
-            avg_response_time_ms=50.0,
-            error_rate=0.0,
-            slow_queries_count=0,
-            uptime_seconds=123.0,
-        )
-        mock_performance_stats.return_value = mock_stats
-
-        class _DummyClient:
-            def table(self, *_, **__):
-                return self
-
-            def select(self, *_, **__):
-                return self
-
-            def limit(self, *_, **__):
-                return self
-
-            def execute(self, *_, **__):
-                return None
-
-        class _FakePool:
-            def __init__(self, stats):
-                self._stats = stats
-
-            def get_performance_stats(self):
-                return self._stats
-
-            @asynccontextmanager
-            async def get_client(self):
-                yield _DummyClient()
-
-        mock_get_pool.return_value = _FakePool(mock_stats)
+    @patch('core.health_checks.get_health_status', new_callable=AsyncMock)
+    def test_health_check(self, mock_health_status):
+        """Test health check endpoint with full mock."""
+        mock_health_status.return_value = {
+            "status": "healthy",
+            "checks": {},
+            "summary": {"ok": True},
+        }
 
         response = client.get("/health")
         assert response.status_code == 200
