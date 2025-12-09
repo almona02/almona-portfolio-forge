@@ -43,8 +43,11 @@ class CadProfileIngestor:
     def process_dxf(self, file_bytes: bytes) -> Dict:
         """Primary ingestion method for DXF files. Returns structured metrics."""
         try:
-            # ezdxf.read expects a text stream; wrap bytes safely.
-            text_stream = io.TextIOWrapper(io.BytesIO(file_bytes), encoding="utf-8", errors="ignore")
+            # ezdxf.read expects a text stream; normalize to bytes then wrap safely.
+            if isinstance(file_bytes, str):
+                file_bytes = file_bytes.encode("utf-8", errors="ignore")
+            buffer = io.BytesIO(file_bytes)
+            text_stream = io.TextIOWrapper(buffer, encoding="utf-8", errors="ignore")
             doc = ezdxf.read(text_stream)
             msp = doc.modelspace()
             
