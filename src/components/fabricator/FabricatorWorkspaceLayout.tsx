@@ -88,7 +88,7 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 pt-[calc(4rem+1rem)]">
       {/* Workspace Header */}
       <div className="border-b border-slate-800/80 bg-slate-900/70 backdrop-blur-sm">
-        <div className="container mx-auto px-4 md:px-6">
+        <div className="mx-auto w-full px-4 md:px-6">
           <div className={`flex flex-col md:flex-row items-start md:items-center justify-between gap-4 py-4 ${isRTLMode ? 'flex-row-reverse' : ''}`}>
             <div className="space-y-1">
               <h1 className={`text-xl md:text-2xl font-bold text-white ${isRTLMode ? 'text-right' : 'text-left'}`}>
@@ -172,7 +172,7 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
       </div>
 
       {/* Workspace Content */}
-      <div className="container mx-auto px-4 md:px-6 py-6">
+      <div className="mx-auto w-full px-4 md:px-6 py-6">
         <div key={location.pathname} className="workspace-content-fade">
           <Outlet context={{ globalSearchQuery: state.globalSearchQuery }} />
         </div>
@@ -180,7 +180,7 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
 
       {/* Minimal Footer - Copyright Only */}
       <footer className="border-t border-gray-800 mt-12">
-        <div className="container mx-auto px-4 md:px-6 py-6">
+        <div className="mx-auto w-full px-4 md:px-6 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500 text-sm">
               © {new Date().getFullYear()} ALMONA Co. All rights reserved.

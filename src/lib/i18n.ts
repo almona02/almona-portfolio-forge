@@ -901,12 +901,26 @@ Object.assign(trTranslations, {
 
   const resources = baseResources;
   
+  const inferDefaultLanguage = () => {
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      const nav = (typeof navigator !== 'undefined' && navigator.language) ? navigator.language.toLowerCase() : '';
+      if (nav.startsWith('ar') || tz.toLowerCase().includes('cairo')) return 'ar-EG';
+      if (nav.startsWith('tr') || tz.toLowerCase().includes('istanbul')) return 'tr';
+    } catch {
+      // ignore
+    }
+    return 'en';
+  };
+
+  const defaultFallback = inferDefaultLanguage();
+
   i18n
     .use(LanguageDetector)
     .use(initReactI18next)
     .init({
       resources,
-      fallbackLng: 'en',
+      fallbackLng: defaultFallback,
       debug: false,
       interpolation: {
         escapeValue: false // React already escapes
@@ -918,6 +932,11 @@ Object.assign(trTranslations, {
       },
       defaultNS: 'translation',
       ns: ['translation', ...new Set(Object.values(discoveredResources).flatMap(o => Object.keys(o)))]
+    })
+    .then(() => {
+      if (typeof document !== 'undefined') {
+        document.documentElement.dir = isRTL(i18n.language) ? 'rtl' : 'ltr';
+      }
     });
 
   // Direction handling (RTL for Arabic, LTR for Turkish and English)
