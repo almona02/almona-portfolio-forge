@@ -8,8 +8,7 @@ import {
   LogOut,
   Shield,
   Workflow,
-  Factory,
-  Settings
+  Factory
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Logo } from "@/components/ui/Logo";
@@ -340,8 +339,8 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
           <div className="hidden lg:flex items-center gap-1.5 xl:gap-2 2xl:gap-3 flex-shrink-0 ml-auto">
             {/* Language Switcher */}
             <LanguageSwitcher 
-              variant="minimal" 
-              className="border-gray-700/50 hover:border-orange-500/50 text-gray-300 hover:text-white bg-transparent hover:bg-white/5 rounded-xl px-2.5 py-1.5 xl:px-3 xl:py-2 2xl:px-3.5 2xl:py-2 backdrop-blur-sm" 
+              variant="icons" 
+              className="px-1.5 py-1" 
             />
             
             {/* User Menu */}

@@ -45,12 +45,20 @@ interface EngineeringBayProps {
     onDesignComplete: (components: WindowComponent[]) => void;
     onHardwareUpdate?: (hardware: any[]) => void;
     profiles: Profile[];
+    relatedPositions?: WindowUnit[];
+    onSelectPosition?: (id: string) => void;
+    onBackToMeasuring?: () => void;
+    onAddNewPose?: () => void;
 }
 
 export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     project,
     onDesignComplete,
     profiles,
+    relatedPositions,
+    onSelectPosition,
+    onBackToMeasuring,
+    onAddNewPose,
 }) => {
     const { t } = useTranslation('fabricator');
     // --- State Management ---
@@ -124,14 +132,14 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         });
     }, []);
 
-    const handleSubmit = () => {
+    const handleSubmit = useCallback((): boolean => {
         if (!liveProject) {
             setError('Cannot complete design: project data is missing.');
-            return;
+            return false;
         }
         if (liveProject.components.length === 0) {
             setError('Cannot complete design: the grid is empty or invalid.');
-            return;
+            return false;
         }
 
         // Egyptian-style validation before 3D & optimization
@@ -144,12 +152,33 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
         if (!validation.isValid) {
             setError(validation.errors.join(' '));
-            return;
+            return false;
         }
 
         setError(null);
         onDesignComplete(liveProject.components);
-    };
+        return true;
+    }, [liveProject, onDesignComplete, currentGrid, activeSystemPackId]);
+
+    const handleSaveAndNext = useCallback(() => {
+        const ok = handleSubmit();
+        if (!ok) return;
+
+        // If a dedicated add‑pose handler is provided (measuring tab workflow), use it.
+        if (onAddNewPose) {
+            onAddNewPose();
+            return;
+        }
+
+        if (!project || !relatedPositions || !onSelectPosition) return;
+
+        const currentIndex = relatedPositions.findIndex((u) => u.id === project.id);
+        if (currentIndex === -1) return;
+        const next = relatedPositions[currentIndex + 1];
+        if (next) {
+            onSelectPosition(next.id);
+        }
+    }, [handleSubmit, onAddNewPose, project, relatedPositions, onSelectPosition]);
     
     // --- Render Logic ---
     if (!project) {
@@ -179,12 +208,32 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                             <span className="text-xl">{t('engineering_bay.title', 'Engineering Bay')}</span>
                         </CardTitle>
                         {liveProject && (
-                             <Button
-                                onClick={handleSubmit}
-                                className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                if (onBackToMeasuring) {
+                                  onBackToMeasuring();
+                                }
+                              }}
+                              className="border-cyan-400 text-cyan-200 hover:bg-cyan-900/30"
                             >
-                                {t('engineering_bay.confirm_design', 'Confirm Design & Proceed to Optimization')}
+                              {t('engineering_bay.back_to_measuring', 'Back to Measuring')}
                             </Button>
+                            <Button
+                              onClick={handleSubmit}
+                              className="bg-green-600 hover:bg-green-700 text-white shadow-lg"
+                            >
+                              {t('engineering_bay.confirm_design', 'Confirm Design & Proceed to Optimization')}
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              onClick={handleSaveAndNext}
+                              className="bg-cyan-500 text-slate-900 hover:bg-cyan-400 shadow-lg font-semibold"
+                            >
+                              {t('engineering_bay.save_and_next', 'Save & Next Pose')}
+                            </Button>
+                          </div>
                         )}
                     </div>
                 </CardHeader>

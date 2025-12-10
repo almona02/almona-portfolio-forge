@@ -449,7 +449,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
 
             {/* Language Switcher - Compact */}
             <div className="hidden md:block">
-              <LanguageSwitcher variant="minimal-text" />
+              <LanguageSwitcher variant="icons" />
             </div>
 
             {/* Notifications */}

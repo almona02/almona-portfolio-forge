@@ -10,6 +10,7 @@
   --de: #ef4444;
   --ad: #0f0f23;
   --r: .5rem;
+  --sidebar-width: 80px; /* Collapsed: 80px, Expanded: 320px */
 }
 
 .dark {
@@ -447,4 +448,44 @@ a[aria-label] {
     0 0 0 3px rgba(249, 115, 22, 0.5),
     0 0 0 6px rgba(0, 0, 0, 0.5);
   outline: none;
+}
+
+/* Enterprise Sidebar Custom Scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(51 65 85) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgb(51 65 85);
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgb(71 85 105);
+}
+
+.scrollbar-thin.scrollbar-thumb-slate-700::-webkit-scrollbar-thumb {
+  background: rgb(51 65 85);
+}
+
+.scrollbar-thin.scrollbar-thumb-slate-700::-webkit-scrollbar-thumb:hover {
+  background: rgb(71 85 105);
+}
+
+/* Smooth sidebar transitions */
+.sidebar-transition {
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

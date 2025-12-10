@@ -47,6 +47,7 @@ import { ProfileIconGenerator, type ProfileIconHandle } from './assets/ProfileIc
 import { ProfileScannerUploader } from './smartscan/ProfileScannerUploader';
 import SmartScanUploader from './smartscan/SmartScanUploader';
 import type { ProfileScanResult } from '@/services/scanApi';
+import './ProfileTuningStudio.css';
 
 interface ProfileTuningStudioProps {
   profile: Profile;
@@ -633,7 +634,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-xl flex items-start justify-center p-4 sm:p-6 overflow-y-auto">
+    <div className="profile-tuning-studio fixed inset-0 z-[200] bg-black/70 backdrop-blur-xl flex items-start justify-center p-4 sm:p-6 overflow-y-auto">
       <div className="w-full max-w-6xl max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)] overflow-y-auto rounded-2xl border border-orange-500/40 bg-gradient-to-br from-gray-950 via-gray-900 to-black shadow-[0_0_60px_rgba(248,113,113,0.35)]">
         <Card className="bg-transparent border-none h-full flex flex-col">
           <CardHeader className="border-b border-orange-500/30 pb-3">

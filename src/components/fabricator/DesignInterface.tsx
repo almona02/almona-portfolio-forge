@@ -23,6 +23,8 @@ interface DesignInterfaceProps {
    */
   onSmartDrawApply?: (components: WindowComponent[]) => void;
   onHardwareUpdate?: (hardware: any[]) => void;
+  onBackToMeasuring?: () => void;
+  onAddNewPose?: () => void;
 }
 
 /**
@@ -42,6 +44,8 @@ export const DesignInterface: React.FC<DesignInterfaceProps> = ({
   onSelectPosition,
   // onSmartDrawApply, // Unused in EngineeringBay flow as it handles completion internally
   onHardwareUpdate,
+  onBackToMeasuring,
+  onAddNewPose,
 }) => {
   const { t } = useTranslation('fabricator');
   const hasInventory = profiles && profiles.length > 0;
@@ -107,6 +111,10 @@ export const DesignInterface: React.FC<DesignInterfaceProps> = ({
             onDesignComplete={onDesignComplete}
             onHardwareUpdate={onHardwareUpdate}
             profiles={profiles}
+            relatedPositions={relatedPositions}
+            onSelectPosition={onSelectPosition}
+            onBackToMeasuring={onBackToMeasuring}
+            onAddNewPose={onAddNewPose}
           />
       </div>
     </div>

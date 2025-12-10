@@ -267,6 +267,17 @@ export const FabricatorWorkflow: React.FC = () => {
     [jobs, currentProject],
   );
 
+  // Keep existing project selector aligned with the active project badge
+  useEffect(() => {
+    if (currentProject) {
+      const key = currentProject.projectCode || currentProject.orderNumber || '';
+      if (key) {
+        setSelectedExistingProjectKey(key);
+      }
+      setSelectedExistingPoseId(currentProject.id);
+    }
+  }, [currentProject]);
+
   // Group loaded jobs by project (projectCode or orderNumber) for project‑level selection
   const existingProjectGroups = React.useMemo(
     () => {
@@ -876,6 +887,29 @@ export const FabricatorWorkflow: React.FC = () => {
     [currentProject, addOrUpdateJob, setSelectedJob, workspaceDispatch],
   );
 
+  // Shared handler to spawn a new pose (used by measuring tab button and Save & Next in design)
+  const handleAddNewPose = useCallback(() => {
+    const group = existingProjectGroups.find((g) => g.key === selectedExistingProjectKey);
+    const baseJob = group?.jobs[0];
+    if (!baseJob) return;
+
+    // Use the first pose of the project to reconstruct the project header,
+    // then start a fresh measuring session for a new pose.
+    setProjectMeta(deriveProjectMetaFromJob(baseJob));
+    workspaceDispatch({
+      type: 'SET_CURRENT_PROJECT',
+      payload: null,
+    });
+    workspaceDispatch({
+      type: 'SET_MEASUREMENT_DATA',
+      payload: null,
+    });
+    setShowLayoutNextStep(false);
+    setPendingLayoutComponents(null);
+    setMeasurementSessionId((prev) => prev + 1);
+    setActiveTab('measuring');
+  }, [deriveProjectMetaFromJob, existingProjectGroups, selectedExistingProjectKey, workspaceDispatch]);
+
   const handleProductionStart = useCallback(() => {
     if (!currentProject) {
       setProjectError('No project available. Please complete the design and optimization phases first.');
@@ -1338,7 +1372,7 @@ export const FabricatorWorkflow: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <label className="text-[11px] text-gray-300">Existing project</label>
                           <select
-                            className="h-8 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-gray-100"
+                              className="h-8 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-gray-100"
                             value={selectedExistingProjectKey}
                             onChange={(e) => {
                               const key = e.target.value;
@@ -1403,29 +1437,7 @@ export const FabricatorWorkflow: React.FC = () => {
                             <Button
                               size="sm"
                               className="bg-orange-500 hover:bg-orange-600"
-                              onClick={() => {
-                                const group = existingProjectGroups.find(
-                                  (g) => g.key === selectedExistingProjectKey,
-                                );
-                                const baseJob = group?.jobs[0];
-                                if (!baseJob) return;
-
-                                // Use the first pose of the project to reconstruct the project header,
-                                // then start a fresh measuring session for a new pose.
-                                setProjectMeta(deriveProjectMetaFromJob(baseJob));
-                                workspaceDispatch({
-                                  type: 'SET_CURRENT_PROJECT',
-                                  payload: null,
-                                });
-                                workspaceDispatch({
-                                  type: 'SET_MEASUREMENT_DATA',
-                                  payload: null,
-                                });
-                                setShowLayoutNextStep(false);
-                                setPendingLayoutComponents(null);
-                                setMeasurementSessionId((prev) => prev + 1);
-                                setActiveTab('measuring');
-                              }}
+                          onClick={handleAddNewPose}
                             >
                               Add new pose to this project
                             </Button>
@@ -1564,21 +1576,7 @@ export const FabricatorWorkflow: React.FC = () => {
                                   size="sm"
                                   variant="outline"
                                   className="h-7 text-xs"
-                                  onClick={() => {
-                                    // Start a fresh measuring session for the next pose
-                                    workspaceDispatch({
-                                      type: 'SET_CURRENT_PROJECT',
-                                      payload: null,
-                                    });
-                                    workspaceDispatch({
-                                      type: 'SET_MEASUREMENT_DATA',
-                                      payload: null,
-                                    });
-                                    setShowLayoutNextStep(false);
-                                    setPendingLayoutComponents(null);
-                                    setMeasurementSessionId((prev) => prev + 1);
-                                    setActiveTab('measuring');
-                                  }}
+                                  onClick={handleAddNewPose}
                                 >
                                   Add another pose to this project
                                 </Button>
@@ -1615,6 +1613,8 @@ export const FabricatorWorkflow: React.FC = () => {
                           onDesignComplete={handleDesignComplete}
                           onSmartDrawApply={handleSmartDrawApply}
                           onHardwareUpdate={handleHardwareUpdate}
+                          onBackToMeasuring={() => setActiveTab('measuring')}
+                          onAddNewPose={handleAddNewPose}
                         />
                         
                         {/* Calibration Wizard Integration */}

@@ -20,7 +20,6 @@ import { ABTestProvider } from "./components/analytics/ABTestProvider";
 import { Analytics } from "@vercel/analytics/react";
 import RegionAwareLayout from "./components/layout/RegionAwareLayout";
 import { useRoutePrefetching } from "./hooks/useRoutePrefetching";
-import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 import Script from 'react-google-analytics'; // or use gtag directly
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
@@ -114,6 +113,7 @@ const AIRecommendationDemo = lazy(() => import("./pages/AIRecommendationDemo.tsx
 const NationalDashboard = lazy(() => import("./pages/NationalDashboard.tsx"));
 
 const queryClient = new QueryClient();
+const isProd = import.meta.env.PROD;
 
 // Optimized loading components
 const LoadingSpinner = ({ message = "Loading..." }: { message?: string }) => (
@@ -180,7 +180,7 @@ const App = () => (
                     >
                       <GlobalDynamicImportGuard />
                       <RoutePrefetchingHelper />
-                      <Analytics />
+                      {isProd && <Analytics />}
                       <RegionAwareLayout showRegionalFeatures={true} enableRegionSwitching={true}>
                         <Routes>
                   {/* Core pages */}
@@ -407,7 +407,7 @@ const App = () => (
         </QueryClientProvider>
       </PrestigeLoader>
     </ErrorBoundary>
-    <SpeedInsights />
+    {isProd && <SpeedInsights />}
   </ChunkLoadingErrorBoundary>
 );
 
