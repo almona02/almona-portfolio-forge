@@ -24,14 +24,13 @@ interface Language {
 }
 
 const languages: Language[] = [
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
   { code: 'ar-EG', name: 'Arabic (Egypt)', nativeName: 'العربية (مصر)', flag: '🇪🇬' },
-  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🌐' },
   { code: 'tr', name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷' },
+  { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
 ];
 
 export const LanguageSwitcher: React.FC<{
-  variant?: 'default' | 'compact' | 'minimal' | 'minimal-text';
+  variant?: 'default' | 'compact' | 'minimal' | 'minimal-text' | 'solid' | 'icons';
   className?: string;
 }> = ({ variant = 'default', className = '' }) => {
   const { i18n } = useTranslation();
@@ -48,13 +47,19 @@ export const LanguageSwitcher: React.FC<{
     // RTL is automatically handled by i18n.ts languageChanged event
   };
 
-  const renderMenu = (showFlag: boolean, textVariant: 'native' | 'name' | 'both') => (
+  const renderMenu = (showFlag: boolean, textVariant: 'native' | 'name' | 'both') => {
+    const solid = variant === 'solid';
+    const baseButtonClasses = solid
+      ? 'bg-slate-900 text-white border-slate-700 hover:border-orange-500/60 hover:bg-slate-800 shadow-sm'
+      : 'border-gray-700/50 hover:border-orange-500/50 text-gray-300 hover:text-white bg-transparent hover:bg-white/5 backdrop-blur-sm';
+
+    return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <Button 
           variant="outline" 
           size="sm" 
-          className={`${className} group relative overflow-hidden transition-all duration-200 font-semibold text-xs xl:text-xs 2xl:text-sm`}
+          className={`${className} group relative overflow-hidden transition-all duration-200 font-semibold text-xs xl:text-xs 2xl:text-sm ${baseButtonClasses}`}
         >
           <span className="relative z-10 flex items-center gap-1.5 xl:gap-2">
             {textVariant === 'both' && <Globe className="h-3.5 w-3.5 xl:h-4 xl:w-4 transition-transform group-hover:rotate-12" />}
@@ -69,12 +74,14 @@ export const LanguageSwitcher: React.FC<{
             {textVariant === 'both' && <span className="hidden sm:inline">{currentLang.nativeName}</span>}
             <ChevronDown className={`h-3 w-3 xl:h-3.5 xl:w-3.5 2xl:h-4 2xl:w-4 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
           </span>
-          {/* Hover gradient overlay */}
-          <span className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+          {!solid && (
+            <span className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={isRTLMode ? 'start' : 'end'}
+        sideOffset={24}
         className="bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl overflow-hidden min-w-[180px] p-1"
       >
         {languages.map((lang) => {
@@ -108,7 +115,8 @@ export const LanguageSwitcher: React.FC<{
         })}
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+    );
+  };
 
   if (variant === 'minimal') {
     return renderMenu(true, 'name');
@@ -116,6 +124,35 @@ export const LanguageSwitcher: React.FC<{
 
   if (variant === 'minimal-text') {
     return renderMenu(false, 'native');
+  }
+
+  if (variant === 'solid') {
+    return renderMenu(true, 'native');
+  }
+
+  if (variant === 'icons') {
+    return (
+      <div className={`flex items-center gap-1.5 ${className}`}>
+        {languages.map((lang) => {
+          const isActive = i18n.language === lang.code || i18n.language.startsWith(lang.code);
+          return (
+            <button
+              key={lang.code}
+              type="button"
+              onClick={() => handleLanguageChange(lang.code)}
+              aria-label={lang.name}
+              className={`
+                h-9 w-9 rounded-full flex items-center justify-center text-base
+                ${isActive ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30 border border-orange-500/60' : 'bg-slate-900 text-slate-200 border border-slate-700 hover:border-orange-400 hover:text-white'}
+                transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-400/70
+              `}
+            >
+              <span>{lang.flag}</span>
+            </button>
+          );
+        })}
+      </div>
+    );
   }
 
   if (variant === 'compact') {

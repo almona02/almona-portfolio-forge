@@ -3,256 +3,712 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fabricator Pro | Industry 4.0 Smart Manufacturing Platform | Almona</title>
-    <meta name="description" content="Fabricator Pro: Integrated smart platform for designing and manufacturing aluminium and UPVC using artificial intelligence in Egypt. Industry 4.0 Smart Manufacturing Platform.">
+    <title>Fabricator Pro | Engineering-Grade Aluminium & UPVC Design-to-Manufacturing | Academic & Government Standard | Almona</title>
+
+    <!-- Academic & Enterprise SEO -->
+    <meta name="description" content="Fabricator Pro: engineering-grade platform for façade, window, and door design-to-manufacturing. 3D/BIM simulation, CNC integration, SmartScan for shop drawings, Egyptian Building Code checks, AR install preview, and AI optimization. Trusted by ministries, universities, and enterprise technical offices.">
+    <meta name="keywords" content="engineering design aluminium, façade engineering software, BIM window platform, 3D door simulation, Egyptian Building Code, SmartScan shop drawings, curtain wall design, CNC engineering integration, Egypt Vision 2030, MCIT ITIDA, technical offices, academic labs, sustainability design, AR installation, K-factor calibration, DXF geometry analysis">
+    <meta name="author" content="Almona Industrial Solutions - Engineering Excellence Center">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical & Language -->
     <link rel="canonical" href="https://almona02.com/fabricator-pro-software-en">
     <link rel="alternate" hreflang="ar" href="https://almona02.com/fabricator-pro-software">
     <link rel="alternate" hreflang="en" href="https://almona02.com/fabricator-pro-software-en">
-    <link rel="alternate" hreflang="x-default" href="https://almona02.com/fabricator-pro-software">
+
+    <!-- Open Graph for Government & Enterprise -->
+    <meta property="og:title" content="Fabricator Pro | Engineering-Grade Façade & Window Platform">
+    <meta property="og:description" content="3D/BIM design, structural checks, CNC integration, SmartScan for shop drawings, Building Code compliance, AR installation preview. Built for ministries, universities, and enterprise technical offices.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://almona02.com/fabricator-pro-software-en">
+    <meta property="og:image" content="https://almona02.com/assets/fabricator-pro-academic-en.jpg">
+    <meta property="og:locale" content="en_EG">
+
+    <!-- Structured Data for Academic/Government Search -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "SoftwareApplication",
+                "name": "Fabricator Pro",
+                "applicationCategory": "EngineeringApplication",
+                "operatingSystem": "Web Browser",
+                "description": "Engineering platform for façade, window, and door design-to-manufacturing with 3D/BIM simulation, structural checks, SmartScan shop drawings, CNC integration, and AR installation preview.",
+                "url": "https://almona02.com/fabricator-pro-software-en",
+                "applicationSuite": "Almona Engineering Suite",
+                "author": {
+                    "@type": "Organization",
+                    "name": "Almona Industrial Solutions",
+                    "url": "https://almona02.com",
+                    "description": "Engineering Excellence Center for manufacturing and digital transformation"
+                },
+                "offers": { "@type": "Offer", "category": "EngineeringSoftware" },
+                "featureList": [
+                    "3D/BIM simulation and design",
+                    "SmartScan for shop drawings",
+                    "Egyptian Building Code control",
+                    "Direct CNC integration",
+                    "AR field installation preview"
+                ],
+                "educationalUse": "EngineeringDesign",
+                "interactivityType": "active",
+                "learningResourceType": "simulation",
+                "isAccessibleForFree": true
+            },
+            {
+                "@type": "EducationalOrganization",
+                "name": "Engineering Excellence Centers",
+                "description": "Training hubs and virtual labs for architectural and mechanical engineering"
+            }
+        ]
+    }
+    </script>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --accent: #ff5f1f;
-            --dark: #0f172a;
-            --light: #f8fafc;
+            --academic-blue: #003366;
+            --engineering-red: #c62828;
+            --safety-green: #2e7d32;
+            --premium-gold: #b8860b;
+            --technical-gray: #455a64;
+            --ar-purple: #6a1b9a;
+            --bim-orange: #ef6c00;
+            --light-bg: #f5f7fa;
             --white: #ffffff;
-            --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
+            --shadow-academic: 0 8px 32px rgba(0, 51, 102, 0.1);
+            --shadow-technical: 0 12px 40px rgba(69, 90, 100, 0.15);
         }
-
-        body { 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
-            line-height: 1.6; 
-            margin: 0;
-            padding: 0;
-            background: var(--light);
-            color: #334155;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.8;
+            background: var(--light-bg);
+            color: #263238;
+            font-size: 1.05rem;
+            direction: ltr;
+            overflow-x: hidden;
         }
-
-        .lang-switcher {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            display: flex;
-            gap: 10px;
-            background: white;
-            padding: 8px 12px;
-            border-radius: 25px;
-            box-shadow: var(--shadow);
-            font-size: 0.9rem;
-        }
-
-        .lang-switcher a {
-            text-decoration: none;
-            color: var(--dark);
-            padding: 4px 12px;
-            border-radius: 15px;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-
-        .lang-switcher a.active {
-            background: var(--primary);
+        .academic-header {
+            background: linear-gradient(135deg, var(--academic-blue) 0%, #002244 100%);
             color: white;
-        }
-
-        .lang-switcher a:hover {
-            background: var(--primary-dark);
-            color: white;
-        }
-
-        .hero {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: white;
-            padding: 80px 20px;
+            padding: 140px 20px 100px;
             text-align: center;
             position: relative;
             overflow: hidden;
+            border-bottom: 5px solid var(--premium-gold);
         }
-
-        .hero::before {
+        .academic-header::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            inset: 0;
+            background:
+              radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 0%, transparent 50%),
+              url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
         }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 0 20px;
-            position: relative;
-            z-index: 1;
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 25px; position: relative; z-index: 2; }
+        .academic-badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
         }
-
-        .tag {
-            display: inline-block;
+        .academic-badge {
             background: rgba(255, 255, 255, 0.15);
-            padding: 8px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 30px;
-            font-size: 0.85rem;
-            margin-bottom: 20px;
+            padding: 12px 25px;
+            font-size: 0.95rem;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .hero h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            margin: 20px 0;
-            font-weight: 800;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.95;
-            max-width: 700px;
-            margin: 0 auto;
-            line-height: 1.7;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin: 60px 0;
-        }
-
-        .feature {
-            background: white;
-            padding: 35px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .feature:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
-        }
-
-        .icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .feature h3 {
-            color: var(--dark);
-            margin-bottom: 15px;
-            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-weight: 700;
         }
-
-        .feature p {
-            color: #64748b;
+        .academic-badge.gold {
+            background: linear-gradient(135deg, rgba(184,134,11,0.2), rgba(184,134,11,0.1));
+            border-color: rgba(184,134,11,0.3);
+        }
+        .academic-title {
+            font-size: 3.2rem;
+            margin: 30px auto 25px;
+            font-weight: 900;
+            line-height: 1.1;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            max-width: 1000px;
+        }
+        .academic-subtitle {
+            font-size: 1.3rem;
+            color: #bbdefb;
+            max-width: 900px;
+            margin: 0 auto 50px;
             line-height: 1.8;
-            font-size: 1rem;
+            font-weight: 500;
         }
 
-        .cta-section {
-            text-align: center;
-            padding: 60px 20px;
+        /* Engineering Excellence */
+        .engineering-excellence {
+            padding: 100px 20px;
             background: white;
-            margin-top: 40px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .section-title { text-align: center; margin-bottom: 60px; }
+        .section-title h2 {
+            color: var(--academic-blue);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: var(--premium-gold);
+            border-radius: 2px;
+        }
+        .engineering-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .engineering-card {
+            background: white;
             border-radius: 20px;
-            box-shadow: var(--shadow);
+            padding: 40px 35px;
+            box-shadow: var(--shadow-academic);
+            border: 2px solid transparent;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .engineering-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 5px;
+            background: var(--premium-gold);
+        }
+        .engineering-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-technical);
+            border-color: var(--academic-blue);
+        }
+        .card-icon { font-size: 3.5rem; margin-bottom: 25px; display: block; }
+        .engineering-card h3 {
+            color: var(--academic-blue);
+            margin-bottom: 18px;
+            font-size: 1.45rem;
+            font-weight: 800;
+        }
+        .engineering-card p {
+            color: var(--technical-gray);
+            line-height: 1.8;
+            margin-bottom: 18px;
+            font-size: 1.05rem;
+        }
+        .tech-badge {
+            display: inline-block;
+            background: var(--academic-blue);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-top: 10px;
         }
 
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        /* Gold Standard - DXF Geometry */
+        .gold-standard {
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+            border-top: 5px solid var(--premium-gold);
+            border-bottom: 5px solid var(--premium-gold);
+        }
+        .gold-standard .section-title h2 { color: var(--premium-gold); }
+        .standard-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .standard-feature {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--shadow-academic);
+            border-left: 4px solid var(--premium-gold);
+        }
+        .standard-feature h4 {
+            color: var(--academic-blue);
+            margin-bottom: 15px;
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+        .standard-feature ul { list-style: none; padding: 0; }
+        .standard-feature li {
+            padding: 8px 0;
+            color: var(--technical-gray);
+            position: relative;
+            padding-left: 22px;
+        }
+        .standard-feature li::before {
+            content: "✓";
+            color: var(--premium-gold);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Visualization */
+        .visualization-section {
+            padding: 100px 20px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .visualization-section::before {
+            content: '';
+            position: absolute;
+            top: -100px; right: -100px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(106,27,154,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .visualization-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .viz-feature {
+            background: white;
+            border-radius: 20px;
+            padding: 35px 30px;
+            box-shadow: var(--shadow-technical);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .viz-feature.ar { border-color: var(--ar-purple); }
+        .viz-feature.bim { border-color: var(--bim-orange); }
+        .viz-feature:hover { transform: translateY(-5px); }
+        .viz-icon { font-size: 3rem; margin-bottom: 18px; display: block; }
+        .viz-feature h3 {
+            color: var(--academic-blue);
+            margin-bottom: 14px;
+            font-size: 1.35rem;
+            font-weight: 800;
+        }
+
+        /* Codes & Safety */
+        .codes-section {
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-top: 3px solid var(--safety-green);
+        }
+        .codes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .code-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--shadow-academic);
+            border-top: 4px solid var(--safety-green);
+        }
+        .code-card h3 {
+            color: var(--safety-green);
+            margin-bottom: 12px;
+            font-size: 1.25rem;
+            font-weight: 800;
+        }
+
+        /* CTA */
+        .academic-cta {
+            padding: 100px 20px;
+            background: linear-gradient(135deg, var(--academic-blue) 0%, #001a33 100%);
             color: white;
-            padding: 16px 40px;
+            text-align: center;
+        }
+        .academic-cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 28px;
+            font-weight: 900;
+        }
+        .academic-cta p {
+            font-size: 1.15rem;
+            margin-bottom: 45px;
+            color: #bbdefb;
+            max-width: 820px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.8;
+        }
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+        .btn-academic {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 40px;
             border-radius: 50px;
             text-decoration: none;
-            font-weight: 700;
-            font-size: 1.1rem;
+            font-weight: 800;
+            font-size: 1.05rem;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            border: 2px solid transparent;
         }
-
-        .btn:hover {
+        .btn-primary {
+            background: var(--premium-gold);
+            color: var(--academic-blue);
+        }
+        .btn-primary:hover {
+            background: #d4af37;
             transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 10px 25px rgba(184,134,11,0.3);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border-color: rgba(255,255,255,0.35);
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: white;
+            transform: translateY(-3px);
         }
 
-        @media (max-width: 600px) {
-            .hero { padding: 60px 20px; }
-            .feature-grid { grid-template-columns: 1fr; }
-            .lang-switcher { top: 10px; right: 10px; font-size: 0.8rem; padding: 6px 10px; }
+        /* Footer */
+        .academic-footer {
+            background: var(--academic-blue);
+            color: white;
+            padding: 80px 20px 40px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer-section h3 {
+            color: white;
+            margin-bottom: 22px;
+            font-size: 1.25rem;
+            padding-bottom: 14px;
+            border-bottom: 2px solid var(--premium-gold);
+        }
+        .footer-links { list-style: none; padding: 0; }
+        .footer-links li { margin-bottom: 14px; }
+        .footer-links a {
+            color: #bbdefb;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-links a:hover { color: white; }
+
+        @media (max-width: 768px) {
+            .academic-title { font-size: 2.3rem; }
+            .academic-subtitle { font-size: 1.05rem; }
+            .engineering-grid,
+            .standard-features,
+            .visualization-features,
+            .codes-grid { grid-template-columns: 1fr; }
+            .section-title h2 { font-size: 2rem; }
+            .academic-cta h2 { font-size: 2rem; }
+            .cta-buttons { flex-direction: column; align-items: center; }
+            .btn-academic { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
-    <div class="lang-switcher">
-        <a href="/fabricator-pro-software">العربية</a>
-        <a href="/fabricator-pro-software-en" class="active">English</a>
-    </div>
-
-    <div class="hero">
+    <header class="academic-header" role="banner">
         <div class="container">
-            <span class="tag">Industry 4.0 Certified</span>
-            <h1>Fabricator Pro</h1>
-            <p class="subtitle">The first smart manufacturing platform in Egypt for aluminium and UPVC factories. Transform your factory into a smart factory today.</p>
+            <div class="academic-badges">
+                <span class="academic-badge gold">Gold Academic Standard</span>
+                <span class="academic-badge">Engineering Certified</span>
+                <span class="academic-badge">Building Code Control</span>
+                <span class="academic-badge">Integrated BIM</span>
+            </div>
+
+            <h1 class="academic-title">
+                Fabricator Pro: Engineering-Grade Platform for Façade, Window, and Door Manufacturing
+            </h1>
+
+            <p class="academic-subtitle">
+                A complete design-to-manufacturing system linking 3D/BIM design, structural checks,
+                building-code compliance, and direct CNC execution. Built for ministries, universities,
+                and enterprise technical offices to meet Egypt Vision 2030 and MCIT/ITIDA mandates.
+            </p>
         </div>
-    </div>
+    </header>
 
-    <div class="container">
-        <div class="feature-grid">
-            <div class="feature">
-                <div class="icon">🤖</div>
-                <h3>Artificial Intelligence (AI)</h3>
-                <p>Stop wasting materials. Our intelligent algorithms optimize cutting ratios and reduce waste by up to 30% compared to traditional methods. A smart system that learns from every manufacturing process.</p>
+    <main>
+        <section class="engineering-excellence" aria-labelledby="engineering-title">
+            <div class="container">
+                <div class="section-title">
+                    <h2 id="engineering-title">Engineering & Manufacturing Excellence</h2>
+                    <p>Precision workflows for ministries, universities, and enterprise technical offices</p>
+                </div>
+
+                <div class="engineering-grid">
+                    <div class="engineering-card">
+                        <div class="card-icon">🏆</div>
+                        <h3>Gold Standard DXF Geometry Intelligence</h3>
+                        <p>
+                            <strong>Almona Tuning Studio</strong>: advanced DXF sector analysis with 99.8% K-Factor precision,
+                            automatic correction for complex sector geometry, and ISO-aligned export for CNC.
+                        </p>
+                        <ul style="margin-top: 12px; color: var(--technical-gray);">
+                            <li>Automated sector specification analysis</li>
+                            <li>Correction for complex sector geometry</li>
+                            <li>CAD Scoring benchmarking for quality</li>
+                            <li>CNC-ready engineering export</li>
+                        </ul>
+                        <span class="tech-badge">CAD Geometry Intelligence</span>
+                    </div>
+
+                    <div class="engineering-card">
+                        <div class="card-icon">🔬</div>
+                        <h3>3D Assembly & Structural Insight</h3>
+                        <p>
+                            Full 3D assembly for windows, doors, and curtain walls. Role definition per sector,
+                            missing component suggestions, and interaction simulation for enterprise QA.
+                        </p>
+                        <ul style="margin-top: 12px; color: var(--technical-gray);">
+                            <li>3D assembly for complex systems</li>
+                            <li>Profile role definition and validation</li>
+                            <li>Missing component suggestions</li>
+                            <li>Structural interaction simulation</li>
+                        </ul>
+                        <span class="tech-badge">3D Assembly Intelligence</span>
+                    </div>
+
+                    <div class="engineering-card">
+                        <div class="card-icon">📐</div>
+                        <h3>SmartScan for Shop Drawings</h3>
+                        <p>
+                            Converts shop drawings into 3D engineering models, validates specs,
+                            and auto-generates manufacturing orders with compliance checks.
+                        </p>
+                        <ul style="margin-top: 12px; color: var(--technical-gray);">
+                            <li>Shop drawings to 3D conversion</li>
+                            <li>Automated system recognition</li>
+                            <li>Specification validation</li>
+                            <li>Executive drawing exports</li>
+                        </ul>
+                        <span class="tech-badge">Engineering Drawing Intelligence</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="gold-standard" aria-labelledby="gold-title">
+            <div class="container">
+                <div class="section-title">
+                    <h2 id="gold-title">DXF Geometry & Manufacturing Gold Standard</h2>
+                    <p>Advanced CAD-to-production for enterprise technical offices</p>
+                </div>
+
+                <div class="standard-features">
+                    <div class="standard-feature">
+                        <h4>DXF Geometry Analysis</h4>
+                        <ul>
+                            <li>Automated sector analysis</li>
+                            <li>99.8% K-Factor determination</li>
+                            <li>Complex geometry correction</li>
+                            <li>Benchmarking for quality</li>
+                            <li>ISO-compliant engineering export</li>
+                        </ul>
+                    </div>
+                    <div class="standard-feature">
+                        <h4>Almona Tuning Studio</h4>
+                        <ul>
+                            <li>Precision calibration for sectors</li>
+                            <li>ML-driven continuous improvement</li>
+                            <li>Sector performance tracking</li>
+                            <li>Engineering quality analytics</li>
+                            <li>Egyptian sector libraries integration</li>
+                        </ul>
+                    </div>
+                    <div class="standard-feature">
+                        <h4>CAD Scoring Benchmark</h4>
+                        <ul>
+                            <li>CAD quality scoring</li>
+                            <li>Global standards comparison</li>
+                            <li>Improvement targeting</li>
+                            <li>Benchmarking reports</li>
+                            <li>Customizable criteria</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="visualization-section" aria-labelledby="viz-title">
+            <div class="container">
+                <div class="section-title">
+                    <h2 id="viz-title">3D Simulation, BIM, and AR Installation</h2>
+                    <p>Enterprise visualization for risk-free delivery</p>
+                </div>
+
+                <div class="visualization-features">
+                    <div class="viz-feature bim">
+                        <div class="viz-icon">🏗️</div>
+                        <h3>Integrated 3D/BIM Design</h3>
+                        <p>
+                            Create realistic models for windows, doors, and curtain walls, with material simulation,
+                            structural checks, and BIM-ready exports for coordination.
+                        </p>
+                        <span class="tech-badge" style="background: var(--bim-orange);">3D BIM Modeling</span>
+                    </div>
+
+                    <div class="viz-feature ar">
+                        <div class="viz-icon">👓</div>
+                        <h3>AR Field Installation</h3>
+                        <p>
+                            Augmented Reality to preview installations on-site, verify dimensions, anticipate clashes,
+                            and guide crews with visual overlays.
+                        </p>
+                        <span class="tech-badge" style="background: var(--ar-purple);">Augmented Reality</span>
+                    </div>
+
+                    <div class="viz-feature">
+                        <div class="viz-icon">⚙️</div>
+                        <h3>Direct CNC Integration</h3>
+                        <p>
+                            Seamless flow from 3D to production. Multi-brand CNC integration, automated cut plans,
+                            and machining exports aligned with enterprise QA gates.
+                        </p>
+                        <span class="tech-badge">Automated Manufacturing</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="codes-section" aria-labelledby="codes-title">
+            <div class="container">
+                <div class="section-title">
+                    <h2 id="codes-title" style="color: var(--safety-green);">Building Codes, Sustainability, Safety</h2>
+                    <p>Compliance and resilience by design</p>
+                </div>
+
+                <div class="codes-grid">
+                    <div class="code-card">
+                        <h3>Egyptian Building Code</h3>
+                        <p>Automated compliance checks against Egyptian Building Code with continuous monitoring for design changes.</p>
+                    </div>
+                    <div class="code-card">
+                        <h3>Green Building Specs</h3>
+                        <p>Energy performance, thermal insulation, and sustainability metrics with readiness for environmental reporting.</p>
+                    </div>
+                    <div class="code-card">
+                        <h3>Structural Safety</h3>
+                        <p>Load analysis, wind resistance, and installation safety with risk alerts for enterprise governance.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="academic-cta" aria-labelledby="cta-title">
+            <div class="container">
+                <h2 id="cta-title">Ready to elevate government-grade, academic-grade engineering?</h2>
+                <p>
+                    Join ministries, universities, and enterprise technical offices using Fabricator Pro as their
+                    standard for engineering precision, compliance, and production certainty.
+                </p>
+
+                <div class="cta-buttons">
+                    <a href="https://www.almona02.com" class="btn-academic btn-primary">
+                        <span>🚀</span>
+                        Request Enterprise Demo
+                    </a>
+                    <a href="https://www.almona02.com" class="btn-academic btn-secondary">
+                        <span>🏛️</span>
+                        For Ministries & Technical Offices
+                    </a>
+                </div>
+
+                <div style="margin-top: 50px; padding: 25px; background: rgba(255, 255, 255, 0.1); border-radius: 15px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    <p style="margin: 0; font-size: 1rem;">
+                        <strong>Academic & Government Standard:</strong><br>
+                        Almona Engineering Excellence · <a href="https://www.almona02.com" style="color: white; text-decoration: underline;">www.almona02.com</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="academic-footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>Fabricator Pro</h3>
+                    <p style="color: #bbdefb; margin-top: 15px; line-height: 1.8;">
+                        Engineering-grade design-to-manufacturing platform for façades, windows, and doors.
+                        Academic and government aligned with uncompromised precision.
+                    </p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Academic Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://www.almona02.com">Academic licensing</a></li>
+                        <li><a href="https://www.almona02.com">Lab installation</a></li>
+                        <li><a href="https://www.almona02.com">Training programs</a></li>
+                        <li><a href="https://www.almona02.com">Research partnerships</a></li>
+                        <li><a href="https://www.almona02.com">Certification tracks</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Enterprise & Government</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://www.almona02.com">www.almona02.com</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Standards Supported</h3>
+                    <ul class="footer-links">
+                        <li>Egyptian Building Code</li>
+                        <li>Green building specifications</li>
+                        <li>ISO-aligned manufacturing</li>
+                        <li>Egyptian aluminium standards</li>
+                        <li>Structural safety guidelines</li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="feature">
-                <div class="icon">⚙️</div>
-                <h3>CNC Machine Integration</h3>
-                <p>Direct connection with YILMAZ CNC machines. Send manufacturing commands directly from the platform to the machine without manual intervention. 100% accuracy and time savings.</p>
-            </div>
-
-            <div class="feature">
-                <div class="icon">📊</div>
-                <h3>Live Production Management</h3>
-                <p>Monitor your production in real-time. Track every order from design to delivery. Comprehensive reports and intelligent analytics to improve performance.</p>
-            </div>
-
-            <div class="feature">
-                <div class="icon">💼</div>
-                <h3>Integrated Project Management</h3>
-                <p>From customer and quote management to production tracking and delivery. An integrated system that connects all factory departments in one platform.</p>
-            </div>
-
-            <div class="feature">
-                <div class="icon">📱</div>
-                <h3>Available on All Devices</h3>
-                <p>Work from anywhere. The platform is available on computer, tablet, and mobile phone. Easy and fast interface on all screens.</p>
-            </div>
-
-            <div class="feature">
-                <div class="icon">🔒</div>
-                <h3>High Security & Protection</h3>
-                <p>Your data is protected with the latest encryption technologies. Automatic daily backups. Advanced permission system for team management.</p>
+            <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center; color: #90caf9;">
+                <p>© 2024 Engineering Excellence Center - Almona Industrial Solutions</p>
+                <p style="font-size: 0.9rem; margin-top: 10px;">
+                    Engineering precision. Technical innovation. Quality as a standard.
+                </p>
             </div>
         </div>
-    </div>
-
-    <div class="cta-section">
-        <h2 style="margin-bottom: 30px; color: var(--dark);">Are You Ready to Upgrade Your Factory?</h2>
-        <a href="/fabricator" class="btn">
-            Try the Platform Free
-            <span style="font-size: 1.2em">→</span>
-        </a>
-        <p style="margin-top: 30px; font-size: 0.9rem; color: #64748b;">
-            <a href="/dealer-verification-en.html" style="color: #64748b; text-decoration: none;">Verify Official Dealer</a>
-        </p>
-    </div>
+    </footer>
 </body>
 </html>

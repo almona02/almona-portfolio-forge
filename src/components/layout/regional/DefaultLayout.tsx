@@ -9,6 +9,8 @@ import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
 import ConditionalNavbar from '../ConditionalNavbar';
 import Footer from '../Footer';
 import { WhatsAppContact } from '@/components/contact/WhatsAppContact';
+import { isRTL } from '@/lib/i18n';
+import { useTranslation } from 'react-i18next';
 
 interface DefaultLayoutProps {
   children: React.ReactNode;
@@ -23,8 +25,10 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
   onRegionChange,
   enableRegionSwitching: _enableRegionSwitching
 }) => {
+  const { i18n } = useTranslation();
   const location = useLocation();
-  const isFabricatorRoute = location.pathname.startsWith('/fabricator');
+  const isFabricatorRoute = location.pathname.startsWith('/fabricator') || location.pathname.startsWith('/fabricator-workflow');
+  const rtl = isRTL(i18n.language);
   
   const _handleRegionChange = (region: RegionCode) => {
     onRegionChange(region);
@@ -36,7 +40,16 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
       <ConditionalNavbar />
 
       {/* Main content */}
-      <div className="relative">
+      <div 
+        className={`relative transition-all duration-300 ${isFabricatorRoute ? 'ms-[var(--sidebar-width,320px)]' : ''}`}
+        style={
+          isFabricatorRoute
+            ? rtl
+              ? { marginRight: 'var(--sidebar-width, 320px)' }
+              : { marginLeft: 'var(--sidebar-width, 320px)' }
+            : {}
+        }
+      >
         {children}
       </div>
 

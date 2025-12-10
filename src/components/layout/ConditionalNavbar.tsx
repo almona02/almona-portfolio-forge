@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import StandardNavbar from './Navbar';
-import IndustrialNavbar from './IndustrialNavbar';
+import EnterpriseSidebar from './EnterpriseSidebar';
 
 interface ConditionalNavbarProps {
   user?: {
@@ -11,6 +11,8 @@ interface ConditionalNavbarProps {
   };
   quoteItems?: unknown[];
   onLogout?: () => void;
+  currentWorkflow?: string;
+  onWorkflowChange?: (workflow: string) => void;
 }
 
 const ConditionalNavbar: React.FC<ConditionalNavbarProps> = (props) => {
@@ -21,7 +23,11 @@ const ConditionalNavbar: React.FC<ConditionalNavbarProps> = (props) => {
     pathname.startsWith('/fabricator') || pathname.startsWith('/fabricator-workflow');
 
   return isFabricatorRoute ? (
-    <IndustrialNavbar {...props} />
+    <EnterpriseSidebar 
+      user={props.user as { name: string; email: string; role: 'operator' | 'supervisor' | 'admin' } | undefined}
+      currentWorkflow={props.currentWorkflow}
+      onWorkflowChange={props.onWorkflowChange}
+    />
   ) : (
     <StandardNavbar {...props} />
   );

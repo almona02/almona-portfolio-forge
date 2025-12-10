@@ -56,6 +56,7 @@ interface ProductionCommandProps {
  * This is a major prestige enhancement.
  */
 const StockBarVisualization: React.FC<{ plan: CuttingPlan }> = ({ plan }) => {
+    const { t } = useTranslation('fabricator');
     const stockLength = plan.stockLength || 6000;
     let currentPos = 0;
 
