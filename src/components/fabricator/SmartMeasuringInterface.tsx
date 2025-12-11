@@ -1,26 +1,25 @@
-import React, { useState, useMemo, Suspense } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Toggle } from '@/shared/ui/ui/toggle';
 import { Checkbox } from '@/shared/ui/ui/checkbox';
 import { Badge } from '@/shared/ui/ui/badge';
-import { Ruler, Camera, Scan, Smartphone, AlertCircle, Box, CheckCircle2, ArrowRight, ArrowLeft, Factory, Sparkles, Layers, ShieldCheck, Grid3X3, QrCode } from 'lucide-react';
+import { Ruler, Box, CheckCircle2, ArrowRight, ArrowLeft, Factory, ShieldCheck, Grid3X3, QrCode, Sparkles } from 'lucide-react';
 import { MeasurementData, SystemProfileSelections, WindowUnit, WindowGrid } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateMeasurements, ValidationError, getConstraintsForSystemPack } from '@/lib/fabricatorValidation';
-// import { Window3DGenerator, WindowMeasurementOverlay } from './Window3DGenerator';
 import { SmartDrawCanvas } from './SmartDrawCanvas';
 import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
+import { getPatternsForSystem } from '@/data/egyptian-window-patterns';
+import { SystemTuningStudio } from './SystemTuningStudio';
+import { loadCustomSystems, addCustomSystem } from '@/lib/fabricator/customSystemStorage';
 import { ProductionLabel } from './ProductionLabel';
 import { useTranslation } from 'react-i18next';
-
-// Lazy load Window3DGenerator to improve initial load performance
-const Window3DGenerator = React.lazy(() => import('./Window3DGenerator').then(module => ({ default: module.Window3DGenerator })));
+import { CustomSystemManager } from './CustomSystemManager';
 
 interface SmartMeasuringInterfaceProps {
   onMeasurementComplete: (data: MeasurementData) => void;
@@ -40,6 +39,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     // Default professional stub dimensions – can be refined per system later.
     width: '1200',
     height: '1200',
+    measurementMode: 'hole', // 'hole' (rough opening) or 'manufacturing'
+    wallDeduction: '15', // mm deduction for wall tolerance
     windowType: 'sliding_window', // Default to sliding
     color: '',
     glazingType: '',
@@ -78,15 +79,18 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     {},
   );
 
-  const [isScanning, setIsScanning] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const refreshCustomSystems = () => setCustomSystems(loadCustomSystems());
+
+  const [_isScanning, _setIsScanning] = useState(false);
+  const [_validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [show3DPreview, setShow3DPreview] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
-  const [highlightedDimension, setHighlightedDimension] = useState<'width' | 'height' | null>(null);
-  const [explodedView, setExplodedView] = useState(false);
+  const [highlightedDimension, setHighlightedDimension] = useState<'width' | 'height' | null>(null); // Used in input focus handlers
   const [verificationConfirmed, setVerificationConfirmed] = useState<boolean | 'indeterminate'>(false);
   const [showLabel, setShowLabel] = useState(false);
+  const [customSystems, setCustomSystems] = useState<any[]>(() => loadCustomSystems());
+  const [showTuningStudio, setShowTuningStudio] = useState(false);
+  const [tuningInitialSystem, setTuningInitialSystem] = useState<any | null>(null);
 
   // Defined Steps
   const STEPS = [
@@ -99,8 +103,12 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
   // Generate preview window unit from measurements for 3D visualization
   const previewWindowUnit = useMemo<WindowUnit | null>(() => {
-    const width = Number(measurements.width);
-    const height = Number(measurements.height);
+    const rawWidth = Number(measurements.width);
+    const rawHeight = Number(measurements.height);
+    const deduction = Number(measurements.wallDeduction || '0');
+    const isHoleMode = measurements.measurementMode === 'hole';
+    const width = isHoleMode ? Math.max(rawWidth - deduction, 0) : rawWidth;
+    const height = isHoleMode ? Math.max(rawHeight - deduction, 0) : rawHeight;
     
     if (!measurements.width || !measurements.height || !measurements.windowType || 
         isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
@@ -174,18 +182,22 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   };
 
   const availableSystemPacks = useMemo(() => {
-    if (region && region !== 'global') {
-      return SYSTEM_PACKS.filter(
-        (p) => p.meta.regions.includes(region) || p.meta.regions.includes('global'),
-      );
-    }
-    return SYSTEM_PACKS;
-  }, [region]);
+    const base = region && region !== 'global'
+      ? SYSTEM_PACKS.filter(
+          (p) => p.meta.regions.includes(region) || p.meta.regions.includes('global'),
+        )
+      : SYSTEM_PACKS;
+    return [...base, ...customSystems];
+  }, [region, customSystems]);
 
   const activeSystemPack = useMemo(
     () => availableSystemPacks.find((p) => p.meta.id === selectedSystemPackId) ?? availableSystemPacks[0] ?? SYSTEM_PACKS[0],
     [availableSystemPacks, selectedSystemPackId],
   );
+
+  const availablePatterns = useMemo(() => {
+    return getPatternsForSystem(selectedSystemPackId);
+  }, [selectedSystemPackId]);
 
   const systemConstraints = useMemo(
     () => getConstraintsForSystemPack(selectedSystemPackId),
@@ -284,8 +296,24 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   };
 
   const handleSubmit = () => {
+    const rawWidth = Number(measurements.width);
+    const rawHeight = Number(measurements.height);
+    const deduction = Number(measurements.wallDeduction || '0');
+    const isHoleMode = measurements.measurementMode === 'hole';
+    const manufacturingWidth = isHoleMode ? rawWidth - deduction : rawWidth;
+    const manufacturingHeight = isHoleMode ? rawHeight - deduction : rawHeight;
+
+    if (isHoleMode && (manufacturingWidth <= 0 || manufacturingHeight <= 0)) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        width: manufacturingWidth <= 0 ? 'Deduction makes width non-positive' : prev.width,
+        height: manufacturingHeight <= 0 ? 'Deduction makes height non-positive' : prev.height,
+      }));
+      return;
+    }
+
     const validation = validateMeasurements(
-      { ...measurements, systemPackId: selectedSystemPackId } as any,
+      { ...measurements, systemPackId: selectedSystemPackId, manufacturingWidth, manufacturingHeight } as any,
       systemConstraints,
     );
 
@@ -351,19 +379,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     }
   };
 
-  const startARScan = () => {
-    setIsScanning(true);
-    // Simulate AR scanning
-    setTimeout(() => {
-      setMeasurements(prev => ({
-        ...prev,
-        width: '1200',
-        height: '1200',
-        windowType: 'sliding_window'
-      }));
-      setIsScanning(false);
-    }, 3000);
-  };
+  // AR scan function reserved for future enhancement
+  // const startARScan = () => { ... };
 
   return (
     <div className="flex flex-col lg:flex-row h-[80vh] gap-6">
@@ -414,22 +431,70 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       <Label className="text-[11px]">{t('smart_measuring.system_config.title', 'System Pack')}</Label>
                       <Select
                         value={selectedSystemPackId}
-                        onValueChange={(value) => setSelectedSystemPackId(value)}
+                        onValueChange={(value) => {
+                          if (value === 'custom') {
+                            const currentPack = availableSystemPacks.find((p) => p.meta.id === selectedSystemPackId);
+                            setTuningInitialSystem(currentPack || null);
+                            setShowTuningStudio(true);
+                            return;
+                          }
+                          setSelectedSystemPackId(value);
+                        }}
                       >
                         <SelectTrigger className="bg-gray-800 border-gray-700 h-8 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-60">
                           {availableSystemPacks.map((pack) => (
-                            <SelectItem key={pack.meta.id} value={pack.meta.id}>
-                              <div className="flex flex-col gap-0.5">
-                                <span className="text-gray-100">{pack.meta.name}</span>
-                                <span className="text-[10px] text-gray-500">
-                                  {pack.meta.brands.join(', ')} · {pack.meta.regions.join('/')}
-                                </span>
+                            <SelectItem key={pack.meta.id} value={pack.meta.id} className="group">
+                              <div className="flex items-start justify-between gap-3 min-w-[220px]">
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-gray-100 flex items-center gap-2">
+                                    {pack.meta.name}
+                                    {pack.meta.id.startsWith('custom') && (
+                                      <Badge className="text-[10px] bg-amber-50 text-amber-700 border-amber-200">
+                                        Custom
+                                      </Badge>
+                                    )}
+                                  </span>
+                                  <span className="text-[10px] text-gray-500">
+                                    {pack.meta.brands.join(', ')} · {pack.meta.regions.join('/')}
+                                  </span>
+                                </div>
+                                {pack.meta.id.startsWith('custom') && (
+                                  <div
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      e.preventDefault();
+                                    }}
+                                    onPointerDown={(e) => e.stopPropagation()}
+                                  >
+                                    <CustomSystemManager
+                                      systemId={pack.meta.id}
+                                      systemName={pack.meta.name}
+                                      onDelete={refreshCustomSystems}
+                                      onArchive={refreshCustomSystems}
+                                      onDuplicate={refreshCustomSystems}
+                                      onEdit={() => {
+                                        setTuningInitialSystem(pack as any);
+                                        setShowTuningStudio(true);
+                                      }}
+                                    />
+                                  </div>
+                                )}
                               </div>
                             </SelectItem>
                           ))}
+                          <SelectItem value="custom">
+                            <div className="flex items-center gap-2">
+                              <Factory className="h-3.5 w-3.5 text-orange-400" />
+                              <div className="flex flex-col gap-0.5">
+                                <span className="text-gray-100">Custom System (Tune...)</span>
+                                <span className="text-[10px] text-gray-500">Import DXF, tag roles, link hardware</span>
+                              </div>
+                            </div>
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -494,6 +559,36 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               {/* STEP 2: Dimensions & Layout */}
               {currentStep === 1 && (
                 <div className="space-y-6">
+                  <div className="bg-gray-800/40 border border-gray-700 rounded-lg p-3">
+                    <Label className="text-[11px] uppercase tracking-wide text-gray-500">Pattern Preset</Label>
+                    {availablePatterns.length === 0 ? (
+                      <p className="text-[11px] text-gray-400 mt-1">No presets for this system. Select a different system to see patterns.</p>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                        {availablePatterns.map((pat) => (
+                          <button
+                            key={pat.id}
+                            onClick={() => {
+                              const midWidth = Math.round((pat.typicalWidthMm[0] + pat.typicalWidthMm[1]) / 2);
+                              const midHeight = Math.round((pat.typicalHeightMm[0] + pat.typicalHeightMm[1]) / 2);
+                              handleInputChange('width', String(midWidth));
+                              handleInputChange('height', String(midHeight));
+                            }}
+                            className="text-left bg-gray-900/40 border border-gray-700 hover:border-orange-500 rounded-lg p-3 transition-colors"
+                          >
+                            <div className="text-sm text-white font-semibold">{pat.name}</div>
+                            <div className="text-[11px] text-gray-400">{pat.layout}</div>
+                            <div className="text-[11px] text-gray-400 mt-1">
+                              {pat.typicalWidthMm[0]}–{pat.typicalWidthMm[1]} mm · {pat.typicalHeightMm[0]}–{pat.typicalHeightMm[1]} mm
+                            </div>
+                            {pat.notes && (
+                              <div className="text-[11px] text-orange-300 mt-1">{pat.notes}</div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <div className="group">
                     <Label className="text-xs uppercase tracking-widest text-gray-500 group-focus-within:text-orange-400 transition-colors">
                       {t('smart_measuring.dimensions.width', 'Total Width (mm)')}
@@ -536,6 +631,65 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     {getFieldError('height') && (
                       <p className="text-sm text-red-400 mt-1">{getFieldError('height')}</p>
                     )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 border-t border-gray-800 pt-4">
+                    <div>
+                      <Label className="text-[11px] uppercase tracking-wide text-gray-500">
+                        Measurement Mode
+                      </Label>
+                      <Select
+                        value={measurements.measurementMode}
+                        onValueChange={(val) => handleInputChange('measurementMode', val)}
+                      >
+                        <SelectTrigger className="bg-gray-800 border-gray-700 h-9 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-900 border-gray-700 text-xs">
+                          <SelectItem value="hole">Hole Size (Rough Opening)</SelectItem>
+                          <SelectItem value="manufacturing">Manufacturing Size</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label className="text-[11px] uppercase tracking-wide text-gray-500">
+                        Wall Tolerance Deduction (mm)
+                      </Label>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={40}
+                        value={measurements.wallDeduction}
+                        onChange={(e) => handleInputChange('wallDeduction', e.target.value)}
+                        className="bg-gray-800/50 border-gray-700 h-9 text-xs"
+                      />
+                    </div>
+
+                    <div className="bg-gray-800/40 border border-gray-700 rounded-lg p-3 text-xs text-gray-200">
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Manufacturing Width</span>
+                        <span className="font-mono text-orange-300">
+                          {Math.max(
+                            Number(measurements.measurementMode === 'hole'
+                              ? Number(measurements.width || 0) - Number(measurements.wallDeduction || 0)
+                              : Number(measurements.width || 0)
+                            ), 0
+                          ).toFixed(0)} mm
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Manufacturing Height</span>
+                        <span className="font-mono text-orange-300">
+                          {Math.max(
+                            Number(measurements.measurementMode === 'hole'
+                              ? Number(measurements.height || 0) - Number(measurements.wallDeduction || 0)
+                              : Number(measurements.height || 0)
+                            ), 0
+                          ).toFixed(0)} mm
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="space-y-3 border-t border-gray-800 pt-4">
@@ -834,19 +988,35 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     </p>
                     
                     <div className="space-y-3 text-sm bg-black/20 p-3 rounded border border-gray-800">
-                       <div className="flex justify-between items-center">
-                         <span className="text-gray-400">{t('smart_measuring.verification.overall_width', 'Overall Width Input:')}</span>
-                         <span className="font-mono text-white text-base">{measurements.width} mm</span>
-                       </div>
-                       <div className="flex justify-between items-center">
-                         <span className="text-gray-400">{t('smart_measuring.verification.deduction', 'Deduction (K-Factor):')}</span>
-                         <span className="font-mono text-red-400">- 6 mm</span> 
-                       </div>
-                       <div className="h-px bg-gray-700 my-1" />
-                       <div className="flex justify-between items-center font-bold">
-                         <span className="text-orange-400">{t('smart_measuring.verification.calculated_cut', 'Calculated Cut Length:')}</span>
-                         <span className="font-mono text-green-400 text-lg">{Number(measurements.width) - 6} mm</span>
-                       </div>
+                       {(() => {
+                         const rawWidth = Number(measurements.width || 0);
+                         const rawHeight = Number(measurements.height || 0);
+                         const deduction = Number(measurements.wallDeduction || 0);
+                         const isHoleMode = measurements.measurementMode === 'hole';
+                         const manufacturingWidth = isHoleMode ? rawWidth - deduction : rawWidth;
+                         const manufacturingHeight = isHoleMode ? rawHeight - deduction : rawHeight;
+                         return (
+                           <>
+                             <div className="flex justify-between items-center">
+                               <span className="text-gray-400">{t('smart_measuring.verification.overall_width', 'Overall Width Input:')}</span>
+                               <span className="font-mono text-white text-base">{rawWidth} mm</span>
+                             </div>
+                             <div className="flex justify-between items-center">
+                               <span className="text-gray-400">{t('smart_measuring.verification.overall_height', 'Overall Height Input:')}</span>
+                               <span className="font-mono text-white text-base">{rawHeight} mm</span>
+                             </div>
+                             <div className="flex justify-between items-center">
+                               <span className="text-gray-400">{t('smart_measuring.verification.deduction', 'Deduction (Wall Tolerance):')}</span>
+                               <span className="font-mono text-red-400">- {isHoleMode ? deduction : 0} mm</span> 
+                             </div>
+                             <div className="h-px bg-gray-700 my-1" />
+                             <div className="flex justify-between items-center font-bold">
+                               <span className="text-orange-400">{t('smart_measuring.verification.calculated_cut', 'Calculated Cut Length:')}</span>
+                               <span className="font-mono text-green-400 text-lg">{manufacturingWidth.toFixed(0)} × {manufacturingHeight.toFixed(0)} mm</span>
+                             </div>
+                           </>
+                         );
+                       })()}
                     </div>
                   </div>
                   
@@ -907,60 +1077,325 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         </div>
       </div>
 
-      {/* Right Panel: The 3D Stage */}
-      <div className="flex-1 bg-gradient-to-br from-gray-900 to-black rounded-xl border border-gray-800 relative overflow-hidden shadow-2xl">
-        <div className="absolute top-4 right-4 z-10 flex gap-2">
-          {/* New "Exploded View" Toggle */}
-          <Toggle 
-            pressed={explodedView} 
-            onPressedChange={setExplodedView}
-            className="bg-black/50 backdrop-blur text-white data-[state=on]:bg-orange-600"
-          >
-            <Layers className="h-4 w-4 mr-2" /> {t('window_3d_generator.explode', 'Explode')}
-          </Toggle>
+      {/* Right Panel: Clean Blueprint Preview */}
+      <div className="flex-1 bg-white rounded-xl border border-gray-200 relative overflow-hidden shadow-sm">
+        {/* Header */}
+        <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between">
+          <Badge className="bg-blue-50 text-blue-700 border-blue-200 font-medium text-xs px-3 py-1">
+            <Ruler className="h-3 w-3 mr-1.5" />
+            Measurement Preview
+          </Badge>
+          {activeSystemPack && (
+            <div className="text-xs text-gray-600 bg-white/90 backdrop-blur px-3 py-1 rounded border border-gray-200">
+              <span className="font-semibold">{activeSystemPack.meta.name}</span>
+            </div>
+          )}
         </div>
 
-        {/* Pass the highlightedDimension to the generator to illuminate the arrow */}
-        {previewWindowUnit && (
-          <Suspense fallback={
-            <div className="w-full h-full min-h-[500px] flex items-center justify-center text-gray-500">
-              <div className="flex flex-col items-center gap-2">
-                <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs">{t('engineering_bay.loading_3d', 'Loading 3D Preview...')}</span>
+        {/* Dynamic Blueprint Canvas */}
+        {previewWindowUnit && Number(measurements.width) > 0 && Number(measurements.height) > 0 ? (
+          <div className="w-full h-full flex items-center justify-center p-6 md:p-8">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="w-full h-full max-w-4xl"
+            >
+              <svg
+                viewBox="0 0 1200 800"
+                className="w-full h-full"
+                style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))' }}
+              >
+                {/* Background grid - more visible and dynamic */}
+                <defs>
+                  <pattern id="blueprint-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                    <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#d1d5db" strokeWidth="0.8" opacity="0.6"/>
+                  </pattern>
+                  {/* Highlight pattern for active dimension */}
+                  <pattern id="highlight-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                    <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#3b82f6" strokeWidth="1" opacity="0.3"/>
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#blueprint-grid)" />
+                {highlightedDimension && (
+                  <rect width="100%" height="100%" fill="url(#highlight-grid)" opacity="0.5" />
+                )}
+
+                {/* Calculate dimensions with smooth transitions */}
+                {(() => {
+                  const width = Number(measurements.width) || 1200;
+                  const height = Number(measurements.height) || 1200;
+                  const aspectRatio = width / height;
+                  const maxWidth = 900;
+                  const maxHeight = 600;
+                  let svgWidth = maxWidth;
+                  let svgHeight = maxHeight;
+                  
+                  if (aspectRatio > maxWidth / maxHeight) {
+                    svgHeight = maxWidth / aspectRatio;
+                  } else {
+                    svgWidth = maxHeight * aspectRatio;
+                  }
+                  
+                  const startX = (1200 - svgWidth) / 2;
+                  const startY = (800 - svgHeight) / 2;
+                  const area = (width * height) / 1_000_000;
+                  
+                  return (
+                    <g>
+                      {/* Window Frame - with subtle animation on dimension change */}
+                      <rect
+                        x={startX}
+                        y={startY}
+                        width={svgWidth}
+                        height={svgHeight}
+                        fill="none"
+                        stroke={highlightedDimension ? "#2563eb" : "#1f2937"}
+                        strokeWidth={highlightedDimension ? "4" : "3"}
+                        className="transition-all duration-300"
+                        style={{ 
+                          strokeDasharray: highlightedDimension ? "8 4" : "none",
+                          animation: highlightedDimension ? "pulse 2s ease-in-out infinite" : "none"
+                        }}
+                      />
+
+                      {/* Corner markers for precision */}
+                      {[0, 1, 2, 3].map((corner) => {
+                        const corners = [
+                          { x: startX, y: startY },
+                          { x: startX + svgWidth, y: startY },
+                          { x: startX + svgWidth, y: startY + svgHeight },
+                          { x: startX, y: startY + svgHeight }
+                        ];
+                        const c = corners[corner];
+                        return (
+                          <circle
+                            key={corner}
+                            cx={c.x}
+                            cy={c.y}
+                            r="4"
+                            fill="#1f2937"
+                            stroke="white"
+                            strokeWidth="1.5"
+                          />
+                        );
+                      })}
+
+                      {/* Width Dimension Line (Top) - animated */}
+                      <g className="transition-all duration-300">
+                        <line 
+                          x1={startX} 
+                          y1={startY - 50} 
+                          x2={startX + svgWidth} 
+                          y2={startY - 50} 
+                          stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"} 
+                          strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
+                          className="transition-all duration-300"
+                        />
+                        <line 
+                          x1={startX} 
+                          y1={startY - 55} 
+                          x2={startX} 
+                          y2={startY - 45} 
+                          stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"} 
+                          strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
+                        />
+                        <line 
+                          x1={startX + svgWidth} 
+                          y1={startY - 55} 
+                          x2={startX + svgWidth} 
+                          y2={startY - 45} 
+                          stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"} 
+                          strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
+                        />
+                        <text
+                          x={startX + svgWidth / 2}
+                          y={startY - 60}
+                          textAnchor="middle"
+                          fill={highlightedDimension === 'width' ? "#1e40af" : "#2563eb"}
+                          fontSize="32"
+                          fontWeight="700"
+                          className="font-mono transition-all duration-300"
+                        >
+                          {width.toLocaleString()} mm
+                        </text>
+                        <text
+                          x={startX + svgWidth / 2}
+                          y={startY - 85}
+                          textAnchor="middle"
+                          fill={highlightedDimension === 'width' ? "#1e40af" : "#6b7280"}
+                          fontSize="12"
+                          fontWeight="700"
+                          letterSpacing="0.1em"
+                          className="transition-all duration-300"
+                        >
+                          WIDTH
+                        </text>
+                      </g>
+
+                      {/* Height Dimension Line (Left) - animated */}
+                      <g className="transition-all duration-300">
+                        <line 
+                          x1={startX - 50} 
+                          y1={startY} 
+                          x2={startX - 50} 
+                          y2={startY + svgHeight} 
+                          stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"} 
+                          strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
+                        />
+                        <line 
+                          x1={startX - 55} 
+                          y1={startY} 
+                          x2={startX - 45} 
+                          y2={startY} 
+                          stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"} 
+                          strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
+                        />
+                        <line 
+                          x1={startX - 55} 
+                          y1={startY + svgHeight} 
+                          x2={startX - 45} 
+                          y2={startY + svgHeight} 
+                          stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"} 
+                          strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
+                        />
+                        <text
+                          x={startX - 60}
+                          y={startY + svgHeight / 2}
+                          textAnchor="middle"
+                          fill={highlightedDimension === 'height' ? "#1e40af" : "#2563eb"}
+                          fontSize="32"
+                          fontWeight="700"
+                          className="font-mono transition-all duration-300"
+                          transform={`rotate(-90 ${startX - 60} ${startY + svgHeight / 2})`}
+                        >
+                          {height.toLocaleString()} mm
+                        </text>
+                        <text
+                          x={startX - 85}
+                          y={startY + svgHeight / 2}
+                          textAnchor="middle"
+                          fill={highlightedDimension === 'height' ? "#1e40af" : "#6b7280"}
+                          fontSize="12"
+                          fontWeight="700"
+                          letterSpacing="0.1em"
+                          className="transition-all duration-300"
+                          transform={`rotate(-90 ${startX - 85} ${startY + svgHeight / 2})`}
+                        >
+                          HEIGHT
+                        </text>
+                      </g>
+
+                      {/* Area Display - dynamic */}
+                      <g className="transition-opacity duration-300">
+                        <rect 
+                          x={startX + svgWidth - 200} 
+                          y={startY + svgHeight + 25} 
+                          width="190" 
+                          height="60" 
+                          fill="white" 
+                          stroke="#1f2937" 
+                          strokeWidth="2" 
+                          rx="6"
+                          className="shadow-sm"
+                        />
+                        <text 
+                          x={startX + svgWidth - 195} 
+                          y={startY + svgHeight + 45} 
+                          fill="#374151" 
+                          fontSize="11" 
+                          fontWeight="600"
+                          letterSpacing="0.05em"
+                        >
+                          AREA
+                        </text>
+                        <text 
+                          x={startX + svgWidth - 195} 
+                          y={startY + svgHeight + 68} 
+                          fill="#1f2937" 
+                          fontSize="20" 
+                          fontWeight="700" 
+                          className="font-mono"
+                        >
+                          {area.toFixed(2)} m²
+                        </text>
+                      </g>
+
+                      {/* Scale indicator */}
+                      <g>
+                        <line 
+                          x1={startX + 20} 
+                          y1={startY + svgHeight + 30} 
+                          x2={startX + 120} 
+                          y2={startY + svgHeight + 30} 
+                          stroke="#6b7280" 
+                          strokeWidth="2"
+                        />
+                        <line 
+                          x1={startX + 20} 
+                          y1={startY + svgHeight + 25} 
+                          x2={startX + 20} 
+                          y2={startY + svgHeight + 35} 
+                          stroke="#6b7280" 
+                          strokeWidth="2"
+                        />
+                        <line 
+                          x1={startX + 120} 
+                          y1={startY + svgHeight + 25} 
+                          x2={startX + 120} 
+                          y2={startY + svgHeight + 35} 
+                          stroke="#6b7280" 
+                          strokeWidth="2"
+                        />
+                        <text
+                          x={startX + 70}
+                          y={startY + svgHeight + 50}
+                          textAnchor="middle"
+                          fill="#6b7280"
+                          fontSize="10"
+                          fontWeight="500"
+                        >
+                          100mm scale
+                        </text>
+                      </g>
+                    </g>
+                  );
+                })()}
+              </svg>
+            </motion.div>
+          </div>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+              className="text-center space-y-4"
+            >
+              <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center border-2 border-blue-200">
+                <Ruler className="h-10 w-10 text-blue-400" />
               </div>
-            </div>
-          }>
-            <Window3DGenerator 
-              key={isGridMode ? `grid-${grid.rows}-${grid.cols}-${grid.cells.length}-${previewWindowUnit?.type}` : `standard-view-${previewWindowUnit?.type}`}
-              windowUnit={previewWindowUnit}
-              showControls={true}
-              presentationMode={false}
-              highlightDimension={highlightedDimension}
-              explodedView={explodedView}
-              setExplodedView={setExplodedView}
-              quality="high"
-            />
-          </Suspense>
+              <div>
+                <p className="text-sm font-semibold text-gray-700 mb-1">Enter dimensions to preview</p>
+                <p className="text-xs text-gray-500">Width and height will appear here in real-time</p>
+              </div>
+            </motion.div>
+          </div>
         )}
       </div>
+
+      <SystemTuningStudio
+        open={showTuningStudio}
+        onClose={() => setShowTuningStudio(false)}
+        initialSystem={tuningInitialSystem}
+        onSave={(customPack) => {
+          const updated = addCustomSystem(customPack);
+          setCustomSystems(updated);
+          setSelectedSystemPackId(customPack.meta?.id);
+          setShowTuningStudio(false);
+        }}
+      />
     </div>
   );
 };
 
-/**
- * Small inline icon component for the system pack header so we don't
- * pull additional imports into the top of the file.
- */
-const FactoryIcon: React.FC = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    className="h-4 w-4 text-orange-400"
-    aria-hidden="true"
-  >
-    <path
-      fill="currentColor"
-      d="M4 3a1 1 0 0 1 1 1v6.382l4-2.309l.008-.004A1 1 0 0 1 10 8a1 1 0 0 1 .553.169L15 11.382V8a1 1 0 1 1 2 0v4.618l.553-.32l.008-.004L21 11.382V8a1 1 0 1 1 2 0v12a1 1 0 0 1-1 1H2.999A1 1 0 0 1 2 20.999V4a1 1 0 0 1 1-1Zm0 10v7h18v-6.382l-4 2.309l-.008.004A1 1 0 0 1 17 16a1 1 0 0 1-.553-.169L11 12.618l-4 2.309l-.008.004A1 1 0 0 1 6 15a1 1 0 0 1-.553-.169Zm3 3h2v3H7Zm4 0h2v3h-2Zm4 0h2v3h-2Z"
-    />
-  </svg>
-);

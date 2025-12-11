@@ -39,6 +39,8 @@ import { MachineValidator } from '@/integrations/yilmaz/MachineValidator';
 import { PDFExportService } from '@/modules/reporting';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { useTranslation } from 'react-i18next';
+import { alm6510MDBExport, ALM6510ExportOptions } from '@/lib/exports/ALM6510MDBExport';
+import { downloadSplitPO } from '@/lib/exports/SplitPOExport';
 
 interface ProductionCommandProps {
     project: WindowUnit | null;
@@ -134,8 +136,11 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
     const [showWasteComparison, setShowWasteComparison] = useState(true); // Default to show
     const [wasteComparison, setWasteComparison] = useState<any>(null);
     const [showProductionPreview, setShowProductionPreview] = useState(false);
-    const [pendingAction, setPendingAction] = useState<'gcode' | 'report' | 'send' | null>(null);
+    const [pendingAction, setPendingAction] = useState<'gcode' | 'report' | 'send' | 'alm6510' | 'splitpo' | null>(null);
     const [lastActionResult, setLastActionResult] = useState<{ success: boolean; message: string } | null>(null);
+    const [isGeneratingALM6510, setIsGeneratingALM6510] = useState(false);
+    const [alm6510ExportError, setAlm6510ExportError] = useState<string | null>(null);
+    const [alm6510ExportSuccess, setAlm6510ExportSuccess] = useState(false);
     const { branding } = useCompanyBranding();
 
     const availableMachines: YilmazMachineModel[] = [
@@ -254,7 +259,34 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
         }
     };
 
-    const confirmAndExecute = (action: 'gcode' | 'report' | 'send') => {
+    const handleDownloadALM6510MDB = async () => {
+        if (!project || !optimization) return;
+
+        setIsGeneratingALM6510(true);
+        setAlm6510ExportError(null);
+        setAlm6510ExportSuccess(false);
+
+        try {
+            const options: ALM6510ExportOptions = {
+                orderNumber: project.orderNumber || `ORDER-${Date.now()}`,
+                customerCode: project.customer || '',
+                customerName: project.customer || '',
+                project: {
+                    positionNumber: parseInt(project.posNumber || '1'),
+                },
+            };
+
+            await alm6510MDBExport.downloadMDB(project, optimization, options);
+            setAlm6510ExportSuccess(true);
+        } catch (error) {
+            console.error('ALM 6510 MDB export error:', error);
+            setAlm6510ExportError(error instanceof Error ? error.message : 'Failed to generate ALM 6510 MDB file');
+        } finally {
+            setIsGeneratingALM6510(false);
+        }
+    };
+
+    const confirmAndExecute = (action: 'gcode' | 'report' | 'send' | 'alm6510' | 'splitpo') => {
         setPendingAction(action);
         setShowProductionPreview(true);
     };
@@ -278,10 +310,26 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                     await handleSendToMachine();
                     resultMessage = t('production_command.job_sent', 'Job sent to Yilmaz {machine}.', { machine: selectedMachine });
                     break;
+                case 'alm6510':
+                    await handleDownloadALM6510MDB();
+                    resultMessage = t('production_command.alm6510_downloaded', 'ALM 6510 MDB file downloaded successfully.');
+                    // Close the preview dialog after successful download
+                    setShowProductionPreview(false);
+                    break;
+                case 'splitpo':
+                    if (project && optimization) {
+                        downloadSplitPO(project, optimization);
+                        resultMessage = 'Split POs (Profile / Glass / Accessory) downloaded.';
+                        setShowProductionPreview(false);
+                    } else {
+                        throw new Error('Missing project or optimization data for Split PO export.');
+                    }
+                    break;
             }
             setLastActionResult({ success: true, message: resultMessage });
         } catch (error: any) {
             setLastActionResult({ success: false, message: error.message || t('production_command.unknown_error', 'An unknown error occurred.') });
+            // Keep dialog open on error so user can see the error
         } finally {
             setIsProcessing(false);
             setPendingAction(null);
@@ -443,9 +491,53 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                         <Button onClick={() => confirmAndExecute('gcode')} disabled={isProcessing} variant="outline" size="lg">
                             <Code className="h-4 w-4 mr-2"/> {t('production_command.generate_gcode', 'Generate & Download G-Code')}
                         </Button>
+                        <Button onClick={() => confirmAndExecute('splitpo')} disabled={isProcessing} variant="outline" size="lg">
+                            <FileText className="h-4 w-4 mr-2"/> Split PO (Profile / Glass / Accessory)
+                        </Button>
+                        
+                        {/* ALM 6510 MDB Export Button - Turkish Pilot */}
+                        {selectedMachine === 'ALM-6510' && (
+                            <Button
+                                onClick={() => confirmAndExecute('alm6510')}
+                                disabled={isProcessing || isGeneratingALM6510}
+                                size="lg"
+                                className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-lg"
+                            >
+                                {isGeneratingALM6510 ? (
+                                    <>
+                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                        {t('production_command.generating_mdb', 'Generating MDB...')}
+                                    </>
+                                ) : (
+                                    <>
+                                        <Download className="h-4 w-4 mr-2" />
+                                        {t('production_command.download_alm6510_mdb', 'Download ALM 6510 MDB')}
+                                    </>
+                                )}
+                            </Button>
+                        )}
+                        
                          <Button onClick={() => confirmAndExecute('send')} disabled={isProcessing || !gCodePreview} size="lg" className="bg-orange-600 hover:bg-orange-700 text-white shadow-lg">
                             <Send className="h-4 w-4 mr-2"/> {t('production_command.send_to_machine', 'Send Job to Machine')}
                         </Button>
+                        
+                        {/* ALM 6510 Export Status Messages */}
+                        {alm6510ExportSuccess && !alm6510ExportError && (
+                            <Alert className="bg-green-900/20 border-green-500">
+                                <CheckCircle className="h-4 w-4" />
+                                <AlertTitle>Success</AlertTitle>
+                                <AlertDescription>
+                                    ALM 6510 MDB file downloaded successfully. Ready for machine import.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                        {alm6510ExportError && (
+                            <Alert variant="destructive" className="bg-red-900/20 border-red-500">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>Export Error</AlertTitle>
+                                <AlertDescription>{alm6510ExportError}</AlertDescription>
+                            </Alert>
+                        )}
                     </div>
                 </CardContent>
             </Card>
