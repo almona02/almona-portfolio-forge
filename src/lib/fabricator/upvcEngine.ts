@@ -336,6 +336,183 @@ export function getClimateUPVCSettings(
 }
 
 /**
+ * Calculate Egyptian cutting angle with compensation
+ * 
+ * CRITICAL: Egyptian profiles use 92° for frames (not 90°) to compensate for welding shrinkage.
+ * This is the "Maalem's secret" that ensures proper sealing after welding.
+ * 
+ * @param componentType - Component type (frame, sash, mullion)
+ * @param isEgyptianSystem - Whether this is an Egyptian-manufactured system
+ * @returns Cutting angle in degrees
+ * 
+ * @example
+ * // Frame corner: 92° (compensates for shrinkage)
+ * calculateEgyptianCuttingAngle('frame', true) // Returns 92
+ * // Sash corner: 88° (complementary to frame)
+ * calculateEgyptianCuttingAngle('sash', true) // Returns 88
+ */
+export function calculateEgyptianCuttingAngle(
+  componentType: 'frame' | 'sash' | 'mullion',
+  isEgyptianSystem: boolean = true
+): number {
+  if (!isEgyptianSystem) {
+    return 90; // European standard
+  }
+  
+  // Egyptian compensation angles (from EMAPEN catalogue)
+  switch (componentType) {
+    case 'frame':
+      return 92; // Compensates for material shrinkage during welding
+    case 'sash':
+      return 88; // Complementary to frame 92° for compression seal
+    case 'mullion':
+      return 90; // Structural joints require precision
+    default:
+      return 90;
+  }
+}
+
+/**
+ * Calculate seasonal burn-off adjustment
+ * 
+ * Egyptian workshops adjust burn-off based on season:
+ * - Summer: -0.2mm (less shrinkage in heat)
+ * - Winter: +0.2mm (more shrinkage in cold)
+ * 
+ * @param baseBurnOff - Base burn-off (typically 3.0mm)
+ * @param season - Current season ('summer' | 'winter' | 'standard')
+ * @returns Adjusted burn-off in mm
+ */
+export function calculateSeasonalBurnOff(
+  baseBurnOff: number = 3.0,
+  season: 'summer' | 'winter' | 'standard' = 'standard'
+): number {
+  switch (season) {
+    case 'summer':
+      return baseBurnOff - 0.2; // Less shrinkage in heat
+    case 'winter':
+      return baseBurnOff + 0.2; // More shrinkage in cold
+    default:
+      return baseBurnOff;
+  }
+}
+
+/**
+ * Calculate Egyptian welding temperature with seasonal adjustment
+ * 
+ * Egyptian formula: Base temp × 0.94 (due to higher filler content in local PVC)
+ * Plus seasonal adjustments for workshop ambient temperature.
+ * 
+ * @param baseTemperature - Base welding temperature (typically 250°C European)
+ * @param isEgyptianPVC - Whether using Egyptian PVC (higher filler content)
+ * @param ambientTemp - Workshop ambient temperature (°C)
+ * @returns Adjusted welding temperature
+ */
+export function calculateEgyptianWeldingTemp(
+  baseTemperature: number = 250,
+  isEgyptianPVC: boolean = true,
+  ambientTemp: number = 25
+): number {
+  let temp = baseTemperature;
+  
+  // Egyptian PVC adjustment: 0.94 factor (higher filler lowers melt point)
+  if (isEgyptianPVC) {
+    temp = baseTemperature * 0.94; // ~235°C
+  }
+  
+  // Seasonal adjustments based on ambient
+  if (ambientTemp > 35) {
+    // Summer: Lower temp (workshop already hot)
+    temp -= 5;
+  } else if (ambientTemp < 20) {
+    // Winter: Higher temp (workshop cold)
+    temp += 5;
+  }
+  
+  return Math.round(temp);
+}
+
+/**
+ * Calculate Egyptian welding pressure
+ * 
+ * Egyptian formula: Base pressure × 0.875 (lower due to equipment and material)
+ * 
+ * @param basePressure - Base pressure (typically 3.2 bar European)
+ * @param isEgyptianSystem - Whether using Egyptian equipment/material
+ * @returns Adjusted welding pressure
+ */
+export function calculateEgyptianWeldingPressure(
+  basePressure: number = 3.2,
+  isEgyptianSystem: boolean = true
+): number {
+  if (isEgyptianSystem) {
+    return basePressure * 0.875; // ~2.8 bar
+  }
+  return basePressure;
+}
+
+/**
+ * Calculate Egyptian welding time
+ * 
+ * Faster than European due to thinner wall sections (2.0-2.5mm vs 2.5-3.0mm)
+ * 
+ * @param wallThickness - Profile wall thickness (mm)
+ * @param isEgyptianSystem - Whether using Egyptian profiles
+ * @returns Heating time in seconds
+ */
+export function calculateEgyptianWeldingTime(
+  wallThickness: number = 2.5,
+  isEgyptianSystem: boolean = true
+): number {
+  if (!isEgyptianSystem) {
+    // European: 30-40 seconds
+    return wallThickness > 2.5 ? 35 : 30;
+  }
+  
+  // Egyptian: Faster due to thinner walls
+  if (wallThickness <= 2.0) {
+    return 22; // 22-25 seconds
+  } else if (wallThickness <= 2.5) {
+    return 28; // 25-30 seconds
+  } else {
+    return 32; // 30-35 seconds
+  }
+}
+
+/**
+ * Get Egyptian cutting parameters for a system
+ * 
+ * Returns complete cutting specification with angles, tolerances, and burn-off.
+ * 
+ * @param systemId - System pack ID (e.g., 'emapen_ema60_complete')
+ * @param season - Current season for burn-off adjustment
+ * @returns Egyptian cutting parameters
+ */
+export function getEgyptianCuttingParams(
+  systemId: string,
+  season: 'summer' | 'winter' | 'standard' = 'standard'
+): {
+  frameCornerAngle: number;
+  sashCornerAngle: number;
+  mullionAngle: number;
+  angleTolerance: number;
+  burnOffMm: number;
+  steelClearance: number;
+} {
+  const isEgyptian = systemId.includes('emapen') || systemId.includes('katra');
+  const baseBurnOff = isEgyptian ? 2.8 : 3.0;
+  
+  return {
+    frameCornerAngle: calculateEgyptianCuttingAngle('frame', isEgyptian),
+    sashCornerAngle: calculateEgyptianCuttingAngle('sash', isEgyptian),
+    mullionAngle: calculateEgyptianCuttingAngle('mullion', isEgyptian),
+    angleTolerance: 0.3, // ±0.3° for frames/sash, ±0.2° for mullions
+    burnOffMm: calculateSeasonalBurnOff(baseBurnOff, season),
+    steelClearance: 10, // 10-15mm standard
+  };
+}
+
+/**
  * Calculate total UPVC material needed with all losses
  * 
  * Accounts for: Cutting length, saw kerf, bar end trim, welding loss

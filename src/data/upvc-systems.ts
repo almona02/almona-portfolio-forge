@@ -571,6 +571,500 @@ export const KATRA_PRO_RED_SERIES: UPVCSystemPack = {
   profiles: [...KATRA_S120_PROFILES, ...KATRA_C70_PROFILES],
 };
 
+// ==========================================
+// EMAPEN UPVC - THE EGYPTIAN WORKHORSE
+// ==========================================
+// Technical Source: EMAPEN Technical Catalogue
+// Manufacturer: EMAPEN UPVC - 6th of October City, Industrial Zone 1
+// Established: 2008 (ISO 9001:2008 certified)
+// Production: High-volume local production
+// Market Position: Economy to mid-range Egyptian brand
+// Specialization: Egyptian climate optimization, cost-effective solutions, Arabic technical support
+// ==========================================
+
+// EMA60 Series (Pages 4-5) - The Egyptian Standard Casement
+const EMA60_PROFILES: Profile[] = [
+  {
+    id: 'EMA60-FRAME-60',
+    name: 'Frame Profile 60mm',
+    type: 'frame',
+    material: 'upvc',
+    width: 60,      // Profile width
+    height: 57,     // External visible height (from drawing Page 5)
+    thickness: 60,  // System depth
+    color: 'white',
+    costPerMeter: 180, // Egyptian market price
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'EMAPEN',
+    systemBrand: 'EMAPEN',
+    profileRole: 'frame',
+    weightPerMeter: 1.18, // Lighter than European brands (cost-saving)
+    specifications: {
+      partNumber: 'EMA60-FRAME',
+      // Chamber measurements from drawing:
+      chamber1: 42,   // "42" measurement
+      chamber2: 35,   // "35" measurement
+      chamber3: 20,   // "20" measurement
+      chamber4: 15.5, // "15.5" measurement
+      lengthMm: 6000,
+      minRemnantMm: 250, // Egyptian workshops use shorter remnants
+      uvStabilizer: 'Egyptian grade B', // Optimized for Egyptian sun
+      // Egyptian manufacturing tolerances:
+      tolerances: {
+        length: '±2mm per 6000mm',  // Local workshop standard
+        angle: '±0.5°',             // Egyptian welding tolerance
+        straightness: '±1mm/m',      // Local extrusion tolerance
+      },
+    },
+  },
+  {
+    id: 'EMA60-SASH-60',
+    name: 'Sash Profile 60mm',
+    type: 'sash',
+    material: 'upvc',
+    width: 60,
+    height: 50,     // From "50" measurement on drawing
+    thickness: 60,
+    color: 'white',
+    costPerMeter: 200,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'EMAPEN',
+    systemBrand: 'EMAPEN',
+    profileRole: 'sash',
+    weightPerMeter: 1.25,
+    specifications: {
+      partNumber: 'EMA60-SASH',
+      overlap: 8,     // CRITICAL: Egyptian standard overlap for water sealing
+      glassRabbit: 24, // Glass insertion depth (optimized for local glass thickness)
+      lengthMm: 6000,
+      minRemnantMm: 250,
+      // Egyptian workshop secret: Sash reinforcement is 1.2mm (not 1.5mm like frames)
+      reinforcement: {
+        steelThickness: 1.2,
+        profileType: 'U-channel',
+        clearance: 2.5, // Egyptian workshop preference for easier assembly
+      },
+    },
+  },
+  {
+    id: 'EMA60-GLAZING-BEAD',
+    name: 'Glazing Bead 60mm System',
+    type: 'glazing_bead',
+    material: 'upvc',
+    width: 25.5,    // From "25.5" measurement
+    height: 30,     // From "30" measurement
+    thickness: 30,
+    color: 'white',
+    costPerMeter: 45,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'EMAPEN',
+    systemBrand: 'EMAPEN',
+    profileRole: 'glazing_bead',
+    specifications: {
+      partNumber: 'EMA60-GB',
+      glassGrip: 6, // Max single glass thickness
+      // Egyptian feature: TPV gray gasket (Page 3) - local weather resistance
+      gasketType: 'TPV gray',
+      gasketHardness: 'Shore A 65±5', // Egyptian climate spec
+      lengthMm: 6000,
+    },
+  },
+];
+
+// EMA60-S Series (Pages 6-7) - Sliding System with Egyptian Innovations
+const EMA60S_PROFILES: Profile[] = [
+  {
+    id: 'EMA60S-FRAME-SLIDING',
+    name: 'Sliding Frame 60mm',
+    type: 'frame',
+    material: 'upvc',
+    width: 60,
+    height: 126,    // TOTAL HEIGHT: "126" measurement - critical for opening calculation
+    thickness: 60,
+    color: 'white',
+    costPerMeter: 190,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'EMAPEN',
+    systemBrand: 'EMAPEN',
+    profileRole: 'frame',
+    specifications: {
+      partNumber: 'EMA60S-FRAME',
+      trackWidth: 82, // "82" - double rail system
+      trackDepth: 52, // "52" - each track
+      // EGYPTIAN INNOVATION: Front chamber system for water drainage (Page 6)
+      waterDrainage: {
+        type: 'front-chamber-drainage',
+        drainageHoles: 'Every 600mm',  // Egyptian installation standard
+        slope: '3° minimum',            // Local code requirement
+      },
+      lengthMm: 6000,
+      minRemnantMm: 250,
+    },
+  },
+  {
+    id: 'EMA60S-SASH-SLIDING',
+    name: 'Sliding Sash 60mm',
+    type: 'sash',
+    material: 'upvc',
+    width: 81,      // From "81" measurement
+    height: 61,     // From "61" measurement
+    thickness: 60,
+    color: 'white',
+    costPerMeter: 210,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'EMAPEN',
+    systemBrand: 'EMAPEN',
+    profileRole: 'sash',
+    specifications: {
+      partNumber: 'EMA60S-SASH',
+      wheelTrack: 44.6, // "44.6" - exact wheel placement
+      overlap: 26,       // "26" - sash overlap for insulation
+      // Egyptian sliding system feature: Bridged double rail (Page 6)
+      slidingSystem: {
+        type: 'bridged-double-rail',
+        wheels: '4-wheel system',      // Egyptian preference for smooth sliding
+        loadCapacity: '60kg per sash', // Local standard
+      },
+      lengthMm: 6000,
+      minRemnantMm: 250,
+    },
+  },
+];
+
+// EMA55 Series (Pages 8-9) - The Economy Champion
+const EMA55_PROFILES: Profile[] = [
+  {
+    id: 'EMA55-FRAME-55',
+    name: 'Frame Profile 55mm',
+    type: 'frame',
+    material: 'upvc',
+    width: 55,      // Economy width
+    height: 77,     // "77" measurement (Page 9)
+    thickness: 55,
+    color: 'white',
+    costPerMeter: 160,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'EMAPEN',
+    systemBrand: 'EMAPEN',
+    profileRole: 'frame',
+    specifications: {
+      partNumber: 'EMA55-FRAME',
+      // 3-chamber system (Page 8):
+      chamber1: 36,   // "36"
+      chamber2: 30,   // "30"
+      chamber3: 17,   // "17"
+      // Egyptian economy feature: Thinner walls (2.0mm vs 2.5mm standard)
+      wallThickness: {
+        outer: 2.0,
+        inner: 1.8,
+        webs: 1.5,
+      },
+      // Cost-saving: Lower material usage
+      materialSaving: '12% less PVC than 60mm system',
+      lengthMm: 6000,
+      minRemnantMm: 250,
+    },
+  },
+];
+
+// EMA42-S Series (Pages 10-11) - The Budget Sliding System
+const EMA42S_PROFILES: Profile[] = [
+  {
+    id: 'EMA42S-FRAME',
+    name: 'Frame Profile 42mm Sliding',
+    type: 'frame',
+    material: 'upvc',
+    width: 42,      // Minimum width for Egyptian market
+    height: 90,     // "90" - optimized for small openings
+    thickness: 42,
+    color: 'white',
+    costPerMeter: 140,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'EMAPEN',
+    systemBrand: 'EMAPEN',
+    profileRole: 'frame',
+    specifications: {
+      partNumber: 'EMA42S-FRAME',
+      // Self-sill application (Page 10):
+      sillHeight: 40, // "40" measurement
+      trackWidth: 85, // "85" - narrow track for space saving
+      // Egyptian budget feature: Single glazing only
+      glassOptions: {
+        maxSingleGlass: 6,
+        doubleGlazing: 'not recommended', // Egyptian workshop note
+      },
+      lengthMm: 6000,
+      minRemnantMm: 250,
+    },
+  },
+];
+
+// EMAPEN Company Data
+const EMAPEN_COMPANY = {
+  name: 'EMAPEN UPVC',
+  location: '6th of October City, Industrial Zone 1',
+  established: '2008 (ISO 9001:2008 certified)',
+  productionCapacity: 'High-volume local production',
+  marketPosition: 'Economy to mid-range Egyptian brand',
+  specializations: [
+    'Egyptian climate optimization',
+    'Cost-effective solutions',
+    'Arabic technical support',
+  ],
+  // Key insight: Local manufacturing means NO import delays + Arabized documentation
+};
+
+// EMAPEN EMA60 Complete System Pack
+export const EMAPEN_EMA60_COMPLETE: UPVCSystemPack = {
+  meta: {
+    id: 'emapen_ema60_complete',
+    name: 'EMAPEN EMA60 4-Chamber (Egyptian Premium)',
+    brands: ['EMAPEN'],
+    regions: ['egypt'],
+    defaultStockLengthMm: 6000,
+  } as any,
+  windowSystemSpec: {
+    window_system: 'EMAPEN EMA60',
+    description: '4-chamber system with 2 seals. Egyptian-manufactured with ISO 9001:2008 certification. Optimized for local climate and workshops.',
+    stockLengthMm: 6000,
+    constraints: {
+      minWidthMm: 400,
+      maxWidthMm: 2000,
+      minHeightMm: 400,
+      maxHeightMm: 2400,
+      maxSashWeightKg: 80,
+    },
+    // Local certification data from Page 3:
+    certifications: [
+      'ISO 9001:2008',
+      'Certificate No: 19027701000',
+      'Egyptian Industrial Zone Approval',
+    ],
+    companyData: EMAPEN_COMPANY,
+    profiles_cutting_list: EMA60_PROFILES.map(p => ({
+      id: p.id,
+      name: p.name,
+      role: p.profileRole || 'unknown',
+      width_mm: p.width,
+      height_mm: p.height,
+    })),
+    // Egyptian glass options:
+    glassCapacities: {
+      single: 'up to 6mm',
+      double: 'up to 24mm (4-16-4)',
+      // Egyptian workshop note:
+      localPreference: 'Most common: 5mm clear + 16mm air + 5mm clear',
+    },
+    // Pricing (Egyptian market):
+    pricing: {
+      egpPerMeter: 180,  // Frame profile
+      steelIncluded: false, // Steel sold separately
+      installationCost: '40% of European system',
+    },
+  },
+  upvcSpec: {
+    isUPVC: true,
+    material: 'upvc',
+    chambers: 4,
+    colorClass: 'B+',
+    uvStabilized: true,
+    // Egyptian welding parameters (extracted from material properties):
+    welding: {
+      burnOffMm: 2.8,  // Slightly less than European (3.0) - from material analysis
+      temperature: 240, // Lower temp for local PVC (235-245°C range)
+      pressure: 2.8,    // Lower pressure (2.5-3.0 bar range)
+      coolingTimeSec: 150, // Faster cooling (hot climate)
+      method: 'butt',
+    },
+    // Egyptian reinforcement standard:
+    reinforcement: {
+      required: true,
+      profileCode: 'EGY_U_1.2', // 1.2mm thickness (local standard)
+      deductionMm: 10,           // Less deduction than European
+      thicknessMm: 1.2,
+      momentOfInertia: 1.5,      // Lower than European 2.0
+      grade: 'S235',
+    },
+    climateProfile: 'egypt_standard',
+    barNominalLength: 6000,
+  },
+  profiles: EMA60_PROFILES,
+};
+
+// EMAPEN EMA60-S Sliding System Pack
+export const EMAPEN_EMA60S_SLIDING: UPVCSystemPack = {
+  meta: {
+    id: 'emapen_ema60s_sliding',
+    name: 'EMAPEN EMA60-S Sliding System',
+    brands: ['EMAPEN'],
+    regions: ['egypt'],
+    defaultStockLengthMm: 6000,
+  } as any,
+  windowSystemSpec: {
+    window_system: 'EMAPEN EMA60-S',
+    description: 'Sliding system with bridged double rail and front chamber water drainage. Egyptian innovation for local climate.',
+    stockLengthMm: 6000,
+    constraints: {
+      minWidthMm: 600,
+      maxWidthMm: 2500,
+      minHeightMm: 600,
+      maxHeightMm: 2400,
+      maxSashWeightKg: 60,
+    },
+    companyData: EMAPEN_COMPANY,
+    profiles_cutting_list: EMA60S_PROFILES.map(p => ({
+      id: p.id,
+      name: p.name,
+      role: p.profileRole || 'unknown',
+      width_mm: p.width,
+      height_mm: p.height,
+    })),
+  },
+  upvcSpec: {
+    isUPVC: true,
+    material: 'upvc',
+    chambers: 3, // Sliding systems use 3 chambers
+    colorClass: 'B',
+    uvStabilized: true,
+    welding: {
+      burnOffMm: 2.8,
+      temperature: 240,
+      pressure: 2.8,
+      coolingTimeSec: 150,
+      method: 'butt',
+    },
+    reinforcement: {
+      required: true,
+      profileCode: 'EGY_U_1.2',
+      deductionMm: 10,
+      thicknessMm: 1.2,
+      momentOfInertia: 1.5,
+      grade: 'S235',
+    },
+    climateProfile: 'egypt_standard',
+    barNominalLength: 6000,
+  },
+  profiles: EMA60S_PROFILES,
+};
+
+// EMAPEN EMA55 Economy System Pack
+export const EMAPEN_EMA55_ECONOMY: UPVCSystemPack = {
+  meta: {
+    id: 'emapen_ema55_economy',
+    name: 'EMAPEN EMA55 3-Chamber (Economy)',
+    brands: ['EMAPEN'],
+    regions: ['egypt'],
+    defaultStockLengthMm: 6000,
+  } as any,
+  windowSystemSpec: {
+    window_system: 'EMAPEN EMA55',
+    description: '3-chamber economy system. 12% less material than 60mm system. Cost-effective for Egyptian market.',
+    stockLengthMm: 6000,
+    constraints: {
+      minWidthMm: 400,
+      maxWidthMm: 1800,
+      minHeightMm: 400,
+      maxHeightMm: 2200,
+      maxSashWeightKg: 60,
+    },
+    companyData: EMAPEN_COMPANY,
+    profiles_cutting_list: EMA55_PROFILES.map(p => ({
+      id: p.id,
+      name: p.name,
+      role: p.profileRole || 'unknown',
+      width_mm: p.width,
+      height_mm: p.height,
+    })),
+  },
+  upvcSpec: {
+    isUPVC: true,
+    material: 'upvc',
+    chambers: 3,
+    colorClass: 'B',
+    uvStabilized: false, // Economy grade
+    welding: {
+      burnOffMm: 2.8,
+      temperature: 240,
+      pressure: 2.8,
+      coolingTimeSec: 150,
+      method: 'butt',
+    },
+    reinforcement: {
+      required: true,
+      profileCode: 'EGY_U_1.0', // Thinner steel for economy
+      deductionMm: 10,
+      thicknessMm: 1.0,  // Egyptian economy standard
+      momentOfInertia: 1.2,
+      grade: 'S235',
+    },
+    climateProfile: 'egypt_standard',
+    barNominalLength: 6000,
+  },
+  profiles: EMA55_PROFILES,
+};
+
+// EMAPEN EMA42-S Budget System Pack
+export const EMAPEN_EMA42S_BUDGET: UPVCSystemPack = {
+  meta: {
+    id: 'emapen_ema42s_budget',
+    name: 'EMAPEN EMA42-S Single Glazing (Budget)',
+    brands: ['EMAPEN'],
+    regions: ['egypt'],
+    defaultStockLengthMm: 6000,
+  } as any,
+  windowSystemSpec: {
+    window_system: 'EMAPEN EMA42-S',
+    description: 'Budget sliding system for small openings. Single glazing only. Minimum width for Egyptian market.',
+    stockLengthMm: 6000,
+    constraints: {
+      minWidthMm: 400,
+      maxWidthMm: 1500,
+      minHeightMm: 400,
+      maxHeightMm: 2000,
+      maxSashWeightKg: 40,
+    },
+    companyData: EMAPEN_COMPANY,
+    profiles_cutting_list: EMA42S_PROFILES.map(p => ({
+      id: p.id,
+      name: p.name,
+      role: p.profileRole || 'unknown',
+      width_mm: p.width,
+      height_mm: p.height,
+    })),
+  },
+  upvcSpec: {
+    isUPVC: true,
+    material: 'upvc',
+    chambers: 2, // Budget system: 2 chambers
+    colorClass: 'B',
+    uvStabilized: false,
+    welding: {
+      burnOffMm: 2.8,
+      temperature: 240,
+      pressure: 2.8,
+      coolingTimeSec: 150,
+      method: 'butt',
+    },
+    reinforcement: {
+      required: false, // Budget: No reinforcement for small sashes
+      profileCode: 'NONE',
+      deductionMm: 0,
+      thicknessMm: 0,
+      momentOfInertia: 0,
+    },
+    climateProfile: 'egypt_standard',
+    barNominalLength: 6000,
+  },
+  profiles: EMA42S_PROFILES,
+};
+
 /**
  * All Egyptian UPVC System Packs
  */
@@ -580,5 +1074,9 @@ export const EGYPTIAN_UPVC_SYSTEMS: UPVCSystemPack[] = [
   VEKA_70_PREMIUM,
   REHAU_GENEO,
   KATRA_PRO_RED_SERIES, // Egyptian manufacturer with exact specs
+  EMAPEN_EMA60_COMPLETE, // Egyptian workhorse - 4-chamber premium
+  EMAPEN_EMA60S_SLIDING, // Sliding system with Egyptian innovations
+  EMAPEN_EMA55_ECONOMY,  // Economy 3-chamber system
+  EMAPEN_EMA42S_BUDGET,   // Budget sliding system
 ];
 
