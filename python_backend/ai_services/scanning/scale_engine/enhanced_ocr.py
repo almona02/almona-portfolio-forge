@@ -15,7 +15,9 @@ class DimensionFilter:
             r"[A-Z]{3,}",
             r"[a-z]{5,}",
         ]
-        self.compiled_patterns = [re.compile(p, re.IGNORECASE) for p in patterns]
+        self.compiled_patterns = [
+            re.compile(p, re.IGNORECASE) for p in patterns
+        ]
 
     def filter_dimensions(
         self, ocr_results: List[Dict], confidence_threshold: float = 0.7
@@ -25,7 +27,11 @@ class DimensionFilter:
             text = res.get("text", "").strip()
             confidence = float(res.get("confidence", 0.0))
             bbox = res.get("bbox")
-            if not self._passes_basic_filters(text, confidence, bbox, confidence_threshold):
+            if not bbox or not isinstance(bbox, list) or len(bbox) != 4:
+                continue
+            if not self._passes_basic_filters(
+                text, confidence, bbox, confidence_threshold
+            ):
                 continue
             value, ok = self._parse_dimension_value(text)
             if not ok:
@@ -81,7 +87,10 @@ class DimensionFilter:
     @staticmethod
     def _parse_dimension_value(text: str) -> Tuple[float, bool]:
         cleaned = text.strip()
-        replacements = {"O": "0", "o": "0", "l": "1", "I": "1", "S": "5", "s": "5", "B": "8", ",": "."}
+        replacements = {
+            "O": "0", "o": "0", "l": "1", "I": "1",
+            "S": "5", "s": "5", "B": "8", ",": "."
+        }
         for old, new in replacements.items():
             cleaned = cleaned.replace(old, new)
         for pattern in [r"mm", r"cm", r"m", r'in', r'"', r"'"]:
