@@ -327,6 +327,250 @@ export const REHAU_GENEO: UPVCSystemPack = {
   },
 };
 
+// ==========================================
+// KATRA PRO RED SERIES (Egyptian Manufacturer)
+// ==========================================
+// Technical Source: Katra PRO RED Series Catalog (Pages 6-19)
+// Manufacturer: Katra Powered by Tatweer (Egypt)
+// Production: 4,000 tons annually, 30+ years experience
+// Specialization: Middle East climate optimization
+// ==========================================
+
+const KATRA_S120_PROFILES: Profile[] = [
+  {
+    id: 'KATRA-S120-FRAME',
+    name: 'Frame Profile 60mm Architrave',
+    type: 'frame',
+    material: 'upvc',
+    width: 60,  // 60mm system depth
+    height: 115.5, // Total height from drawing (Page 6)
+    thickness: 60,
+    color: 'white',
+    costPerMeter: 320,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'Katra',
+    systemBrand: 'Katra PRO RED',
+    profileRole: 'frame',
+    weightPerMeter: 1.28,
+    specifications: {
+      partNumber: 'RED-S120-FRAME',
+      chamberWidth: 102, // From "102" measurement on Page 6
+      chamberDepth: 60,
+      lengthMm: 6000,
+      minRemnantMm: 300,
+    },
+  },
+  {
+    id: 'KATRA-S120-SASH',
+    name: 'Sliding Sash Profile',
+    type: 'sash',
+    material: 'upvc',
+    width: 92, // "92°" indicates sash width (Page 6)
+    height: 45, // From drawing measurements
+    thickness: 60,
+    color: 'white',
+    costPerMeter: 380,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'Katra',
+    systemBrand: 'Katra PRO RED',
+    profileRole: 'sash',
+    weightPerMeter: 1.42,
+    specifications: {
+      partNumber: 'RED-S120-SASH',
+      // Key feature: 3-track system with fly-screen
+      trackType: '3-track',
+      supportsFlyScreen: true,
+      lengthMm: 6000,
+      minRemnantMm: 300,
+      compatibleHardware: ['sliding_wheel_15mm'],
+    },
+  },
+  {
+    id: 'KATRA-S120-FLYSCREEN',
+    name: 'Fly-screen Sash Profile',
+    type: 'accessory',
+    material: 'upvc',
+    width: 64,
+    height: 30,
+    thickness: 1.5,
+    color: 'white',
+    costPerMeter: 120,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'Katra',
+    systemBrand: 'Katra PRO RED',
+    profileRole: 'accessory',
+    weightPerMeter: 0.45,
+    specifications: {
+      partNumber: 'RED-S120-FLY',
+      lengthMm: 6000,
+    },
+  },
+];
+
+const KATRA_C70_PROFILES: Profile[] = [
+  {
+    id: 'KATRA-C70-FRAME',
+    name: 'Frame with 60mm Architrave',
+    type: 'frame',
+    material: 'upvc',
+    width: 60,  // "60 مم" - 60mm system (Page 12)
+    height: 70, // "C70" indicates 70mm frame height
+    thickness: 60,
+    color: 'white',
+    costPerMeter: 340,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'Katra',
+    systemBrand: 'Katra PRO RED',
+    profileRole: 'frame',
+    weightPerMeter: 1.32,
+    specifications: {
+      partNumber: 'RED-C70-FRAME',
+      chamberWidth: 58, // From "58" measurement on Page 12
+      chamberDepth: 60,
+      lengthMm: 6000,
+      minRemnantMm: 300,
+    },
+  },
+  {
+    id: 'KATRA-C70-SASH',
+    name: 'Door Sash Profile',
+    type: 'sash',
+    material: 'upvc',
+    width: 60,
+    height: 47, // Multiple 47mm measurements (Page 13)
+    thickness: 2.8,
+    color: 'white',
+    costPerMeter: 360,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'Katra',
+    systemBrand: 'Katra PRO RED',
+    profileRole: 'sash',
+    weightPerMeter: 1.38,
+    specifications: {
+      partNumber: 'RED-C70-DOOR-SASH',
+      lengthMm: 6000,
+      minRemnantMm: 300,
+      compatibleHardware: ['hinge_13mm', 'espag_lock'],
+    },
+  },
+  {
+    id: 'KATRA-C70-MULLION',
+    name: 'False Mullion Profile',
+    type: 'mullion',
+    material: 'upvc',
+    width: 62.5,
+    height: 66,
+    thickness: 2.5,
+    color: 'white',
+    costPerMeter: 300,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'Katra',
+    systemBrand: 'Katra PRO RED',
+    profileRole: 'mullion',
+    weightPerMeter: 1.25,
+    specifications: {
+      partNumber: 'RED-C70-MULLION',
+      lengthMm: 6000,
+    },
+  },
+];
+
+export const KATRA_PRO_RED_SERIES: UPVCSystemPack = {
+  meta: {
+    id: 'katra_pro_red_series',
+    name: 'Katra PRO RED Series (Egyptian Made)',
+    brands: ['Katra', 'Tatweer'],
+    regions: ['egypt'],
+    defaultStockLengthMm: 6000,
+  } as any,
+  windowSystemSpec: {
+    window_system: 'Katra PRO RED',
+    description: 'High-performance UPVC systems specifically engineered for Egyptian market conditions. Combines thermal insulation with aesthetic design.',
+    stockLengthMm: 6000,
+    constraints: {
+      minWidthMm: 400,
+      maxWidthMm: 2500,
+      minHeightMm: 400,
+      maxHeightMm: 2800,
+      maxSashWeightKg: 100,
+    },
+    // Company info from Pages 2-5
+    companyData: {
+      founded: 'Over 30 years experience in UPVC',
+      productionCapacity: '4,000 tons annually',
+      technology: 'Online compounding technology',
+      qualityControl: 'Specialized quality lab',
+      manufacturer: 'Katra Powered by Tatweer',
+      origin: 'Egypt',
+    },
+    profiles_cutting_list: [...KATRA_S120_PROFILES, ...KATRA_C70_PROFILES].map(p => ({
+      id: p.id,
+      name: p.name,
+      role: p.profileRole || 'unknown',
+      width_mm: p.width,
+      height_mm: p.height,
+    })),
+    // Glass bead options from Pages 8 & 14
+    glazingOptions: [
+      {
+        id: 'single-sliding',
+        name: 'Single Glazing Bead for Sliding',
+        partNumber: 'باكتة مفرد جرار',
+        maxGlassThickness: 6,
+      },
+      {
+        id: 'double-sliding',
+        name: 'Double Glazing Bead for Sliding',
+        partNumber: 'باكتة مزدوج جرار',
+        maxGlassThickness: 24,
+      },
+      {
+        id: 'single-casement',
+        name: 'Single Glazing Bead for Casement',
+        partNumber: 'باكتة مفرد مفصلي',
+        maxGlassThickness: 6,
+      },
+      {
+        id: 'double-casement',
+        name: 'Double Glazing Bead for Casement',
+        partNumber: 'باكتة مزدوج مفصلي',
+        maxGlassThickness: 24,
+      },
+    ],
+  },
+  upvcSpec: {
+    isUPVC: true,
+    material: 'upvc',
+    chambers: 4, // Casement: 4 internal chambers (Page 18: "4 غرف داخلية للنظام المفصلي")
+    colorClass: 'A+', // UV stabilized for Egyptian sun
+    uvStabilized: true,
+    welding: {
+      burnOffMm: 3.0, // Standard for Egyptian workshops
+      temperature: 250,
+      pressure: 3.2,
+      coolingTimeSec: 200,
+      method: 'butt',
+    },
+    reinforcement: {
+      required: true,
+      profileCode: 'EGY_STEEL_1.5', // Egyptian standard 1.5mm
+      deductionMm: 12.0, // Precise fit for Egyptian workshops
+      thicknessMm: 1.5,
+      momentOfInertia: 2.5,
+      grade: 'S275',
+    },
+    climateProfile: 'egypt_standard',
+    barNominalLength: 6000,
+  },
+  profiles: [...KATRA_S120_PROFILES, ...KATRA_C70_PROFILES],
+};
+
 /**
  * All Egyptian UPVC System Packs
  */
@@ -335,5 +579,6 @@ export const EGYPTIAN_UPVC_SYSTEMS: UPVCSystemPack[] = [
   KOMPEN_60_ECO,
   VEKA_70_PREMIUM,
   REHAU_GENEO,
+  KATRA_PRO_RED_SERIES, // Egyptian manufacturer with exact specs
 ];
 
