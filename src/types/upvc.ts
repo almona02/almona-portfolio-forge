@@ -91,3 +91,80 @@ export interface UPVCComponent {
   requiresReinforcement: boolean;
 }
 
+/**
+ * Egyptian Cutting Parameters
+ * 
+ * Extracted from EMAPEN technical catalogue and Egyptian workshop practices.
+ * Critical difference: Egyptian profiles use NON-STANDARD cutting angles (92° not 90°).
+ */
+export interface EgyptianCuttingParams {
+  /** Cutting angle for frame corners (92° not 90° - compensates for welding shrinkage) */
+  frameCornerAngle: number;
+  /** Cutting angle for sash corners (88° - complementary to frame 92°) */
+  sashCornerAngle: number;
+  /** Cutting angle for mullion joints (90° exact) */
+  mullionAngle: number;
+  /** Angle tolerance (±0.3° for frames/sash, ±0.2° for mullions) */
+  angleTolerance: number;
+  /** Burn-off allowance per side (varies by season: 2.8mm summer, 3.2mm winter) */
+  burnOffMm: number;
+  /** Seasonal adjustment factor */
+  seasonalAdjustment?: {
+    summer: number; // -0.2mm
+    winter: number; // +0.2mm
+  };
+  /** Steel reinforcement cutting: PVC length - clearance */
+  steelClearance: number; // 10-15mm standard
+}
+
+/**
+ * Egyptian Welding Machine Settings
+ * 
+ * Based on actual Egyptian workshop equipment (El-Arabi, Strong, Maksan).
+ */
+export interface EgyptianWeldingMachine {
+  /** Machine type/brand */
+  machineType: string;
+  /** Common in which regions */
+  commonIn: string[];
+  /** Temperature settings */
+  temperature: {
+    set: number;
+    actual: number; // Often 5°C offset due to calibration
+    calibrationOffset: number;
+  };
+  /** Pressure settings */
+  pressure: {
+    set: number;
+    actual: number; // Often inaccurate after 6 months
+  };
+  /** Heating time in seconds */
+  heatingTime: number;
+  /** Common maintenance issues */
+  maintenanceIssues: string[];
+}
+
+/**
+ * Egyptian Welding Protocol
+ * 
+ * Complete daily startup and per-window procedure for Egyptian workshops.
+ */
+export interface EgyptianWeldingProtocol {
+  /** Daily startup checklist */
+  dailyStartup: string[];
+  /** Per-window procedure */
+  perWindowProcedure: string[];
+  /** Quality checks frequency */
+  qualityChecks: {
+    everyWindow: string[];
+    every10Windows: string[];
+    every100Windows: string[];
+  };
+  /** Allowable adjustments based on ambient conditions */
+  allowableAdjustments: {
+    temperature: string;
+    time: string;
+    pressure: string;
+  };
+}
+
