@@ -20,6 +20,15 @@ class DummyTable:
         # assign id and other fields if not present
         for item in items:
             item.setdefault("id", str(uuid4()))
+            # Generate ticket_number if inserting into service_tickets table
+            if self.name == "service_tickets" and "ticket_number" not in item:
+                from datetime import datetime
+                year = datetime.now().year
+                # Simple mock ticket number generation
+                existing = [row for row in self.store.get(self.name, []) 
+                           if row.get("ticket_number", "").startswith(f"TKT-{year}-")]
+                next_num = len(existing) + 1
+                item["ticket_number"] = f"TKT-{year}-{next_num:06d}"
         self.store.setdefault(self.name, []).extend(items)
 
         class R:

@@ -42,6 +42,7 @@ const WINTECH_PROFILES: Profile[] = [
     thickness: 60,
     color: 'white',
     costPerMeter: 280,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'Wintech',
@@ -66,6 +67,7 @@ const WINTECH_PROFILES: Profile[] = [
     thickness: 60,
     color: 'white',
     costPerMeter: 320,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'Wintech',
@@ -93,6 +95,7 @@ const WINTECH_PROFILES: Profile[] = [
     thickness: 60,
     color: 'white',
     costPerMeter: 340,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'Wintech',
@@ -115,6 +118,7 @@ const WINTECH_PROFILES: Profile[] = [
     thickness: 20,
     color: 'white',
     costPerMeter: 45,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'Wintech',
@@ -157,7 +161,6 @@ export const WINTECH_6400_DETAILED: UPVCSystemPack = {
   },
   upvcSpec: {
     isUPVC: true,
-    material: 'upvc',
     chambers: 4, // 6400 is 4-chamber
     colorClass: 'B',
     uvStabilized: true, // Wintech Egypt uses stabilizers
@@ -371,6 +374,7 @@ const KATRA_S120_PROFILES: Profile[] = [
     thickness: 60,
     color: 'white',
     costPerMeter: 380,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'Katra',
@@ -397,6 +401,7 @@ const KATRA_S120_PROFILES: Profile[] = [
     thickness: 1.5,
     color: 'white',
     costPerMeter: 120,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'Katra',
@@ -445,6 +450,7 @@ const KATRA_C70_PROFILES: Profile[] = [
     thickness: 2.8,
     color: 'white',
     costPerMeter: 360,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'Katra',
@@ -546,9 +552,8 @@ export const KATRA_PRO_RED_SERIES: UPVCSystemPack = {
   },
   upvcSpec: {
     isUPVC: true,
-    material: 'upvc',
     chambers: 4, // Casement: 4 internal chambers (Page 18: "4 غرف داخلية للنظام المفصلي")
-    colorClass: 'A+', // UV stabilized for Egyptian sun
+    colorClass: 'A', // UV stabilized for Egyptian sun
     uvStabilized: true,
     welding: {
       burnOffMm: 3.0, // Standard for Egyptian workshops
@@ -594,6 +599,7 @@ const EMA60_PROFILES: Profile[] = [
     thickness: 60,  // System depth
     color: 'white',
     costPerMeter: 180, // Egyptian market price
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'EMAPEN',
@@ -715,6 +721,7 @@ const EMA60S_PROFILES: Profile[] = [
     thickness: 60,
     color: 'white',
     costPerMeter: 210,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'EMAPEN',
@@ -748,6 +755,7 @@ const EMA55_PROFILES: Profile[] = [
     thickness: 55,
     color: 'white',
     costPerMeter: 160,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'EMAPEN',
@@ -785,6 +793,7 @@ const EMA42S_PROFILES: Profile[] = [
     thickness: 42,
     color: 'white',
     costPerMeter: 140,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'EMAPEN',
@@ -871,9 +880,8 @@ export const EMAPEN_EMA60_COMPLETE: UPVCSystemPack = {
   },
   upvcSpec: {
     isUPVC: true,
-    material: 'upvc',
     chambers: 4,
-    colorClass: 'B+',
+    colorClass: 'B',
     uvStabilized: true,
     // Egyptian welding parameters (extracted from material properties):
     welding: {
@@ -1190,6 +1198,7 @@ const FOXYWIN_50MM_PROFILES: Profile[] = [
     thickness: 50,
     color: 'white',
     costPerMeter: 195,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'FOXYWIN',
@@ -1220,6 +1229,7 @@ const FOXYWIN_60MM_PROFILES: Profile[] = [
     thickness: 60,
     color: 'white',
     costPerMeter: 240,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'FOXYWIN',
@@ -1244,6 +1254,7 @@ const FOXYWIN_60MM_PROFILES: Profile[] = [
     thickness: 60,
     color: 'white',
     costPerMeter: 250,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'FOXYWIN',
@@ -1273,6 +1284,7 @@ const FOXYWIN_88MM_SLIDING_PROFILES: Profile[] = [
     thickness: 88,
     color: 'white',
     costPerMeter: 220,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'FOXYWIN',
@@ -1299,6 +1311,7 @@ const FOXYWIN_88MM_SLIDING_PROFILES: Profile[] = [
     thickness: 88,
     color: 'white',
     costPerMeter: 230,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'FOXYWIN',
@@ -1325,6 +1338,7 @@ const FOXYWIN_88MM_SLIDING_PROFILES: Profile[] = [
     thickness: 88,
     color: 'white',
     costPerMeter: 150,
+    cuttingAllowance: 0, // UPVC welding burn-off handled separately
     stockQuantity: 0,
     minStockLevel: 0,
     supplier: 'FOXYWIN',
@@ -1458,8 +1472,7 @@ export const FOXYWIN_ECO_SMART_50: UPVCSystemPack = {
       thicknessMm: 1.2,
       momentOfInertia: 1.5,
       grade: 'S235',
-      // Reinforcement formula for BOM: Steel Length = Finished Dimension - 12mm
-      formula: 'finishedDimension - 12',
+      // Reinforcement formula for BOM: Steel Length = Finished Dimension - 12mm (stored in deductionMm)
     },
     climateProfile: 'egypt_standard',
     barNominalLength: 6000,
@@ -1509,7 +1522,6 @@ export const FOXYWIN_FOXY_SHIELD_60: UPVCSystemPack = {
   },
   upvcSpec: {
     isUPVC: true,
-    material: 'upvc',
     chambers: 4,
     colorClass: 'A',
     uvStabilized: true,
@@ -1527,8 +1539,7 @@ export const FOXYWIN_FOXY_SHIELD_60: UPVCSystemPack = {
       thicknessMm: 1.5,
       momentOfInertia: 2.0,
       grade: 'S275',
-      // Reinforcement formula for BOM: Steel Length = Finished Dimension - 10mm
-      formula: 'finishedDimension - 10',
+      // Reinforcement formula for BOM: Steel Length = Finished Dimension - 10mm (stored in deductionMm)
     },
     climateProfile: 'egypt_standard',
     barNominalLength: 6000,

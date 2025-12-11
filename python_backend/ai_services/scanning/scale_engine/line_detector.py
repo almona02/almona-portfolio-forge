@@ -69,7 +69,7 @@ class DimensionLineDetector:
                 continue
             group = [line1]
             used[i] = True
-            for j, line2 in enumerate(lines[i + 1:], i + 1):
+            for j, line2 in enumerate(lines[i + 1 :], i + 1):
                 if used[j]:
                     continue
                 angle_diff = abs(line1["angle"] - line2["angle"])
@@ -165,7 +165,11 @@ class DimensionLineDetector:
         unique: List[Dict] = []
         seen = set()
         for assoc in associations:
-            text_id = tuple(map(int, assoc["text"]["bbox"][0:2] + assoc["text"]["bbox"][2:4])) if isinstance(assoc["text"]["bbox"], list) else id(assoc["text"])
+            text_id = (
+                tuple(map(int, assoc["text"]["bbox"][0:2] + assoc["text"]["bbox"][2:4]))
+                if isinstance(assoc["text"]["bbox"], list)
+                else id(assoc["text"])
+            )
             if text_id in seen:
                 continue
             seen.add(text_id)
@@ -198,4 +202,3 @@ class DimensionLineDetector:
             return None
         except (TypeError, ValueError):
             return None
-

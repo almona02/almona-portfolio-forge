@@ -3,7 +3,7 @@ import path from "path";
 import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig, loadEnv } from "vite";
 /// <reference types="vitest" />
-// import { VitePWA } from "vite-plugin-pwa";
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 // Updated: 2024-09-26 - Simplified build config to fix chunk rendering issues
@@ -68,116 +68,63 @@ export default defineConfig(({ mode }) => {
           }
         }
       },
-      // Temporarily disabled PWA to isolate build issues
-      // VitePWA({
-      //   registerType: "autoUpdate",
-      //   injectRegister: "auto",
-      //   devOptions: {
-      //     enabled: false // Disable in development to avoid build issues
-      //   },
-      //   workbox: {
-      //     // Use only essential glob patterns to reduce sync errors
-      //     globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-      //     globDirectory: 'dist',
-      //     navigateFallback: null, // Disable navigate fallback to prevent sw.js errors
-      //     navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
-      //     globIgnores: [
-      //       '**/node_modules/**',
-      //       '**/sw.js',
-      //       '**/workbox-*.js',
-      //       '**/workbox-*.map',
-      //       '**/registerSW.js'
-      //     ],
-      //     cleanupOutdatedCaches: true,
-      //     skipWaiting: true,
-      //     clientsClaim: false,
-      //     maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
-      //     
-      //     // Use runtime caching for better control
-      //     runtimeCaching: [
-      //       {
-      //         urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
-      //         handler: 'NetworkFirst',
-      //         options: {
-      //           cacheName: 'supabase-cache',
-      //           expiration: {
-      //             maxEntries: 50,
-      //             maxAgeSeconds: 5 * 60,
-      //           },
-      //           networkTimeoutSeconds: 10,
-      //         },
-      //       },
-      //       {
-      //         urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-      //         handler: 'CacheFirst',
-      //         options: {
-      //           cacheName: 'google-fonts-cache',
-      //           expiration: {
-      //             maxEntries: 10,
-      //             maxAgeSeconds: 60 * 60 * 24 * 365
-      //           }
-      //         }
-      //       }
-      //     ],
-      //   },
-      //   includeAssets: ["favicon.ico", "apple-touch-icon.png", "logo.svg"],
-      //   manifest: {
-      //     name: "Almona Portfolio Forge - Industrial Machinery Solutions",
-      //     short_name: "Almona",
-      //     description: "Leading provider of industrial machinery, fabrication services, and technical solutions in Egypt and the Middle East. Now with offline support for service tickets.",
-      //     theme_color: "#f97316",
-      //     background_color: "#0d0f12",
-      //     display: "standalone",
-      //     orientation: "any",
-      //     start_url: "/",
-      //     scope: "/",
-      //     categories: ["business", "productivity", "utilities"],
-      //     lang: "ar",
-      //     dir: "rtl",
-      //     shortcuts: [
-      //       {
-      //         name: "Create Service Ticket",
-      //         short_name: "New Ticket",
-      //         description: "Create a new service ticket",
-      //         url: "/portal/tickets/new",
-      //         icons: [{ src: "/icons/ticket-icon.png", sizes: "96x96" }]
-      //       },
-      //       {
-      //         name: "Machine Health",
-      //         short_name: "Health",
-      //         description: "View machine health dashboard",
-      //         url: "/portal/health",
-      //         icons: [{ src: "/icons/health-icon.png", sizes: "96x96" }]
-      //       }
-      //     ],
-      //     icons: [
-      //       {
-      //         src: "/icons/pwa-192x192.png",
-      //         sizes: "192x192",
-      //         type: "image/png",
-      //         purpose: "any"
-      //       },
-      //       {
-      //         src: "/icons/pwa-512x512.png",
-      //         sizes: "512x512", 
-      //         type: "image/png",
-      //         purpose: "any"
-      //       },
-      //       {
-      //         src: "/icons/pwa-192x192.png",
-      //         sizes: "192x192",
-      //         type: "image/png",
-      //         purpose: "maskable"
-      //       },
-      //       {
-      //         src: "/icons/pwa-512x512.png",
-      //         sizes: "512x512",
-      //         type: "image/png", 
-      //         purpose: "maskable"
-      //       }
-      //     ]
-      //   }
-      // }),
+      // PWA Configuration - Stable, Production-Ready
+      ...(isProduction ? [VitePWA({
+        registerType: "autoUpdate",
+        injectRegister: "auto",
+        devOptions: {
+          enabled: false // Disable in development for stability
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          globDirectory: 'dist',
+          cleanupOutdatedCaches: true,
+          skipWaiting: true,
+          clientsClaim: true,
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit for stability
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'supabase-api',
+                expiration: {
+                  maxEntries: 30,
+                  maxAgeSeconds: 5 * 60, // 5 minutes
+                },
+                networkTimeoutSeconds: 10,
+              },
+            }
+          ],
+        },
+        includeAssets: ["favicon.ico", "apple-touch-icon.png", "pwa-192x192.png", "pwa-512x512.png"],
+        manifest: {
+          name: "Almona Precision - Factory Calibration",
+          short_name: "Almona Precision",
+          description: "Factory floor calibration tool for precision window fabrication",
+          theme_color: "#0d0f12",
+          background_color: "#ffffff",
+          display: "standalone",
+          orientation: "portrait",
+          start_url: "/",
+          scope: "/",
+          categories: ["business", "productivity"],
+          icons: [
+            {
+              src: "/pwa-192x192.png",
+              sizes: "192x192",
+              type: "image/png",
+              purpose: "any maskable"
+            },
+            {
+              src: "/pwa-512x512.png",
+              sizes: "512x512",
+              type: "image/png",
+              purpose: "any maskable"
+            }
+          ]
+        }
+      })] : []),
       ...(isProduction && process.env.ANALYZE === 'true'
         ? [
             visualizer({
@@ -212,6 +159,8 @@ export default defineConfig(({ mode }) => {
       conditions: ['import', 'module', 'browser', 'default'],
       // Properly resolve long package
       mainFields: ['browser', 'module', 'main'],
+      // Explicitly include .ts and .tsx extensions for resolution
+      extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json'],
       // CRITICAL: Deduplicate React to prevent multiple instances
       // This prevents "unstable_now" errors from duplicate React bundles
       dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"]

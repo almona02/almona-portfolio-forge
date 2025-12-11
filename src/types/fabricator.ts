@@ -195,8 +195,32 @@ export interface Profile {
   category?: 'window' | 'door' | 'curtain_wall' | 'structural' | 'accessory';
   /** System type: casement, sliding, tilt_turn, fixed, facade, commercial */
   systemType?: 'casement' | 'sliding' | 'tilt_turn' | 'fixed' | 'facade' | 'commercial';
-  /** Profile role in system: frame, sash, mullion, transom, glazing_bead, interlock, accessory */
-  profileRole?: 'frame' | 'sash' | 'mullion' | 'transom' | 'glazing_bead' | 'interlock' | 'accessory';
+  /** Profile role in system: frame, sash, mullion, transom, glazing_bead, interlock, accessory, screen_sash, screen_adapter */
+  profileRole?: 'frame' | 'sash' | 'mullion' | 'transom' | 'glazing_bead' | 'interlock' | 'accessory' | 'screen_sash' | 'screen_adapter';
+  /** Sash inner gap for glazing fit (mm) - e.g., 40mm for ROCK 60, 50mm for JUMBO 100 */
+  innerGap?: number;
+  /** Maximum load capacity for hardware associated with this profile (kg) */
+  maxLoadCapacity?: number;
+  /** Allowed glass thicknesses for this profile (mm) */
+  compatibleGlassThicknesses?: number[];
+  /** Compatible glazing bead widths for this profile (mm) */
+  compatibleBeadSizes?: number[];
+  /** Track type for sliding systems */
+  trackType?: 'V-groove' | 'U-groove' | 'flat';
+  /** Assembly method requirement for corner cleats */
+  cleatType?: 'crimp' | 'screw';
+  /** Total gasket compression (mm) - standard: 6mm (3mm internal + 3mm external) */
+  gasketCompression?: number;
+  /** Indicates if this profile can be bent for arches */
+  supportsBending?: boolean;
+  /** Minimum bending radius for this profile (mm) - if supportsBending = true */
+  minBendingRadius?: number;
+  /** Indicates if this profile supports an integrated screen sash (Panda feature) */
+  supportsScreenSash?: boolean;
+  /** Profile ID for the compatible screen adapter (Barour Shabaak) if supportsScreenSash */
+  screenAdapterProfile?: string;
+  /** Screen adapter offset (mm) - how much adapter pushes screen sash outward (12-18mm, default 15mm) */
+  screenAdapterOffset?: number;
   /** IDs of compatible accessories */
   compatibleAccessories?: string[];
   /** Router/pantograph machining operations */

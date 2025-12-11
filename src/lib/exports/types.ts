@@ -8,7 +8,7 @@ import { WindowUnit, OptimizationResult, CuttingPlan, Profile } from '@/types/fa
 /**
  * Export format types
  */
-export type ExportFormat = 'pdf' | 'csv' | 'dxf';
+export type ExportFormat = 'pdf' | 'csv' | 'dxf' | 'mdb';
 
 /**
  * Company branding configuration
@@ -116,6 +116,14 @@ export interface MachineExportProfile {
     millingLayer?: string;
     tappingLayer?: string;
     templateLayer?: string;
+  };
+  /**
+   * For MDB exports, defines table structure and column mappings.
+   */
+  mdbLayout?: {
+    tableName: string;
+    columns: string[];
+    defaultValues?: Record<string, any>;
   };
 }
 
