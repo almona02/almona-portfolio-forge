@@ -19,16 +19,15 @@ import {
   Loader2,
   FileText
 } from 'lucide-react';
-import { WindowUnit, Profile, OptimizationResult, WindowComponent, CuttingPlan } from '@/types/fabricator';
+import { WindowUnit, Profile, OptimizationResult, CuttingPlan } from '@/types/fabricator';
 import { YilmazGCodeGenerator, YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
 import { MachineValidator } from '@/integrations/yilmaz/MachineValidator';
-import { YilmazCNC } from '@/integrations/yilmaz/YilmazCNC';
-import { ReportEngine } from '@/modules/reporting';
 import { PDFExportService } from '@/modules/reporting';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { WasteComparisonReport } from '@/components/analytics/WasteComparisonReport';
 import { calculateManualCuttingPlan, compareWaste } from '@/lib/analytics/WasteCalculator';
 import { ProductionPreviewDialog } from './ProductionPreviewDialog';
+import { alm6510MDBExport, ALM6510ExportOptions } from '@/lib/exports/ALM6510MDBExport';
 
 interface CuttingOptimizationEngineProps {
   project: WindowUnit | null;
@@ -69,12 +68,13 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
   const [validationResult, setValidationResult] = useState<any>(null);
   const [exportError, setExportError] = useState<string | null>(null);
   const [exportSuccess, setExportSuccess] = useState(false);
-  const [showReportGenerator, setShowReportGenerator] = useState(false);
+  const [_showReportGenerator, _setShowReportGenerator] = useState(false);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
   const [showWasteComparison, setShowWasteComparison] = useState(false);
   const [wasteComparison, setWasteComparison] = useState<any>(null);
   const [showProductionPreview, setShowProductionPreview] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'gcode' | 'report' | null>(null);
+  const [pendingAction, setPendingAction] = useState<'gcode' | 'report' | 'alm6510' | null>(null);
+  const [isGeneratingALM6510, setIsGeneratingALM6510] = useState(false);
   const { branding } = useCompanyBranding();
 
   // Calculate waste comparison when optimization is available
@@ -87,8 +87,8 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
           for (let i = 0; i < (comp.quantity || 1); i++) {
             cuts.push({
               id: `${comp.id}-${i}`,
-              profileId: comp.profileId,
-              length: comp.cuttingLength || comp.length,
+              profileId: comp.profile?.id || '',
+              length: comp.cuttingLengths?.[0] || comp.width || 0,
               quantity: 1,
             });
           }
@@ -225,13 +225,13 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
     try {
       // In a real implementation, this would connect to the actual machine
       // For now, we'll simulate the connection
-      const networkConfig = {
-        host: '192.168.1.100', // Example IP - would come from machine settings
-        port: 8080,
-        timeout: 30000,
-        retryAttempts: 3,
-        retryDelay: 1000
-      };
+      // const networkConfig = {
+      //   host: '192.168.1.100', // Example IP - would come from machine settings
+      //   port: 8080,
+      //   timeout: 30000,
+      //   retryAttempts: 3,
+      //   retryDelay: 1000
+      // };
 
       // Note: In production, you would instantiate YilmazCNC and send the G-code
       // const cnc = new YilmazCNC('machine-1', selectedMachine, selectedMachine, networkConfig);
@@ -248,6 +248,33 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
       setExportError(error instanceof Error ? error.message : 'Failed to send to machine');
     } finally {
       setIsSendingToMachine(false);
+    }
+  };
+
+  const handleDownloadALM6510MDB = async () => {
+    if (!project || !optimization) return;
+
+    setIsGeneratingALM6510(true);
+    setExportError(null);
+    setExportSuccess(false);
+
+    try {
+      const options: ALM6510ExportOptions = {
+        orderNumber: project.orderNumber || `ORDER-${Date.now()}`,
+        customerCode: project.customer || '',
+        customerName: project.customer || '',
+        project: {
+          positionNumber: parseInt(project.posNumber || '1'),
+        },
+      };
+
+      await alm6510MDBExport.downloadMDB(project, optimization, options);
+      setExportSuccess(true);
+    } catch (error) {
+      console.error('ALM 6510 MDB export error:', error);
+      setExportError(error instanceof Error ? error.message : 'Failed to generate ALM 6510 MDB file');
+    } finally {
+      setIsGeneratingALM6510(false);
     }
   };
 
@@ -593,6 +620,72 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
         </CardContent>
       </Card>
 
+      {/* ALM 6510 MDB Export Section - Turkish Pilot */}
+      <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-orange-500/30">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Download className="h-5 w-5 text-orange-400" />
+            ALM 6510 Machine Export (Turkish Pilot)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+            <p className="text-sm text-blue-300">
+              <strong>🇹🇷 Turkish Pilot Program:</strong> Download MDB file for Yılmaz ALM 6510 machine.
+              The file is 100% aligned with the machine's software requirements.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <label className="text-sm font-medium text-gray-300 mb-2 block">
+                Machine: <span className="text-orange-400 font-bold">ALM 6510</span>
+              </label>
+              <p className="text-xs text-gray-400">
+                8-axis CNC machining center with operation codes (P1-P7). 
+                MDB file contains Table1 with 37 columns matching machine software.
+              </p>
+            </div>
+
+            <Button
+              onClick={handleDownloadALM6510MDB}
+              disabled={isGeneratingALM6510 || !project || !optimization}
+              className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold"
+            >
+              {isGeneratingALM6510 ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Generating MDB File...
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4 mr-2" />
+                  Download ALM 6510 MDB File
+                </>
+              )}
+            </Button>
+
+            {exportSuccess && !exportError && (
+              <Alert className="bg-green-900/20 border-green-500">
+                <CheckCircle className="h-4 w-4" />
+                <AlertTitle>Success</AlertTitle>
+                <AlertDescription>
+                  ALM 6510 MDB file downloaded successfully. Ready for machine import.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {exportError && (
+              <Alert variant="destructive" className="bg-red-900/20 border-red-500">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Export Error</AlertTitle>
+                <AlertDescription>{exportError}</AlertDescription>
+              </Alert>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* MANDATORY Production Preview Dialog */}
       {project && (
         <ProductionPreviewDialog
@@ -607,6 +700,8 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
               void handleGenerateGCode();
             } else if (pendingAction === 'report') {
               void handleExportCuttingReport();
+            } else if (pendingAction === 'alm6510') {
+              void handleDownloadALM6510MDB();
             }
             setPendingAction(null);
           }}

@@ -66,6 +66,7 @@ const ProfileImportTool = React.lazy(() =>
   })),
 );
 import { supabase } from '@/lib/supabase';
+import { EgyptianConstraintsCard } from '@/components/fabricator/EgyptianConstraintsCard';
 const ProductionScheduler = React.lazy(() =>
   import('@/components/fabricator/ProductionScheduler').then((m) => ({
     default: m.ProductionScheduler,
@@ -81,9 +82,9 @@ const RealTimeMonitoring = React.lazy(() =>
     default: m.RealTimeMonitoring,
   })),
 );
-const Window3DGenerator = React.lazy(() =>
-  import('@/components/fabricator/Window3DGenerator').then((m) => ({
-    default: m.Window3DGenerator,
+const PrecisionDesignInterface = React.lazy(() =>
+  import('@/components/fabricator/PrecisionDesignInterface').then((m) => ({
+    default: m.PrecisionDesignInterface,
   })),
 );
 const JobSummaryPanel = React.lazy(() =>
@@ -176,6 +177,7 @@ import {
 } from '@/lib/performance';
 import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
 import { ContextualTooltips } from '@/components/fabricator/ContextualTooltips';
+import { EgyptianProjectWizard } from '@/components/fabricator/EgyptianProjectWizard';
 
 const sampleHardware = [
   { id: 'hinge_1', name: 'Casement Hinge', type: 'hinge', quantity: 2, position: 'side' },
@@ -218,7 +220,8 @@ export const FabricatorWorkflow: React.FC = () => {
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const [showMobilePanel, setShowMobilePanel] = useState(false);
   const [showProjectWizard, setShowProjectWizard] = useState(false);
-  const [projectMeta, setProjectMeta] = useState<ProjectHeaderMeta | null>(null);
+  const [projectMeta, setProjectMeta] = useState<(ProjectHeaderMeta & Record<string, any>) | null>(null);
+  const [useEgyptWizard, setUseEgyptWizard] = useState(true);
   // Project-created toast message is now handled directly by wizards
   const { branding } = useCompanyBranding();
 
@@ -426,6 +429,22 @@ export const FabricatorWorkflow: React.FC = () => {
       setShowProjectWizard(true);
     }
   }, [currentProject, projectMeta, jobs.length]);
+
+  // URL param override for wizard selection
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const wizard = params.get('wizard');
+    if (wizard === 'egypt') {
+      setUseEgyptWizard(true);
+      setShowProjectWizard(true);
+    } else if (wizard === 'standard') {
+      setUseEgyptWizard(false);
+      setShowProjectWizard(true);
+    } else {
+      // Default: based on region meta if present
+      setUseEgyptWizard((projectMeta?.region ?? 'egypt') === 'egypt');
+    }
+  }, [projectMeta?.region]);
 
   // Get current user ID
   useEffect(() => {
@@ -1654,18 +1673,18 @@ export const FabricatorWorkflow: React.FC = () => {
               </Card>
             </TabsContent>
 
-                {/* 3D Preview Tab */}
+                {/* Blueprint Preview Tab */}
             <TabsContent value="preview3d" className="space-y-6">
               <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
                     <div className="p-2 bg-orange-500/20 rounded-lg">
-                      <Box className="h-6 w-6 text-orange-400" />
+                      <Ruler className="h-6 w-6 text-orange-400" />
                     </div>
                     <div>
-                      3D Model Preview
+                      Blueprint Preview
                       <CardDescription className="text-lg text-gray-300 mt-1">
-                        Real-time 3D visualization of your window design with interactive controls and error detection
+                        Engineering blueprint-style preview with precision dimensions and real-time updates
                       </CardDescription>
                     </div>
                   </CardTitle>
@@ -1678,21 +1697,26 @@ export const FabricatorWorkflow: React.FC = () => {
                       }
                     >
                       {currentProject ? (
-                        <div className="w-full h-[600px] rounded-lg overflow-hidden border border-gray-700 shadow-2xl">
-                          <Window3DGenerator 
-                            windowUnit={currentProject}
-                            showControls={true}
-                            presentationMode={false}
-                            showErrorDetection={true}
+                        <div className="w-full min-h-[600px] rounded-lg overflow-hidden border border-gray-700 shadow-2xl">
+                          <PrecisionDesignInterface
+                            project={currentProject}
                             profiles={inventory}
+                            grid={currentProject.grid || { rows: 1, cols: 1, cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }] }}
+                            onGridChange={(grid) => {
+                              // Update project grid
+                              workspaceDispatch({
+                                type: 'SET_CURRENT_PROJECT',
+                                payload: { ...currentProject, grid },
+                              });
+                            }}
                           />
                         </div>
                       ) : (
                         <div className="text-center py-16">
-                          <Box className="h-20 w-20 text-gray-600 mx-auto mb-4" />
+                          <Ruler className="h-20 w-20 text-gray-600 mx-auto mb-4" />
                           <h3 className="text-2xl font-semibold mb-3 text-gray-400">No Project Available</h3>
                           <p className="text-gray-500 max-w-md mx-auto mb-6">
-                            Please complete the measurement and design phases first to generate a 3D preview of your window project.
+                            Please complete the measurement and design phases first to generate a blueprint preview of your window project.
                           </p>
                           <Button 
                             onClick={() => setActiveTab('measuring')}
@@ -2061,12 +2085,16 @@ export const FabricatorWorkflow: React.FC = () => {
             <FeedbackButton jobId={currentProject?.id} />
           </Suspense>
 
-          {/* New Project Wizard – mandatory header before measuring */}
-          <Suspense fallback={null}>
-            <NewProjectWizard
+          {/* New Project Wizard – Egyptian-first flow with fallback and edit shortcut */}
+          {useEgyptWizard ? (
+            <EgyptianProjectWizard
               open={showProjectWizard}
               onOpenChange={setShowProjectWizard}
               initialMeta={projectMeta || undefined}
+              onFallback={() => {
+                setUseEgyptWizard(false);
+                setShowProjectWizard(true);
+              }}
               onSubmit={(meta) => {
                 const projectCode = `FP-${Date.now().toString(36).toUpperCase().slice(-6)}`;
                 const customerCode = `FC-${meta.clientName
@@ -2074,12 +2102,42 @@ export const FabricatorWorkflow: React.FC = () => {
                   .toUpperCase()
                   .slice(0, 3)}-${Date.now().toString(36).toUpperCase().slice(-3)}`;
                 setProjectMeta({ ...meta, projectCode, customerCode });
+                setUseEgyptWizard(true);
                 setShowProjectWizard(false);
-                // Keep user on measuring tab ready to capture dimensions
                 setActiveTab('measuring');
               }}
             />
-          </Suspense>
+          ) : (
+            <Suspense fallback={null}>
+              <NewProjectWizard
+                open={showProjectWizard}
+                onOpenChange={setShowProjectWizard}
+                initialMeta={projectMeta || undefined}
+                onSubmit={(meta) => {
+                  const projectCode = `FP-${Date.now().toString(36).toUpperCase().slice(-6)}`;
+                  const customerCode = `FC-${meta.clientName
+                    .replace(/\s+/g, '')
+                    .toUpperCase()
+                    .slice(0, 3)}-${Date.now().toString(36).toUpperCase().slice(-3)}`;
+                  setProjectMeta({ ...meta, projectCode, customerCode });
+                  setShowProjectWizard(false);
+                  setActiveTab('measuring');
+                }}
+              />
+            </Suspense>
+          )}
+
+          {projectMeta?.egyptianConstraints && (
+            <div className="mt-4">
+              <EgyptianConstraintsCard
+                constraints={projectMeta.egyptianConstraints}
+                onEdit={() => {
+                  setUseEgyptWizard(true);
+                  setShowProjectWizard(true);
+                }}
+              />
+            </div>
+          )}
 
 
           {/* Contextual Tooltips */}

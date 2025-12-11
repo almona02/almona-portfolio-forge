@@ -1,0 +1,223 @@
+{
+  "machineId": "alm-6510",
+  "name": "ALM 6510",
+  "model": "ALM 6510",
+  "brand": "yilmaz",
+  "description": "Aluminium Profile Machining Center - 8-axis CNC servo control for milling, drilling, and cutting operations on four sides of profiles",
+  
+  "specifications": {
+    "maxXTravel": 6500,
+    "maxYTravel": 1200,
+    "maxZTravel": 300,
+    "maxProfileLength": 6500,
+    "minProfileLength": 700,
+    "maxProfileHeight": 180,
+    "maxProfileWidth": 130,
+    "minProfileHeight": 40,
+    "minProfileWidth": 40,
+    "spindleSpeed": 12000,
+    "cncAxes": 8
+  },
+  
+  "operations": {
+    "P1": {
+      "name": "Slot for lock",
+      "description": "Lock slot operation performed with T50",
+      "tools": [50],
+      "parameters": ["X", "Y", "Z", "L", "W", "D"],
+      "format": "P1T50X12000 Y300Z600L1760 W175D200//"
+    },
+    "P2": {
+      "name": "Espagnolette Channel (Slot)",
+      "description": "Espagnolette slot with radius, performed with T50 or T51",
+      "tools": [50, 51],
+      "parameters": ["X", "Y", "Z", "L", "W", "R", "D"],
+      "format": "P2T50X12000 Y300Z600L1000 W150R75D200//"
+    },
+    "P3": {
+      "name": "Water Drain",
+      "description": "Water drain slot operation",
+      "tools": [20, 50, 60, 70],
+      "parameters": ["X", "Y", "Z", "L", "D"],
+      "format": "P3T70X1200 Y300Z600L400D200//"
+    },
+    "P4": {
+      "name": "Left Barrel",
+      "description": "Left barrel hole operation",
+      "tools": [30, 32, 60],
+      "parameters": ["X", "Y", "Z", "L", "W", "C", "R", "D"],
+      "format": "P4T32X12000 Y300Z600L330W100C170D650//"
+    },
+    "P5": {
+      "name": "Right Barrel",
+      "description": "Right barrel hole operation",
+      "tools": [30, 31, 32, 60, 70, 71],
+      "parameters": ["X", "Y", "Z", "L", "W", "C", "R", "D"],
+      "format": "P5T32X12000 Y300Z600L330W100C170D600//"
+    },
+    "P6": {
+      "name": "Drill (hole)",
+      "description": "Drill hole operation",
+      "tools": [30, 31, 60, 70, 71],
+      "parameters": ["X", "Y", "Z", "C", "D"],
+      "format": "P6T30X12000 Y300Z600C180D250//"
+    },
+    "P7": {
+      "name": "Marking and drilling",
+      "description": "Marking and drilling hole that is equal to tool diameter",
+      "tools": [10, 11, 20, 30, 40, 50, 60, 70, 71],
+      "parameters": ["X", "Y", "Z", "D"],
+      "format": "P7T50X400Y0Z60D30//"
+    }
+  },
+  
+  "tools": {
+    "10": {
+      "name": "Marking Tool 10",
+      "diameter": 5,
+      "maxDepth": 50,
+      "operations": ["P7"]
+    },
+    "11": {
+      "name": "Marking Tool 11",
+      "diameter": 5,
+      "maxDepth": 50,
+      "operations": ["P7"]
+    },
+    "20": {
+      "name": "Water Drain Tool 20",
+      "diameter": 8,
+      "maxDepth": 200,
+      "operations": ["P3", "P7"]
+    },
+    "30": {
+      "name": "Barrel/Drill Tool 30",
+      "diameter": 8,
+      "maxDepth": 250,
+      "operations": ["P4", "P5", "P6", "P7"]
+    },
+    "31": {
+      "name": "Barrel/Drill Tool 31",
+      "diameter": 8,
+      "maxDepth": 250,
+      "operations": ["P5", "P6", "P7"]
+    },
+    "32": {
+      "name": "Barrel Tool 32",
+      "diameter": 8,
+      "maxDepth": 70,
+      "operations": ["P4", "P5"]
+    },
+    "40": {
+      "name": "Marking Tool 40",
+      "diameter": 5,
+      "maxDepth": 50,
+      "operations": ["P7"]
+    },
+    "50": {
+      "name": "Lock/Espagnolette Tool 50",
+      "diameter": 8,
+      "maxDepth": 200,
+      "operations": ["P1", "P2", "P3", "P7"]
+    },
+    "51": {
+      "name": "Espagnolette Tool 51",
+      "diameter": 8,
+      "maxDepth": 200,
+      "operations": ["P2"]
+    },
+    "60": {
+      "name": "Barrel/Drill Tool 60",
+      "diameter": 8,
+      "maxDepth": 200,
+      "operations": ["P3", "P4", "P5", "P6", "P7"]
+    },
+    "70": {
+      "name": "Water Drain Tool 70",
+      "diameter": 8,
+      "maxDepth": 200,
+      "operations": ["P3", "P5", "P7"]
+    },
+    "71": {
+      "name": "Barrel Tool 71",
+      "diameter": 8,
+      "maxDepth": 200,
+      "operations": ["P5", "P7"]
+    }
+  },
+  
+  "dimensionFormat": {
+    "lengthMultiplier": 10,
+    "angleMultiplier": 10,
+    "description": "Length 1200.5 mm → 12005, Angle 45.4° → 454"
+  },
+  
+  "mdbTableStructure": {
+    "tableName": "Table1",
+    "columns": [
+      "PROGRAM_NO",
+      "CUSTOMER_CODE",
+      "CUSTOMER_NAME",
+      "STOCK_CODE",
+      "STOCK_NAME",
+      "ORDER_NO",
+      "EXPLANATION1",
+      "EXPLANATION2",
+      "LENGTH",
+      "INCH_MM",
+      "FRAME_X",
+      "FRAME_Y",
+      "POSE_NO",
+      "TROLLEY",
+      "UNIT",
+      "LEFT_ANGLE",
+      "RIGHT_ANGLE",
+      "SIDE",
+      "CUTTED",
+      "HEIGHT",
+      "SELLER",
+      "IMAGE",
+      "PAIR",
+      "BAR_NO",
+      "TOTAL_SIZE",
+      "PICE_NO",
+      "GRUP",
+      "WIDTH",
+      "TYPE",
+      "COLOR_CODE",
+      "STIL_LENGTH",
+      "FRAME_NO",
+      "REMAINING_LENGTH",
+      "CODE",
+      "ROBOT_Y",
+      "ROBOT_Z",
+      "ROBOT_VERTICAL"
+    ],
+    "totalColumns": 37,
+    "defaultValues": {
+      "INCH_MM": 0,
+      "POSE_NO": 1,
+      "TROLLEY": 1,
+      "UNIT": 1,
+      "LEFT_ANGLE": 900,
+      "RIGHT_ANGLE": 900,
+      "CUTTED": 1,
+      "PAIR": 1,
+      "BAR_NO": 1,
+      "PICE_NO": 1,
+      "TYPE": "A",
+      "COLOR_CODE": "1",
+      "FRAME_NO": 1,
+      "ROBOT_VERTICAL": 0
+    }
+  },
+  
+  "optimizationIntegration": {
+    "supported": true,
+    "exportFormats": ["mdb", "csv", "json"],
+    "operationCodeGeneration": true,
+    "toolSelection": "automatic",
+    "coordinateSystem": "X-Y-Z with reference point at center"
+  }
+}
+
