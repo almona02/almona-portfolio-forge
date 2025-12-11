@@ -188,9 +188,8 @@ export default defineConfig(({ mode }) => {
       target: "esnext",
       minify: isProduction ? "esbuild" : false, // FIXED: Use esbuild instead of terser to avoid circular reference issues
       sourcemap: false, // Disable sourcemaps to speed up build
-      // Note: react-vendor is intentionally large (3.9MB) to prevent module loading errors
-      // This is acceptable as it contains React core and all React-dependent libraries
-      chunkSizeWarningLimit: 5000, // Increased to accommodate react-vendor chunk
+      // Aggressive chunk splitting to prevent 17MB monster
+      chunkSizeWarningLimit: 2000, // Warn if any chunk exceeds 2MB (helps identify issues)
       assetsInlineLimit: 2048, // Reduced to prevent large inline assets
       reportCompressedSize: false,
       cssCodeSplit: true, // Enable CSS code splitting to reduce main bundle size
@@ -273,6 +272,84 @@ export default defineConfig(({ mode }) => {
           entryFileNames: `assets/[name]-[hash].js`,
           chunkFileNames: `assets/[name]-[hash].js`,
           assetFileNames: `assets/[name]-[hash].[ext]`,
+          // AGGRESSIVE chunk splitting to isolate 17MB monster
+          manualChunks: (id) => {
+            // 🔪 ISOLATE AI/ML ENGINES (TensorFlow, ONNX) - 5MB+
+            if (id.includes('@tensorflow') || id.includes('tfjs') || 
+                id.includes('onnx') || id.includes('@huggingface') ||
+                id.includes('@google/generative-ai')) {
+              return 'ai-engine';
+            }
+            
+            // 🔪 ISOLATE PHYSICS ENGINE (Ammo.js) - 5MB+
+            if (id.includes('ammo') || id.includes('ammo.js')) {
+              return 'physics-engine';
+            }
+            
+            // 🔪 ISOLATE 3D ENGINE (Three.js) - 4MB
+            if (id.includes('three') || id.includes('@react-three/fiber') || 
+                id.includes('@react-three/drei') || id.includes('@react-three/xr')) {
+              return '3d-engine';
+            }
+            
+            // 🔪 ISOLATE PDF/EXCEL PROCESSING - 2MB+
+            if (id.includes('pdfjs') || id.includes('pdf-lib') || 
+                id.includes('exceljs') || id.includes('pdfjs-dist')) {
+              return 'document-vendor';
+            }
+            
+            // 🔪 ISOLATE CHART LIBRARIES - 1MB+
+            if (id.includes('chart.js') || id.includes('recharts') || 
+                id.includes('react-chartjs-2')) {
+              return 'chart-vendor';
+            }
+            
+            // 🔪 ISOLATE MAP LIBRARIES - 1MB+
+            if (id.includes('maplibre') || id.includes('mapbox')) {
+              return 'map-vendor';
+            }
+            
+            // React core libraries - keep together
+            if (id.includes('react') || id.includes('react-dom') || 
+                id.includes('react-router') || id.includes('react/jsx-runtime')) {
+              return 'react-vendor';
+            }
+            
+            // UI libraries (framer-motion, lucide, etc.)
+            if (id.includes('framer-motion') || id.includes('lucide-react') ||
+                id.includes('@radix-ui') || id.includes('class-variance-authority') ||
+                id.includes('clsx') || id.includes('tailwind-merge')) {
+              return 'ui-vendor';
+            }
+            
+            // Heavy algorithm libraries (fabricator core)
+            if (id.includes('algorithms') || id.includes('fabricator') && 
+                !id.includes('components') && !id.includes('pages')) {
+              return 'fabricator-core';
+            }
+            
+            // Admin dashboard code
+            if (id.includes('admin') || id.includes('dashboard') || 
+                id.includes('analytics')) {
+              return 'admin-dashboard';
+            }
+            
+            // Large utility libraries
+            if (id.includes('i18next') || id.includes('axios') || 
+                id.includes('zustand') || id.includes('zod')) {
+              return 'utils-vendor';
+            }
+            
+            // Markdown editor (heavy)
+            if (id.includes('@uiw/react-md-editor') || id.includes('markdown-it')) {
+              return 'markdown-vendor';
+            }
+            
+            // Everything else from node_modules
+            if (id.includes('node_modules')) {
+              return 'vendor';
+            }
+          },
         },
       },
     },
