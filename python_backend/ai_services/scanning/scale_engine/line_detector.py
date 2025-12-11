@@ -69,7 +69,7 @@ class DimensionLineDetector:
                 continue
             group = [line1]
             used[i] = True
-            for j, line2 in enumerate(lines[i + 1 :], i + 1):
+            for j, line2 in enumerate(lines[i + 1:], i + 1):
                 if used[j]:
                     continue
                 angle_diff = abs(line1["angle"] - line2["angle"])
