@@ -14,8 +14,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/shared/ui/ui/badge';
 import { Progress } from '@/shared/ui/ui/progress';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { MapPin, Ruler, Factory, CheckCircle2 } from 'lucide-react';
+import { MapPin, Ruler, Factory, CheckCircle2, Layers, BoxSelect, Check } from 'lucide-react';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
 import type { ProjectHeaderMeta } from './NewProjectWizard';
 import { SystemTuningStudio } from './SystemTuningStudio';
 import { CustomSystemManager } from './CustomSystemManager';
@@ -89,33 +90,76 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
   const [baseShape, setBaseShape] = useState<BaseShape>((initialMeta?.egyptianConstraints?.baseShape as BaseShape) || 'two_sash');
   const [openingType, setOpeningType] = useState<OpeningType>((initialMeta?.egyptianConstraints?.openingType as OpeningType) || 'sliding');
   const [selectedSystemId, setSelectedSystemId] = useState<string | null>(defaultSystems[0]);
+  const [materialPreference, setMaterialPreference] = useState<'aluminum' | 'upvc'>('aluminum');
 
   const recommendedSystems = useMemo(() => {
     const recs = new Set<string>();
-    // Usage
+    const allSystems = [...SYSTEM_PACKS, ...EGYPTIAN_UPVC_SYSTEMS, ...customSystems];
+    
+    // Filter by material preference first
+    const materialFiltered = allSystems.filter(pack => {
+      const isUPVC = (pack as any).upvcSpec !== undefined;
+      if (materialPreference === 'aluminum' && isUPVC) return false;
+      if (materialPreference === 'upvc' && !isUPVC) return false;
+      return true;
+    });
+    
+    // Usage-based recommendations
     if (usageType === 'commercial' || usageType === 'hotel') {
-      recs.add('panda-100');
-      recs.add('jumbo100');
+      if (materialPreference === 'aluminum') {
+        recs.add('panda-100');
+        recs.add('jumbo100');
+      } else {
+        recs.add('veka_70_softline');
+        recs.add('rehau_geneo');
+      }
     } else {
-      recs.add('panda-50');
+      if (materialPreference === 'aluminum') {
+        recs.add('panda-50');
+      } else {
+        recs.add('wintech_6400_detailed');
+        recs.add('kompen_60_eco');
+      }
     }
+    
     // Wind / exposure / floor
     if (windZone === 'high_wind' || floorLevel > 5) {
-      recs.add('rock60');
-      recs.add('jumbo100');
+      if (materialPreference === 'aluminum') {
+        recs.add('rock60');
+        recs.add('jumbo100');
+      } else {
+        recs.add('veka_70_softline');
+        recs.add('rehau_geneo');
+      }
     } else if (windZone === 'coastal') {
-      recs.add('rock60');
+      if (materialPreference === 'aluminum') {
+        recs.add('rock60');
+      } else {
+        recs.add('veka_70_softline'); // UV stabilized for coastal
+      }
     }
+    
     // Opening preference
     if (openingType === 'sliding' || openingType === 'door') {
-      recs.add('rock60');
+      if (materialPreference === 'aluminum') {
+        recs.add('rock60');
+      } else {
+        recs.add('wintech_6400_detailed');
+      }
     }
     if (openingType === 'door') {
-      recs.add('panda-100');
+      if (materialPreference === 'aluminum') {
+        recs.add('panda-100');
+      } else {
+        recs.add('rehau_geneo'); // High load capacity
+      }
     }
-    const list = Array.from(recs).filter((id) => SYSTEM_PACKS.find((p) => p.meta.id === id) || customSystems.find((c) => c.meta?.id === id));
-    return list.length ? list : defaultSystems;
-  }, [usageType, windZone, floorLevel, openingType, customSystems]);
+    
+    const list = Array.from(recs).filter((id) => 
+      materialFiltered.find((p) => p.meta.id === id)
+    );
+    return list.length ? list : (materialPreference === 'aluminum' ? defaultSystems : ['wintech_6400_detailed']);
+  }, [usageType, windZone, floorLevel, openingType, customSystems, materialPreference]);
 
   const canNext = () => {
     if (step === 0) return clientName.trim().length > 0 && projectName.trim().length > 0;
@@ -287,44 +331,91 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
           )}
 
           {step === 2 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label>Floor Level</Label>
-                <Input
-                  type="number"
-                  min={0}
-                  value={floorLevel}
-                  onChange={(e) => setFloorLevel(Number(e.target.value || 0))}
-                  className="bg-gray-800 border-gray-700"
-                />
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>Floor Level</Label>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={floorLevel}
+                    onChange={(e) => setFloorLevel(Number(e.target.value || 0))}
+                    className="bg-gray-800 border-gray-700"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Usage Type</Label>
+                  <Select value={usageType} onValueChange={(val) => setUsageType(val as UsageType)}>
+                    <SelectTrigger className="bg-gray-800 border-gray-700">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 border-gray-700">
+                      <SelectItem value="residential">Residential</SelectItem>
+                      <SelectItem value="commercial">Commercial</SelectItem>
+                      <SelectItem value="hotel">Hotel</SelectItem>
+                      <SelectItem value="hospital">Hospital</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Opening Type</Label>
+                  <Select value={openingType} onValueChange={(val) => setOpeningType(val as OpeningType)}>
+                    <SelectTrigger className="bg-gray-800 border-gray-700">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 border-gray-700">
+                      <SelectItem value="sliding">Sliding</SelectItem>
+                      <SelectItem value="casement">Casement</SelectItem>
+                      <SelectItem value="tilt_turn">Tilt & Turn</SelectItem>
+                      <SelectItem value="door">Door</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>Usage Type</Label>
-                <Select value={usageType} onValueChange={(val) => setUsageType(val as UsageType)}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-gray-700">
-                    <SelectItem value="residential">Residential</SelectItem>
-                    <SelectItem value="commercial">Commercial</SelectItem>
-                    <SelectItem value="hotel">Hotel</SelectItem>
-                    <SelectItem value="hospital">Hospital</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Opening Type</Label>
-                <Select value={openingType} onValueChange={(val) => setOpeningType(val as OpeningType)}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-gray-700">
-                    <SelectItem value="sliding">Sliding</SelectItem>
-                    <SelectItem value="casement">Casement</SelectItem>
-                    <SelectItem value="tilt_turn">Tilt & Turn</SelectItem>
-                    <SelectItem value="door">Door</SelectItem>
-                  </SelectContent>
-                </Select>
+
+              {/* Material Preference Selector */}
+              <div className="space-y-3 pt-4 border-t border-gray-800">
+                <Label className="text-[11px] uppercase tracking-wide text-gray-500">Material Preference</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div 
+                    className={`relative p-3 rounded-lg border cursor-pointer transition-all ${
+                      materialPreference === 'aluminum' 
+                        ? 'bg-blue-900/20 border-blue-500' 
+                        : 'bg-gray-800/40 border-gray-700 hover:bg-gray-800'
+                    }`}
+                    onClick={() => setMaterialPreference('aluminum')}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <Layers className={`h-4 w-4 ${materialPreference === 'aluminum' ? 'text-blue-400' : 'text-gray-400'}`} />
+                      <span className={`text-sm font-medium ${materialPreference === 'aluminum' ? 'text-blue-100' : 'text-gray-300'}`}>
+                        Aluminum
+                      </span>
+                    </div>
+                    <div className="text-[10px] text-gray-500 pl-6">60% Market Share (Standard)</div>
+                    {materialPreference === 'aluminum' && (
+                      <div className="absolute top-2 right-2 text-blue-500"><Check className="h-3 w-3" /></div>
+                    )}
+                  </div>
+                  <div 
+                    className={`relative p-3 rounded-lg border cursor-pointer transition-all ${
+                      materialPreference === 'upvc' 
+                        ? 'bg-green-900/20 border-green-500' 
+                        : 'bg-gray-800/40 border-gray-700 hover:bg-gray-800'
+                    }`}
+                    onClick={() => setMaterialPreference('upvc')}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <BoxSelect className={`h-4 w-4 ${materialPreference === 'upvc' ? 'text-green-400' : 'text-gray-400'}`} />
+                      <span className={`text-sm font-medium ${materialPreference === 'upvc' ? 'text-green-100' : 'text-gray-300'}`}>
+                        UPVC (Welded)
+                      </span>
+                    </div>
+                    <div className="text-[10px] text-gray-500 pl-6">40% Market Share (Insulated)</div>
+                    {materialPreference === 'upvc' && (
+                      <div className="absolute top-2 right-2 text-green-500"><Check className="h-3 w-3" /></div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -349,7 +440,9 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                 <Label>Recommended Systems</Label>
                 <div className="flex flex-wrap gap-2">
                   {recommendedSystems.map((id) => {
-                    const pack = SYSTEM_PACKS.find((p) => p.meta.id === id) || customSystems.find((c) => c.meta?.id === id);
+                    const pack = SYSTEM_PACKS.find((p) => p.meta.id === id) 
+                      || EGYPTIAN_UPVC_SYSTEMS.find((p) => p.meta.id === id)
+                      || customSystems.find((c) => c.meta?.id === id);
                     if (!pack) return null;
                     const active = selectedSystemId === id;
                     return (
