@@ -180,6 +180,20 @@ def create_v2_app() -> FastAPI:
     from apis.v2.background_tasks import router as tasks_router
     app.include_router(tasks_router)
 
+    # Include ALM 6510 MDB export router
+    try:
+        from apis.v2 import alm6510_export
+        # Router has prefix="/alm6510", include with /api/v2 prefix
+        # Full path will be: /api/v2/alm6510/generate-mdb
+        app.include_router(alm6510_export.router, prefix="/api/v2")
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).error(
+            "ALM 6510 export router not loaded: %s",
+            exc,
+            exc_info=True
+        )
+
     # Enhanced SmartScan health endpoints (prefixed to avoid clashes)
     app.include_router(health_router.router, prefix="/health")
 

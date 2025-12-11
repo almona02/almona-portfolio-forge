@@ -78,8 +78,69 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
     };
   }, [components, profiles]);
 
-  // Calculate summary statistics
+  // Calculate summary statistics from optimization result or components
   const summary = useMemo(() => {
+    // Try to get data from optimization result first (most accurate)
+    if (optimizationResult?.cuttingPlan && optimizationResult.cuttingPlan.length > 0) {
+      let totalCuts = 0;
+      const uniqueProfiles = new Set<string>();
+      let totalMaterialLength = 0;
+      let totalBars = 0;
+
+      optimizationResult.cuttingPlan.forEach((plan) => {
+        totalCuts += plan.cuts.length;
+        uniqueProfiles.add(plan.profile.name || plan.profile.id);
+        plan.cuts.forEach((cut) => {
+          totalMaterialLength += cut.length || 0;
+        });
+        totalBars += 1; // Each plan represents one bar
+      });
+
+      return {
+        totalCuts,
+        uniqueProfiles: uniqueProfiles.size,
+        totalMaterialLength: Math.round(totalMaterialLength),
+        estimatedBars: totalBars || Math.ceil(totalMaterialLength / 6000),
+        totalWaste: optimizationResult.wastePercentage || 0,
+        efficiency: optimizationResult.nestingEfficiency || 0,
+      };
+    }
+
+    // Fallback: Calculate from components
+    if (components && components.length > 0) {
+      const uniqueProfiles = new Set<string>();
+      let totalMaterialLength = 0;
+      let totalCuts = 0;
+
+      components.forEach((comp) => {
+        if (comp.profile?.id) {
+          uniqueProfiles.add(comp.profile.id);
+        }
+        
+        // Calculate from cutting lengths if available
+        if (comp.cuttingLengths && comp.cuttingLengths.length > 0) {
+          comp.cuttingLengths.forEach((len) => {
+            totalMaterialLength += len;
+            totalCuts += 1;
+          });
+        } else if (comp.width && comp.height) {
+          // Fallback: estimate from dimensions
+          totalMaterialLength += (comp.width + comp.height) * 2; // Perimeter estimate
+          totalCuts += 4; // 4 sides
+        }
+      });
+
+      return {
+        totalCuts,
+        uniqueProfiles: uniqueProfiles.size,
+        totalMaterialLength: Math.round(totalMaterialLength),
+        estimatedBars: Math.ceil(totalMaterialLength / 6000),
+        totalWaste: 0,
+        efficiency: 0,
+      };
+    }
+
+    // Last resort: Use simulation data
     const totalCuts = simulation.cuts.length;
     const uniqueProfiles = new Set(simulation.cuts.map((c) => c.profileName));
     const totalMaterialLength = simulation.cuts.reduce((sum, c) => sum + c.cutLength, 0);
@@ -88,17 +149,30 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
       totalCuts,
       uniqueProfiles: uniqueProfiles.size,
       totalMaterialLength: Math.round(totalMaterialLength),
-      estimatedBars: Math.ceil(totalMaterialLength / 6000), // Assuming 6m stock
+      estimatedBars: Math.ceil(totalMaterialLength / 6000),
+      totalWaste: 0,
+      efficiency: 0,
     };
-  }, [simulation]);
+  }, [optimizationResult, components, simulation]);
 
   // Check if user can proceed (no critical errors)
   const canProceed = validation.isValid && calibrationStatus.allCalibrated;
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleConfirm = () => {
-    if (canProceed) {
-      onConfirm();
-      onOpenChange(false);
+  const handleConfirm = async () => {
+    if (canProceed && !isProcessing) {
+      setIsProcessing(true);
+      try {
+        // Call onConfirm (which is executePendingAction) and wait for it
+        await onConfirm();
+        // Don't close immediately - let the parent handle closing after success
+        // The dialog will close when showProductionPreview is set to false by parent
+      } catch (error) {
+        console.error('Error in production preview confirmation:', error);
+        // Keep dialog open on error so user can see the error message
+      } finally {
+        setIsProcessing(false);
+      }
     }
   };
 
@@ -131,25 +205,80 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* Summary Statistics */}
+          {/* Summary Statistics - Professional Dynamic Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="p-3 bg-gray-800 rounded border border-gray-700">
-              <p className="text-xs text-gray-400">Total Cuts</p>
-              <p className="text-2xl font-bold text-blue-400">{summary.totalCuts}</p>
+            <div className="relative p-4 bg-gradient-to-br from-blue-500/10 to-blue-600/5 rounded-lg border border-blue-500/30 shadow-lg hover:shadow-blue-500/20 transition-all duration-300 group">
+              <div className="absolute top-2 right-2 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+              <p className="text-xs font-semibold text-blue-300/80 uppercase tracking-wider mb-2">Total Cuts</p>
+              <p className="text-3xl font-bold text-blue-400 group-hover:text-blue-300 transition-colors">
+                {summary.totalCuts.toLocaleString()}
+              </p>
+              <p className="text-[10px] text-blue-400/60 mt-1">Optimized cuts</p>
             </div>
-            <div className="p-3 bg-gray-800 rounded border border-gray-700">
-              <p className="text-xs text-gray-400">Profiles</p>
-              <p className="text-2xl font-bold text-green-400">{summary.uniqueProfiles}</p>
+            
+            <div className="relative p-4 bg-gradient-to-br from-green-500/10 to-green-600/5 rounded-lg border border-green-500/30 shadow-lg hover:shadow-green-500/20 transition-all duration-300 group">
+              <div className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <p className="text-xs font-semibold text-green-300/80 uppercase tracking-wider mb-2">Profiles</p>
+              <p className="text-3xl font-bold text-green-400 group-hover:text-green-300 transition-colors">
+                {summary.uniqueProfiles}
+              </p>
+              <p className="text-[10px] text-green-400/60 mt-1">Unique types</p>
             </div>
-            <div className="p-3 bg-gray-800 rounded border border-gray-700">
-              <p className="text-xs text-gray-400">Material Length</p>
-              <p className="text-2xl font-bold text-orange-400">{summary.totalMaterialLength}mm</p>
+            
+            <div className="relative p-4 bg-gradient-to-br from-orange-500/10 to-orange-600/5 rounded-lg border border-orange-500/30 shadow-lg hover:shadow-orange-500/20 transition-all duration-300 group">
+              <div className="absolute top-2 right-2 w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+              <p className="text-xs font-semibold text-orange-300/80 uppercase tracking-wider mb-2">Material Length</p>
+              <p className="text-3xl font-bold text-orange-400 group-hover:text-orange-300 transition-colors">
+                {summary.totalMaterialLength > 0 
+                  ? `${(summary.totalMaterialLength / 1000).toFixed(2)}m`
+                  : '0m'}
+              </p>
+              <p className="text-[10px] text-orange-400/60 mt-1">
+                {summary.totalMaterialLength > 0 
+                  ? `${summary.totalMaterialLength.toLocaleString()}mm`
+                  : 'No material'}
+              </p>
             </div>
-            <div className="p-3 bg-gray-800 rounded border border-gray-700">
-              <p className="text-xs text-gray-400">Est. Bars</p>
-              <p className="text-2xl font-bold text-purple-400">{summary.estimatedBars}</p>
+            
+            <div className="relative p-4 bg-gradient-to-br from-purple-500/10 to-purple-600/5 rounded-lg border border-purple-500/30 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 group">
+              <div className="absolute top-2 right-2 w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+              <p className="text-xs font-semibold text-purple-300/80 uppercase tracking-wider mb-2">Est. Bars</p>
+              <p className="text-3xl font-bold text-purple-400 group-hover:text-purple-300 transition-colors">
+                {summary.estimatedBars}
+              </p>
+              <p className="text-[10px] text-purple-400/60 mt-1">
+                {summary.efficiency > 0 
+                  ? `${summary.efficiency.toFixed(1)}% efficiency`
+                  : 'Stock bars needed'}
+              </p>
             </div>
           </div>
+
+          {/* Additional Metrics Row - Only show if optimization data available */}
+          {optimizationResult && (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-700/50">
+                <p className="text-xs text-gray-400 mb-1">Efficiency</p>
+                <p className="text-xl font-bold text-emerald-400">
+                  {optimizationResult.nestingEfficiency?.toFixed(1) || '0'}%
+                </p>
+              </div>
+              <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-700/50">
+                <p className="text-xs text-gray-400 mb-1">Waste</p>
+                <p className="text-xl font-bold text-red-400">
+                  {optimizationResult.wastePercentage?.toFixed(1) || '0'}%
+                </p>
+              </div>
+              <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-700/50">
+                <p className="text-xs text-gray-400 mb-1">Est. Cost</p>
+                <p className="text-xl font-bold text-yellow-400">
+                  {optimizationResult.costBreakdown?.totalCost 
+                    ? `${optimizationResult.costBreakdown.totalCost.toFixed(0)} EGP`
+                    : 'N/A'}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Calibration Status */}
           {!calibrationStatus.allCalibrated && (
@@ -269,11 +398,20 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
             )}
             <Button
               onClick={handleConfirm}
-              disabled={!canProceed}
-              className="bg-green-500 hover:bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!canProceed || isProcessing}
+              className="bg-green-500 hover:bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed min-w-[160px]"
             >
-              <CheckCircle2 className="h-4 w-4 mr-2" />
-              Confirm & Generate
+              {isProcessing ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  Confirm & Generate
+                </>
+              )}
             </Button>
           </div>
         </DialogFooter>
