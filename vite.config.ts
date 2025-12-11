@@ -309,15 +309,17 @@ export default defineConfig(({ mode }) => {
               return 'map-vendor';
             }
             
-            // React core libraries - keep together
+            // React core libraries + React-dependent UI libraries (must load together)
+            // @radix-ui requires React, so it must be in same chunk as React
             if (id.includes('react') || id.includes('react-dom') || 
-                id.includes('react-router') || id.includes('react/jsx-runtime')) {
+                id.includes('react-router') || id.includes('react/jsx-runtime') ||
+                id.includes('@radix-ui') || id.includes('framer-motion')) {
               return 'react-vendor';
             }
             
-            // UI libraries (framer-motion, lucide, etc.)
-            if (id.includes('framer-motion') || id.includes('lucide-react') ||
-                id.includes('@radix-ui') || id.includes('class-variance-authority') ||
+            // UI libraries that don't depend on React (can load separately)
+            if (id.includes('lucide-react') ||
+                id.includes('class-variance-authority') ||
                 id.includes('clsx') || id.includes('tailwind-merge')) {
               return 'ui-vendor';
             }
