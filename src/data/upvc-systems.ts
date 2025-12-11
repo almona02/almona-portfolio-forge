@@ -1065,6 +1065,608 @@ export const EMAPEN_EMA42S_BUDGET: UPVCSystemPack = {
   profiles: EMA42S_PROFILES,
 };
 
+// ==========================================
+// FOXYWIN - THE EGYPTIAN UPVC DISRUPTOR
+// ==========================================
+// Technical Source: FOXYWIN Technical Catalogue
+// Manufacturer: FOXYWIN / Al-Talab Industrial Group
+// Established: 1990 (35 years plastic experience), UPVC launch 2025
+// Technology Partner: Miram System (German UPVC technology)
+// Raw Materials: DOW Chemical, BASF, Formosa Plastics, INOVYN
+// Warranty: 10 YEARS (unprecedented in Egypt)
+// Market Position: Premium quality at competitive price
+// ==========================================
+
+// FOXYWIN Company Data
+const FOXYWIN_COMPANY = {
+  name: 'FOXYWIN / Al-Talab Industrial Group',
+  parentCompany: 'Al-Talab Industrial Group',
+  established: 1990,
+  upvcLaunch: 2025,
+  location: 'Egypt',
+  experience: '35 years in plastic manufacturing',
+  technologyPartner: 'Miram System (Germany)',
+  rawMaterialSuppliers: ['DOW Chemical', 'BASF', 'Formosa Plastics', 'INOVYN', 'VENATOR', 'KLEIBERIT', 'HYUNDAI L&C'],
+  warranty: '10 years',
+  qualityLab: {
+    equipment: [
+      'Spectrophotometer',
+      'Ultrasonic washing device',
+      'Tensile & Compression oven',
+      'UV-150 Ultraviolet Accelerated Weathering Test Chamber',
+      'Weldability test machine',
+      'Falling impact device',
+    ],
+  },
+};
+
+// FOXYWIN Eco-Smart 50mm Profiles (Page 7)
+const FOXYWIN_50MM_PROFILES: Profile[] = [
+  {
+    id: 'FOXYWIN-50-FRAME',
+    name: 'Frame Profile 50mm (Casement)',
+    type: 'frame',
+    material: 'upvc',
+    width: 50,
+    height: 54, // From Page 7 drawing
+    thickness: 50,
+    color: 'white',
+    costPerMeter: 180,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'FOXYWIN',
+    systemBrand: 'FOXYWIN',
+    profileRole: 'frame',
+    specifications: {
+      partNumber: '50-FRAME',
+      arabicName: 'حلق مقصلي بدون بار',
+      chambers: 3,
+      lengthMm: 6000,
+      minRemnantMm: 250,
+      shopDrawingPage: 7,
+      shopDrawingRef: 'Page 7 - Frame Profile 50mm',
+    },
+  },
+  {
+    id: 'FOXYWIN-50-RENOVATION-FRAME',
+    name: 'Renovation Frame 50mm (With Gasket)',
+    type: 'frame',
+    material: 'upvc',
+    width: 50,
+    height: 60, // From Page 7 - "حلق مقصلي ببار السم بالكاونتش"
+    thickness: 50,
+    color: 'white',
+    costPerMeter: 200,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'FOXYWIN',
+    systemBrand: 'FOXYWIN',
+    profileRole: 'frame',
+    specifications: {
+      partNumber: '50-RENOVATION-FRAME',
+      arabicName: 'حلق مقصلي ببار السم بالكاونتش',
+      specialFeature: 'Retrofit existing windows without demolition',
+      chambers: 3,
+      lengthMm: 6000,
+      minRemnantMm: 250,
+      shopDrawingPage: 7,
+      shopDrawingRef: 'Page 7 - Renovation Frame with Gasket',
+    },
+  },
+  {
+    id: 'FOXYWIN-50-SASH',
+    name: 'Sash Profile 50mm (Window)',
+    type: 'sash',
+    material: 'upvc',
+    width: 50,
+    height: 74, // From Page 7 drawing
+    thickness: 50,
+    color: 'white',
+    costPerMeter: 190,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'FOXYWIN',
+    systemBrand: 'FOXYWIN',
+    profileRole: 'sash',
+    specifications: {
+      partNumber: '50-SASH',
+      arabicName: 'ضافة شباك مقصلي',
+      chambers: 3,
+      lengthMm: 6000,
+      minRemnantMm: 250,
+      shopDrawingPage: 7,
+      shopDrawingRef: 'Page 7 - Window Sash Profile',
+      // Reinforcement formula: Steel = Finished Dimension - 12mm
+      reinforcementFormula: 'finishedDimension - 12',
+    },
+  },
+  {
+    id: 'FOXYWIN-50-DOOR-SASH',
+    name: 'Door Sash Profile 50mm',
+    type: 'sash',
+    material: 'upvc',
+    width: 50,
+    height: 70, // From Page 7 drawing
+    thickness: 50,
+    color: 'white',
+    costPerMeter: 195,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'FOXYWIN',
+    systemBrand: 'FOXYWIN',
+    profileRole: 'sash',
+    specifications: {
+      partNumber: '50-DOOR-SASH',
+      arabicName: 'ضافة باب مقصلي',
+      chambers: 3,
+      lengthMm: 6000,
+      minRemnantMm: 250,
+      shopDrawingPage: 7,
+      shopDrawingRef: 'Page 7 - Door Sash Profile',
+      reinforcementFormula: 'finishedDimension - 12',
+    },
+  },
+];
+
+// FOXYWIN Foxy-Shield 60mm Profiles (Page 10 - inferred from naming)
+const FOXYWIN_60MM_PROFILES: Profile[] = [
+  {
+    id: 'FOXYWIN-60-FRAME',
+    name: 'Frame Profile 60mm (Premium Casement)',
+    type: 'frame',
+    material: 'upvc',
+    width: 60,
+    height: 64, // Standard 60mm frame height
+    thickness: 60,
+    color: 'white',
+    costPerMeter: 240,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'FOXYWIN',
+    systemBrand: 'FOXYWIN',
+    profileRole: 'frame',
+    specifications: {
+      partNumber: '60-FRAME',
+      chambers: 4,
+      lengthMm: 6000,
+      minRemnantMm: 250,
+      shopDrawingPage: 10,
+      shopDrawingRef: 'Page 10 - Premium Frame Profile',
+    },
+  },
+  {
+    id: 'FOXYWIN-60-SASH',
+    name: 'Sash Profile 60mm (Premium)',
+    type: 'sash',
+    material: 'upvc',
+    width: 60,
+    height: 77, // Standard 60mm sash height
+    thickness: 60,
+    color: 'white',
+    costPerMeter: 250,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'FOXYWIN',
+    systemBrand: 'FOXYWIN',
+    profileRole: 'sash',
+    specifications: {
+      partNumber: '60-SASH',
+      chambers: 4,
+      lengthMm: 6000,
+      minRemnantMm: 250,
+      shopDrawingPage: 10,
+      shopDrawingRef: 'Page 10 - Premium Sash Profile',
+      reinforcementFormula: 'finishedDimension - 10', // Premium: tighter clearance
+    },
+  },
+];
+
+// FOXYWIN Eco-View 88mm Sliding Profiles (Page 15)
+const FOXYWIN_88MM_SLIDING_PROFILES: Profile[] = [
+  {
+    id: 'FOXYWIN-88-SLIDING-FRAME',
+    name: 'Sliding Frame 88mm',
+    type: 'frame',
+    material: 'upvc',
+    width: 88,
+    height: 44.5, // From Page 15 drawing
+    thickness: 88,
+    color: 'white',
+    costPerMeter: 220,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'FOXYWIN',
+    systemBrand: 'FOXYWIN',
+    profileRole: 'frame',
+    specifications: {
+      partNumber: '88-SLIDING-FRAME',
+      chambers: 5,
+      trackSystem: 'Dual track',
+      lengthMm: 6000,
+      minRemnantMm: 250,
+      shopDrawingPage: 15,
+      shopDrawingRef: 'Page 15 - Sliding Frame 88mm',
+      specialFeature: 'Dust stop system (مانع الزربية)',
+    },
+  },
+  {
+    id: 'FOXYWIN-88-SLIDING-SASH',
+    name: 'Sliding Sash 88mm',
+    type: 'sash',
+    material: 'upvc',
+    width: 88,
+    height: 37.5, // From Page 15 drawing
+    thickness: 88,
+    color: 'white',
+    costPerMeter: 230,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'FOXYWIN',
+    systemBrand: 'FOXYWIN',
+    profileRole: 'sash',
+    specifications: {
+      partNumber: '88-SLIDING-SASH',
+      arabicName: 'ضلعه شباك',
+      chambers: 5,
+      lengthMm: 6000,
+      minRemnantMm: 250,
+      shopDrawingPage: 15,
+      shopDrawingRef: 'Page 15 - Sliding Sash 88mm',
+      reinforcementFormula: 'finishedDimension - 12',
+    },
+  },
+  {
+    id: 'FOXYWIN-88-MOSQUITO-SASH',
+    name: 'Mosquito/Fly Screen Sash 88mm',
+    type: 'sash',
+    material: 'upvc',
+    width: 88,
+    height: 19.5, // From Page 15 drawing
+    thickness: 88,
+    color: 'white',
+    costPerMeter: 150,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'FOXYWIN',
+    systemBrand: 'FOXYWIN',
+    profileRole: 'accessory',
+    specifications: {
+      partNumber: '88-MOSQUITO-SASH',
+      arabicName: 'ضلعه سالك',
+      chambers: 2,
+      lengthMm: 6000,
+      minRemnantMm: 250,
+      shopDrawingPage: 15,
+      shopDrawingRef: 'Page 15 - Mosquito Sash 88mm',
+    },
+  },
+];
+
+// FOXYWIN Foxy-Prestige 114mm Sliding Profiles (Page 18)
+const FOXYWIN_114MM_SLIDING_PROFILES: Profile[] = [
+  {
+    id: 'FOXYWIN-114-SLIDING-FRAME',
+    name: 'Sliding Frame 114mm (3-Rail Premium)',
+    type: 'frame',
+    material: 'upvc',
+    width: 114,
+    height: 52, // From Page 18 drawing
+    thickness: 114,
+    color: 'white',
+    costPerMeter: 280,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'FOXYWIN',
+    systemBrand: 'FOXYWIN',
+    profileRole: 'frame',
+    specifications: {
+      partNumber: '114-SLIDING-FRAME',
+      arabicName: 'حلق جرار بيارا سم بلكاوتش',
+      chambers: 5,
+      railSystem: '3-rail system',
+      lengthMm: 6000,
+      minRemnantMm: 250,
+      shopDrawingPage: 18,
+      shopDrawingRef: 'Page 18 - Premium Sliding Frame 114mm',
+      specialFeature: 'With gasket for better seal, dust stop system',
+    },
+  },
+  {
+    id: 'FOXYWIN-114-SLIDING-DOOR-SASH',
+    name: 'Sliding Door Sash 114mm (Heavy Duty)',
+    type: 'sash',
+    material: 'upvc',
+    width: 114,
+    height: 45, // From Page 18 drawing
+    thickness: 114,
+    color: 'white',
+    costPerMeter: 300,
+    stockQuantity: 0,
+    minStockLevel: 0,
+    supplier: 'FOXYWIN',
+    systemBrand: 'FOXYWIN',
+    profileRole: 'sash',
+    specifications: {
+      partNumber: '114-SLIDING-DOOR-SASH',
+      arabicName: 'ضلعه باب',
+      chambers: 5,
+      for: 'Sliding doors (heavy duty)',
+      lengthMm: 6000,
+      minRemnantMm: 250,
+      shopDrawingPage: 18,
+      shopDrawingRef: 'Page 18 - Sliding Door Sash 114mm',
+      reinforcementFormula: 'finishedDimension - 10', // Premium: tighter clearance
+    },
+  },
+];
+
+// FOXYWIN Eco-Smart 50mm System Pack
+export const FOXYWIN_ECO_SMART_50: UPVCSystemPack = {
+  meta: {
+    id: 'foxywin_eco_smart_50',
+    name: 'FOXYWIN Eco-Smart 50mm (3 Chambers)',
+    brands: ['FOXYWIN', 'Al-Talab'],
+    regions: ['egypt'],
+    defaultStockLengthMm: 6000,
+  } as any,
+  windowSystemSpec: {
+    window_system: 'FOXYWIN Eco-Smart 50mm',
+    description: 'Economy casement system for price-sensitive market. 3 chambers, basic insulation. Includes renovation frame option for retrofits.',
+    stockLengthMm: 6000,
+    constraints: {
+      minWidthMm: 400,
+      maxWidthMm: 1800,
+      minHeightMm: 400,
+      maxHeightMm: 2200,
+      maxSashWeightKg: 60,
+    },
+    companyData: FOXYWIN_COMPANY,
+    profiles_cutting_list: FOXYWIN_50MM_PROFILES.map(p => ({
+      id: p.id,
+      name: p.name,
+      role: p.profileRole || 'unknown',
+      width_mm: p.width,
+      height_mm: p.height,
+    })),
+    glassOptions: {
+      single: 'up to 6mm',
+      double: 'not recommended for economy system',
+    },
+    specialFeatures: [
+      'Renovation frame option (retrofit without demolition)',
+      'DOW Chemical raw materials',
+      '10-year warranty',
+    ],
+  },
+  upvcSpec: {
+    isUPVC: true,
+    material: 'upvc',
+    chambers: 3,
+    colorClass: 'B',
+    uvStabilized: true,
+    welding: {
+      burnOffMm: 2.8,
+      temperature: 240,
+      pressure: 2.8,
+      coolingTimeSec: 150,
+      method: 'butt',
+    },
+    reinforcement: {
+      required: true,
+      profileCode: 'FOXYWIN_STEEL_1.2',
+      deductionMm: 12, // Economy: 12mm clearance
+      thicknessMm: 1.2,
+      momentOfInertia: 1.5,
+      grade: 'S235',
+      // Reinforcement formula for BOM: Steel Length = Finished Dimension - 12mm
+      formula: 'finishedDimension - 12',
+    },
+    climateProfile: 'egypt_standard',
+    barNominalLength: 6000,
+  },
+  profiles: FOXYWIN_50MM_PROFILES,
+};
+
+// FOXYWIN Foxy-Shield 60mm System Pack
+export const FOXYWIN_FOXY_SHIELD_60: UPVCSystemPack = {
+  meta: {
+    id: 'foxywin_foxy_shield_60',
+    name: 'FOXYWIN Foxy-Shield 60mm (4 Chambers)',
+    brands: ['FOXYWIN', 'Al-Talab'],
+    regions: ['egypt'],
+    defaultStockLengthMm: 6000,
+  } as any,
+  windowSystemSpec: {
+    window_system: 'FOXYWIN Foxy-Shield 60mm',
+    description: 'Premium casement system with 4 chambers for better insulation. German Miram technology, DOW Chemical raw materials, 10-year warranty.',
+    stockLengthMm: 6000,
+    constraints: {
+      minWidthMm: 500,
+      maxWidthMm: 2500,
+      minHeightMm: 500,
+      maxHeightMm: 2800,
+      maxSashWeightKg: 100,
+    },
+    companyData: FOXYWIN_COMPANY,
+    profiles_cutting_list: FOXYWIN_60MM_PROFILES.map(p => ({
+      id: p.id,
+      name: p.name,
+      role: p.profileRole || 'unknown',
+      width_mm: p.width,
+      height_mm: p.height,
+    })),
+    glassOptions: {
+      single: 'up to 6mm',
+      double: 'up to 24mm (4-16-4)',
+    },
+    specialFeatures: [
+      'DOW Chemical raw materials',
+      '10-year warranty',
+      'Full color laminations available (7 colors)',
+      'Dust-resistant gaskets',
+      'German Miram technology',
+    ],
+  },
+  upvcSpec: {
+    isUPVC: true,
+    material: 'upvc',
+    chambers: 4,
+    colorClass: 'A',
+    uvStabilized: true,
+    welding: {
+      burnOffMm: 2.8,
+      temperature: 240,
+      pressure: 2.8,
+      coolingTimeSec: 150,
+      method: 'butt',
+    },
+    reinforcement: {
+      required: true,
+      profileCode: 'FOXYWIN_STEEL_1.5',
+      deductionMm: 10, // Premium: 10mm clearance (tighter fit)
+      thicknessMm: 1.5,
+      momentOfInertia: 2.0,
+      grade: 'S275',
+      // Reinforcement formula for BOM: Steel Length = Finished Dimension - 10mm
+      formula: 'finishedDimension - 10',
+    },
+    climateProfile: 'egypt_standard',
+    barNominalLength: 6000,
+  },
+  profiles: FOXYWIN_60MM_PROFILES,
+};
+
+// FOXYWIN Eco-View 88mm Sliding System Pack
+export const FOXYWIN_ECO_VIEW_88: UPVCSystemPack = {
+  meta: {
+    id: 'foxywin_eco_view_88',
+    name: 'FOXYWIN Eco-View 88mm Sliding (5 Chambers)',
+    brands: ['FOXYWIN', 'Al-Talab'],
+    regions: ['egypt'],
+    defaultStockLengthMm: 6000,
+  } as any,
+  windowSystemSpec: {
+    window_system: 'FOXYWIN Eco-View 88mm',
+    description: 'Economy sliding system with 5 chambers. Includes dust stop system (مانع الزربية) specifically for Egyptian dust/sand conditions.',
+    stockLengthMm: 6000,
+    constraints: {
+      minWidthMm: 600,
+      maxWidthMm: 2500,
+      minHeightMm: 600,
+      maxHeightMm: 2400,
+      maxSashWeightKg: 60,
+    },
+    companyData: FOXYWIN_COMPANY,
+    profiles_cutting_list: FOXYWIN_88MM_SLIDING_PROFILES.map(p => ({
+      id: p.id,
+      name: p.name,
+      role: p.profileRole || 'unknown',
+      width_mm: p.width,
+      height_mm: p.height,
+    })),
+    specialFeatures: [
+      'Dust stop system (مانع الزربية) - Egyptian climate adaptation',
+      'Dual track system',
+      'Mosquito/fly screen sash included',
+      'Enhanced drainage for rare rains',
+    ],
+  },
+  upvcSpec: {
+    isUPVC: true,
+    material: 'upvc',
+    chambers: 5,
+    colorClass: 'B',
+    uvStabilized: true,
+    welding: {
+      burnOffMm: 2.8,
+      temperature: 240,
+      pressure: 2.8,
+      coolingTimeSec: 150,
+      method: 'butt',
+    },
+    reinforcement: {
+      required: true,
+      profileCode: 'FOXYWIN_STEEL_1.2',
+      deductionMm: 12,
+      thicknessMm: 1.2,
+      momentOfInertia: 1.5,
+      grade: 'S235',
+      formula: 'finishedDimension - 12',
+    },
+    climateProfile: 'egypt_standard',
+    barNominalLength: 6000,
+  },
+  profiles: FOXYWIN_88MM_SLIDING_PROFILES,
+};
+
+// FOXYWIN Foxy-Prestige 114mm Sliding System Pack
+export const FOXYWIN_FOXY_PRESTIGE_114: UPVCSystemPack = {
+  meta: {
+    id: 'foxywin_foxy_prestige_114',
+    name: 'FOXYWIN Foxy-Prestige 114mm Sliding (5 Chambers)',
+    brands: ['FOXYWIN', 'Al-Talab'],
+    regions: ['egypt'],
+    defaultStockLengthMm: 6000,
+  } as any,
+  windowSystemSpec: {
+    window_system: 'FOXYWIN Foxy-Prestige 114mm',
+    description: 'Premium 3-rail sliding system for large openings. Maximum insulation and prestige. Heavy-duty for door applications.',
+    stockLengthMm: 6000,
+    constraints: {
+      minWidthMm: 800,
+      maxWidthMm: 3000,
+      minHeightMm: 800,
+      maxHeightMm: 3000,
+      maxSashWeightKg: 150,
+    },
+    companyData: FOXYWIN_COMPANY,
+    profiles_cutting_list: FOXYWIN_114MM_SLIDING_PROFILES.map(p => ({
+      id: p.id,
+      name: p.name,
+      role: p.profileRole || 'unknown',
+      width_mm: p.width,
+      height_mm: p.height,
+    })),
+    glassOptions: {
+      single: 'up to 8mm',
+      double: 'up to 32mm',
+    },
+    specialFeatures: [
+      '3-rail system for smoother operation',
+      'Heavy-duty for door applications',
+      'Full dust sealing system',
+      'Available in all 7 laminate colors',
+      'With gasket for better seal',
+    ],
+  },
+  upvcSpec: {
+    isUPVC: true,
+    material: 'upvc',
+    chambers: 5,
+    colorClass: 'A',
+    uvStabilized: true,
+    welding: {
+      burnOffMm: 2.8,
+      temperature: 240,
+      pressure: 2.8,
+      coolingTimeSec: 150,
+      method: 'butt',
+    },
+    reinforcement: {
+      required: true,
+      profileCode: 'FOXYWIN_STEEL_1.5',
+      deductionMm: 10, // Premium: 10mm clearance
+      thicknessMm: 1.5,
+      momentOfInertia: 2.5,
+      grade: 'S275',
+      formula: 'finishedDimension - 10',
+    },
+    climateProfile: 'egypt_standard',
+    barNominalLength: 6000,
+  },
+  profiles: FOXYWIN_114MM_SLIDING_PROFILES,
+};
+
 /**
  * All Egyptian UPVC System Packs
  */
@@ -1078,5 +1680,9 @@ export const EGYPTIAN_UPVC_SYSTEMS: UPVCSystemPack[] = [
   EMAPEN_EMA60S_SLIDING, // Sliding system with Egyptian innovations
   EMAPEN_EMA55_ECONOMY,  // Economy 3-chamber system
   EMAPEN_EMA42S_BUDGET,   // Budget sliding system
+  FOXYWIN_ECO_SMART_50,   // Economy 3-chamber casement
+  FOXYWIN_FOXY_SHIELD_60, // Premium 4-chamber casement
+  FOXYWIN_ECO_VIEW_88,    // Economy 5-chamber sliding
+  FOXYWIN_FOXY_PRESTIGE_114, // Premium 5-chamber sliding (3-rail)
 ];
 
