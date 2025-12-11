@@ -198,12 +198,12 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
       };
     };
 
-    // Defer canvas initialization to improve LCP
+    // Defer canvas initialization to improve LCP - wait longer for better performance
     if ('requestIdleCallback' in window) {
-      idleCallbackId = (window as any).requestIdleCallback(initCanvas, { timeout: 2000 });
+      idleCallbackId = (window as any).requestIdleCallback(initCanvas, { timeout: 3000 });
     } else {
-      // Fallback for browsers without requestIdleCallback
-      timeoutId = setTimeout(initCanvas, 200);
+      // Fallback for browsers without requestIdleCallback - increased delay for better LCP
+      timeoutId = setTimeout(initCanvas, 1000);
     }
 
     return () => {
@@ -225,7 +225,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
       <motion.div 
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: 'url(/images/egyptian-industrial-hero-bg.png)',
+          backgroundImage: 'url(/images/egyptian-industrial-hero-bg.webp)',
           backgroundSize: 'cover',
           backgroundPosition: 'center right',
           backgroundRepeat: 'no-repeat',
@@ -244,12 +244,14 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
       
       {/* Fallback img element for better browser compatibility - Lazy loaded to improve LCP */}
       <img 
-        src="/images/egyptian-industrial-hero-bg.png"
+        src="/images/egyptian-industrial-hero-bg.webp"
         alt="Egyptian-Ottoman Industrial Scene"
         className="absolute inset-0 z-0 w-full h-full object-cover object-right opacity-0 pointer-events-none"
         style={{ display: 'none' }}
         loading="lazy"
         decoding="async"
+        width="1920"
+        height="1080"
         onError={(e) => {
           console.error('Failed to load hero background image:', e);
         }}
