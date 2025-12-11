@@ -107,11 +107,30 @@ const Navbar: React.FC<NavbarProps> = ({ user: propUser, quoteItems: _quoteItems
         { name: t('navigation.services.fabrication_services.name', 'Fabrication Services'), path: "/fabrication-services", description: t('navigation.services.fabrication_services.description', 'Precision engineering') }
       ]
     },
-    { name: t('navigation.fabricator_pro', 'Fabricator Pro'), path: "/fabricator", type: "link", badge: "BETA" },
+    { 
+      name: t('navigation.fabricator_pro', 'Fabricator Pro'), 
+      path: "/fabricator", 
+      type: user ? "dropdown" : "link", 
+      badge: "BETA",
+      items: user ? [
+        { 
+          name: '🇪🇬 Egypt Pilot', 
+          path: "/fabricator-workflow", 
+          description: "Panda 50 system validation",
+          icon: "Factory"
+        },
+        { 
+          name: '🇹🇷 Turkish Pilot', 
+          path: "/fabricator/profile-studio", 
+          description: "Custom profile import & tuning",
+          icon: "Factory"
+        }
+      ] : undefined
+    },
     { name: t('navigation.smart_shop', 'Smart Shop'), path: "/shop", type: "link", badge: "SOON" },
     { name: t('navigation.about', 'About'), path: "/about", type: "link" },
     { name: t('navigation.contact', 'Contact'), path: "/contact", type: "link" },
-  ], [t]);
+  ], [t, user]);
 
   // Simple dropdown handlers
   const handleDropdownToggle = useCallback((name: string) => {

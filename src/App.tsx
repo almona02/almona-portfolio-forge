@@ -81,6 +81,9 @@ const PublicOptimizer = lazy(() => import("./pages/PublicOptimizer.tsx"));
 const FabricatorWorkspaceLayout = lazy(
   () => import("./components/fabricator/FabricatorWorkspaceLayout.tsx"),
 );
+const ProfileStudioLite = lazy(() => import("./components/fabricator/ProfileStudioLite.tsx").then(m => ({ default: m.ProfileStudioLite })));
+const TurkishProfileGallery = lazy(() => import("./components/fabricator/TurkishProfileGallery.tsx").then(m => ({ default: m.TurkishProfileGallery })));
+const SystemPackTuningStudio = lazy(() => import("./components/fabricator/SystemPackTuningStudio.tsx").then(m => ({ default: m.SystemPackTuningStudio })));
 const CommercialPage = lazy(() => import("./pages/CommercialPage.tsx").catch(() => ({
   default: () => null,
 })));
@@ -323,6 +326,30 @@ const App = () => (
                           <ProtectedRoute>
                             <FabricatorBrandingSettings />
                           </ProtectedRoute>
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="profile-studio"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/profile-studio')}>
+                          <ProfileStudioLite />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="turkish-gallery"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/turkish-gallery')}>
+                          <TurkishProfileGallery />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="tuning-studio"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/tuning-studio')}>
+                          <SystemPackTuningStudio />
                         </Suspense>
                       }
                     />

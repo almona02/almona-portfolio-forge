@@ -1,0 +1,151 @@
+{
+  "terms": {
+    "skina": {
+      "term": "سكينة",
+      "english": "Interlock Kit",
+      "category": "sliding_systems",
+      "description": "The plastic cap where two sliding sashes meet. Contains brush pile seal to prevent air leaks through the middle.",
+      "technicalDetails": {
+        "material": "Nylon pile on aluminum base",
+        "pileDensity": "High (minimum 8mm, Egyptian standard 10mm)",
+        "width": "20mm typical",
+        "quantity": "1 per meeting stile"
+      },
+      "usage": "Critical component for sliding windows. Without this, air and dust leak through the middle gap between sashes.",
+      "suppliers": ["Caluminium", "ASAŞ", "Alumisr"]
+    },
+    "barour_shabaak": {
+      "term": "برور شباك",
+      "english": "Double Sash Adapter",
+      "category": "panda_system",
+      "description": "Special profile that clips onto frame to create secondary rebate for screen sash in Panda systems.",
+      "technicalDetails": {
+        "profileCode": "Sector Barour Shabaak",
+        "purpose": "Creates secondary rebate for screen sash",
+        "screenAdapterOffset_mm": 15,
+        "range_mm": [12, 18],
+        "quantity": "4 per window (perimeter)"
+      },
+      "usage": "Enables Panda system to have both glass sash and screen sash on the same frame. The adapter pushes the screen sash outward by 12-18mm.",
+      "manufacturerVariants": {
+        "al-sherif": 15,
+        "al-aharam": 14,
+        "sector": 15,
+        "wintech": 15
+      }
+    },
+    "takoz": {
+      "term": "تاكوز",
+      "english": "Glazing Shim",
+      "category": "hinged_systems",
+      "description": "Plastic packers used to 'toe and heel' glass in sash, preventing sagging and water pooling.",
+      "technicalDetails": {
+        "material": "PVC",
+        "thickness_mm": [3, 5, 6],
+        "purpose": "Toe and heel glass positioning",
+        "quantity": "4-6 per sash (corners + mid-points)"
+      },
+      "usage": "Critical for preventing glass sagging. Glass cannot just sit on metal - it needs plastic packers to maintain correct position. Without shims, the sash will sag and water will pool.",
+      "suppliers": ["Local (widely available)"]
+    },
+    "hars_taleeq": {
+      "term": "حارس التعليق",
+      "english": "Anti-Lift Block",
+      "category": "sliding_systems",
+      "description": "Plastic pieces inserted in the top track to prevent the sash from being lifted out (burglary protection).",
+      "technicalDetails": {
+        "material": "Nylon (UV-resistant)",
+        "height_mm": 15,
+        "compatibleTrack": "V-groove",
+        "quantity": "2 per sash (top track, both ends)"
+      },
+      "usage": "Security component. Prevents sash from being lifted out of the track from outside. Essential for sliding windows in ground floor or accessible locations.",
+      "suppliers": ["Caluminium", "ASAŞ", "Alumisr"]
+    },
+    "zawya": {
+      "term": "زاوية",
+      "english": "Corner Cleat",
+      "category": "hinged_systems",
+      "description": "Aluminum corner connector for sash assembly. Can be crimp (factory) or screw (workshop) type.",
+      "technicalDetails": {
+        "types": ["crimp", "screw"],
+        "gauge_mm": 1.5,
+        "quantity": "4 per sash (one per corner)",
+        "assemblyMethod": {
+          "crimp": "Requires factory crimping machine",
+          "screw": "Manual assembly with Allen key (M5 or M6)"
+        }
+      },
+      "usage": "Connects sash corners. Crimp cleats are stronger but require factory machine. Screw cleats are for manual workshop assembly.",
+      "suppliers": ["Caluminium", "ASAŞ", "KALE"]
+    },
+    "shish": {
+      "term": "شيش",
+      "english": "Rolling Shutter",
+      "category": "rolling_shutters",
+      "description": "Monoblock aluminum shutter that rolls up into a box above the window. Provides security, privacy, and sun protection.",
+      "technicalDetails": {
+        "boxSizes_mm": [140, 170, 180, 210],
+        "slatTypes": {
+          "4cm": "Foam-filled, standard residential",
+          "5cm": "Foam-filled, medium duty",
+          "5.5cm": "Extruded, heavy duty"
+        },
+        "motorTypes": {
+          "electric": "Somfy/Nice, 220V AC, 95% in luxury villas",
+          "manual": "Shareet/Manivella, common in middle-class apartments"
+        }
+      },
+      "usage": "Very popular in Egyptian high-end apartments (80% penetration in Cairo/Alexandria). Box mounted above window, reduces actual window height.",
+      "suppliers": ["Local Manufacturers (10th of Ramadan)"]
+    },
+    "latish": {
+      "term": "لاتيش",
+      "english": "Georgian Bars",
+      "category": "decorative",
+      "description": "Aluminum bars inside double glazing unit for decorative effect. Popular in New Cairo villas.",
+      "technicalDetails": {
+        "material": "Aluminum",
+        "sizes_mm": ["8x8", "10x10"],
+        "gridTypes": ["Salib (Cross)", "T-Shape", "Diamond"],
+        "connectors": "Saliba Latish (cross connectors)",
+        "installation": "Inside double glazing unit (between glass panes)"
+      },
+      "usage": "Decorative element. Adds 15-25% to glass cost. Charged by linear meter.",
+      "suppliers": ["Local (many suppliers)"]
+    },
+    "duran": {
+      "term": "دوران",
+      "english": "Bending",
+      "category": "architectural",
+      "description": "Profile bending service for arched windows. Charged per 'Fatha' (one bend), not per meter.",
+      "technicalDetails": {
+        "costPerBend_EGP": [50, 100],
+        "minimumRadius": {
+          "panda": 500,
+          "rock60": 1200,
+          "jumbo100": 1500
+        },
+        "requiresSpecializedMachine": true,
+        "glassTemplate": "Astamba required for custom curved glass"
+      },
+      "usage": "Egyptians love arches in villas. Not all profiles can bend. Panda system bends well (500mm min radius).",
+      "suppliers": ["Large Workshops with Bending Machines"]
+    },
+    "acp": {
+      "term": "لوح الألمنيوم المركب",
+      "english": "Aluminum Composite Panel",
+      "category": "kitchen_cladding",
+      "description": "4mm aluminum composite panel used for kitchen door bottoms. Replaces glass for safety and privacy.",
+      "technicalDetails": {
+        "thickness_mm": 4,
+        "core": ["Polyethylene", "Fire-resistant"],
+        "colors": ["Silver", "White", "Wood Effect (Sublimation)"],
+        "pricePerM2_EGP": [150, 250]
+      },
+      "usage": "Bottom part of balcony door in kitchen (hides messy floor area). Also used for safety (tempered glass alternative).",
+      "suppliers": ["Local Suppliers (10th of Ramadan, Obour)"]
+    }
+  }
+}
+

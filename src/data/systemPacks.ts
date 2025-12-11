@@ -9,6 +9,7 @@ import {
   ASAS_REFD77_PACK,
 } from '@/data/profileSystems/turkish/asas/asasCW100';
 import { CALUMINIUM_PS_PACK } from '@/data/profileSystems/egyptian/caluminium/ps';
+import { PANDA_50_SYSTEM_PACK, PANDA_100_SYSTEM_PACK } from '@/data/profileSystems/egyptian/panda/panda';
 
 /**
  * System pack metadata – describes a branded window/door system
@@ -1030,6 +1031,11 @@ export const JUMBO100_SYSTEM_PACK: SystemPack = {
 };
 
 export const SYSTEM_PACKS: SystemPack[] = [
+  // Egyptian Systems (Gold Tier - Priority)
+  PANDA_50_SYSTEM_PACK, // The King of Egypt - 90% residential market
+  PANDA_100_SYSTEM_PACK, // Commercial/Heavy variant
+  CALUMINIUM_PS_PACK,
+  // Turkish Systems
   ROCK60_SYSTEM_PACK,
   JUMBO100_SYSTEM_PACK,
   ANADOLU_W60_PACK,
@@ -1040,7 +1046,6 @@ export const SYSTEM_PACKS: SystemPack[] = [
   ASAS_RESCARA_RWT75_PACK,
   ASAS_RESCARA_R50_PACK,
   ASAS_REFD77_PACK,
-  CALUMINIUM_PS_PACK,
   // Coming Soon – Additional Turkish & Egyptian branded packs
   // Winsa_PACK,
   // ALUMIL_EGYPT_NC_PACK,

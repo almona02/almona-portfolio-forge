@@ -18,6 +18,10 @@ import type { Database, SectorType } from '@/types/database';
 import { ProjectCockpit, type ProjectType, getProjectTypeConfig } from './ProjectCockpit';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useTranslation } from 'react-i18next';
+import { SystemTuningStudio } from './SystemTuningStudio';
+import { useMemo } from 'react';
+import { loadCustomSystems, addCustomSystem } from '@/lib/fabricator/customSystemStorage';
+import { CustomSystemManager } from './CustomSystemManager';
 
 type FabricatorCustomerRow = Database['public']['Tables']['fabricator_customers']['Row'];
 
@@ -38,6 +42,18 @@ export interface ProjectHeaderMeta {
   systemPackId?: string;
   /** Optional shortlist of allowed system packs for this project */
   allowedSystemPackIds?: string[];
+  /** Egyptian constraints captured by the wizard */
+  egyptianConstraints?: {
+    governorate?: string;
+    windZone?: string;
+    exposure?: string;
+    floorLevel?: number;
+    usageType?: string;
+    baseShape?: string;
+    openingType?: string;
+    recommendedByWizard?: boolean;
+    wizardVersion?: string;
+  };
 }
 
 interface NewProjectWizardProps {
@@ -79,6 +95,11 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
     initialMeta?.allowedSystemPackIds ||
       (initialMeta?.systemPackId ? [initialMeta.systemPackId] : [])
   );
+  const [customSystems, setCustomSystems] = useState<any[]>(() => loadCustomSystems());
+  const [showTuningStudio, setShowTuningStudio] = useState(false);
+  const [tuningInitialSystem, setTuningInitialSystem] = useState<any | null>(null);
+
+  const allSystems = useMemo(() => [...SYSTEM_PACKS, ...customSystems], [customSystems]);
 
   // Pre-select system pack based on project type
   useEffect(() => {
@@ -86,7 +107,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
       const config = getProjectTypeConfig(projectType);
       if (config && config.suggestedSystems.length > 0) {
         const suggestedSystem = config.suggestedSystems[0];
-        const pack = SYSTEM_PACKS.find(
+        const pack = allSystems.find(
           (p) =>
             p.meta.id === suggestedSystem.toUpperCase() ||
             p.meta.name.toUpperCase().includes(suggestedSystem.toUpperCase())
@@ -96,7 +117,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
         }
       }
     }
-  }, [projectType]);
+  }, [projectType, allSystems]);
 
   // Load saved fabricator customers so they can be used from the dropdown
   useEffect(() => {
@@ -172,6 +193,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -228,12 +250,25 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
 
             <div className="space-y-4 mt-2">
           <div className="space-y-2">
-            <Label className="text-xs flex items-center gap-1">
-              {t('new_project_wizard.project_system_packs', 'Project System Packs (multi-select)')}
-              <span className="text-[10px] text-gray-500">({t('new_project_wizard.use_to_shortlist', 'use to shortlist relevant systems')})</span>
-            </Label>
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-xs flex items-center gap-1">
+                  {t('new_project_wizard.project_system_packs', 'Project System Packs (multi-select)')}
+                  <span className="text-[10px] text-gray-500">({t('new_project_wizard.use_to_shortlist', 'use to shortlist relevant systems')})</span>
+                </Label>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs"
+                onClick={() => setShowTuningStudio(true)}
+              >
+                <Factory className="h-3.5 w-3.5 mr-1" />
+                Tune Custom System
+              </Button>
+            </div>
             <div className="grid grid-cols-1 gap-2 max-h-[260px] overflow-y-auto pr-1">
-              {SYSTEM_PACKS.map((pack) => {
+              {allSystems.map((pack) => {
                 const stats = getPackStats(pack);
                 const isSelected = selectedSystemPackIds.includes(pack.meta.id);
                 return (
@@ -274,6 +309,27 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                         <Badge variant="outline" className="text-[10px] border-gray-700">
                           {stats.accessoryCount} {t('new_project_wizard.accessories', 'Accessories')}
                         </Badge>
+                        {pack.meta.id.startsWith('custom') && (
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                            }}
+                            onPointerDown={(e) => e.stopPropagation()}
+                          >
+                            <CustomSystemManager
+                              systemId={pack.meta.id}
+                              systemName={pack.meta.name}
+                              onDelete={() => setCustomSystems(loadCustomSystems())}
+                              onArchive={() => setCustomSystems(loadCustomSystems())}
+                              onDuplicate={() => setCustomSystems(loadCustomSystems())}
+                              onEdit={() => {
+                                setTuningInitialSystem(pack as any);
+                                setShowTuningStudio(true);
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </button>
@@ -451,6 +507,18 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    <SystemTuningStudio
+      open={showTuningStudio}
+      onClose={() => setShowTuningStudio(false)}
+      initialSystem={tuningInitialSystem}
+      onSave={(customPack) => {
+        const updated = addCustomSystem(customPack);
+        setCustomSystems(updated);
+        setSelectedSystemPackIds((prev) => [...prev, customPack.meta.id]);
+        setShowTuningStudio(false);
+      }}
+    />
+    </>
   );
 };
 

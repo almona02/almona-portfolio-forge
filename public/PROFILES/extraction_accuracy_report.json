@@ -1,0 +1,39 @@
+{
+  "mdb_verification": {
+    "file_exists": true,
+    "tables_found": 1,
+    "tables_verified": [
+      {
+        "table_name": "Table1",
+        "actual_rows": 15,
+        "extracted_rows": 0,
+        "actual_columns": 37,
+        "extracted_columns": 0,
+        "row_match": false,
+        "column_match": false,
+        "column_names_match": false
+      }
+    ],
+    "total_rows_verified": 0,
+    "columns_verified": 0,
+    "data_integrity": "poor",
+    "accuracy_score": 0.0,
+    "issues": []
+  },
+  "pdf_verification": {
+    "file_exists": true,
+    "pages_found": 11,
+    "pages_extracted": 19,
+    "text_extracted": 20346,
+    "metadata_extracted": true,
+    "accuracy_score": 0.0,
+    "issues": [
+      "Text length mismatch: extracted 20346 vs estimated 8550"
+    ],
+    "first_page_verified": false,
+    "last_page_verified": false,
+    "text_length_ratio": 0.42023002064287823
+  },
+  "overall_accuracy": 0.0,
+  "grade": "D (Poor)"
+}

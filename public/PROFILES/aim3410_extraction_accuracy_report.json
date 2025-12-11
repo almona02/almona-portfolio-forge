@@ -1,0 +1,22 @@
+{
+  "aim3410_verification": {
+    "file_exists": true,
+    "pages_found": 19,
+    "pages_extracted": 19,
+    "text_extracted": 20346,
+    "metadata_extracted": true,
+    "accuracy_score": 1.0,
+    "issues": [],
+    "key_content_verified": {},
+    "first_page_verified": true,
+    "last_page_verified": true,
+    "specs_verified": true,
+    "gcode_content_verified": true,
+    "key_phrases_found": 8,
+    "key_phrases_total": 10,
+    "key_phrases_ratio": 0.8,
+    "text_length_ratio": 0.9836331465644352
+  },
+  "accuracy": 1.0,
+  "grade": "A+ (Excellent)"
+}

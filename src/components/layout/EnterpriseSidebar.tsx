@@ -72,6 +72,11 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   const sidebarRef = useRef<HTMLElement>(null);
   const { branding } = useCompanyBranding();
 
+  // Collapse all menus on route change to reduce noise
+  useEffect(() => {
+    setActiveMenu(null);
+  }, [location.pathname]);
+
   // Responsive sidebar sizing
   const sidebarConfig = useMemo(() => {
     if (viewportWidth < 640) {

@@ -54,8 +54,10 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: '#002D62', // Nile Deep Blue - The Authority
+					foreground: '#FFFFFF',
+					light: '#003D7A',
+					dark: '#001D4A'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -70,8 +72,18 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					DEFAULT: '#D4AF37', // Royal Gold - The Standard
+					foreground: '#000000',
+					light: '#E5C158',
+					dark: '#B8941F'
+				},
+				canvas: {
+					DEFAULT: '#F0F0F0', // Limestone - The Workspace
+					foreground: '#000000'
+				},
+				machine: {
+					DEFAULT: '#2C3539', // Iron Grey - The Tech
+					foreground: '#FFFFFF'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -136,6 +148,10 @@ export default {
 					'0%': { transform: 'translateX(-10px)', opacity: '0' },
 					'100%': { transform: 'translateX(0)', opacity: '1' }
 				},
+				'stone-slide': {
+					'0%': { transform: 'translateY(20px)', opacity: '0', scale: '0.98' },
+					'100%': { transform: 'translateY(0)', opacity: '1', scale: '1' }
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -143,6 +159,11 @@ export default {
 				'fade-in': 'fade-in 0.3s ease-out',
 				'fade-out': 'fade-out 0.3s ease-out',
 				'slide-in': 'slide-in 0.3s ease-out',
+				'stone-slide': 'stone-slide 0.5s cubic-bezier(0.4, 0, 0.2, 1)', // Heavy and Precise
+			},
+			fontFamily: {
+				'cairo': ['Cairo', 'sans-serif'], // Headings - Authority
+				'mono': ['JetBrains Mono', 'monospace'], // Data - Precision
 			},
 			backgroundImage: {
 				'gradient-orange': 'linear-gradient(90deg, #FF5F1F 0%, #FF8C00 100%)',

@@ -1,0 +1,254 @@
+{
+  "machineId": "aim-3410",
+  "name": "AIM 3410",
+  "model": "AIM 3410",
+  "brand": "yilmaz",
+  "description": "4-axis CNC aluminium profile machining center with 24,000 RPM electro spindle, 7+1 automatic tool magazine, and integrated saw operations",
+  
+  "specifications": {
+    "workingCapacity": {
+      "xAxis": 3200,
+      "yAxis": 300,
+      "zAxis": 260,
+      "aAxis": {
+        "min": -95,
+        "max": 95
+      },
+      "unit": "mm"
+    },
+    "electroSpindle": {
+      "maxSpeed": 24000,
+      "maxPowerS1": 7.5,
+      "maxPowerS6": 9,
+      "toolHolder": "HSK F63",
+      "unit": {
+        "speed": "RPM",
+        "power": "kW"
+      }
+    },
+    "toolMagazine": {
+      "capacity": 8,
+      "type": "Mobile with bridge",
+      "cutterTools": 7,
+      "sawBlade": 1,
+      "maxSawDiameter": 180,
+      "maxToolWeight": 3,
+      "unit": {
+        "diameter": "mm",
+        "weight": "kg"
+      }
+    },
+    "feedRates": {
+      "x": 60,
+      "y": 50,
+      "z": 50,
+      "a": 72,
+      "unit": {
+        "xyz": "m/min",
+        "a": "deg/sec"
+      }
+    },
+    "servoMotors": {
+      "x": 1,
+      "y": 1,
+      "z": 1,
+      "a": 0.75,
+      "unit": "kW"
+    },
+    "clamping": {
+      "standard": 4,
+      "maxOptional": 2,
+      "total": 6,
+      "automaticPositioning": true,
+      "positioningSoftware": "CAMPROX"
+    },
+    "cncAxes": 4,
+    "precision": 0.1,
+    "totalPower": 11.6,
+    "unit": "kW"
+  },
+  
+  "programming": {
+    "language": "ISO G-code",
+    "software": "AIMCAM",
+    "features": [
+      "Standard ISO 'G' code programming language",
+      "Macro program support",
+      "Automatic G-code generation from graphics",
+      "Customer-specific graphic drawings",
+      "Automatic clamp handling",
+      "Tool table for parameters and offsets",
+      "CNC Setting Tables for machine parameters"
+    ],
+    "gCodeCommands": {
+      "motion": ["G00", "G01", "G02", "G03", "G04"],
+      "coordinate": ["G17", "G18", "G19", "G20", "G21", "G28", "G53", "G54-G59"],
+      "positioning": ["G90", "G91", "G92"],
+      "feedRate": ["G93", "G94", "G95"],
+      "cannedCycles": ["G80", "G81", "G82", "G83", "G84", "G85", "G86", "G87", "G88", "G89"]
+    },
+    "mCodeCommands": {
+      "program": ["M00", "M01", "M02", "M30"],
+      "spindle": ["M03", "M04", "M05"],
+      "tool": ["M06"],
+      "coolant": ["M07", "M08", "M09"],
+      "subprogram": ["M98", "M99"]
+    }
+  },
+  
+  "macros": {
+    "mill_slot": {
+      "name": "Mill Slot",
+      "type": "milling",
+      "description": "Mill a slot in the profile",
+      "parameters": ["x", "y", "z", "length", "width", "depth", "toolNumber", "feedRate"],
+      "requiresTool": true,
+      "requiresClamp": true
+    },
+    "drill_hole": {
+      "name": "Drill Hole",
+      "type": "drilling",
+      "description": "Drill a hole in the profile",
+      "parameters": ["x", "y", "z", "diameter", "depth", "toolNumber", "peckDepth"],
+      "requiresTool": true,
+      "requiresClamp": true
+    },
+    "saw_cut": {
+      "name": "Saw Cut",
+      "type": "saw_cut",
+      "description": "Cut profile with saw blade (tool 8)",
+      "parameters": ["x", "y", "z", "angle", "length"],
+      "requiresTool": true,
+      "requiresClamp": true
+    },
+    "clamp_position": {
+      "name": "Clamp Position",
+      "type": "clamp_position",
+      "description": "Automatically position clamps (via CAMPROX)",
+      "parameters": ["clampNumber", "xPosition"],
+      "requiresTool": false,
+      "requiresClamp": false
+    }
+  },
+  
+  "toolTable": {
+    "maxTools": 8,
+    "toolTypes": ["cutter", "saw"],
+    "defaultTools": [
+      {
+        "number": 1,
+        "type": "cutter",
+        "diameter": 5,
+        "description": "Ø5mm carbide cutter"
+      },
+      {
+        "number": 2,
+        "type": "cutter",
+        "diameter": 6,
+        "description": "Ø6mm carbide cutter"
+      },
+      {
+        "number": 3,
+        "type": "cutter",
+        "diameter": 8,
+        "description": "Ø8mm carbide cutter"
+      },
+      {
+        "number": 4,
+        "type": "cutter",
+        "diameter": 10,
+        "description": "Ø10mm carbide cutter"
+      },
+      {
+        "number": 5,
+        "type": "cutter",
+        "diameter": 12,
+        "description": "Ø12mm carbide cutter"
+      },
+      {
+        "number": 6,
+        "type": "cutter",
+        "diameter": 13,
+        "description": "Ø13mm carbide cutter"
+      },
+      {
+        "number": 7,
+        "type": "cutter",
+        "diameter": 8,
+        "description": "Ø8mm carbide cutter (backup)"
+      },
+      {
+        "number": 8,
+        "type": "saw",
+        "diameter": 180,
+        "description": "Ø180mm saw blade"
+      }
+    ]
+  },
+  
+  "cncSettings": {
+    "hardware": {
+      "cpu": "Intel Atom E3815",
+      "cpuSpeed": "1460 MHz",
+      "cores": 1,
+      "ram": "1 GB DDR3 SDRAM",
+      "cache": "512 kB L2",
+      "usb": ["USB3.0", "USB2.0"],
+      "display": "15'' Colorful touch screen",
+      "controlBoard": "Speed control board for 4 axes and spindle"
+    },
+    "software": {
+      "features": [
+        "Displaying position of axes on screen",
+        "Clamp control",
+        "Rotational speed of spindle display",
+        "Manual control of axes",
+        "Automatic cooling control",
+        "Profile support control",
+        "Machine safety cover control"
+      ],
+      "tables": {
+        "toolTable": "Storing tool parameters and offsets",
+        "cncSettingTables": "Machine parameters for maintenance (Axial length, origins, number of clamps, number of magazines, correction values)"
+      }
+    }
+  },
+  
+  "operations": {
+    "supported": [
+      "Multi-piece operations (holes, slots, notching, saw blade cuts)",
+      "Milling on top + side faces + end",
+      "Saw cutting on top + side faces + ends",
+      "Special milling operations",
+      "Automatic clamp handling before operation",
+      "Automatic clamp handling during operation"
+    ],
+    "machinableFaces": {
+      "withMillingTool": "1+2+2 (top + side faces + end)",
+      "withSawTool": "1+2+2 (top + side faces + ends)"
+    }
+  },
+  
+  "optimizationIntegration": {
+    "supported": true,
+    "exportFormats": ["gcode", "nc", "txt"],
+    "macroGeneration": true,
+    "gCodeGeneration": true,
+    "toolSelection": "automatic",
+    "clampPositioning": "automatic",
+    "coordinateSystem": "ISO G-code standard"
+  },
+  
+  "features": {
+    "automaticClampPositioning": true,
+    "automaticToolChange": true,
+    "toolMagazineOnYAxis": true,
+    "remoteConnection": true,
+    "usbImport": true,
+    "multiLanguage": true,
+    "soundInsulation": true,
+    "ledLighting": true,
+    "handHeldController": "optional"
+  }
+}
+
