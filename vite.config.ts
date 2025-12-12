@@ -128,11 +128,11 @@ export default defineConfig(({ mode }) => {
       ...(isProduction && process.env.ANALYZE === 'true'
         ? [
             visualizer({
-              filename: "dist/bundle-analysis.html",
+              filename: "dist/stats.json",
+              template: "raw-data", // emit JSON for programmatic analysis
               open: false,
               gzipSize: true,
               brotliSize: true,
-              template: "treemap", // Use treemap for visual HTML output
               sourcemap: false,
             }),
           ]
@@ -272,45 +272,28 @@ export default defineConfig(({ mode }) => {
           entryFileNames: `assets/[name]-[hash].js`,
           chunkFileNames: `assets/[name]-[hash].js`,
           assetFileNames: `assets/[name]-[hash].[ext]`,
-          // AGGRESSIVE chunk splitting to isolate 17MB monster
+          // Refined: keep pure engines split; put all React-touching deps together
           manualChunks: (id) => {
-            // Exclude app code from vendor chunks
+            // Exclude app code
             if (id.includes('/src/') || id.includes('\\src\\')) {
               return undefined;
             }
 
-            // STEP 1: isolate only safe heavy engines
-            if (id.includes('node_modules/three/') && !id.includes('@react-three')) {
+            // Pure, non-React engines (lazy)
+            if (id.includes('hls.js')) {
+              return 'video-engine';
+            }
+            if (id.includes('maplibre-gl') || id.includes('mapbox-gl')) {
+              return 'map-engine';
+            }
+            if (id.includes('node_modules/three/') && !id.includes('postprocessing')) {
               return 'three-engine';
             }
             if (id.includes('node_modules/ammo.js/')) {
               return 'physics-engine';
             }
-            if (
-              id.includes('node_modules/@tensorflow/') ||
-              id.includes('node_modules/tfjs/') ||
-              id.includes('node_modules/onnx/') ||
-              id.includes('node_modules/@google/generative-ai/')
-            ) {
-              return 'ml-engine';
-            }
-            if (
-              id.includes('node_modules/jspdf/') ||
-              id.includes('node_modules/html2canvas/') ||
-              id.includes('node_modules/exceljs/') ||
-              id.includes('node_modules/pdfjs-dist/')
-            ) {
-              return 'document-vendor';
-            }
-            if (
-              id.includes('node_modules/chart.js/') ||
-              id.includes('node_modules/d3/') ||
-              id.includes('node_modules/victory/')
-            ) {
-              return 'chart-vendor';
-            }
 
-            // STEP 2: everything else -> react-vendor (safety net)
+            // Everything else (React + wrappers + utilities)
             if (id.includes('node_modules')) {
               return 'react-vendor';
             }
