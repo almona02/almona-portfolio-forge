@@ -1,25 +1,30 @@
-import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import {
+    getDefaultGlazing,
+    getDefaultProfileColor
+} from '@/data/egyptian-defaults';
+import { EGYPTIAN_PATTERNS, getPatternsForSystem, type EgyptianPattern } from '@/data/egyptian-window-patterns';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
+import { addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import { ValidationError, getConstraintsForSystemPack, validateMeasurements } from '@/lib/fabricatorValidation';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Checkbox } from '@/shared/ui/ui/checkbox';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Toggle } from '@/shared/ui/ui/toggle';
-import { Checkbox } from '@/shared/ui/ui/checkbox';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Ruler, Box, CheckCircle2, ArrowRight, ArrowLeft, Factory, ShieldCheck, Grid3X3, QrCode, Sparkles } from 'lucide-react';
-import { MeasurementData, SystemProfileSelections, WindowUnit, WindowGrid } from '@/types/fabricator';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
-import { validateMeasurements, ValidationError, getConstraintsForSystemPack } from '@/lib/fabricatorValidation';
-import { SmartDrawCanvas } from './SmartDrawCanvas';
-import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
-import { getPatternsForSystem } from '@/data/egyptian-window-patterns';
-import { SystemTuningStudio } from './SystemTuningStudio';
-import { loadCustomSystems, addCustomSystem } from '@/lib/fabricator/customSystemStorage';
-import { ProductionLabel } from './ProductionLabel';
+import { MeasurementData, SystemProfileSelections, WindowGrid, WindowUnit } from '@/types/fabricator';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowLeft, ArrowRight, Box, CheckCircle2, Factory, Grid3X3, Maximize2, Minimize2, QrCode, RotateCcw, Ruler, ShieldCheck, Sparkles, ZoomIn, ZoomOut } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { CustomSystemManager } from './CustomSystemManager';
+import { ProductionLabel } from './ProductionLabel';
+import { SmartDrawCanvas } from './SmartDrawCanvas';
+import { SystemTuningStudio } from './SystemTuningStudio';
 
 interface SmartMeasuringInterfaceProps {
   onMeasurementComplete: (data: MeasurementData) => void;
@@ -35,6 +40,18 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   region,
 }) => {
   const { t } = useTranslation('fabricator');
+  
+  // Get Egyptian defaults based on region
+  const egyptianDefaults = useMemo(() => {
+    const defaultColor = getDefaultProfileColor(region || 'Cairo');
+    const defaultGlazing = getDefaultGlazing(region || 'Cairo', true); // External window
+    return {
+      color: defaultColor.name,
+      glazingType: defaultGlazing.type,
+      glassColor: defaultGlazing.color || 'clear',
+    };
+  }, [region]);
+  
   const [measurements, setMeasurements] = useState({
     // Default professional stub dimensions – can be refined per system later.
     width: '1200',
@@ -42,9 +59,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     measurementMode: 'hole', // 'hole' (rough opening) or 'manufacturing'
     wallDeduction: '15', // mm deduction for wall tolerance
     windowType: 'sliding_window', // Default to sliding
-    color: '',
-    glazingType: '',
-    glassColor: '',
+    color: egyptianDefaults.color,
+    glazingType: egyptianDefaults.glazingType,
+    glassColor: egyptianDefaults.glassColor,
     flyScreenType: '',
     flatNumber: '',
     buildingBlock: '',
@@ -85,6 +102,28 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   const [_validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [currentStep, setCurrentStep] = useState(0);
+  const [selectedPatternId, setSelectedPatternId] = useState<string>('');
+  const [blueprintZoom, setBlueprintZoom] = useState<number>(1); // Zoom level (1 = 100%, 1.2 = 120%, etc.)
+  const [blueprintFullscreen, setBlueprintFullscreen] = useState<boolean>(false);
+
+  // Escape key handler to reset zoom and exit fullscreen
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        // Exit fullscreen first if active
+        if (blueprintFullscreen) {
+          setBlueprintFullscreen(false);
+        }
+        // Reset zoom to normal
+        if (blueprintZoom !== 1) {
+          setBlueprintZoom(1);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [blueprintZoom, blueprintFullscreen]);
   const [highlightedDimension, setHighlightedDimension] = useState<'width' | 'height' | null>(null); // Used in input focus handlers
   const [verificationConfirmed, setVerificationConfirmed] = useState<boolean | 'indeterminate'>(false);
   const [showLabel, setShowLabel] = useState(false);
@@ -140,6 +179,21 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       grid: isGridMode ? grid : undefined
     };
   }, [measurements, grid, isGridMode, selectedSystemPackId]);
+  
+  // Force blueprint to update when grid changes - include ALL grid properties for reactivity
+  // Use JSON.stringify to ensure any grid change triggers update
+  const blueprintKey = useMemo(() => {
+    if (!grid) return `blueprint-no-grid-${isGridMode}`;
+    // Include all grid properties to ensure reactivity
+    const gridHash = JSON.stringify({
+      cols: grid.cols,
+      rows: grid.rows,
+      cells: grid.cells.map(c => ({ id: c.id, row: c.row, col: c.col, type: c.type })),
+      colWidths: grid.colWidths,
+      rowHeights: grid.rowHeights
+    });
+    return `blueprint-${gridHash}-${isGridMode}`;
+  }, [grid, isGridMode]);
 
   const handleInputChange = (field: string, value: string) => {
     setMeasurements(prev => ({ ...prev, [field]: value }));
@@ -369,6 +423,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       ...measurements,
       systemPackId: selectedSystemPackId,
       systemProfileSelections,
+      // Rule 18: Include wall tolerance data for InterferenceEngine
+      measurementMode: measurements.measurementMode as 'hole' | 'manufacturing',
+      wallDeduction: measurements.wallDeduction,
+      manufacturingWidth,
+      manufacturingHeight,
+      // Include rough opening if in hole mode
+      roughOpeningWidth: isHoleMode ? rawWidth : undefined,
+      roughOpeningHeight: isHoleMode ? rawHeight : undefined,
     };
 
     // Call the callback
@@ -565,27 +627,112 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                       <p className="text-[11px] text-gray-400 mt-1">No presets for this system. Select a different system to see patterns.</p>
                     ) : (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                        {availablePatterns.map((pat) => (
+                        {availablePatterns.map((pat) => {
+                          const isSelected = selectedPatternId === pat.id;
+                          return (
                           <button
                             key={pat.id}
                             onClick={() => {
+                              setSelectedPatternId(pat.id);
                               const midWidth = Math.round((pat.typicalWidthMm[0] + pat.typicalWidthMm[1]) / 2);
                               const midHeight = Math.round((pat.typicalHeightMm[0] + pat.typicalHeightMm[1]) / 2);
                               handleInputChange('width', String(midWidth));
                               handleInputChange('height', String(midHeight));
+                              
+                              // Update grid using ENGINEERING TECHNICAL SPECIFICATIONS from pattern
+                              // This ensures all technical details (mullions, transoms, cell types) are applied
+                              if (pat.gridSpec) {
+                                const gridSpec = pat.gridSpec;
+                                const newCells: typeof grid.cells = gridSpec.cells.map((cell, idx) => ({
+                                  id: `${cell.row}-${cell.col}`,
+                                  row: cell.row,
+                                  col: cell.col,
+                                  type: cell.type,
+                                  openingDirection: cell.openingDirection,
+                                  colSpan: cell.colSpan,
+                                  rowSpan: cell.rowSpan
+                                }));
+                                
+                                // Update grid state with technical specifications
+                                setGrid({
+                                  rows: gridSpec.rows,
+                                  cols: gridSpec.cols,
+                                  cells: newCells,
+                                  colWidths: gridSpec.colWidths,
+                                  rowHeights: gridSpec.rowHeights
+                                });
+                              } else {
+                                // Fallback: Parse layout string if gridSpec not available (legacy patterns)
+                                let newRows = 1;
+                                let newCols = 1;
+                                
+                                const panelMatch = pat.layout.match(/(\d+)[- ]panel/);
+                                if (panelMatch) {
+                                  const panelCount = parseInt(panelMatch[1], 10);
+                                  if (pat.type === 'sliding' || pat.type === 'door') {
+                                    newRows = 1;
+                                    newCols = panelCount;
+                                  } else {
+                                    newRows = Math.ceil(Math.sqrt(panelCount));
+                                    newCols = Math.ceil(panelCount / newRows);
+                                  }
+                                } else if (pat.layout.includes('single') || pat.layout.includes('lite')) {
+                                  newRows = 1;
+                                  newCols = 1;
+                                }
+                                
+                                const newCells: typeof grid.cells = [];
+                                for (let r = 0; r < newRows; r++) {
+                                  for (let c = 0; c < newCols; c++) {
+                                    const cellId = `${r}-${c}`;
+                                    let cellType: typeof grid.cells[0]['type'] = 'fixed';
+                                    
+                                    if (pat.type === 'sliding' || pat.type === 'door') {
+                                      cellType = 'sliding';
+                                    } else if (pat.type === 'casement' || pat.type === 'tilt_turn') {
+                                      cellType = 'sash';
+                                    } else if (pat.type === 'fixed') {
+                                      cellType = 'fixed';
+                                    } else if (pat.type === 'mixed') {
+                                      if (newCols > 1 && c === Math.floor(newCols / 2)) {
+                                        cellType = 'fixed';
+                                      } else {
+                                        cellType = 'sash';
+                                      }
+                                    }
+                                    
+                                    newCells.push({
+                                      id: cellId,
+                                      row: r,
+                                      col: c,
+                                      type: cellType
+                                    });
+                                  }
+                                }
+                                
+                                setGrid({
+                                  rows: newRows,
+                                  cols: newCols,
+                                  cells: newCells
+                                });
+                              }
                             }}
-                            className="text-left bg-gray-900/40 border border-gray-700 hover:border-orange-500 rounded-lg p-3 transition-colors"
+                            className={`text-left rounded-lg p-3 transition-all ${
+                              isSelected 
+                                ? 'bg-orange-500/20 border-2 border-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.3)]' 
+                                : 'bg-gray-900/40 border border-gray-700 hover:border-orange-500'
+                            }`}
                           >
                             <div className="text-sm text-white font-semibold">{pat.name}</div>
-                            <div className="text-[11px] text-gray-400">{pat.layout}</div>
-                            <div className="text-[11px] text-gray-400 mt-1">
-                              {pat.typicalWidthMm[0]}–{pat.typicalWidthMm[1]} mm · {pat.typicalHeightMm[0]}–{pat.typicalHeightMm[1]} mm
-                            </div>
-                            {pat.notes && (
-                              <div className="text-[11px] text-orange-300 mt-1">{pat.notes}</div>
+                            {isSelected && (
+                              <div className="mt-2 text-[10px] text-orange-400 font-semibold flex items-center gap-1">
+                                <CheckCircle2 className="h-3 w-3" />
+                                Selected
+                              </div>
                             )}
                           </button>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -1079,35 +1226,126 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
       {/* Right Panel: Clean Blueprint Preview */}
       <div className="flex-1 bg-white rounded-xl border border-gray-200 relative overflow-hidden shadow-sm">
-        {/* Header */}
+        {/* Header with Zoom Controls */}
         <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between">
           <Badge className="bg-blue-50 text-blue-700 border-blue-200 font-medium text-xs px-3 py-1">
             <Ruler className="h-3 w-3 mr-1.5" />
             Measurement Preview
           </Badge>
-          {activeSystemPack && (
-            <div className="text-xs text-gray-600 bg-white/90 backdrop-blur px-3 py-1 rounded border border-gray-200">
-              <span className="font-semibold">{activeSystemPack.meta.name}</span>
+          <div className="flex items-center gap-2">
+            {activeSystemPack && (
+              <div className="text-xs text-gray-600 bg-white/90 backdrop-blur px-3 py-1 rounded border border-gray-200">
+                <span className="font-semibold">{activeSystemPack.meta.name}</span>
+              </div>
+            )}
+            {/* Zoom Controls */}
+            <div className="flex items-center gap-1 bg-white/90 backdrop-blur rounded border border-gray-200 p-1 shadow-sm">
+              <button
+                onClick={() => setBlueprintZoom(prev => Math.max(0.5, prev - 0.1))}
+                className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                title="Zoom Out (Ctrl + Scroll Down)"
+                aria-label="Zoom Out"
+              >
+                <ZoomOut className="h-4 w-4 text-gray-600" />
+              </button>
+              <span 
+                className={`text-xs font-mono px-2 min-w-[3rem] text-center transition-colors ${
+                  blueprintZoom !== 1 
+                    ? 'text-orange-600 font-bold bg-orange-50 rounded px-2 py-0.5' 
+                    : 'text-gray-700'
+                }`}
+                title={blueprintZoom !== 1 ? "Press Escape to reset to 100%" : "Zoom Level"}
+              >
+                {Math.round(blueprintZoom * 100)}%
+              </span>
+              <button
+                onClick={() => setBlueprintZoom(prev => Math.min(2.0, prev + 0.1))}
+                className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                title="Zoom In (Ctrl + Scroll Up)"
+                aria-label="Zoom In"
+              >
+                <ZoomIn className="h-4 w-4 text-gray-600" />
+              </button>
+              {/* Prominent Reset Button - Highlighted when zoom !== 1 */}
+              <button
+                onClick={() => {
+                  setBlueprintZoom(1);
+                  if (blueprintFullscreen) {
+                    setBlueprintFullscreen(false);
+                  }
+                }}
+                className={`p-1.5 rounded transition-all ${
+                  blueprintZoom !== 1
+                    ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-md animate-pulse'
+                    : 'hover:bg-gray-100 text-gray-600'
+                }`}
+                title={blueprintZoom !== 1 ? "Reset to 100% (Escape)" : "Reset Zoom (currently at 100%)"}
+                aria-label="Reset Zoom"
+              >
+                <RotateCcw className={`h-4 w-4 ${blueprintZoom !== 1 ? 'text-white' : 'text-gray-600'}`} />
+              </button>
+              {blueprintZoom !== 1 && (
+                <span className="text-[10px] text-orange-600 font-medium px-1.5 py-0.5 bg-orange-50 rounded border border-orange-200">
+                  ESC
+                </span>
+              )}
+              <button
+                onClick={() => setBlueprintFullscreen(!blueprintFullscreen)}
+                className="p-1.5 hover:bg-gray-100 rounded transition-colors"
+                title={blueprintFullscreen ? "Exit Fullscreen (Escape)" : "Fullscreen Preview"}
+                aria-label={blueprintFullscreen ? "Exit Fullscreen" : "Fullscreen Preview"}
+              >
+                {blueprintFullscreen ? (
+                  <Minimize2 className="h-4 w-4 text-gray-600" />
+                ) : (
+                  <Maximize2 className="h-4 w-4 text-gray-600" />
+                )}
+              </button>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Dynamic Blueprint Canvas */}
         {previewWindowUnit && Number(measurements.width) > 0 && Number(measurements.height) > 0 ? (
-          <div className="w-full h-full flex items-center justify-center p-6 md:p-8">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className="w-full h-full max-w-4xl"
-            >
-              <svg
-                viewBox="0 0 1200 800"
-                className="w-full h-full"
-                style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))' }}
-              >
-                {/* Background grid - more visible and dynamic */}
-                <defs>
+          <>
+            {/* Blueprint Canvas - Conditionally rendered in normal or fullscreen mode */}
+            {blueprintFullscreen && typeof document !== 'undefined' ? (
+              // Fullscreen Mode - Render via Portal
+              createPortal(
+                <div className="fixed inset-0 z-[9999] bg-white overflow-auto">
+                  {/* Fullscreen Mode Top Reset Button */}
+                  <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
+                    <button
+                      onClick={() => {
+                        setBlueprintZoom(1);
+                        setBlueprintFullscreen(false);
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg shadow-lg transition-all hover:shadow-xl font-medium text-sm"
+                      title="Reset Zoom & Exit Fullscreen (Escape)"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      <span>Reset to Normal View</span>
+                      <span className="text-xs opacity-75">(ESC)</span>
+                    </button>
+                  </div>
+                  {/* Fullscreen Blueprint Content */}
+                  <div className="w-full h-full flex items-center justify-center p-6 md:p-8">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: blueprintZoom }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full h-full max-w-full"
+                      style={{ transformOrigin: 'center' }}
+                    >
+                      {/* Render the same SVG content as normal view */}
+                      <svg
+                        key={`fullscreen-${blueprintKey}`}
+                        viewBox="0 0 1200 800"
+                        className="w-full h-full"
+                        style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))' }}
+                      >
+                        {/* Background grid - more visible and dynamic */}
+                        <defs>
                   <pattern id="blueprint-grid" width="30" height="30" patternUnits="userSpaceOnUse">
                     <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#d1d5db" strokeWidth="0.8" opacity="0.6"/>
                   </pattern>
@@ -1122,12 +1360,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 )}
 
                 {/* Calculate dimensions with smooth transitions */}
+                {/* IMPORTANT: This IIFE re-runs on every render, but we need to ensure grid state is fresh */}
                 {(() => {
                   const width = Number(measurements.width) || 1200;
                   const height = Number(measurements.height) || 1200;
                   const aspectRatio = width / height;
-                  const maxWidth = 900;
-                  const maxHeight = 600;
+                  // Increase blueprint size by 20% for better view
+                  const maxWidth = 1080; // 900 * 1.2
+                  const maxHeight = 720; // 600 * 1.2
                   let svgWidth = maxWidth;
                   let svgHeight = maxHeight;
                   
@@ -1137,9 +1377,36 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     svgWidth = maxHeight * aspectRatio;
                   }
                   
+                  // Calculate centered position (zoom is applied via CSS transform)
                   const startX = (1200 - svgWidth) / 2;
                   const startY = (800 - svgHeight) / 2;
                   const area = (width * height) / 1_000_000;
+                  
+                  // Calculate grid divisions - ALWAYS show grid structure if grid is defined
+                  // This ensures blueprint updates dynamically when SmartDrawCanvas grid changes
+                  // IMPORTANT: Read grid directly from state (not from closure) to ensure reactivity
+                  const currentGrid = grid; // Capture current grid state
+                  const showGrid = currentGrid && currentGrid.cols > 0 && currentGrid.rows > 0;
+                  
+                  // Get selected pattern for technical details (mullions, transoms, constraints)
+                  const selectedPattern: EgyptianPattern | undefined = selectedPatternId 
+                    ? EGYPTIAN_PATTERNS.find(p => p.id === selectedPatternId)
+                    : undefined;
+                  
+                  // Calculate column/row widths with proportions if specified
+                  const colWeights = currentGrid.colWidths && currentGrid.colWidths.length === currentGrid.cols
+                    ? currentGrid.colWidths
+                    : Array(currentGrid.cols).fill(1);
+                  const rowWeights = currentGrid.rowHeights && currentGrid.rowHeights.length === currentGrid.rows
+                    ? currentGrid.rowHeights
+                    : Array(currentGrid.rows).fill(1);
+                  
+                  const totalColWeight = colWeights.reduce((a, b) => a + b, 0);
+                  const totalRowWeight = rowWeights.reduce((a, b) => a + b, 0);
+                  
+                  // Base column/row dimensions (for simple calculations)
+                  const colWidth = showGrid && currentGrid.cols > 0 ? svgWidth / currentGrid.cols : svgWidth;
+                  const rowHeight = showGrid && currentGrid.rows > 0 ? svgHeight / currentGrid.rows : svgHeight;
                   
                   return (
                     <g>
@@ -1158,6 +1425,290 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                           animation: highlightedDimension ? "pulse 2s ease-in-out infinite" : "none"
                         }}
                       />
+                      
+                      {/* Grid Divisions - Vertical Mullions with Technical Annotations */}
+                      {showGrid && currentGrid.cols > 1 && Array.from({ length: currentGrid.cols - 1 }, (_, i) => {
+                        // Calculate mullion position using colWeights (accounts for proportional widths)
+                        let xPos = startX;
+                        for (let c = 0; c <= i; c++) {
+                          xPos += (colWeights[c] / totalColWeight) * svgWidth;
+                        }
+                        
+                        // Get mullion technical details from pattern if available
+                        const mullionSpec = selectedPattern?.mullions?.find(m => m.position === i);
+                        const mullionWidth = mullionSpec?.width || 50; // Default 50mm, or from pattern spec
+                        const mullionType = mullionSpec?.type || 'standard';
+                        const isStructural = mullionSpec?.reinforcement || mullionType === 'structural';
+                        
+                        return (
+                          <g key={`mullion-v-${i}-${blueprintKey}`}>
+                            {/* Mullion line - thicker for structural */}
+                            <line
+                              x1={xPos}
+                              y1={startY}
+                              x2={xPos}
+                              y2={startY + svgHeight}
+                              stroke={isStructural ? "#dc2626" : "#4b5563"}
+                              strokeWidth={isStructural ? "3" : "2.5"}
+                              strokeDasharray={isStructural ? "6 3" : "4 4"}
+                              opacity="0.7"
+                              className="transition-all duration-300"
+                            />
+                            {/* Mullion width annotation with technical details */}
+                            {svgHeight > 200 && (
+                              <>
+                                <text
+                                  x={xPos}
+                                  y={startY + svgHeight / 2}
+                                  textAnchor="middle"
+                                  dominantBaseline="middle"
+                                  fill={isStructural ? "#dc2626" : "#6b7280"}
+                                  fontSize="10"
+                                  fontWeight="600"
+                                  transform={`rotate(-90 ${xPos} ${startY + svgHeight / 2})`}
+                                  className="pointer-events-none select-none"
+                                >
+                                  {mullionType.toUpperCase()} {mullionWidth}mm
+                                  {isStructural && ' ⚙️'}
+                                </text>
+                                {/* Mullion Height Dimension - Show from height perspective */}
+                                <g>
+                                  {/* Height dimension line along mullion - more spacing */}
+                                  <line
+                                    x1={xPos - 25}
+                                    y1={startY}
+                                    x2={xPos - 25}
+                                    y2={startY + svgHeight}
+                                    stroke={isStructural ? "#dc2626" : "#6b7280"}
+                                    strokeWidth="1.5"
+                                    strokeDasharray="2 2"
+                                    opacity="0.5"
+                                  />
+                                  {/* Height dimension markers */}
+                                  <line
+                                    x1={xPos - 30}
+                                    y1={startY}
+                                    x2={xPos - 20}
+                                    y2={startY}
+                                    stroke={isStructural ? "#dc2626" : "#6b7280"}
+                                    strokeWidth="2"
+                                  />
+                                  <line
+                                    x1={xPos - 30}
+                                    y1={startY + svgHeight}
+                                    x2={xPos - 20}
+                                    y2={startY + svgHeight}
+                                    stroke={isStructural ? "#dc2626" : "#6b7280"}
+                                    strokeWidth="2"
+                                  />
+                                  {/* Height dimension text - more spacing */}
+                                  <text
+                                    x={xPos - 40}
+                                    y={startY + svgHeight / 2}
+                                    textAnchor="end"
+                                    dominantBaseline="middle"
+                                    fill={isStructural ? "#dc2626" : "#6b7280"}
+                                    fontSize="11"
+                                    fontWeight="700"
+                                    className="pointer-events-none select-none font-mono"
+                                  >
+                                    {Math.round(height)}mm
+                                  </text>
+                                  {/* Label - more spacing */}
+                                  <text
+                                    x={xPos - 40}
+                                    y={startY + svgHeight / 2 - 20}
+                                    textAnchor="end"
+                                    dominantBaseline="middle"
+                                    fill={isStructural ? "#dc2626" : "#9ca3af"}
+                                    fontSize="9"
+                                    fontWeight="500"
+                                    className="pointer-events-none select-none"
+                                  >
+                                    MULLION H
+                                  </text>
+                                </g>
+                              </>
+                            )}
+                          </g>
+                        );
+                      })}
+                      
+                      {/* Grid Divisions - Horizontal Transoms with Technical Annotations */}
+                      {showGrid && currentGrid.rows > 1 && Array.from({ length: currentGrid.rows - 1 }, (_, i) => {
+                        // Calculate transom position using rowWeights
+                        let yPos = startY;
+                        for (let r = 0; r <= i; r++) {
+                          yPos += (rowWeights[r] / totalRowWeight) * svgHeight;
+                        }
+                        
+                        // Get transom technical details from pattern if available
+                        const transomSpec = selectedPattern?.transoms?.find(t => t.position === i);
+                        const transomHeight = transomSpec?.height || 50; // Default 50mm, or from pattern spec
+                        const transomType = transomSpec?.type || 'standard';
+                        const isStructural = transomSpec?.reinforcement || transomType === 'structural';
+                        
+                        return (
+                          <g key={`transom-h-${i}-${blueprintKey}`}>
+                            {/* Transom line */}
+                            <line
+                              x1={startX}
+                              y1={yPos}
+                              x2={startX + svgWidth}
+                              y2={yPos}
+                              stroke="#4b5563"
+                              strokeWidth="2.5"
+                              strokeDasharray="4 4"
+                              opacity="0.7"
+                              className="transition-all duration-300"
+                            />
+                            {/* Transom height annotation with technical details */}
+                            {svgWidth > 300 && (
+                              <text
+                                x={startX + svgWidth / 2}
+                                y={yPos}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                fill={isStructural ? "#dc2626" : "#6b7280"}
+                                fontSize="10"
+                                fontWeight="600"
+                                className="pointer-events-none select-none"
+                              >
+                                {transomType.toUpperCase()} {transomHeight}mm
+                                {isStructural && ' ⚙️'}
+                              </text>
+                            )}
+                          </g>
+                        );
+                      })}
+                      
+                      {/* Grid Cells - Dynamically updates from SmartDrawCanvas grid changes with Technical Details */}
+                      {showGrid && currentGrid.cells && currentGrid.cells.length > 0 && currentGrid.cells.map((cell) => {
+                        // Calculate cell position and dimensions (accounting for colWidths/rowHeights if specified)
+                        const colWeights = currentGrid.colWidths && currentGrid.colWidths.length === currentGrid.cols
+                          ? currentGrid.colWidths
+                          : Array(currentGrid.cols).fill(1);
+                        const rowWeights = currentGrid.rowHeights && currentGrid.rowHeights.length === currentGrid.rows
+                          ? currentGrid.rowHeights
+                          : Array(currentGrid.rows).fill(1);
+                        
+                        const totalColWeight = colWeights.reduce((a, b) => a + b, 0);
+                        const totalRowWeight = rowWeights.reduce((a, b) => a + b, 0);
+                        
+                        // Calculate cell position
+                        let cellX = startX;
+                        for (let c = 0; c < cell.col; c++) {
+                          cellX += (colWeights[c] / totalColWeight) * svgWidth;
+                        }
+                        
+                        let cellY = startY;
+                        for (let r = 0; r < cell.row; r++) {
+                          cellY += (rowWeights[r] / totalRowWeight) * svgHeight;
+                        }
+                        
+                        const cellW = (colWeights[cell.col] / totalColWeight) * svgWidth;
+                        const cellH = (rowWeights[cell.row] / totalRowWeight) * svgHeight;
+                        
+                        // Calculate actual cell dimensions in mm
+                        const cellWidthMm = (cellW / svgWidth) * width;
+                        const cellHeightMm = (cellH / svgHeight) * height;
+                        const cellAreaM2 = (cellWidthMm * cellHeightMm) / 1_000_000;
+                        
+                        // Cell type colors
+                        const cellFill = {
+                          'fixed': 'rgba(59, 130, 246, 0.1)',
+                          'sash': 'rgba(34, 197, 94, 0.1)',
+                          'sliding': 'rgba(234, 179, 8, 0.1)',
+                          'panel': 'rgba(107, 114, 128, 0.1)',
+                          'empty': 'rgba(239, 68, 68, 0.05)',
+                        }[cell.type] || 'transparent';
+                        
+                        const cellStroke = {
+                          'fixed': '#3b82f6',
+                          'sash': '#22c55e',
+                          'sliding': '#eab308',
+                          'panel': '#6b7280',
+                          'empty': '#ef4444',
+                        }[cell.type] || '#4b5563';
+                        
+                        // Opening direction indicator
+                        const openingArrow = cell.openingDirection === 'left' ? '←' 
+                          : cell.openingDirection === 'right' ? '→'
+                          : cell.openingDirection === 'top' ? '↑'
+                          : cell.openingDirection === 'bottom' ? '↓'
+                          : '';
+                        
+                        return (
+                          <g key={`${cell.id}-${currentGrid.cols}-${currentGrid.rows}-${blueprintKey}`}>
+                            {/* Cell background */}
+                            <rect
+                              x={cellX}
+                              y={cellY}
+                              width={cellW}
+                              height={cellH}
+                              fill={cellFill}
+                              stroke={cellStroke}
+                              strokeWidth="1.5"
+                              opacity="0.6"
+                              className="transition-all duration-300"
+                            />
+                            
+                            {/* Cell type label with opening direction - more spacing */}
+                            {cellW > 80 && cellH > 50 && (
+                              <>
+                                <text
+                                  x={cellX + cellW / 2}
+                                  y={cellY + cellH / 2 - 15}
+                                  textAnchor="middle"
+                                  dominantBaseline="middle"
+                                  fill={cellStroke}
+                                  fontSize={Math.max(11, Math.min(cellW, cellH) * 0.12)}
+                                  fontWeight="bold"
+                                  opacity="0.9"
+                                  className="pointer-events-none select-none"
+                                >
+                                  {cell.type === 'sash' ? 'SASH' : cell.type.toUpperCase()}
+                                  {openingArrow && ` ${openingArrow}`}
+                                </text>
+                                
+                                {/* Cell dimensions annotation - more spacing */}
+                                {cellW > 120 && cellH > 80 && (
+                                  <text
+                                    x={cellX + cellW / 2}
+                                    y={cellY + cellH / 2 + 18}
+                                    textAnchor="middle"
+                                    dominantBaseline="middle"
+                                    fill="#6b7280"
+                                    fontSize={Math.max(9, Math.min(cellW, cellH) * 0.08)}
+                                    fontWeight="500"
+                                    opacity="0.7"
+                                    className="pointer-events-none select-none font-mono"
+                                  >
+                                    {Math.round(cellWidthMm)}×{Math.round(cellHeightMm)}mm
+                                  </text>
+                                )}
+                                
+                                {/* Cell area annotation (for larger cells) - more spacing */}
+                                {cellW > 150 && cellH > 100 && cellAreaM2 > 0.5 && (
+                                  <text
+                                    x={cellX + cellW / 2}
+                                    y={cellY + cellH / 2 + 35}
+                                    textAnchor="middle"
+                                    dominantBaseline="middle"
+                                    fill="#9ca3af"
+                                    fontSize={Math.max(8, Math.min(cellW, cellH) * 0.07)}
+                                    fontWeight="400"
+                                    opacity="0.6"
+                                    className="pointer-events-none select-none"
+                                  >
+                                    {cellAreaM2.toFixed(2)} m²
+                                  </text>
+                                )}
+                              </>
+                            )}
+                          </g>
+                        );
+                      })}
 
                       {/* Corner markers for precision */}
                       {[0, 1, 2, 3].map((corner) => {
@@ -1181,36 +1732,36 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         );
                       })}
 
-                      {/* Width Dimension Line (Top) - animated */}
+                      {/* Width Dimension Line (Top) - animated with more spacing */}
                       <g className="transition-all duration-300">
                         <line 
                           x1={startX} 
-                          y1={startY - 50} 
+                          y1={startY - 70} 
                           x2={startX + svgWidth} 
-                          y2={startY - 50} 
+                          y2={startY - 70} 
                           stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"} 
                           strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
                           className="transition-all duration-300"
                         />
                         <line 
                           x1={startX} 
-                          y1={startY - 55} 
+                          y1={startY - 75} 
                           x2={startX} 
-                          y2={startY - 45} 
+                          y2={startY - 65} 
                           stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"} 
                           strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
                         />
                         <line 
                           x1={startX + svgWidth} 
-                          y1={startY - 55} 
+                          y1={startY - 75} 
                           x2={startX + svgWidth} 
-                          y2={startY - 45} 
+                          y2={startY - 65} 
                           stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"} 
                           strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
                         />
                         <text
                           x={startX + svgWidth / 2}
-                          y={startY - 60}
+                          y={startY - 85}
                           textAnchor="middle"
                           fill={highlightedDimension === 'width' ? "#1e40af" : "#2563eb"}
                           fontSize="32"
@@ -1221,7 +1772,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         </text>
                         <text
                           x={startX + svgWidth / 2}
-                          y={startY - 85}
+                          y={startY - 110}
                           textAnchor="middle"
                           fill={highlightedDimension === 'width' ? "#1e40af" : "#6b7280"}
                           fontSize="12"
@@ -1233,46 +1784,46 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         </text>
                       </g>
 
-                      {/* Height Dimension Line (Left) - animated */}
+                      {/* Height Dimension Line (Left) - animated with more spacing */}
                       <g className="transition-all duration-300">
                         <line 
-                          x1={startX - 50} 
+                          x1={startX - 70} 
                           y1={startY} 
-                          x2={startX - 50} 
+                          x2={startX - 70} 
                           y2={startY + svgHeight} 
                           stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"} 
                           strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
                         />
                         <line 
-                          x1={startX - 55} 
+                          x1={startX - 75} 
                           y1={startY} 
-                          x2={startX - 45} 
+                          x2={startX - 65} 
                           y2={startY} 
                           stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"} 
                           strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
                         />
                         <line 
-                          x1={startX - 55} 
+                          x1={startX - 75} 
                           y1={startY + svgHeight} 
-                          x2={startX - 45} 
+                          x2={startX - 65} 
                           y2={startY + svgHeight} 
                           stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"} 
                           strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
                         />
                         <text
-                          x={startX - 60}
+                          x={startX - 85}
                           y={startY + svgHeight / 2}
                           textAnchor="middle"
                           fill={highlightedDimension === 'height' ? "#1e40af" : "#2563eb"}
                           fontSize="32"
                           fontWeight="700"
                           className="font-mono transition-all duration-300"
-                          transform={`rotate(-90 ${startX - 60} ${startY + svgHeight / 2})`}
+                          transform={`rotate(-90 ${startX - 85} ${startY + svgHeight / 2})`}
                         >
                           {height.toLocaleString()} mm
                         </text>
                         <text
-                          x={startX - 85}
+                          x={startX - 110}
                           y={startY + svgHeight / 2}
                           textAnchor="middle"
                           fill={highlightedDimension === 'height' ? "#1e40af" : "#6b7280"}
@@ -1280,17 +1831,17 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                           fontWeight="700"
                           letterSpacing="0.1em"
                           className="transition-all duration-300"
-                          transform={`rotate(-90 ${startX - 85} ${startY + svgHeight / 2})`}
+                          transform={`rotate(-90 ${startX - 110} ${startY + svgHeight / 2})`}
                         >
                           HEIGHT
                         </text>
                       </g>
 
-                      {/* Area Display - dynamic */}
+                      {/* Area Display - dynamic with more spacing */}
                       <g className="transition-opacity duration-300">
                         <rect 
                           x={startX + svgWidth - 200} 
-                          y={startY + svgHeight + 25} 
+                          y={startY + svgHeight + 45} 
                           width="190" 
                           height="60" 
                           fill="white" 
@@ -1301,7 +1852,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         />
                         <text 
                           x={startX + svgWidth - 195} 
-                          y={startY + svgHeight + 45} 
+                          y={startY + svgHeight + 65} 
                           fill="#374151" 
                           fontSize="11" 
                           fontWeight="600"
@@ -1311,7 +1862,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                         </text>
                         <text 
                           x={startX + svgWidth - 195} 
-                          y={startY + svgHeight + 68} 
+                          y={startY + svgHeight + 88} 
                           fill="#1f2937" 
                           fontSize="20" 
                           fontWeight="700" 
@@ -1361,9 +1912,567 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     </g>
                   );
                 })()}
-              </svg>
-            </motion.div>
-          </div>
+                      </svg>
+                    </motion.div>
+                  </div>
+                </div>,
+                document.body
+              )
+            ) : (
+              // Normal View Mode
+              <div 
+                className="w-full h-full flex items-center justify-center p-6 md:p-8 transition-all duration-300 relative"
+              >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: blueprintZoom }}
+                  transition={{ duration: 0.3 }}
+                  className="w-full h-full max-w-4xl"
+                  style={{ transformOrigin: 'center' }}
+                >
+                  {/* Normal view SVG - same content as fullscreen */}
+                  <svg
+                    key={blueprintKey}
+                    viewBox="0 0 1200 800"
+                    className="w-full h-full"
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.08))' }}
+                  >
+                    {/* Background grid */}
+                    <defs>
+                      <pattern id="blueprint-grid-normal" width="30" height="30" patternUnits="userSpaceOnUse">
+                        <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#d1d5db" strokeWidth="0.8" opacity="0.6"/>
+                      </pattern>
+                      <pattern id="highlight-grid-normal" width="30" height="30" patternUnits="userSpaceOnUse">
+                        <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#3b82f6" strokeWidth="1" opacity="0.3"/>
+                      </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#blueprint-grid-normal)" />
+                    {highlightedDimension && (
+                      <rect width="100%" height="100%" fill="url(#highlight-grid-normal)" opacity="0.5" />
+                    )}
+
+                    {/* Calculate dimensions - same logic as fullscreen */}
+                    {(() => {
+                      const width = Number(measurements.width) || 1200;
+                      const height = Number(measurements.height) || 1200;
+                      const aspectRatio = width / height;
+                      const maxWidth = 1080;
+                      const maxHeight = 720;
+                      let svgWidth = maxWidth;
+                      let svgHeight = maxHeight;
+                      
+                      if (aspectRatio > maxWidth / maxHeight) {
+                        svgHeight = maxWidth / aspectRatio;
+                      } else {
+                        svgWidth = maxHeight * aspectRatio;
+                      }
+                      
+                      const startX = (1200 - svgWidth) / 2;
+                      const startY = (800 - svgHeight) / 2;
+                      const area = (width * height) / 1_000_000;
+                      const currentGrid = grid;
+                      const showGrid = currentGrid && currentGrid.cols > 0 && currentGrid.rows > 0;
+                      const selectedPattern: EgyptianPattern | undefined = selectedPatternId 
+                        ? EGYPTIAN_PATTERNS.find(p => p.id === selectedPatternId)
+                        : undefined;
+                      
+                      const colWeights = currentGrid.colWidths && currentGrid.colWidths.length === currentGrid.cols
+                        ? currentGrid.colWidths
+                        : Array(currentGrid.cols).fill(1);
+                      const rowWeights = currentGrid.rowHeights && currentGrid.rowHeights.length === currentGrid.rows
+                        ? currentGrid.rowHeights
+                        : Array(currentGrid.rows).fill(1);
+                      
+                      const totalColWeight = colWeights.reduce((a, b) => a + b, 0);
+                      const totalRowWeight = rowWeights.reduce((a, b) => a + b, 0);
+                      
+                      return (
+                        <g>
+                          {/* Window Frame */}
+                          <rect
+                            x={startX}
+                            y={startY}
+                            width={svgWidth}
+                            height={svgHeight}
+                            fill="none"
+                            stroke={highlightedDimension ? "#2563eb" : "#1f2937"}
+                            strokeWidth={highlightedDimension ? "4" : "3"}
+                            className="transition-all duration-300"
+                            style={{ 
+                              strokeDasharray: highlightedDimension ? "8 4" : "none",
+                              animation: highlightedDimension ? "pulse 2s ease-in-out infinite" : "none"
+                            }}
+                          />
+                          
+                          {/* Vertical Mullions */}
+                          {showGrid && currentGrid.cols > 1 && Array.from({ length: currentGrid.cols - 1 }, (_, i) => {
+                            let xPos = startX;
+                            for (let c = 0; c <= i; c++) {
+                              xPos += (colWeights[c] / totalColWeight) * svgWidth;
+                            }
+                            
+                            const mullionSpec = selectedPattern?.mullions?.find(m => m.position === i);
+                            const mullionWidth = mullionSpec?.width || 50;
+                            const mullionType = mullionSpec?.type || 'standard';
+                            const isStructural = mullionSpec?.reinforcement || mullionType === 'structural';
+                            
+                            return (
+                              <g key={`mullion-v-${i}-${blueprintKey}`}>
+                                <line
+                                  x1={xPos}
+                                  y1={startY}
+                                  x2={xPos}
+                                  y2={startY + svgHeight}
+                                  stroke={isStructural ? "#dc2626" : "#4b5563"}
+                                  strokeWidth={isStructural ? "3" : "2.5"}
+                                  strokeDasharray={isStructural ? "6 3" : "4 4"}
+                                  opacity="0.7"
+                                  className="transition-all duration-300"
+                                />
+                                {svgHeight > 200 && (
+                                  <>
+                                    <text
+                                      x={xPos}
+                                      y={startY + svgHeight / 2}
+                                      textAnchor="middle"
+                                      dominantBaseline="middle"
+                                      fill={isStructural ? "#dc2626" : "#6b7280"}
+                                      fontSize="10"
+                                      fontWeight="600"
+                                      transform={`rotate(-90 ${xPos} ${startY + svgHeight / 2})`}
+                                      className="pointer-events-none select-none"
+                                    >
+                                      {mullionType.toUpperCase()} {mullionWidth}mm
+                                      {isStructural && ' ⚙️'}
+                                    </text>
+                                    <g>
+                                      <line
+                                        x1={xPos - 25}
+                                        y1={startY}
+                                        x2={xPos - 25}
+                                        y2={startY + svgHeight}
+                                        stroke={isStructural ? "#dc2626" : "#6b7280"}
+                                        strokeWidth="1.5"
+                                        strokeDasharray="2 2"
+                                        opacity="0.5"
+                                      />
+                                      <line
+                                        x1={xPos - 30}
+                                        y1={startY}
+                                        x2={xPos - 20}
+                                        y2={startY}
+                                        stroke={isStructural ? "#dc2626" : "#6b7280"}
+                                        strokeWidth="2"
+                                      />
+                                      <line
+                                        x1={xPos - 30}
+                                        y1={startY + svgHeight}
+                                        x2={xPos - 20}
+                                        y2={startY + svgHeight}
+                                        stroke={isStructural ? "#dc2626" : "#6b7280"}
+                                        strokeWidth="2"
+                                      />
+                                      <text
+                                        x={xPos - 40}
+                                        y={startY + svgHeight / 2}
+                                        textAnchor="end"
+                                        dominantBaseline="middle"
+                                        fill={isStructural ? "#dc2626" : "#6b7280"}
+                                        fontSize="11"
+                                        fontWeight="700"
+                                        className="pointer-events-none select-none font-mono"
+                                      >
+                                        {Math.round(height)}mm
+                                      </text>
+                                      <text
+                                        x={xPos - 40}
+                                        y={startY + svgHeight / 2 - 20}
+                                        textAnchor="end"
+                                        dominantBaseline="middle"
+                                        fill={isStructural ? "#dc2626" : "#9ca3af"}
+                                        fontSize="9"
+                                        fontWeight="500"
+                                        className="pointer-events-none select-none"
+                                      >
+                                        MULLION H
+                                      </text>
+                                    </g>
+                                  </>
+                                )}
+                              </g>
+                            );
+                          })}
+                          
+                          {/* Horizontal Transoms */}
+                          {showGrid && currentGrid.rows > 1 && Array.from({ length: currentGrid.rows - 1 }, (_, i) => {
+                            let yPos = startY;
+                            for (let r = 0; r <= i; r++) {
+                              yPos += (rowWeights[r] / totalRowWeight) * svgHeight;
+                            }
+                            
+                            const transomSpec = selectedPattern?.transoms?.find(t => t.position === i);
+                            const transomHeight = transomSpec?.height || 50;
+                            const transomType = transomSpec?.type || 'standard';
+                            const isStructural = transomSpec?.reinforcement || transomType === 'structural';
+                            
+                            return (
+                              <g key={`transom-h-${i}-${blueprintKey}`}>
+                                <line
+                                  x1={startX}
+                                  y1={yPos}
+                                  x2={startX + svgWidth}
+                                  y2={yPos}
+                                  stroke={isStructural ? "#dc2626" : "#4b5563"}
+                                  strokeWidth={isStructural ? "3" : "2.5"}
+                                  strokeDasharray={isStructural ? "6 3" : "4 4"}
+                                  opacity="0.7"
+                                  className="transition-all duration-300"
+                                />
+                                {svgWidth > 300 && (
+                                  <text
+                                    x={startX + svgWidth / 2}
+                                    y={yPos}
+                                    textAnchor="middle"
+                                    dominantBaseline="middle"
+                                    fill={isStructural ? "#dc2626" : "#6b7280"}
+                                    fontSize="10"
+                                    fontWeight="600"
+                                    className="pointer-events-none select-none"
+                                  >
+                                    {transomType.toUpperCase()} {transomHeight}mm
+                                    {isStructural && ' ⚙️'}
+                                  </text>
+                                )}
+                              </g>
+                            );
+                          })}
+                          
+                          {/* Grid Cells */}
+                          {showGrid && currentGrid.cells && currentGrid.cells.length > 0 && currentGrid.cells.map((cell) => {
+                            const colWeights = currentGrid.colWidths && currentGrid.colWidths.length === currentGrid.cols
+                              ? currentGrid.colWidths
+                              : Array(currentGrid.cols).fill(1);
+                            const rowWeights = currentGrid.rowHeights && currentGrid.rowHeights.length === currentGrid.rows
+                              ? currentGrid.rowHeights
+                              : Array(currentGrid.rows).fill(1);
+                            
+                            const totalColWeight = colWeights.reduce((a, b) => a + b, 0);
+                            const totalRowWeight = rowWeights.reduce((a, b) => a + b, 0);
+                            
+                            let cellX = startX;
+                            for (let c = 0; c < cell.col; c++) {
+                              cellX += (colWeights[c] / totalColWeight) * svgWidth;
+                            }
+                            
+                            let cellY = startY;
+                            for (let r = 0; r < cell.row; r++) {
+                              cellY += (rowWeights[r] / totalRowWeight) * svgHeight;
+                            }
+                            
+                            const cellW = (colWeights[cell.col] / totalColWeight) * svgWidth;
+                            const cellH = (rowWeights[cell.row] / totalRowWeight) * svgHeight;
+                            
+                            const cellWidthMm = (cellW / svgWidth) * width;
+                            const cellHeightMm = (cellH / svgHeight) * height;
+                            const cellAreaM2 = (cellWidthMm * cellHeightMm) / 1_000_000;
+                            
+                            const cellFill = {
+                              'fixed': 'rgba(59, 130, 246, 0.1)',
+                              'sash': 'rgba(34, 197, 94, 0.1)',
+                              'sliding': 'rgba(234, 179, 8, 0.1)',
+                              'panel': 'rgba(107, 114, 128, 0.1)',
+                              'empty': 'rgba(239, 68, 68, 0.05)',
+                            }[cell.type] || 'transparent';
+                            
+                            const cellStroke = {
+                              'fixed': '#3b82f6',
+                              'sash': '#22c55e',
+                              'sliding': '#eab308',
+                              'panel': '#6b7280',
+                              'empty': '#ef4444',
+                            }[cell.type] || '#4b5563';
+                            
+                            const openingArrow = cell.openingDirection === 'left' ? '←' 
+                              : cell.openingDirection === 'right' ? '→'
+                              : cell.openingDirection === 'top' ? '↑'
+                              : cell.openingDirection === 'bottom' ? '↓'
+                              : '';
+                            
+                            return (
+                              <g key={`${cell.id}-${currentGrid.cols}-${currentGrid.rows}-${blueprintKey}`}>
+                                <rect
+                                  x={cellX}
+                                  y={cellY}
+                                  width={cellW}
+                                  height={cellH}
+                                  fill={cellFill}
+                                  stroke={cellStroke}
+                                  strokeWidth="1.5"
+                                  opacity="0.6"
+                                  className="transition-all duration-300"
+                                />
+                                
+                                {cellW > 80 && cellH > 50 && (
+                                  <>
+                                    <text
+                                      x={cellX + cellW / 2}
+                                      y={cellY + cellH / 2 - 15}
+                                      textAnchor="middle"
+                                      dominantBaseline="middle"
+                                      fill={cellStroke}
+                                      fontSize={Math.max(11, Math.min(cellW, cellH) * 0.12)}
+                                      fontWeight="bold"
+                                      opacity="0.9"
+                                      className="pointer-events-none select-none"
+                                    >
+                                      {cell.type === 'sash' ? 'SASH' : cell.type.toUpperCase()}
+                                      {openingArrow && ` ${openingArrow}`}
+                                    </text>
+                                    
+                                    {cellW > 120 && cellH > 80 && (
+                                      <text
+                                        x={cellX + cellW / 2}
+                                        y={cellY + cellH / 2 + 18}
+                                        textAnchor="middle"
+                                        dominantBaseline="middle"
+                                        fill="#6b7280"
+                                        fontSize={Math.max(9, Math.min(cellW, cellH) * 0.08)}
+                                        fontWeight="500"
+                                        opacity="0.7"
+                                        className="pointer-events-none select-none font-mono"
+                                      >
+                                        {Math.round(cellWidthMm)}×{Math.round(cellHeightMm)}mm
+                                      </text>
+                                    )}
+                                    
+                                    {cellW > 150 && cellH > 100 && cellAreaM2 > 0.5 && (
+                                      <text
+                                        x={cellX + cellW / 2}
+                                        y={cellY + cellH / 2 + 35}
+                                        textAnchor="middle"
+                                        dominantBaseline="middle"
+                                        fill="#9ca3af"
+                                        fontSize={Math.max(8, Math.min(cellW, cellH) * 0.07)}
+                                        fontWeight="400"
+                                        opacity="0.6"
+                                        className="pointer-events-none select-none"
+                                      >
+                                        {cellAreaM2.toFixed(2)} m²
+                                      </text>
+                                    )}
+                                  </>
+                                )}
+                              </g>
+                            );
+                          })}
+
+                          {/* Corner markers */}
+                          {[0, 1, 2, 3].map((corner) => {
+                            const corners = [
+                              { x: startX, y: startY },
+                              { x: startX + svgWidth, y: startY },
+                              { x: startX + svgWidth, y: startY + svgHeight },
+                              { x: startX, y: startY + svgHeight }
+                            ];
+                            const c = corners[corner];
+                            return (
+                              <circle
+                                key={corner}
+                                cx={c.x}
+                                cy={c.y}
+                                r="4"
+                                fill="#1f2937"
+                                stroke="white"
+                                strokeWidth="1.5"
+                              />
+                            );
+                          })}
+
+                          {/* Width Dimension Line */}
+                          <g className="transition-all duration-300">
+                            <line 
+                              x1={startX} 
+                              y1={startY - 70} 
+                              x2={startX + svgWidth} 
+                              y2={startY - 70} 
+                              stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"} 
+                              strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
+                              className="transition-all duration-300"
+                            />
+                            <line 
+                              x1={startX} 
+                              y1={startY - 75} 
+                              x2={startX} 
+                              y2={startY - 65} 
+                              stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"} 
+                              strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
+                            />
+                            <line 
+                              x1={startX + svgWidth} 
+                              y1={startY - 75} 
+                              x2={startX + svgWidth} 
+                              y2={startY - 65} 
+                              stroke={highlightedDimension === 'width' ? "#2563eb" : "#3b82f6"} 
+                              strokeWidth={highlightedDimension === 'width' ? "3" : "2"}
+                            />
+                            <text
+                              x={startX + svgWidth / 2}
+                              y={startY - 85}
+                              textAnchor="middle"
+                              fill={highlightedDimension === 'width' ? "#1e40af" : "#2563eb"}
+                              fontSize="32"
+                              fontWeight="700"
+                              className="font-mono transition-all duration-300"
+                            >
+                              {width.toLocaleString()} mm
+                            </text>
+                            <text
+                              x={startX + svgWidth / 2}
+                              y={startY - 110}
+                              textAnchor="middle"
+                              fill={highlightedDimension === 'width' ? "#1e40af" : "#6b7280"}
+                              fontSize="12"
+                              fontWeight="700"
+                              letterSpacing="0.1em"
+                              className="transition-all duration-300"
+                            >
+                              WIDTH
+                            </text>
+                          </g>
+
+                          {/* Height Dimension Line */}
+                          <g className="transition-all duration-300">
+                            <line 
+                              x1={startX - 70} 
+                              y1={startY} 
+                              x2={startX - 70} 
+                              y2={startY + svgHeight} 
+                              stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"} 
+                              strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
+                            />
+                            <line 
+                              x1={startX - 75} 
+                              y1={startY} 
+                              x2={startX - 65} 
+                              y2={startY} 
+                              stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"} 
+                              strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
+                            />
+                            <line 
+                              x1={startX - 75} 
+                              y1={startY + svgHeight} 
+                              x2={startX - 65} 
+                              y2={startY + svgHeight} 
+                              stroke={highlightedDimension === 'height' ? "#2563eb" : "#3b82f6"} 
+                              strokeWidth={highlightedDimension === 'height' ? "3" : "2"}
+                            />
+                            <text
+                              x={startX - 85}
+                              y={startY + svgHeight / 2}
+                              textAnchor="middle"
+                              fill={highlightedDimension === 'height' ? "#1e40af" : "#2563eb"}
+                              fontSize="32"
+                              fontWeight="700"
+                              className="font-mono transition-all duration-300"
+                              transform={`rotate(-90 ${startX - 85} ${startY + svgHeight / 2})`}
+                            >
+                              {height.toLocaleString()} mm
+                            </text>
+                            <text
+                              x={startX - 110}
+                              y={startY + svgHeight / 2}
+                              textAnchor="middle"
+                              fill={highlightedDimension === 'height' ? "#1e40af" : "#6b7280"}
+                              fontSize="12"
+                              fontWeight="700"
+                              letterSpacing="0.1em"
+                              className="transition-all duration-300"
+                              transform={`rotate(-90 ${startX - 110} ${startY + svgHeight / 2})`}
+                            >
+                              HEIGHT
+                            </text>
+                          </g>
+
+                          {/* Area Display */}
+                          <g className="transition-opacity duration-300">
+                            <rect 
+                              x={startX + svgWidth - 200} 
+                              y={startY + svgHeight + 45} 
+                              width="190" 
+                              height="60" 
+                              fill="white" 
+                              stroke="#1f2937" 
+                              strokeWidth="2" 
+                              rx="6"
+                              className="shadow-sm"
+                            />
+                            <text 
+                              x={startX + svgWidth - 195} 
+                              y={startY + svgHeight + 65} 
+                              fill="#374151" 
+                              fontSize="11" 
+                              fontWeight="600"
+                              letterSpacing="0.05em"
+                            >
+                              AREA
+                            </text>
+                            <text 
+                              x={startX + svgWidth - 195} 
+                              y={startY + svgHeight + 88} 
+                              fill="#1f2937" 
+                              fontSize="20" 
+                              fontWeight="700" 
+                              className="font-mono"
+                            >
+                              {area.toFixed(2)} m²
+                            </text>
+                          </g>
+
+                          {/* Scale indicator */}
+                          <g>
+                            <line 
+                              x1={startX + 20} 
+                              y1={startY + svgHeight + 30} 
+                              x2={startX + 120} 
+                              y2={startY + svgHeight + 30} 
+                              stroke="#6b7280" 
+                              strokeWidth="2"
+                            />
+                            <line 
+                              x1={startX + 20} 
+                              y1={startY + svgHeight + 25} 
+                              x2={startX + 20} 
+                              y2={startY + svgHeight + 35} 
+                              stroke="#6b7280" 
+                              strokeWidth="2"
+                            />
+                            <line 
+                              x1={startX + 120} 
+                              y1={startY + svgHeight + 25} 
+                              x2={startX + 120} 
+                              y2={startY + svgHeight + 35} 
+                              stroke="#6b7280" 
+                              strokeWidth="2"
+                            />
+                            <text
+                              x={startX + 70}
+                              y={startY + svgHeight + 50}
+                              textAnchor="middle"
+                              fill="#6b7280"
+                              fontSize="10"
+                              fontWeight="500"
+                            >
+                              100mm scale
+                            </text>
+                          </g>
+                        </g>
+                      );
+                    })()}
+                  </svg>
+                </motion.div>
+              </div>
+            )}
+          </>
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <motion.div

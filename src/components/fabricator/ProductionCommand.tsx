@@ -41,6 +41,8 @@ import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { useTranslation } from 'react-i18next';
 import { alm6510MDBExport, ALM6510ExportOptions } from '@/lib/exports/ALM6510MDBExport';
 import { downloadSplitPO } from '@/lib/exports/SplitPOExport';
+import { InstallationVariablesPanel } from './InstallationVariablesPanel';
+import type { InstallationVariables, InstallationCostBreakdown } from '@/lib/installation/EgyptianInstallationCalculator';
 
 interface ProductionCommandProps {
     project: WindowUnit | null;
@@ -142,6 +144,10 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
     const [alm6510ExportError, setAlm6510ExportError] = useState<string | null>(null);
     const [alm6510ExportSuccess, setAlm6510ExportSuccess] = useState(false);
     const { branding } = useCompanyBranding();
+    
+    // Installation variables state
+    const [installationVariables, setInstallationVariables] = useState<InstallationVariables | null>(null);
+    const [installationBreakdown, setInstallationBreakdown] = useState<InstallationCostBreakdown | null>(null);
 
     const availableMachines: YilmazMachineModel[] = [
         'AIM-3410',
@@ -318,7 +324,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                     break;
                 case 'splitpo':
                     if (project && optimization) {
-                        downloadSplitPO(project, optimization);
+                        downloadSplitPO(project, optimization, installationBreakdown || undefined);
                         resultMessage = 'Split POs (Profile / Glass / Accessory) downloaded.';
                         setShowProductionPreview(false);
                     } else {
@@ -440,7 +446,28 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                 </CardContent>
             </Card>
 
-            {/* --- 4. DISPATCH TO PRODUCTION --- */}
+            {/* --- 4. INSTALLATION VARIABLES --- */}
+            {project && (
+                <Card className="bg-gray-800/30 border-gray-700">
+                    <CardHeader>
+                        <CardTitle className="text-base">{t('production_command.installation_variables', 'Installation Variables')}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <InstallationVariablesPanel
+                            projectArea={project.overallWidth && project.overallHeight 
+                                ? (project.overallWidth * project.overallHeight) / 1_000_000 
+                                : 0}
+                            openingCount={project.quantity || 1}
+                            floorLevel={1} // TODO: Get from project context/positionMeta
+                            onVariablesChange={setInstallationVariables}
+                            onCostCalculated={setInstallationBreakdown}
+                            className="bg-transparent border-0 shadow-none"
+                        />
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* --- 5. DISPATCH TO PRODUCTION --- */}
             <Card className="bg-gray-800/30 border-gray-700" id="dispatch-section">
                 <CardHeader>
                      <CardTitle className="text-base">{t('production_command.dispatch_to_production', 'Dispatch to Production')}</CardTitle>
