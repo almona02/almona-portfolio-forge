@@ -101,13 +101,13 @@ export class DataReplication {
     }
 
     const records = Array.from(this.pendingRecords.values());
-    let synced = 0;
+    let _synced = 0;
     let failed = 0;
 
     for (const record of records) {
       const success = await this.syncRecord(record);
       if (success) {
-        synced++;
+        _synced++;
       } else {
         failed++;
       }

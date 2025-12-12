@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/shared/ui/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import SEO from "./components/SEO";
 import { PageLoadingWrapper } from "./components/ui/PageLoadingWrapper";
@@ -20,7 +19,6 @@ import { ABTestProvider } from "./components/analytics/ABTestProvider";
 import { Analytics } from "@vercel/analytics/react";
 import RegionAwareLayout from "./components/layout/RegionAwareLayout";
 import { useRoutePrefetching } from "./hooks/useRoutePrefetching";
-import Script from 'react-google-analytics'; // or use gtag directly
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // Core pages (essential) - loaded immediately
