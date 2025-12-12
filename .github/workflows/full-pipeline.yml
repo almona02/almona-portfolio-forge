@@ -117,8 +117,8 @@ jobs:
           exit-code: '0'
           severity: 'CRITICAL,HIGH'
       - name: Export SBOM (Syft)
-        uses: anchore/sbom-action@v0
         continue-on-error: true
+        uses: anchore/sbom-action@v0
         with:
           image: 'almona-ai-service'
           format: 'spdx-json'
