@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Columns, Rows, List, ChevronUp, ChevronDown } from 'lucide-react';
 import { WindowGrid, GridCell } from '@/types/fabricator';
 import { cn } from '@/lib/utils';
@@ -111,19 +111,33 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
     onGridChange({ ...grid, cells: newCells });
   };
 
-  // SVG ViewBox calculations
+  // SVG ViewBox calculations - useMemo to ensure recalculation when grid changes
   const svgWidth = 1000;
   const svgHeight = (height / width) * 1000;
   
   // Calculate cell dimensions using proportional widths/heights if provided
-  const colWeights = grid.colWidths && grid.colWidths.length === grid.cols ? grid.colWidths : Array(grid.cols).fill(1);
-  const rowWeights = grid.rowHeights && grid.rowHeights.length === grid.rows ? grid.rowHeights : Array(grid.rows).fill(1);
-  const totalColWeight = colWeights.reduce((a, b) => a + b, 0) || grid.cols;
-  const totalRowWeight = rowWeights.reduce((a, b) => a + b, 0) || grid.rows;
-  const colStarts = colWeights.map((_, idx) => (colWeights.slice(0, idx).reduce((a, b) => a + b, 0) / totalColWeight) * svgWidth + offsetX);
-  const rowStarts = rowWeights.map((_, idx) => (rowWeights.slice(0, idx).reduce((a, b) => a + b, 0) / totalRowWeight) * svgHeight + offsetY);
-  const colWidthsPx = colWeights.map((w) => (w / totalColWeight) * svgWidth);
-  const rowHeightsPx = rowWeights.map((w) => (w / totalRowWeight) * svgHeight);
+  // Use useMemo to recalculate when grid structure changes
+  const { colWeights, rowWeights, totalColWeight, totalRowWeight, colStarts, rowStarts, colWidthsPx, rowHeightsPx } = React.useMemo(() => {
+    const cWeights = grid.colWidths && grid.colWidths.length === grid.cols ? grid.colWidths : Array(grid.cols).fill(1);
+    const rWeights = grid.rowHeights && grid.rowHeights.length === grid.rows ? grid.rowHeights : Array(grid.rows).fill(1);
+    const tColWeight = cWeights.reduce((a, b) => a + b, 0) || grid.cols;
+    const tRowWeight = rWeights.reduce((a, b) => a + b, 0) || grid.rows;
+    const cStarts = cWeights.map((_, idx) => (cWeights.slice(0, idx).reduce((a, b) => a + b, 0) / tColWeight) * svgWidth + offsetX);
+    const rStarts = rWeights.map((_, idx) => (rWeights.slice(0, idx).reduce((a, b) => a + b, 0) / tRowWeight) * svgHeight + offsetY);
+    const cWidthsPx = cWeights.map((w) => (w / tColWeight) * svgWidth);
+    const rHeightsPx = rWeights.map((w) => (w / tRowWeight) * svgHeight);
+    
+    return {
+      colWeights: cWeights,
+      rowWeights: rWeights,
+      totalColWeight: tColWeight,
+      totalRowWeight: tRowWeight,
+      colStarts: cStarts,
+      rowStarts: rStarts,
+      colWidthsPx: cWidthsPx,
+      rowHeightsPx: rHeightsPx
+    };
+  }, [grid.cols, grid.rows, grid.colWidths, grid.rowHeights, svgWidth, svgHeight, offsetX, offsetY]);
 
   // ENHANCED VISUALS: Upgrade the styling functions
     const getCellFill = (type: string, isHovered: boolean) => {
@@ -294,9 +308,10 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
         <div className="relative shadow-2xl w-full h-full">
           {/* SVG Grid Renderer */}
           <svg 
+            key={`grid-${grid.cols}-${grid.rows}-${grid.cells.length}`}
             viewBox={`0 0 ${svgWidth} ${svgHeight}`} 
             className="w-full h-full"
-             preserveAspectRatio="xMidYMid meet"
+            preserveAspectRatio="xMidYMid meet"
           >
              {/* Add a subtle background grid */}
             {colStarts.slice(1).map((xPos, i) => (
