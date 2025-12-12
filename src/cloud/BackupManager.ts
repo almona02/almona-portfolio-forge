@@ -68,7 +68,7 @@ export class BackupManager {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       backup.status = 'completed';
       backup.size = Math.floor(Math.random() * 1000000000); // Simulated size
-    } catch (error) {
+    } catch (_error) {
       backup.status = 'failed';
     }
 
@@ -144,7 +144,7 @@ export class BackupManager {
       }
 
       operation.status = 'completed';
-    } catch (error) {
+    } catch (_error) {
       operation.status = 'failed';
     }
 

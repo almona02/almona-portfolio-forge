@@ -267,7 +267,7 @@ export function generateMullionComponentsFromLayout(
   }
 
   let index = 0;
-  for (const position of usableMullions) {
+  for (const _position of usableMullions) {
     const id = `mullion_${project.id}_${index}`;
     index += 1;
 

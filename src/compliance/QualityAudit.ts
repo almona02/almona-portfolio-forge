@@ -174,7 +174,7 @@ export class QualityAuditService {
   /**
    * Check dimension accuracy
    */
-  private checkDimensionAccuracy(project: WindowUnit): number {
+  private checkDimensionAccuracy(_project: WindowUnit): number {
     // Simulate dimension check
     return 98.5; // 98.5% accuracy
   }
