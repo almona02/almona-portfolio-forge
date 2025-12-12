@@ -274,6 +274,12 @@ export default defineConfig(({ mode }) => {
           assetFileNames: `assets/[name]-[hash].[ext]`,
           // AGGRESSIVE chunk splitting to isolate 17MB monster
           manualChunks: (id) => {
+            // CRITICAL: Exclude app code from vendor chunks to prevent circular dependencies
+            // App code (src/) should always go to main bundle, never vendor chunks
+            if (id.includes('/src/') || id.includes('\\src\\')) {
+              return undefined; // Let Vite handle app code chunking
+            }
+            
             // 🔪 ISOLATE AI/ML ENGINES (TensorFlow, ONNX) - 5MB+
             if (id.includes('@tensorflow') || id.includes('tfjs') || 
                 id.includes('onnx') || id.includes('@huggingface') ||
