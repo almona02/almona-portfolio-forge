@@ -112,6 +112,11 @@ scripts/
 *.sh
 *.bat
 
+# Allow image optimization scripts for prebuild
+!scripts/optimize-images-node.js
+!scripts/optimize-images.sh
+!scripts/optimize-images.ps1
+
 # Test files
 __tests__/
 *.test.*
