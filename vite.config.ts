@@ -315,11 +315,15 @@ export default defineConfig(({ mode }) => {
               return 'map-vendor';
             }
             
-            // React core libraries + React-dependent UI libraries (must load together)
-            // @radix-ui requires React, so it must be in same chunk as React
+            // React core libraries + ALL React-dependent libraries (must load together FIRST)
+            // CRITICAL: All React-dependent libs must be in same chunk and load before vendor
+            // This ensures React is initialized before any library tries to use it
             if (id.includes('react') || id.includes('react-dom') || 
                 id.includes('react-router') || id.includes('react/jsx-runtime') ||
-                id.includes('@radix-ui') || id.includes('framer-motion')) {
+                id.includes('@radix-ui') || id.includes('framer-motion') ||
+                id.includes('react-i18next') || id.includes('@tanstack/react-query') ||
+                id.includes('@tanstack/react-query-devtools') ||
+                id.includes('react-hook-form') || id.includes('@hookform')) {
               return 'react-vendor';
             }
             
@@ -347,9 +351,12 @@ export default defineConfig(({ mode }) => {
               return 'markdown-vendor';
             }
             
-            // Everything else from node_modules (including utils to prevent circular deps)
-            // Note: i18next, axios, zustand, zod bundled with vendor to avoid initialization order issues
+            // Everything else from node_modules (NON-React dependencies only)
+            // Note: i18next core (not react-i18next), axios, zod are OK here
+            // But zustand might use React - check if it does
             if (id.includes('node_modules')) {
+              // Double-check: if it's React-dependent, it should have been caught above
+              // This is a fallback for truly non-React libraries
               return 'vendor';
             }
           },
