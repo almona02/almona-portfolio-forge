@@ -27,6 +27,15 @@ jobs:
         run: npm ci --no-audit --no-fund
         env:
           NPM_CONFIG_PRODUCTION: "false"
+      - name: Optimize Images (WebP)
+        run: |
+          if command -v cwebp &> /dev/null; then
+            bash ./scripts/optimize-images.sh || echo "WebP conversion skipped (tools not available)"
+          else
+            sudo apt-get update && sudo apt-get install -y webp
+            bash ./scripts/optimize-images.sh || echo "WebP conversion skipped"
+          fi
+        continue-on-error: true
       - name: Lint
         run: npm run lint
       - name: Type Check
@@ -109,14 +118,17 @@ jobs:
           severity: 'CRITICAL,HIGH'
       - name: Export SBOM (Syft)
         uses: anchore/sbom-action@v0
+        continue-on-error: true
         with:
           image: 'almona-ai-service'
           format: 'spdx-json'
       - name: Upload SBOM
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: backend-sbom
           path: sbom.spdx.json
+          if-no-files-found: ignore
 
   summary:
     name: Pipeline Summary
