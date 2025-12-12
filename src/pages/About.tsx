@@ -127,6 +127,9 @@ const About = () => {
                   alt="Cross-Empire Innovation: Egyptian Pharaoh and Ottoman Pasha overseeing YILMAZ industrial machinery"
                   className="w-full h-full object-contain object-center"
                   loading="lazy"
+                  width="1536"
+                  height="2720"
+                  decoding="async"
                 />
                 
                 {/* Subtle overlay gradient for depth */}
