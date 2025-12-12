@@ -159,7 +159,7 @@ export class LocationSync {
    */
   getOptimalLocation(
     taskType: ProductionTask['type'],
-    priority: number
+    _priority: number
   ): Location | null {
     const availableLocations = Array.from(this.locations.values()).filter(
       (l) => l.status === 'active' && l.capabilities.includes(taskType)
