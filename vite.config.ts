@@ -274,92 +274,48 @@ export default defineConfig(({ mode }) => {
           assetFileNames: `assets/[name]-[hash].[ext]`,
           // AGGRESSIVE chunk splitting to isolate 17MB monster
           manualChunks: (id) => {
-            // CRITICAL: Exclude app code from vendor chunks to prevent circular dependencies
-            // App code (src/) should always go to main bundle, never vendor chunks
+            // Exclude app code from vendor chunks
             if (id.includes('/src/') || id.includes('\\src\\')) {
-              return undefined; // Let Vite handle app code chunking
+              return undefined;
             }
-            
-            // 🔪 ISOLATE AI/ML ENGINES (TensorFlow, ONNX) - 5MB+
-            if (id.includes('@tensorflow') || id.includes('tfjs') || 
-                id.includes('onnx') || id.includes('@huggingface') ||
-                id.includes('@google/generative-ai')) {
-              return 'ai-engine';
+
+            // STEP 1: isolate only safe heavy engines
+            if (id.includes('node_modules/three/') && !id.includes('@react-three')) {
+              return 'three-engine';
             }
-            
-            // 🔪 ISOLATE PHYSICS ENGINE (Ammo.js) - 5MB+
-            if (id.includes('ammo') || id.includes('ammo.js')) {
+            if (id.includes('node_modules/ammo.js/')) {
               return 'physics-engine';
             }
-            
-            // 🔪 ISOLATE 3D ENGINE (Three.js) - 4MB
-            if (id.includes('three') || id.includes('@react-three/fiber') || 
-                id.includes('@react-three/drei') || id.includes('@react-three/xr')) {
-              return '3d-engine';
+            if (
+              id.includes('node_modules/@tensorflow/') ||
+              id.includes('node_modules/tfjs/') ||
+              id.includes('node_modules/onnx/') ||
+              id.includes('node_modules/@google/generative-ai/')
+            ) {
+              return 'ml-engine';
             }
-            
-            // 🔪 ISOLATE PDF/EXCEL PROCESSING - 2MB+
-            if (id.includes('pdfjs') || id.includes('pdf-lib') || 
-                id.includes('exceljs') || id.includes('pdfjs-dist')) {
+            if (
+              id.includes('node_modules/jspdf/') ||
+              id.includes('node_modules/html2canvas/') ||
+              id.includes('node_modules/exceljs/') ||
+              id.includes('node_modules/pdfjs-dist/')
+            ) {
               return 'document-vendor';
             }
-            
-            // 🔪 ISOLATE CHART LIBRARIES - 1MB+
-            if (id.includes('chart.js') || id.includes('recharts') || 
-                id.includes('react-chartjs-2')) {
+            if (
+              id.includes('node_modules/chart.js/') ||
+              id.includes('node_modules/d3/') ||
+              id.includes('node_modules/victory/')
+            ) {
               return 'chart-vendor';
             }
-            
-            // 🔪 ISOLATE MAP LIBRARIES - 1MB+
-            if (id.includes('maplibre') || id.includes('mapbox')) {
-              return 'map-vendor';
-            }
-            
-            // React core libraries + ALL React-dependent libraries (must load together FIRST)
-            // CRITICAL: All React-dependent libs must be in same chunk and load before vendor
-            // This ensures React is initialized before any library tries to use it
-            if (id.includes('react') || id.includes('react-dom') || 
-                id.includes('react-router') || id.includes('react/jsx-runtime') ||
-                id.includes('@radix-ui') || id.includes('framer-motion') ||
-                id.includes('react-i18next') || id.includes('@tanstack/react-query') ||
-                id.includes('@tanstack/react-query-devtools') ||
-                id.includes('react-hook-form') || id.includes('@hookform')) {
+
+            // STEP 2: everything else -> react-vendor (safety net)
+            if (id.includes('node_modules')) {
               return 'react-vendor';
             }
-            
-            // UI libraries that don't depend on React (can load separately)
-            if (id.includes('lucide-react') ||
-                id.includes('class-variance-authority') ||
-                id.includes('clsx') || id.includes('tailwind-merge')) {
-              return 'ui-vendor';
-            }
-            
-            // Heavy algorithm libraries (fabricator core)
-            if (id.includes('algorithms') || id.includes('fabricator') && 
-                !id.includes('components') && !id.includes('pages')) {
-              return 'fabricator-core';
-            }
-            
-            // Admin dashboard code
-            if (id.includes('admin') || id.includes('dashboard') || 
-                id.includes('analytics')) {
-              return 'admin-dashboard';
-            }
-            
-            // Markdown editor (heavy, independent)
-            if (id.includes('@uiw/react-md-editor') || id.includes('markdown-it')) {
-              return 'markdown-vendor';
-            }
-            
-            // Everything else from node_modules (NON-React dependencies only)
-            // Note: i18next core (not react-i18next), axios, zod are OK here
-            // But zustand might use React - check if it does
-            if (id.includes('node_modules')) {
-              // Double-check: if it's React-dependent, it should have been caught above
-              // This is a fallback for truly non-React libraries
-              return 'vendor';
-            }
           },
+
         },
       },
     },
