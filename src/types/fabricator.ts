@@ -487,6 +487,15 @@ export interface MeasurementData {
   roomOrZone?: string;
   windowIndex?: string;
   remarks?: string;
+  /** Rule 18: Wall Tolerance - Input mode and deduction */
+  measurementMode?: 'hole' | 'manufacturing'; // 'hole' = rough opening, 'manufacturing' = exact size
+  wallDeduction?: string; // mm deduction for wall tolerance (default 15mm)
+  /** Calculated manufacturing dimensions (after deduction if in hole mode) */
+  manufacturingWidth?: number;
+  manufacturingHeight?: number;
+  /** Rough opening dimensions (if measurementMode is 'hole') */
+  roughOpeningWidth?: number;
+  roughOpeningHeight?: number;
 }
 
 // Lightweight commercial draft types used by workspace context

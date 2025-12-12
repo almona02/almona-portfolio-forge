@@ -5,6 +5,9 @@ import { generateComponentsFromGrid } from '@/algorithms/smartDraw';
 import { SimplifiedOptimizationEngine } from '@/lib/fabricator/OptimizationEngine';
 import { PricingEngine } from '@/lib/pricing/PricingEngine';
 import { cn } from '@/lib/utils';
+import { EGYPTIAN_PATTERNS, getPatternsForSystem, type EgyptianPattern } from '@/data/egyptian-window-patterns';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
+import { Label } from '@/shared/ui/ui/label';
 
 interface PrecisionDesignInterfaceProps {
   project: WindowUnit | null;
@@ -34,6 +37,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
   onGridChange,
   className
 }) => {
+  const [selectedPatternId, setSelectedPatternId] = useState<string>('');
   const [dragState, setDragState] = useState<DragState>({ type: null, index: -1 });
   const [hudState, setHudState] = useState<HUDState>({ cellId: null, x: 0, y: 0 });
   const [hoveredCell, setHoveredCell] = useState<string | null>(null);
@@ -103,6 +107,88 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     if (!project?.systemPackId) return null;
     return availableSystemPacks.find(p => p.meta.id === project.systemPackId) || null;
   }, [project?.systemPackId, availableSystemPacks]);
+
+  // Get available patterns for current system
+  const availablePatterns = useMemo(() => {
+    if (!project?.systemPackId) return [];
+    return getPatternsForSystem(project.systemPackId);
+  }, [project?.systemPackId]);
+
+  // Handle pattern selection - auto-populate grid
+  const handlePatternSelect = useCallback((patternId: string) => {
+    setSelectedPatternId(patternId);
+    const pattern = EGYPTIAN_PATTERNS.find(p => p.id === patternId);
+    if (!pattern) return;
+
+    // Convert pattern layout to WindowGrid
+    // Parse layout string to determine grid dimensions
+    let rows = 1;
+    let cols = 1;
+    
+    // Extract number from layout string (e.g., "2-panel sliding" -> 2)
+    const panelMatch = pattern.layout.match(/(\d+)[- ]panel/);
+    if (panelMatch) {
+      const panelCount = parseInt(panelMatch[1], 10);
+      // For sliding windows, panels are side-by-side (1 row, N cols)
+      if (pattern.type === 'sliding' || pattern.type === 'door') {
+        rows = 1;
+        cols = panelCount;
+      } else {
+        // For other types, try to create a square-ish grid
+        rows = Math.ceil(Math.sqrt(panelCount));
+        cols = Math.ceil(panelCount / rows);
+      }
+    } else if (pattern.layout.includes('single') || pattern.layout.includes('lite')) {
+      rows = 1;
+      cols = 1;
+    }
+
+    const newGrid: WindowGrid = {
+      rows,
+      cols,
+      cells: []
+    };
+
+    // Generate cells based on pattern type
+    for (let r = 0; r < newGrid.rows; r++) {
+      for (let c = 0; c < newGrid.cols; c++) {
+        const cellId = `${r}-${c}`;
+        let cellType: GridCell['type'] = 'fixed';
+        
+        // Determine cell type based on pattern
+        if (pattern.type === 'sliding' || pattern.type === 'door') {
+          cellType = 'sliding'; // All cells are sliding for sliding patterns
+        } else if (pattern.type === 'casement') {
+          cellType = 'sash';
+        } else if (pattern.type === 'fixed') {
+          cellType = 'fixed';
+        } else if (pattern.type === 'mixed') {
+          // Mixed patterns - center fixed, sides casement
+          if (newGrid.cols > 1 && c === Math.floor(newGrid.cols / 2)) {
+            cellType = 'fixed';
+          } else {
+            cellType = 'sash';
+          }
+        }
+        
+        newGrid.cells.push({
+          id: cellId,
+          row: r,
+          col: c,
+          type: cellType
+        });
+      }
+    }
+
+    // Update project dimensions to pattern's typical dimensions if needed
+    if (project && pattern.typicalWidthMm && pattern.typicalHeightMm) {
+      const midWidth = Math.round((pattern.typicalWidthMm[0] + pattern.typicalWidthMm[1]) / 2);
+      const midHeight = Math.round((pattern.typicalHeightMm[0] + pattern.typicalHeightMm[1]) / 2);
+      // Note: We can't directly update project here, but the grid change will trigger re-render
+    }
+
+    onGridChange(newGrid);
+  }, [onGridChange, project]);
 
   // Get glass info
   const glassInfo = useMemo(() => {
@@ -476,6 +562,31 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
             <span className="text-gray-900">{colorInfo}</span>
           </div>
         </div>
+        
+        {/* Pattern Selector */}
+        {availablePatterns.length > 0 && (
+          <div className="flex items-center gap-3">
+            <Label className="text-sm text-gray-600 font-semibold">Pattern:</Label>
+            <Select
+              value={selectedPatternId}
+              onValueChange={handlePatternSelect}
+            >
+              <SelectTrigger className="w-[200px] bg-white border-gray-300 text-sm">
+                <SelectValue placeholder="Select Pattern..." />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                {availablePatterns.map((pattern) => (
+                  <SelectItem key={pattern.id} value={pattern.id}>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{pattern.name}</span>
+                      <span className="text-xs text-gray-500">{pattern.layout}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       {/* Center: Blueprint Canvas */}

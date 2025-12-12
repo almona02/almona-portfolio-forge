@@ -1,6 +1,14 @@
+import type { WindowGrid, GridCell } from '@/types/fabricator';
+
 /**
  * Egyptian Window Patterns - practical presets for fast, safe setup.
  * Includes typical dimension ranges, recommended systems, and accessory notes.
+ * 
+ * ENGINEERING SPECIFICATIONS:
+ * - Grid structure (rows, cols, cell types)
+ * - Mullion/transom requirements
+ * - Opening directions
+ * - Technical constraints
  */
 export interface EgyptianPattern {
   id: string;
@@ -12,6 +20,77 @@ export interface EgyptianPattern {
   compatibleSystems: string[]; // systemPack ids
   notes?: string;
   accessories?: string[];
+  
+  // ========== ENGINEERING TECHNICAL SPECIFICATIONS ==========
+  /**
+   * Grid structure definition - exact technical layout
+   * This is what gets applied to the blueprint preview
+   */
+  gridSpec: {
+    rows: number;
+    cols: number;
+    cells: Array<{
+      row: number;
+      col: number;
+      type: GridCell['type'];
+      openingDirection?: GridCell['openingDirection'];
+      colSpan?: number;
+      rowSpan?: number;
+    }>;
+    /**
+     * Column width proportions (relative weights)
+     * e.g. [1, 2, 1] means middle column is 2x wider
+     */
+    colWidths?: number[];
+    /**
+     * Row height proportions (relative weights)
+     * e.g. [2, 1] means top row is 2x taller
+     */
+    rowHeights?: number[];
+  };
+  
+  /**
+   * Mullion specifications (vertical divisions)
+   */
+  mullions?: Array<{
+    position: number; // column index where mullion appears (0 = between col 0 and 1)
+    type: 'standard' | 'structural' | 'corner';
+    width?: number; // mm - actual mullion width
+    reinforcement?: boolean; // requires steel reinforcement
+  }>;
+  
+  /**
+   * Transom specifications (horizontal divisions)
+   */
+  transoms?: Array<{
+    position: number; // row index where transom appears (0 = between row 0 and 1)
+    type: 'standard' | 'structural';
+    height?: number; // mm - actual transom height
+    reinforcement?: boolean; // requires steel reinforcement
+  }>;
+  
+  /**
+   * Technical constraints for this pattern
+   */
+  constraints?: {
+    minSashWidth?: number; // mm - minimum individual sash width
+    maxSashWidth?: number; // mm - maximum individual sash width
+    minSashHeight?: number; // mm
+    maxSashHeight?: number; // mm
+    maxSashArea?: number; // m² - maximum sash area before heavy-duty hardware
+    requiresReinforcement?: boolean; // needs steel reinforcement
+    windLoadCategory?: 'low' | 'medium' | 'high'; // wind load requirements
+  };
+  
+  /**
+   * Opening mechanism details
+   */
+  openingMechanism?: {
+    type: 'sliding' | 'casement' | 'tilt-turn' | 'awning' | 'fixed' | 'bi-fold';
+    direction?: 'left' | 'right' | 'both' | 'outward' | 'inward';
+    trackType?: 'top' | 'bottom' | 'both'; // for sliding
+    pivotPoint?: 'center' | 'side' | 'corner'; // for pivot doors
+  };
 }
 
 export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
@@ -24,6 +103,30 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     typicalHeightMm: [1200, 2000],
     compatibleSystems: ['panda-50', 'rock60', 'jumbo100'],
     accessories: ['anti-lift blocks', 'interlock kit'],
+    gridSpec: {
+      rows: 1,
+      cols: 2,
+      cells: [
+        { row: 0, col: 0, type: 'sliding', openingDirection: 'right' },
+        { row: 0, col: 1, type: 'sliding', openingDirection: 'left' }
+      ],
+      colWidths: [1, 1] // Equal width panels
+    },
+    mullions: [
+      { position: 0, type: 'standard', width: 50 } // Mullion between col 0 and 1
+    ],
+    constraints: {
+      minSashWidth: 600,
+      maxSashWidth: 1200,
+      maxSashArea: 2.5,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'sliding',
+      direction: 'both',
+      trackType: 'bottom'
+    }
   },
   {
     id: 'sliding-4s',
@@ -34,6 +137,34 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     typicalHeightMm: [1400, 2200],
     compatibleSystems: ['panda-50', 'rock60', 'jumbo100'],
     accessories: ['anti-lift blocks', 'interlock kit', 'heavy-duty rollers (if >2.5m²)'],
+    gridSpec: {
+      rows: 1,
+      cols: 4,
+      cells: [
+        { row: 0, col: 0, type: 'sliding', openingDirection: 'right' },
+        { row: 0, col: 1, type: 'sliding', openingDirection: 'right' },
+        { row: 0, col: 2, type: 'sliding', openingDirection: 'left' },
+        { row: 0, col: 3, type: 'sliding', openingDirection: 'left' }
+      ],
+      colWidths: [1, 1, 1, 1] // Equal width panels
+    },
+    mullions: [
+      { position: 0, type: 'standard', width: 50 },
+      { position: 1, type: 'standard', width: 50 },
+      { position: 2, type: 'standard', width: 50 }
+    ],
+    constraints: {
+      minSashWidth: 550,
+      maxSashWidth: 900,
+      maxSashArea: 2.5,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'sliding',
+      direction: 'both',
+      trackType: 'bottom'
+    }
   },
   {
     id: 'sliding-3s-center-fixed',
@@ -44,6 +175,32 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     typicalHeightMm: [1400, 2200],
     compatibleSystems: ['panda-50', 'rock60'],
     accessories: ['interlock kit'],
+    gridSpec: {
+      rows: 1,
+      cols: 3,
+      cells: [
+        { row: 0, col: 0, type: 'sliding', openingDirection: 'right' },
+        { row: 0, col: 1, type: 'fixed' },
+        { row: 0, col: 2, type: 'sliding', openingDirection: 'left' }
+      ],
+      colWidths: [1, 1.2, 1] // Center fixed panel slightly wider
+    },
+    mullions: [
+      { position: 0, type: 'standard', width: 50 },
+      { position: 1, type: 'standard', width: 50 }
+    ],
+    constraints: {
+      minSashWidth: 600,
+      maxSashWidth: 1100,
+      maxSashArea: 2.5,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'sliding',
+      direction: 'both',
+      trackType: 'bottom'
+    }
   },
   {
     id: 'casement-double',
@@ -54,6 +211,30 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     typicalHeightMm: [1200, 2200],
     compatibleSystems: ['panda-50', 'panda-100', 'volcano-m11000'],
     accessories: ['friction stays', 'espagnolette', 'cleats'],
+    gridSpec: {
+      rows: 1,
+      cols: 2,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'left' },
+        { row: 0, col: 1, type: 'sash', openingDirection: 'right' }
+      ],
+      colWidths: [1, 1] // Equal width sashes
+    },
+    mullions: [
+      { position: 0, type: 'standard', width: 50 } // Center mullion
+    ],
+    constraints: {
+      minSashWidth: 600,
+      maxSashWidth: 1000,
+      maxSashArea: 2.2,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'casement',
+      direction: 'both',
+      trackType: undefined
+    }
   },
   {
     id: 'fixed-with-side-casements',
@@ -64,6 +245,32 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     typicalHeightMm: [1400, 2400],
     compatibleSystems: ['panda-50', 'rock60', 'panda-100'],
     accessories: ['friction stays', 'espagnolette'],
+    gridSpec: {
+      rows: 1,
+      cols: 3,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'left' },
+        { row: 0, col: 1, type: 'fixed' },
+        { row: 0, col: 2, type: 'sash', openingDirection: 'right' }
+      ],
+      colWidths: [1, 1.5, 1] // Center fixed panel wider
+    },
+    mullions: [
+      { position: 0, type: 'standard', width: 50 },
+      { position: 1, type: 'standard', width: 50 }
+    ],
+    constraints: {
+      minSashWidth: 500,
+      maxSashWidth: 800,
+      maxSashArea: 2.0,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'casement',
+      direction: 'both',
+      trackType: undefined
+    }
   },
   {
     id: 'sliding-door-2p',
@@ -75,6 +282,32 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     compatibleSystems: ['jumbo100', 'ps-6600', 'ps-9600'],
     accessories: ['heavy-duty rollers', 'interlock kit'],
     notes: 'Use heavy-duty rollers if sash area > 2.5m².',
+    gridSpec: {
+      rows: 1,
+      cols: 2,
+      cells: [
+        { row: 0, col: 0, type: 'sliding', openingDirection: 'right' },
+        { row: 0, col: 1, type: 'sliding', openingDirection: 'left' }
+      ],
+      colWidths: [1, 1]
+    },
+    mullions: [
+      { position: 0, type: 'standard', width: 50 }
+    ],
+    constraints: {
+      minSashWidth: 900,
+      maxSashWidth: 1600,
+      minSashHeight: 2000,
+      maxSashHeight: 2600,
+      maxSashArea: 4.2,
+      requiresReinforcement: true,
+      windLoadCategory: 'high'
+    },
+    openingMechanism: {
+      type: 'sliding',
+      direction: 'both',
+      trackType: 'bottom'
+    }
   },
   {
     id: 'fixed',
@@ -84,6 +317,23 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     typicalWidthMm: [600, 2000],
     typicalHeightMm: [600, 2000],
     compatibleSystems: ['panda-50', 'rock60', 'panda-100'],
+    gridSpec: {
+      rows: 1,
+      cols: 1,
+      cells: [
+        { row: 0, col: 0, type: 'fixed' }
+      ]
+    },
+    constraints: {
+      maxSashArea: 4.0,
+      requiresReinforcement: false,
+      windLoadCategory: 'low'
+    },
+    openingMechanism: {
+      type: 'fixed',
+      direction: undefined,
+      trackType: undefined
+    }
   },
   {
     id: 'with-shish',
@@ -95,6 +345,27 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     compatibleSystems: ['panda-50', 'rock60'],
     accessories: ['shish box (140/170/180/210mm)', 'motor or manual mechanism'],
     notes: 'Rule 8 applies: deduct box height from rough opening.',
+    gridSpec: {
+      rows: 1,
+      cols: 1,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'right' }
+      ]
+    },
+    constraints: {
+      minSashWidth: 1000,
+      maxSashWidth: 2500,
+      minSashHeight: 1400,
+      maxSashHeight: 2600,
+      maxSashArea: 6.5,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'casement',
+      direction: 'outward',
+      trackType: undefined
+    }
   },
   {
     id: 'kitchen-door-acp',
@@ -106,6 +377,32 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     compatibleSystems: ['panda-50', 'panda-100', 'volcano-m11000'],
     accessories: ['ACP panel', 'tempered/laminated glass above'],
     notes: 'Rule 10 applies: safety panel recommendation.',
+    gridSpec: {
+      rows: 2,
+      cols: 1,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'right' },
+        { row: 1, col: 0, type: 'panel' } // ACP bottom panel
+      ],
+      rowHeights: [1.5, 1] // Top glass panel taller
+    },
+    transoms: [
+      { position: 0, type: 'standard', height: 50 } // Transom between glass and ACP
+    ],
+    constraints: {
+      minSashWidth: 800,
+      maxSashWidth: 1100,
+      minSashHeight: 2000,
+      maxSashHeight: 2400,
+      maxSashArea: 2.6,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'casement',
+      direction: 'outward',
+      trackType: undefined
+    }
   },
   {
     id: 'arched-panda',
@@ -117,11 +414,362 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     compatibleSystems: ['panda-50'],
     accessories: ['bending service', 'glass template'],
     notes: 'Rule 12 applies: min radius 500mm.',
+    gridSpec: {
+      rows: 1,
+      cols: 1,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'right' }
+      ]
+    },
+    constraints: {
+      minSashWidth: 1000,
+      maxSashWidth: 2200,
+      minSashHeight: 1400,
+      maxSashHeight: 2600,
+      maxSashArea: 5.7,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'casement',
+      direction: 'outward',
+      trackType: undefined
+    }
+  },
+  // ========== GOLD TIER ADDITIONS - HIGH PRIORITY ==========
+  {
+    id: 'tilt-turn',
+    name: 'Tilt & Turn Window',
+    type: 'tilt_turn',
+    layout: 'Single tilt & turn sash',
+    typicalWidthMm: [600, 1200],
+    typicalHeightMm: [1200, 2000],
+    compatibleSystems: ['panda-50', 'panda-100', 'volcano-m11000'],
+    accessories: ['tilt-turn mechanism', 'espagnolette', 'corner cleat'],
+    notes: 'Most popular in modern Egyptian apartments - 60% of new construction. Tilt for ventilation, turn for cleaning.',
+    gridSpec: {
+      rows: 1,
+      cols: 1,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'right' }
+      ]
+    },
+    constraints: {
+      minSashWidth: 600,
+      maxSashWidth: 1200,
+      minSashHeight: 1200,
+      maxSashHeight: 2000,
+      maxSashArea: 2.4,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'tilt-turn',
+      direction: 'outward',
+      trackType: undefined
+    }
+  },
+  {
+    id: 'casement-single',
+    name: 'Single Casement (Bathroom/Kitchen)',
+    type: 'casement',
+    layout: 'Single side-hung casement',
+    typicalWidthMm: [400, 800],
+    typicalHeightMm: [500, 1600],
+    compatibleSystems: ['panda-50', 'rock60'],
+    accessories: ['friction stay', 'espagnolette', 'corner cleat'],
+    notes: 'Standard for bathrooms and small kitchen windows. Most common single-opening pattern.',
+    gridSpec: {
+      rows: 1,
+      cols: 1,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'right' }
+      ]
+    },
+    constraints: {
+      minSashWidth: 400,
+      maxSashWidth: 800,
+      minSashHeight: 500,
+      maxSashHeight: 1600,
+      maxSashArea: 1.3,
+      requiresReinforcement: false,
+      windLoadCategory: 'low'
+    },
+    openingMechanism: {
+      type: 'casement',
+      direction: 'right',
+      trackType: undefined
+    }
+  },
+  {
+    id: 'with-latish',
+    name: 'Window with Latish (Mosquito Net)',
+    type: 'mixed',
+    layout: 'Casement with integrated latish',
+    typicalWidthMm: [800, 1500],
+    typicalHeightMm: [1200, 2000],
+    compatibleSystems: ['panda-50', 'rock60'],
+    accessories: ['latish frame', 'mosquito mesh', 'magnetic catch'],
+    notes: '90% of Egyptian residential - latish opens IN, glass opens OUT. Essential for ventilation without insects.',
+    gridSpec: {
+      rows: 1,
+      cols: 1,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'right' }
+      ]
+    },
+    constraints: {
+      minSashWidth: 800,
+      maxSashWidth: 1500,
+      minSashHeight: 1200,
+      maxSashHeight: 2000,
+      maxSashArea: 3.0,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'casement',
+      direction: 'outward',
+      trackType: undefined
+    }
+  },
+  {
+    id: 'with-shish-latish',
+    name: 'Window with Shish + Latish',
+    type: 'mixed',
+    layout: 'Casement with shish above and latish inside',
+    typicalWidthMm: [1000, 2000],
+    typicalHeightMm: [1600, 2400],
+    compatibleSystems: ['panda-50', 'rock60'],
+    accessories: ['shish box (140/170/180/210mm)', 'latish frame', 'mosquito mesh'],
+    notes: 'Premium combination - shish for security, latish for ventilation. Rule 8 applies: deduct shish box height.',
+    gridSpec: {
+      rows: 1,
+      cols: 1,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'right' }
+      ]
+    },
+    constraints: {
+      minSashWidth: 1000,
+      maxSashWidth: 2000,
+      minSashHeight: 1600,
+      maxSashHeight: 2400,
+      maxSashArea: 4.8,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'casement',
+      direction: 'outward',
+      trackType: undefined
+    }
+  },
+  {
+    id: 'french-door',
+    name: 'French Door (Double Casement Door)',
+    type: 'door',
+    layout: '2-panel casement doors',
+    typicalWidthMm: [1400, 2000],
+    typicalHeightMm: [2000, 2400],
+    compatibleSystems: ['panda-100', 'volcano-m11000'],
+    accessories: ['door handle', 'espagnolette', 'threshold', 'door closer'],
+    notes: 'Popular in villas and luxury apartments. Both doors open outward or inward.',
+    gridSpec: {
+      rows: 1,
+      cols: 2,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'left' },
+        { row: 0, col: 1, type: 'sash', openingDirection: 'right' }
+      ],
+      colWidths: [1, 1]
+    },
+    mullions: [
+      { position: 0, type: 'standard', width: 50 }
+    ],
+    constraints: {
+      minSashWidth: 700,
+      maxSashWidth: 1000,
+      minSashHeight: 2000,
+      maxSashHeight: 2400,
+      maxSashArea: 2.4,
+      requiresReinforcement: true,
+      windLoadCategory: 'high'
+    },
+    openingMechanism: {
+      type: 'casement',
+      direction: 'both',
+      trackType: undefined
+    }
+  },
+  {
+    id: 'awning-window',
+    name: 'Awning Window (Top-Hung)',
+    type: 'casement',
+    layout: 'Single top-hung awning',
+    typicalWidthMm: [600, 1500],
+    typicalHeightMm: [600, 1200],
+    compatibleSystems: ['panda-50', 'rock60'],
+    accessories: ['awning mechanism', 'friction stay', 'rain drip'],
+    notes: 'Common in commercial buildings, allows ventilation in rain. Opens outward from bottom.',
+    gridSpec: {
+      rows: 1,
+      cols: 1,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'bottom' }
+      ]
+    },
+    constraints: {
+      minSashWidth: 600,
+      maxSashWidth: 1500,
+      minSashHeight: 600,
+      maxSashHeight: 1200,
+      maxSashArea: 1.8,
+      requiresReinforcement: false,
+      windLoadCategory: 'low'
+    },
+    openingMechanism: {
+      type: 'awning',
+      direction: 'outward',
+      trackType: 'top'
+    }
+  },
+  {
+    id: 'corner-window',
+    name: 'Corner Window (90°)',
+    type: 'mixed',
+    layout: 'Two windows meeting at 90° corner',
+    typicalWidthMm: [1200, 2000],
+    typicalHeightMm: [1200, 2000],
+    compatibleSystems: ['panda-50', 'rock60'],
+    accessories: ['corner mullion', 'corner seal'],
+    notes: 'Villa specialty - creates panoramic view. Requires special corner mullion.',
+    gridSpec: {
+      rows: 1,
+      cols: 2,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'right' },
+        { row: 0, col: 1, type: 'sash', openingDirection: 'left' }
+      ],
+      colWidths: [1, 1]
+    },
+    mullions: [
+      { position: 0, type: 'corner', width: 50 } // Special corner mullion
+    ],
+    constraints: {
+      minSashWidth: 1200,
+      maxSashWidth: 2000,
+      minSashHeight: 1200,
+      maxSashHeight: 2000,
+      maxSashArea: 4.0,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'casement',
+      direction: 'both',
+      trackType: undefined
+    }
+  },
+  {
+    id: 'picture-window',
+    name: 'Picture Window (Large Fixed)',
+    type: 'fixed',
+    layout: 'Single large fixed lite',
+    typicalWidthMm: [2000, 4000],
+    typicalHeightMm: [1800, 3000],
+    compatibleSystems: ['jumbo100', 'rock60'],
+    accessories: ['structural mullion (if > 3m²)'],
+    notes: 'Commercial storefronts, luxury villas. May require structural mullion for large spans.',
+    gridSpec: {
+      rows: 1,
+      cols: 1,
+      cells: [
+        { row: 0, col: 0, type: 'fixed' }
+      ]
+    },
+    constraints: {
+      minSashWidth: 2000,
+      maxSashWidth: 4000,
+      minSashHeight: 1800,
+      maxSashHeight: 3000,
+      maxSashArea: 12.0,
+      requiresReinforcement: true, // Requires structural mullion if > 3m²
+      windLoadCategory: 'high'
+    },
+    openingMechanism: {
+      type: 'fixed',
+      direction: undefined,
+      trackType: undefined
+    }
+  },
+  {
+    id: 'bi-fold-door',
+    name: 'Bi-Fold Door',
+    type: 'door',
+    layout: '2-4 panel bi-fold',
+    typicalWidthMm: [2000, 4000],
+    typicalHeightMm: [2000, 2400],
+    compatibleSystems: ['jumbo100', 'ps-9600'],
+    accessories: ['bi-fold mechanism', 'top track', 'bottom pivot'],
+    notes: 'Modern villas, creates wide opening. Panels fold to one side.',
+    gridSpec: {
+      rows: 1,
+      cols: 4,
+      cells: [
+        { row: 0, col: 0, type: 'sliding', openingDirection: 'right' },
+        { row: 0, col: 1, type: 'sliding', openingDirection: 'right' },
+        { row: 0, col: 2, type: 'sliding', openingDirection: 'right' },
+        { row: 0, col: 3, type: 'sliding', openingDirection: 'right' }
+      ],
+      colWidths: [1, 1, 1, 1]
+    },
+    mullions: [
+      { position: 0, type: 'standard', width: 50 },
+      { position: 1, type: 'standard', width: 50 },
+      { position: 2, type: 'standard', width: 50 }
+    ],
+    constraints: {
+      minSashWidth: 500,
+      maxSashWidth: 1000,
+      minSashHeight: 2000,
+      maxSashHeight: 2400,
+      maxSashArea: 2.4,
+      requiresReinforcement: true,
+      windLoadCategory: 'high'
+    },
+    openingMechanism: {
+      type: 'bi-fold',
+      direction: 'right',
+      trackType: 'top'
+    }
   },
 ];
 
 export function getPatternsForSystem(systemId: string): EgyptianPattern[] {
   return EGYPTIAN_PATTERNS.filter((p) => p.compatibleSystems.includes(systemId));
+}
+
+/**
+ * Convert pattern gridSpec to WindowGrid format
+ * This ensures technical specifications are properly applied to the blueprint
+ */
+export function patternGridSpecToWindowGrid(gridSpec: EgyptianPattern['gridSpec']): WindowGrid {
+  return {
+    rows: gridSpec.rows,
+    cols: gridSpec.cols,
+    cells: gridSpec.cells.map((cell, idx) => ({
+      id: `${cell.row}-${cell.col}`,
+      row: cell.row,
+      col: cell.col,
+      type: cell.type,
+      openingDirection: cell.openingDirection,
+      colSpan: cell.colSpan,
+      rowSpan: cell.rowSpan
+    })),
+    colWidths: gridSpec.colWidths,
+    rowHeights: gridSpec.rowHeights
+  };
 }
 /**
  * Egyptian Window Patterns Database
