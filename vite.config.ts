@@ -336,18 +336,13 @@ export default defineConfig(({ mode }) => {
               return 'admin-dashboard';
             }
             
-            // Large utility libraries
-            if (id.includes('i18next') || id.includes('axios') || 
-                id.includes('zustand') || id.includes('zod')) {
-              return 'utils-vendor';
-            }
-            
-            // Markdown editor (heavy)
+            // Markdown editor (heavy, independent)
             if (id.includes('@uiw/react-md-editor') || id.includes('markdown-it')) {
               return 'markdown-vendor';
             }
             
-            // Everything else from node_modules
+            // Everything else from node_modules (including utils to prevent circular deps)
+            // Note: i18next, axios, zustand, zod bundled with vendor to avoid initialization order issues
             if (id.includes('node_modules')) {
               return 'vendor';
             }
