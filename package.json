@@ -36,7 +36,7 @@
     "pwa:icons": "node scripts/generate-pwa-icons.js",
     "sitemap:generate": "node scripts/generate-sitemap.js",
     "optimize:images": "node scripts/optimize-images-node.js || (powershell -ExecutionPolicy Bypass -File ./scripts/optimize-images.ps1) || (bash ./scripts/optimize-images.sh) || echo 'WebP tools not found - using Squoosh.app recommended'",
-    "prebuild": "npm run optimize:images",
+    "prebuild": "npm run optimize:images || echo 'Image optimization skipped (optional)'",
     "test": "echo 'Tests disabled for CI compatibility' && exit 0",
     "test:predictive": "vitest run src/lib/predictive/tests",
     "test:all": "vitest run src/lib/predictive/tests src/components/__tests__",

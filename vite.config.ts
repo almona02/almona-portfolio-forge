@@ -76,12 +76,19 @@ export default defineConfig(({ mode }) => {
           enabled: false // Disable in development for stability
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
+          globIgnores: [
+            '**/hero01*.png',
+            '**/egyptian-industrial-hero-bg.png',
+            '**/about-page-image.png',
+            '**/*-large.png',
+            '**/*-hero*.png'
+          ],
           globDirectory: 'dist',
           cleanupOutdatedCaches: true,
           skipWaiting: true,
           clientsClaim: true,
-          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit for stability
+          maximumFileSizeToCacheInBytes: 12 * 1024 * 1024, // 12MB limit to handle large JS bundles
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
@@ -93,6 +100,20 @@ export default defineConfig(({ mode }) => {
                   maxAgeSeconds: 5 * 60, // 5 minutes
                 },
                 networkTimeoutSeconds: 10,
+              },
+            },
+            {
+              urlPattern: /\.(?:png|jpg|jpeg|webp|gif)$/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'images-cache',
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
               },
             }
           ],
