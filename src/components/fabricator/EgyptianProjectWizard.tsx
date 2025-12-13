@@ -21,6 +21,9 @@ import type { ProjectHeaderMeta } from './NewProjectWizard';
 import { SystemTuningStudio } from './SystemTuningStudio';
 import { CustomSystemManager } from './CustomSystemManager';
 import { loadCustomSystems, addCustomSystem } from '@/lib/fabricator/customSystemStorage';
+import { getSystemPackTuningStatus, saveReturnUrl } from '@/lib/fabricator/systemTuningUtils';
+import { useNavigate } from 'react-router-dom';
+import { AlertCircle, Settings, ArrowRight } from 'lucide-react';
 
 type WindZone = 'inland' | 'coastal' | 'high_wind';
 type Exposure = 'street' | 'backyard' | 'open_field';
@@ -63,6 +66,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
   onFallback,
   initialMeta,
 }) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [useEgyptianStandards, setUseEgyptianStandards] = useState(
     initialMeta?.region ? initialMeta.region === 'egypt' : true,
@@ -70,6 +74,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
   const [showTuningStudio, setShowTuningStudio] = useState(false);
   const [customSystems, setCustomSystems] = useState<any[]>([]);
   const [tuningInitialSystem, setTuningInitialSystem] = useState<any | null>(null);
+  const [showTuningPrompt, setShowTuningPrompt] = useState(false);
 
   React.useEffect(() => {
     const saved = loadCustomSystems();
@@ -110,6 +115,27 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
     setSelectedSystemId(defaultSystem);
   }, [materialPreference]);
 
+  // Check tuning status when system is selected
+  const selectedSystemPack = React.useMemo(() => {
+    if (!selectedSystemId) return null;
+    return SYSTEM_PACKS.find((p) => p.meta.id === selectedSystemId) 
+      || EGYPTIAN_UPVC_SYSTEMS.find((p) => p.meta.id === selectedSystemId)
+      || customSystems.find((c) => c.meta?.id === selectedSystemId);
+  }, [selectedSystemId, customSystems]);
+
+  const tuningStatus = React.useMemo(() => {
+    return getSystemPackTuningStatus(selectedSystemPack);
+  }, [selectedSystemPack]);
+
+  // Show tuning prompt if system needs tuning
+  React.useEffect(() => {
+    if (selectedSystemPack && tuningStatus.needsTuning && step >= 3) {
+      setShowTuningPrompt(true);
+    } else {
+      setShowTuningPrompt(false);
+    }
+  }, [selectedSystemPack, tuningStatus, step]);
+
   const recommendedSystems = useMemo(() => {
     const recs = new Set<string>();
     const allSystems = [...SYSTEM_PACKS, ...EGYPTIAN_UPVC_SYSTEMS, ...customSystems];
@@ -139,6 +165,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
         recs.add('panda-50');
       } else {
         recs.add('foxywin_eco_smart_50'); // FoxyWin as primary recommendation
+        recs.add('katra_pro_red_series'); // Katra PRO RED - Egyptian manufacturer for testing
         recs.add('wintech_6400_detailed');
         recs.add('kompen_60_eco');
       }
@@ -167,6 +194,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
         recs.add('rock60');
       } else {
         recs.add('wintech_6400_detailed');
+        recs.add('katra_pro_red_series'); // Katra has sliding system (S120)
       }
     }
     if (openingType === 'door') {
@@ -453,86 +481,133 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
           )}
 
           {step === 3 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Base Shape</Label>
-                <Select value={baseShape} onValueChange={(val) => setBaseShape(val as BaseShape)}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-900 border-gray-700">
-                    <SelectItem value="single">Single</SelectItem>
-                    <SelectItem value="two_sash">Two Sash</SelectItem>
-                    <SelectItem value="three_sash">Three Sash</SelectItem>
-                    <SelectItem value="balcony">Balcony Combo</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Recommended Systems</Label>
-                <div className="flex flex-wrap gap-2">
-                  {recommendedSystems.map((id) => {
-                    const pack = SYSTEM_PACKS.find((p) => p.meta.id === id) 
-                      || EGYPTIAN_UPVC_SYSTEMS.find((p) => p.meta.id === id)
-                      || customSystems.find((c) => c.meta?.id === id);
-                    if (!pack) return null;
-                    const active = selectedSystemId === id;
-                    return (
-                      <button
-                        key={id}
-                        onClick={() => setSelectedSystemId(id)}
-                        className={`relative px-3 py-2 rounded border text-xs transition ${
-                          active ? 'border-orange-500 bg-orange-500/10 text-orange-200' : 'border-gray-700 hover:border-gray-500'
-                        }`}
+            <div className="space-y-4">
+              {/* Tuning Status Alert */}
+              {showTuningPrompt && selectedSystemPack && (
+                <Alert className="bg-yellow-900/20 border-yellow-500/50">
+                  <AlertCircle className="h-4 w-4 text-yellow-400" />
+                  <AlertDescription className="text-sm">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <strong className="text-yellow-300">System needs tuning for accurate cut lists</strong>
+                        <p className="text-xs text-gray-400 mt-1">
+                          Configure Frame and Sash profiles, welding parameters, and cutting rules for 99.8% accuracy.
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        className="bg-yellow-600 hover:bg-yellow-500 text-white ml-4"
+                        onClick={() => {
+                          // Save return URL with wizard state
+                          saveReturnUrl('/fabricator-workflow', {
+                            returnToWizard: 'true',
+                            systemPackId: selectedSystemId || '',
+                            materialPreference,
+                            clientName,
+                            projectName,
+                          });
+                          // Navigate to no-DXF tuning studio
+                          navigate(`/fabricator/tuning-studio-no-dxf?systemPackId=${selectedSystemId}`);
+                        }}
                       >
-                        <span>{pack.meta.name}</span>
-                        {pack.meta.id.startsWith('custom') && (
-                          <span className="ml-2 text-[10px] text-amber-500">Custom</span>
-                        )}
-                        {pack.meta.id.startsWith('custom') && (
-                          <div
-                            className="absolute top-1 right-1 opacity-0 hover:opacity-100 transition-opacity"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                            }}
-                            onPointerDown={(e) => e.stopPropagation()}
-                          >
-                            <CustomSystemManager
-                              systemId={pack.meta.id}
-                              systemName={pack.meta.name}
-                              onDelete={() => setCustomSystems(loadCustomSystems())}
-                              onArchive={() => setCustomSystems(loadCustomSystems())}
-                              onDuplicate={() => setCustomSystems(loadCustomSystems())}
-                              onEdit={() => {
-                                setTuningInitialSystem(pack as any);
-                                setShowTuningStudio(true);
-                              }}
-                            />
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                  {recommendedSystems.length === 0 && (
-                    <span className="text-[11px] text-gray-400">No recommendation; select manually.</span>
-                  )}
+                        <Settings className="h-3.5 w-3.5 mr-2" />
+                        Tune System Now
+                        <ArrowRight className="h-3.5 w-3.5 ml-2" />
+                      </Button>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Base Shape</Label>
+                  <Select value={baseShape} onValueChange={(val) => setBaseShape(val as BaseShape)}>
+                    <SelectTrigger className="bg-gray-800 border-gray-700">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-900 border-gray-700">
+                      <SelectItem value="single">Single</SelectItem>
+                      <SelectItem value="two_sash">Two Sash</SelectItem>
+                      <SelectItem value="three_sash">Three Sash</SelectItem>
+                      <SelectItem value="balcony">Balcony Combo</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-2"
-                  onClick={() => {
-                    const currentPack =
-                      SYSTEM_PACKS.find((p) => p.meta.id === selectedSystemId) ||
-                      customSystems.find((c) => c.meta?.id === selectedSystemId);
-                    setTuningInitialSystem(currentPack || null);
-                    setShowTuningStudio(true);
-                  }}
-                >
-                  <Factory className="h-3.5 w-3.5 mr-2" />
-                  Tune This System (Advanced)
-                </Button>
+                <div className="space-y-2">
+                  <Label>Recommended Systems</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {recommendedSystems.map((id) => {
+                      const pack = SYSTEM_PACKS.find((p) => p.meta.id === id) 
+                        || EGYPTIAN_UPVC_SYSTEMS.find((p) => p.meta.id === id)
+                        || customSystems.find((c) => c.meta?.id === id);
+                      if (!pack) return null;
+                      const active = selectedSystemId === id;
+                      const packTuningStatus = getSystemPackTuningStatus(pack);
+                      return (
+                        <button
+                          key={id}
+                          onClick={() => setSelectedSystemId(id)}
+                          className={`relative px-3 py-2 rounded border text-xs transition ${
+                            active ? 'border-orange-500 bg-orange-500/10 text-orange-200' : 'border-gray-700 hover:border-gray-500'
+                          }`}
+                        >
+                          <span>{pack.meta.name}</span>
+                          {!packTuningStatus.isTuned && packTuningStatus.hasProfiles && (
+                            <span className="ml-2 text-[10px] text-yellow-500">Needs Tuning</span>
+                          )}
+                          {packTuningStatus.isTuned && (
+                            <span className="ml-2 text-[10px] text-green-500">✓ Tuned</span>
+                          )}
+                          {pack.meta.id.startsWith('custom') && (
+                            <span className="ml-2 text-[10px] text-amber-500">Custom</span>
+                          )}
+                          {pack.meta.id.startsWith('custom') && (
+                            <div
+                              className="absolute top-1 right-1 opacity-0 hover:opacity-100 transition-opacity"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                              }}
+                              onPointerDown={(e) => e.stopPropagation()}
+                            >
+                              <CustomSystemManager
+                                systemId={pack.meta.id}
+                                systemName={pack.meta.name}
+                                onDelete={() => setCustomSystems(loadCustomSystems())}
+                                onArchive={() => setCustomSystems(loadCustomSystems())}
+                                onDuplicate={() => setCustomSystems(loadCustomSystems())}
+                                onEdit={() => {
+                                  setTuningInitialSystem(pack as any);
+                                  setShowTuningStudio(true);
+                                }}
+                              />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                    {recommendedSystems.length === 0 && (
+                      <span className="text-[11px] text-gray-400">No recommendation; select manually.</span>
+                    )}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => {
+                      const currentPack =
+                        SYSTEM_PACKS.find((p) => p.meta.id === selectedSystemId) ||
+                        EGYPTIAN_UPVC_SYSTEMS.find((p) => p.meta.id === selectedSystemId) ||
+                        customSystems.find((c) => c.meta?.id === selectedSystemId);
+                      setTuningInitialSystem(currentPack || null);
+                      setShowTuningStudio(true);
+                    }}
+                  >
+                    <Factory className="h-3.5 w-3.5 mr-2" />
+                    Tune This System (Advanced)
+                  </Button>
+                </div>
               </div>
             </div>
           )}

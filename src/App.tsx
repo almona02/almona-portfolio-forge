@@ -82,6 +82,7 @@ const FabricatorWorkspaceLayout = lazy(
 const ProfileStudioLite = lazy(() => import("./components/fabricator/ProfileStudioLite.tsx").then(m => ({ default: m.ProfileStudioLite })));
 const TurkishProfileGallery = lazy(() => import("./components/fabricator/TurkishProfileGallery.tsx").then(m => ({ default: m.TurkishProfileGallery })));
 const SystemPackTuningStudio = lazy(() => import("./components/fabricator/SystemPackTuningStudio.tsx").then(m => ({ default: m.SystemPackTuningStudio })));
+const NoDXFTuningStudio = lazy(() => import("./components/fabricator/NoDXFTuningStudio.tsx").then(m => ({ default: m.NoDXFTuningStudio })));
 const CommercialPage = lazy(() => import("./pages/CommercialPage.tsx").catch(() => ({
   default: () => null,
 })));
@@ -348,6 +349,14 @@ const App = () => (
                       element={
                         <Suspense fallback={getLoadingComponent('/fabricator/tuning-studio')}>
                           <SystemPackTuningStudio />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="tuning-studio-no-dxf"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/tuning-studio-no-dxf')}>
+                          <NoDXFTuningStudio />
                         </Suspense>
                       }
                     />
