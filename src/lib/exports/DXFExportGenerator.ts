@@ -282,14 +282,33 @@ export class DXFExportGenerator {
 
       // Add cut label if annotations enabled
       if (options.includeAnnotations) {
+        const componentType = cut.componentType || '';
+        const roleLabel = componentType === 'frame' ? 'FRAME' : 
+                         componentType === 'sash' ? 'SASH' : '';
+        const labelText = roleLabel 
+          ? `${cut.length.toFixed(0)}mm [${roleLabel}]`
+          : `${cut.length.toFixed(0)}mm`;
+        
         dxf.drawText(
-          `${cut.length.toFixed(0)}mm`,
+          labelText,
           cutX + cutWidth / 2,
           yOffset + stockHeight / 2,
           0,
           `${layerName}_LABELS`,
           6
         );
+        
+        // Add component ID for traceability
+        if (cut.componentId) {
+          dxf.drawText(
+            cut.componentId,
+            cutX + cutWidth / 2,
+            yOffset + stockHeight / 2 - 8,
+            0,
+            `${layerName}_LABELS`,
+            4
+          );
+        }
       }
 
       currentPosition += cut.length;

@@ -395,55 +395,166 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
 
         {/* Details Tab */}
         <TabsContent value="details" className="space-y-4">
-          {reportData.cuttingPlans.map((plan, planIndex) => (
-            <Card key={planIndex} className="print:break-inside-avoid">
-              <CardHeader>
-                <CardTitle>Plan #{plan.sequence} - {plan.profile.name}</CardTitle>
-                <CardDescription>
-                  Stock Length: {plan.stockLength} mm | Utilization: {plan.utilization.toFixed(1)}%
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className={`w-full text-sm ${isRTL ? 'rtl' : ''}`} dir={dir}>
-                    <thead>
-                      <tr className="border-b">
-                        <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.seq', 'Seq')}</th>
-                        <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.length', 'Length')}</th>
-                        <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.angle', 'Angle')}</th>
-                        <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.componentId', 'Component ID')}</th>
-                        <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.position', 'Position')}</th>
-                        <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.waste', 'Waste')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {plan.cuts.map((cut, cutIndex) => (
-                        <tr key={cutIndex} className="border-b">
-                          <td className={`p-2 ${getTextAlign(language, 'left')}`}>{cut.sequence}</td>
-                          <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.length, language, 2)}</td>
-                          <td className={`p-2 ${getTextAlign(language, 'left')}`}>
-                            {cut.angle === 45
-                              ? `${formatNumber(cut.angle, language, 1)}° miter`
-                              : `${formatNumber(cut.angle, language, 1)}°`}
-                          </td>
-                          <td className={`p-2 ${getTextAlign(language, 'left')}`}>
-                            {cut.componentId}
-                            {cut.componentType && (
-                              <span className="ml-1 text-[10px] text-muted-foreground">
-                                ({cut.componentType})
-                              </span>
-                            )}
-                          </td>
-                          <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.position, language, 2)}</td>
-                          <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.waste, language, 2)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {reportData.cuttingPlans.map((plan, planIndex) => {
+            // Group cuts by frame and sash for Egypt pilot
+            const frameCuts = plan.cuts.filter(cut => 
+              cut.componentType === 'frame' || 
+              cut.componentId?.toLowerCase().includes('frame') ||
+              cut.componentId?.toLowerCase().includes('frame-')
+            );
+            const sashCuts = plan.cuts.filter(cut => 
+              cut.componentType === 'sash' || 
+              cut.componentId?.toLowerCase().includes('sash') ||
+              cut.componentId?.toLowerCase().includes('sash-')
+            );
+            const otherCuts = plan.cuts.filter(cut => 
+              !frameCuts.includes(cut) && !sashCuts.includes(cut)
+            );
+
+            return (
+              <Card key={planIndex} className="print:break-inside-avoid">
+                <CardHeader>
+                  <CardTitle>Plan #{plan.sequence} - {plan.profile.name}</CardTitle>
+                  <CardDescription>
+                    Stock Length: {plan.stockLength} mm | Utilization: {plan.utilization.toFixed(1)}%
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Frame Cuts Section */}
+                  {frameCuts.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold mb-3 text-blue-400">Frame Cuts ({frameCuts.length})</h4>
+                      <div className="overflow-x-auto">
+                        <table className={`w-full text-sm ${isRTL ? 'rtl' : ''}`} dir={dir}>
+                          <thead>
+                            <tr className="border-b">
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.seq', 'Seq')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.length', 'Length')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.angle', 'Angle')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.componentId', 'Component ID')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.position', 'Position')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.waste', 'Waste')}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {frameCuts.map((cut, cutIndex) => (
+                              <tr key={cutIndex} className="border-b">
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>{cut.sequence}</td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.length, language, 2)}</td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>
+                                  {cut.angle === 45
+                                    ? `${formatNumber(cut.angle, language, 1)}° miter`
+                                    : `${formatNumber(cut.angle, language, 1)}°`}
+                                </td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>
+                                  {cut.componentId}
+                                  {cut.componentType && (
+                                    <span className="ml-1 text-[10px] text-muted-foreground">
+                                      ({cut.componentType})
+                                    </span>
+                                  )}
+                                </td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.position, language, 2)}</td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.waste, language, 2)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sash Cuts Section */}
+                  {sashCuts.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold mb-3 text-green-400">Sash Cuts ({sashCuts.length})</h4>
+                      <div className="overflow-x-auto">
+                        <table className={`w-full text-sm ${isRTL ? 'rtl' : ''}`} dir={dir}>
+                          <thead>
+                            <tr className="border-b">
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.seq', 'Seq')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.length', 'Length')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.angle', 'Angle')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.componentId', 'Component ID')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.position', 'Position')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.waste', 'Waste')}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {sashCuts.map((cut, cutIndex) => (
+                              <tr key={cutIndex} className="border-b">
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>{cut.sequence}</td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.length, language, 2)}</td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>
+                                  {cut.angle === 45
+                                    ? `${formatNumber(cut.angle, language, 1)}° miter`
+                                    : `${formatNumber(cut.angle, language, 1)}°`}
+                                </td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>
+                                  {cut.componentId}
+                                  {cut.componentType && (
+                                    <span className="ml-1 text-[10px] text-muted-foreground">
+                                      ({cut.componentType})
+                                    </span>
+                                  )}
+                                </td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.position, language, 2)}</td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.waste, language, 2)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Other Cuts Section */}
+                  {otherCuts.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold mb-3 text-gray-400">Other Cuts ({otherCuts.length})</h4>
+                      <div className="overflow-x-auto">
+                        <table className={`w-full text-sm ${isRTL ? 'rtl' : ''}`} dir={dir}>
+                          <thead>
+                            <tr className="border-b">
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.seq', 'Seq')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.length', 'Length')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.angle', 'Angle')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.componentId', 'Component ID')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.position', 'Position')}</th>
+                              <th className={`${getTextAlign(language, 'left')} p-2`}>{t('cuttingList.waste', 'Waste')}</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {otherCuts.map((cut, cutIndex) => (
+                              <tr key={cutIndex} className="border-b">
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>{cut.sequence}</td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.length, language, 2)}</td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>
+                                  {cut.angle === 45
+                                    ? `${formatNumber(cut.angle, language, 1)}° miter`
+                                    : `${formatNumber(cut.angle, language, 1)}°`}
+                                </td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>
+                                  {cut.componentId}
+                                  {cut.componentType && (
+                                    <span className="ml-1 text-[10px] text-muted-foreground">
+                                      ({cut.componentType})
+                                    </span>
+                                  )}
+                                </td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.position, language, 2)}</td>
+                                <td className={`p-2 ${getTextAlign(language, 'left')}`}>{formatUnit(cut.waste, language, 2)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </TabsContent>
       </Tabs>
     </div>

@@ -78,6 +78,8 @@ export interface SystemPack {
   glassAllowances?: GlassAllowanceSpec;
   /** Optional default grid layout to apply when this pack is selected */
   defaultGrid?: WindowGrid;
+  /** Optional profiles array for cut list generation with accurate dimensions */
+  profiles?: Profile[];
 }
 
 // ----------------------------------------------------------------------------
