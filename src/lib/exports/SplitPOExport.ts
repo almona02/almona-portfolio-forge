@@ -1,5 +1,5 @@
-import type { WindowUnit, OptimizationResult } from '@/types/fabricator';
 import type { InstallationCostBreakdown } from '@/lib/installation/EgyptianInstallationCalculator';
+import type { OptimizationResult, WindowUnit } from '@/types/fabricator';
 
 export interface SplitPOPayload {
   profilePO: string;
