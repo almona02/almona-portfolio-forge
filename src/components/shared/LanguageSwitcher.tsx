@@ -24,7 +24,7 @@ interface Language {
 }
 
 const languages: Language[] = [
-  { code: 'ar-EG', name: 'Arabic (Egypt)', nativeName: 'العربية (مصر)', flag: '🇪🇬' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇪🇬' },
   { code: 'tr', name: 'Turkish', nativeName: 'Türkçe', flag: '🇹🇷' },
   { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
 ];
@@ -35,16 +35,34 @@ export const LanguageSwitcher: React.FC<{
 }> = ({ variant = 'default', className = '' }) => {
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
+  
+  // Normalize language code for matching (handles 'ar-EG', 'ar', etc.)
+  const normalizeLangCode = (code: string): string => {
+    if (code.startsWith('ar')) return 'ar';
+    return code;
+  };
+  
   const currentLang =
     languages.find(
-      (lang) => i18n.language === lang.code || i18n.language.startsWith(lang.code),
+      (lang) => {
+        const currentLangCode = normalizeLangCode(i18n.language);
+        const langCode = normalizeLangCode(lang.code);
+        return currentLangCode === langCode || i18n.language.startsWith(lang.code);
+      }
     ) || languages[0];
   const isRTLMode = isRTL(i18n.language);
 
   const handleLanguageChange = (langCode: string) => {
-    i18n.changeLanguage(langCode);
+    // Ensure language change triggers RTL update
+    i18n.changeLanguage(langCode).then(() => {
+      // Force direction update
+      if (typeof document !== 'undefined') {
+        const newIsRTL = isRTL(langCode);
+        document.documentElement.dir = newIsRTL ? 'rtl' : 'ltr';
+        document.documentElement.lang = langCode;
+      }
+    });
     setIsOpen(false);
-    // RTL is automatically handled by i18n.ts languageChanged event
   };
 
   const renderMenu = (showFlag: boolean, textVariant: 'native' | 'name' | 'both') => {
@@ -92,7 +110,9 @@ export const LanguageSwitcher: React.FC<{
         collisionPadding={8}
       >
         {languages.map((lang) => {
-          const isActive = i18n.language === lang.code || i18n.language.startsWith(lang.code);
+          const currentLangCode = normalizeLangCode(i18n.language);
+          const langCode = normalizeLangCode(lang.code);
+          const isActive = currentLangCode === langCode || i18n.language.startsWith(lang.code);
           return (
             <DropdownMenuItem
               key={lang.code}
@@ -142,13 +162,16 @@ export const LanguageSwitcher: React.FC<{
     return (
       <div className={`flex items-center gap-1.5 ${className}`}>
         {languages.map((lang) => {
-          const isActive = i18n.language === lang.code || i18n.language.startsWith(lang.code);
+          const currentLangCode = normalizeLangCode(i18n.language);
+          const langCode = normalizeLangCode(lang.code);
+          const isActive = currentLangCode === langCode || i18n.language.startsWith(lang.code);
           return (
             <button
               key={lang.code}
               type="button"
               onClick={() => handleLanguageChange(lang.code)}
               aria-label={lang.name}
+              title={lang.name}
               className={`
                 h-9 w-9 rounded-full flex items-center justify-center text-base
                 ${isActive ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30 border border-orange-500/60' : 'bg-slate-900 text-slate-200 border border-slate-700 hover:border-orange-400 hover:text-white'}
