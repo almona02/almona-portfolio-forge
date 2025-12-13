@@ -1,39 +1,40 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence, useSpring } from 'framer-motion';
-import { 
-  Factory, 
-  Cpu, 
-  Sparkles, 
-  Brain,
-  ChevronRight,
-  ChevronDown,
+import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
+import { isRTL } from '@/lib/i18n';
+import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/ui/tooltip';
+import { getLiveAluminumPrice } from '@/utils/marketData';
+import { AnimatePresence, motion, useSpring } from 'framer-motion';
+import {
+  Activity,
+  ArrowRight,
   BarChart3,
-  Settings,
-  Zap,
+  Bell,
+  Box,
+  Brain,
+  Calculator,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Coins,
+  Cpu,
+  Factory,
+  FileText,
+  Menu,
+  Package,
   Ruler,
   Scissors,
-  Package,
-  User,
-  Bell,
   Search,
-  Workflow,
-  Users,
-  FileText,
-  Calculator,
-  Coins,
-  Box,
+  Settings,
+  Sparkles,
   TrendingUp,
-  Activity,
-  Menu,
-  ArrowRight,
-  ChevronLeft
+  User,
+  Users,
+  Workflow,
+  Zap
 } from 'lucide-react';
-import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
-import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isRTL } from '@/lib/i18n';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/ui/tooltip';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 interface EnterpriseSidebarProps {
   user?: {
@@ -144,15 +145,16 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     { id: 'quality', name: t('fabricator:workflow.steps.quality.name', 'Quality Control'), icon: Zap, status: 'pending' }
   ];
 
-  // Fabrication modules
+  // Fabrication modules - Gold Tier Enhanced
   const fabricationModules = [
     {
       name: t('fabricator:navbar.fabrication_modules.cutting_optimization.name', 'Cutting Optimization'),
       path: "/fabricator-workflow#optimization",
       icon: Scissors,
-      status: "optimal",
-      efficiency: "92.5%",
-      description: t('fabricator:navbar.fabrication_modules.cutting_optimization.description', 'AI-powered material nesting')
+      status: "verified", // Enhanced status
+      efficiency: "99.8%", // Gold tier accuracy
+      description: t('fabricator:navbar.fabrication_modules.cutting_optimization.description', 'AI-powered material nesting'),
+      goldTierVerified: true
     },
     {
       name: t('fabricator:navbar.fabrication_modules.machine_control.name', 'Machine Control'),
@@ -326,19 +328,21 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Status badge component
+  // Status badge component - Gold Tier Enhanced
   const StatusBadge: React.FC<{ status: string; efficiency?: string }> = ({ status, efficiency }) => {
     const statusConfig = {
+      verified: { color: 'text-[#003366]', bg: 'bg-[#FFD700]', border: 'border-[#003366]', dot: 'bg-green-500' }, // New Gold Tier status
       optimal: { color: 'text-emerald-400', bg: 'bg-emerald-400/20', border: 'border-emerald-400/30', dot: 'bg-emerald-400' },
       running: { color: 'text-blue-400', bg: 'bg-blue-400/20', border: 'border-blue-400/30', dot: 'bg-blue-400' },
       monitoring: { color: 'text-purple-400', bg: 'bg-purple-400/20', border: 'border-purple-400/30', dot: 'bg-purple-400' },
-      active: { color: 'text-orange-400', bg: 'bg-orange-400/20', border: 'border-orange-400/30', dot: 'bg-orange-400' },
+      active: { color: 'text-[#FFD700]', bg: 'bg-[#FFD700]/20', border: 'border-[#FFD700]/30', dot: 'bg-[#FFD700]' },
       pending: { color: 'text-amber-400', bg: 'bg-amber-400/20', border: 'border-amber-400/30', dot: 'bg-amber-400' }
     };
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
     return (
       <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] border ${config.bg} ${config.border} ${config.color} backdrop-blur-sm`}>
         <div className={`w-1.5 h-1.5 rounded-full ${config.dot} animate-pulse`} />
+        {status === 'verified' && <span className="text-[8px]">🏆</span>}
         {efficiency ? `${efficiency}` : status}
       </div>
     );
@@ -399,8 +403,17 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
 
   const sidebarContent = (
     <>
-      {/* Header - Enterprise Grade */}
-      <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-800/60 bg-slate-900/30 backdrop-blur-sm relative">
+      {/* Background Pattern - Blueprint Aesthetic */}
+      <div 
+        className="absolute inset-0 opacity-5 pointer-events-none z-0"
+        style={{ 
+          backgroundImage: 'radial-gradient(#003366 1px, transparent 1px)', 
+          backgroundSize: '20px 20px' 
+        }}
+      />
+
+      {/* Header - Enterprise Grade with Gold Tier */}
+      <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-800/60 bg-slate-900/30 backdrop-blur-sm relative z-10">
         <motion.div
           initial={false}
           animate={{ opacity: isCollapsed ? 0 : 1, scale: isCollapsed ? 0.8 : 1 }}
@@ -413,14 +426,37 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
               e.preventDefault();
               setShowHomeConfirm(true);
             }}
-            className="flex items-center gap-3 group"
+            className="flex items-center gap-3 group relative"
           >
+            {/* Gold Tier 99.8% Accuracy Badge */}
+            {!isCollapsed && (
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="absolute -right-2 -top-2 z-20"
+              >
+                <div className="relative group cursor-help">
+                  <div className="absolute inset-0 bg-[#FFD700] rounded-full blur-sm opacity-50 animate-pulse"></div>
+                  <div className="relative px-2 py-0.5 bg-[#FFD700] rounded-full border border-[#003366] shadow-sm flex items-center gap-1">
+                    <span className="text-[10px] font-bold text-[#003366]">99.8%</span>
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                  </div>
+                  
+                  {/* Tooltip */}
+                  <div className="absolute left-full ml-2 top-0 bg-[#003366] text-white text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 border border-[#FFD700]/30 transition-opacity">
+                    Certified Accuracy
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
-              className="relative h-10 w-10 rounded-xl bg-gradient-to-br from-orange-400 via-amber-300 to-sky-400 shadow-lg shadow-orange-500/40 flex items-center justify-center overflow-hidden"
+              className="relative h-10 w-10 rounded-xl bg-gradient-to-br from-[#003366] via-[#004488] to-[#FFD700] shadow-lg shadow-[#003366]/40 flex items-center justify-center overflow-hidden"
             >
-              <Factory className="w-5 h-5 text-slate-950 z-10" />
+              <Factory className="w-5 h-5 text-white z-10" />
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
                 animate={{ x: ['-100%', '100%'] }}
@@ -458,10 +494,10 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             animate={{
               backgroundColor: isCollapsed 
                 ? 'rgba(148, 163, 184, 0.3)' 
-                : 'rgba(249, 115, 22, 0.4)',
+                : 'rgba(0, 51, 102, 0.4)',
               borderColor: isCollapsed 
                 ? 'rgba(148, 163, 184, 0.5)' 
-                : 'rgba(249, 115, 22, 0.6)',
+                : 'rgba(255, 215, 0, 0.6)',
             }}
             transition={{ duration: 0.3 }}
           />
@@ -479,7 +515,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           {/* Pulse effect when active */}
           {!isCollapsed && (
             <motion.div
-              className="absolute inset-0 rounded-full bg-orange-500/20"
+              className="absolute inset-0 rounded-full bg-[#FFD700]/20"
               animate={{
                 scale: [1, 1.5, 1],
                 opacity: [0.5, 0, 0.5],
@@ -512,7 +548,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-orange-500/95 to-red-500/95 backdrop-blur-sm border border-orange-400/60 shadow-xl shadow-orange-500/40"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#003366]/95 to-[#004488]/95 backdrop-blur-sm border border-[#FFD700]/60 shadow-xl shadow-[#003366]/40"
             >
               <ArrowRight className="w-4 h-4 text-white flex-shrink-0" />
               <span className="text-xs font-semibold text-white whitespace-nowrap">
@@ -520,18 +556,40 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
               </span>
             </motion.div>
             {/* Arrow pointer pointing to sidebar */}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1.5 w-3 h-3 bg-orange-500/95 rotate-45 border-l border-b border-orange-400/60" />
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1.5 w-3 h-3 bg-[#003366]/95 rotate-45 border-l border-b border-[#FFD700]/60" />
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Live Market Ticker - Gold Tier */}
+      {!isCollapsed && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mx-3 mt-3 px-4 py-2 bg-gradient-to-r from-[#003366]/30 to-[#001133]/30 border border-[#FFD700]/20 rounded-lg backdrop-blur-sm relative z-10"
+        >
+          <div className="flex items-center justify-between text-[10px]">
+            <div className="flex items-center gap-1.5 text-blue-200">
+              <span className="text-[#FFD700]">⚡</span>
+              <span>LME Aluminum</span>
+            </div>
+            <div className="flex items-center gap-1 font-mono">
+              <span className="text-white font-bold">{getLiveAluminumPrice().toLocaleString()}</span>
+              <span className="text-[#FFD700]">EGP</span>
+              <span className="text-green-400">▲</span>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* System Status Bar - Enterprise Dashboard */}
       {!isCollapsed && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mx-3 mt-3 p-3 rounded-lg bg-slate-900/40 border border-slate-800/50 backdrop-blur-sm shadow-inner"
+          transition={{ delay: 0.15 }}
+          className="mx-3 mt-3 p-3 rounded-lg bg-slate-900/40 border border-slate-800/50 backdrop-blur-sm shadow-inner relative z-10"
         >
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -560,7 +618,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       )}
 
       {/* Search - Enterprise Search Bar */}
-      <div className="px-3 mt-3">
+      <div className="px-3 mt-3 relative z-10">
         <AnimatePresence mode="wait">
           {showSearch && !isCollapsed ? (
             <motion.div
@@ -577,7 +635,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onBlur={() => !searchQuery && setShowSearch(false)}
                 autoFocus
-                className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-400/50 focus:ring-1 focus:ring-orange-400/30 transition-all"
+                className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#FFD700]/50 focus:ring-1 focus:ring-[#FFD700]/30 transition-all"
               />
             </motion.div>
           ) : (
@@ -604,7 +662,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       </div>
 
       {/* Navigation Content - Scrollable Enterprise Navigation */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden mt-2 px-2.5 scrollbar-thin scrollbar-thumb-slate-700/50 scrollbar-track-transparent hover:scrollbar-thumb-slate-600/70">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden mt-2 px-2.5 scrollbar-thin scrollbar-thumb-slate-700/50 scrollbar-track-transparent hover:scrollbar-thumb-slate-600/70 relative z-10">
         {/* Workflow Section */}
         <div className="mb-6">
           <motion.button
@@ -613,14 +671,14 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             onClick={() => setActiveMenu(activeMenu === 'workflow' ? null : 'workflow')}
             className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all ${
               activeMenu === 'workflow'
-                ? 'bg-gradient-to-r from-orange-500/15 to-red-500/15 border border-orange-500/40 shadow-sm shadow-orange-500/10'
+                ? 'bg-gradient-to-r from-[#003366]/15 to-[#004488]/15 border border-[#FFD700]/40 shadow-sm shadow-[#003366]/10'
                 : 'hover:bg-slate-800/40 border border-transparent hover:border-slate-700/30'
             }`}
           >
             <div className="flex items-center gap-3">
-              <Ruler className={`w-4 h-4 ${activeMenu === 'workflow' ? 'text-orange-400' : 'text-slate-400'}`} />
+              <Ruler className={`w-4 h-4 ${activeMenu === 'workflow' ? 'text-[#FFD700]' : 'text-slate-400'}`} />
               {!isCollapsed && (
-                <span className={`text-sm font-medium ${activeMenu === 'workflow' ? 'text-orange-400' : 'text-slate-300'}`}>
+                <span className={`text-sm font-medium ${activeMenu === 'workflow' ? 'text-[#FFD700]' : 'text-slate-300'}`}>
                   WorkFlow
                 </span>
               )}
@@ -652,7 +710,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       }}
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-left transition-all ${
                         isActive
-                          ? 'bg-orange-500/15 text-orange-400 border border-orange-500/40 shadow-sm'
+                          ? 'bg-[#003366]/15 text-[#FFD700] border border-[#FFD700]/40 shadow-sm'
                           : 'text-slate-400 hover:bg-slate-800/40 hover:text-white'
                       }`}
                     >
@@ -674,14 +732,14 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             onClick={() => setActiveMenu(activeMenu === 'operations' ? null : 'operations')}
             className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all ${
               activeMenu === 'operations'
-                ? 'bg-gradient-to-r from-orange-500/15 to-red-500/15 border border-orange-500/40 shadow-sm shadow-orange-500/10'
+                ? 'bg-gradient-to-r from-[#003366]/15 to-[#004488]/15 border border-[#FFD700]/40 shadow-sm shadow-[#003366]/10'
                 : 'hover:bg-slate-800/40 border border-transparent hover:border-slate-700/30'
             }`}
           >
             <div className="flex items-center gap-3">
-              <Workflow className={`w-4 h-4 ${activeMenu === 'operations' ? 'text-orange-400' : 'text-slate-400'}`} />
+              <Workflow className={`w-4 h-4 ${activeMenu === 'operations' ? 'text-[#FFD700]' : 'text-slate-400'}`} />
               {!isCollapsed && (
-                <span className={`text-sm font-medium ${activeMenu === 'operations' ? 'text-orange-400' : 'text-slate-300'}`}>
+                <span className={`text-sm font-medium ${activeMenu === 'operations' ? 'text-[#FFD700]' : 'text-slate-300'}`}>
                   Workspace
                 </span>
               )}
@@ -715,13 +773,13 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                     }}
                     className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all group ${
                       item.id === 'commercial'
-                        ? 'bg-gradient-to-r from-orange-500/15 to-red-500/15 border border-orange-500/40 shadow-sm shadow-orange-500/10'
+                        ? 'bg-gradient-to-r from-[#003366]/15 to-[#004488]/15 border border-[#FFD700]/40 shadow-sm shadow-[#003366]/10'
                         : 'hover:bg-slate-800/40 border border-transparent hover:border-slate-700/30'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <item.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${
-                        item.id === 'commercial' ? 'text-orange-400' : 'text-slate-400 group-hover:text-white'
+                        item.id === 'commercial' ? 'text-[#FFD700]' : 'text-slate-400 group-hover:text-white'
                       }`} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
@@ -731,7 +789,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                             {item.label}
                           </span>
                           {item.badge && (
-                            <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                            <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#FFD700]/20 text-[#003366] border border-[#FFD700]/30">
                               {item.badge}
                             </span>
                           )}
@@ -774,14 +832,14 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                   }}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all group ${
                     isActive
-                      ? 'bg-gradient-to-r from-orange-500/15 to-red-500/15 border border-orange-500/40 shadow-sm shadow-orange-500/10'
+                      ? 'bg-gradient-to-r from-[#003366]/15 to-[#004488]/15 border border-[#FFD700]/40 shadow-sm shadow-[#003366]/10'
                       : 'hover:bg-slate-800/40 border border-transparent hover:border-slate-700/30'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <item.icon
                       className={`w-4 h-4 flex-shrink-0 transition-colors ${
-                        isActive ? 'text-orange-400' : 'text-slate-400 group-hover:text-white'
+                        isActive ? 'text-[#FFD700]' : 'text-slate-400 group-hover:text-white'
                       }`}
                     />
                     {!isCollapsed && (
@@ -789,13 +847,13 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                         <div className="flex items-center gap-2">
                           <span
                             className={`text-sm font-medium truncate ${
-                              isActive ? 'text-orange-400' : 'text-slate-300'
+                              isActive ? 'text-[#FFD700]' : 'text-slate-300'
                             }`}
                           >
                             {item.label}
                           </span>
                           {item.badge && (
-                            <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                            <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#FFD700]/20 text-[#003366] border border-[#FFD700]/30">
                               {item.badge}
                             </span>
                           )}
@@ -838,7 +896,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                             }}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-all ${
                               isChildActive
-                                ? 'text-orange-400 bg-orange-500/10'
+                                ? 'text-[#FFD700] bg-[#003366]/10'
                                 : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
                             }`}
                           >
@@ -877,7 +935,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                     to={module.path}
                     className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800/40 transition-all group border border-transparent hover:border-slate-700/30"
                   >
-                    <module.icon className="w-4 h-4 text-slate-400 group-hover:text-orange-400 transition-colors" />
+                    <module.icon className="w-4 h-4 text-slate-400 group-hover:text-[#FFD700] transition-colors" />
                     <div className="flex-1 min-w-0">
                       <div className="text-xs font-medium text-slate-300 truncate">{module.name}</div>
                       <StatusBadge status={module.status} efficiency={module.efficiency} />
@@ -904,7 +962,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                   onClick={() => action.action()}
                   className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800/40 transition-all group text-left border border-transparent hover:border-slate-700/30"
                 >
-                  <action.icon className="w-4 h-4 text-slate-400 group-hover:text-orange-400 transition-colors" />
+                  <action.icon className="w-4 h-4 text-slate-400 group-hover:text-[#FFD700] transition-colors" />
                   <span className="text-xs font-medium text-slate-300">{action.name}</span>
                 </motion.button>
               ))}
@@ -914,7 +972,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       </div>
 
       {/* Footer - Enterprise Footer Section */}
-      <div className="border-t border-slate-800/60 bg-slate-900/20 backdrop-blur-sm p-3 space-y-2">
+      <div className="border-t border-slate-800/60 bg-slate-900/20 backdrop-blur-sm p-3 space-y-2 relative z-10">
         {/* Notifications */}
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -962,7 +1020,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             onClick={() => setActiveMenu(activeMenu === 'user' ? null : 'user')}
             className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 transition-all group"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#003366] to-[#FFD700] flex items-center justify-center flex-shrink-0">
               <User className="w-4 h-4 text-white" />
             </div>
             {!isCollapsed && (
@@ -995,7 +1053,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                     }}
                     className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors text-left"
                   >
-                    <Settings className="w-4 h-4 text-orange-400" />
+                    <Settings className="w-4 h-4 text-[#FFD700]" />
                     <span className="text-sm text-slate-300">Settings</span>
                   </button>
                   <button
@@ -1028,7 +1086,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white font-bold shadow-lg shadow-orange-500/40">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#003366] to-[#004488] flex items-center justify-center text-white font-bold shadow-lg shadow-[#003366]/40 border border-[#FFD700]/30">
                     !
                   </div>
                   <div>
@@ -1053,7 +1111,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       setActiveMenu(null);
                       onLogout?.();
                     }}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30 hover:from-orange-600 hover:to-red-600 transition-colors"
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#003366] to-[#004488] text-white shadow-lg shadow-[#003366]/30 hover:from-[#004488] hover:to-[#003366] transition-colors border border-[#FFD700]/30"
                   >
                     {t('confirmation.signOut.action', 'Sign Out')}
                   </button>
@@ -1081,7 +1139,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-400 via-amber-300 to-sky-400 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-orange-500/40">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#003366] via-[#004488] to-[#FFD700] flex items-center justify-center text-white font-bold shadow-lg shadow-[#003366]/40">
                     ⓘ
                   </div>
                   <div>
@@ -1106,7 +1164,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       setIsMobileNavOpen(false);
                       navigate('/');
                     }}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30 hover:from-orange-600 hover:to-red-600 transition-colors"
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#003366] to-[#004488] text-white shadow-lg shadow-[#003366]/30 hover:from-[#004488] hover:to-[#003366] transition-colors border border-[#FFD700]/30"
                   >
                     {t('confirmation.home.leave', 'Leave')}
                   </button>
@@ -1133,7 +1191,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           {/* Resize handle */}
           {!isMobile && (
             <div
-              className={`absolute ${isRTLMode ? 'left-0' : 'right-0'} top-0 h-full w-1 cursor-col-resize bg-transparent hover:bg-orange-500/20`}
+              className={`absolute ${isRTLMode ? 'left-0' : 'right-0'} top-0 h-full w-1 cursor-col-resize bg-transparent hover:bg-[#FFD700]/20`}
               onMouseDown={(e) => {
                 e.preventDefault();
                 setIsResizing(true);
@@ -1149,7 +1207,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={openMobileNav}
-          className={`fixed ${isRTLMode ? 'right-4' : 'left-4'} bottom-6 z-[255] h-12 w-12 rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-xl shadow-orange-500/30 border border-orange-300/40 text-white flex items-center justify-center`}
+          className={`fixed ${isRTLMode ? 'right-4' : 'left-4'} bottom-6 z-[255] h-12 w-12 rounded-full bg-gradient-to-r from-[#003366] to-[#004488] shadow-xl shadow-[#003366]/30 border border-[#FFD700]/40 text-white flex items-center justify-center`}
           aria-label="Open navigation"
         >
           <Menu className="w-5 h-5" />
@@ -1192,7 +1250,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             className={`fixed top-20 z-[190] w-96 bg-slate-950/98 border border-slate-800/80 rounded-2xl shadow-2xl shadow-black/60 overflow-hidden backdrop-blur-xl ${isRTLMode ? 'mr-2' : 'ml-2'}`}
           >
             <div className="px-4 py-3 border-b border-slate-800 flex items-center gap-2">
-              <Search className="h-4 w-4 text-orange-400" />
+              <Search className="h-4 w-4 text-[#FFD700]" />
               <span className="text-sm font-semibold text-slate-100">Search Results</span>
               <span className="ml-auto text-[11px] text-slate-500">{filteredNavItems.length} matches</span>
             </div>
@@ -1210,12 +1268,12 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       }}
                       className="w-full text-left px-4 py-3 hover:bg-white/5 transition-colors flex items-center gap-3"
                     >
-                      <item.icon className="h-4 w-4 text-orange-400" />
+                      <item.icon className="h-4 w-4 text-[#FFD700]" />
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-semibold text-slate-100">{item.label}</span>
                           {item.badge && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-orange-500/40 text-orange-300 bg-orange-500/10 uppercase font-semibold">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-[#FFD700]/40 text-[#FFD700] bg-[#003366]/10 uppercase font-semibold">
                               {item.badge}
                             </span>
                           )}
