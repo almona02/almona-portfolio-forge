@@ -5,27 +5,31 @@
  * After tuning, mark as verified and proceed to design interface
  */
 
-import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { 
-  Settings, 
-  CheckCircle2, 
-  AlertTriangle, 
-  ArrowRight, 
-  ArrowLeft,
-  Sparkles,
-  Gauge,
-  Zap,
-  Wrench
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import { ProfileTuningStudio } from './ProfileTuningStudio';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import type { Profile } from '@/types/fabricator';
+import { motion } from 'framer-motion';
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
+  BoxSelect,
+  CheckCircle2,
+  Gauge,
+  Layers,
+  Settings,
+  Sparkles,
+  Wrench,
+  Zap
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ProfileTuningStudio } from './ProfileTuningStudio';
 
 interface SystemPackProfile {
   id: string;
@@ -62,15 +66,19 @@ export const SystemPackTuningStudio: React.FC = () => {
   const [tunedProfiles, setTunedProfiles] = useState<Set<string>>(new Set());
   const [tuningProfile, setTuningProfile] = useState<Profile | null>(null);
   const [userId] = useState<string>('current-user'); // TODO: Get from auth context
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [viewMode, setViewMode] = useState<'tabs' | 'cards'>('cards'); // New: cards view for better profile overview
 
-  // Load system pack from localStorage
+  // Load system pack from localStorage or original systems
   useEffect(() => {
     if (!systemPackId) {
-      navigate('/fabricator/profile-studio');
+      navigate('/fabricator-workflow');
       return;
     }
 
     try {
+      // First try custom/tuned version
       const stored = localStorage.getItem(`custom-profile-${systemPackId}`);
       if (stored) {
         const pack = JSON.parse(stored);
@@ -84,17 +92,54 @@ export const SystemPackTuningStudio: React.FC = () => {
           }
         });
         setTunedProfiles(tuned);
-      } else {
-        // Pack not found, redirect back
-        navigate('/fabricator/profile-studio');
+        return;
       }
+
+      // Try original system pack from SYSTEM_PACKS or EGYPTIAN_UPVC_SYSTEMS
+      const originalPack = SYSTEM_PACKS.find((p: any) => p.meta?.id === systemPackId) ||
+                          EGYPTIAN_UPVC_SYSTEMS.find((p: any) => p.meta?.id === systemPackId);
+      
+      if (originalPack) {
+        // Convert to SystemPack format
+        const packMeta = (originalPack as any).meta || {};
+        const profiles = (originalPack as any).profiles || [];
+        const systemPackProfiles: SystemPackProfile[] = profiles.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          type: (p.profileRole || p.type || 'frame') as 'frame' | 'sash' | 'mullion' | 'transom' | 'bead',
+          material: p.material || 'upvc',
+          unitWeight: p.weightPerMeter,
+          barLength: p.specifications?.barLength || 6000,
+          width: p.width,
+          height: p.height,
+          thickness: p.thickness,
+          tuningStatus: 'untuned',
+        }));
+
+        const pack: SystemPack = {
+          id: packMeta.id || systemPackId,
+          name: packMeta.name || 'Unknown System',
+          manufacturer: packMeta.brands?.[0] || 'Unknown',
+          region: packMeta.regions?.[0] || 'global',
+          profiles: systemPackProfiles,
+          tuningStatus: 'untuned',
+          createdAt: new Date().toISOString(),
+          isComplete: false,
+        };
+
+        setSystemPack(pack);
+        setTunedProfiles(new Set());
+        return;
+      }
+
+      // Pack not found, redirect back
+      navigate('/fabricator-workflow');
     } catch (error) {
       console.error('Error loading system pack:', error);
-      navigate('/fabricator/profile-studio');
+      navigate('/fabricator-workflow');
     }
   }, [systemPackId, navigate]);
 
-  const currentProfile = systemPack?.profiles?.[selectedProfileIndex];
   const allProfilesTuned = systemPack?.profiles?.every(p => tunedProfiles.has(p.id)) || false;
 
   // Convert SystemPackProfile to Profile type for ProfileTuningStudio
@@ -145,11 +190,24 @@ export const SystemPackTuningStudio: React.FC = () => {
   };
 
   const handleOpenTuning = (profile: SystemPackProfile) => {
+    // Check for unsaved changes before opening new profile
+    if (hasUnsavedChanges && tuningProfile) {
+      const confirmed = window.confirm(
+        'You have unsaved changes in the current profile tuning. Open a different profile without saving?'
+      );
+      if (!confirmed) return;
+    }
+    
     const profileForTuning = convertToProfile(profile);
     setTuningProfile(profileForTuning);
+    setHasUnsavedChanges(false); // Reset for new profile
   };
 
-  const handleTuningClose = () => {
+  const handleTuningClose = (hasChanges: boolean = false) => {
+    if (hasChanges) {
+      setHasUnsavedChanges(true);
+    }
+    
     setTuningProfile(null);
     // Reload system pack to get any updates
     if (systemPackId) {
@@ -166,6 +224,34 @@ export const SystemPackTuningStudio: React.FC = () => {
         setTunedProfiles(tuned);
       }
     }
+  };
+
+  const handleExit = () => {
+    if (hasUnsavedChanges) {
+      setShowExitConfirm(true);
+    } else {
+      handleConfirmExit();
+    }
+  };
+
+  const handleConfirmExit = () => {
+    // Get return URL or default to workflow
+    const returnUrl = sessionStorage.getItem('tuning_return_url');
+    if (returnUrl) {
+      try {
+        const data = JSON.parse(returnUrl);
+        sessionStorage.removeItem('tuning_return_url');
+        navigate(data.url, { state: data.params || {} });
+      } catch {
+        navigate('/fabricator-workflow');
+      }
+    } else {
+      navigate('/fabricator-workflow');
+    }
+  };
+
+  const handleCancelExit = () => {
+    setShowExitConfirm(false);
   };
 
   const handleProfileTuned = (profileId: string) => {
@@ -203,20 +289,71 @@ export const SystemPackTuningStudio: React.FC = () => {
       ...systemPack,
       profiles: updatedProfiles,
       tuningStatus: 'tuned' as const,
+      tunedAt: new Date().toISOString(),
     };
     
     localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
+    localStorage.setItem(`system-pack-${systemPackId}`, JSON.stringify(updatedPack));
     setSystemPack(updatedPack);
     setTunedProfiles(new Set(updatedProfiles.map(p => p.id)));
     
     window.dispatchEvent(new CustomEvent('customProfileAdded', { detail: updatedPack }));
+    window.dispatchEvent(new CustomEvent('systemPackTuned', { 
+      detail: { 
+        systemPackId: systemPackId,
+        systemPackName: systemPack.name,
+        tuned: true 
+      } 
+    }));
+  };
+
+  const handleSaveAndReturn = () => {
+    if (!systemPack) return;
+    
+    // Mark all as tuned if not already
+    if (!allProfilesTuned) {
+      handleMarkAllTuned();
+    }
+
+    // Get return URL
+    const returnUrl = sessionStorage.getItem('tuning_return_url');
+    if (returnUrl) {
+      try {
+        const data = JSON.parse(returnUrl);
+        sessionStorage.removeItem('tuning_return_url');
+        navigate(data.url, { 
+          state: { 
+            systemPackId: systemPackId,
+            systemTuned: true,
+            systemTunedMessage: `System "${systemPack.name}" has been tuned and is ready to use with all profiles configured.`,
+            ...data.params 
+          } 
+        });
+      } catch {
+        navigate('/fabricator-workflow', {
+          state: {
+            systemPackId: systemPackId,
+            systemTuned: true,
+            systemTunedMessage: `System "${systemPack.name}" has been tuned and is ready to use.`,
+          }
+        });
+      }
+    } else {
+      navigate('/fabricator-workflow', {
+        state: {
+          systemPackId: systemPackId,
+          systemTuned: true,
+          systemTunedMessage: `System "${systemPack.name}" has been tuned and is ready to use.`,
+        }
+      });
+    }
   };
 
   const handleGoToDesign = () => {
     navigate('/fabricator/design');
   };
 
-  if (!systemPack || !currentProfile) {
+  if (!systemPack) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
         <div className="text-center text-white">
@@ -260,16 +397,61 @@ export const SystemPackTuningStudio: React.FC = () => {
                 </div>
                 <Button
                   variant="outline"
-                  onClick={() => navigate('/fabricator/profile-studio')}
+                  onClick={handleExit}
                   className="border-slate-600 bg-slate-800/50 text-slate-200 hover:bg-slate-700/50"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Import
+                  {hasUnsavedChanges ? 'Exit (Unsaved Changes)' : 'Back to Workflow'}
                 </Button>
               </div>
             </CardHeader>
           </Card>
         </motion.div>
+
+        {/* Exit Confirmation Dialog */}
+        {showExitConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={handleCancelExit}
+          >
+            <Card 
+              className="bg-slate-900 border-slate-700 shadow-2xl max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                  Unsaved Changes
+                </CardTitle>
+                <CardDescription className="text-slate-300">
+                  You have unsaved changes in profile tuning. Are you sure you want to exit?
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-sm text-slate-400">
+                  Your changes will be lost if you exit without saving.
+                </p>
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={handleCancelExit}
+                    className="border-slate-600"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleConfirmExit}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Exit Without Saving
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
         {/* System Pack Overview */}
         <motion.div
@@ -284,13 +466,123 @@ export const SystemPackTuningStudio: React.FC = () => {
                   <h3 className="text-xl font-bold text-white mb-1">{systemPack.name}</h3>
                   <p className="text-slate-400 text-sm">{systemPack.manufacturer} • {systemPack.region.toUpperCase()}</p>
                 </div>
-                <Badge className={allProfilesTuned ? 'bg-green-500/20 text-green-300 border-green-500/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40'}>
-                  {allProfilesTuned ? 'All Tuned' : `${tunedProfiles.size}/${systemPack.profiles.length} Tuned`}
-                </Badge>
+                <div className="flex items-center gap-3">
+                  <Badge className={allProfilesTuned ? 'bg-green-500/20 text-green-300 border-green-500/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40'}>
+                    {allProfilesTuned ? 'All Tuned' : `${tunedProfiles.size}/${systemPack.profiles.length} Tuned`}
+                  </Badge>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={viewMode === 'cards' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setViewMode('cards')}
+                      className={viewMode === 'cards' ? 'bg-orange-600' : ''}
+                    >
+                      <Layers className="h-4 w-4 mr-2" />
+                      Cards
+                    </Button>
+                    <Button
+                      variant={viewMode === 'tabs' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setViewMode('tabs')}
+                      className={viewMode === 'tabs' ? 'bg-orange-600' : ''}
+                    >
+                      <Settings className="h-4 w-4 mr-2" />
+                      Tabs
+                    </Button>
+                  </div>
+                </div>
               </div>
 
-              {/* Profile Tabs */}
-              <Tabs value={selectedProfileIndex.toString()} onValueChange={(v) => setSelectedProfileIndex(Number(v))}>
+              {/* Profile Cards View */}
+              {viewMode === 'cards' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                  {systemPack.profiles.map((profile) => {
+                    const isTuned = tunedProfiles.has(profile.id);
+                    const profileIcon = profile.type === 'frame' ? Layers : BoxSelect;
+                    const IconComponent = profileIcon;
+                    
+                    return (
+                      <Card 
+                        key={profile.id}
+                        className={`bg-slate-900/50 border-slate-700/50 hover:border-orange-500/50 transition-colors ${
+                          isTuned ? 'ring-2 ring-green-500/30' : ''
+                        }`}
+                      >
+                        <CardHeader>
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className={`p-2 rounded-lg ${
+                                profile.type === 'frame' ? 'bg-blue-500/20' : 
+                                profile.type === 'sash' ? 'bg-green-500/20' : 
+                                'bg-purple-500/20'
+                              }`}>
+                                <IconComponent className={`h-5 w-5 ${
+                                  profile.type === 'frame' ? 'text-blue-400' : 
+                                  profile.type === 'sash' ? 'text-green-400' : 
+                                  'text-purple-400'
+                                }`} />
+                              </div>
+                              <div>
+                                <CardTitle className="text-base text-white capitalize">
+                                  {profile.name}
+                                </CardTitle>
+                                <CardDescription className="text-xs text-slate-400">
+                                  {profile.type} • {profile.material}
+                                </CardDescription>
+                              </div>
+                            </div>
+                            {isTuned && (
+                              <Badge className="bg-green-500/20 text-green-300 border-green-500/40">
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                Tuned
+                              </Badge>
+                            )}
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="text-xs text-slate-400 space-y-1">
+                            {profile.width && profile.height && (
+                              <div>Dimensions: {profile.width} × {profile.height} mm</div>
+                            )}
+                            {profile.unitWeight && (
+                              <div>Weight: {profile.unitWeight} kg/m</div>
+                            )}
+                            {profile.barLength && (
+                              <div>Bar Length: {profile.barLength} mm</div>
+                            )}
+                          </div>
+                          
+                          <Button
+                            onClick={() => handleOpenTuning(profile)}
+                            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                            size="sm"
+                          >
+                            <Wrench className="h-4 w-4 mr-2" />
+                            Go to Profile Tuning
+                            <ArrowRight className="h-4 w-4 ml-2" />
+                          </Button>
+                          
+                          {!isTuned && (
+                            <Button
+                              onClick={() => handleProfileTuned(profile.id)}
+                              variant="outline"
+                              className="w-full border-green-500/40 text-green-300 hover:bg-green-500/10"
+                              size="sm"
+                            >
+                              <Zap className="h-4 w-4 mr-2" />
+                              Mark as Tuned
+                            </Button>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Profile Tabs View (Existing) */}
+              {viewMode === 'tabs' && (
+                <Tabs value={selectedProfileIndex.toString()} onValueChange={(v) => setSelectedProfileIndex(Number(v))}>
                 <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-2 bg-slate-900/50">
                   {systemPack.profiles.map((profile, index) => (
                     <TabsTrigger
@@ -400,6 +692,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                   </TabsContent>
                 ))}
               </Tabs>
+              )}
             </CardContent>
           </Card>
         </motion.div>
@@ -435,13 +728,25 @@ export const SystemPackTuningStudio: React.FC = () => {
               disabled={allProfilesTuned}
               className="border-slate-600 bg-slate-800/50 text-slate-200 hover:bg-slate-700/50"
             >
+              <CheckCircle2 className="h-4 w-4 mr-2" />
               Mark All as Tuned
+            </Button>
+            <Button
+              onClick={handleSaveAndReturn}
+              disabled={!allProfilesTuned}
+              size="lg"
+              className="h-12 px-8 text-base bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <CheckCircle2 className="h-5 w-5 mr-2" />
+              Save & Return to Workflow
+              <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
             <Button
               onClick={handleGoToDesign}
               disabled={!allProfilesTuned}
+              variant="outline"
               size="lg"
-              className="h-12 px-8 text-base bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-lg shadow-orange-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-12 px-8 text-base border-slate-600 bg-slate-800/50 text-slate-200 hover:bg-slate-700/50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Start New Measurement
               <ArrowRight className="h-5 w-5 ml-2" />

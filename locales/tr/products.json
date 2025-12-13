@@ -1,4 +1,151 @@
 {
+  "page": {
+    "title": "Ürünler - ALMONA Endüstriyel Makineler",
+    "description": "CNC tezgahları, kopya yönlendiricileri ve alüminyum işleme ekipmanları dahil olmak üzere YILMAZ endüstriyel makinelerinin tam kataloğunu inceleyin. Akıllı üretim için Endüstri 4.0 çözümleri.",
+    "keywords": "YILMAZ makineleri, CNC tezgahları Mısır, endüstriyel ekipman, alüminyum işleme, PVC makineleri, kopya yönlendiricileri"
+  },
+  "hero": {
+    "title": "Endüstri 4.0",
+    "subtitle": "Akıllı Üretim",
+    "description": "Yapay zeka destekli öneriler, IoT bağlantısı ve dijital ikiz teknolojisi ile endüstriyel makinelerin geleceğini deneyimleyin. Akıllı otomasyon ve tahmine dayalı analitik ile üretiminizi dönüştürün.",
+    "aiWizard": "🚀 AI Makine Sihirbazı",
+    "liveConfigurator": "⚙️ Canlı Yapılandırıcı",
+    "viewAnalytics": "📊 Analitikleri Görüntüle"
+  },
+  "industry40": {
+    "features": {
+      "aiSearch": {
+        "title": "Yapay Zeka Destekli Arama",
+        "description": "Gereksinimlerinize göre akıllı makine önerileri"
+      },
+      "analytics": {
+        "title": "Gerçek Zamanlı Analitik",
+        "description": "Canlı performans izleme ve tahmine dayalı bakım"
+      },
+      "iot": {
+        "title": "IoT Entegrasyonu",
+        "description": "Uzaktan izleme yetenekleri olan bağlı makineler"
+      },
+      "automation": {
+        "title": "Akıllı Otomasyon",
+        "description": "Otomatik iş akışları ve üretim optimizasyonu"
+      },
+      "digitalTwin": {
+        "title": "Dijital İkiz",
+        "description": "Simülasyon ve test için sanal makine modelleri"
+      },
+      "blockchain": {
+        "title": "Blockchain İzlenebilirlik",
+        "description": "Güvenli tedarik zinciri takibi ve sertifikasyon"
+      }
+    },
+    "stats": {
+      "uptime": "Çalışma Süresi",
+      "energySavings": "Enerji Tasarrufu",
+      "monitoring": "İzleme",
+      "powered": "Destekli"
+    }
+  },
+  "certifications": {
+    "title": "Sertifikalar ve Standartlar",
+    "iso9001": "Kalite Yönetim Sistemleri",
+    "ceMark": "Avrupa Güvenlik Standartları",
+    "industry40": "Akıllı Üretim Sertifikalı",
+    "energyStar": "Enerji Verimliliği",
+    "rohs": "Çevresel Standartlar",
+    "ulListed": "Güvenlik Sertifikası"
+  },
+  "machines": {
+    "title": "YILMAZ Makineleri",
+    "subtitle": "Türkiye'nin önde gelen üreticisinden premium alüminyum ve PVC işleme makineleri. 2000'den beri yetkili bayii.",
+    "tabs": {
+      "yilmaz": "YILMAZ Makineleri"
+    },
+    "showing": "{count} / {total} makine gösteriliyor",
+    "filtered": "• Filtrelenmiş",
+    "clearFilters": "Filtreleri Temizle",
+    "noMachines": {
+      "title": "Makine bulunamadı",
+      "description": "Arama veya filtre kriterlerinizi ayarlamayı deneyin",
+      "clearFilters": "Filtreleri Temizle"
+    }
+  },
+  "technology": {
+    "title": "Gelişmiş Teknoloji",
+    "aiRecommendations": {
+      "title": "AI Önerileri",
+      "description": "Makine öğrenme algoritmaları, özel üretim ihtiyaçlarınız için mükemmel ekipmanı önermek üzere gereksinimlerinizi analiz eder."
+    },
+    "iotConnectivity": {
+      "title": "IoT Bağlantısı",
+      "description": "Bağlı makinelerden gerçek zamanlı izleme ve veri toplama, tahmine dayalı bakım ve performans optimizasyonunu mümkün kılar."
+    },
+    "digitalTwins": {
+      "title": "Dijital İkizler",
+      "description": "Fiziksel makinelerin sanal temsilleri, gerçek dağıtımdan önce simülasyon, test ve optimizasyona olanak tanır."
+    }
+  },
+  "faq": {
+    "title": "Sık Sorulan Sorular",
+    "industry40": {
+      "question": "YILMAZ makinelerini Endüstri 4.0'a hazır yapan nedir?",
+      "answer": "YILMAZ makineleri, IoT bağlantısı, AI destekli tanılama, tahmine dayalı bakım ve optimal performans izleme için dijital ikiz teknolojisi özelliklerine sahiptir."
+    },
+    "installation": {
+      "question": "Kurulum ve eğitim sağlıyor musunuz?",
+      "answer": "Evet, operasyonlarınıza sorunsuz entegrasyon sağlamak için kapsamlı kurulum hizmetleri, operatör eğitimi ve devam eden teknik destek sağlıyoruz."
+    },
+    "warranty": {
+      "question": "Garanti kapsamı nedir?",
+      "answer": "Tüm YILMAZ makineleri, parça ve işçiliği kapsayan kapsamlı 1 yıllık garanti ile gelir ve uzatılmış garanti seçenekleri mevcuttur."
+    },
+    "customization": {
+      "question": "Özel bir yapılandırma alabilir miyim?",
+      "answer": "Kesinlikle! Özel üretim gereksinimlerinizi ve alan kısıtlamalarınızı karşılamak için özelleştirme seçenekleri sunuyoruz."
+    }
+  },
+  "newsletter": {
+    "title": "Güncel Kalın",
+    "description": "En son Endüstri 4.0 içgörüleri, ürün güncellemeleri ve özel teklifleri e-posta kutunuza alın.",
+    "placeholder": "E-posta adresinizi girin",
+    "subscribe": "Abone Ol"
+  },
+  "whyChoose": {
+    "title": "Neden YILMAZ Makinelerini Seçmelisiniz?",
+    "description": "Endüstri 4.0 standartları, dijital kalite kontrolü ve sertifikalı süreçlerle son teknoloji fabrikamızda hassas bir şekilde üretilmiştir. Üretim katınızı çalışırken görün—makinelerinizin tam olarak doğduğu yerde.",
+    "badges": {
+      "industry40": "Endüstri 4.0",
+      "digitalQA": "Dijital Kalite Kontrolü",
+      "ceCertified": "CE Sertifikalı"
+    },
+    "factoryTour": "Bir Ziyaret Düzenleyin",
+    "premiumQuality": {
+      "title": "Premium Kalite",
+      "description": "Olağanüstü dayanıklılık ve performans için yüksek kaliteli malzemeler ve hassas mühendislik ile üretilmiştir."
+    },
+    "technicalSupport": {
+      "title": "Teknik Destek",
+      "description": "Uzman ekibimiz kapsamlı kurulum, eğitim ve bakım hizmetleri sağlar."
+    },
+    "genuineParts": {
+      "title": "Orijinal Yedek Parçalar",
+      "description": "Optimal makine performansını sağlamak için garanti ile orijinal yedek parçalar tedarik ediyoruz."
+    }
+  },
+  "configurator": {
+    "title": "Canlı Makine Yapılandırıcısı",
+    "description": "Etkileşimli yapılandırıcımızla YILMAZ makinenizi özelleştirin. Seçenekleri seçin, gerçek zamanlı fiyatları görüntüleyin ve anında teklifler alın.",
+    "comingSoon": "Yapılandırıcı Yakında",
+    "comingSoonDescription": "Makineleri özelleştirmenize, 3D modelleri görüntülemenize ve gerçek zamanlı fiyatlandırma almanıza olanak tanıyacak gelişmiş bir etkileşimli yapılandırıcı üzerinde çalışıyoruz.",
+    "close": "Kapat",
+    "tryWizard": "Bunun Yerine AI Sihirbazını Deneyin"
+  },
+  "comparison": {
+    "maxReached": "Maksimuma ulaşıldı",
+    "maxReachedDescription": "Aynı anda en fazla 5 makineyi karşılaştırabilirsiniz",
+    "saved": "Karşılaştırma kaydedildi",
+    "savedDescription": "Bu karşılaştırmaya daha sonra erişebilirsiniz"
+  },
   "shop": {
     "tabs": {
       "industrial-machines": "Endüstriyel İşleme Tezgahları",

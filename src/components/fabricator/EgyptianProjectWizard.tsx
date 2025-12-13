@@ -76,9 +76,67 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
   const [tuningInitialSystem, setTuningInitialSystem] = useState<any | null>(null);
   const [showTuningPrompt, setShowTuningPrompt] = useState(false);
 
+  // Load custom systems and tuned systems from localStorage
   React.useEffect(() => {
     const saved = loadCustomSystems();
-    if (saved.length) setCustomSystems(saved);
+    const tunedSystems: any[] = [];
+    
+    // Also load tuned systems from localStorage (custom-profile-* and system-pack-*)
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith('custom-profile-') || key?.startsWith('system-pack-')) {
+        try {
+          const stored = localStorage.getItem(key);
+          if (stored) {
+            const pack = JSON.parse(stored);
+            // Only include if it's tuned
+            if (pack.tuningStatus === 'tuned' || pack.profiles?.some((p: any) => p.tuningStatus === 'tuned')) {
+              tunedSystems.push(pack);
+            }
+          }
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+    }
+    
+    // Merge custom systems and tuned systems, avoiding duplicates
+    const allCustom = [...saved, ...tunedSystems];
+    const unique = allCustom.filter((sys, idx, self) => 
+      idx === self.findIndex((s) => s.meta?.id === sys.meta?.id || s.id === sys.id)
+    );
+    if (unique.length) setCustomSystems(unique);
+    
+    // Listen for system pack tuned events
+    const handleSystemPackTuned = () => {
+      const updated = loadCustomSystems();
+      // Reload tuned systems
+      const newTuned: any[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith('custom-profile-') || key?.startsWith('system-pack-')) {
+          try {
+            const stored = localStorage.getItem(key);
+            if (stored) {
+              const pack = JSON.parse(stored);
+              if (pack.tuningStatus === 'tuned' || pack.profiles?.some((p: any) => p.tuningStatus === 'tuned')) {
+                newTuned.push(pack);
+              }
+            }
+          } catch (e) {
+            // Ignore
+          }
+        }
+      }
+      const merged = [...updated, ...newTuned];
+      const uniqueMerged = merged.filter((sys, idx, self) => 
+        idx === self.findIndex((s) => s.meta?.id === sys.meta?.id || s.id === sys.id)
+      );
+      setCustomSystems(uniqueMerged);
+    };
+    
+    window.addEventListener('systemPackTuned', handleSystemPackTuned);
+    return () => window.removeEventListener('systemPackTuned', handleSystemPackTuned);
   }, []);
 
   // Core header
@@ -115,9 +173,25 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
     setSelectedSystemId(defaultSystem);
   }, [materialPreference]);
 
-  // Check tuning status when system is selected
+  // Check tuning status when system is selected - also check localStorage for tuned versions
   const selectedSystemPack = React.useMemo(() => {
     if (!selectedSystemId) return null;
+    
+    // First check localStorage for tuned version
+    try {
+      const tunedStored = localStorage.getItem(`custom-profile-${selectedSystemId}`) || 
+                         localStorage.getItem(`system-pack-${selectedSystemId}`);
+      if (tunedStored) {
+        const tunedPack = JSON.parse(tunedStored);
+        if (tunedPack.tuningStatus === 'tuned' || tunedPack.profiles?.some((p: any) => p.tuningStatus === 'tuned')) {
+          return tunedPack;
+        }
+      }
+    } catch (e) {
+      // Ignore errors
+    }
+    
+    // Fall back to original systems
     return SYSTEM_PACKS.find((p) => p.meta.id === selectedSystemId) 
       || EGYPTIAN_UPVC_SYSTEMS.find((p) => p.meta.id === selectedSystemId)
       || customSystems.find((c) => c.meta?.id === selectedSystemId);
@@ -262,9 +336,33 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
     if (onFallback) onFallback();
   };
 
+  // Handle Enter key to trigger Next button
+  React.useEffect(() => {
+    if (!open) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+        const target = e.target as HTMLElement;
+        // Don't trigger if user is typing in an input/textarea
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+          return;
+        }
+        e.preventDefault();
+        if (step < 4 && canNext()) {
+          setStep((s) => Math.min(4, s + 1));
+        } else if (step === 4) {
+          handleSubmit();
+        }
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, step]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl bg-gray-900 border-gray-800 text-white">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[95vh] overflow-y-auto bg-gray-900 border-gray-800 text-white sm:w-full">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg">
             <MapPin className="h-5 w-5 text-orange-400" />

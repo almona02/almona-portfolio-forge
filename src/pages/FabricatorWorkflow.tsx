@@ -1,26 +1,31 @@
 // pages/FabricatorWorkflow.tsx
-import React, { useState, useCallback, useEffect, Suspense } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Tabs, TabsContent } from '@/shared/ui/ui/tabs';
-import { Badge } from '@/shared/ui/ui/badge';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import { EgyptianConstraintsCard } from '@/components/fabricator/EgyptianConstraintsCard';
+import { track } from '@/lib/analytics';
+import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Tabs, TabsContent } from '@/shared/ui/ui/tabs';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
+  AlertCircle,
+  BarChart3,
+  Box,
+  CheckCircle2,
+  Clock,
+  Factory,
+  Loader2,
+  Package,
   Ruler,
   Scissors,
-  Settings,
-  Package,
-  Zap,
-  Factory,
-  AlertCircle,
-  Loader2,
-  Box,
-  Share2,
-  Clock,
   Search,
-  BarChart3,
+  Settings,
+  Share2,
+  Zap,
 } from 'lucide-react';
+import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // NOTE: Heavy Fabricator Pro modules are lazy‑loaded per tab to keep
@@ -60,13 +65,16 @@ const ProfileManagement = React.lazy(() =>
     default: m.ProfileManagement,
   })),
 );
+const SystemPackManagement = React.lazy(() =>
+  import('@/components/fabricator/SystemPackManagement').then((m) => ({
+    default: m.SystemPackManagement,
+  })),
+);
 const ProfileImportTool = React.lazy(() =>
   import('@/components/fabricator/ProfileImportTool').then((m) => ({
     default: m.ProfileImportTool,
   })),
 );
-import { supabase } from '@/lib/supabase';
-import { EgyptianConstraintsCard } from '@/components/fabricator/EgyptianConstraintsCard';
 const ProductionScheduler = React.lazy(() =>
   import('@/components/fabricator/ProductionScheduler').then((m) => ({
     default: m.ProductionScheduler,
@@ -127,8 +135,6 @@ const FeedbackButton = React.lazy(() =>
     default: m.FeedbackButton,
   })),
 );
-import { track } from '@/lib/analytics';
-import ErrorBoundary from '@/components/ErrorBoundary';
 const ClientPortalManager = React.lazy(() =>
   import('@/modules/client-portal').then((m) => ({
     default: m.ClientPortalManager,
@@ -150,34 +156,34 @@ const CalibrationWizard = React.lazy(() =>
   })),
 );
 
-import { parseLegacyOrderData } from '@/lib/legacyDataParser';
-import { ROCK60_WINDOW_SYSTEM_TEMPLATE } from '@/data/systemPacks';
-import {
-  WindowUnit,
-  Profile,
-  OptimizationResult,
-  WindowComponent,
-  MeasurementData,
-  AdaptiveSolverConfig,
-} from '@/types/fabricator';
 import { EnhancedAdaptiveSolver } from '@/algorithms/EnhancedAdaptiveSolver';
-import { trainingDataCollector } from '@/lib/ml/TrainingDataCollector';
-import { validateProject, deriveSystemConstraintsFromProfiles, validateProjectWithConstraints } from '@/lib/fabricatorValidation';
-import { useJobsStore } from '@/store/jobsStore';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { AnatolianCockpit } from '@/components/fabricator/AnatolianCockpit';
 import { BosphorusWorkflowRibbon } from '@/components/fabricator/BosphorusWorkflowRibbon';
-import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
-import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
-import { 
-  trackFabricatorLoadTime, 
-  markFabricatorReady, 
-  trackInventoryLoad,
-  trackOptimization 
-} from '@/lib/performance';
-import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
 import { ContextualTooltips } from '@/components/fabricator/ContextualTooltips';
 import { EgyptianProjectWizard } from '@/components/fabricator/EgyptianProjectWizard';
+import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
+import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import { ROCK60_WINDOW_SYSTEM_TEMPLATE } from '@/data/systemPacks';
+import { deriveSystemConstraintsFromProfiles, validateProject, validateProjectWithConstraints } from '@/lib/fabricatorValidation';
+import { parseLegacyOrderData } from '@/lib/legacyDataParser';
+import { trainingDataCollector } from '@/lib/ml/TrainingDataCollector';
+import {
+  markFabricatorReady,
+  trackFabricatorLoadTime,
+  trackInventoryLoad,
+  trackOptimization
+} from '@/lib/performance';
+import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
+import { useJobsStore } from '@/store/jobsStore';
+import {
+  AdaptiveSolverConfig,
+  MeasurementData,
+  OptimizationResult,
+  Profile,
+  WindowComponent,
+  WindowUnit,
+} from '@/types/fabricator';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const sampleHardware = [
   { id: 'hinge_1', name: 'Casement Hinge', type: 'hinge', quantity: 2, position: 'side' },
@@ -207,6 +213,18 @@ export const FabricatorWorkflow: React.FC = () => {
   } = useJobsStore();
   const { state: workspaceState, dispatch: workspaceDispatch } = useFabricatorWorkspace();
   const [activeTab, setActiveTab] = useState(navState?.startTab || 'measuring');
+
+  // Handle hash navigation (e.g., #inventory) to set active tab
+  useEffect(() => {
+    const hash = location.hash.replace('#', '');
+    if (hash && ['measuring', 'design', 'preview3d', 'optimization', 'inventory', 'production', 'quality'].includes(hash)) {
+      setActiveTab(hash);
+      // Scroll to top of content area after tab change
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
+    }
+  }, [location.hash]);
   const currentProject = (workspaceState.currentProject as WindowUnit | null) || null;
   const [projects, setProjects] = useState<WindowUnit[]>([]);
   const [inventory, setInventory] = useState<Profile[]>([]);
@@ -222,8 +240,23 @@ export const FabricatorWorkflow: React.FC = () => {
   const [showProjectWizard, setShowProjectWizard] = useState(false);
   const [projectMeta, setProjectMeta] = useState<(ProjectHeaderMeta & Record<string, any>) | null>(null);
   const [useEgyptWizard, setUseEgyptWizard] = useState(true);
+  const [systemTunedMessage, setSystemTunedMessage] = useState<string | null>(null);
   // Project-created toast message is now handled directly by wizards
   const { branding } = useCompanyBranding();
+
+  // Check for system tuned message from navigation state
+  useEffect(() => {
+    if (location.state && (location.state as any).systemTuned) {
+      const message = (location.state as any).systemTunedMessage;
+      if (message) {
+        setSystemTunedMessage(message);
+        // Clear after 5 seconds
+        setTimeout(() => setSystemTunedMessage(null), 5000);
+        // Clear navigation state
+        navigate(location.pathname, { replace: true, state: {} });
+      }
+    }
+  }, [location.state, location.pathname, navigate]);
 
   const activeWorkshopLabel =
     branding.workshopName?.trim() ||
@@ -1466,6 +1499,17 @@ export const FabricatorWorkflow: React.FC = () => {
                     </div>
                   )}
 
+                  {/* System Tuned Success Message */}
+                  {systemTunedMessage && (
+                    <Alert className="mb-4 bg-green-900/20 border-green-500/50">
+                      <CheckCircle2 className="h-4 w-4 text-green-400" />
+                      <AlertTitle className="text-green-300">System Tuned Successfully!</AlertTitle>
+                      <AlertDescription className="text-sm text-gray-200 mt-1">
+                        {systemTunedMessage}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
                   {!projectMeta ? (
                     <div className="border border-dashed border-gray-700 rounded-lg p-6 text-center space-y-3">
                       <p className="text-sm text-gray-300 font-medium">
@@ -1493,8 +1537,8 @@ export const FabricatorWorkflow: React.FC = () => {
                         <SmartMeasuringInterface
                           key={measurementSessionId}
                           onMeasurementComplete={handleMeasurementComplete}
-                          systemPackId={undefined}
-                          region={projectMeta.region}
+                          systemPackId={projectMeta?.systemPackId}
+                          region={projectMeta?.region}
                         />
                       </Suspense>
                     </ErrorBoundary>
@@ -1838,6 +1882,34 @@ export const FabricatorWorkflow: React.FC = () => {
 
                 {/* Inventory Tab */}
             <TabsContent value="inventory" className="space-y-8">
+              {/* System Pack Management - FIRST */}
+              <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-2xl">
+                    <div className="p-2 bg-blue-500/20 rounded-lg">
+                      <Settings className="h-6 w-6 text-blue-400" />
+                    </div>
+                    <div>
+                      System Pack Management
+                      <CardDescription className="text-lg text-gray-300 mt-1">
+                        View all system packs, check tuning status, and configure Frame/Sash profiles for accurate cut lists
+                      </CardDescription>
+                    </div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <ErrorBoundary level="component">
+                    <Suspense
+                      fallback={
+                        <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                      }
+                    >
+                      <SystemPackManagement />
+                    </Suspense>
+                  </ErrorBoundary>
+                </CardContent>
+              </Card>
+
               {/* Profile Management */}
               <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
                 <CardHeader className="pb-4">
@@ -1901,6 +1973,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   )}
                 </CardContent>
               </Card>
+
 
               {/* Inventory Dashboard */}
               <Card className="bg-gray-800/50 border-gray-700 shadow-xl">

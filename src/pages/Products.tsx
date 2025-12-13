@@ -1,35 +1,34 @@
-import { Model3DDialog } from "@/components/3d-model/Model3DDialog";
 import { EnhancedModel3DDialog } from "@/components/3d-model/EnhancedModel3DDialog";
+import SEO from "@/components/SEO";
 import CompareBar from "@/components/comparison/CompareBar";
 import CompareDialog from "@/components/comparison/CompareDialog";
-import { VirtualizedMachineGrid } from "@/components/optimized/VirtualizedMachineGrid";
-import { MobileOptimizedGrid } from "@/components/optimized/MobileOptimizedGrid";
 import { MobileFilterPanel } from "@/components/optimized/MobileFilterPanel";
+import { MobileOptimizedGrid } from "@/components/optimized/MobileOptimizedGrid";
+import { VirtualizedMachineGrid } from "@/components/optimized/VirtualizedMachineGrid";
+import CategoryBreadcrumb from "@/components/products/CategoryBreadcrumb";
+import SmartCategoryNavigation from "@/components/products/SmartCategoryNavigation";
 import { QuoteRequestDialog } from "@/components/quotes/QuoteRequestDialog";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
 import MachineRecommendationWizard from "@/components/shop/machine-recommendation/MachineRecommendationWizard";
-import SmartCategoryNavigation from "@/components/products/SmartCategoryNavigation";
-import CategoryBreadcrumb from "@/components/products/CategoryBreadcrumb";
-import { useVirtualizedMachines } from "@/hooks/useVirtualizedMachines";
-import { useToast } from "@/hooks/useToast";
-import { useAuth } from "@/context/AuthContext";
-import { loadComparisons, saveComparison } from "@/lib/comparisonStorage";
 import { smartCategoryMapping } from "@/constants/smartCategories";
+import type { Machine } from "@/constants/yilmazMachines";
+import { useAuth } from "@/context/AuthContext";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
+import { useScrollThreshold } from "@/hooks/useScrollThreshold";
+import { useToast } from "@/hooks/useToast";
+import { useVirtualizedMachines } from "@/hooks/useVirtualizedMachines";
+import { loadComparisons, saveComparison } from "@/lib/comparisonStorage";
+import { debounce } from "@/lib/utils";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Input } from "@/shared/ui/ui/input";
-import ProductCard from "@/shared/ui/ui/ProductCard";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/ui/ui/select";
 import { Separator } from "@/shared/ui/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import type { Machine as UiMachine } from "@/types/index";
-import type { Machine } from "@/constants/yilmazMachines";
+import { Eye, X } from "lucide-react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 interface SourceMachineLike {
   id: string; name: string; description?: string; imageUrl?: string; image_url?: string;
@@ -41,13 +40,6 @@ interface SourceMachineLike {
   airSpec?: { consumption?: string; pressure?: string };
   modelPath?: string;
 }
-import { Eye, X } from "lucide-react";
-import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import React, { useEffect, useState, Suspense, useCallback, useMemo } from "react";
-import { useSearchParams, useLocation } from "react-router-dom";
-import SEO from "@/components/SEO";
-import { useScrollThreshold } from "@/hooks/useScrollThreshold";
-import { debounce } from "@/lib/utils";
 
 // UI wrapper union ensures compatibility with comparison + quote components expecting UiMachine shape
 const mapToUiMachine = (m: SourceMachineLike): UiMachine => ({
@@ -74,6 +66,7 @@ const mapToUiMachine = (m: SourceMachineLike): UiMachine => ({
 });
 
 const Products = function ProductsPage() {
+  const { t } = useTranslation('products');
   const { toast } = useToast();
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -217,8 +210,8 @@ const Products = function ProductsPage() {
     if (selected) {
       if (selectedMachines.length >= 5) {
         toast({
-          title: "Maximum reached",
-          description: "You can compare up to 5 machines at a time",
+          title: t('comparison.maxReached'),
+          description: t('comparison.maxReachedDescription'),
           variant: "destructive",
         });
         return;
@@ -240,14 +233,14 @@ const Products = function ProductsPage() {
   const handleSaveComparison = () => {
     saveComparison(selectedMachines);
     toast({
-      title: "Comparison saved",
-      description: "You can access this comparison later",
+      title: t('comparison.saved'),
+      description: t('comparison.savedDescription'),
     });
   };
 
   useEffect(() => {
-    document.title = "Products - ALMONA";
-  }, []);
+    document.title = t('page.title');
+  }, [t]);
 
   const handleQuoteRequest = (machine: Machine) => {
     setSelectedProduct(machine);
@@ -263,38 +256,38 @@ const Products = function ProductsPage() {
   const industry40Features = [
     {
       icon: "🤖",
-      title: "AI-Powered Search",
-      description: "Intelligent machine recommendations based on your requirements",
+      title: t('industry40.features.aiSearch.title'),
+      description: t('industry40.features.aiSearch.description'),
       color: "text-blue-400"
     },
     {
       icon: "📊",
-      title: "Real-time Analytics",
-      description: "Live performance monitoring and predictive maintenance",
+      title: t('industry40.features.analytics.title'),
+      description: t('industry40.features.analytics.description'),
       color: "text-green-400"
     },
     {
       icon: "🔗",
-      title: "IoT Integration",
-      description: "Connected machines with remote monitoring capabilities",
+      title: t('industry40.features.iot.title'),
+      description: t('industry40.features.iot.description'),
       color: "text-purple-400"
     },
     {
       icon: "⚡",
-      title: "Smart Automation",
-      description: "Automated workflows and production optimization",
+      title: t('industry40.features.automation.title'),
+      description: t('industry40.features.automation.description'),
       color: "text-orange-400"
     },
     {
       icon: "🌐",
-      title: "Digital Twin",
-      description: "Virtual machine models for simulation and testing",
+      title: t('industry40.features.digitalTwin.title'),
+      description: t('industry40.features.digitalTwin.description'),
       color: "text-cyan-400"
     },
     {
       icon: "🔒",
-      title: "Blockchain Traceability",
-      description: "Secure supply chain tracking and certification",
+      title: t('industry40.features.blockchain.title'),
+      description: t('industry40.features.blockchain.description'),
       color: "text-red-400"
     }
   ];
@@ -329,31 +322,31 @@ const Products = function ProductsPage() {
 
   // Certifications
   const certifications = [
-    { name: "ISO 9001", description: "Quality Management Systems" },
-    { name: "CE Mark", description: "European Safety Standards" },
-    { name: "Industry 4.0", description: "Smart Manufacturing Certified" },
-    { name: "Energy Star", description: "Energy Efficiency" },
-    { name: "RoHS", description: "Environmental Standards" },
-    { name: "UL Listed", description: "Safety Certification" }
+    { name: "ISO 9001", description: t('certifications.iso9001') },
+    { name: "CE Mark", description: t('certifications.ceMark') },
+    { name: "Industry 4.0", description: t('certifications.industry40') },
+    { name: "Energy Star", description: t('certifications.energyStar') },
+    { name: "RoHS", description: t('certifications.rohs') },
+    { name: "UL Listed", description: t('certifications.ulListed') }
   ];
 
   // FAQ data
   const faqs = [
     {
-      question: "What makes YILMAZ machines Industry 4.0 ready?",
-      answer: "YILMAZ machines feature IoT connectivity, AI-powered diagnostics, predictive maintenance, and digital twin technology for optimal performance monitoring."
+      question: t('faq.industry40.question'),
+      answer: t('faq.industry40.answer')
     },
     {
-      question: "Do you provide installation and training?",
-      answer: "Yes, we provide comprehensive installation services, operator training, and ongoing technical support to ensure smooth integration into your operations."
+      question: t('faq.installation.question'),
+      answer: t('faq.installation.answer')
     },
     {
-      question: "What is the warranty coverage?",
-      answer: "All YILMAZ machines come with a comprehensive 1-year warranty covering parts and labor, with extended warranty options available."
+      question: t('faq.warranty.question'),
+      answer: t('faq.warranty.answer')
     },
     {
-      question: "Can I get a custom configuration?",
-      answer: "Absolutely! We offer customization options to meet your specific production requirements and space constraints."
+      question: t('faq.customization.question'),
+      answer: t('faq.customization.answer')
     }
   ];
 
@@ -363,10 +356,10 @@ const Products = function ProductsPage() {
   return (
     <>
       <SEO
-        title="YILMAZ Industrial Machinery - Products Catalog | Almona Co."
-        description="Browse our complete catalog of YILMAZ industrial machinery including CNC machines, copy routers, and aluminum processing equipment. Industry 4.0 solutions for smart manufacturing."
+        title={t('page.title')}
+        description={t('page.description')}
         url={currentUrl}
-        keywords="YILMAZ machines, CNC machines Egypt, industrial machinery, aluminum processing, PVC machines, copy routers"
+        keywords={t('page.keywords')}
       />
       <main className="flex-grow pt-24">
         {/* SEO Structured Data */}
@@ -406,14 +399,12 @@ const Products = function ProductsPage() {
             className="relative z-10 fade-in-up"
           >
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              <span className="text-gradient-orange">Industry 4.0</span>
+              <span className="text-gradient-orange">{t('hero.title')}</span>
               <br />
-              <span className="text-white">Smart Manufacturing</span>
+              <span className="text-white">{t('hero.subtitle')}</span>
             </h1>
             <p className="text-xl text-gray-300 max-w-4xl mx-auto mb-8 leading-relaxed">
-              Experience the future of industrial machinery with AI-powered recommendations,
-              IoT connectivity, and digital twin technology. Transform your production
-              with intelligent automation and predictive analytics.
+              {t('hero.description')}
             </p>
 
             {/* Industry 4.0 Feature Grid */}
@@ -434,23 +425,23 @@ const Products = function ProductsPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 onClick={() => setWizardOpen(true)}
-                aria-label="Open AI Machine Wizard"
-                title="Open AI Machine Wizard"
+                aria-label={t('hero.aiWizard')}
+                title={t('hero.aiWizard')}
                 className="bg-orange-600 hover:bg-orange-700 text-white px-7 py-3 text-lg font-semibold shadow-md hover:shadow-lg transition-colors"
               >
-                🚀 AI Machine Wizard
+                {t('hero.aiWizard')}
               </Button>
               <Button
                 onClick={() => setShowConfigurator(true)}
                 className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                ⚙️ Live Configurator
+                {t('hero.liveConfigurator')}
               </Button>
               <Button
                 variant="outline"
                 className="border-orange-500/50 text-orange-400 hover:bg-orange-500/10 px-8 py-3 text-lg font-semibold"
               >
-                📊 View Analytics
+                {t('hero.viewAnalytics')}
               </Button>
             </div>
           </div>
@@ -470,19 +461,19 @@ const Products = function ProductsPage() {
         >
           <div className="text-center bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-lg p-6">
             <div className="text-3xl font-bold text-blue-400 mb-2">99.9%</div>
-            <div className="text-sm text-gray-300">Uptime</div>
+            <div className="text-sm text-gray-300">{t('industry40.stats.uptime')}</div>
           </div>
           <div className="text-center bg-gradient-to-br from-green-500/10 to-green-600/10 border border-green-500/20 rounded-lg p-6">
             <div className="text-3xl font-bold text-green-400 mb-2">45%</div>
-            <div className="text-sm text-gray-300">Energy Savings</div>
+            <div className="text-sm text-gray-300">{t('industry40.stats.energySavings')}</div>
           </div>
           <div className="text-center bg-gradient-to-br from-purple-500/10 to-purple-600/10 border border-purple-500/20 rounded-lg p-6">
             <div className="text-3xl font-bold text-purple-400 mb-2">24/7</div>
-            <div className="text-sm text-gray-300">Monitoring</div>
+            <div className="text-sm text-gray-300">{t('industry40.stats.monitoring')}</div>
           </div>
           <div className="text-center bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-lg p-6">
             <div className="text-3xl font-bold text-orange-400 mb-2">AI</div>
-            <div className="text-sm text-gray-300">Powered</div>
+            <div className="text-sm text-gray-300">{t('industry40.stats.powered')}</div>
           </div>
         </div>
 
@@ -494,7 +485,7 @@ const Products = function ProductsPage() {
           style={{ animationDelay: '0.5s' }}
         >
           <h2 className="text-2xl font-bold text-center mb-8">
-            <span className="text-gradient-orange">Certifications & Standards</span>
+            <span className="text-gradient-orange">{t('certifications.title')}</span>
           </h2>
           <div className="flex flex-wrap justify-center gap-4">
               {certifications.map((cert, index) => (
@@ -513,18 +504,17 @@ const Products = function ProductsPage() {
         {/* Existing Products page content */}
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold mb-4">
-            <span className="text-gradient-orange">YILMAZ Machines</span>
+            <span className="text-gradient-orange">{t('machines.title')}</span>
           </h2>
           <p className="text-gray-400 max-w-3xl mx-auto">
-            Premium aluminum & PVC processing machines from Turkey&apos;s leading
-            manufacturer. Authorized dealer since 2000.
+            {t('machines.subtitle')}
           </p>
         </div>
 
         <Tabs defaultValue="yilmaz" className="mb-8">
           {/* Category selection with adaptive gradient */}
           <TabsList className="grid w-full grid-cols-1 max-w-xs mx-auto rounded-md shadow-sm border border-gray-700 bg-[linear-gradient(135deg,rgba(0,0,0,0.85)_0%,rgba(30,30,30,0.85)_60%,rgba(55,55,55,0.75)_100%)] backdrop-blur">
-            <TabsTrigger value="yilmaz">YILMAZ Machines</TabsTrigger>
+            <TabsTrigger value="yilmaz">{t('machines.tabs.yilmaz')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="yilmaz">
@@ -560,9 +550,9 @@ const Products = function ProductsPage() {
                 {(filters.searchTerm || filters.category !== 'all' || enhancedMachines.length < totalCount) && (
                   <div className="flex items-center justify-between mt-4 p-3 bg-gray-800/50 rounded-lg">
                     <div className="text-sm text-gray-300">
-                      Showing {enhancedMachines.length} of {totalCount} machines
+                      {t('machines.showing', { count: enhancedMachines.length, total: totalCount })}
                       {(filters.searchTerm || filters.category !== 'all') && (
-                        <span className="text-orange-400 ml-2">• Filtered</span>
+                        <span className="text-orange-400 ml-2">{t('machines.filtered')}</span>
                       )}
                     </div>
                     {(filters.searchTerm || filters.category !== 'all') && (
@@ -572,7 +562,7 @@ const Products = function ProductsPage() {
                         onClick={handleClearFilters}
                         className="text-orange-400 hover:text-orange-300 hover:bg-orange-500/10"
                       >
-                        Clear filters
+                        {t('machines.clearFilters')}
                       </Button>
                     )}
                   </div>
@@ -594,16 +584,16 @@ const Products = function ProductsPage() {
               {enhancedMachines.length === 0 ? (
                 <div className="text-center py-12">
                   <h3 className="text-xl font-medium mb-2">
-                    No machines found
+                    {t('machines.noMachines.title')}
                   </h3>
                   <p className="text-gray-400">
-                    Try adjusting your search or filter criteria
+                    {t('machines.noMachines.description')}
                   </p>
                   <Button
                     className="mt-4 border border-almona-light hover:bg-almona-light/10"
                     onClick={handleClearFilters}
                   >
-                    Clear filters
+                    {t('machines.noMachines.clearFilters')}
                   </Button>
                 </div>
               ) : (
@@ -652,7 +642,7 @@ const Products = function ProductsPage() {
           style={{ animationDelay: '0.5s' }}
         >
           <h2 className="text-3xl font-bold mb-6 text-center">
-            <span className="text-gradient-orange">Advanced Technology</span>
+            <span className="text-gradient-orange">{t('technology.title')}</span>
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -660,10 +650,9 @@ const Products = function ProductsPage() {
               <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🤖</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-blue-400">AI Recommendations</h3>
+              <h3 className="text-xl font-semibold mb-2 text-blue-400">{t('technology.aiRecommendations.title')}</h3>
               <p className="text-gray-400">
-                Machine learning algorithms analyze your requirements to suggest the perfect equipment
-                for your specific manufacturing needs.
+                {t('technology.aiRecommendations.description')}
               </p>
             </div>
 
@@ -671,10 +660,9 @@ const Products = function ProductsPage() {
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">📡</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-green-400">IoT Connectivity</h3>
+              <h3 className="text-xl font-semibold mb-2 text-green-400">{t('technology.iotConnectivity.title')}</h3>
               <p className="text-gray-400">
-                Real-time monitoring and data collection from connected machines enables
-                predictive maintenance and performance optimization.
+                {t('technology.iotConnectivity.description')}
               </p>
             </div>
 
@@ -682,10 +670,9 @@ const Products = function ProductsPage() {
               <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🎯</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-purple-400">Digital Twins</h3>
+              <h3 className="text-xl font-semibold mb-2 text-purple-400">{t('technology.digitalTwins.title')}</h3>
               <p className="text-gray-400">
-                Virtual representations of physical machines allow for simulation,
-                testing, and optimization before actual deployment.
+                {t('technology.digitalTwins.description')}
               </p>
             </div>
           </div>
@@ -697,7 +684,7 @@ const Products = function ProductsPage() {
           style={{ animationDelay: '0.6s' }}
         >
           <h2 className="text-3xl font-bold text-center mb-8">
-            <span className="text-gradient-orange">Frequently Asked Questions</span>
+            <span className="text-gradient-orange">{t('faq.title')}</span>
           </h2>
           <div className="max-w-4xl mx-auto space-y-4">
             {faqs.map((faq, index) => (
@@ -719,23 +706,22 @@ const Products = function ProductsPage() {
           style={{ animationDelay: '0.7s' }}
         >
           <h2 className="text-2xl font-bold mb-4">
-            <span className="text-gradient-orange">Stay Updated</span>
+            <span className="text-gradient-orange">{t('newsletter.title')}</span>
           </h2>
           <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-            Get the latest Industry 4.0 insights, product updates, and exclusive offers
-            delivered to your inbox.
+            {t('newsletter.description')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
             <Input
               type="email"
-              placeholder="Enter your email"
+              placeholder={t('newsletter.placeholder')}
               className="bg-gray-800/50 border-gray-600 text-white placeholder-gray-400"
             />
             <Button
               onClick={() => setShowNewsletter(true)}
               className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
             >
-              Subscribe
+              {t('newsletter.subscribe')}
             </Button>
           </div>
         </div>
@@ -744,20 +730,19 @@ const Products = function ProductsPage() {
         <div className="bg-almona-darker/60 border border-gray-800 rounded-xl p-6 sm:p-8 mb-12 fade-in-up">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center">
             <div className="space-y-3">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gradient-orange">Why Choose YILMAZ Machines?</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gradient-orange">{t('whyChoose.title')}</h2>
               <p className="text-gray-300 leading-relaxed">
-                Precision-built in our state-of-the-art factory with Industry 4.0 standards, digital QA, and
-                certified processes. See the production floor in action—exactly where your machines are born.
+                {t('whyChoose.description')}
               </p>
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="text-xs border-orange-400/60 text-orange-300">Industry 4.0</Badge>
-                <Badge variant="outline" className="text-xs border-orange-400/60 text-orange-300">Digital QA</Badge>
-                <Badge variant="outline" className="text-xs border-orange-400/60 text-orange-300">CE Certified</Badge>
+                <Badge variant="outline" className="text-xs border-orange-400/60 text-orange-300">{t('whyChoose.badges.industry40')}</Badge>
+                <Badge variant="outline" className="text-xs border-orange-400/60 text-orange-300">{t('whyChoose.badges.digitalQA')}</Badge>
+                <Badge variant="outline" className="text-xs border-orange-400/60 text-orange-300">{t('whyChoose.badges.ceCertified')}</Badge>
               </div>
               <div className="flex gap-3 pt-2">
                 <Button asChild className="bg-gradient-orange hover:bg-orange-600 text-white">
                   <a href="https://youtu.be/Q0i1AOCOUgo?si=boDqL2T7eFgtny4w" target="_blank" rel="noreferrer">
-                    Roll out a Visit
+                    {t('whyChoose.factoryTour')}
                   </a>
                 </Button>
               </div>
@@ -810,7 +795,7 @@ const Products = function ProductsPage() {
 
         <div className="bg-almona-darker/50 p-8 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">
-            Why Choose YILMAZ Machines?
+            {t('whyChoose.title')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
@@ -818,11 +803,10 @@ const Products = function ProductsPage() {
                 <Badge variant="outline" className="mr-2">
                   1
                 </Badge>
-                Premium Quality
+                {t('whyChoose.premiumQuality.title')}
               </h3>
               <p className="text-gray-400">
-                Manufactured with high-grade materials and precision
-                engineering for exceptional durability and performance.
+                {t('whyChoose.premiumQuality.description')}
               </p>
             </div>
             <div>
@@ -830,11 +814,10 @@ const Products = function ProductsPage() {
                 <Badge variant="outline" className="mr-2">
                   2
                 </Badge>
-                Technical Support
+                {t('whyChoose.technicalSupport.title')}
               </h3>
               <p className="text-gray-400">
-                Our expert team provides comprehensive installation,
-                training and maintenance services.
+                {t('whyChoose.technicalSupport.description')}
               </p>
             </div>
             <div>
@@ -842,11 +825,10 @@ const Products = function ProductsPage() {
                 <Badge variant="outline" className="mr-2">
                   3
                 </Badge>
-                Genuine Parts
+                {t('whyChoose.genuineParts.title')}
               </h3>
               <p className="text-gray-400">
-                We supply original spare parts with warranty to ensure
-                optimal machine performance.
+                {t('whyChoose.genuineParts.description')}
               </p>
             </div>
           </div>
@@ -929,21 +911,19 @@ const Products = function ProductsPage() {
           >
             <div className="text-center">
               <h2 className="text-3xl font-bold mb-4">
-                <span className="text-gradient-orange">Live Machine Configurator</span>
+                <span className="text-gradient-orange">{t('configurator.title')}</span>
               </h2>
               <p className="text-gray-300 mb-8">
-                Customize your YILMAZ machine with our interactive configurator.
-                Select options, view real-time pricing, and get instant quotes.
+                {t('configurator.description')}
               </p>
 
               {/* Placeholder for configurator content */}
               <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 mb-6">
                 <div className="text-center text-gray-400">
                   <div className="text-6xl mb-4">⚙️</div>
-                  <p className="text-lg">Configurator Coming Soon</p>
+                  <p className="text-lg">{t('configurator.comingSoon')}</p>
                   <p className="text-sm mt-2">
-                    We're working on an advanced interactive configurator that will allow you to
-                    customize machines, view 3D models, and get real-time pricing.
+                    {t('configurator.comingSoonDescription')}
                   </p>
                 </div>
               </div>
@@ -954,7 +934,7 @@ const Products = function ProductsPage() {
                   variant="outline"
                   className="border-gray-600 text-gray-300 hover:bg-gray-700"
                 >
-                  Close
+                  {t('configurator.close')}
                 </Button>
                 <Button
                   onClick={() => {
@@ -963,7 +943,7 @@ const Products = function ProductsPage() {
                   }}
                   className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
                 >
-                  Try AI Wizard Instead
+                  {t('configurator.tryWizard')}
                 </Button>
               </div>
             </div>

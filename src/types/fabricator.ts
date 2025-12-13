@@ -195,8 +195,35 @@ export interface Profile {
   category?: 'window' | 'door' | 'curtain_wall' | 'structural' | 'accessory';
   /** System type: casement, sliding, tilt_turn, fixed, facade, commercial */
   systemType?: 'casement' | 'sliding' | 'tilt_turn' | 'fixed' | 'facade' | 'commercial';
-  /** Profile role in system: frame, sash, mullion, transom, glazing_bead, interlock, accessory, screen_sash, screen_adapter */
-  profileRole?: 'frame' | 'sash' | 'mullion' | 'transom' | 'glazing_bead' | 'interlock' | 'accessory' | 'screen_sash' | 'screen_adapter';
+  /** Profile role in system: Gold-tier granular roles for accurate cutting lists */
+  profileRole?: 
+    | 'frame'                    // Main frame profile
+    | 'frame_architrave'         // Frame with architrave (decorative border)
+    | 'sash'                     // Standard operable sash
+    | 'sash_sliding'             // Sliding sash profile
+    | 'sash_door'                // Door sash profile
+    | 'sash_flyscreen'           // Fly-screen sash profile
+    | 'sash_casement'            // Casement sash profile
+    | 'mullion'                  // Vertical divider (true mullion)
+    | 'mullion_false'            // False mullion (decorative)
+    | 'transom'                  // Horizontal divider
+    | 'glazing_bead'             // Glazing bead profile
+    | 'glazing_bead_inner'       // Inner glazing bead
+    | 'glazing_bead_outer'       // Outer glazing bead
+    | 'interlock'                // Interlock profile
+    | 'accessory'                // Accessory profile
+    | 'screen_sash'              // Screen sash
+    | 'screen_adapter'           // Screen adapter (Barour Shabaak)
+    | 'panel'                    // Panel / Filler
+    | 'architrave'               // Standalone architrave
+    | 'threshold'                // Threshold profile
+    | 'sill'                     // Sill profile
+    | 'head'                     // Head profile
+    | 'jamb'                     // Jamb profile
+    | 'corner_cleat'             // Corner cleat
+    | 'reinforcement'            // Reinforcement profile
+    | 'gasket'                   // Gasket profile
+    | 'weather_strip';           // Weather strip
   /** Sash inner gap for glazing fit (mm) - e.g., 40mm for ROCK 60, 50mm for JUMBO 100 */
   innerGap?: number;
   /** Maximum load capacity for hardware associated with this profile (kg) */
