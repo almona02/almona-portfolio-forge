@@ -81,8 +81,15 @@ export const LanguageSwitcher: React.FC<{
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={isRTLMode ? 'start' : 'end'}
-        sideOffset={24}
-        className="bg-gray-900/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl overflow-hidden min-w-[180px] p-1"
+        side="bottom"
+        sideOffset={8}
+        alignOffset={isRTLMode ? 0 : -8}
+        className="bg-slate-900/98 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl min-w-[180px] max-w-[90vw] sm:max-w-none max-h-[calc(100vh-120px)] overflow-y-auto overflow-x-hidden p-1 z-[9999]"
+        style={{
+          WebkitBackdropFilter: 'blur(12px)',
+          backdropFilter: 'blur(12px)',
+        }}
+        collisionPadding={8}
       >
         {languages.map((lang) => {
           const isActive = i18n.language === lang.code || i18n.language.startsWith(lang.code);
@@ -92,9 +99,10 @@ export const LanguageSwitcher: React.FC<{
               onClick={() => handleLanguageChange(lang.code)}
               className={`
                 flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer
+                min-h-[44px] touch-manipulation
                 ${isActive 
                   ? 'text-orange-400 bg-gradient-to-r from-orange-500/10 to-red-500/10' 
-                  : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  : 'text-gray-300 hover:text-white hover:bg-white/5 active:bg-white/10'
                 }
                 group/item
               `}

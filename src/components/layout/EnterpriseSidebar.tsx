@@ -662,7 +662,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       </div>
 
       {/* Navigation Content - Scrollable Enterprise Navigation */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden mt-2 px-2.5 scrollbar-thin scrollbar-thumb-slate-700/50 scrollbar-track-transparent hover:scrollbar-thumb-slate-600/70 relative z-10">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden mt-2 px-2.5 scrollbar-thin scrollbar-thumb-slate-700/50 scrollbar-track-transparent hover:scrollbar-thumb-slate-600/70 relative z-10 min-h-0">
         {/* Workflow Section */}
         <div className="mb-6">
           <motion.button
@@ -918,32 +918,61 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           })}
         </div>
 
-        {/* Fabrication Modules - Enterprise Module Section */}
+        {/* Fabrication Modules - Enterprise Module Section (Collapsible, Hidden by Default) */}
         {!isCollapsed && (
           <div className="mt-5 pt-5 border-t border-slate-800/60">
-            <div className="px-3 mb-2.5">
-              <h3 className="text-[10px] font-bold text-slate-500/80 uppercase tracking-widest">Modules</h3>
-            </div>
-            <div className="space-y-1">
-              {fabricationModules.map((module) => (
+            <motion.button
+              whileHover={{ x: 2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setActiveMenu(activeMenu === 'modules' ? null : 'modules')}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all mb-2 ${
+                activeMenu === 'modules'
+                  ? 'bg-gradient-to-r from-[#003366]/15 to-[#004488]/15 border border-[#FFD700]/40 shadow-sm shadow-[#003366]/10'
+                  : 'hover:bg-slate-800/40 border border-transparent hover:border-slate-700/30'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Package className={`w-4 h-4 ${activeMenu === 'modules' ? 'text-[#FFD700]' : 'text-slate-400'}`} />
+                <span className={`text-sm font-medium ${activeMenu === 'modules' ? 'text-[#FFD700]' : 'text-slate-300'}`}>
+                  Modules
+                </span>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-slate-400 transition-transform ${activeMenu === 'modules' ? 'rotate-180' : ''}`}
+              />
+            </motion.button>
+            <AnimatePresence>
+              {activeMenu === 'modules' && (
                 <motion.div
-                  key={module.name}
-                  whileHover={{ x: 2 }}
-                  whileTap={{ scale: 0.98 }}
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="space-y-1 overflow-hidden"
                 >
-                  <Link
-                    to={module.path}
-                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800/40 transition-all group border border-transparent hover:border-slate-700/30"
-                  >
-                    <module.icon className="w-4 h-4 text-slate-400 group-hover:text-[#FFD700] transition-colors" />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-slate-300 truncate">{module.name}</div>
-                      <StatusBadge status={module.status} efficiency={module.efficiency} />
-                    </div>
-                  </Link>
+                  {fabricationModules.map((module) => (
+                    <motion.div
+                      key={module.name}
+                      whileHover={{ x: 2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <Link
+                        to={module.path}
+                        onClick={() => {
+                          if (isMobile) setIsMobileNavOpen(false);
+                        }}
+                        className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800/40 transition-all group border border-transparent hover:border-slate-700/30"
+                      >
+                        <module.icon className="w-4 h-4 text-slate-400 group-hover:text-[#FFD700] transition-colors" />
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-medium text-slate-300 truncate">{module.name}</div>
+                          <StatusBadge status={module.status} efficiency={module.efficiency} />
+                        </div>
+                      </Link>
+                    </motion.div>
+                  ))}
                 </motion.div>
-              ))}
-            </div>
+              )}
+            </AnimatePresence>
           </div>
         )}
 
@@ -1185,7 +1214,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           ref={sidebarRef}
           dir={isRTLMode ? 'rtl' : 'ltr'}
           style={{ width: sidebarWidth }}
-          className={`fixed ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-screen z-[200] flex flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 backdrop-blur-2xl border-${isRTLMode ? 'l' : 'r'} border-slate-800/60 shadow-2xl shadow-black/50 will-change-[width] overflow-hidden`}
+          className={`fixed ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-screen z-[200] flex flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 backdrop-blur-2xl border-${isRTLMode ? 'l' : 'r'} border-slate-800/60 shadow-2xl shadow-black/50 will-change-[width]`}
         >
           {sidebarContent}
           {/* Resize handle */}
@@ -1225,7 +1254,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             onClick={closeMobileNav}
           >
             <motion.div
-              className={`absolute ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-full bg-slate-950/98 ${isRTLMode ? 'border-l' : 'border-r'} border-slate-800/60 shadow-2xl shadow-black/60 overflow-hidden`}
+              className={`absolute ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-full bg-slate-950/98 ${isRTLMode ? 'border-l' : 'border-r'} border-slate-800/60 shadow-2xl shadow-black/60 flex flex-col`}
               style={{ width: sidebarConfig.drawerWidth || '82vw' }}
               initial={{ x: isRTLMode ? 20 : -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}

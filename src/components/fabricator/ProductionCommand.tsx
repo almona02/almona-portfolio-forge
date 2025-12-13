@@ -43,6 +43,7 @@ import { alm6510MDBExport, ALM6510ExportOptions } from '@/lib/exports/ALM6510MDB
 import { downloadSplitPO } from '@/lib/exports/SplitPOExport';
 import { InstallationVariablesPanel } from './InstallationVariablesPanel';
 import type { InstallationVariables, InstallationCostBreakdown } from '@/lib/installation/EgyptianInstallationCalculator';
+import { ExportService } from '@/lib/exports';
 
 interface ProductionCommandProps {
     project: WindowUnit | null;
@@ -467,10 +468,95 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                 </Card>
             )}
 
-            {/* --- 5. DISPATCH TO PRODUCTION --- */}
-            <Card className="bg-gray-800/30 border-gray-700" id="dispatch-section">
+            {/* --- 5. ONE-CLICK EXPORT PANEL (Egypt Pilot) --- */}
+            <Card className="bg-gradient-to-r from-orange-900/20 to-orange-800/20 border-orange-500/50" id="dispatch-section">
                 <CardHeader>
-                     <CardTitle className="text-base">{t('production_command.dispatch_to_production', 'Dispatch to Production')}</CardTitle>
+                    <CardTitle className="text-base flex items-center gap-2">
+                        <Download className="h-5 w-5 text-orange-400" />
+                        {t('production_command.one_click_export', 'One-Click Export (Egypt Pilot)')}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {/* Quick Export Buttons */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <Button
+                            onClick={async () => {
+                                if (project && optimization) {
+                                    try {
+                                        const exportService = new ExportService();
+                                        const blob = await exportService.export(project, optimization, 'pdf', {
+                                            includeDiagrams: true,
+                                            includeQRCode: true,
+                                        });
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = `cutting-list-${project.orderNumber || 'export'}.pdf`;
+                                        a.click();
+                                        URL.revokeObjectURL(url);
+                                    } catch (error) {
+                                        console.error('PDF export failed:', error);
+                                    }
+                                }
+                            }}
+                            className="bg-blue-600 hover:bg-blue-700 text-white h-16 flex flex-col items-center justify-center gap-1"
+                            disabled={!project || !optimization}
+                        >
+                            <FileText className="h-6 w-6" />
+                            <span className="text-sm font-semibold">PDF Export</span>
+                            <span className="text-xs opacity-90">Cutting List</span>
+                        </Button>
+                        <Button
+                            onClick={async () => {
+                                if (project && optimization) {
+                                    try {
+                                        const exportService = new ExportService();
+                                        const blob = await exportService.export(project, optimization, 'dxf', {
+                                            includeAnnotations: true,
+                                            includeQRCode: true,
+                                        });
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = `cutting-list-${project.orderNumber || 'export'}.dxf`;
+                                        a.click();
+                                        URL.revokeObjectURL(url);
+                                    } catch (error) {
+                                        console.error('DXF export failed:', error);
+                                    }
+                                }
+                            }}
+                            className="bg-green-600 hover:bg-green-700 text-white h-16 flex flex-col items-center justify-center gap-1"
+                            disabled={!project || !optimization}
+                        >
+                            <Code className="h-6 w-6" />
+                            <span className="text-sm font-semibold">DXF Export</span>
+                            <span className="text-xs opacity-90">CNC Ready</span>
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                if (project && optimization) {
+                                    downloadSplitPO(project, optimization, installationBreakdown);
+                                }
+                            }}
+                            className="bg-orange-600 hover:bg-orange-700 text-white h-16 flex flex-col items-center justify-center gap-1"
+                            disabled={!project || !optimization}
+                        >
+                            <Send className="h-6 w-6" />
+                            <span className="text-sm font-semibold">Split PO</span>
+                            <span className="text-xs opacity-90">3 POs Export</span>
+                        </Button>
+                    </div>
+                    <div className="text-xs text-gray-400 text-center pt-2">
+                        All exports include Frame + Sash cuts separately • Ready for production
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* --- 6. DISPATCH TO PRODUCTION (Advanced) --- */}
+            <Card className="bg-gray-800/30 border-gray-700" id="dispatch-section-advanced">
+                <CardHeader>
+                     <CardTitle className="text-base">{t('production_command.dispatch_to_production', 'Dispatch to Production (Advanced)')}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Side: CNC Machine Control */}

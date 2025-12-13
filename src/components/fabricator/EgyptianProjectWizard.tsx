@@ -89,8 +89,26 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
   const [usageType, setUsageType] = useState<UsageType>((initialMeta?.egyptianConstraints?.usageType as UsageType) || 'residential');
   const [baseShape, setBaseShape] = useState<BaseShape>((initialMeta?.egyptianConstraints?.baseShape as BaseShape) || 'two_sash');
   const [openingType, setOpeningType] = useState<OpeningType>((initialMeta?.egyptianConstraints?.openingType as OpeningType) || 'sliding');
-  const [selectedSystemId, setSelectedSystemId] = useState<string | null>(defaultSystems[0]);
   const [materialPreference, setMaterialPreference] = useState<'aluminum' | 'upvc'>('aluminum');
+  
+  // Set default system based on material preference
+  const getDefaultSystemForMaterial = (material: 'aluminum' | 'upvc'): string => {
+    if (material === 'aluminum') {
+      return 'caluminium-ps'; // PS system pack as default for aluminum
+    } else {
+      return 'foxywin_eco_smart_50'; // FoxyWin as default for UPVC
+    }
+  };
+
+  const [selectedSystemId, setSelectedSystemId] = useState<string | null>(
+    getDefaultSystemForMaterial(materialPreference)
+  );
+
+  // Update selected system when material changes
+  React.useEffect(() => {
+    const defaultSystem = getDefaultSystemForMaterial(materialPreference);
+    setSelectedSystemId(defaultSystem);
+  }, [materialPreference]);
 
   const recommendedSystems = useMemo(() => {
     const recs = new Set<string>();
@@ -107,16 +125,20 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
     // Usage-based recommendations
     if (usageType === 'commercial' || usageType === 'hotel') {
       if (materialPreference === 'aluminum') {
+        recs.add('caluminium-ps'); // PS system for commercial aluminum
         recs.add('panda-100');
         recs.add('jumbo100');
       } else {
+        recs.add('foxywin_foxy_shield_60'); // Premium FoxyWin for commercial
         recs.add('veka_70_softline');
         recs.add('rehau_geneo');
       }
     } else {
       if (materialPreference === 'aluminum') {
+        recs.add('caluminium-ps'); // PS system as primary recommendation
         recs.add('panda-50');
       } else {
+        recs.add('foxywin_eco_smart_50'); // FoxyWin as primary recommendation
         recs.add('wintech_6400_detailed');
         recs.add('kompen_60_eco');
       }
@@ -158,7 +180,11 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
     const list = Array.from(recs).filter((id) => 
       materialFiltered.find((p) => p.meta.id === id)
     );
-    return list.length ? list : (materialPreference === 'aluminum' ? defaultSystems : ['wintech_6400_detailed']);
+    // Default fallback based on material
+    const fallback = materialPreference === 'aluminum' 
+      ? ['caluminium-ps'] // PS system as default for aluminum
+      : ['foxywin_eco_smart_50']; // FoxyWin as default for UPVC
+    return list.length ? list : fallback;
   }, [usageType, windZone, floorLevel, openingType, customSystems, materialPreference]);
 
   const canNext = () => {
@@ -176,7 +202,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
       siteName: siteName.trim() || undefined,
       currency: 'EGP',
       region: 'egypt',
-      systemPackId: selectedSystemId || recommendedSystems[0] || defaultSystems[0],
+      systemPackId: selectedSystemId || recommendedSystems[0] || getDefaultSystemForMaterial(materialPreference),
       allowedSystemPackIds: recommendedSystems,
       egyptianConstraints: {
         governorate,
@@ -246,33 +272,83 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
           </div>
 
           {step === 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Client Name</Label>
-                <Input
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                  placeholder="El Sherif Aluminum"
-                  className="bg-gray-800 border-gray-700"
-                />
+            <div className="space-y-4">
+              {/* Material Selection - FIRST STEP for Egypt Pilot */}
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold">Material Type (Egypt Pilot)</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div 
+                    className={`relative p-4 rounded-lg border cursor-pointer transition-all ${
+                      materialPreference === 'aluminum' 
+                        ? 'bg-blue-900/20 border-blue-500 shadow-lg shadow-blue-500/20' 
+                        : 'bg-gray-800/40 border-gray-700 hover:bg-gray-800'
+                    }`}
+                    onClick={() => setMaterialPreference('aluminum')}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <Layers className={`h-5 w-5 ${materialPreference === 'aluminum' ? 'text-blue-400' : 'text-gray-400'}`} />
+                      <span className={`text-base font-medium ${materialPreference === 'aluminum' ? 'text-blue-100' : 'text-gray-300'}`}>
+                        Aluminum
+                      </span>
+                    </div>
+                    <div className="text-xs text-gray-500 mb-2">Default: PS System Pack</div>
+                    <div className="text-[10px] text-gray-500">60% Market Share (Standard)</div>
+                    {materialPreference === 'aluminum' && (
+                      <div className="absolute top-2 right-2 text-blue-500"><Check className="h-4 w-4" /></div>
+                    )}
+                  </div>
+                  <div 
+                    className={`relative p-4 rounded-lg border cursor-pointer transition-all ${
+                      materialPreference === 'upvc' 
+                        ? 'bg-green-900/20 border-green-500 shadow-lg shadow-green-500/20' 
+                        : 'bg-gray-800/40 border-gray-700 hover:bg-gray-800'
+                    }`}
+                    onClick={() => setMaterialPreference('upvc')}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <BoxSelect className={`h-5 w-5 ${materialPreference === 'upvc' ? 'text-green-400' : 'text-gray-400'}`} />
+                      <span className={`text-base font-medium ${materialPreference === 'upvc' ? 'text-green-100' : 'text-gray-300'}`}>
+                        UPVC (Welded)
+                      </span>
+                    </div>
+                    <div className="text-xs text-gray-500 mb-2">Default: FoxyWin System</div>
+                    <div className="text-[10px] text-gray-500">40% Market Share (Insulated)</div>
+                    {materialPreference === 'upvc' && (
+                      <div className="absolute top-2 right-2 text-green-500"><Check className="h-4 w-4" /></div>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>Project Name</Label>
-                <Input
-                  value={projectName}
-                  onChange={(e) => setProjectName(e.target.value)}
-                  placeholder="Nasr City Tower"
-                  className="bg-gray-800 border-gray-700"
-                />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label>Site / Address</Label>
-                <Input
-                  value={siteName}
-                  onChange={(e) => setSiteName(e.target.value)}
-                  placeholder="Nasr City, Cairo"
-                  className="bg-gray-800 border-gray-700"
-                />
+
+              {/* Project Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-800">
+                <div className="space-y-2">
+                  <Label>Client Name</Label>
+                  <Input
+                    value={clientName}
+                    onChange={(e) => setClientName(e.target.value)}
+                    placeholder="El Sherif Aluminum"
+                    className="bg-gray-800 border-gray-700"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Project Name</Label>
+                  <Input
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                    placeholder="Nasr City Tower"
+                    className="bg-gray-800 border-gray-700"
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label>Site / Address</Label>
+                  <Input
+                    value={siteName}
+                    onChange={(e) => setSiteName(e.target.value)}
+                    placeholder="Nasr City, Cairo"
+                    className="bg-gray-800 border-gray-700"
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -373,50 +449,6 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                 </div>
               </div>
 
-              {/* Material Preference Selector */}
-              <div className="space-y-3 pt-4 border-t border-gray-800">
-                <Label className="text-[11px] uppercase tracking-wide text-gray-500">Material Preference</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  <div 
-                    className={`relative p-3 rounded-lg border cursor-pointer transition-all ${
-                      materialPreference === 'aluminum' 
-                        ? 'bg-blue-900/20 border-blue-500' 
-                        : 'bg-gray-800/40 border-gray-700 hover:bg-gray-800'
-                    }`}
-                    onClick={() => setMaterialPreference('aluminum')}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <Layers className={`h-4 w-4 ${materialPreference === 'aluminum' ? 'text-blue-400' : 'text-gray-400'}`} />
-                      <span className={`text-sm font-medium ${materialPreference === 'aluminum' ? 'text-blue-100' : 'text-gray-300'}`}>
-                        Aluminum
-                      </span>
-                    </div>
-                    <div className="text-[10px] text-gray-500 pl-6">60% Market Share (Standard)</div>
-                    {materialPreference === 'aluminum' && (
-                      <div className="absolute top-2 right-2 text-blue-500"><Check className="h-3 w-3" /></div>
-                    )}
-                  </div>
-                  <div 
-                    className={`relative p-3 rounded-lg border cursor-pointer transition-all ${
-                      materialPreference === 'upvc' 
-                        ? 'bg-green-900/20 border-green-500' 
-                        : 'bg-gray-800/40 border-gray-700 hover:bg-gray-800'
-                    }`}
-                    onClick={() => setMaterialPreference('upvc')}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <BoxSelect className={`h-4 w-4 ${materialPreference === 'upvc' ? 'text-green-400' : 'text-gray-400'}`} />
-                      <span className={`text-sm font-medium ${materialPreference === 'upvc' ? 'text-green-100' : 'text-gray-300'}`}>
-                        UPVC (Welded)
-                      </span>
-                    </div>
-                    <div className="text-[10px] text-gray-500 pl-6">40% Market Share (Insulated)</div>
-                    {materialPreference === 'upvc' && (
-                      <div className="absolute top-2 right-2 text-green-500"><Check className="h-3 w-3" /></div>
-                    )}
-                  </div>
-                </div>
-              </div>
             </div>
           )}
 
