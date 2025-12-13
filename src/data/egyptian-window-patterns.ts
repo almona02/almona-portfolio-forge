@@ -1,4 +1,4 @@
-import type { WindowGrid, GridCell } from '@/types/fabricator';
+import type { GridCell, WindowGrid } from '@/types/fabricator';
 
 /**
  * Egyptian Window Patterns - practical presets for fast, safe setup.
@@ -101,7 +101,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: '2-panel sliding',
     typicalWidthMm: [1200, 2400],
     typicalHeightMm: [1200, 2000],
-    compatibleSystems: ['panda-50', 'rock60', 'jumbo100'],
+    compatibleSystems: ['panda-50', 'rock60', 'jumbo100', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'emapen_ema60_complete', 'emapen_ema60s_sliding', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
     accessories: ['anti-lift blocks', 'interlock kit'],
     gridSpec: {
       rows: 1,
@@ -135,7 +135,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: '4-panel sliding',
     typicalWidthMm: [2200, 3600],
     typicalHeightMm: [1400, 2200],
-    compatibleSystems: ['panda-50', 'rock60', 'jumbo100'],
+    compatibleSystems: ['panda-50', 'rock60', 'jumbo100', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'emapen_ema60_complete', 'emapen_ema60s_sliding', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
     accessories: ['anti-lift blocks', 'interlock kit', 'heavy-duty rollers (if >2.5m²)'],
     gridSpec: {
       rows: 1,
@@ -173,7 +173,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: '3-panel with fixed center',
     typicalWidthMm: [1800, 3200],
     typicalHeightMm: [1400, 2200],
-    compatibleSystems: ['panda-50', 'rock60'],
+    compatibleSystems: ['panda-50', 'rock60', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'emapen_ema60_complete', 'emapen_ema60s_sliding', 'emapen_ema55_economy', 'emapen_ema42s_budget', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
     accessories: ['interlock kit'],
     gridSpec: {
       rows: 1,
@@ -209,7 +209,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: 'Left/Right casements with mullion',
     typicalWidthMm: [1200, 2000],
     typicalHeightMm: [1200, 2200],
-    compatibleSystems: ['panda-50', 'panda-100', 'volcano-m11000'],
+    compatibleSystems: ['panda-50', 'panda-100', 'volcano-m11000', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'veka_70_softline', 'rehau_geneo', 'emapen_ema60_complete', 'emapen_ema55_economy', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60'],
     accessories: ['friction stays', 'espagnolette', 'cleats'],
     gridSpec: {
       rows: 1,
@@ -237,13 +237,83 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     }
   },
   {
+    id: 'casement-2sash',
+    name: '2 Sash Casements',
+    type: 'casement',
+    layout: '2-panel casement window',
+    typicalWidthMm: [1200, 2000],
+    typicalHeightMm: [1200, 2200],
+    compatibleSystems: ['panda-50', 'panda-100', 'rock60', 'volcano-m11000', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'veka_70_softline', 'rehau_geneo', 'emapen_ema60_complete', 'emapen_ema60s_sliding', 'emapen_ema55_economy', 'emapen_ema42s_budget', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
+    accessories: ['friction stays', 'espagnolette', 'cleats', 'corner cleats'],
+    gridSpec: {
+      rows: 1,
+      cols: 2,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'left' },
+        { row: 0, col: 1, type: 'sash', openingDirection: 'right' }
+      ],
+      colWidths: [1, 1] // Equal width sashes
+    },
+    mullions: [
+      { position: 0, type: 'standard', width: 50 } // Center mullion
+    ],
+    constraints: {
+      minSashWidth: 600,
+      maxSashWidth: 1000,
+      maxSashArea: 2.2,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'casement',
+      direction: 'both',
+      trackType: undefined
+    }
+  },
+  {
+    id: 'casement-2sash-fixed',
+    name: '2 Sash Casements + Fixed',
+    type: 'mixed',
+    layout: '2 casement sashes with fixed center panel',
+    typicalWidthMm: [1800, 3200],
+    typicalHeightMm: [1400, 2400],
+    compatibleSystems: ['panda-50', 'panda-100', 'rock60', 'volcano-m11000', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'veka_70_softline', 'rehau_geneo', 'emapen_ema60_complete', 'emapen_ema60s_sliding', 'emapen_ema55_economy', 'emapen_ema42s_budget', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
+    accessories: ['friction stays', 'espagnolette', 'cleats'],
+    gridSpec: {
+      rows: 1,
+      cols: 3,
+      cells: [
+        { row: 0, col: 0, type: 'sash', openingDirection: 'left' },
+        { row: 0, col: 1, type: 'fixed' },
+        { row: 0, col: 2, type: 'sash', openingDirection: 'right' }
+      ],
+      colWidths: [1, 1.5, 1] // Center fixed panel wider
+    },
+    mullions: [
+      { position: 0, type: 'standard', width: 50 },
+      { position: 1, type: 'standard', width: 50 }
+    ],
+    constraints: {
+      minSashWidth: 500,
+      maxSashWidth: 800,
+      maxSashArea: 2.0,
+      requiresReinforcement: false,
+      windLoadCategory: 'medium'
+    },
+    openingMechanism: {
+      type: 'casement',
+      direction: 'both',
+      trackType: undefined
+    }
+  },
+  {
     id: 'fixed-with-side-casements',
     name: 'Fixed + Side Casements',
     type: 'mixed',
     layout: 'Fixed center with side casements',
     typicalWidthMm: [1600, 3000],
     typicalHeightMm: [1400, 2400],
-    compatibleSystems: ['panda-50', 'rock60', 'panda-100'],
+    compatibleSystems: ['panda-50', 'rock60', 'panda-100', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'veka_70_softline', 'rehau_geneo', 'emapen_ema60_complete', 'emapen_ema60s_sliding', 'emapen_ema55_economy', 'emapen_ema42s_budget', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
     accessories: ['friction stays', 'espagnolette'],
     gridSpec: {
       rows: 1,
@@ -279,7 +349,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: '2-panel sliding door',
     typicalWidthMm: [1800, 3200],
     typicalHeightMm: [2000, 2600],
-    compatibleSystems: ['jumbo100', 'ps-6600', 'ps-9600'],
+    compatibleSystems: ['jumbo100', 'ps-6600', 'ps-9600', 'katra_pro_red_series', 'emapen_ema60s_sliding', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
     accessories: ['heavy-duty rollers', 'interlock kit'],
     notes: 'Use heavy-duty rollers if sash area > 2.5m².',
     gridSpec: {
@@ -316,7 +386,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: 'Single fixed lite',
     typicalWidthMm: [600, 2000],
     typicalHeightMm: [600, 2000],
-    compatibleSystems: ['panda-50', 'rock60', 'panda-100'],
+    compatibleSystems: ['panda-50', 'rock60', 'panda-100', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'veka_70_softline', 'rehau_geneo', 'emapen_ema60_complete', 'emapen_ema55_economy', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60'],
     gridSpec: {
       rows: 1,
       cols: 1,
@@ -342,7 +412,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: 'Any window with rolling shutter box',
     typicalWidthMm: [1000, 2500],
     typicalHeightMm: [1400, 2600],
-    compatibleSystems: ['panda-50', 'rock60'],
+    compatibleSystems: ['panda-50', 'rock60', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'emapen_ema60_complete', 'emapen_ema60s_sliding', 'emapen_ema55_economy', 'emapen_ema42s_budget', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
     accessories: ['shish box (140/170/180/210mm)', 'motor or manual mechanism'],
     notes: 'Rule 8 applies: deduct box height from rough opening.',
     gridSpec: {
@@ -374,7 +444,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: 'Door with ACP bottom panel',
     typicalWidthMm: [800, 1100],
     typicalHeightMm: [2000, 2400],
-    compatibleSystems: ['panda-50', 'panda-100', 'volcano-m11000'],
+    compatibleSystems: ['panda-50', 'panda-100', 'volcano-m11000', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'veka_70_softline', 'rehau_geneo', 'emapen_ema60_complete', 'emapen_ema55_economy', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60'],
     accessories: ['ACP panel', 'tempered/laminated glass above'],
     notes: 'Rule 10 applies: safety panel recommendation.',
     gridSpec: {
@@ -411,7 +481,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: 'Arched top with casement',
     typicalWidthMm: [1000, 2200],
     typicalHeightMm: [1400, 2600],
-    compatibleSystems: ['panda-50'],
+    compatibleSystems: ['panda-50', 'wintech_6400_detailed', 'kompen_60_eco', 'emapen_ema60_complete', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60'],
     accessories: ['bending service', 'glass template'],
     notes: 'Rule 12 applies: min radius 500mm.',
     gridSpec: {
@@ -444,7 +514,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: 'Single tilt & turn sash',
     typicalWidthMm: [600, 1200],
     typicalHeightMm: [1200, 2000],
-    compatibleSystems: ['panda-50', 'panda-100', 'volcano-m11000'],
+    compatibleSystems: ['panda-50', 'panda-100', 'volcano-m11000', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'veka_70_softline', 'rehau_geneo', 'emapen_ema60_complete', 'emapen_ema55_economy', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60'],
     accessories: ['tilt-turn mechanism', 'espagnolette', 'corner cleat'],
     notes: 'Most popular in modern Egyptian apartments - 60% of new construction. Tilt for ventilation, turn for cleaning.',
     gridSpec: {
@@ -476,7 +546,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: 'Single side-hung casement',
     typicalWidthMm: [400, 800],
     typicalHeightMm: [500, 1600],
-    compatibleSystems: ['panda-50', 'rock60'],
+    compatibleSystems: ['panda-50', 'rock60', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'emapen_ema60_complete', 'emapen_ema60s_sliding', 'emapen_ema55_economy', 'emapen_ema42s_budget', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
     accessories: ['friction stay', 'espagnolette', 'corner cleat'],
     notes: 'Standard for bathrooms and small kitchen windows. Most common single-opening pattern.',
     gridSpec: {
@@ -508,7 +578,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: 'Casement with integrated latish',
     typicalWidthMm: [800, 1500],
     typicalHeightMm: [1200, 2000],
-    compatibleSystems: ['panda-50', 'rock60'],
+    compatibleSystems: ['panda-50', 'rock60', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'emapen_ema60_complete', 'emapen_ema60s_sliding', 'emapen_ema55_economy', 'emapen_ema42s_budget', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
     accessories: ['latish frame', 'mosquito mesh', 'magnetic catch'],
     notes: '90% of Egyptian residential - latish opens IN, glass opens OUT. Essential for ventilation without insects.',
     gridSpec: {
@@ -540,7 +610,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: 'Casement with shish above and latish inside',
     typicalWidthMm: [1000, 2000],
     typicalHeightMm: [1600, 2400],
-    compatibleSystems: ['panda-50', 'rock60'],
+    compatibleSystems: ['panda-50', 'rock60', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'emapen_ema60_complete', 'emapen_ema60s_sliding', 'emapen_ema55_economy', 'emapen_ema42s_budget', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
     accessories: ['shish box (140/170/180/210mm)', 'latish frame', 'mosquito mesh'],
     notes: 'Premium combination - shish for security, latish for ventilation. Rule 8 applies: deduct shish box height.',
     gridSpec: {
@@ -572,7 +642,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: '2-panel casement doors',
     typicalWidthMm: [1400, 2000],
     typicalHeightMm: [2000, 2400],
-    compatibleSystems: ['panda-100', 'volcano-m11000'],
+    compatibleSystems: ['panda-100', 'volcano-m11000', 'veka_70_softline', 'rehau_geneo', 'emapen_ema60_complete', 'foxywin_foxy_shield_60'],
     accessories: ['door handle', 'espagnolette', 'threshold', 'door closer'],
     notes: 'Popular in villas and luxury apartments. Both doors open outward or inward.',
     gridSpec: {
@@ -609,7 +679,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: 'Single top-hung awning',
     typicalWidthMm: [600, 1500],
     typicalHeightMm: [600, 1200],
-    compatibleSystems: ['panda-50', 'rock60'],
+    compatibleSystems: ['panda-50', 'rock60', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'emapen_ema60_complete', 'emapen_ema60s_sliding', 'emapen_ema55_economy', 'emapen_ema42s_budget', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
     accessories: ['awning mechanism', 'friction stay', 'rain drip'],
     notes: 'Common in commercial buildings, allows ventilation in rain. Opens outward from bottom.',
     gridSpec: {
@@ -641,7 +711,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: 'Two windows meeting at 90° corner',
     typicalWidthMm: [1200, 2000],
     typicalHeightMm: [1200, 2000],
-    compatibleSystems: ['panda-50', 'rock60'],
+    compatibleSystems: ['panda-50', 'rock60', 'katra_pro_red_series', 'wintech_6400_detailed', 'kompen_60_eco', 'emapen_ema60_complete', 'emapen_ema60s_sliding', 'emapen_ema55_economy', 'emapen_ema42s_budget', 'foxywin_eco_smart_50', 'foxywin_foxy_shield_60', 'foxywin_eco_view_88', 'foxywin_foxy_prestige_114'],
     accessories: ['corner mullion', 'corner seal'],
     notes: 'Villa specialty - creates panoramic view. Requires special corner mullion.',
     gridSpec: {
@@ -678,7 +748,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: 'Single large fixed lite',
     typicalWidthMm: [2000, 4000],
     typicalHeightMm: [1800, 3000],
-    compatibleSystems: ['jumbo100', 'rock60'],
+    compatibleSystems: ['jumbo100', 'rock60', 'veka_70_softline', 'rehau_geneo', 'foxywin_foxy_prestige_114'],
     accessories: ['structural mullion (if > 3m²)'],
     notes: 'Commercial storefronts, luxury villas. May require structural mullion for large spans.',
     gridSpec: {
@@ -710,7 +780,7 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
     layout: '2-4 panel bi-fold',
     typicalWidthMm: [2000, 4000],
     typicalHeightMm: [2000, 2400],
-    compatibleSystems: ['jumbo100', 'ps-9600'],
+    compatibleSystems: ['jumbo100', 'ps-9600', 'foxywin_foxy_prestige_114'],
     accessories: ['bi-fold mechanism', 'top track', 'bottom pivot'],
     notes: 'Modern villas, creates wide opening. Panels fold to one side.',
     gridSpec: {
@@ -758,7 +828,7 @@ export function patternGridSpecToWindowGrid(gridSpec: EgyptianPattern['gridSpec'
   return {
     rows: gridSpec.rows,
     cols: gridSpec.cols,
-    cells: gridSpec.cells.map((cell, idx) => ({
+    cells: gridSpec.cells.map((cell) => ({
       id: `${cell.row}-${cell.col}`,
       row: cell.row,
       col: cell.col,
@@ -784,8 +854,6 @@ export function patternGridSpecToWindowGrid(gridSpec: EgyptianPattern['gridSpec'
  * - Building code compliance notes
  */
 
-import type { WindowGrid } from '@/types/fabricator';
-
 export interface EgyptianWindowPattern {
   id: string;
   name: string;
@@ -805,6 +873,8 @@ export interface EgyptianWindowPattern {
     shish?: string[];
     latish?: string[];
     acp?: string[];
+    duran?: string[];
+    curtain_wall?: string[];
   };
   buildingCodeNotes?: string[];
   typicalUse: string;

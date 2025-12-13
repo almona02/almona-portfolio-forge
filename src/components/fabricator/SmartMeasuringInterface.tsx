@@ -1,9 +1,10 @@
 import {
-    getDefaultGlazing,
-    getDefaultProfileColor
+  getDefaultGlazing,
+  getDefaultProfileColor
 } from '@/data/egyptian-defaults';
 import { EGYPTIAN_PATTERNS, getPatternsForSystem, type EgyptianPattern } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
 import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
 import { addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 import { ValidationError, getConstraintsForSystemPack, validateMeasurements } from '@/lib/fabricatorValidation';
@@ -236,12 +237,21 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   };
 
   const availableSystemPacks = useMemo(() => {
+    // Include both SYSTEM_PACKS (which now includes UPVC) and EGYPTIAN_UPVC_SYSTEMS for completeness
+    const allPacks = [...SYSTEM_PACKS, ...EGYPTIAN_UPVC_SYSTEMS];
+    
     const base = region && region !== 'global'
-      ? SYSTEM_PACKS.filter(
+      ? allPacks.filter(
           (p) => p.meta.regions.includes(region) || p.meta.regions.includes('global'),
         )
-      : SYSTEM_PACKS;
-    return [...base, ...customSystems];
+      : allPacks;
+    
+    // Remove duplicates by ID, then add custom systems
+    const uniquePacks = base.filter((pack, index, self) => 
+      index === self.findIndex((p) => p.meta.id === pack.meta.id)
+    );
+    
+    return [...uniquePacks, ...customSystems];
   }, [region, customSystems]);
 
   const activeSystemPack = useMemo(
@@ -272,6 +282,88 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   }[] = useMemo(() => {
     if (!activeSystemPack) return [];
 
+    // Check if system pack has profiles with roles defined
+    const profiles = (activeSystemPack as any).profiles || [];
+    // Check for all frame and sash variants (frame, frame_architrave, sash, sash_sliding, sash_door, etc.)
+    const hasProfilesWithRoles = profiles.some((p: any) => {
+      const role = p.profileRole;
+      if (!role) return false;
+      // Check if it's any frame variant
+      if (role.startsWith('frame') || role === 'architrave' || role === 'threshold' || role === 'sill' || role === 'head' || role === 'jamb') {
+        return true;
+      }
+      // Check if it's any sash variant
+      if (role.startsWith('sash') || role === 'screen_sash') {
+        return true;
+      }
+      return false;
+    });
+
+    // If system has profiles with roles, generate options from them
+    if (hasProfilesWithRoles) {
+      const roleOptions: { id: string; label: string; description: string; options: { code: string; label: string }[] }[] = [];
+      
+      // Frame profiles - include all frame variants
+      const frameProfiles = profiles.filter((p: any) => {
+        const role = p.profileRole;
+        return role && (
+          role.startsWith('frame') || 
+          role === 'architrave' || 
+          role === 'threshold' || 
+          role === 'sill' || 
+          role === 'head' || 
+          role === 'jamb'
+        );
+      });
+      if (frameProfiles.length > 0) {
+        roleOptions.push({
+          id: 'frameProfileCode',
+          label: 'Frame profile',
+          description: 'Select the frame profile code you will use for this unit.',
+          options: frameProfiles.map((p: any) => ({
+            code: p.id,
+            label: `${p.name}${p.specifications?.partNumber ? ` (${p.specifications.partNumber})` : ''}`,
+          })),
+        });
+      }
+
+      // Sash profiles - include all sash variants (sliding, door, casement, flyscreen, etc.)
+      const sashProfiles = profiles.filter((p: any) => {
+        const role = p.profileRole;
+        return role && (role.startsWith('sash') || role === 'screen_sash');
+      });
+      if (sashProfiles.length > 0) {
+        roleOptions.push({
+          id: 'sashProfileCode',
+          label: 'Sash profile',
+          description: 'Select the sash profile code for operable leaves.',
+          options: sashProfiles.map((p: any) => ({
+            code: p.id,
+            label: `${p.name}${p.specifications?.partNumber ? ` (${p.specifications.partNumber})` : ''}`,
+          })),
+        });
+      }
+
+      // Glazing bead profiles
+      const beadProfiles = profiles.filter((p: any) => p.profileRole === 'glazing_bead' || p.profileRole === 'bead');
+      if (beadProfiles.length > 0) {
+        roleOptions.push({
+          id: 'beadProfileCode',
+          label: 'Glazing bead',
+          description: 'Select the glazing bead profile used for this opening.',
+          options: beadProfiles.map((p: any) => ({
+            code: p.id,
+            label: `${p.name}${p.specifications?.partNumber ? ` (${p.specifications.partNumber})` : ''}`,
+          })),
+        });
+      }
+
+      if (roleOptions.length > 0) {
+        return roleOptions;
+      }
+    }
+
+    // Legacy hardcoded mappings for backward compatibility
     if (activeSystemPack.meta.id === 'rock60') {
       return [
         {
@@ -445,7 +537,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   // const startARScan = () => { ... };
 
   return (
-    <div className="flex flex-col lg:flex-row h-[80vh] gap-6">
+    <div className="flex flex-col lg:flex-row h-[80vh] sm:h-[85vh] max-h-screen gap-6 min-h-0">
       {/* Label Modal */}
       {showLabel && previewWindowUnit && (
         <ProductionLabel 
@@ -455,9 +547,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       )}
 
       {/* Left Panel: The Guided Form */}
-      <div className="w-full lg:w-1/3 flex flex-col bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-xl overflow-hidden">
+      <div className="w-full lg:w-1/3 flex flex-col bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-xl overflow-hidden min-h-0">
         {/* Step Progress Indicator */}
-        <div className="flex items-center p-4 border-b border-gray-800 space-x-2">
+        <div className="flex items-center p-4 border-b border-gray-800 space-x-2 flex-shrink-0">
           {STEPS.map((step, idx) => (
             <div 
               key={step.id} 
@@ -467,14 +559,14 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
             />
           ))}
         </div>
-        <div className="p-4">
+        <div className="p-4 flex-shrink-0">
           <h2 className="text-xl font-light text-white flex items-center gap-2">
             <span className="text-orange-500 font-bold">0{currentStep + 1}.</span> {STEPS[currentStep].title}
           </h2>
         </div>
 
         {/* Form Content Container */}
-        <div className="flex-1 overflow-y-auto p-4 relative">
+        <div className="flex-1 overflow-y-auto p-4 relative min-h-0">
           <AnimatePresence mode='wait' custom={currentStep}>
             <motion.div
               key={currentStep}
@@ -1185,19 +1277,19 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         </div>
 
         {/* Footer Navigation */}
-        <div className="p-4 border-t border-gray-800 flex justify-between bg-gray-900">
-          <Button variant="ghost" disabled={currentStep === 0} onClick={prevStep}>
+        <div className="p-4 border-t border-gray-800 flex flex-col sm:flex-row justify-between gap-2 bg-gray-900 flex-shrink-0">
+          <Button variant="ghost" disabled={currentStep === 0} onClick={prevStep} className="w-full sm:w-auto">
             <ArrowLeft className="mr-2 h-4 w-4" /> {t('smart_measuring.actions.previous', 'Back')}
           </Button>
           
           {currentStep === STEPS.length - 1 ? (
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               {/* Print Label Button - Enabled only after verification */}
               {verificationConfirmed && (
                 <Button
                   variant="outline"
                   onClick={() => setShowLabel(true)}
-                  className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
+                  className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white w-full sm:w-auto"
                 >
                   <QrCode className="mr-2 h-4 w-4" /> {t('smart_measuring.actions.print_label', 'Print Label')}
                 </Button>
@@ -1207,7 +1299,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                 onClick={handleSubmit} 
                 disabled={!verificationConfirmed}
                 className={`
-                  transition-all duration-300
+                  transition-all duration-300 w-full sm:w-auto
                   ${verificationConfirmed 
                     ? 'bg-green-600 hover:bg-green-500 text-white shadow-[0_0_20px_rgba(22,163,74,0.4)]' 
                     : 'bg-gray-700 text-gray-400 cursor-not-allowed'}
@@ -1217,7 +1309,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
               </Button>
             </div>
           ) : (
-            <Button onClick={nextStep} className="bg-orange-600 hover:bg-orange-500 text-white">
+            <Button onClick={nextStep} className="bg-orange-600 hover:bg-orange-500 text-white w-full sm:w-auto">
               {t('smart_measuring.actions.next', 'Next Step')} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           )}
@@ -1225,7 +1317,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       </div>
 
       {/* Right Panel: Clean Blueprint Preview */}
-      <div className="flex-1 bg-white rounded-xl border border-gray-200 relative overflow-hidden shadow-sm">
+      <div className="flex-1 bg-white rounded-xl border border-gray-200 relative overflow-hidden shadow-sm min-h-0 min-w-0">
         {/* Header with Zoom Controls */}
         <div className="absolute top-4 left-4 right-4 z-10 flex items-center justify-between">
           <Badge className="bg-blue-50 text-blue-700 border-blue-200 font-medium text-xs px-3 py-1">

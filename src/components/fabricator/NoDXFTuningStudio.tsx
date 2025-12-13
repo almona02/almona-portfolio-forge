@@ -8,40 +8,40 @@
  * - All parameters used in optimization and cut list
  */
 
-import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
+import { addCustomSystem } from '@/lib/fabricator/customSystemStorage';
+import { detectRoleFromName } from '@/lib/fabricator/roleDetection';
+import { getReturnUrl } from '@/lib/fabricator/systemTuningUtils';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { 
-  Settings, 
-  CheckCircle2, 
-  AlertTriangle, 
+import type { Profile } from '@/types/fabricator';
+import { motion } from 'framer-motion';
+import {
+  AlertCircle,
+  AlertTriangle,
   ArrowLeft,
   ArrowRight,
-  Sparkles,
-  Wrench,
-  Layers,
   BoxSelect,
+  CheckCircle2,
+  Layers,
   Save,
-  AlertCircle
+  Settings,
+  Sparkles
 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
-import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
-import { getReturnUrl } from '@/lib/fabricator/systemTuningUtils';
-import { addCustomSystem } from '@/lib/fabricator/customSystemStorage';
-import type { Profile } from '@/types/fabricator';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface ProfileConfig {
   id: string;
   name: string;
-  role: 'frame' | 'sash';
+  role: Profile['profileRole'] | 'frame' | 'sash'; // Support both old and new roles
   width: number;
   height: number;
   thickness: number;
@@ -77,8 +77,8 @@ export const NoDXFTuningStudio: React.FC = () => {
       return;
     }
 
-    const pack = SYSTEM_PACKS.find((p) => p.meta.id === systemPackId) ||
-                 EGYPTIAN_UPVC_SYSTEMS.find((p) => p.meta.id === systemPackId);
+    const pack = SYSTEM_PACKS.find((p) => p.meta?.id === systemPackId) ||
+                 EGYPTIAN_UPVC_SYSTEMS.find((p) => (p as any).meta?.id === systemPackId);
     
     if (!pack) {
       navigate('/fabricator-workflow');
@@ -94,9 +94,8 @@ export const NoDXFTuningStudio: React.FC = () => {
     if (existingProfiles.length > 0) {
       // Use existing profiles
       const profileConfigs: ProfileConfig[] = existingProfiles.map((p: Profile) => {
-        const role = p.profileRole === 'frame' ? 'frame' : 
-                     p.profileRole === 'sash' ? 'sash' : 
-                     (p.type === 'frame' ? 'frame' : 'sash');
+        // ✅ Smart role detection: Use existing role, or detect from name, or fallback to type
+        const role = p.profileRole || detectRoleFromName(p.name, p.type) || (p.type === 'frame' ? 'frame' : 'sash');
         
         return {
           id: p.id,
@@ -242,19 +241,20 @@ export const NoDXFTuningStudio: React.FC = () => {
         machiningMacros: [],
       }));
 
-      // Create tuned system pack
+      // Update the original system pack (don't create a new one)
       const tunedPack = {
         ...systemPack,
         meta: {
           ...systemPack.meta,
-          id: `tuned-${systemPack.meta.id}`,
-          name: `${systemPack.meta.name} (Tuned)`,
+          // Keep original ID to maintain references
+          id: systemPack.meta.id,
+          name: systemPack.meta.name,
         },
         profiles: profileObjects,
         tuningStatus: 'tuned',
       };
 
-      // Save to custom systems
+      // Save to custom systems (this will update if exists, add if new)
       addCustomSystem(tunedPack);
 
       // Save to localStorage for SystemPackTuningStudio compatibility
@@ -264,22 +264,48 @@ export const NoDXFTuningStudio: React.FC = () => {
           ...p,
           tuningStatus: 'tuned',
         })),
+        tuningStatus: 'tuned',
+        tunedAt: new Date().toISOString(),
       }));
+
+      // Also update the original system pack reference
+      localStorage.setItem(`system-pack-${tunedPack.meta.id}`, JSON.stringify(tunedPack));
 
       setSaveSuccess(true);
       
       // Dispatch event for other components
       window.dispatchEvent(new CustomEvent('customProfileAdded', { detail: tunedPack }));
+      window.dispatchEvent(new CustomEvent('systemPackTuned', { 
+        detail: { 
+          systemPackId: tunedPack.meta.id,
+          systemPackName: tunedPack.meta.name,
+          tuned: true 
+        } 
+      }));
 
-      // Return to wizard after 1 second
+      // Show success message for 2 seconds before returning
       setTimeout(() => {
         const returnUrl = getReturnUrl();
         if (returnUrl) {
-          navigate(returnUrl.url, { state: { systemPackId: tunedPack.meta.id, ...returnUrl.params } });
+          // Pass tuned system info in state
+          navigate(returnUrl.url, { 
+            state: { 
+              systemPackId: tunedPack.meta.id,
+              systemTuned: true,
+              systemTunedMessage: `System "${tunedPack.meta.name}" has been tuned and is ready to use with Frame and Sash profiles configured.`,
+              ...returnUrl.params 
+            } 
+          });
         } else {
-          navigate('/fabricator-workflow');
+          navigate('/fabricator-workflow', {
+            state: {
+              systemPackId: tunedPack.meta.id,
+              systemTuned: true,
+              systemTunedMessage: `System "${tunedPack.meta.name}" has been tuned and is ready to use.`,
+            }
+          });
         }
-      }, 1000);
+      }, 2000);
     } catch (error) {
       console.error('Error saving tuned system:', error);
     } finally {
@@ -407,18 +433,52 @@ export const NoDXFTuningStudio: React.FC = () => {
                           className="bg-gray-800 border-gray-700"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label className="text-xs">Role</Label>
+                      <div className="space-y-2 col-span-2">
+                        <Label className="text-xs">Profile Role (Gold-Tier Granular)</Label>
                         <Select
                           value={profile.role}
-                          onValueChange={(val) => handleProfileUpdate(profile.id, { role: val as 'frame' | 'sash' })}
+                          onValueChange={(val) => handleProfileUpdate(profile.id, { role: val as any })}
                         >
                           <SelectTrigger className="bg-gray-800 border-gray-700">
-                            <SelectValue />
+                            <SelectValue placeholder="Select role" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="frame">Frame</SelectItem>
-                            <SelectItem value="sash">Sash</SelectItem>
+                          <SelectContent className="max-h-[400px]">
+                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 border-b border-gray-700">Frame Roles</div>
+                            <SelectItem value="frame">Frame (Main)</SelectItem>
+                            <SelectItem value="frame_architrave">Frame with Architrave</SelectItem>
+                            <SelectItem value="architrave">Architrave (Standalone)</SelectItem>
+                            <SelectItem value="threshold">Threshold</SelectItem>
+                            <SelectItem value="sill">Sill</SelectItem>
+                            <SelectItem value="head">Head</SelectItem>
+                            <SelectItem value="jamb">Jamb</SelectItem>
+                            
+                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 border-b border-gray-700 mt-2">Sash Roles</div>
+                            <SelectItem value="sash">Sash (Standard)</SelectItem>
+                            <SelectItem value="sash_sliding">Sliding Sash</SelectItem>
+                            <SelectItem value="sash_door">Door Sash</SelectItem>
+                            <SelectItem value="sash_flyscreen">Fly-screen Sash</SelectItem>
+                            <SelectItem value="sash_casement">Casement Sash</SelectItem>
+                            <SelectItem value="screen_sash">Screen Sash</SelectItem>
+                            
+                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 border-b border-gray-700 mt-2">Structural Roles</div>
+                            <SelectItem value="mullion">Mullion (True)</SelectItem>
+                            <SelectItem value="mullion_false">False Mullion</SelectItem>
+                            <SelectItem value="transom">Transom</SelectItem>
+                            <SelectItem value="reinforcement">Reinforcement</SelectItem>
+                            <SelectItem value="corner_cleat">Corner Cleat</SelectItem>
+                            
+                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 border-b border-gray-700 mt-2">Glazing Roles</div>
+                            <SelectItem value="glazing_bead">Glazing Bead (Standard)</SelectItem>
+                            <SelectItem value="glazing_bead_inner">Glazing Bead (Inner)</SelectItem>
+                            <SelectItem value="glazing_bead_outer">Glazing Bead (Outer)</SelectItem>
+                            
+                            <div className="px-2 py-1.5 text-xs font-semibold text-gray-400 border-b border-gray-700 mt-2">Accessory Roles</div>
+                            <SelectItem value="interlock">Interlock</SelectItem>
+                            <SelectItem value="accessory">Accessory Profile</SelectItem>
+                            <SelectItem value="screen_adapter">Screen Adapter (Barour Shabaak)</SelectItem>
+                            <SelectItem value="panel">Panel / Filler</SelectItem>
+                            <SelectItem value="gasket">Gasket</SelectItem>
+                            <SelectItem value="weather_strip">Weather Strip</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

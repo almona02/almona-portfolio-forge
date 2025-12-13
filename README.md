@@ -76,6 +76,10 @@ Almona Portfolio Forge is a full-stack industrial machinery platform centered ar
 ### Core Domains
 
 1. **Fabricator Pro**: Complete aluminium/UPVC fabrication workflow with AI optimization
+   - **Egypt Pilot Program**: Optimized 3-4 click workflow for Egyptian workshops
+   - **No-DXF Tuning Studio**: System tuning without CAD import (88% of parameters)
+   - **Material-First Selection**: Auto-default system packs (PS for Aluminum, FoxyWin for UPVC)
+   - **Tuning Status Detection**: Automatic validation and user-friendly prompts
 2. **Products**: Rich machinery catalog with 3D/AR visualization
 3. **Maintenance**: Unified ticketing system with machine passport records
 4. **Sales**: Smart industrial shop, B2B marketplace, quote workflows
@@ -120,6 +124,7 @@ CNC Integration → Machine Export → Production Floor
 | Steel Reinforcement | 99.8% | 10mm clearance deduction | Structural validation |
 | Thermal Expansion | 99.6% | Climate-specific gaps | Cairo 40°C, Coastal 35°C, Desert 50°C |
 | Cut Lists | 99.6-99.8% | Material-aware optimization | Kerf 4.5mm, bar trim 20mm |
+| **No-DXF Tuning** | **88%** | **Profile role definition, micron parameters** | **Frame/Sash roles, saw kerf, welding loss** |
 
 **Accuracy Breakdown by Component:**
 - DXF Geometry Extraction: **99.5-99.8%** (CAD-grade precision with `ezdxf`)
@@ -158,7 +163,9 @@ CNC Integration → Machine Export → Production Floor
 | Market Coverage | 60% (Aluminum) | 100% (Al + UPVC) | +67% |
 | Addressable Workshops | ~1,800 | ~5,000 | +177% |
 | Revenue Potential (ARR) | $5.4M | $15M+ | +177% |
-| System Packs | 5 | 13 | +160% |
+| System Packs | 5 | 13+ | +160% |
+| **Egypt Pilot Systems** | **0** | **5+** | **New** |
+| **No-DXF Tuning Capability** | **0%** | **88%** | **New** |
 
 ---
 
@@ -207,6 +214,14 @@ CNC Integration → Machine Export → Production Floor
 - **i18next**: 25.3.2 (56 translation files)
 - **RTL Support**: Arabic (العربية) layout
 - **Localization**: EN, AR, TR, FR, DE
+- **Language Switcher**: Home navbar with Arabic, Turkish, English support
+
+#### Egypt Pilot Features
+- **Egyptian Project Wizard**: Material-first selection with auto-defaults
+- **No-DXF Tuning Studio**: Complete system tuning without CAD import
+- **Tuning Status Detection**: Automatic validation and user prompts
+- **Pilot Systems**: FoxyWin, Caluminium PS, Katra PRO RED, EMAPEN, Wintech
+- **Optimized Workflow**: 3-4 clicks from home to production-ready cut list
 
 ### Backend Architecture
 
@@ -408,6 +423,9 @@ almona-portfolio-forge/
 ├── src/                          # Frontend source
 │   ├── components/              # React components (370+ files)
 │   │   ├── fabricator/         # Fabricator Pro components
+│   │   │   ├── EgyptianProjectWizard.tsx  # Egypt pilot wizard
+│   │   │   ├── NoDXFTuningStudio.tsx      # No-DXF tuning interface
+│   │   │   └── SystemTuningStudio.tsx     # Advanced tuning (with DXF)
 │   │   ├── 3d-model/           # 3D visualization
 │   │   ├── admin/               # Admin dashboard
 │   │   └── shared/ui/           # Base UI components
@@ -417,6 +435,7 @@ almona-portfolio-forge/
 │   │   ├── calibration/        # Calibration management
 │   │   ├── exports/             # Export generators
 │   │   └── fabricator/          # Fabricator utilities
+│   │       └── systemTuningUtils.ts  # Tuning status detection
 │   ├── pages/                   # Route components (46 files)
 │   ├── hooks/                   # Custom React hooks (23 files)
 │   ├── types/                   # TypeScript definitions (13 files)
@@ -802,19 +821,36 @@ This project is proprietary software developed for **Almona Industrial Solutions
 - [CNC Integration Guide](./docs/cnc-integration/)
 - [AI/ML Models](./docs/ai-models/)
 
+### Egypt Pilot Documentation
+
+- [Egypt Pilot Complete Flow](./EGYPT_PILOT_COMPLETE_FLOW.md) - Optimized 3-4 click workflow
+- [No-DXF Tuning Implementation](./EGYPT_PILOT_NO_DXF_TUNING.md) - System tuning without CAD
+- [UPVC Tuning Without DXF](./UPVC_TUNING_WITHOUT_DXF.md) - Complete tuning capabilities
+- [Katra PRO RED Addition](./KATRA_PILOT_ADDITION.md) - Egyptian manufacturer system
+
 ---
 
 ## 🎯 Roadmap
+
+### ✅ Q4 2024 (Completed)
+- [x] **Egypt Pilot Program**: Material-first selection, auto-defaults, optimized workflow
+- [x] **No-DXF Tuning Studio**: 88% of tuning parameters without CAD import
+- [x] **Tuning Status Detection**: Automatic validation and user-friendly prompts
+- [x] **Katra PRO RED Series**: Egyptian manufacturer system added to pilot
+- [x] **Language Switcher**: Arabic, Turkish, English support with RTL/LTR
 
 ### Q1 2025
 - [ ] IoT Direct Connection (MQTT)
 - [ ] Augmented Reality Assembly Overlay
 - [ ] Sustainability & Carbon Footprint Tracking
+- [ ] Batch Calibration for No-DXF Tuning
+- [ ] Climate Profile Auto-Adjustment
 
 ### Q2 2025
 - [ ] Advanced ML Models (Computer Vision)
 - [ ] Multi-tenant Architecture
 - [ ] Mobile Applications (iOS/Android)
+- [ ] Tuning Templates Export/Import
 
 ### Q3 2025
 - [ ] International Expansion (EU, GCC)
@@ -825,4 +861,24 @@ This project is proprietary software developed for **Almona Industrial Solutions
 
 **Built with ❤️ for Almona Industrial Solutions**
 
-*Last Updated: December 2024 | Version: 5.4*
+---
+
+## 🇪🇬 Recent Updates (December 2024)
+
+### Egypt Pilot Program Launch
+- **Material-First Selection**: Aluminum/UPVC selection with auto-default system packs
+- **No-DXF Tuning Studio**: Complete system tuning (88% of parameters) without CAD import
+- **Optimized Workflow**: 3-4 clicks from home screen to production-ready cut list
+- **Tuning Status Detection**: Automatic validation with user-friendly prompts
+- **Pilot Systems**: FoxyWin, Caluminium PS, Katra PRO RED, EMAPEN, Wintech
+- **Language Support**: Arabic (RTL), Turkish, English with seamless switching
+
+### Key Features
+- ✅ Frame and Sash profile role definition without DXF
+- ✅ Micron parameter configuration (saw kerf, bar trim, welding loss)
+- ✅ Cutting rules and allowances
+- ✅ UPVC-specific reinforcement settings
+- ✅ Seamless integration with optimization engine
+- ✅ Return URL navigation for smooth workflow
+
+*Last Updated: December 2024 | Version: 5.5*
