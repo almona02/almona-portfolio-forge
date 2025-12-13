@@ -207,6 +207,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   // Quick actions
   const quickActions = [
     { name: t('fabricator:navbar.quick_actions.new_project', 'New Project'), action: () => navigate('/fabricator-workflow?new=true'), icon: Zap },
+    { name: t('fabricator:navbar.quick_actions.system_pack_management', 'System Pack Management'), action: () => navigate('/fabricator-workflow#inventory'), icon: Settings },
     { name: t('fabricator:navbar.quick_actions.profile_tuning', 'Profile Tuning Studio'), action: () => navigate('/fabricator/profiles?tuning=studio'), icon: Sparkles },
     { name: t('fabricator:navbar.quick_actions.machine_status', 'Machine Status'), action: () => navigate('/machine-status'), icon: Factory },
     { name: t('fabricator:navbar.quick_actions.inventory_check', 'Inventory Check'), action: () => navigate('/fabricator/inventory'), icon: Package },
@@ -279,6 +280,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       icon: Package,
       description: 'Production assets & machines',
       children: [
+        { id: 'system-packs', label: 'System Pack Management', icon: Settings, path: '/fabricator-workflow#inventory', badge: 'TUNE' },
         { id: 'profiles', label: 'Profiles & Accessories', icon: Scissors, path: '/fabricator-workflow#inventory' },
         { id: 'machines', label: 'Machines', icon: Cpu, path: '/machines' },
         { id: 'accounting', label: 'Accounting', icon: Coins, path: '/accounting' }
@@ -413,7 +415,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       />
 
       {/* Header - Enterprise Grade with Gold Tier */}
-      <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-800/60 bg-slate-900/30 backdrop-blur-sm relative z-10">
+      <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3.5 border-b border-slate-800/60 bg-slate-900/30 backdrop-blur-sm relative z-10">
         <motion.div
           initial={false}
           animate={{ opacity: isCollapsed ? 0 : 1, scale: isCollapsed ? 0.8 : 1 }}
@@ -428,28 +430,6 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             }}
             className="flex items-center gap-3 group relative"
           >
-            {/* Gold Tier 99.8% Accuracy Badge */}
-            {!isCollapsed && (
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="absolute -right-2 -top-2 z-20"
-              >
-                <div className="relative group cursor-help">
-                  <div className="absolute inset-0 bg-[#FFD700] rounded-full blur-sm opacity-50 animate-pulse"></div>
-                  <div className="relative px-2 py-0.5 bg-[#FFD700] rounded-full border border-[#003366] shadow-sm flex items-center gap-1">
-                    <span className="text-[10px] font-bold text-[#003366]">99.8%</span>
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                  </div>
-                  
-                  {/* Tooltip */}
-                  <div className="absolute left-full ml-2 top-0 bg-[#003366] text-white text-xs px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50 border border-[#FFD700]/30 transition-opacity">
-                    Certified Accuracy
-                  </div>
-                </div>
-              </motion.div>
-            )}
             
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
@@ -469,10 +449,10 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 animate={{ opacity: 1, x: 0 }}
                 className="flex flex-col"
               >
-                <span className="text-sm font-bold tracking-[0.15em] text-slate-100 uppercase leading-tight">
+                <span className="text-xs sm:text-sm font-bold tracking-[0.15em] text-slate-100 uppercase leading-tight truncate">
                   ALMONA
                 </span>
-                <span className="text-[10px] font-semibold text-slate-400/90 leading-tight mt-0.5">
+                <span className="text-[9px] sm:text-[10px] font-semibold text-slate-400/90 leading-tight mt-0.5 truncate">
                   {cockpitOwner} Cockpit
                 </span>
               </motion.div>
@@ -976,26 +956,55 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           </div>
         )}
 
-        {/* Quick Actions - Enterprise Quick Access */}
+        {/* Quick Actions - Enterprise Quick Access (Collapsible, Hidden by Default) */}
         {!isCollapsed && (
           <div className="mt-5 pt-5 border-t border-slate-800/60">
-            <div className="px-3 mb-2.5">
-              <h3 className="text-[10px] font-bold text-slate-500/80 uppercase tracking-widest">Quick Actions</h3>
-            </div>
-            <div className="space-y-1">
-              {quickActions.map((action) => (
-                <motion.button
-                  key={action.name}
-                  whileHover={{ x: 2 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => action.action()}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800/40 transition-all group text-left border border-transparent hover:border-slate-700/30"
+            <motion.button
+              whileHover={{ x: 2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setActiveMenu(activeMenu === 'quickActions' ? null : 'quickActions')}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all mb-2 ${
+                activeMenu === 'quickActions'
+                  ? 'bg-gradient-to-r from-[#003366]/15 to-[#004488]/15 border border-[#FFD700]/40 shadow-sm shadow-[#003366]/10'
+                  : 'hover:bg-slate-800/40 border border-slate-700/30'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Zap className={`w-4 h-4 ${activeMenu === 'quickActions' ? 'text-[#FFD700]' : 'text-slate-400'}`} />
+                <span className={`text-sm font-medium ${activeMenu === 'quickActions' ? 'text-[#FFD700]' : 'text-slate-300'}`}>
+                  Quick Actions
+                </span>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-slate-400 transition-transform ${activeMenu === 'quickActions' ? 'rotate-180' : ''}`}
+              />
+            </motion.button>
+            <AnimatePresence>
+              {activeMenu === 'quickActions' && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="space-y-1 overflow-hidden"
                 >
-                  <action.icon className="w-4 h-4 text-slate-400 group-hover:text-[#FFD700] transition-colors" />
-                  <span className="text-xs font-medium text-slate-300">{action.name}</span>
-                </motion.button>
-              ))}
-            </div>
+                  {quickActions.map((action) => (
+                    <motion.button
+                      key={action.name}
+                      whileHover={{ x: 2 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        action.action();
+                        if (isMobile) setIsMobileNavOpen(false);
+                      }}
+                      className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800/40 transition-all group border border-transparent hover:border-slate-700/30 w-full text-left"
+                    >
+                      <action.icon className="w-4 h-4 text-slate-400 group-hover:text-[#FFD700] transition-colors" />
+                      <span className="text-xs font-medium text-slate-300">{action.name}</span>
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
       </div>
@@ -1214,7 +1223,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           ref={sidebarRef}
           dir={isRTLMode ? 'rtl' : 'ltr'}
           style={{ width: sidebarWidth }}
-          className={`fixed ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-screen z-[200] flex flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 backdrop-blur-2xl border-${isRTLMode ? 'l' : 'r'} border-slate-800/60 shadow-2xl shadow-black/50 will-change-[width]`}
+          className={`fixed ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-screen z-[200] flex flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 backdrop-blur-2xl border-${isRTLMode ? 'l' : 'r'} border-slate-800/60 shadow-2xl shadow-black/50 will-change-[width] w-full sm:w-auto`}
         >
           {sidebarContent}
           {/* Resize handle */}

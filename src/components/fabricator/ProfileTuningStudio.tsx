@@ -8,51 +8,51 @@
  * - Marks profile as "tuned" in specifications for quick scanning
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import type { ProfileScanResult } from '@/services/scanApi';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Button } from '@/shared/ui/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import {
-  Sparkles,
-  CheckCircle2,
-  AlertTriangle,
-  Wand2,
-  Settings,
-  Ruler,
-  ArrowLeft,
-  Droplets,
-  Shield,
-  Wrench,
-  Wallet,
-  Activity,
-  Scan,
-  AlertCircle,
-} from 'lucide-react';
-import { useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import type { Profile } from '@/types/fabricator';
+import {
+  Activity,
+  AlertCircle,
+  AlertTriangle,
+  ArrowLeft,
+  CheckCircle2,
+  Droplets,
+  Ruler,
+  Scan,
+  Settings,
+  Shield,
+  Sparkles,
+  Wallet,
+  Wand2,
+  Wrench,
+} from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
+import { toast } from 'sonner';
 import { CalibrationWizard } from './CalibrationWizard';
 import { MachiningZoneEditor, type MachiningZone } from './MachiningZoneEditor';
-import { supabase } from '@/lib/supabase';
-import { toast } from 'sonner';
+import './ProfileTuningStudio.css';
 import { ProfileIconGenerator, type ProfileIconHandle } from './assets/ProfileIconGenerator';
 import { ProfileScannerUploader } from './smartscan/ProfileScannerUploader';
 import SmartScanUploader from './smartscan/SmartScanUploader';
-import type { ProfileScanResult } from '@/services/scanApi';
-import './ProfileTuningStudio.css';
 
 interface ProfileTuningStudioProps {
   profile: Profile;
   userId: string;
-  onClose: () => void;
+  onClose: (hasChanges?: boolean) => void;
   onProfileUpdated?: () => void;
 }
 
@@ -318,8 +318,10 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
         'You have unsaved changes. Leave without saving?'
       );
       if (!confirmed) return;
+      onClose(true); // Pass hasChanges = true
+    } else {
+      onClose(false); // Pass hasChanges = false
     }
-    onClose();
   };
 
   const markAsTuned = async () => {

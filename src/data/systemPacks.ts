@@ -1,15 +1,16 @@
-import type { Profile, WindowGrid } from '@/types/fabricator';
-import { ANADOLU_W60_PACK } from '@/data/profileSystems/turkish/anadolu/w60';
-import { KALE_70_SLIDING_PACK, KALE_COMMERCIAL_PACK } from '@/data/profileSystems/turkish/kale/kale70';
-import { 
-  ASAS_CW100_PACK, 
-  ASAS_COMMERCIAL_PACK,
-  ASAS_RESCARA_RWT75_PACK,
-  ASAS_RESCARA_R50_PACK,
-  ASAS_REFD77_PACK,
-} from '@/data/profileSystems/turkish/asas/asasCW100';
 import { CALUMINIUM_PS_PACK } from '@/data/profileSystems/egyptian/caluminium/ps';
-import { PANDA_50_SYSTEM_PACK, PANDA_100_SYSTEM_PACK } from '@/data/profileSystems/egyptian/panda/panda';
+import { PANDA_100_SYSTEM_PACK, PANDA_50_SYSTEM_PACK } from '@/data/profileSystems/egyptian/panda/panda';
+import { ANADOLU_W60_PACK } from '@/data/profileSystems/turkish/anadolu/w60';
+import {
+  ASAS_COMMERCIAL_PACK,
+  ASAS_CW100_PACK,
+  ASAS_REFD77_PACK,
+  ASAS_RESCARA_R50_PACK,
+  ASAS_RESCARA_RWT75_PACK,
+} from '@/data/profileSystems/turkish/asas/asasCW100';
+import { KALE_70_SLIDING_PACK, KALE_COMMERCIAL_PACK } from '@/data/profileSystems/turkish/kale/kale70';
+import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
+import type { Profile, WindowGrid } from '@/types/fabricator';
 
 /**
  * System pack metadata – describes a branded window/door system
@@ -66,6 +67,8 @@ export interface GlassAllowanceSpec {
   maxHeightMm?: number;
   /** Optional global max pane area in m². */
   maxAreaM2?: number;
+  /** Optional max glazing thickness in mm. */
+  maxGlazingThicknessMm?: number;
 }
 
 export interface SystemPack {
@@ -1048,6 +1051,8 @@ export const SYSTEM_PACKS: SystemPack[] = [
   ASAS_RESCARA_RWT75_PACK,
   ASAS_RESCARA_R50_PACK,
   ASAS_REFD77_PACK,
+  // Egyptian UPVC Systems (Integrated for Fabricator Pro)
+  ...(EGYPTIAN_UPVC_SYSTEMS as unknown as SystemPack[]),
   // Coming Soon – Additional Turkish & Egyptian branded packs
   // Winsa_PACK,
   // ALUMIL_EGYPT_NC_PACK,

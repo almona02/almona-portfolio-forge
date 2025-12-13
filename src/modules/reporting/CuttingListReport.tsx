@@ -14,33 +14,31 @@
  * - Multi-language support
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import {
-  FileText,
-  Download,
-  FileSpreadsheet,
-  FileCode,
-  Printer,
-  Loader2,
-  CheckCircle,
-  AlertCircle,
-  QrCode,
-  BarChart3,
-  Scissors,
-} from 'lucide-react';
-import { WindowUnit, OptimizationResult } from '@/types/fabricator';
-import { CompanyBranding } from './PDFExportService';
-import { ExportService, ExportFormat, PDFExportOptions, ExportProgress } from '@/lib/exports';
-import { cuttingListGenerator } from '@/lib/reports/CuttingListGenerator';
-import { formatUnit, formatNumber, formatDate, getRTLClass, getTextAlign } from '@/lib/localization/formatUtils';
+import { ExportFormat, ExportProgress, ExportService, PDFExportOptions } from '@/lib/exports';
+import { formatDate, formatNumber, formatUnit, getRTLClass, getTextAlign } from '@/lib/localization/formatUtils';
 import { injectPrintStyles } from '@/lib/localization/printStyles';
-import { useTranslation } from 'react-i18next';
+import { cuttingListGenerator } from '@/lib/reports/CuttingListGenerator';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { OptimizationResult, WindowUnit } from '@/types/fabricator';
+import {
+  AlertCircle,
+  CheckCircle,
+  FileCode,
+  FileSpreadsheet,
+  FileText,
+  Loader2,
+  Printer,
+  QrCode,
+  Scissors
+} from 'lucide-react';
 import QRCode from 'qrcode';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { CompanyBranding } from './PDFExportService';
 
 interface CuttingListReportProps {
   project: WindowUnit;
@@ -396,19 +394,70 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
         {/* Details Tab */}
         <TabsContent value="details" className="space-y-4">
           {reportData.cuttingPlans.map((plan, planIndex) => {
-            // Group cuts by frame and sash for Egypt pilot
-            const frameCuts = plan.cuts.filter(cut => 
-              cut.componentType === 'frame' || 
-              cut.componentId?.toLowerCase().includes('frame') ||
-              cut.componentId?.toLowerCase().includes('frame-')
-            );
-            const sashCuts = plan.cuts.filter(cut => 
-              cut.componentType === 'sash' || 
-              cut.componentId?.toLowerCase().includes('sash') ||
-              cut.componentId?.toLowerCase().includes('sash-')
-            );
+            // Gold-tier: Group cuts by specific profile roles for accurate visualization
+            const roleGroups = new Map<string, typeof plan.cuts>();
+            
+            plan.cuts.forEach(cut => {
+              const role = cut.componentType || 'other';
+              if (!roleGroups.has(role)) {
+                roleGroups.set(role, []);
+              }
+              roleGroups.get(role)!.push(cut);
+            });
+            
+            // Organize by category for better visualization
+            const frameRoles = ['frame', 'frame_architrave', 'architrave', 'threshold', 'sill', 'head', 'jamb'];
+            const sashRoles = ['sash', 'sash_sliding', 'sash_door', 'sash_flyscreen', 'sash_casement', 'screen_sash'];
+            const structuralRoles = ['mullion', 'mullion_false', 'transom', 'reinforcement', 'corner_cleat'];
+            const glazingRoles = ['glazing_bead', 'glazing_bead_inner', 'glazing_bead_outer'];
+            const accessoryRoles = ['interlock', 'accessory', 'screen_adapter', 'panel', 'gasket', 'weather_strip'];
+            
+            const frameCuts = plan.cuts.filter(cut => {
+              const role = cut.componentType || '';
+              return frameRoles.includes(role) || 
+                     cut.componentId?.toLowerCase().includes('frame') ||
+                     cut.componentId?.toLowerCase().includes('architrave') ||
+                     cut.componentId?.toLowerCase().includes('threshold') ||
+                     cut.componentId?.toLowerCase().includes('sill') ||
+                     cut.componentId?.toLowerCase().includes('head') ||
+                     cut.componentId?.toLowerCase().includes('jamb');
+            });
+            
+            const sashCuts = plan.cuts.filter(cut => {
+              const role = cut.componentType || '';
+              return sashRoles.includes(role) || 
+                     (cut.componentId?.toLowerCase().includes('sash') && !cut.componentId?.toLowerCase().includes('frame'));
+            });
+            
+            const structuralCuts = plan.cuts.filter(cut => {
+              const role = cut.componentType || '';
+              return structuralRoles.includes(role) ||
+                     cut.componentId?.toLowerCase().includes('mullion') ||
+                     cut.componentId?.toLowerCase().includes('transom') ||
+                     cut.componentId?.toLowerCase().includes('reinforcement');
+            });
+            
+            const glazingCuts = plan.cuts.filter(cut => {
+              const role = cut.componentType || '';
+              return glazingRoles.includes(role) ||
+                     cut.componentId?.toLowerCase().includes('bead') ||
+                     cut.componentId?.toLowerCase().includes('glazing');
+            });
+            
+            const accessoryCuts = plan.cuts.filter(cut => {
+              const role = cut.componentType || '';
+              return accessoryRoles.includes(role) ||
+                     cut.componentId?.toLowerCase().includes('interlock') ||
+                     cut.componentId?.toLowerCase().includes('adapter') ||
+                     cut.componentId?.toLowerCase().includes('panel');
+            });
+            
             const otherCuts = plan.cuts.filter(cut => 
-              !frameCuts.includes(cut) && !sashCuts.includes(cut)
+              !frameCuts.includes(cut) && 
+              !sashCuts.includes(cut) && 
+              !structuralCuts.includes(cut) &&
+              !glazingCuts.includes(cut) &&
+              !accessoryCuts.includes(cut)
             );
 
             return (

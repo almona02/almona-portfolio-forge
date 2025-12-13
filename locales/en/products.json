@@ -1,4 +1,151 @@
 {
+  "page": {
+    "title": "Products - ALMONA Industrial Machinery",
+    "description": "Browse our complete catalog of YILMAZ industrial machinery including CNC machines, copy routers, and aluminum processing equipment. Industry 4.0 solutions for smart manufacturing.",
+    "keywords": "YILMAZ machines, CNC machines Egypt, industrial machinery, aluminum processing, PVC machines, copy routers"
+  },
+  "hero": {
+    "title": "Industry 4.0",
+    "subtitle": "Smart Manufacturing",
+    "description": "Experience the future of industrial machinery with AI-powered recommendations, IoT connectivity, and digital twin technology. Transform your production with intelligent automation and predictive analytics.",
+    "aiWizard": "🚀 AI Machine Wizard",
+    "liveConfigurator": "⚙️ Live Configurator",
+    "viewAnalytics": "📊 View Analytics"
+  },
+  "industry40": {
+    "features": {
+      "aiSearch": {
+        "title": "AI-Powered Search",
+        "description": "Intelligent machine recommendations based on your requirements"
+      },
+      "analytics": {
+        "title": "Real-time Analytics",
+        "description": "Live performance monitoring and predictive maintenance"
+      },
+      "iot": {
+        "title": "IoT Integration",
+        "description": "Connected machines with remote monitoring capabilities"
+      },
+      "automation": {
+        "title": "Smart Automation",
+        "description": "Automated workflows and production optimization"
+      },
+      "digitalTwin": {
+        "title": "Digital Twin",
+        "description": "Virtual machine models for simulation and testing"
+      },
+      "blockchain": {
+        "title": "Blockchain Traceability",
+        "description": "Secure supply chain tracking and certification"
+      }
+    },
+    "stats": {
+      "uptime": "Uptime",
+      "energySavings": "Energy Savings",
+      "monitoring": "Monitoring",
+      "powered": "Powered"
+    }
+  },
+  "certifications": {
+    "title": "Certifications & Standards",
+    "iso9001": "Quality Management Systems",
+    "ceMark": "European Safety Standards",
+    "industry40": "Smart Manufacturing Certified",
+    "energyStar": "Energy Efficiency",
+    "rohs": "Environmental Standards",
+    "ulListed": "Safety Certification"
+  },
+  "machines": {
+    "title": "YILMAZ Machines",
+    "subtitle": "Premium aluminum & PVC processing machines from Turkey's leading manufacturer. Authorized dealer since 2000.",
+    "tabs": {
+      "yilmaz": "YILMAZ Machines"
+    },
+    "showing": "Showing {{count}} of {{total}} machines",
+    "filtered": "• Filtered",
+    "clearFilters": "Clear filters",
+    "noMachines": {
+      "title": "No machines found",
+      "description": "Try adjusting your search or filter criteria",
+      "clearFilters": "Clear filters"
+    }
+  },
+  "technology": {
+    "title": "Advanced Technology",
+    "aiRecommendations": {
+      "title": "AI Recommendations",
+      "description": "Machine learning algorithms analyze your requirements to suggest the perfect equipment for your specific manufacturing needs."
+    },
+    "iotConnectivity": {
+      "title": "IoT Connectivity",
+      "description": "Real-time monitoring and data collection from connected machines enables predictive maintenance and performance optimization."
+    },
+    "digitalTwins": {
+      "title": "Digital Twins",
+      "description": "Virtual representations of physical machines allow for simulation, testing, and optimization before actual deployment."
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "industry40": {
+      "question": "What makes YILMAZ machines Industry 4.0 ready?",
+      "answer": "YILMAZ machines feature IoT connectivity, AI-powered diagnostics, predictive maintenance, and digital twin technology for optimal performance monitoring."
+    },
+    "installation": {
+      "question": "Do you provide installation and training?",
+      "answer": "Yes, we provide comprehensive installation services, operator training, and ongoing technical support to ensure smooth integration into your operations."
+    },
+    "warranty": {
+      "question": "What is the warranty coverage?",
+      "answer": "All YILMAZ machines come with a comprehensive 1-year warranty covering parts and labor, with extended warranty options available."
+    },
+    "customization": {
+      "question": "Can I get a custom configuration?",
+      "answer": "Absolutely! We offer customization options to meet your specific production requirements and space constraints."
+    }
+  },
+  "newsletter": {
+    "title": "Stay Updated",
+    "description": "Get the latest Industry 4.0 insights, product updates, and exclusive offers delivered to your inbox.",
+    "placeholder": "Enter your email",
+    "subscribe": "Subscribe"
+  },
+  "whyChoose": {
+    "title": "Why Choose YILMAZ Machines?",
+    "description": "Precision-built in our state-of-the-art factory with Industry 4.0 standards, digital QA, and certified processes. See the production floor in action—exactly where your machines are born.",
+    "badges": {
+      "industry40": "Industry 4.0",
+      "digitalQA": "Digital QA",
+      "ceCertified": "CE Certified"
+    },
+    "factoryTour": "Roll out a Visit",
+    "premiumQuality": {
+      "title": "Premium Quality",
+      "description": "Manufactured with high-grade materials and precision engineering for exceptional durability and performance."
+    },
+    "technicalSupport": {
+      "title": "Technical Support",
+      "description": "Our expert team provides comprehensive installation, training and maintenance services."
+    },
+    "genuineParts": {
+      "title": "Genuine Parts",
+      "description": "We supply original spare parts with warranty to ensure optimal machine performance."
+    }
+  },
+  "configurator": {
+    "title": "Live Machine Configurator",
+    "description": "Customize your YILMAZ machine with our interactive configurator. Select options, view real-time pricing, and get instant quotes.",
+    "comingSoon": "Configurator Coming Soon",
+    "comingSoonDescription": "We're working on an advanced interactive configurator that will allow you to customize machines, view 3D models, and get real-time pricing.",
+    "close": "Close",
+    "tryWizard": "Try AI Wizard Instead"
+  },
+  "comparison": {
+    "maxReached": "Maximum reached",
+    "maxReachedDescription": "You can compare up to 5 machines at a time",
+    "saved": "Comparison saved",
+    "savedDescription": "You can access this comparison later"
+  },
   "shop": {
     "tabs": {
       "industrial-machines": "Industrial Processing Machines",
