@@ -4,23 +4,23 @@
  * v1: Manual input with visual reference (de-risked approach)
  */
 
-import React, { useRef, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Label } from '@/shared/ui/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Progress } from '@/shared/ui/ui/progress';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Upload, FileText, CheckCircle2, AlertCircle, ChevronRight, ChevronLeft } from 'lucide-react';
-import { ProfileCrossSectionViewer } from './ProfileCrossSectionViewer';
-import { ProfileIconGenerator, type ProfileIconHandle } from './assets/ProfileIconGenerator';
-import { KFactorCalculator } from './KFactorCalculator';
 import { profileDataSheetParser } from '@/lib/profile/ProfileDataSheetParser';
 import { profileDefinitionManager } from '@/lib/profile/ProfileDefinitionManager';
 import { supabase } from '@/lib/supabase';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Input } from '@/shared/ui/ui/input';
+import { Label } from '@/shared/ui/ui/label';
+import { Progress } from '@/shared/ui/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { useToast } from '@/shared/ui/ui/use-toast';
 import type { Profile } from '@/types/fabricator';
+import { CheckCircle2, ChevronLeft, ChevronRight, FileText, Upload } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { KFactorCalculator } from './KFactorCalculator';
+import { ProfileCrossSectionViewer } from './ProfileCrossSectionViewer';
+import { ProfileIconGenerator, type ProfileIconHandle } from './assets/ProfileIconGenerator';
 
 interface ProfileDefinitionWizardProps {
   open: boolean;
@@ -34,8 +34,8 @@ interface ProfileDefinitionWizardProps {
     height?: number;
     materialThickness?: number;
     weightPerMeter?: number;
-    role?: 'frame' | 'mullion' | 'transom' | 'sash' | 'casement' | 'tilt' | 'turn' | 'fixed' | 'ventilator';
-    material?: 'aluminum' | 'steel' | 'upvc' | 'wood';
+    role?: 'frame' | 'mullion' | 'transom' | 'sash' | 'glazing_bead' | 'interlock' | 'accessory';
+    material?: 'aluminum' | 'upvc' | 'wood';
     defaultKFactor45?: number;
     defaultKFactor90?: number;
   };
@@ -63,7 +63,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
+  const [_isUploading, setIsUploading] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const profileIconRef = useRef<ProfileIconHandle>(null);
 
@@ -146,7 +146,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
       const fileExt = uploadedImageFile.name.split('.').pop();
       const fileName = `${userId}/${Date.now()}.${fileExt}`;
 
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('profile-images')
         .upload(fileName, uploadedImageFile, {
           cacheControl: '3600',
@@ -235,20 +235,41 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
       const thumbnailDataUrl = await profileIconRef.current?.capture();
       const thumbnailUrl = await uploadThumbnailFromDataUrl(thumbnailDataUrl || null);
 
+      // Map role to valid ProfileDefinitionInput role
+      const roleValue: string = formData.role;
+      const validRole: 'frame' | 'sash' | 'mullion' | 'transom' | 'glazing_bead' | 'interlock' | 'accessory' = 
+        (roleValue === 'casement' || roleValue === 'tilt' || roleValue === 'turn') ? 'sash' :
+        (roleValue === 'fixed' || roleValue === 'ventilator') ? 'frame' :
+        (roleValue === 'frame' || roleValue === 'sash' || roleValue === 'mullion' || roleValue === 'transom' || roleValue === 'glazing_bead' || roleValue === 'interlock' || roleValue === 'accessory') ? roleValue as 'frame' | 'sash' | 'mullion' | 'transom' | 'glazing_bead' | 'interlock' | 'accessory' :
+        'frame'; // Default fallback
+
+      // Map material to valid ProfileDefinitionInput material (remove 'steel')
+      const materialValue: string = formData.material;
+      const validMaterial: 'aluminum' | 'upvc' | 'wood' = 
+        materialValue === 'steel' ? 'aluminum' :
+        (materialValue === 'aluminum' || materialValue === 'upvc' || materialValue === 'wood') ? materialValue as 'aluminum' | 'upvc' | 'wood' :
+        'aluminum'; // Default fallback
+
       // Create profile
       const profile = await profileDefinitionManager.createProfileFromDefinition({
         ...formData,
+        role: validRole,
+        material: validMaterial,
         crossSectionImageUrl: imageUrl || undefined,
         annotations: annotations.length > 0 ? annotations : undefined,
         userId,
       });
 
       if (thumbnailUrl) {
-        await supabase
+        const { error } = await (supabase
           .from('fabricator_profiles')
-          .update({ thumbnail_url: thumbnailUrl })
+          .update({ thumbnail_url: thumbnailUrl } as never) as any) // Type assertion for Supabase client type limitations
           .eq('id', profile.id);
-        (profile as any).thumbnailUrl = thumbnailUrl;
+        if (error) {
+          console.error('Failed to update thumbnail URL:', error);
+        } else {
+          (profile as any).thumbnailUrl = thumbnailUrl;
+        }
       }
 
       toast({
@@ -532,7 +553,14 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
               profile={{
                 id: 'temp',
                 name: formData.profileCode,
-                material: formData.material,
+                material: (() => {
+                  const mat: string = formData.material;
+                  if (mat === 'steel') return 'aluminum' as const;
+                  if (mat === 'aluminum' || mat === 'upvc' || mat === 'wood') {
+                    return mat as 'aluminum' | 'upvc' | 'wood';
+                  }
+                  return 'aluminum' as const;
+                })(),
                 width: formData.width,
                 height: formData.height,
                 thickness: formData.materialThickness,

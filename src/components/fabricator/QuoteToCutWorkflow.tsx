@@ -3,18 +3,18 @@
  * Orchestrates the complete flow from project setup to quote generation
  */
 
-import React, { useState, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Progress } from '@/shared/ui/ui/progress';
-import { ChevronRight, ChevronLeft, CheckCircle2 } from 'lucide-react';
-import { ProjectCockpit, type ProjectType, getProjectTypeConfig } from './ProjectCockpit';
-import { SystemDrivenDesign } from './SystemDrivenDesign';
-import { SmartDrawTool } from './SmartDrawTool';
+import type { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
+import { CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
 import { LiveCostConsole } from './LiveCostConsole';
 import { NewProjectWizard, type ProjectHeaderMeta } from './NewProjectWizard';
-import type { WindowComponent, Profile, WindowUnit } from '@/types/fabricator';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { ProjectCockpit, getProjectTypeConfig, type ProjectType } from './ProjectCockpit';
+import { SmartDrawTool } from './SmartDrawTool';
+import { SystemDrivenDesign } from './SystemDrivenDesign';
 
 type WorkflowStep = 1 | 2 | 3 | 4;
 
@@ -78,12 +78,30 @@ export const QuoteToCutWorkflow: React.FC<QuoteToCutWorkflowProps> = ({
   const handleGenerateQuote = () => {
     if (!projectMeta || components.length === 0) return;
 
+    // Calculate overall dimensions from components
+    let maxWidth = 0;
+    let maxHeight = 0;
+    components.forEach(comp => {
+      if (comp.width > maxWidth) maxWidth = comp.width;
+      if (comp.height > maxHeight) maxHeight = comp.height;
+    });
+
     // Create a basic WindowUnit from the workflow data
     const project: WindowUnit = {
       id: `project-${Date.now()}`,
+      orderNumber: projectMeta.orderNumber || `ORD-${Date.now()}`,
+      posNumber: '1', // Default position number
       type: 'window',
-      overallWidth: 0, // Would be calculated from components
-      overallHeight: 0, // Would be calculated from components
+      overallWidth: maxWidth || 1200,
+      overallHeight: maxHeight || 1200,
+      color: 'Silver', // Default color
+      glazing: {
+        type: 'double',
+        thickness: 24,
+      },
+      hardware: [],
+      status: 'design',
+      optimization: null,
       customer: projectMeta.clientName,
       components,
       systemPackId: selectedSystemPackId,
@@ -228,7 +246,7 @@ export const QuoteToCutWorkflow: React.FC<QuoteToCutWorkflowProps> = ({
                       >
                         <span>{comp.type}</span>
                         <span>
-                          {((comp.cuttingLength || comp.length) / 1000).toFixed(2)}m ×{' '}
+                          {((comp.cuttingLengths?.[0] || 0) / 1000).toFixed(2)}m ×{' '}
                           {comp.quantity || 1}
                         </span>
                       </div>

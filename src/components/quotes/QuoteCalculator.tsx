@@ -1,6 +1,6 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React from 'react';
 
 import { Machine } from '../../types/index';
 
@@ -23,7 +23,7 @@ export const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({
   onCalculate: _onCalculate,
 }) => {
   const calculateEstimate = () => {
-    const basePrice = products.reduce((sum, p) => sum + (p.price || 0), 0);
+    const basePrice = products.reduce((sum, p) => sum + ((p as any).price || 0), 0);
     const servicePrice = services.reduce((sum, s) => sum + (s.price || 0), 0);
     let total = basePrice + servicePrice;
 
@@ -53,7 +53,7 @@ export const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({
         <div className="space-y-4">
           <div className="flex justify-between">
             <span>Products Total:</span>
-            <span>{products.reduce((sum, p) => sum + (p.price || 0), 0).toLocaleString()} EGP</span>
+            <span>{products.reduce((sum, p) => sum + ((p as any).price || 0), 0).toLocaleString()} EGP</span>
           </div>
           <div className="flex justify-between">
             <span>Services Total:</span>

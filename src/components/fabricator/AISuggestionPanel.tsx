@@ -4,14 +4,14 @@
  * The crown jewel feature that makes the system truly intelligent
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Sparkles, CheckCircle2, X, TrendingUp, AlertTriangle, Loader2 } from 'lucide-react';
 import { calibrationLearner, type PredictionInput, type PredictionResult } from '@/lib/ml/CalibrationLearner';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import type { Profile } from '@/types/fabricator';
+import { AlertTriangle, CheckCircle2, Loader2, Sparkles, TrendingUp, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface AISuggestionPanelProps {
@@ -43,6 +43,7 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
   useEffect(() => {
     loadPrediction();
     checkModelStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile.id, jointType, cutAngle]);
 
   const loadPrediction = async () => {
@@ -54,7 +55,9 @@ export const AISuggestionPanel: React.FC<AISuggestionPanelProps> = ({
         materialThickness: profile.thickness || 1.5,
         cutAngle,
         jointType,
-        profileRole: profile.profileRole,
+        profileRole: (profile.profileRole === 'frame' || profile.profileRole === 'sash' || profile.profileRole === 'glazing_bead' || profile.profileRole === 'mullion' || profile.profileRole === 'transom' || profile.profileRole === 'interlock') 
+          ? profile.profileRole 
+          : 'frame',
         material: profile.material,
       };
 

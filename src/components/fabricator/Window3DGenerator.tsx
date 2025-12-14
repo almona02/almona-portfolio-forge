@@ -14,37 +14,62 @@
  * - Dynamic Measurement Rendering: On-screen dimensions for clear communication.
  */
 
-import React, {
-  useRef, useEffect, useState, useCallback, Suspense, useMemo, forwardRef, useImperativeHandle
-} from 'react';
-import { Canvas, useFrame, useThree, extend } from '@react-three/fiber';
 import {
-  OrbitControls, Environment, Html, Bounds, Text, Line, CameraControls
+    Bounds,
+    CameraControls,
+    Environment, Html,
+    Line,
+    OrbitControls,
+    Text
 } from '@react-three/drei';
-import { EffectComposer, SSAO, Bloom, Vignette } from '@react-three/postprocessing';
+import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
+import { Bloom, EffectComposer, SSAO, Vignette } from '@react-three/postprocessing';
 import { useDrag } from '@use-gesture/react';
+import {
+    Suspense,
+    forwardRef,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+    useState
+} from 'react';
 
 import * as THREE from 'three';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
-import { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js';
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter.js';
+import { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js';
 
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Progress } from '@/shared/ui/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Toggle } from '@/shared/ui/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/ui/tooltip';
-import { Progress } from '@/shared/ui/ui/progress';
 
 import {
-    Download, Play, Pause, RotateCcw, AlertTriangle, Ruler, ZoomIn, ZoomOut, Home, Sun, Moon, Layers, Sparkles, Maximize2, Scissors
+    AlertTriangle,
+    Download,
+    Home,
+    Layers,
+    Maximize2,
+    Moon,
+    Pause,
+    Play,
+    RotateCcw,
+    Ruler,
+    Scissors,
+    Sparkles,
+    Sun,
+    ZoomIn, ZoomOut
 } from 'lucide-react';
 
-import { track } from '@/lib/analytics';
-import { validateProjectWithConstraints, deriveSystemConstraintsFromProfiles, ValidationResult } from '@/lib/fabricatorValidation';
-import { generateModelGeometries, FrameGeometry, MiteredFrameData } from '@/lib/3d/windowGeometry';
-import { WindowUnit, Profile } from '@/types/fabricator';
 import { useAdvancedMaterials, useWindowPhysics } from '@/lib/3d';
+import { FrameGeometry, MiteredFrameData, generateModelGeometries } from '@/lib/3d/windowGeometry';
+import { track } from '@/lib/analytics';
+import { ValidationResult, deriveSystemConstraintsFromProfiles, validateProjectWithConstraints } from '@/lib/fabricatorValidation';
+import { Profile, WindowUnit } from '@/types/fabricator';
 import { useTranslation } from 'react-i18next';
 
 // Extend THREE with additional features if needed
@@ -98,6 +123,7 @@ function MiteredFramePart({ part, material, enableShadows }: { part: MiteredFram
 function SectionViewGizmo({ plane, setPlane }: { plane: THREE.Plane, setPlane: (p: THREE.Plane) => void }) {
     // Removed unused camera and size
     useThree();
+    const { t } = useTranslation('fabricator');
     const gizmoRef = useRef<THREE.Group>(null!);
 
     const bind = useDrag(({ offset: [_dx, dy] }) => {

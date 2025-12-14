@@ -1,25 +1,22 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Progress } from '@/shared/ui/ui/progress';
-import {
-  Smartphone,
-  Monitor,
-  Zap,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  Loader2,
-  Scan,
-  RotateCcw,
-  Maximize2,
-  Settings,
-  Sparkles
-} from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
-import { launchSwiftXR as launchSwiftXRNative, detectSwiftXR, launchARWithFallback } from '@/utils/swiftXRIntegration';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Progress } from '@/shared/ui/ui/progress';
+import { detectSwiftXR, launchSwiftXR as launchSwiftXRNative } from '@/utils/swiftXRIntegration';
+import {
+    CheckCircle,
+    Loader2,
+    Monitor,
+    Scan,
+    Settings,
+    Smartphone,
+    Sparkles,
+    XCircle,
+    Zap
+} from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './SwiftXR.css';
 
 // AR Capability Detection Types
@@ -449,7 +446,7 @@ export function UnifiedARManager({
 
           {/* Launch Button */}
           <Button
-            onClick={launchAR}
+            onClick={() => launchAR()}
             disabled={!deviceInfo?.supportsAR}
             className="swiftxr-launch-button w-full"
             size="lg"

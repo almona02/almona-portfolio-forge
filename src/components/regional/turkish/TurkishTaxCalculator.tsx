@@ -3,23 +3,23 @@
  * Interactive KDV calculation tool for Turkish market
  */
 
-import React, { useState, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { 
-  calculateTurkishTax, 
-  formatTurkishCurrency, 
-  TURKISH_KDV_RATES, 
-  KdvRate,
-  getKdvRateForCategory,
-  validateTurkishTaxNumber
+import {
+    KdvRate,
+    TURKISH_KDV_RATES,
+    calculateTurkishTax,
+    formatTurkishCurrency,
+    getKdvRateForCategory,
+    validateTurkishTaxNumber
 } from '@/lib/turkishTaxUtils';
+import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface TurkishTaxCalculatorProps {
   className?: string;
@@ -99,7 +99,7 @@ export const TurkishTaxCalculator: React.FC<TurkishTaxCalculatorProps> = ({
             {t('turkish.taxCalculator.kdvRate', 'KDV Oranı')}
           </Label>
           <Select value={kdvRate} onValueChange={(value: KdvRate) => setKdvRate(value)}>
-            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+            <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -125,7 +125,7 @@ export const TurkishTaxCalculator: React.FC<TurkishTaxCalculatorProps> = ({
             {t('turkish.taxCalculator.category', 'Kategori')} ({t('turkish.taxCalculator.optional', 'İsteğe bağlı')})
           </Label>
           <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+            <SelectTrigger>
               <SelectValue placeholder={t('turkish.taxCalculator.selectCategory', 'Kategori seçin')} />
             </SelectTrigger>
             <SelectContent>
@@ -168,7 +168,7 @@ export const TurkishTaxCalculator: React.FC<TurkishTaxCalculatorProps> = ({
               className="bg-gray-700 border-gray-600 text-white"
             />
             {isValidTaxNumber !== null && (
-              <Badge variant={isValidTaxNumber ? "default" : "destructive"} className="px-2">
+              <Badge variant={isValidTaxNumber ? "default" : "default"} className={`px-2 ${!isValidTaxNumber ? 'bg-red-600 text-white' : ''}`}>
                 {isValidTaxNumber ? '✓' : '✗'}
               </Badge>
             )}

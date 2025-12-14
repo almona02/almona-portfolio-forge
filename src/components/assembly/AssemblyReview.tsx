@@ -1,37 +1,37 @@
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
-  AlertCircle,
-  AlertTriangle,
-  CheckCircle,
-  Download,
-  Eye,
-  Loader2,
-  X,
-} from "lucide-react";
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import type {
-  AssemblyComponent,
-  AssemblyResponse,
-  AssemblyReviewState,
+    AssemblyComponent,
+    AssemblyResponse,
+    AssemblyReviewState,
 } from "@/types/assembly";
+import {
+    AlertCircle,
+    AlertTriangle,
+    CheckCircle,
+    Download,
+    Eye,
+    Loader2,
+    X,
+} from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 interface AssemblyReviewProps {
   assemblyData: AssemblyResponse | null;
@@ -174,7 +174,7 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
                 {Math.round(confidence * 100)}% Confidence
               </Badge>
               {hasIssues && (
-                <Badge variant="destructive" className="px-3 py-1.5 text-sm">
+                <Badge variant="default" className="px-3 py-1.5 text-sm bg-red-600 text-white">
                   <AlertTriangle className="h-3 w-3 mr-1" />
                   Needs Review
                 </Badge>

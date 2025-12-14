@@ -1,5 +1,5 @@
-import React, { memo, useState, useRef, useEffect } from 'react';
-import { getOptimizedImageUrl, getBestImageFormat } from '@/lib/imageOptimization';
+import { getBestImageFormat, getOptimizedImageUrl } from '@/lib/imageOptimization';
+import { memo, useEffect, useRef, useState } from 'react';
 
 interface OptimizedImageProps {
   src: string;
@@ -51,7 +51,7 @@ export const OptimizedImage = memo<OptimizedImageProps>(({
         width,
         height,
         quality,
-        format: bestFormat
+        format: bestFormat === 'jpeg' ? 'auto' : bestFormat
       });
       setOptimizedSrc(optimized);
     }
@@ -188,11 +188,11 @@ export const ResponsiveImage = memo<ResponsiveImageProps>(({
   }, []);
 
   // Generate responsive srcSet if breakpoints provided
-  const responsiveSrcSet = breakpoints ? breakpoints
-    .map(({ width }) => `${getOptimizedImageUrl(src, { width, format: bestFormat })} ${width}w`)
+  const _responsiveSrcSet = breakpoints ? breakpoints
+    .map(({ width }) => `${getOptimizedImageUrl(src, { width, format: bestFormat === 'jpeg' ? 'auto' : bestFormat })} ${width}w`)
     .join(', ') : srcSet;
 
-  const responsiveSizes = breakpoints ? breakpoints
+  const _responsiveSizes = breakpoints ? breakpoints
     .map(({ media, width }) => media ? `${media} ${width}px` : `${width}px`)
     .join(', ') : sizes;
 

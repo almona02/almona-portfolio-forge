@@ -1,9 +1,9 @@
-import React, { memo, useState } from 'react';
 import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Sheet, SheetContent, SheetTrigger } from '@/shared/ui/ui/sheet';
-import { Filter, X, Search, SortAsc } from 'lucide-react';
+import { Filter, Search, X } from 'lucide-react';
+import { memo, useState } from 'react';
 
 interface MobileFilterPanelProps {
   searchTerm: string;

@@ -3,11 +3,12 @@
  * Enhanced version of EnhancedGLBViewer with interactive part selection and pricing integration
  */
 
-import React, { Suspense, useRef, useEffect, useState, useCallback } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, Environment, OrbitControls, Bounds, useBounds, useAnimations, Text, Html } from '@react-three/drei';
-import { initCompressedModelDecoders } from '@/lib/three-optimized';
+import { getRegionalConfig } from '@/config/regionalConfig';
 import { useRegionDetection, useRegionUtils } from '@/hooks/useRegionDetection';
+import { initCompressedModelDecoders } from '@/lib/three-optimized';
+import { Bounds, Environment, Html, OrbitControls, useAnimations, useBounds, useGLTF } from '@react-three/drei';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as THREE from 'three';
 
@@ -352,7 +353,7 @@ export function InteractiveGLBViewer({
 
   // Calculate total price in regional currency
   useEffect(() => {
-    const calculatePrice = async () => {
+    const calculatePrice = () => {
       let basePrice = 0;
       selectedParts.forEach(partId => {
         const part = parts.find(p => p.id === partId);
@@ -361,12 +362,13 @@ export function InteractiveGLBViewer({
         }
       });
 
-      const regionalPrice = await utils.convertCurrency(basePrice, 'USD', utils.config.currency.code);
-      setTotalPrice(regionalPrice);
+      // Use base price directly (assumes prices are already in regional currency)
+      // If conversion is needed, use convertCurrency from @/lib/currencyExchange
+      setTotalPrice(basePrice);
     };
 
     calculatePrice();
-  }, [selectedParts, parts, utils]);
+  }, [selectedParts, parts]);
 
   const handlePartClick = (partId: string) => {
     const newSelected = new Set(selectedParts);
@@ -388,6 +390,7 @@ export function InteractiveGLBViewer({
     onPartSelected?.(part);
 
     if (enablePricing) {
+      const config = getRegionalConfig(regionState.region);
       const taxAmount = utils.calculateTax(part.price);
       const totalWithTax = utils.calculateTotalWithTax(part.price);
       
@@ -397,7 +400,7 @@ export function InteractiveGLBViewer({
         quantity: 1,
         taxAmount,
         totalWithTax,
-        currency: utils.config.currency.code,
+        currency: config.currency.code,
         region: regionState.region
       };
 

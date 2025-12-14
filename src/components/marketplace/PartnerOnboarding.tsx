@@ -1,42 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
+import { track } from '@/lib/analytics';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import {
-  Store,
-  Users,
-  FileText,
-  Shield,
-  Key,
-  DollarSign,
-  BarChart3,
-  CheckCircle,
   AlertTriangle,
-  Upload,
+  Award,
+  CheckCircle,
+  Clock,
+  Crown,
+  DollarSign,
   Download,
   Eye,
-  Settings,
-  Crown,
+  FileText,
   Globe,
-  Zap,
-  Target,
-  TrendingUp,
+  Key,
   Star,
-  Award,
-  Clock,
-  Calendar,
+  Store,
+  TrendingUp,
+  Upload,
+  Users,
 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { track } from '@/lib/analytics';
 
 // Partner Types
 interface PartnerApplication {
@@ -130,7 +124,7 @@ const mockPartnerApplication: PartnerApplication = {
   status: 'draft',
 };
 
-const mockPartner: Partner = {
+const _mockPartner: Partner = {
   id: 'partner-001',
   companyName: 'Alexandria Industrial Equipment',
   contactName: 'Omar Farouk',
@@ -176,9 +170,9 @@ const mockPartner: Partner = {
  * - Multi-tier partner program
  */
 export const PartnerOnboarding: React.FC = () => {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const [application, setApplication] = useState<PartnerApplication>(mockPartnerApplication);
-  const [partner, setPartner] = useState<Partner | null>(null);
+  const [partner, _setPartner] = useState<Partner | null>(null);
   const [activeTab, setActiveTab] = useState('application');
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);

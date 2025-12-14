@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import React from "react";
 
 const NileLogisticsService = () => {
+  const [shippingPort, setShippingPort] = React.useState<string>('');
+  const [destination, setDestination] = React.useState<string>('');
+  
   const ports = [
     "Alexandria", "Port Said", "Suez", "Damietta", 
     "10th of Ramadan City", "6th October City"
@@ -16,7 +20,7 @@ const NileLogisticsService = () => {
         <div>
           <h3 className="text-lg font-semibold mb-3">حاسبة تكاليف الشحن</h3>
           <div className="space-y-4">
-            <Select>
+            <Select value={shippingPort} onValueChange={setShippingPort}>
               <SelectTrigger>
                 <SelectValue placeholder="ميناء الشحن" />
               </SelectTrigger>
@@ -27,7 +31,7 @@ const NileLogisticsService = () => {
               </SelectContent>
             </Select>
             
-            <Select>
+            <Select value={destination} onValueChange={setDestination}>
               <SelectTrigger>
                 <SelectValue placeholder="الوجهة" />
               </SelectTrigger>

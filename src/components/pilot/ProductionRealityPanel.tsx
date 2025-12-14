@@ -3,7 +3,7 @@ import React from 'react';
 export const ProductionRealityPanel: React.FC<{
   systemId: string;
   manufacturingDims: { width: number; height: number };
-}> = ({ systemId, manufacturingDims }) => {
+}> = ({ systemId, manufacturingDims: _manufacturingDims }) => {
   return (
     <div className="mt-4 bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-xl p-4">
       <div className="flex items-center gap-2 mb-3">

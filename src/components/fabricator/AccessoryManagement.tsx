@@ -9,35 +9,34 @@
  * - Bulk operations for pricing updates
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates';
+import { supabase } from '@/lib/supabase';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Checkbox } from '@/shared/ui/ui/checkbox';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
-import { Checkbox } from '@/shared/ui/ui/checkbox';
-import { 
-  Plus, 
-  Trash2, 
-  Save, 
-  Edit2, 
-  AlertCircle, 
-  CheckCircle, 
-  Package,
-  Download,
-  Upload,
-  RefreshCw,
-  Search,
-  Link2,
-  X
-} from 'lucide-react';
 import { FabricatorAccessory, Profile } from '@/types/fabricator';
-import { supabase } from '@/lib/supabase';
-import { toast } from 'sonner';
-import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates';
+import {
+  AlertCircle,
+  CheckCircle,
+  Download,
+  Edit2,
+  Link2,
+  Package,
+  Plus,
+  RefreshCw,
+  Save,
+  Search,
+  Trash2,
+  Upload,
+} from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 interface AccessoryManagementProps {
   onAccessoriesUpdate?: (accessories: FabricatorAccessory[]) => void;
@@ -46,7 +45,7 @@ interface AccessoryManagementProps {
 }
 
 export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
-  onAccessoriesUpdate,
+  onAccessoriesUpdate: _onAccessoriesUpdate,
   profiles = [],
   userId,
 }) => {
@@ -195,7 +194,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
           const { error: seedError } = await supabase
             .from('fabricator_accessories')
-            .insert(accessoriesToInsert);
+            .insert(accessoriesToInsert as any);
 
           if (seedError) {
             console.error('Error seeding ROCK 60 accessories:', seedError);
@@ -249,7 +248,8 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [userId, onAccessoriesUpdate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   // Setup real-time subscription
   useEffect(() => {
@@ -279,6 +279,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
         supabase.removeChannel(subscription);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, loadAccessories]);
 
   // Initial load
@@ -327,7 +328,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
       const finalPrice = calculatePrice(formData.baseCost || 0, formData.markupPercentage || 30);
 
-      const { data, error: insertError } = await supabase
+      const { error: insertError } = await supabase
         .from('fabricator_accessories')
         .insert({
           user_id: userId,
@@ -344,7 +345,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
           region: formData.region || ['global'],
           image_url: formData.imageUrl,
           specifications: formData.specifications || {},
-        })
+        } as any)
         .select()
         .single();
 
@@ -373,24 +374,27 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
       const finalPrice = calculatePrice(formData.baseCost || 0, formData.markupPercentage || 30);
 
-      let query = supabase
+      const updateData = {
+        name: formData.name,
+        type: formData.type,
+        category: formData.category,
+        unit_price: finalPrice,
+        base_cost: formData.baseCost,
+        markup_percentage: formData.markupPercentage,
+        supplier: formData.supplier,
+        sku: formData.sku,
+        description: formData.description,
+        compatible_materials: formData.compatibleMaterials,
+        region: formData.region,
+        image_url: formData.imageUrl,
+        specifications: formData.specifications,
+        updated_at: new Date().toISOString(),
+      } as any;
+
+      const db = supabase as any;
+      let query = db
         .from('fabricator_accessories')
-        .update({
-          name: formData.name,
-          type: formData.type,
-          category: formData.category,
-          unit_price: finalPrice,
-          base_cost: formData.baseCost,
-          markup_percentage: formData.markupPercentage,
-          supplier: formData.supplier,
-          sku: formData.sku,
-          description: formData.description,
-          compatible_materials: formData.compatibleMaterials,
-          region: formData.region,
-          image_url: formData.imageUrl,
-          specifications: formData.specifications,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', editingId)
         .eq('user_id', userId);
 
@@ -591,7 +595,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
 
       const { error: insertError } = await supabase
         .from('fabricator_accessories')
-        .insert(accessoriesToInsert);
+        .insert(accessoriesToInsert as any);
 
       if (insertError) throw insertError;
 
@@ -630,7 +634,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
           .insert({
             profile_id: profileId,
             accessory_id: accessoryId,
-          });
+          } as any);
         toast.success('Compatibility added');
       }
     } catch (err) {

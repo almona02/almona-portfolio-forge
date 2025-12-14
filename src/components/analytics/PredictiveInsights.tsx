@@ -1,37 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import {
-  TrendingUp,
-  TrendingDown,
-  BarChart3,
-  PieChart,
-  Target,
-  Brain,
-  Zap,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  DollarSign,
-  Users,
-  Globe,
-  Calendar,
-  Star,
-  ArrowUp,
-  ArrowDown,
-  Activity,
-  Eye,
-  Download,
-  Settings,
-} from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { track } from '@/lib/analytics';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Cell, Area, AreaChart } from 'recharts';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import {
+    Activity,
+    AlertTriangle,
+    Brain,
+    CheckCircle,
+    Clock,
+    Download,
+    Eye,
+    Settings,
+    Star,
+    Target,
+    TrendingDown,
+    TrendingUp,
+    Zap,
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Area, AreaChart, CartesianGrid, Cell, Pie, PieChart as RechartsPieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 // Predictive Analytics Types
 interface Prediction {
@@ -258,7 +250,7 @@ const mockRiskAssessments: RiskAssessment[] = [
  * - Strategic recommendations
  */
 export const PredictiveInsights: React.FC = () => {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const [predictions] = useState<Prediction[]>(mockPredictions);
   const [selectedTimeframe, setSelectedTimeframe] = useState('6months');
   const [activeTab, setActiveTab] = useState('forecasts');
@@ -310,7 +302,7 @@ export const PredictiveInsights: React.FC = () => {
                 {prediction.confidence}% confidence
               </Badge>
               <Badge 
-                variant={prediction.impact === 'high' ? 'destructive' : 'default'}
+                variant={prediction.impact === 'high' ? 'default' : 'default'}
                 className="text-xs"
               >
                 {prediction.impact} impact
@@ -390,7 +382,7 @@ export const PredictiveInsights: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -569,7 +561,7 @@ export const PredictiveInsights: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">Risk Score: {riskScore.toFixed(0)}</Badge>
                   <Badge 
-                    variant={risk.severity === 'critical' || risk.severity === 'high' ? 'destructive' : 'default'}
+                    variant={risk.severity === 'critical' || risk.severity === 'high' ? 'default' : 'default'}
                   >
                     {risk.severity}
                   </Badge>

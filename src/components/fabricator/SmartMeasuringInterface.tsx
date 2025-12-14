@@ -1,6 +1,6 @@
 import {
-  getDefaultGlazing,
-  getDefaultProfileColor
+    getDefaultGlazing,
+    getDefaultProfileColor
 } from '@/data/egyptian-defaults';
 import { EGYPTIAN_PATTERNS, getPatternsForSystem, type EgyptianPattern } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
@@ -242,20 +242,20 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     
     const base = region && region !== 'global'
       ? allPacks.filter(
-          (p) => p.meta.regions.includes(region) || p.meta.regions.includes('global'),
+          (p) => ('meta' in p ? p.meta.regions.includes(region) : false) || ('meta' in p ? p.meta.regions.includes('global') : false),
         )
       : allPacks;
     
     // Remove duplicates by ID, then add custom systems
     const uniquePacks = base.filter((pack, index, self) => 
-      index === self.findIndex((p) => p.meta.id === pack.meta.id)
+      index === self.findIndex((p) => ('meta' in p && 'meta' in pack) ? p.meta.id === pack.meta.id : false)
     );
     
     return [...uniquePacks, ...customSystems];
   }, [region, customSystems]);
 
   const activeSystemPack = useMemo(
-    () => availableSystemPacks.find((p) => p.meta.id === selectedSystemPackId) ?? availableSystemPacks[0] ?? SYSTEM_PACKS[0],
+    () => availableSystemPacks.find((p) => ('meta' in p ? p.meta.id === selectedSystemPackId : false)) ?? availableSystemPacks[0] ?? SYSTEM_PACKS[0],
     [availableSystemPacks, selectedSystemPackId],
   );
 
@@ -735,7 +735,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                               // This ensures all technical details (mullions, transoms, cell types) are applied
                               if (pat.gridSpec) {
                                 const gridSpec = pat.gridSpec;
-                                const newCells: typeof grid.cells = gridSpec.cells.map((cell, idx) => ({
+                                const newCells: typeof grid.cells = gridSpec.cells.map((cell, _idx) => ({
                                   id: `${cell.row}-${cell.col}`,
                                   row: cell.row,
                                   col: cell.col,
@@ -1496,9 +1496,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                   const totalColWeight = colWeights.reduce((a, b) => a + b, 0);
                   const totalRowWeight = rowWeights.reduce((a, b) => a + b, 0);
                   
-                  // Base column/row dimensions (for simple calculations)
-                  const colWidth = showGrid && currentGrid.cols > 0 ? svgWidth / currentGrid.cols : svgWidth;
-                  const rowHeight = showGrid && currentGrid.rows > 0 ? svgHeight / currentGrid.rows : svgHeight;
+                  // Base column/row dimensions (for simple calculations) - calculated but not used in this scope
+                  // const colWidth = showGrid && currentGrid.cols > 0 ? svgWidth / currentGrid.cols : svgWidth;
+                  // const rowHeight = showGrid && currentGrid.rows > 0 ? svgHeight / currentGrid.rows : svgHeight;
                   
                   return (
                     <g>

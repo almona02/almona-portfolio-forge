@@ -12,45 +12,38 @@
  * - Automatic price validation and alerts
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
+import { useRegionDetection } from '@/hooks/useRegionDetection';
+import { formatCurrency, getExchangeRate } from '@/lib/currencyExchange';
+import { PricingEngine, type LaborCostConfig, type MaterialPricingRule, type PriceHistoryEntry, type PriceValidationAlert, type PricingConfiguration as PricingConfig } from '@/lib/pricing/PricingEngine';
+import { supabase } from '@/lib/supabase';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Progress } from '@/shared/ui/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { 
-  Settings, 
-  Save, 
-  RefreshCw, 
-  AlertCircle, 
-  CheckCircle, 
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
-  History,
-  Upload,
-  Download,
-  FileSpreadsheet,
-  Calculator,
-  AlertTriangle,
-  X,
-  Plus,
-  Trash2,
-  Edit2
+import {
+    AlertCircle,
+    AlertTriangle,
+    CheckCircle,
+    Download,
+    FileSpreadsheet,
+    Plus,
+    RefreshCw,
+    Save,
+    TrendingDown,
+    TrendingUp,
+    Upload,
 } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { supabase } from '@/lib/supabase';
-import { PricingEngine, type PricingConfiguration, type MaterialPricingRule, type LaborCostConfig, type PriceHistoryEntry, type PriceValidationAlert } from '@/lib/pricing/PricingEngine';
-import { formatCurrency, getExchangeRate } from '@/lib/currencyExchange';
-import { useRegionDetection } from '@/hooks/useRegionDetection';
 
 interface PricingConfigurationProps {
   userId?: string;
-  onConfigurationUpdate?: (config: PricingConfiguration) => void;
+  onConfigurationUpdate?: (config: PricingConfig) => void;
 }
 
 export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
@@ -64,7 +57,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
   const [activeTab, setActiveTab] = useState('general');
   
   // Configuration state
-  const [config, setConfig] = useState<Partial<PricingConfiguration>>({
+  const [config, setConfig] = useState<Partial<PricingConfig>>({
     region: 'global',
     currency: 'USD',
     materialMarkupPercentage: 35,
@@ -81,12 +74,12 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
   });
 
   // Material pricing rules
-  const [materialRules, setMaterialRules] = useState<MaterialPricingRule[]>([]);
-  const [editingMaterialRule, setEditingMaterialRule] = useState<MaterialPricingRule | null>(null);
+  const [materialRules] = useState<MaterialPricingRule[]>([]);
+  const [_editingMaterialRule, _setEditingMaterialRule] = useState<MaterialPricingRule | null>(null);
 
   // Labor cost configurations
-  const [laborConfigs, setLaborConfigs] = useState<LaborCostConfig[]>([]);
-  const [editingLaborConfig, setEditingLaborConfig] = useState<LaborCostConfig | null>(null);
+  const [laborConfigs] = useState<LaborCostConfig[]>([]);
+  const [_editingLaborConfig, _setEditingLaborConfig] = useState<LaborCostConfig | null>(null);
 
   // Price history
   const [priceHistory, setPriceHistory] = useState<PriceHistoryEntry[]>([]);
@@ -130,6 +123,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
     };
 
     initEngine();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   // Auto-detect region and currency
@@ -149,7 +143,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
         }));
       }
     }
-  }, [regionState.region]);
+  }, [regionState.region]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load exchange rates
   useEffect(() => {
@@ -222,8 +216,9 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
         .limit(50);
 
       if (error) throw error;
-      setAlerts(data || []);
-      setUnresolvedAlerts(data?.filter(a => !a.is_resolved) || []);
+      const typedData = (data || []) as any[];
+      setAlerts(typedData as PriceValidationAlert[]);
+      setUnresolvedAlerts(typedData.filter((a: any) => !a.is_resolved) || []);
     } catch (error) {
       console.error('Failed to load alerts:', error);
     }
@@ -296,13 +291,13 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
               user_id: userId,
               profile_id: update.profile_id,
               material_type: 'aluminum', // Would need to be determined
-              region: config.region,
-              currency: config.currency,
+              region: config.region || 'global',
+              currency: config.currency || 'USD',
               base_cost_per_meter: update.base_cost_per_meter,
               markup_percentage: update.markup_percentage,
               final_price_per_meter: update.base_cost_per_meter * (1 + update.markup_percentage / 100),
               is_active: true,
-            });
+            } as any); // Type assertion for Supabase client type limitations
         }
 
         toast.success(`Successfully imported ${updates.length} price updates`);

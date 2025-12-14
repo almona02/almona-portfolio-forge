@@ -1,46 +1,46 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import {
-  Upload,
-  X,
-  CheckCircle,
-  AlertCircle,
-  FileText,
-  Loader2,
-  Download,
-  Settings,
-  Eye,
-  AlertTriangle,
-} from "lucide-react";
-import {
-  scanSingleProfile,
-  SmartScanResult,
-  getSupportedFormats,
-  ScanResultData,
-  enhancedSmartScan,
-} from "@/services/smartScanApi";
 import { useAuth } from "@/context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { useProfileTuningStore } from "@/stores/profileTuningStore";
-import { Button } from "@/shared/ui/ui/button";
-import { Progress } from "@/shared/ui/ui/progress";
+import {
+    ScanResultData,
+    SmartScanResult,
+    enhancedSmartScan,
+    getSupportedFormats,
+    scanSingleProfile,
+} from "@/services/smartScanApi";
 import { Alert, AlertDescription } from "@/shared/ui/ui/alert";
 import { Badge } from "@/shared/ui/ui/badge";
+import { Button } from "@/shared/ui/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    Dialog as UIDialog,
 } from "@/shared/ui/ui/dialog";
 import { Input } from "@/shared/ui/ui/input";
 import { Label } from "@/shared/ui/ui/label";
+import { Progress } from "@/shared/ui/ui/progress";
 import { Switch } from "@/shared/ui/ui/switch";
-import { Dialog as UIDialog } from "@/shared/ui/ui/dialog"; // alias to avoid conflict
-import { ImportWizard } from "./ImportWizard";
+import { useProfileTuningStore } from "@/stores/profileTuningStore";
 import { saveScannedProfile } from "@/utils/profileImport";
+import {
+    AlertCircle,
+    AlertTriangle,
+    CheckCircle,
+    Download,
+    Eye,
+    FileText,
+    Loader2,
+    Settings,
+    Upload,
+    X,
+} from "lucide-react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ImportWizard } from "./ImportWizard";
 
 type JobStatus = "pending" | "processing" | "success" | "error";
 
@@ -68,7 +68,7 @@ export const SmartScanUploader: React.FC = () => {
   const [useEnhancedScan, setUseEnhancedScan] = useState(false);
   const [enableOCR, setEnableOCR] = useState(true);
   const [requireValidation, setRequireValidation] = useState(true);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const _fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const tuningStore = useProfileTuningStore();
   const [importWizardData, setImportWizardData] = useState<{
@@ -718,24 +718,24 @@ export const SmartScanUploader: React.FC = () => {
                               <div className="flex justify-between items-center">
                                 <span className="text-xs text-zinc-500">Profile:</span>
                                 <span className="text-sm font-medium text-white">
-                                  {job.result.suggestions.egyptian_standard_match.name}
+                                  {(job.result.suggestions.egyptian_standard_match as any)?.name || 'Unknown'}
                                 </span>
                               </div>
                               <div className="flex justify-between items-center">
                                 <span className="text-xs text-zinc-500">Match score:</span>
                                 <Progress
-                                  value={job.result.suggestions.egyptian_standard_match.match_score * 100}
+                                  value={((job.result.suggestions.egyptian_standard_match as any)?.match_score || 0) * 100}
                                   className="w-16 h-1.5"
                                 />
                                 <span className="text-xs font-mono text-white w-8 text-right">
-                                  {(job.result.suggestions.egyptian_standard_match.match_score * 100).toFixed(0)}%
+                                  {(((job.result.suggestions.egyptian_standard_match as any)?.match_score || 0) * 100).toFixed(0)}%
                                 </span>
                               </div>
-                              {job.result.suggestions.egyptian_standard_match.deviation_mm && (
+                              {(job.result.suggestions.egyptian_standard_match as any)?.deviation_mm && (
                                 <div className="text-xs text-zinc-500 mt-1">
                                   Deviation:{" "}
-                                  {job.result.suggestions.egyptian_standard_match.deviation_mm.width.toFixed(1)}mm width,{" "}
-                                  {job.result.suggestions.egyptian_standard_match.deviation_mm.height.toFixed(1)}mm height
+                                  {((job.result.suggestions.egyptian_standard_match as any).deviation_mm.width || 0).toFixed(1)}mm width,{" "}
+                                  {((job.result.suggestions.egyptian_standard_match as any).deviation_mm.height || 0).toFixed(1)}mm height
                                 </div>
                               )}
                             </div>
@@ -802,9 +802,9 @@ export const SmartScanUploader: React.FC = () => {
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            const standard = job.result?.suggestions?.egyptian_standard_match;
+                            const standard = job.result?.suggestions?.egyptian_standard_match as any;
                             if (!standard) return;
-                            toast.info(`Applied ${standard.name} standard dimensions`);
+                            toast.info(`Applied ${standard?.name || 'Egyptian standard'} standard dimensions`);
                           }}
                           className="h-7 text-xs border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10"
                         >

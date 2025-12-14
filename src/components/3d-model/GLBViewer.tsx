@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react'
-import { useFrame, useThree } from '@react-three/fiber'
-import { useGLTF, useAnimations } from '@react-three/drei'
-import type { Group } from 'three'
-import { Window3DModel, WindowMeasurementOverlay } from '@/components/fabricator/Window3DGenerator'
+import { Window3DModel } from '@/components/fabricator/Window3DGenerator'
 import { WindowUnit } from '@/types/fabricator'
+import { useAnimations, useGLTF } from '@react-three/drei'
+import { useFrame, useThree } from '@react-three/fiber'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import type { Group } from 'three'
 import * as THREE from 'three'
 import './SwiftXR.css'
 
@@ -216,9 +216,7 @@ export function GLBViewer({
             animationProgress={windowAnimationProgress}
             onModelReady={handleWindowModelUpdate}
           />
-          {showMeasurements && (
-            <WindowMeasurementOverlay windowUnit={windowUnit} />
-          )}
+          {/* Measurement overlay removed - component doesn't exist */}
         </group>
       ) : isGLBMode && scene ? (
         <group ref={groupRef} scale={[scale, scale, scale]} position={position}>
