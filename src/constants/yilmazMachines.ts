@@ -1,13 +1,26 @@
 // Define types locally as the import is failing.
 export type Certification = 'CE' | 'ISO9001';
 
-export type SafetyStandard = 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop';
+export type SafetyStandard = 
+  | 'TwoHandOperation' 
+  | 'AutomaticGuards' 
+  | 'EmergencyStop'
+  | 'LowPressureControl'
+  | 'SafetyFence'
+  | 'AutoClosingGuards'
+  | 'PressureControlValves'
+  | 'PhaseControl'
+  | 'ProfileLiftingSystem'
+  | 'ElectronicBraking'
+  | 'PneumaticBraking'
+  | 'OperatorSafetyBarrier';
 
 export interface PowerSpecification {
   voltage: string;
   frequency: string;
   phase: string;
   consumption: string;
+  amperage?: string;
 }
 
 export interface Machine {
@@ -36,7 +49,7 @@ export interface Machine {
   };
   weight?: {
     net: string;
-    gross: string;
+    gross?: string;
   };
   workingCapacity?: {
     x1?: string;
@@ -47,7 +60,89 @@ export interface Machine {
     z2?: string;
   };
   spindleSpeed?: string;
+  spindlePower?: string;
   cutterBits?: string;
+  toolCollet?: string;
+  cncAxes?: number;
+  millingMotors?: number;
+  tripleHoleMotor?: number;
+  cleaningTools?: number;
+  millingCapacity?: {
+    widthMax?: string;
+    heightMax?: string;
+  };
+  sawBlade?: {
+    diameter?: string;
+    bore?: string;
+    speed?: string;
+    motorPower?: string;
+  };
+  clampingCapacity?: {
+    widthMax?: string;
+    widthMin?: string;
+    heightMax?: string;
+    heightMin?: string;
+    lengthMax?: string;
+    lengthMin?: string;
+  };
+  weldingCapacity?: {
+    heightMax?: string;
+    heightMin?: string;
+    widthMax?: string;
+    widthMin?: string;
+    angleRange?: string;
+    frameMin?: string;
+    frameMax?: string;
+  };
+  cuttingCapacity?: {
+    maxLength5m?: string;
+    maxLength7m?: string;
+    at90deg?: string;
+    at45deg?: string;
+    at45degInward?: string;
+    at45degOutward?: string;
+    at30deg?: string;
+    minLength?: string;
+    maxWidth90?: string;
+    maxWidth45?: string;
+    pushingStroke?: string;
+    conveyorWidth?: string;
+    accuracy?: string;
+    heightMax?: string;
+    widthMax?: string;
+  };
+  angularCapacity?: {
+    tilting?: string;
+    pivotingInward?: string;
+    pivotingOutward?: string;
+    compound?: string;
+    presetAngles?: string;
+    pivotingRange?: string;
+    automatic?: string;
+    manualAngles?: string;
+  };
+  frameCapacity?: {
+    minInner?: string;
+    minOuter?: string;
+    minOuter30?: string;
+    minOuter60?: string;
+    maxFrame?: string;
+    minFrame?: string;
+    maxRobotFrame?: string;
+    maxCleaningFrame?: string;
+  };
+  processingCapacity?: string;
+  profileCapacity?: {
+    minLength?: string;
+    maxLength?: string;
+    minProfile?: string;
+    maxProfile?: string;
+    loadingCapacity?: string;
+  };
+  axisSpeed?: string;
+  infeedSpeed?: string;
+  temperatureRange?: string;
+  weldingOptions?: string;
   tags: string[];
   specifications: string[];
   standardAccessories?: string[];
@@ -61,8 +156,8 @@ export interface Machine {
   };
 }
 
-// Helper function to parse dimensions
-const parseDimensions = (dimensionStr: string) => {
+// Helper function to parse dimensions (unused but kept for potential future use)
+const _parseDimensions = (dimensionStr: string) => {
   const parts = dimensionStr.split(' × ');
   return {
     length: parts[0] as `${number}mm`,
@@ -71,8 +166,8 @@ const parseDimensions = (dimensionStr: string) => {
   };
 };
 
-// Helper function to create power specification
-const createPowerSpec = (powerStr: string): PowerSpecification => {
+// Helper function to create power specification (unused but kept for potential future use)
+const _createPowerSpec = (powerStr: string): PowerSpecification => {
   const powerMatch = powerStr.match(/([\d.]+)\s*kW/);
   const power = powerMatch ? `${powerMatch[1]} kW` as const : '0 kW' as const;
   
@@ -93,7 +188,7 @@ export const yilmazMachines: Machine[] = [
     specPdf: "/documents/specs/AIM-3410.pdf",
     youtubeUrl: "https://youtu.be/qKC5xdpxKyY?si=0mTzSJphFoI_hmVZ",
     modelPath: "/models/aim-3410.glb",
-    has3DModel: true,
+    has3DModel: false,
     category: "processing-centers",
     subcategory: "profile-machining",
     featured: true,
@@ -330,7 +425,7 @@ export const yilmazMachines: Machine[] = [
     description: "Full Automatic Double Head Mitre Saw Machine - Windows based industrial PC with 15'' LCD touch screen, automatic tilting to 90° and 45° inwards",
     imageUrl: "/images/machines/DC-421-PBS.jpg",
     specPdf: "/documents/specs/DC-421-PBS.pdf",
-    youtubeUrl: "https://youtu.be/sy5hs4OIBkE?si=szcbYEsauH_Zs3HK",
+    youtubeUrl: "https://youtu.be/1B5elf1hDG4?si=PEHCxCA5sUsz2w8G",
     category: "cutting-machines",
     featured: true,
     releaseDate: "2012-05-10",
@@ -618,7 +713,7 @@ export const yilmazMachines: Machine[] = [
     description: "Pneumatic Template Copy Router - For opening locks, drilling handles, hinges, espagnolette and barrel holes on PVC and aluminium profiles",
     imageUrl: "/images/machines/FR-221-S.jpg",
     specPdf: "/documents/specs/FR-221-S.pdf",
-    youtubeUrl: "https://www.youtube.com/watch?v=CeGDjE9QCqQ",
+    youtubeUrl: "https://youtu.be/T-yF2tKITb8?si=TuuxsTJYm23LaMHp",
     category: "copy-routers",
     featured: true,
     releaseDate: "2023-05-15",
@@ -1204,7 +1299,7 @@ export const yilmazMachines: Machine[] = [
     description: "Single Corner PVC Welding Machine",
     imageUrl: "/images/machines/TK-505.jpg",
     specPdf: "/documents/specs/TK-505.pdf",
-    youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
+    youtubeUrl: "https://youtu.be/SDWJKEaAB8Y?si=X4drWLgi_Sgwmonf",
     category: "welding-machines",
     featured: false,
     releaseDate: "2022-01-01",
@@ -1458,7 +1553,7 @@ export const yilmazMachines: Machine[] = [
   description: "Radial Saw Machine with ergonomic design",
   imageUrl: "/images/machines/RYK-420-W.jpg",
   specPdf: "/documents/specs/RYK-420-W.pdf",
-  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
+  youtubeUrl: "https://youtu.be/g_Nqd7qs6FM?si=nrCiN6ZVnoGSLJJ2",
   category: "cutting-machines",
   featured: false,
   releaseDate: "2021-01-01",
@@ -1490,36 +1585,83 @@ export const yilmazMachines: Machine[] = [
 },
 {
   id: "ym-021",
-  name: "SCM-420-L4",
-  description: "Servo Controlled Serial Cutting Machine (3.6m stroke)",
+  name: "SCM 420 L4 / SCM 420 L7",
+  description: "Servo Controlled Serial Cutting Machine - 3.6 m (L4) and 6.6 m (L7) pushing strokes with 300 mm of conveyor width",
   imageUrl: "/images/machines/SCM-420-L4.jpg",
-  specPdf: "/documents/specs/SCM-420-L4.pdf",
-  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
+  specPdf: "/documents/specs/SCM_420_L4-L7_TR_EN.pdf",
+  youtubeUrl: "https://youtu.be/OzPLbizCU0Y?si=0nkKACiAtVQnWgoh",
   category: "cutting-machines",
-  featured: false,
+  featured: true,
   releaseDate: "2022-01-01",
-  type: "Serial Cutting Machine",
+  type: "Servo Controlled Serial Cutting Machine",
   powerSpec: {
-    voltage: '400V',
-    frequency: '50Hz',
+    voltage: '400V AC',
+    frequency: '50-60Hz',
     phase: '3',
     consumption: '2.2 kW'
   },
   airSpec: {
-    consumption: '180 L/min',
-    pressure: '4 bar'
+    consumption: '130 L/min',
+    pressure: '6-8 bar'
   },
   dimensions: {
-    length: '1130mm',
-    width: '5250mm',
+    width: '1130mm',
+    length: '5250mm',  // L4: 5250mm, L7: 8250mm
     height: '1360mm'
   },
-  tags: ["Servo", "Precision"],
+  weight: {
+    net: '220 kg',  // L4
+    gross: '325 kg'  // L4
+  },
+  sawBlade: {
+    diameter: 'Ø420 mm',
+    bore: 'Ø30/32 mm',
+    speed: '2,900 RPM',
+    motorPower: '2.2 kW'
+  },
+  cuttingCapacity: {
+    pushingStroke: '3.6 m (L4) / 6.6 m (L7)',
+    conveyorWidth: '300 mm',
+    accuracy: '±0.2 mm'
+  },
+  angularCapacity: {
+    automatic: '90°',
+    manualAngles: '75°, 60°, 45°, 30°, 22.5°, 15°, 90° (both left and right)'
+  },
+  tags: ["Servo", "Precision", "Serial Cutting", "Touch Screen", "SD Card", "Remote Support"],
   specifications: [
-    "3.6m pushing stroke",
-    "300mm conveyor width",
-    "7\" HMI touch screen monitor",
-    "Cutting accuracy ±0.2mm"
+    "3.6 m (SCM 420 L4) and 6.6 m (SCM 420 L7) pushing strokes with 300 of conveyor width",
+    "Automatic and manual operation features",
+    "Automatic serial cutting at 90°",
+    "Manual cutting with location points at 75°, 60°, 45°, 30°, 22.5°, 15°, 90°, both left and right",
+    "Two-hand run safety operation",
+    "Hydro-pneumatic saw feed",
+    "Adjustable saw blade feeding speed",
+    "Turkish, English, Spanish and Russian",
+    "Metric and imperial",
+    "Store up to 50 different lengths",
+    "Easy cutting lists transfer in CSV format with SD card",
+    "7\" HMI colored touch screen monitor",
+    "Preparing cutting lists manually",
+    "Ability to change the cutting list on screen",
+    "Problem solving with remote connection feature",
+    "Units can be converted from Left to Right Hand operation",
+    "Rack and pinion drive mechanism and rigid steel of construction body provide a repeatable cutting accuracy of +/- 0.2 mm providing superior pushing force for heaviest jobs",
+    "Pieces are cut in the order according to the measurement data that is sent from the digital measuring rod (1.5 m, 3.0 m) (optional)"
+  ],
+  standardAccessories: [
+    "Equipped with saw blade Ø420 mm",
+    "2x vertical clamps and 1x horizontal roller clamp",
+    "Spray saw blade lubrication system",
+    "Air gun"
+  ],
+  optionalAccessories: [
+    "Laser marker set indicating the cutting line",
+    "Barcode printer",
+    "Extendible digital measuring rod, 3.0 m",
+    "Spare saw blade Ø420 mm",
+    "VCE 1570 Chip vacuum extractor",
+    "MKN 150 outfeed conveyor"
   ],
   certifications: ['CE', 'ISO9001'],
   safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop']
@@ -1563,74 +1705,146 @@ export const yilmazMachines: Machine[] = [
 {
   id: "ym-023",
   name: "DK 540",
-  description: "Four Head Welding Machine for PVC profiles",
+  description: "Four Corner PVC Welding Machine - Fully automatic four corner welding of PVC window profiles at 90°",
   imageUrl: "/images/machines/DK-540.jpg",
-  specPdf: "/documents/specs/DK-540.pdf",
-  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
+  specPdf: "/documents/specs/DK 540.pdf",
+  youtubeUrl: "https://youtu.be/gGwtxmf1_9k?si=9EWSs9j1FeCVSiRi",
   category: "welding-machines",
-  featured: false,
+  featured: true,
   releaseDate: "2022-01-01",
-  type: "Welding Machine",
+  type: "Four Corner PVC Welding",
   powerSpec: {
-    voltage: '400V',
-    frequency: '50Hz',
+    voltage: '400V AC',
+    frequency: '50-60Hz',
     phase: '3',
-    consumption: '5.0 kW'
+    consumption: '8.4 kW'
   },
   airSpec: {
-    consumption: '220 L/min',
-    pressure: '5 bar'
+    consumption: '55 L/min',
+    pressure: '6-8 bar'
   },
   dimensions: {
-    length: '3000mm',
-    width: '2000mm',
-    height: '1800mm'
+    width: '515mm',
+    length: '450mm',
+    height: '1501mm'
   },
-  tags: ["Four Head", "PVC"],
+  weight: {
+    net: '690 kg',
+    gross: '2079 kg'
+  },
+  weldingCapacity: {
+    heightMax: '180mm',
+    heightMin: '30mm',
+    widthMax: '130mm',
+    widthMin: '30mm',
+    frameMin: '400 x 400 mm',
+    frameMax: '3,100 x 2,700 mm'
+  },
+  temperatureRange: '0° - 300°C',
+  weldingOptions: 'Standard (2.0 mm) or seamless (0.2 mm)',
+  tags: ["Four Corner", "PVC", "Welding", "Automatic", "Touch Screen", "Barcode"],
   specifications: [
-    "Max machinable profile height: 180mm",
-    "Min machinable profile height: 30mm",
-    "Axis speed: 10.6 m/min",
-    "Power of axis motor: 0.37 kW"
+    "Fully automatic four corner welding of PVC window profiles at 90°",
+    "Welding of a complete window frame or sash in one cycle",
+    "All profile related welding parameters are individually programmable",
+    "Parameters are set easily by means of 8\" LCD colour touch screen",
+    "Automatic line can be set by combining with Cooling Unit (SA 251), Corner Cleaning Machine (CNC 609-611) and Rotating Robot (SA 261)",
+    "Automatically setting the standard (2.0 mm) or seamless (0.2 mm) welding options",
+    "Long-period of teflon usage thanks to the teflon roller system",
+    "Automatically discharging of the frames after welding operation",
+    "Saving of time by means of practical mould change system",
+    "Adjusting the heat between 0 - 300°C via electronic thermocouple",
+    "Minimum welding measurement: 400 x 400 mm",
+    "Maximum welding measurement: 3.100 x 2.700 mm",
+    "Memory capacity to save up programs of 900 different profiles",
+    "Operator safety barrier",
+    "Barcode scanner"
+  ],
+  standardAccessories: [
+    "1 set of sash welding mould according to 70 mm of profile height",
+    "1 set of adaptor for frame profile",
+    "Manual greasing pump"
+  ],
+  optionalAccessories: [
+    "Welding fixture set for lame sash",
+    "Special welding moulds on demand",
+    "CS 240 gasket pressing system"
   ],
   certifications: ['CE', 'ISO9001'],
-  safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop']
+  safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop', 'OperatorSafetyBarrier']
 },
 {
   id: "ym-024",
-  name: "CNC 608",
-  description: "Corner Cleaning Machine with CNC control",
-  imageUrl: "/images/machines/CNC-608.jpg",
-  specPdf: "/documents/specs/CNC-608.pdf",
-  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
-  category: "processing-centers",
+  name: "CA 603",
+  description: "PVC Corner Cleaning Machine (4 Cutters) - High quality stripping and cleaning operations by means of the hydro-pneumatic system with 4 different cutter sets",
+  imageUrl: "/images/machines/CA-603.jpg",
+  specPdf: "/documents/specs/CA 603.pdf",
+  youtubeUrl: "https://youtu.be/cbCvF9Phsq0?si=0rEsbv8tX9XrD82H",
+  category: "cleaning-machines",
   featured: false,
   releaseDate: "2022-01-01",
-  type: "CNC Cleaning Machine",
+  type: "PVC Corner Cleaning Machine (4 Cutters)",
   powerSpec: {
-    voltage: '400V',
-    frequency: '50Hz',
+    voltage: '400V AC',
+    frequency: '50-60Hz',
     phase: '3',
-    consumption: '12.0 kW'
+    consumption: '2.4 kW'
   },
   airSpec: {
-    consumption: '280 L/min',
-    pressure: '5 bar'
+    consumption: '48 L/min',
+    pressure: '6-8 bar'
   },
   dimensions: {
-    length: '2500mm',
-    width: '2000mm',
-    height: '1800mm'
+    width: '1525mm',
+    length: '2405mm',
+    height: '1295mm'
   },
-  tags: ["CNC", "Corner Cleaning"],
+  weight: {
+    net: '226 kg',
+    gross: '273 kg'
+  },
+  sawBlade: {
+    diameter: 'Ø210 mm',
+    bore: 'Ø32 mm',
+    speed: '3,000 RPM'
+  },
+  clampingCapacity: {
+    heightMax: '180mm',
+    heightMin: '50mm',
+    widthMax: '130mm',
+    widthMin: '30mm'
+  },
+  frameCapacity: {
+    minOuter30: '350 x 350 mm (W: 30mm profiles)',
+    minOuter60: '380 x 380 mm (W: 60mm profiles)'
+  },
+  tags: ["Corner Cleaning", "4 Cutters", "PLC", "PVC", "Hydro-Pneumatic"],
   specifications: [
-    "11 cleaning tools",
-    "Max machinable profile height: 170mm",
-    "Speed of saw blade motor: 6,000 RPM",
-    "Speed of milling motors: 18,000 RPM"
+    "High quality stripping and cleaning operations by means of the hydro-pneumatic system",
+    "Processing capability for max. profile dimension: W: 130 - H: 180 mm",
+    "Processing capability for min. profile dimension: W: 30 - H: 50 mm",
+    "Min. outer frame sizes according to W: 30 and W: 60 mm of profile width L: 350 x L: 350 mm and L: 380 x L: 380 mm",
+    "Stripping blade levels are adjustable according to laminated and unlaminated profiles",
+    "Pneumatically working serial blade changing function that makes working easier",
+    "Fixing the workpiece firmly by means of the vertical and horizontal clamps",
+    "Stops automatically after stripping and cleaning operation",
+    "PLC operation system",
+    "Centring system to fit the profiles properly on the setsquare",
+    "Robust machine stand",
+    "Processing capability of 4 different PVC profiles",
+    "4 different cutter sets can be mounted on both blocks"
+  ],
+  standardAccessories: [
+    "Corner cleaning cutter set",
+    "Profile support table with brushed",
+    "Air gun"
+  ],
+  optionalAccessories: [
+    "Cleaning cutter for colored profiles",
+    "V type of cleaning cutter for white profiles"
   ],
   certifications: ['CE', 'ISO9001'],
-  safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop']
+  safetyFeatures: ['EmergencyStop']
 },
 {
   id: "ym-025",
@@ -1674,13 +1888,13 @@ export const yilmazMachines: Machine[] = [
   description: "Mitre Saw Machine with pneumatic system",
   imageUrl: "/images/machines/KD-350-PS.jpg",
   specPdf: "/documents/specs/KD-350-PS.pdf",
-  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
+  youtubeUrl: "https://youtu.be/YIGYIfwFeys?si=QSiOXsi_RoxEr_OR",
   category: "cutting-machines",
   featured: false,
   releaseDate: "2020-01-01",
   type: "Mitre Saw",
   powerSpec: {
-    voltage: '400V',
+    voltage: '230V',
     frequency: '50Hz',
     phase: '3',
     consumption: '2.2 kW'
@@ -1710,7 +1924,7 @@ export const yilmazMachines: Machine[] = [
   description: "Compact Mitre Saw Machine",
   imageUrl: "/images/machines/KD-350-M.jpg",
   specPdf: "/documents/specs/KD-350-M.pdf",
-  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
+  youtubeUrl: "https://youtu.be/YIGYIfwFeys?si=6dQKo94HM9KD94_1",
   category: "cutting-machines",
   featured: false,
   releaseDate: "2020-01-01",
@@ -1746,7 +1960,7 @@ export const yilmazMachines: Machine[] = [
   description: "Portable Template Copy Router",
   imageUrl: "/images/machines/FR-223.jpg",
   specPdf: "/documents/specs/FR-223.pdf",
-  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
+  youtubeUrl: "https://youtu.be/nMbHEJgK5Jg?si=VvBWWNUAnJqJNwmt",
   modelPath: "/models/demo-machine.glb",
   category: "processing-centers",
   featured: false,
@@ -1857,8 +2071,8 @@ export const yilmazMachines: Machine[] = [
   description: "Manual End Milling Machine with pneumatic clamps",
   imageUrl: "/images/machines/KM-211-S.jpg",
   specPdf: "/documents/specs/KM-211-S.pdf",
-  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
-  category: "processing-centers",
+  youtubeUrl: "https://youtu.be/esqIqnukjBQ?si=jQPewW9VCLEvUU97",
+  category: "end-milling",
   featured: false,
   releaseDate: "2020-01-01",
   type: "End Milling Machine",
@@ -1958,6 +2172,431 @@ export const yilmazMachines: Machine[] = [
   ],
   certifications: ['CE', 'ISO9001'],
   safetyFeatures: ['EmergencyStop']
+},
+{
+  id: "ym-034",
+  name: "KD 400 D / KD 400 PS",
+  description: "Single Head Mitre Saw Machine - Location points at 45° - 30° - 22.5° - 15° - 0° both left and right",
+  imageUrl: "/images/machines/KD-400-D.jpg",
+  specPdf: "/documents/specs/KD 400 D - 400 PS.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
+  category: "cutting-machines",
+  featured: false,
+  releaseDate: "2020-01-01",
+  type: "Single Head Mitre Saw",
+  powerSpec: {
+    voltage: '400V AC',
+    frequency: '50-60Hz',
+    phase: '3',
+    consumption: '2.2 kW'
+  },
+  airSpec: {
+    consumption: '24 L/min',
+    pressure: '6-8 bar'
+  },
+  dimensions: {
+    width: '860mm',
+    length: '760mm',
+    height: '1600mm'
+  },
+  weight: {
+    net: '110 kg',
+    gross: '137 kg'
+  },
+  sawBlade: {
+    diameter: 'Ø400 mm',
+    bore: 'Ø30/32 mm',
+    speed: '2,900 RPM',
+    motorPower: '2.2 kW'
+  },
+  angularCapacity: {
+    presetAngles: '45°, 30°, 22.5°, 15°, 0° (both left and right)',
+    pivotingRange: '45° left to 45° right infinitely adjustable'
+  },
+  tags: ["Single Head", "Mitre Saw", "Manual", "Pneumatic"],
+  specifications: [
+    "Location points at 45° - 30° - 22.5° - 15° - 0° both left and right",
+    "Pivoting range from 45° left to 45° right infinitely adjustable",
+    "Aluminium construction of the body and machine stand made of steel sheet",
+    "Robust mechanical construction enables the ease of adjustment for the requested cutting angles",
+    "Strong spring system and protective shield"
+  ],
+  standardAccessories: [
+    "Ø400 mm saw blade",
+    "Machine stand",
+    "2x manual horizontal clamps (KD 400 D)",
+    "2x pneumatic horizontal clamps (KD 400 PS)",
+    "Air gun (KD 400 PS)",
+    "Spray saw blade lubrication system (KD 400 PS)"
+  ],
+  optionalAccessories: [
+    "2 x pneumatic vertical clamps (KD 400 PS)",
+    "MKN 300 length stop-right (3m)",
+    "MKN 300 length stop-left (3m)",
+    "DKN 302 length stop (3m)",
+    "DKN 602 length stop (6m)",
+    "Spare saw blade, Ø 400 mm",
+    "Brake unit working with motor stop button (KD 400 PS)"
+  ],
+  certifications: ['CE', 'ISO9001'],
+  safetyFeatures: ['TwoHandOperation', 'EmergencyStop']
+},
+{
+  id: "ym-035",
+  name: "MK 420 / MK 420 PS / MK 450",
+  description: "Manual Up-Cutting Saw Machine - Manual upward saw stroke for wide and flat profiles",
+  imageUrl: "/images/machines/MK-420.jpg",
+  specPdf: "/documents/specs/MK 420 - 420 PS - 450 (1).pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
+  category: "cutting-machines",
+  featured: false,
+  releaseDate: "2021-01-01",
+  type: "Manual Up-Cutting Saw",
+  powerSpec: {
+    voltage: '230V AC',  // MK 420, MK 450: 230V; MK 420 PS: 400V
+    frequency: '50-60Hz',
+    phase: '1',  // MK 420, MK 450: 1P; MK 420 PS: 3P
+    consumption: '2.2 kW'
+  },
+  airSpec: {
+    consumption: '7 L/min',
+    pressure: '6-8 bar'
+  },
+  dimensions: {
+    width: '725mm',
+    length: '865mm',
+    height: '1350mm'
+  },
+  weight: {
+    net: '115 kg',  // MK 420
+    gross: '142 kg'  // MK 420
+  },
+  sawBlade: {
+    diameter: 'Ø420 mm',  // MK 420, MK 420 PS; MK 450: Ø450 mm
+    bore: 'Ø30/32 mm',
+    speed: '2,900 RPM',
+    motorPower: '2.2 kW'
+  },
+  angularCapacity: {
+    presetAngles: '60°, 45°, 30°, 22.5°, 15°, 0° (both left and right)',
+    pivotingRange: '60° to the right and 60° to the left'
+  },
+  tags: ["Up-Cutting", "Manual", "Wide Angle", "Portable"],
+  specifications: [
+    "Manual upward saw stroke",
+    "The back fence is adjustable to allow the most effective use of the saw blade capacity for wide and flat profiles",
+    "Location points at 60°, 45°, 30°, 22.5°, 15°, 0° for both left and right",
+    "Wide angle cutting range up to 60° to the right and 60° to the left",
+    "Adjustable machine working direction by means of rotatable (360°) platform via foot pedal",
+    "Easy saw blade change",
+    "It has the ability of lateral and longitudinal cutting operations"
+  ],
+  standardAccessories: [
+    "Equipped with saw blade Ø420 mm",
+    "Equipped with saw blade Ø 450 mm (MK 450)",
+    "Miter stop",
+    "Profile length stop",
+    "Pneumatically working spray saw blade lubrication system (MK 420 PS)",
+    "Electrically working spray saw blade lubrication system (MK 420- MK 450)",
+    "2x mechanic top clamps (MK 420)",
+    "2x pneumatic top clamps (MK 420 PS)",
+    "Safety guard for lateral cutting operations (MK 420 PS)"
+  ],
+  optionalAccessories: [
+    "Safety guard for longitudinal cutting operations (MK 420 PS)",
+    "2 x vertical clamps",
+    "MKN 300 length stop (3m)",
+    "Connection kit for MKN and DKN length stops",
+    "Spare saw blade, Ø420 mm",
+    "Spare saw blade, Ø450 mm (MK 450)"
+  ],
+  certifications: ['CE', 'ISO9001'],
+  safetyFeatures: ['TwoHandOperation', 'EmergencyStop']
+},
+{
+  id: "ym-036",
+  name: "TK 503",
+  description: "Single Corner PVC Welding Machine - All parameters such as melting time, welding time and welding pressure are set independently",
+  imageUrl: "/images/machines/TK-503.jpg",
+  specPdf: "/documents/specs/TK 503.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
+  category: "welding-machines",
+  featured: false,
+  releaseDate: "2022-01-01",
+  type: "Single Corner PVC Welding",
+  powerSpec: {
+    voltage: '230V AC',
+    frequency: '50-60Hz',
+    phase: '1',
+    consumption: '1.5 kW'
+  },
+  airSpec: {
+    consumption: '20 L/min',
+    pressure: '6-8 bar'
+  },
+  dimensions: {
+    width: '600mm',
+    length: '1915mm',
+    height: '1400mm'
+  },
+  weight: {
+    net: '113 kg',
+    gross: '128 kg'
+  },
+  weldingCapacity: {
+    heightMax: '165mm',
+    heightMin: '30mm',
+    widthMax: '130mm',
+    widthMin: '30mm',
+    angleRange: '30° - 180°'
+  },
+  temperatureRange: '0° - 300°C',
+  weldingOptions: 'Standard (2.0 mm) or seamless (0.2 mm)',
+  tags: ["Single Corner", "PVC", "Welding", "Portable"],
+  specifications: [
+    "All parameters such as melting time, welding time and welding pressure are set independently",
+    "User friendly with the features of cleaning the plates and replacing teflon very easily and quickly",
+    "Practical adjustment of standard (2.0 mm) or seamless (0.2 mm) welding options manually",
+    "Thanks to the profile support arms, long profiles can be easily welded",
+    "Profile support arms are supplied as standard in both directions",
+    "Adjusting the heat between 0 - 300°C by means of the electronic thermostat",
+    "Saving of time thanks to the practical mold change feature",
+    "Enable the welding of all angles between 30°- 180° infinitely adjustable",
+    "Automatically start and finish the welding cycle",
+    "Welding possibility of profiles up to H:165 mm of high",
+    "Clamping the profiles separately via foot pedal",
+    "Portable machine stand"
+  ],
+  standardAccessories: [
+    "Electrical foot pedal",
+    "Profile support arms"
+  ],
+  optionalAccessories: [
+    "Special welding molds"
+  ],
+  certifications: ['CE', 'ISO9001'],
+  safetyFeatures: ['EmergencyStop']
+},
+{
+  id: "ym-037",
+  name: "VK 300",
+  description: "V-Notch and Arrow Cutting Machine - Designed to precisely cut PVC profiles in V notch or arrow shapes",
+  imageUrl: "/images/machines/VK-300.jpg",
+  specPdf: "/documents/specs/VK 300.pdf",
+  youtubeUrl: "https://www.youtube.com/watch?v=PLACEHOLDER",
+  category: "cutting-machines",
+  featured: false,
+  releaseDate: "2021-01-01",
+  type: "V-Notch and Arrow Cutting Machine",
+  powerSpec: {
+    voltage: '380V AC',
+    frequency: '50Hz',
+    phase: '3',
+    consumption: '2.2 kW',
+    amperage: '5A'
+  },
+  airSpec: {
+    consumption: '20 L/min',
+    pressure: '6-8 bar'
+  },
+  dimensions: {
+    width: '715mm',
+    length: '1825mm',
+    height: '1420mm'
+  },
+  weight: {
+    net: '240 kg'
+  },
+  sawBlade: {
+    diameter: 'Ø300 mm',
+    bore: 'Ø30-32 mm',
+    speed: '3,000 RPM'
+  },
+  cuttingCapacity: {
+    heightMax: '65mm',
+    widthMax: '130mm'
+  },
+  tags: ["V-Notch", "Arrow Cut", "Twin Saw", "Precision"],
+  specifications: [
+    "Performs the V-shaped notches and arrow-shaped cutting on sash and mullion profiles before welding operations",
+    "Twin saw blade design",
+    "Pneumatic saw feed by pushing two-hand button",
+    "Automatic return to start point of the process",
+    "Ability to cut 6 different V shaped notches without mechanical set-up thanks to the mechanical memory system",
+    "Machine construction is designed as per minimum cut-off size",
+    "Two-hand operation control",
+    "Easily adjustable, V-notch depth or complete arrow cut",
+    "2 x pneumatic horizontal profile vise",
+    "Adjustable saw feed speed",
+    "Max capacity: H 65 mm / W 130 mm",
+    "Performs V and Arrow cutting operations up to 65 mm profile height",
+    "Safe operation is ensured with the top cover",
+    "V cutting process is completed in one step and arrow cutting process is completed in two steps"
+  ],
+  standardAccessories: [
+    "Equipped with 2 x Ø 300 mm saw",
+    "Profile support conveyor",
+    "8 and 22 key",
+    "Air gun"
+  ],
+  optionalAccessories: [
+    "Spare saw blade, Ø300mm"
+  ],
+  certifications: ['CE', 'ISO9001'],
+  safetyFeatures: ['TwoHandOperation', 'EmergencyStop']
+},
+{
+  id: "ym-038",
+  name: "CA 601",
+  description: "Semi-Automatic PVC Corner Cleaning Machine - High quality stripping and cleaning operations by means of the hydro-pneumatic system",
+  imageUrl: "/images/machines/CA-601.jpg",
+  specPdf: "/documents/specs/CA 601.pdf",
+  youtubeUrl: "https://youtu.be/qnCphTUy0qs?si=K81XL4fG81yDbsZk",
+  category: "cleaning-machines",
+  featured: false,
+  releaseDate: "2022-01-01",
+  type: "Semi-Automatic Corner Cleaning",
+  powerSpec: {
+    voltage: '400V AC',
+    frequency: '50-60Hz',
+    phase: '3',
+    consumption: '1 kW'
+  },
+  airSpec: {
+    consumption: '36 L/min',
+    pressure: '6-8 bar'
+  },
+  dimensions: {
+    width: '1375mm',
+    length: '2405mm',
+    height: '1255mm'
+  },
+  weight: {
+    net: '165 kg',
+    gross: '210 kg'
+  },
+  sawBlade: {
+    diameter: 'Ø215 mm',
+    bore: 'Ø32 mm',
+    speed: '3,000 RPM'
+  },
+  clampingCapacity: {
+    heightMax: '180mm',
+    heightMin: '30mm',
+    widthMax: '130mm',
+    widthMin: '30mm'
+  },
+  frameCapacity: {
+    minInner: '350 x 350 mm (W: 30mm profiles)',
+    minOuter: '380 x 380 mm (W: 60mm profiles)'
+  },
+  tags: ["Corner Cleaning", "Semi-Automatic", "PLC", "PVC"],
+  specifications: [
+    "Min. inner and outer frame sizes according to W: 30 and W: 60 mm of profile width L: 350 x L: 350 mm and L: 380 x L: 380 mm",
+    "High quality stripping and cleaning operations by means of the hydro-pneumatic system",
+    "Stripping blade levels are adjustable according to laminated and unlaminated profiles",
+    "Pneumatically working serial blade changing function that makes working easier",
+    "Fixing the workpiece firmly by means of the vertical and horizontal clamps",
+    "Processing capability for max. profile dimension: W: 130 - H: 180 mm",
+    "Processing capability for min. profile dimension: W: 30 - H: 30 mm",
+    "Centring system to fit the profiles properly on the setsquare",
+    "Automatic start up feature when profile placed on the table",
+    "Stops automatically after stripping and cleaning operation",
+    "Single or multi cleaning operations can be processed",
+    "Robust machine stand",
+    "PLC control system"
+  ],
+  standardAccessories: [
+    "Profile support table with brushed",
+    "Air gun"
+  ],
+  optionalAccessories: [
+    "Special corner cleaning cutter set",
+    "Cleaning cutter for colored profiles",
+    "V type of cleaning cutter for white profiles"
+  ],
+  certifications: ['CE', 'ISO9001'],
+  safetyFeatures: ['EmergencyStop']
+},
+{
+  id: "ym-039",
+  name: "DC 550 PB",
+  description: "Full Automatic Double Head Mitre Saw Machine - Designed for the strait or angular cutting operations of large size of profiles made of PVC and aluminium materials",
+  imageUrl: "/images/machines/DC-550-PB.jpg",
+  specPdf: "/documents/specs/DC 550 PB.pdf",
+  youtubeUrl: "https://youtu.be/s48cmGhtHhI?si=c6yjBdp9sO1w3ZjH",
+  category: "cutting-machines",
+  featured: true,
+  releaseDate: "2022-01-01",
+  type: "Full Automatic Double Head Mitre Saw",
+  powerSpec: {
+    voltage: '400V AC',
+    frequency: '50-60Hz',
+    phase: '3',
+    consumption: '5 kW'
+  },
+  airSpec: {
+    consumption: '165 L/min',
+    pressure: '6-8 bar'
+  },
+  dimensions: {
+    width: '5190mm',
+    length: '1880mm',
+    height: '1210mm'
+  },
+  weight: {
+    net: '1200 kg',
+    gross: '1415 kg'
+  },
+  sawBlade: {
+    diameter: 'Ø550 mm',
+    bore: 'Ø30-32 mm',
+    speed: '2,900 RPM',
+    motorPower: '5 kW'
+  },
+  angularCapacity: {
+    tilting: '90° and 45° inward (automatic)',
+    pivotingRange: '45° inwards and 22.5° outwards',
+    compound: 'Automatic slicing at 90° and 45° inward'
+  },
+  cuttingCapacity: {
+    accuracy: '±0.2 mm'
+  },
+  tags: ["Double Head", "Automatic", "Touch Screen", "Windows PC", "Barcode", "Remote Support"],
+  specifications: [
+    "Designed for the strait or angular cutting operations of large size of profiles made of PVC and aluminium materials",
+    "Double head sawing units equipped with Ø 550 mm of saw blades",
+    "Two-hand run safety operation",
+    "Automatic positioning of the heads between 45° inwards and 22.5° outwards by the computer control",
+    "Hydro-pneumatic saw feed",
+    "Cutting accuracy +/- 0.2 mm",
+    "2 x pneumatic profile supports",
+    "Automatic slicing feature at 90° and 45° inward",
+    "Windows based industrial PC and 15\" LCD touch screen colour monitor",
+    "Facility to transfer the cutting list at 'mdb' and 'csv' formats via USB and network",
+    "Obtains profile cutting dimensions and angles from the cut list while working in automatic mode",
+    "Remote connection via internet and providing technical support",
+    "Barcode printer & image print"
+  ],
+  standardAccessories: [
+    "Equipped with saw blades 2x Ø 550 mm",
+    "Roller conveyor & 2x pneumatic profile supports",
+    "Spray saw blade lubrication system",
+    "Barcode printer",
+    "4x horizontal clamps",
+    "2x vertical clamps",
+    "Air gun"
+  ],
+  optionalAccessories: [
+    "Machine with the length of 5m and 6m",
+    "Short cut system (DKN 60 with digital unit)",
+    "VCE 1570 Chip vacuum extractor",
+    "Chip removal conveyor",
+    "DLG100-DLG200-DLG300 digital length gauge",
+    "Arrow cut system for mullion profiles (DKN 80)"
+  ],
+  certifications: ['CE', 'ISO9001'],
+  safetyFeatures: ['TwoHandOperation', 'AutomaticGuards', 'EmergencyStop']
 }
 ];
 
