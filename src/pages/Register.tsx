@@ -65,9 +65,30 @@ export const Register = () => {
         sector: data.sector
       });
       toast.success('Registration successful! Please check your email to verify your account.');
+      // Navigate to login or home after successful registration
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Registration failed.';
-      toast.error(errorMessage);
+      console.error('Registration error details:', err);
+      let errorMessage = 'Registration failed. Please try again.';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+        
+        // Provide more user-friendly error messages
+        if (err.message.includes('already exists') || err.message.includes('duplicate')) {
+          errorMessage = 'An account with this email already exists. Please try logging in instead.';
+        } else if (err.message.includes('password')) {
+          errorMessage = 'Password does not meet requirements. Please use a stronger password.';
+        } else if (err.message.includes('email')) {
+          errorMessage = 'Invalid email address. Please check and try again.';
+        } else if (err.message.includes('network') || err.message.includes('fetch')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        }
+      }
+      
+      toast.error(errorMessage, { duration: 5000 });
     }
   };
 
