@@ -16,49 +16,49 @@
  * - Automatic remnant consolidation suggestions
  */
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { PurchaseWizard } from '@/components/fabricator/PurchaseWizard';
+import { Rock60PricingSetup } from '@/components/fabricator/Rock60PricingSetup';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Progress } from '@/shared/ui/ui/progress';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Label } from '@/shared/ui/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
-import { Switch } from '@/shared/ui/ui/switch';
-import {
-  Package,
-  AlertTriangle,
-  CheckCircle,
-  TrendingUp,
-  History,
-  MapPin,
-  QrCode,
-  BarChart3,
-  RefreshCw,
-  Download,
-  Search,
-  X,
-  Calendar,
-  DollarSign,
-  Box,
-  Warehouse,
-  AlertCircle,
-  Info,
-  FileText,
-  ShoppingCart,
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { WindowUnit, Profile } from '@/types/fabricator';
-import { remnantManager, type Remnant, type RemnantStatistics, type RemnantConsolidationSuggestion } from '@/lib/inventory/RemnantManager';
+import { JUMBO100_WINDOW_SYSTEM_SPEC, ROCK60_WINDOW_SYSTEM_TEMPLATE, SYSTEM_PACKS } from '@/data/systemPacks';
+import { remnantManager, type Remnant, type RemnantConsolidationSuggestion, type RemnantStatistics } from '@/lib/inventory/RemnantManager';
 import { syncStockFromMovements } from '@/lib/inventory/StockCalculator';
 import { supabase } from '@/lib/supabase';
-import { Rock60PricingSetup } from '@/components/fabricator/Rock60PricingSetup';
-import { PurchaseWizard } from '@/components/fabricator/PurchaseWizard';
-import { ROCK60_WINDOW_SYSTEM_TEMPLATE, JUMBO100_WINDOW_SYSTEM_SPEC, SYSTEM_PACKS } from '@/data/systemPacks';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Input } from '@/shared/ui/ui/input';
+import { Label } from '@/shared/ui/ui/label';
+import { Progress } from '@/shared/ui/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
+import { Switch } from '@/shared/ui/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { Profile, WindowUnit } from '@/types/fabricator';
+import {
+    AlertCircle,
+    AlertTriangle,
+    BarChart3,
+    Box,
+    Calendar,
+    CheckCircle,
+    DollarSign,
+    Download,
+    FileText,
+    History,
+    Info,
+    MapPin,
+    Package,
+    QrCode,
+    RefreshCw,
+    Search,
+    ShoppingCart,
+    TrendingUp,
+    Warehouse,
+    X,
+} from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 // System-pack specific paint color options (can be expanded per catalog)
 const PACK_COLOR_OPTIONS: Record<
@@ -202,7 +202,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   userId,
 }) => {
   const { t } = useTranslation('fabricator');
-  const { state: workspaceState } = useFabricatorWorkspace();
+  const { state: workspaceState, dispatch } = useFabricatorWorkspace();
   const searchQuery = workspaceState.globalSearchQuery || '';
   const [activeTab, setActiveTab] = useState('overview');
   const [remnants, setRemnants] = useState<Remnant[]>([]);
@@ -769,7 +769,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
         const code = (profile.specifications as any)?.supplierCode?.toLowerCase() || 
                      (profile.specifications as any)?.internalCode?.toLowerCase() || '';
         const role = (profile.specifications as any)?.profileRole?.toLowerCase() || '';
-        const profileNumber = profile.profileNumber?.toLowerCase() || '';
+        const profileNumber = ((profile.specifications as any)?.profileNumber || (profile.specifications as any)?.supplierCode || '').toLowerCase();
         
         if (!(
           name.includes(query) ||
@@ -1198,7 +1198,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         <Input
                           placeholder="Search profiles..."
                           value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
+                          onChange={(e) => dispatch({ type: 'SET_GLOBAL_SEARCH', payload: e.target.value })}
                           className="pl-10"
                         />
                       </div>

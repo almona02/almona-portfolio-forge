@@ -1,15 +1,13 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
-import { 
-  getDefaultProfileColor, 
-  getDefaultGlazing, 
-  getDefaultWindLoad, 
-  getDefaultMarketTier,
-  EGYPTIAN_PROFILE_COLORS,
-  EGYPTIAN_MARKET_SEGMENTATION
+import {
+    getDefaultGlazing,
+    getDefaultMarketTier,
+    getDefaultProfileColor,
+    getDefaultWindLoad
 } from '@/data/egyptian-defaults';
-import { Palette, Droplet, Wind, TrendingUp } from 'lucide-react';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Droplet, Palette, TrendingUp, Wind } from 'lucide-react';
+import React from 'react';
 
 interface EgyptianDefaultsPreviewProps {
   region?: string;
@@ -62,9 +60,9 @@ export const EgyptianDefaultsPreview: React.FC<EgyptianDefaultsPreviewProps> = (
           <div className="flex items-center gap-2">
             <Droplet className="h-3 w-3 text-blue-400" />
             <span className="text-xs text-gray-300">
-              {defaults.glazing.type === 'double' && defaults.glazing.color === 'blue_reflective' 
+              {defaults.glazing.type === 'double' && (defaults.glazing as any).color === 'blue_reflective' 
                 ? 'Blue Reflective' 
-                : defaults.glazing.type === 'double' && defaults.glazing.color === 'brown_reflective'
+                : defaults.glazing.type === 'double' && (defaults.glazing as any).color === 'brown_reflective'
                 ? 'Brown Reflective'
                 : `${defaults.glazing.type} (${defaults.glazing.thickness}mm)`}
             </span>
@@ -96,13 +94,13 @@ export const EgyptianDefaultsPreview: React.FC<EgyptianDefaultsPreviewProps> = (
           <Badge 
             variant="outline" 
             className={`text-[10px] ${
-              defaults.marketTier === EGYPTIAN_MARKET_SEGMENTATION.low ? 'bg-green-900/30 border-green-800 text-green-400' :
-              defaults.marketTier === EGYPTIAN_MARKET_SEGMENTATION.high ? 'bg-purple-900/30 border-purple-800 text-purple-400' :
+              (defaults.marketTier as any).profiles === 'chinese_local' ? 'bg-green-900/30 border-green-800 text-green-400' :
+              (defaults.marketTier as any).profiles === 'german' ? 'bg-purple-900/30 border-purple-800 text-purple-400' :
               'bg-gray-800/50 border-gray-700'
             }`}
           >
-            {defaults.marketTier === EGYPTIAN_MARKET_SEGMENTATION.low ? 'Low' :
-             defaults.marketTier === EGYPTIAN_MARKET_SEGMENTATION.high ? 'High' :
+            {(defaults.marketTier as any).profiles === 'chinese_local' ? 'Low' :
+             (defaults.marketTier as any).profiles === 'german' ? 'High' :
              'Medium'} Tier
           </Badge>
         </div>

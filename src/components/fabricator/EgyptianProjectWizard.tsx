@@ -1,29 +1,28 @@
-import React, { useMemo, useState } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/shared/ui/ui/dialog';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Label } from '@/shared/ui/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Progress } from '@/shared/ui/ui/progress';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { MapPin, Ruler, Factory, CheckCircle2, Layers, BoxSelect, Check } from 'lucide-react';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
+import { addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import { getSystemPackTuningStatus, saveReturnUrl } from '@/lib/fabricator/systemTuningUtils';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/shared/ui/ui/dialog';
+import { Input } from '@/shared/ui/ui/input';
+import { Label } from '@/shared/ui/ui/label';
+import { Progress } from '@/shared/ui/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
+import { AlertCircle, ArrowRight, BoxSelect, Check, CheckCircle2, Factory, Layers, MapPin, Ruler, Settings } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { CustomSystemManager } from './CustomSystemManager';
 import type { ProjectHeaderMeta } from './NewProjectWizard';
 import { SystemTuningStudio } from './SystemTuningStudio';
-import { CustomSystemManager } from './CustomSystemManager';
-import { loadCustomSystems, addCustomSystem } from '@/lib/fabricator/customSystemStorage';
-import { getSystemPackTuningStatus, saveReturnUrl } from '@/lib/fabricator/systemTuningUtils';
-import { useNavigate } from 'react-router-dom';
-import { AlertCircle, Settings, ArrowRight } from 'lucide-react';
 
 type WindZone = 'inland' | 'coastal' | 'high_wind';
 type Exposure = 'street' | 'backyard' | 'open_field';
@@ -57,7 +56,7 @@ const GOVERNORATES: { name: string; windZone: WindZone }[] = [
   { name: 'Delta', windZone: 'inland' },
 ];
 
-const defaultSystems = ['panda-50', 'rock60'];
+const _defaultSystems = ['panda-50', 'rock60'];
 
 export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
   open,
@@ -94,7 +93,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
               tunedSystems.push(pack);
             }
           }
-        } catch (e) {
+        } catch {
           // Ignore parse errors
         }
       }
@@ -123,7 +122,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                 newTuned.push(pack);
               }
             }
-          } catch (e) {
+          } catch {
             // Ignore
           }
         }
@@ -187,13 +186,13 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
           return tunedPack;
         }
       }
-    } catch (e) {
+    } catch {
       // Ignore errors
     }
     
     // Fall back to original systems
     return SYSTEM_PACKS.find((p) => p.meta.id === selectedSystemId) 
-      || EGYPTIAN_UPVC_SYSTEMS.find((p) => p.meta.id === selectedSystemId)
+      || EGYPTIAN_UPVC_SYSTEMS.find((p) => (p as any).meta?.id === selectedSystemId)
       || customSystems.find((c) => c.meta?.id === selectedSystemId);
   }, [selectedSystemId, customSystems]);
 
@@ -358,6 +357,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, step]);
 
   return (
@@ -637,7 +637,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                   <div className="flex flex-wrap gap-2">
                     {recommendedSystems.map((id) => {
                       const pack = SYSTEM_PACKS.find((p) => p.meta.id === id) 
-                        || EGYPTIAN_UPVC_SYSTEMS.find((p) => p.meta.id === id)
+                        || EGYPTIAN_UPVC_SYSTEMS.find((p) => (p as any).meta?.id === id)
                         || customSystems.find((c) => c.meta?.id === id);
                       if (!pack) return null;
                       const active = selectedSystemId === id;
@@ -696,7 +696,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                     onClick={() => {
                       const currentPack =
                         SYSTEM_PACKS.find((p) => p.meta.id === selectedSystemId) ||
-                        EGYPTIAN_UPVC_SYSTEMS.find((p) => p.meta.id === selectedSystemId) ||
+                        EGYPTIAN_UPVC_SYSTEMS.find((p) => (p as any).meta?.id === selectedSystemId) ||
                         customSystems.find((c) => c.meta?.id === selectedSystemId);
                       setTuningInitialSystem(currentPack || null);
                       setShowTuningStudio(true);

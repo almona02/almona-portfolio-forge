@@ -1,28 +1,26 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import {
-  Users,
-  Package,
-  ShoppingCart,
-  DollarSign,
-  BarChart3,
-  TrendingUp,
-  Activity,
-  AlertTriangle,
+    Activity,
+    AlertTriangle,
+    DollarSign,
+    Package,
+    ShoppingCart,
+    Users,
 } from 'lucide-react';
+import React, { useState } from 'react';
 
 // Import all admin panels
+import { BusinessKPIDashboard } from '../analytics/BusinessKPIDashboard';
+import { RecentOrders } from './RecentOrders';
+import { SalesChart } from './SalesChart';
 import { CustomersPanel } from './panels/CustomersPanel';
-import { ProductsPanel } from './panels/ProductsPanel';
+import { FinancePanel } from './panels/FinancePanel';
 import { InventoryPanel } from './panels/InventoryPanel';
 import { OrdersPanel } from './panels/OrdersPanel';
-import { FinancePanel } from './panels/FinancePanel';
-import { SalesChart } from './SalesChart';
-import { RecentOrders } from './RecentOrders';
-import { BusinessKPIDashboard } from '../analytics/BusinessKPIDashboard';
+import { ProductsPanel } from './panels/ProductsPanel';
 
 /**
  * Admin Dashboard Component

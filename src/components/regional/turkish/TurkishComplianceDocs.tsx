@@ -3,17 +3,16 @@
  * Generates Turkish market compliance documents and certificates
  */
 
-import React, { useState, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { generateTurkishInvoice, formatTurkishDate, generateTurkishInvoiceNumber } from '@/lib/turkishTaxUtils';
+import { Textarea } from '@/components/ui/textarea';
+import { formatTurkishDate, generateTurkishInvoice, generateTurkishInvoiceNumber } from '@/lib/turkishTaxUtils';
+import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface TurkishComplianceDocsProps {
   className?: string;
@@ -144,6 +143,14 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
     }
   }, [selectedDocument, companyInfo, customerInfo, products, onDocumentGenerated]);
 
+  const generateDocumentContent = useCallback((doc: any) => {
+    if (doc.type === 'delivery-note') {
+      return generateDeliveryNoteHTML(doc);
+    }
+    return generateInvoiceHTML(doc);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const downloadDocument = useCallback(() => {
     if (!generatedDocument) return;
 
@@ -157,14 +164,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, [generatedDocument]);
-
-  const generateDocumentContent = (doc: any) => {
-    if (doc.type === 'delivery-note') {
-      return generateDeliveryNoteHTML(doc);
-    }
-    return generateInvoiceHTML(doc);
-  };
+  }, [generatedDocument, generateDocumentContent]);
 
   const generateInvoiceHTML = (invoice: any) => {
     return `
@@ -339,8 +339,8 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
           <Label className="text-gray-300">
             {t('turkish.compliance.documentType', 'Belge Türü')}
           </Label>
-          <Select value={selectedDocument} onValueChange={setSelectedDocument}>
-            <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+            <Select value={selectedDocument} onValueChange={setSelectedDocument}>
+            <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

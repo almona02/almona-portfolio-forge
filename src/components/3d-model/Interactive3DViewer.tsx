@@ -10,15 +10,15 @@
  * - Pricing integration
  */
 
-import React, { Suspense, useRef, useEffect, useState, useCallback } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
-import { useGLTF, Environment, OrbitControls, Bounds, useBounds, useAnimations, Html, Text } from '@react-three/drei';
-import { initCompressedModelDecoders } from '@/lib/three-optimized';
-import { launchSwiftXR, detectSwiftXR } from '@/utils/swiftXRIntegration';
+import { Window3DModel } from '@/components/fabricator/Window3DGenerator';
+import { useRegionUtils } from '@/hooks/useRegionDetection';
 import { useToast } from '@/hooks/useToast';
-import { Window3DModel, WindowMeasurementOverlay } from '@/components/fabricator/Window3DGenerator';
+import { initCompressedModelDecoders } from '@/lib/three-optimized';
 import { WindowUnit } from '@/types/fabricator';
-import { useRegionDetection, useRegionUtils } from '@/hooks/useRegionDetection';
+import { detectSwiftXR, launchSwiftXR } from '@/utils/swiftXRIntegration';
+import { Bounds, Environment, Html, OrbitControls, useAnimations, useBounds, useGLTF } from '@react-three/drei';
+import { Canvas, useThree } from '@react-three/fiber';
+import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as THREE from 'three';
 import './SwiftXR.css';
@@ -723,7 +723,7 @@ export function Interactive3DViewer({
                   </group>
                 </Bounds>
                 {showMeasurements && (
-                  <WindowMeasurementOverlay windowUnit={windowUnit} />
+                  {/* Measurement overlay removed - component doesn't exist */}
                 )}
               </>
             ) : isGLBMode && modelPath ? (

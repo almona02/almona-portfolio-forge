@@ -3,16 +3,17 @@
  * Integrates with InteractiveGLBViewer to provide real-time pricing calculations
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useRegionDetection, useRegionUtils, useTurkishTaxUtils } from '@/hooks/useRegionDetection';
-import { PartAnnotation, PricingCalculation } from './InteractiveGLBViewer';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { getRegionalConfig } from '@/config/regionalConfig';
+import { useRegionDetection, useRegionUtils, useTurkishTaxUtils } from '@/hooks/useRegionDetection';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { PartAnnotation } from './InteractiveGLBViewer';
 
 interface InteractivePricingCalculatorProps {
   selectedParts: PartAnnotation[];
@@ -23,7 +24,7 @@ interface InteractivePricingCalculatorProps {
   className?: string;
 }
 
-interface TotalPricingCalculation {
+export interface TotalPricingCalculation {
   subtotal: number;
   taxAmount: number;
   total: number;
@@ -92,11 +93,12 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
     const taxAmount = parts.reduce((sum, item) => sum + item.taxAmount, 0);
     const total = parts.reduce((sum, item) => sum + item.total, 0);
 
+    const config = getRegionalConfig(regionState.region);
     const pricing: TotalPricingCalculation = {
       subtotal,
       taxAmount,
       total,
-      currency: utils.config.currency.code,
+      currency: config.currency.code,
       region: regionState.region,
       parts
     };
@@ -169,7 +171,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
           <span>{t('pricing.calculator.title', 'Pricing Calculator')}</span>
           {showRegionalPricing && (
             <Badge variant="outline" className="text-orange-400 border-orange-400">
-              {regionState.region} - {utils.config.currency.symbol}
+              {regionState.region} - {getRegionalConfig(regionState.region).currency.symbol}
             </Badge>
           )}
         </CardTitle>
@@ -234,7 +236,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
                   </div>
                   {showTaxBreakdown && (
                     <div className="text-gray-400 text-xs">
-                      {utils.formatCurrency(item.subtotal, { showSymbol: true })} + {utils.formatCurrency(item.taxAmount, { showSymbol: true })} {utils.config.tax.vatName}
+                      {utils.formatCurrency(item.subtotal, { showSymbol: true })} + {utils.formatCurrency(item.taxAmount, { showSymbol: true })} {getRegionalConfig(regionState.region).tax.vatName}
                     </div>
                   )}
                 </div>
@@ -256,7 +258,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
             {showTaxBreakdown && (
               <div className="flex justify-between text-gray-300">
                 <span>
-                  {t('pricing.calculator.tax', 'Tax')} ({utils.config.tax.vatName} {utils.config.tax.vatRate * 100}%):
+                  {t('pricing.calculator.tax', 'Tax')} ({getRegionalConfig(regionState.region).tax.vatName} {getRegionalConfig(regionState.region).tax.vatRate * 100}%):
                 </span>
                 <span>{utils.formatCurrency(totalPricing.taxAmount, { showSymbol: true })}</span>
               </div>

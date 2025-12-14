@@ -1,13 +1,13 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { PILOT_SYSTEMS, SYSTEM_CATEGORIES, getSystemsByCategory, getPilotSystem, type PilotSystemId } from '@/data/pilot-systems';
+import { SmartDrawCanvas } from '@/components/fabricator/SmartDrawCanvas';
+import { ProductionRealityPanel } from '@/components/pilot/ProductionRealityPanel';
+import { SYSTEM_CATEGORIES, getPilotSystem, getSystemsByCategory, type PilotSystemId } from '@/data/pilot-systems';
 import { useMaalemEngines } from '@/hooks/useMaalemEngines';
 import { generateManualCuttingPacket } from '@/lib/pilot/ManualCuttingPacketGenerator';
-import { SmartDrawCanvas } from '@/components/fabricator/SmartDrawCanvas';
-import { getLiveAluminumPrice } from '@/utils/marketData';
-import { ProductionRealityPanel } from '@/components/pilot/ProductionRealityPanel';
-import type { MaalemDashboardState } from '@/types/pilot';
 import type { WindowGrid } from '@/types/fabricator';
+import type { MaalemDashboardState } from '@/types/pilot';
+import { getLiveAluminumPrice } from '@/utils/marketData';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 export const MaalemDashboard: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -137,7 +137,7 @@ export const MaalemDashboard: React.FC = () => {
               <div className="flex justify-between items-center text-lg font-bold text-[#003366]"><span>الإجمالي</span><span className="font-mono">{costs.total.toLocaleString('ar-EG')}</span></div>
             </div>
           </div>
-          <button onClick={() => optimization && generateManualCuttingPacket(inputs, optimization, costs)} disabled={validation.status === 'error' || !optimization} className="mt-4 w-full py-4 bg-[#003366] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-3">
+          <button onClick={() => optimization && generateManualCuttingPacket(inputs, optimization, { ...costs, profiles: costs.material * 0.6, glass: costs.material * 0.3, accessories: costs.material * 0.1 })} disabled={validation.status === 'error' || !optimization} className="mt-4 w-full py-4 bg-[#003366] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-3">
             <span className="text-xl">🖨️</span><div><div className="font-bold">طباعة أمر الشغل</div><div className="text-xs font-normal opacity-80">دقة ٩٩.٨٪</div></div>
           </button>
         </div>

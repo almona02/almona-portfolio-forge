@@ -9,14 +9,14 @@
  * - Enhanced AR/WebXR support
  */
 
-import React, { Suspense, useRef, useEffect, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
-import { useGLTF, Environment, OrbitControls, Bounds, useBounds, useAnimations, Html, Text } from '@react-three/drei';
-import { initCompressedModelDecoders } from '@/lib/three-optimized';
-import { launchSwiftXR, detectSwiftXR } from '@/utils/swiftXRIntegration';
+import { Window3DModel } from '@/components/fabricator/Window3DGenerator';
 import { useToast } from '@/hooks/useToast';
-import { Window3DModel, WindowMeasurementOverlay } from '@/components/fabricator/Window3DGenerator';
+import { initCompressedModelDecoders } from '@/lib/three-optimized';
 import { WindowUnit } from '@/types/fabricator';
+import { detectSwiftXR, launchSwiftXR } from '@/utils/swiftXRIntegration';
+import { Bounds, Environment, OrbitControls, useAnimations, useBounds, useGLTF } from '@react-three/drei';
+import { Canvas } from '@react-three/fiber';
+import React, { Suspense, forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import * as THREE from 'three';
 import './SwiftXR.css';
 
@@ -514,9 +514,7 @@ export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
                     />
                   </group>
                 </Bounds>
-                {showMeasurements && (
-                  <WindowMeasurementOverlay windowUnit={windowUnit} />
-                )}
+                {/* Measurement overlay removed - component doesn't exist */}
               </>
             ) : isGLBMode && modelPath ? (
               <Bounds fit clip observe margin={1.15}>

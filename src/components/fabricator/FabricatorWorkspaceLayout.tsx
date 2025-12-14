@@ -1,23 +1,17 @@
-import React, { useCallback, useState } from 'react';
-import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
-import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { AutoSaveIndicator } from '@/components/fabricator/AutoSaveIndicator';
+import { WorkspaceSnapshotManager } from '@/components/fabricator/WorkspaceSnapshotManager';
+import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import { useAutoSave } from '@/hooks/useAutoSave';
+import { isRTL } from '@/lib/i18n';
+import { WorkspaceSyncService } from '@/lib/workspace/WorkspaceSyncService';
+import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Input } from '@/shared/ui/ui/input';
-import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
-import { Users, Package, FileText, Calculator, Library, Search } from 'lucide-react';
-import { WorkspaceSnapshotManager } from '@/components/fabricator/WorkspaceSnapshotManager';
-import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
-import { AutoSaveIndicator } from '@/components/fabricator/AutoSaveIndicator';
-import { useAutoSave } from '@/hooks/useAutoSave';
-import { WorkspaceSyncService } from '@/lib/workspace/WorkspaceSyncService';
+import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { Calculator, FileText, Library, Package, Search, Users } from 'lucide-react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isRTL } from '@/lib/i18n';
-import { Suspense } from 'react';
-
-// At the top of the file, replace static imports with dynamic ones
-const ProfileManagement = React.lazy(() => import('./ProfileManagement'));
-const CuttingOptimizationPanel = React.lazy(() => import('./CuttingOptimizationPanel'));
-const Window3DGenerator = React.lazy(() => import('./Window3DGenerator'));
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const workspaceTabs = [
   { id: 'projects', icon: FileText, path: '/fabricator/projects', key: 'projects' },
@@ -36,7 +30,7 @@ export const FabricatorWorkspaceLayout: React.FC = () => {
   const isRTLMode = isRTL(i18n.language);
   const [searchQuery, setSearchQuery] = useState(state.globalSearchQuery || '');
 
-  const workspaceOwner =
+  const _workspaceOwner =
     branding.workshopName?.trim() ||
     branding.companyName?.trim() ||
     t('workspace.title', 'Fabricator');

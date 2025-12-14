@@ -3,17 +3,16 @@
  * Quick preview and access to remnant marketplace
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { RemnantMarketplace } from '@/lib/inventory/RemnantMarketplace';
 import type { MarketplaceListing } from '@/lib/inventory/RemnantMarketplace';
-import { ShoppingCart, Plus, ArrowRight, MapPin } from 'lucide-react';
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/shared/ui/ui/dialog';
+import { RemnantMarketplace } from '@/lib/inventory/RemnantMarketplace';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardTitle } from '@/shared/ui/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/ui/dialog';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
+import { ArrowRight, Plus, ShoppingCart } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface RemnantMarketplacePreviewProps {
   workshopId: string;
@@ -28,7 +27,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
   onListingCreated,
   remnantId,
   remnantLength,
-  remnantProfileId,
+  remnantProfileId: _remnantProfileId,
 }) => {
   const [recentListings, setRecentListings] = useState<MarketplaceListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,7 +39,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
 
   useEffect(() => {
     loadRecentListings();
-  }, [workshopId]);
+  }, [workshopId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadRecentListings = async () => {
     try {

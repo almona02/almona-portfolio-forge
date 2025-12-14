@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { Columns, Rows, List, ChevronUp, ChevronDown } from 'lucide-react';
-import { WindowGrid, GridCell } from '@/types/fabricator';
 import { cn } from '@/lib/utils';
+import { GridCell, WindowGrid } from '@/types/fabricator';
+import { ChevronDown, ChevronUp, Columns, List, Rows } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface SmartDrawProps {
   width: number;
@@ -32,7 +32,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
     } else if (!colWidthsInput) {
       setColWidthsInput('');
     }
-  }, [grid.cols, grid.colWidths]);
+  }, [grid.cols, grid.colWidths, colWidthsInput]);
 
   useEffect(() => {
     if (grid.rowHeights && grid.rowHeights.length === grid.rows) {
@@ -40,7 +40,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
     } else if (!rowHeightsInput) {
       setRowHeightsInput('');
     }
-  }, [grid.rows, grid.rowHeights]);
+  }, [grid.rows, grid.rowHeights, rowHeightsInput]);
 
   // Initialize grid if empty (fallback safety)
   useEffect(() => {
@@ -84,7 +84,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   };
 
   const handleCellClick = (cellId: string) => {
-    const newCells = grid.cells.map(cell => {
+    const newCells: GridCell[] = grid.cells.map(cell => {
       if (cell.id === cellId) {
         // Cycle: Fixed -> Sash(left) -> Sash(right) -> Sliding -> Panel -> Empty -> Fixed
         const cycle = ['fixed', 'sash-left', 'sash-right', 'sliding', 'panel', 'empty'] as const;
@@ -98,12 +98,16 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
         const nextKey = cycle[(currentIndex + 1) % cycle.length];
 
         if (nextKey === 'sash-left') {
-          return { ...cell, type: 'sash', openingDirection: 'left' };
+          return { ...cell, type: 'sash' as const, openingDirection: 'left' as const };
         }
         if (nextKey === 'sash-right') {
-          return { ...cell, type: 'sash', openingDirection: 'right' };
+          return { ...cell, type: 'sash' as const, openingDirection: 'right' as const };
         }
-        return { ...cell, type: nextKey as any, openingDirection: undefined };
+        // Ensure type matches GridCell type
+        const validType = (nextKey === 'fixed' || nextKey === 'sliding' || nextKey === 'panel' || nextKey === 'empty') 
+          ? nextKey 
+          : 'fixed';
+        return { ...cell, type: validType as 'fixed' | 'sash' | 'sliding' | 'empty' | 'panel', openingDirection: undefined };
       }
       return cell;
     });
@@ -117,7 +121,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   
   // Calculate cell dimensions using proportional widths/heights if provided
   // Use useMemo to recalculate when grid structure changes
-  const { colWeights, rowWeights, totalColWeight, totalRowWeight, colStarts, rowStarts, colWidthsPx, rowHeightsPx } = React.useMemo(() => {
+  const { colStarts, rowStarts, colWidthsPx, rowHeightsPx } = React.useMemo(() => {
     const cWeights = grid.colWidths && grid.colWidths.length === grid.cols ? grid.colWidths : Array(grid.cols).fill(1);
     const rWeights = grid.rowHeights && grid.rowHeights.length === grid.rows ? grid.rowHeights : Array(grid.rows).fill(1);
     const tColWeight = cWeights.reduce((a, b) => a + b, 0) || grid.cols;
@@ -128,10 +132,6 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
     const rHeightsPx = rWeights.map((w) => (w / tRowWeight) * svgHeight);
     
     return {
-      colWeights: cWeights,
-      rowWeights: rWeights,
-      totalColWeight: tColWeight,
-      totalRowWeight: tRowWeight,
       colStarts: cStarts,
       rowStarts: rStarts,
       colWidthsPx: cWidthsPx,

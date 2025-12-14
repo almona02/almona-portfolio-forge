@@ -1,24 +1,23 @@
-import React, { useState, useEffect, useRef, Suspense, useCallback } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { createTicketZodSchema, UnifiedTicketFormData } from '@/lib/validation/ticket';
-import { getPresignedUrl, uploadFile } from '@/lib/uploads/ticketAttachments';
-import { TicketPriority, TicketType, ServiceTicket } from '@/types/tickets';
-import { useAuth } from '@/context/AuthContext';
-import { useMutation } from '@tanstack/react-query';
-import { createTicket } from '@/lib/ticketApi';
-import { api } from '@/lib/api';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/context/AuthContext';
+import { api } from '@/lib/api';
+import { createTicket } from '@/lib/ticketApi';
+import { getPresignedUrl, uploadFile } from '@/lib/uploads/ticketAttachments';
+import { UnifiedTicketFormData, createTicketZodSchema } from '@/lib/validation/ticket';
+import { ServiceTicket, TicketPriority, TicketType } from '@/types/tickets';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
+import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 // Removed Select components after converting machine serial to pill selection
 import { Label } from '@/components/ui/label';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, ChevronLeft, ChevronRight, Copy, Check } from 'lucide-react';
-import { useToast } from '@/hooks/useToast';
 import { useLanguage } from '@/context/LanguageContext';
-import { useClipboard } from '@/hooks/useClipboard';
+import { useToast } from '@/hooks/useToast';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CheckCircle2, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 
 interface TicketWizardDialogProps {
   open: boolean;
@@ -62,7 +61,7 @@ const getSteps = (t: any) => [
 export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, onOpenChange, onTicketCreated, initialValues }) => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { t, language } = useLanguage();
+  const { t, language: _language } = useLanguage();
   const [activeStepIndex, setActiveStepIndex] = useState(0);
   const [createdTicketId, setCreatedTicketId] = useState<string | null>(null);
   const [createdTicketTwin, setCreatedTicketTwin] = useState<string | null>(null);
@@ -76,7 +75,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
   const DRAFT_KEY = user ? `ticket_wizard_draft_${user.id}` : undefined;
   const [mdMode, setMdMode] = useState<'edit' | 'preview'>('edit');
   const [richMode, setRichMode] = useState(false);
-  type RichEditorComponent = React.ComponentType<{ value?: string; onChange?: (v: string) => void; preview?: string; height?: number; textareaProps?: any }>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  type RichEditorComponent = React.ComponentType<{ value?: string; onChange?: (v: string) => void; preview?: string; height?: number; textareaProps?: any }>;
   const [RichEditor, setRichEditor] = useState<RichEditorComponent | null>(null);
   const [mdRenderer, setMdRenderer] = useState<null | { render: (src: string) => string }>(null);
   const [sanitizer, setSanitizer] = useState<null | ((html: string) => string)>(null);
@@ -401,7 +400,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         );
       })}
     </div>
-  ), [uiType, handleTypeClick]);
+  ), [uiType, handleTypeClick, typeMeta]);
 
   const handlePriorityClick = useCallback((priority: TicketPriority) => {
     userInteractedRef.current = true;
@@ -431,7 +430,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
         );
       })}
     </div>
-  ), [uiPriority, handlePriorityClick]);
+  ), [uiPriority, handlePriorityClick, priorityMeta]);
 
   const activeStep = steps[activeStepIndex];
   const isLastFormStep = activeStep.id === 'preview';
@@ -671,17 +670,14 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                         size="sm" 
                         variant="outline" 
                         className="flex items-center gap-1" 
-                        onClick={() => {
+                        onClick={async () => {
                           if (createdTicketTwin) {
-                            twinClipboard.copyToClipboard(createdTicketTwin, 'digital twin code');
+                            await navigator.clipboard.writeText(createdTicketTwin);
+                            toast({ title: 'Copied!', description: 'Digital twin code copied to clipboard.' });
                           }
                         }}
                       >
-                        {twinClipboard.copiedText === createdTicketTwin ? (
-                          <Check className="h-3 w-3 text-green-500" />
-                        ) : (
-                          <Copy className="h-3 w-3" />
-                        )} {t('ticket.copy_code')}
+                        <Copy className="h-3 w-3" /> {t('ticket.copy_code')}
                       </Button>
                     </div>
                   ) : (
@@ -725,7 +721,6 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
 export default TicketWizardDialog;
 
 // Helper subcomponent for Contact & Machine section
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MachineAndContactSection: React.FC<{ control: any; setValue: any; userId: string | null; selectedContactMethod: string | undefined }> = ({ control, setValue, userId, selectedContactMethod }) => {
   const [machines, setMachines] = React.useState<Array<{ serial_number: string; model?: string | null }> | null>(null);
   const [loading, setLoading] = React.useState(false);

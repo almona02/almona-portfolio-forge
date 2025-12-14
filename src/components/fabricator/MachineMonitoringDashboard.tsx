@@ -4,29 +4,30 @@
  * Displays machine status, production progress, and health metrics
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Progress } from '@/shared/ui/ui/progress';
-import { Button } from '@/shared/ui/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
-import {
-  Activity,
-  Factory,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  Zap,
-  Thermometer,
-  Gauge,
-  Play,
-  Pause,
-  Square,
-  RefreshCw
-} from 'lucide-react';
 import { MachineStatus } from '@/integrations/cnc/CNCController';
-import { YilmazCNC, YilmazMachineModel } from '@/integrations/yilmaz/YilmazCNC';
-import { YilmazNetworkProtocol, YilmazNetworkConfig } from '@/machine-connectors/YilmazNetworkProtocol';
+import { YilmazCNC } from '@/integrations/yilmaz/YilmazCNC';
+import { YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
+import { YilmazNetworkConfig } from '@/machine-connectors/YilmazNetworkProtocol';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Progress } from '@/shared/ui/ui/progress';
+import {
+    Activity,
+    AlertCircle,
+    CheckCircle,
+    Clock,
+    Factory,
+    Gauge,
+    Pause,
+    Play,
+    RefreshCw,
+    Square,
+    Thermometer,
+    Zap
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 export interface MachineInfo {
   id: string;

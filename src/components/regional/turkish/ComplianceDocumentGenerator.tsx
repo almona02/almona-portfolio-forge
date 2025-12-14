@@ -1,8 +1,8 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ComplianceDocumentGeneratorProps {
   machineId: string;
@@ -11,7 +11,7 @@ interface ComplianceDocumentGeneratorProps {
 
 export const ComplianceDocumentGenerator: React.FC<ComplianceDocumentGeneratorProps> = ({
   machineId,
-  customerInfo
+  customerInfo: _customerInfo
 }) => {
   const { t } = useTranslation();
 
@@ -46,7 +46,7 @@ export const ComplianceDocumentGenerator: React.FC<ComplianceDocumentGeneratorPr
                 <div>
                   <span className="font-medium">{doc.name}</span>
                   {doc.required && (
-                    <Badge variant="destructive" className="ml-2">
+                    <Badge variant="default" className="ml-2 bg-red-600 text-white">
                       {t('turkish_documents.required')}
                     </Badge>
                   )}

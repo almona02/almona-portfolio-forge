@@ -1,9 +1,9 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Progress } from '@/shared/ui/ui/progress';
-import { Activity, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { WindowUnit } from '@/types/fabricator';
+import { Activity, CheckCircle, Clock } from 'lucide-react';
+import React from 'react';
 
 interface RealTimeMonitoringProps {
   projects: WindowUnit[];
@@ -11,7 +11,7 @@ interface RealTimeMonitoringProps {
 
 export const RealTimeMonitoring: React.FC<RealTimeMonitoringProps> = ({ projects }) => {
   const activeProjects = projects.filter(p => p.status === 'production');
-  const completedProjects = projects.filter(p => p.status === 'completed');
+  const completedProjects = projects.filter(p => p.status === 'delivered');
 
   return (
     <Card className="bg-gray-700/50 border-gray-600">

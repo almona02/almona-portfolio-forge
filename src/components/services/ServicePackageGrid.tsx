@@ -1,5 +1,5 @@
-import React from 'react';
 import { useLanguage } from '@/context/LanguageContext';
+import React from 'react';
 import { ServicePackageCard } from './ServicePackageCard';
 
 interface ServicePackageGridProps {
@@ -29,13 +29,12 @@ export const ServicePackageGrid: React.FC<ServicePackageGridProps> = ({
 
       {/* Package Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {packages.map((packageId, index) => (
+        {packages.map((packageId) => (
           <ServicePackageCard
             key={packageId}
             packageId={packageId}
             onSelect={onPackageSelect}
             className="animate-fade-in-up"
-            style={{ animationDelay: `${index * 0.1}s` }}
           />
         ))}
       </div>

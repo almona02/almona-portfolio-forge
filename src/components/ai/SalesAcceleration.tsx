@@ -1,42 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  Brain,
-  Target,
-  TrendingUp,
-  Users,
-  MessageCircle,
-  FileText,
-  Zap,
-  Star,
-  CheckCircle,
-  AlertCircle,
-  Clock,
-  DollarSign,
-  BarChart3,
-  Lightbulb,
-  Send,
-  Download,
-  Eye,
-  Settings,
-  ArrowRight,
-  Phone,
-  Mail,
-  Calendar,
-  Award,
-} from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { track } from '@/lib/analytics';
 import { getEquipmentRecommendation } from '@/lib/ai/gemini';
+import { track } from '@/lib/analytics';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import {
+    AlertCircle,
+    BarChart3,
+    Brain,
+    Calendar,
+    CheckCircle,
+    DollarSign,
+    Eye,
+    Lightbulb,
+    Mail,
+    Phone,
+    Send,
+    Star,
+    Target,
+    TrendingUp,
+    Users,
+    Zap,
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // AI Sales Types
 interface Lead {
@@ -208,9 +198,9 @@ const mockAIInsights: AIInsight[] = [
  * - Regional market intelligence
  */
 export const SalesAcceleration: React.FC = () => {
-  const { t } = useTranslation();
-  const [leads, setLeads] = useState<Lead[]>(mockLeads);
-  const [aiInsights, setAIInsights] = useState<AIInsight[]>(mockAIInsights);
+  const [_t] = useTranslation();
+  const [leads] = useState<Lead[]>(mockLeads);
+  const [aiInsights] = useState<AIInsight[]>(mockAIInsights);
   const [activeTab, setActiveTab] = useState('leads');
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [generatingProposal, setGeneratingProposal] = useState(false);
@@ -287,7 +277,7 @@ export const SalesAcceleration: React.FC = () => {
         query: aiQuery,
         timestamp: Date.now()
       });
-    } catch (error) {
+    } catch {
       setAIResponse('AI service temporarily unavailable. Please try again later.');
     }
   };
@@ -369,7 +359,7 @@ export const SalesAcceleration: React.FC = () => {
                     <div className="flex items-center gap-2 mt-1">
                       <Badge variant="outline">{lead.region}</Badge>
                       <Badge 
-                        variant={lead.qualification === 'hot' ? 'destructive' : lead.qualification === 'warm' ? 'default' : 'secondary'}
+                        variant={lead.qualification === 'hot' ? 'default' : lead.qualification === 'warm' ? 'default' : 'secondary'}
                       >
                         {lead.qualification}
                       </Badge>
@@ -496,7 +486,7 @@ export const SalesAcceleration: React.FC = () => {
                 
                 <div className="flex items-center gap-1">
                   <Badge 
-                    variant={insight.priority === 'high' ? 'destructive' : 'default'}
+                    variant={insight.priority === 'high' ? 'default' : 'default'}
                     className="capitalize"
                   >
                     {insight.priority}

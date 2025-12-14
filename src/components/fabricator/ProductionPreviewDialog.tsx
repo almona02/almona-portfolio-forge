@@ -4,21 +4,21 @@
  * This is a gatekeeper modal, not an optional preview
  */
 
-import React, { useState, useMemo } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/shared/ui/ui/dialog';
-import { Button } from '@/shared/ui/ui/button';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { CheckCircle2, AlertTriangle, XCircle, Settings, Loader2 } from 'lucide-react';
-import { CutSimulationViewer } from './CutSimulationViewer';
 import { cutSimulator } from '@/lib/simulation/CutSimulator';
-import type { WindowComponent, Profile, OptimizationResult } from '@/types/fabricator';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Button } from '@/shared/ui/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/shared/ui/ui/dialog';
+import type { OptimizationResult, Profile, WindowComponent } from '@/types/fabricator';
+import { AlertTriangle, CheckCircle2, Loader2, Settings, XCircle } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { CutSimulationViewer } from './CutSimulationViewer';
 
 interface ProductionPreviewDialogProps {
   open: boolean;
@@ -53,7 +53,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
 
   // Check if all profiles are calibrated
   const calibrationStatus = useMemo(() => {
-    const profileIds = new Set(components.map((c) => c.profileId));
+    const profileIds = new Set(components.map((c) => c.profile.id));
     const uncalibrated: string[] = [];
     const partiallyCalibrated: string[] = [];
 
@@ -61,12 +61,18 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
       const profile = profiles.find((p) => p.id === profileId);
       if (!profile) continue;
 
-      const hasKFactor45 = profile.default_k_factor_45 !== null && profile.default_k_factor_45 !== undefined;
-      const hasKFactor90 = profile.default_k_factor_90 !== null && profile.default_k_factor_90 !== undefined;
+      // Check if profile has calibrations with allowances
+      const hasCalibration = profile.calibrations && profile.calibrations.length > 0;
+      const hasMiter45Allowance = profile.calibrations?.some(
+        (cal) => cal.allowances?.miter45Extra !== undefined && cal.allowances.miter45Extra !== 0
+      );
+      const hasBasicAllowance = profile.calibrations?.some(
+        (cal) => cal.allowances?.basicCutting !== undefined && cal.allowances.basicCutting !== 0
+      );
 
-      if (!hasKFactor45 && !hasKFactor90) {
+      if (!hasCalibration || (!hasMiter45Allowance && !hasBasicAllowance)) {
         uncalibrated.push(profile.name);
-      } else if (!hasKFactor45 || !hasKFactor90) {
+      } else if (!hasMiter45Allowance || !hasBasicAllowance) {
         partiallyCalibrated.push(profile.name);
       }
     }

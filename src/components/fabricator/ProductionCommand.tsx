@@ -17,33 +17,41 @@
  * - Polished UI/UX: The layout, terminology, and visual language are refined to
  *   instill a sense of confidence, precision, and command.
  */
-import React, { useState, useEffect } from 'react';
+import { WasteComparisonReport } from '@/components/analytics/WasteComparisonReport';
+import { MachineValidator } from '@/integrations/yilmaz/MachineValidator';
+import { YilmazGCodeGenerator, YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
+import { calculateManualCuttingPlan, compareWaste } from '@/lib/analytics/WasteCalculator';
+import { ExportService } from '@/lib/exports';
+import { ALM6510ExportOptions, alm6510MDBExport } from '@/lib/exports/ALM6510MDBExport';
+import { downloadSplitPO } from '@/lib/exports/SplitPOExport';
+import type { InstallationCostBreakdown, InstallationVariables } from '@/lib/installation/EgyptianInstallationCalculator';
+import { PDFExportService } from '@/modules/reporting';
+import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
 import {
     Card, CardContent, CardHeader, CardTitle
 } from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Button } from '@/shared/ui/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import {
-    Scissors, TrendingUp, Package, Clock, DollarSign, Download, Send, Code,
-    AlertCircle, CheckCircle, Loader2, FileText
-} from 'lucide-react';
-import { WindowUnit, Profile, OptimizationResult, CuttingPlan } from '@/types/fabricator';
-import { YilmazGCodeGenerator, YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/ui/tooltip';
-import { WasteComparisonReport } from '@/components/analytics/WasteComparisonReport';
-import { calculateManualCuttingPlan, compareWaste } from '@/lib/analytics/WasteCalculator';
-import { ProductionPreviewDialog } from './ProductionPreviewDialog';
-import { MachineValidator } from '@/integrations/yilmaz/MachineValidator';
-import { PDFExportService } from '@/modules/reporting';
-import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
+import { CuttingPlan, OptimizationResult, Profile, WindowUnit } from '@/types/fabricator';
+import {
+    AlertCircle, CheckCircle,
+    Clock,
+    Code,
+    DollarSign, Download,
+    FileText,
+    Loader2,
+    Package,
+    Scissors,
+    Send,
+    TrendingUp
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { alm6510MDBExport, ALM6510ExportOptions } from '@/lib/exports/ALM6510MDBExport';
-import { downloadSplitPO } from '@/lib/exports/SplitPOExport';
 import { InstallationVariablesPanel } from './InstallationVariablesPanel';
-import type { InstallationVariables, InstallationCostBreakdown } from '@/lib/installation/EgyptianInstallationCalculator';
-import { ExportService } from '@/lib/exports';
+import { ProductionPreviewDialog } from './ProductionPreviewDialog';
 
 interface ProductionCommandProps {
     project: WindowUnit | null;
@@ -136,7 +144,6 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
     const [selectedMachine, setSelectedMachine] = useState<YilmazMachineModel>('AIM-7510');
     const [isProcessing, setIsProcessing] = useState(false);
     const [gCodePreview, setGCodePreview] = useState<string | null>(null);
-    const [showWasteComparison, setShowWasteComparison] = useState(true); // Default to show
     const [wasteComparison, setWasteComparison] = useState<any>(null);
     const [showProductionPreview, setShowProductionPreview] = useState(false);
     const [pendingAction, setPendingAction] = useState<'gcode' | 'report' | 'send' | 'alm6510' | 'splitpo' | null>(null);
@@ -147,7 +154,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
     const { branding } = useCompanyBranding();
     
     // Installation variables state
-    const [installationVariables, setInstallationVariables] = useState<InstallationVariables | null>(null);
+    const [_installationVariables, setInstallationVariables] = useState<InstallationVariables | null>(null);
     const [installationBreakdown, setInstallationBreakdown] = useState<InstallationCostBreakdown | null>(null);
 
     const availableMachines: YilmazMachineModel[] = [
@@ -388,7 +395,6 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                     comparison={wasteComparison}
                     currency="EGP"
                     onExportPDF={() => {}}
-                    isInitiallyOpen={showWasteComparison}
                 />
             )}
 
@@ -484,11 +490,11 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                                 if (project && optimization) {
                                     try {
                                         const exportService = new ExportService();
-                                        const blob = await exportService.export(project, optimization, 'pdf', {
+                                        const result = await exportService.exportProject(project, optimization, 'pdf', {
                                             includeDiagrams: true,
                                             includeQRCode: true,
                                         });
-                                        const url = URL.createObjectURL(blob);
+                                        const url = URL.createObjectURL(result.blob);
                                         const a = document.createElement('a');
                                         a.href = url;
                                         a.download = `cutting-list-${project.orderNumber || 'export'}.pdf`;
@@ -511,11 +517,11 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                                 if (project && optimization) {
                                     try {
                                         const exportService = new ExportService();
-                                        const blob = await exportService.export(project, optimization, 'dxf', {
+                                        const result = await exportService.exportProject(project, optimization, 'dxf', {
                                             includeAnnotations: true,
                                             includeQRCode: true,
                                         });
-                                        const url = URL.createObjectURL(blob);
+                                        const url = URL.createObjectURL(result.blob);
                                         const a = document.createElement('a');
                                         a.href = url;
                                         a.download = `cutting-list-${project.orderNumber || 'export'}.dxf`;

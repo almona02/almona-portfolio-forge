@@ -9,21 +9,20 @@
  * This closes the loop between prediction and reality.
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
-import { Badge } from '@/shared/ui/ui/badge';
-import { 
-  AlertTriangle, 
-  CheckCircle2, 
-  TrendingDown, 
-  TrendingUp,
-  Save,
-  RefreshCw
-} from 'lucide-react';
 import { micronEngine } from '@/lib/fabricator/MicronEngine';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Input } from '@/shared/ui/ui/input';
+import {
+    AlertTriangle,
+    CheckCircle2,
+    RefreshCw,
+    Save,
+    TrendingDown,
+    TrendingUp
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface Cut {
   id: string;
@@ -279,7 +278,7 @@ export const CalibrationView: React.FC<CalibrationViewProps> = ({
                       value={actual || ''}
                       onChange={(e) => handleActualChange(cut.id, e.target.value)}
                       placeholder="Enter measured"
-                      className="w-full sm:w-32 text-lg text-center sm:text-right font-mono h-12 text-base"
+                      className="w-full sm:w-32 text-base text-center sm:text-right font-mono h-12"
                       inputMode="decimal"
                       autoComplete="off"
                     />

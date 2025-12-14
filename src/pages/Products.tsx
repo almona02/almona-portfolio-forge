@@ -68,7 +68,7 @@ const mapToUiMachine = (m: SourceMachineLike): UiMachine => ({
 const Products = function ProductsPage() {
   const { t } = useTranslation('products');
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // SINGLE SOURCE OF TRUTH for filters
@@ -98,9 +98,9 @@ const Products = function ProductsPage() {
   const [wizardOpen, setWizardOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Machine | null>(null);
   const [showConfigurator, setShowConfigurator] = useState(false);
-  const [showNewsletter, setShowNewsletter] = useState(false);
+  const [_showNewsletter, setShowNewsletter] = useState(false);
   const [isTourPlaying, setIsTourPlaying] = useState(false);
-  const scrolled = useScrollThreshold(48);
+  const _scrolled = useScrollThreshold(48);
 
   // Debounced filter handler for search performance
   const debouncedSetFilters = useMemo(
@@ -240,7 +240,7 @@ const Products = function ProductsPage() {
     setSelectedMachines([]);
   };
 
-  const handleSaveComparison = () => {
+  const _handleSaveComparison = () => {
     saveComparison(selectedMachines);
     toast({
       title: t('comparison.saved'),
@@ -303,7 +303,7 @@ const Products = function ProductsPage() {
   ];
 
   // Customer testimonials
-  const testimonials = [
+  const _testimonials = [
     {
       name: "Ahmed Hassan",
       company: "Aluminum Solutions Ltd",
@@ -535,7 +535,7 @@ const Products = function ProductsPage() {
                 selectedCategory={filters.category}
                 onCategorySelect={(category) => handleFilterChange('category', category)}
                 onSearchChange={(search) => handleFilterChange('searchTerm', search)}
-                onSearchResults={(results) => {
+                onSearchResults={(_results) => {
                   // The search results are already filtered by the SmartCategoryNavigation
                   // The onSearchChange will update the main search term for useVirtualizedMachines
                 }}
@@ -856,7 +856,7 @@ const Products = function ProductsPage() {
       )}
 
       <CompareBar
-        machines={selectedMachines}
+        machines={selectedMachines.map(mapToUiMachine)}
         onRemove={handleRemoveMachine}
         onCompare={() => setShowCompareDialog(true)}
         onClear={handleClearSelection}

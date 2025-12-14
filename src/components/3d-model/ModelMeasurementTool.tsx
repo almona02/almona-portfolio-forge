@@ -1,23 +1,22 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/shared/ui/ui/button';
+import { useToast } from '@/hooks/useToast';
 import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { 
-  Ruler, 
-  X, 
-  RotateCcw, 
-  Download, 
-  Share2, 
-  Info,
-  Settings,
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  Download,
   Eye,
   EyeOff,
   Move3D,
-  Zap,
-  Target
+  RotateCcw,
+  Ruler,
+  Settings,
+  Share2,
+  Target,
+  X,
+  Zap
 } from 'lucide-react';
-import { useToast } from '@/hooks/useToast';
+import { useCallback, useRef, useState } from 'react';
 
 interface MeasurementPoint {
   id: string;
@@ -69,29 +68,28 @@ export function ModelMeasurementTool({
   const [snapToGrid, setSnapToGrid] = useState(true);
   const [showLabels, setShowLabels] = useState(true);
   const [measurementColor, setMeasurementColor] = useState('#ff6b35');
-  const [labelColor, setLabelColor] = useState('#ffffff');
+  const [_labelColor, _setLabelColor] = useState('#ffffff');
   const [autoRotateSpeed, setAutoRotateSpeed] = useState(1);
   const [showGrid, setShowGrid] = useState(false);
   
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const _canvasRef = useRef<HTMLCanvasElement>(null);
   const { toast } = useToast();
 
-  // Unit conversion factors (to mm)
-  const unitFactors = {
-    mm: 1,
-    cm: 10,
-    m: 1000,
-    in: 25.4,
-    ft: 304.8
-  };
-
   const convertUnit = useCallback((value: number, fromUnit: string, toUnit: string) => {
+    // Unit conversion factors (to mm)
+    const unitFactors = {
+      mm: 1,
+      cm: 10,
+      m: 1000,
+      in: 25.4,
+      ft: 304.8
+    };
     const fromFactor = unitFactors[fromUnit as keyof typeof unitFactors];
     const toFactor = unitFactors[toUnit as keyof typeof unitFactors];
     return (value * fromFactor) / toFactor;
   }, []);
 
-  const addMeasurement = useCallback((startPoint: MeasurementPoint, endPoint: MeasurementPoint) => {
+  const _addMeasurement = useCallback((startPoint: MeasurementPoint, endPoint: MeasurementPoint) => {
     const distance = Math.sqrt(
       Math.pow(endPoint.position.x - startPoint.position.x, 2) +
       Math.pow(endPoint.position.y - startPoint.position.y, 2) +
@@ -194,7 +192,7 @@ export function ModelMeasurementTool({
       x: 0, 
       scale: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 300,
         damping: 30
       }

@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/ui/button';
 import { useToast } from '@/shared/ui/ui/use-toast';
+import { useEffect, useState } from 'react';
 import { detectFaults } from '../../lib/ai/faultDetection';
-import type { Dealer } from '../../types/maintenance';
-
 
 interface Dealer {
   name: string;
@@ -50,8 +48,8 @@ export const MachineHealthCheck = () => {
   const [isMonitoringVibration, setIsMonitoringVibration] = useState(false);
   const { toast } = useToast();
 
-  // New predictive maintenance state
-  const [predictiveMaintenance, setPredictiveMaintenance] = useState({
+  // New predictive maintenance state (for future use)
+  const [_predictiveMaintenance, _setPredictiveMaintenance] = useState({
     bladeWear: 0,
     hydraulicPressure: 0,
     motorEfficiency: 0,

@@ -16,30 +16,30 @@
  * - localStorage persistence
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { X, ChevronRight, ChevronLeft, CheckCircle2, Play, SkipForward } from 'lucide-react';
-import { Button } from '@/shared/ui/ui/button';
-import { Progress } from '@/shared/ui/ui/progress';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Dialog, DialogContent, DialogTitle } from '@/shared/ui/ui/dialog';
-import { OnboardingVideoPlayer } from './OnboardingVideoPlayer';
-import { cn } from '@/lib/utils';
-import { useTranslation } from 'react-i18next';
 import {
-  SmartMeasuringDemo,
-  AIDesignDemo,
-  OptimizationDemo,
-  CNCExportDemo,
-} from './onboarding/OnboardingStepDemos';
-import {
-  trackOnboardingStarted,
-  trackOnboardingStepViewed,
-  trackOnboardingStepCompleted,
-  trackOnboardingCompleted,
-  trackOnboardingSkipped,
-  trackOnboardingVideoPlayed,
-  trackOnboardingVideoCompleted,
+    trackOnboardingCompleted,
+    trackOnboardingSkipped,
+    trackOnboardingStarted,
+    trackOnboardingStepCompleted,
+    trackOnboardingStepViewed,
+    trackOnboardingVideoCompleted,
+    trackOnboardingVideoPlayed,
 } from '@/lib/analytics/onboardingAnalytics';
+import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/ui/button';
+import { CardContent } from '@/shared/ui/ui/card';
+import { Dialog, DialogContent, DialogTitle } from '@/shared/ui/ui/dialog';
+import { Progress } from '@/shared/ui/ui/progress';
+import { CheckCircle2, ChevronLeft, ChevronRight, Play, SkipForward, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { OnboardingVideoPlayer } from './OnboardingVideoPlayer';
+import {
+    AIDesignDemo,
+    CNCExportDemo,
+    OptimizationDemo,
+    SmartMeasuringDemo,
+} from './onboarding/OnboardingStepDemos';
 
 // Wrapper component to handle video analytics
 const OnboardingVideoPlayerWrapper: React.FC<{
@@ -105,35 +105,35 @@ export interface FabricatorOnboardingProps {
 
 // Default steps with interactive demos
 // Helper to get default steps with i18n support
-const getDefaultSteps = (t: (key: string, defaultValue?: string) => string): OnboardingStep[] => [
+const getDefaultSteps = (t: (key: string, options?: { defaultValue?: string }) => string): OnboardingStep[] => [
   {
     id: 'measuring',
-    title: t('onboarding.steps.measuring.title', 'Smart Measuring'),
-    description: t('onboarding.steps.measuring.description', 'Learn how to use our AI-powered measuring tools to quickly and accurately measure window dimensions. Our smart measuring interface guides you through the process step by step.'),
+    title: t('onboarding.steps.measuring.title', { defaultValue: 'Smart Measuring' }),
+    description: t('onboarding.steps.measuring.description', { defaultValue: 'Learn how to use our AI-powered measuring tools to quickly and accurately measure window dimensions. Our smart measuring interface guides you through the process step by step.' }),
     duration: '2:30',
     // videoUrl: '/videos/onboarding/measuring.mp4', // Placeholder - videos to be added
     component: SmartMeasuringDemo,
   },
   {
     id: 'design',
-    title: t('onboarding.steps.design.title', 'AI-Powered Design'),
-    description: t('onboarding.steps.design.description', 'Discover how our AI design assistant helps you create optimal window configurations. The system suggests profiles, accessories, and layouts based on your measurements.'),
+    title: t('onboarding.steps.design.title', { defaultValue: 'AI-Powered Design' }),
+    description: t('onboarding.steps.design.description', { defaultValue: 'Discover how our AI design assistant helps you create optimal window configurations. The system suggests profiles, accessories, and layouts based on your measurements.' }),
     duration: '3:45',
     // videoUrl: '/videos/onboarding/design.mp4',
     component: AIDesignDemo,
   },
   {
     id: 'optimization',
-    title: t('onboarding.steps.optimization.title', 'Cutting Optimization'),
-    description: t('onboarding.steps.optimization.description', 'Master the cutting optimization engine that minimizes waste and maximizes efficiency. Learn how to configure optimization parameters and interpret results.'),
+    title: t('onboarding.steps.optimization.title', { defaultValue: 'Cutting Optimization' }),
+    description: t('onboarding.steps.optimization.description', { defaultValue: 'Master the cutting optimization engine that minimizes waste and maximizes efficiency. Learn how to configure optimization parameters and interpret results.' }),
     duration: '4:15',
     // videoUrl: '/videos/onboarding/optimization.mp4',
     component: OptimizationDemo,
   },
   {
     id: 'export',
-    title: t('onboarding.steps.export.title', 'CNC Export'),
-    description: t('onboarding.steps.export.description', 'Export your optimized cutting plans to CNC machines. Generate DXF files, cutting lists, and production reports with a single click.'),
+    title: t('onboarding.steps.export.title', { defaultValue: 'CNC Export' }),
+    description: t('onboarding.steps.export.description', { defaultValue: 'Export your optimized cutting plans to CNC machines. Generate DXF files, cutting lists, and production reports with a single click.' }),
     duration: '2:45',
     // videoUrl: '/videos/onboarding/export.mp4',
     component: CNCExportDemo,
@@ -151,7 +151,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
   const { t } = useTranslation('fabricator');
   const defaultSteps = getDefaultSteps(t);
   const steps = customSteps || defaultSteps;
-  const finalSkipText = skipText || t('onboarding.skip', 'Skip Tutorial');
+  const finalSkipText = skipText || t('onboarding.skip', { defaultValue: 'Skip Tutorial' });
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
   const [startTime] = useState(Date.now());
@@ -176,6 +176,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
         steps.length
       );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, currentStep, steps]);
 
   // Load progress from localStorage

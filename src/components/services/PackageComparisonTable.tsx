@@ -1,9 +1,9 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { useLanguage } from '@/context/LanguageContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useLanguage } from '@/context/LanguageContext';
+import { motion } from 'framer-motion';
 import { Check, X } from 'lucide-react';
+import React from 'react';
 
 interface PackageComparisonTableProps {
   className?: string;
@@ -12,7 +12,7 @@ interface PackageComparisonTableProps {
 export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
   className = ''
 }) => {
-  const { t, language } = useLanguage();
+  const { t, language: _language } = useLanguage();
 
   const packages = ['basic', 'professional', 'enterprise'] as const;
   
@@ -137,7 +137,7 @@ export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
                     {category.items.map((item, itemIndex) => (
                       <tr key={itemIndex} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                         <td className="p-4 text-gray-300 text-sm">
-                          {t(`features.${item.key}`, { defaultValue: item.key.replace(/_/g, ' ') })}
+                          {t(`features.${item.key}`) || item.key.replace(/_/g, ' ')}
                         </td>
                         <td className="p-4 text-center">
                           {getFeatureValue(item.basic)}

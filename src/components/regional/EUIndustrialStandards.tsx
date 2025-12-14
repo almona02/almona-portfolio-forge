@@ -1,38 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
-import {
-  Shield,
-  Award,
-  FileText,
-  CheckCircle,
-  AlertTriangle,
-  Download,
-  Upload,
-  Settings,
-  Globe,
-  Factory,
-  Zap,
-  Gauge,
-  Lock,
-  Eye,
-  Star,
-  Calendar,
-  MapPin,
-  Phone,
-  Mail,
-  ExternalLink,
-} from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { track } from '@/lib/analytics';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import {
+    AlertTriangle,
+    Award,
+    CheckCircle,
+    Download,
+    ExternalLink,
+    Eye,
+    FileText,
+    Gauge,
+    Globe,
+    Mail,
+    MapPin,
+    Phone,
+    Settings,
+    Shield,
+    Upload,
+    Zap,
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // EU Standards and Certifications
 interface EUStandard {
@@ -228,7 +223,7 @@ const mockCEMarks: CEMark[] = [
  * - Market-specific requirements
  */
 export const EUIndustrialStandards: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t: _t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedCountry, setSelectedCountry] = useState('Germany');
   const [selectedProduct, setSelectedProduct] = useState('CNC Machines');

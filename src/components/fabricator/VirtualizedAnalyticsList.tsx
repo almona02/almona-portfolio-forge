@@ -4,9 +4,8 @@
  * Used in PersonalAnalyticsDashboard for profile health and trends
  */
 
-import React from 'react';
-// @ts-expect-error - @tanstack/react-virtual types may not be available
 import { useVirtualizer } from '@tanstack/react-virtual';
+import React from 'react';
 
 interface VirtualizedAnalyticsListProps<T> {
   items: T[];

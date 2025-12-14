@@ -1,35 +1,35 @@
-import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useJobsStore } from '@/store/jobsStore';
-import type { WindowUnit } from '@/types/fabricator';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Label } from '@/shared/ui/ui/label';
-import { Checkbox } from '@/shared/ui/ui/checkbox';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/shared/ui/ui/table';
-import { ScrollArea } from '@/shared/ui/ui/scroll-area';
-import { MapPin, Search, ArrowLeft, ArrowRight, Layers, Trash2, Eye } from 'lucide-react';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
 } from '@/shared/ui/ui/alert-dialog';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Checkbox } from '@/shared/ui/ui/checkbox';
+import { Input } from '@/shared/ui/ui/input';
+import { Label } from '@/shared/ui/ui/label';
+import { ScrollArea } from '@/shared/ui/ui/scroll-area';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/shared/ui/ui/table';
+import { useJobsStore } from '@/store/jobsStore';
+import type { WindowUnit } from '@/types/fabricator';
+import { ArrowLeft, ArrowRight, Eye, Layers, MapPin, Search, Trash2 } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface PositionsGridProps {
   currentProject: WindowUnit | null;
@@ -246,9 +246,7 @@ export const PositionsGrid: React.FC<PositionsGridProps> = ({ currentProject }) 
                           {String((job as any).glazing?.type || '—')}
                         </span>
                         <span className="text-[8px] text-gray-400 leading-tight truncate">
-                          {meta.flyScreenType
-                            ? (meta.flyScreenType as string).substring(0, 8)
-                            : (job as any).flyScreenType || 'none'}
+                          {(job as any).flyScreenType || 'none'}
                         </span>
                       </div>
                     </TableCell>

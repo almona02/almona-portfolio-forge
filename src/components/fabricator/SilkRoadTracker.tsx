@@ -8,21 +8,22 @@
  * Logic: Calculate ETA based on "Customs Delay" variable (Real Egyptian Reality)
  */
 
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Alert } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Progress } from '@/shared/ui/ui/progress';
-import { 
-  Factory, 
-  Ship, 
-  Building2, 
-  Warehouse, 
-  Wrench,
-  Clock,
+import { AnimatePresence, motion } from 'framer-motion';
+import {
   AlertCircle,
-  CheckCircle2
+  Building2,
+  CheckCircle2,
+  Clock,
+  Factory,
+  Ship,
+  Warehouse,
+  Wrench
 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 /**
  * Supply chain node types

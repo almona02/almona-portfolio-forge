@@ -1,7 +1,7 @@
-export * from './product';
 export * from './certification';
-export * from './machine'; // existing simple Machine (maybe different context)
 export * from './fabricator';
+export * from './machine'; // existing simple Machine (maybe different context)
+export * from './product';
 
 // Core types used by Yilmaz machines dataset
 export interface PowerSpecification {
@@ -12,7 +12,19 @@ export interface PowerSpecification {
   amperage?: string; // e.g. '25A'
 }
 
-export type SafetyStandard = 'TwoHandOperation' | 'AutomaticGuards' | 'EmergencyStop';
+export type SafetyStandard = 
+  | 'TwoHandOperation' 
+  | 'AutomaticGuards' 
+  | 'EmergencyStop'
+  | 'LowPressureControl'
+  | 'SafetyFence'
+  | 'AutoClosingGuards'
+  | 'PressureControlValves'
+  | 'PhaseControl'
+  | 'ProfileLiftingSystem'
+  | 'ElectronicBraking'
+  | 'PneumaticBraking'
+  | 'OperatorSafetyBarrier';
 
 export interface Machine {
   id: string;

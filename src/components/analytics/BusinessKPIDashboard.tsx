@@ -1,26 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  TrendingUp,
-  TrendingDown,
-  DollarSign,
-  Users,
-  ShoppingCart,
-  Target,
-  Activity,
-  BarChart3,
-  PieChart as PieChartIcon,
-  Calendar,
-  Clock,
-  ArrowUpRight,
-  ArrowDownLeft,
-} from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { track } from '@/lib/analytics';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import {
+    Activity,
+    ArrowDownLeft,
+    ArrowUpRight,
+    BarChart3,
+    DollarSign,
+    Target,
+    TrendingUp,
+    Users,
+} from 'lucide-react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { lazy, Suspense } from 'react';
 
 // Lazy load recharts components
 const LineChart = lazy(() => import('recharts').then(module => ({ default: module.LineChart })));
@@ -127,7 +121,7 @@ const generateMockMetrics = (): BusinessMetrics => ({
  * - Integration with existing admin dashboard
  */
 export const BusinessKPIDashboard: React.FC = React.memo(() => {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const [metrics, setMetrics] = useState<BusinessMetrics>(generateMockMetrics());
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
   const [activeTab, setActiveTab] = useState('overview');
