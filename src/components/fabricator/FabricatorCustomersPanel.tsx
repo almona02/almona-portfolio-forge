@@ -1,48 +1,48 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { supabase } from '@/lib/supabase';
-import type { Database, SectorType } from '@/types/database';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Badge } from '@/shared/ui/ui/badge';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/shared/ui/ui/alert-dialog';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/shared/ui/ui/dialog';
+import { Input } from '@/shared/ui/ui/input';
+import { Label } from '@/shared/ui/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/shared/ui/ui/select';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from '@/shared/ui/ui/table';
-import { Users, Plus, Filter, Calendar, Edit2, Trash2, Save, X } from 'lucide-react';
+import type { Database, SectorType } from '@/types/database';
+import { Calendar, Edit2, Filter, Plus, Save, Trash2, Users, X } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/shared/ui/ui/alert-dialog';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/shared/ui/ui/dialog';
-import { Label } from '@/shared/ui/ui/label';
 
 type FabricatorCustomerRow = Database['public']['Tables']['fabricator_customers']['Row'];
 
@@ -203,7 +203,7 @@ export const FabricatorCustomersPanel: React.FC = () => {
         .from('fabricator_customers')
         .insert(payload as any)
         .select('*')
-        .single();
+        .single() as any;
 
       if (insertError) throw insertError;
 
@@ -244,9 +244,10 @@ export const FabricatorCustomersPanel: React.FC = () => {
         updated_at: new Date().toISOString(),
       };
 
-      const { data, error: updateError } = await supabase
+      const db = supabase as any;
+      const { data, error: updateError } = await db
         .from('fabricator_customers')
-        .update(payload as any)
+        .update(payload)
         .eq('id', editingId)
         .eq('owner_user_id', user.id)
         .select('*')

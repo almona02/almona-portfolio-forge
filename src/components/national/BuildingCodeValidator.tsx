@@ -1,11 +1,11 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CheckCircle2, AlertTriangle, Shield, Loader2 } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Loader2, Shield } from 'lucide-react';
+import React from 'react';
 
 export const BuildingCodeValidator = () => {
   const [status, setStatus] = React.useState<'idle' | 'loading' | 'safe' | 'unsafe'>('idle');
@@ -41,15 +41,15 @@ export const BuildingCodeValidator = () => {
           <div className="space-y-2">
             <Label className="text-slate-400 text-xs uppercase tracking-wide">Region (Wind Load Zone)</Label>
             <Select value={region} onValueChange={setRegion}>
-              <SelectTrigger className="bg-slate-900/50 border-slate-700 text-white">
+              <SelectTrigger>
                 <SelectValue placeholder="Select Region" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700">
-                <SelectItem value="cairo" className="text-white hover:bg-slate-700">Cairo (Zone 2)</SelectItem>
-                <SelectItem value="alexandria" className="text-white hover:bg-slate-700">Alexandria (Zone 3)</SelectItem>
-                <SelectItem value="aswan" className="text-white hover:bg-slate-700">Aswan (Zone 1)</SelectItem>
-                <SelectItem value="delta" className="text-white hover:bg-slate-700">Delta Region (Zone 2)</SelectItem>
-                <SelectItem value="sinai" className="text-white hover:bg-slate-700">Sinai (Zone 4)</SelectItem>
+              <SelectContent>
+                <SelectItem value="cairo">Cairo (Zone 2)</SelectItem>
+                <SelectItem value="alexandria">Alexandria (Zone 3)</SelectItem>
+                <SelectItem value="aswan">Aswan (Zone 1)</SelectItem>
+                <SelectItem value="delta">Delta Region (Zone 2)</SelectItem>
+                <SelectItem value="sinai">Sinai (Zone 4)</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -1,34 +1,30 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { LazyEnhancedGLBViewer } from './LazyGLBViewer';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Progress } from '@/shared/ui/ui/progress';
-import { 
-  X, 
-  Download, 
-  Share2, 
-  RotateCcw, 
-  ZoomIn, 
-  ZoomOut, 
-  Move3D, 
-  Ruler,
-  Camera,
-  Smartphone,
-  Monitor,
-  Info,
-  Settings,
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Users
-} from 'lucide-react';
-import { useToast } from '@/hooks/useToast';
-import { ModelMeasurementTool } from './ModelMeasurementTool';
-import { Collaborative3DViewer } from './Collaborative3DViewer';
 import { SwiftXRIframe } from '@/components/swiftxr/SwiftXRIframe';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { useToast } from '@/hooks/useToast';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+    Camera,
+    Download,
+    Info,
+    Monitor,
+    Move3D,
+    Pause,
+    Play,
+    RotateCcw,
+    Ruler,
+    Settings,
+    Share2,
+    Smartphone,
+    Users,
+    X,
+    ZoomIn,
+    ZoomOut
+} from 'lucide-react';
+import { useCallback, useRef, useState } from 'react';
+import { Collaborative3DViewer } from './Collaborative3DViewer';
+import { LazyEnhancedGLBViewer } from './LazyGLBViewer';
+import { ModelMeasurementTool } from './ModelMeasurementTool';
 
 interface EnhancedModel3DDialogProps {
   isOpen: boolean;
@@ -403,8 +399,6 @@ export function EnhancedModel3DDialog({
                         onLoaded={handleLoad}
                         onError={handleError}
                         autoPlayAnimations={false}
-                        cameraState={rightCamera}
-                        onCameraChange={setLeftCamera}
                       />
                       {sharedMeasurements.length > 0 && (
                         <div className="absolute bottom-3 left-3 text-xs text-gray-300 bg-black/50 px-2 py-1 rounded">
@@ -421,8 +415,6 @@ export function EnhancedModel3DDialog({
                         onLoaded={handleLoad}
                         onError={handleError}
                         autoPlayAnimations={false}
-                        cameraState={leftCamera}
-                        onCameraChange={setRightCamera}
                       />
                       {sharedMeasurements.length > 0 && (
                         <div className="absolute bottom-3 left-3 text-xs text-gray-300 bg-black/50 px-2 py-1 rounded">

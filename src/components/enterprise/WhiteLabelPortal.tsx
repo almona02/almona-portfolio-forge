@@ -1,39 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
-import {
-  Palette,
-  Upload,
-  Eye,
-  Settings,
-  Building2,
-  Users,
-  BarChart3,
-  Globe,
-  Shield,
-  Zap,
-  Crown,
-  CheckCircle,
-  AlertTriangle,
-  Image as ImageIcon,
-  Type,
-  Layout,
-  Smartphone,
-  Monitor,
-  Save,
-  RefreshCw,
-} from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { Textarea } from '@/components/ui/textarea';
 import { track } from '@/lib/analytics';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import {
+    AlertTriangle,
+    BarChart3,
+    Building2,
+    CheckCircle,
+    Crown,
+    Eye,
+    Globe,
+    Layout,
+    Monitor,
+    Palette,
+    RefreshCw,
+    Save,
+    Shield,
+    Smartphone,
+    Upload,
+    Zap,
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // White Label Configuration Types
 interface BrandingConfig {
@@ -122,7 +117,7 @@ const mockTenantConfig: TenantConfig = {
  * - Domain and SSL management
  */
 export const WhiteLabelPortal: React.FC = () => {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const [tenantConfig, setTenantConfig] = useState<TenantConfig>(mockTenantConfig);
   const [previewMode, setPreviewMode] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [activeTab, setActiveTab] = useState('branding');

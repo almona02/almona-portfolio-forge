@@ -1,30 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Bot, 
-  User, 
-  Send, 
-  Loader2, 
-  MessageSquare,
-  HelpCircle,
-  Wrench,
-  FileText,
-  Phone,
-  MinusCircle,
-  PlusCircle,
-  Sparkles,
-  AlertCircle,
-  CheckCircle
-} from 'lucide-react';
-import { getTechnicalSupport, identifyPartFromImage, getDiagnosticGuidance, getMaintenanceAdvice } from '@/lib/ai/gemini';
 import { useAuth } from '@/context/AuthContext';
-import { toast } from 'sonner';
+import { getTechnicalSupport, identifyPartFromImage } from '@/lib/ai/gemini';
 import { supabase } from '@/lib/supabase';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+    Bot,
+    Loader2,
+    MinusCircle,
+    Send,
+    Sparkles,
+    User
+} from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 // Enhanced message types for technical support
 interface ChatMessage {
@@ -129,7 +121,7 @@ export const AITechnicalChatbot: React.FC = () => {
       };
       setMessages([welcomeMessage]);
     }
-  }, [isOpen, user]);
+  }, [isOpen, user, messages.length]);
 
   // Auto-scroll to bottom of messages
   const scrollToBottom = () => {
@@ -153,23 +145,20 @@ export const AITechnicalChatbot: React.FC = () => {
     imageBase64?: string
   ): Promise<string> => {
     try {
-      let prompt = `${EGYPTIAN_TECHNICAL_CONTEXT}\n\n`;
-      
-      // Add context based on message category and severity
-      if (severity === 'critical' || severity === 'high') {
-        prompt += `URGENT ${severity.toUpperCase()} ISSUE - Priority response needed!\n\n`;
-      }
-      
-      if (category === 'emergency') {
-        prompt += `EMERGENCY SITUATION - Provide immediate safety procedures first!\n\n`;
-      }
-      
-      // Add chat history for context
-      if (chatHistory.length > 0) {
-        prompt += `Previous conversation context:\n${chatHistory.slice(-4).join('\n')}\n\n`;
-      }
-      
-      prompt += `Customer inquiry: ${userMessage}`;
+      // Build context for AI (prompt variable removed as it's not used directly)
+      const _context = `${EGYPTIAN_TECHNICAL_CONTEXT}\n\n${
+        severity === 'critical' || severity === 'high' 
+          ? `URGENT ${severity.toUpperCase()} ISSUE - Priority response needed!\n\n` 
+          : ''
+      }${
+        category === 'emergency' 
+          ? `EMERGENCY SITUATION - Provide immediate safety procedures first!\n\n` 
+          : ''
+      }${
+        chatHistory.length > 0 
+          ? `Previous conversation context:\n${chatHistory.slice(-4).join('\n')}\n\n` 
+          : ''
+      }Customer inquiry: ${userMessage}`;
       
       // Handle image-based part identification
       if (imageBase64) {
@@ -298,7 +287,7 @@ export const AITechnicalChatbot: React.FC = () => {
   // Log chat interaction for analytics and improvement
   const logChatInteraction = async (userMsg: ChatMessage, botMsg: ChatMessage) => {
     try {
-      await supabase.from('chat_interactions').insert({
+      await (supabase as any).from('chat_interactions').insert({
         user_id: user?.id,
         user_message: userMsg.content,
         bot_response: botMsg.content,

@@ -4,27 +4,27 @@
  * Makes the data collection visible and actionable
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
+import { personalAnalytics, type CalibrationInsight, type EfficiencyTrend, type ProfileHealth, type StrategyPerformance } from '@/lib/analytics/PersonalAnalytics';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import {
-  TrendingUp,
-  TrendingDown,
+  Activity,
   AlertCircle,
+  BarChart3,
+  Calendar,
   CheckCircle2,
   Info,
-  BarChart3,
-  Target,
-  Activity,
   RefreshCw,
-  Calendar,
+  Target,
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-react';
-import { personalAnalytics, type CalibrationInsight, type StrategyPerformance, type ProfileHealth, type EfficiencyTrend } from '@/lib/analytics/PersonalAnalytics';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { VirtualizedAnalyticsList } from './VirtualizedAnalyticsList';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { VirtualizedAnalyticsList } from './VirtualizedAnalyticsList';
 
 interface PersonalAnalyticsDashboardProps {
   userId: string;
@@ -221,7 +221,7 @@ export const PersonalAnalyticsDashboard: React.FC<PersonalAnalyticsDashboardProp
                            profile.healthStatus === 'good' ? t('personal_analytics.health_good', 'Good') :
                            profile.healthStatus === 'needs_attention' ? t('personal_analytics.health_needs_attention', 'Needs Attention') :
                            profile.healthStatus === 'critical' ? t('personal_analytics.health_critical', 'Critical') :
-                           profile.healthStatus.replace('_', ' ')}
+                           String(profile.healthStatus).replace('_', ' ')}
                         </Badge>
                       </div>
                       <p className="text-sm text-gray-400 mt-2">{profile.recommendation}</p>

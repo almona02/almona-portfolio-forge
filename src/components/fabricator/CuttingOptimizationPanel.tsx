@@ -1,14 +1,16 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
+import {
+  HeavyCutInput,
+  HeavyStockInput,
+} from '@/lib/api/pythonHeavyClient';
+import { unifiedOptimize } from '@/lib/api/unifiedOptimizer';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Progress } from '@/shared/ui/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -16,25 +18,20 @@ import {
   SelectValue,
 } from '@/shared/ui/ui/select';
 import { Separator } from '@/shared/ui/ui/separator';
-import { 
-  Scissors, 
-  BarChart3, 
-  Package, 
-  Download,
-  RefreshCw,
-  Zap,
-  Plus,
-  Trash2,
-  TrendingUp,
-  AlertCircle,
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import {
-  HeavyCutInput,
-  HeavyStockInput,
-} from '@/lib/api/pythonHeavyClient';
-import { unifiedOptimize } from '@/lib/api/unifiedOptimizer';
+  BarChart3,
+  Download,
+  Package,
+  Plus,
+  RefreshCw,
+  Scissors,
+  Trash2,
+  Zap,
+} from 'lucide-react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 // Types
 interface CutPiece {
@@ -82,7 +79,7 @@ interface CuttingOptimizationPanelProps {
 }
 
 export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> = ({
-  profiles = [],
+  profiles: _profiles = [],
   onExportGCode,
 }) => {
   const { t } = useTranslation('fabricator');
@@ -94,7 +91,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
   ]);
   
   // Stock Pieces State
-  const [stockPieces, setStockPieces] = useState<StockPiece[]>([
+  const [stockPieces] = useState<StockPiece[]>([
     { id: 's1', length: 6000, quantity: 10, material: 'aluminum', profile: '60mm', cost: 120, isRemnant: false },
     { id: 's2', length: 4500, quantity: 3, material: 'aluminum', profile: '60mm', cost: 90, isRemnant: true },
     { id: 's3', length: 3000, quantity: 5, material: 'aluminum', profile: '60mm', cost: 60, isRemnant: false },
@@ -105,7 +102,7 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [selectedStrategy, setSelectedStrategy] = useState('genetic');
   const [kerfWidth, setKerfWidth] = useState(3);
-  const [minRemnant, setMinRemnant] = useState(100);
+  const [minRemnant] = useState(100);
   
   // Add new cut piece
   const addCutPiece = useCallback(() => {
@@ -254,7 +251,15 @@ export const CuttingOptimizationPanel: React.FC<CuttingOptimizationPanelProps> =
           plans: local.plans.map((p) => ({
             stockPieceId: p.barId,
             stockLength: p.barLength,
-            cuts: p.cuts as CutPiece[],
+            cuts: p.cuts.map((c: any) => ({
+              id: c.id || '',
+              length: c.lengthMm || c.length || 0,
+              quantity: c.quantity || 1,
+              material: c.material || 'aluminum',
+              profile: c.profileId || c.profile || '60mm',
+              priority: c.priority || 1,
+              label: c.label || '',
+            })) as CutPiece[],
             usedLength: p.usedLength,
             wasteLength: p.wasteLength,
             utilization: p.utilization,

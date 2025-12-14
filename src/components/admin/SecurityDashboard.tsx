@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/lib/supabase';
+import { useEffect, useState } from 'react';
 
 interface SecurityEvent {
   id: string;
@@ -56,14 +56,15 @@ export function SecurityDashboard() {
       .limit(100);
     
     if (data) {
-      setEvents(data);
+      const typedData = data as SecurityEvent[];
+      setEvents(typedData);
       
       // Calculate stats
       setStats({
-        totalEvents: data.length,
-        failedAuths: data.filter(e => e.event_type === 'auth_failure').length,
-        rateLimits: data.filter(e => e.event_type === 'rate_limit_exceeded').length,
-        suspiciousRequests: data.filter(e => e.event_type === 'suspicious_request').length,
+        totalEvents: typedData.length,
+        failedAuths: typedData.filter(e => e.event_type === 'auth_failure').length,
+        rateLimits: typedData.filter(e => e.event_type === 'rate_limit_exceeded').length,
+        suspiciousRequests: typedData.filter(e => e.event_type === 'suspicious_request').length,
       });
     }
   };

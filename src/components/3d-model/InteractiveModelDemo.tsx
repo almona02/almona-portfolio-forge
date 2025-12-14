@@ -3,14 +3,14 @@
  * Demonstrates the integration of InteractiveGLBViewer with InteractivePricingCalculator
  */
 
-import React, { useState, useCallback } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useRegionDetection } from '@/hooks/useRegionDetection';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InteractiveGLBViewer, PartAnnotation, PricingCalculation } from './InteractiveGLBViewer';
 import { InteractivePricingCalculator, TotalPricingCalculation } from './InteractivePricingCalculator';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useRegionDetection } from '@/hooks/useRegionDetection';
 
 // Sample part annotations for demonstration
 const SAMPLE_ANNOTATIONS: PartAnnotation[] = [
@@ -85,7 +85,7 @@ export const InteractiveModelDemo: React.FC<InteractiveModelDemoProps> = ({
   modelPath = '/models/window-assembly.glb',
   className = ''
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { regionState } = useRegionDetection();
   
   const [selectedParts, setSelectedParts] = useState<PartAnnotation[]>([]);

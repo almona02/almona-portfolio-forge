@@ -1,13 +1,13 @@
-import React, { useMemo, useState } from "react";
-import { Save, AlertTriangle } from "lucide-react";
 import { ScanResultData } from "@/services/smartScanApi";
-import type { Profile } from "@/types/fabricator";
+import { Alert, AlertDescription } from "@/shared/ui/ui/alert";
+import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Input } from "@/shared/ui/ui/input";
 import { Label } from "@/shared/ui/ui/label";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Alert, AlertDescription } from "@/shared/ui/ui/alert";
 import { useProfileTuningStore } from "@/stores/profileTuningStore";
+import type { Profile } from "@/types/fabricator";
+import { AlertTriangle, Save } from "lucide-react";
+import React, { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 interface ImportWizardProps {
@@ -29,11 +29,11 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
   const baseName = filename.replace(/\.[^/.]+$/, "").replace(/_/g, " ").toUpperCase();
   const defaultName =
     scanData.technical_data?.profile_name ||
-    scanData.suggestions?.egyptian_standard_match?.name ||
+    ((scanData.suggestions?.egyptian_standard_match as any)?.name) ||
     `${baseName} PROFILE`;
   const defaultMaterial =
     (scanData.technical_data?.material_hints?.[0] as any) ||
-    (scanData.suggestions?.egyptian_standard_match?.material as any) ||
+    ((scanData.suggestions?.egyptian_standard_match as any)?.material) ||
     "aluminum";
   const defaultRole =
     (scanData.suggestions?.likely_role as any) ||
@@ -107,9 +107,9 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
     const finalName =
       profileName ||
       scanData.technical_data?.profile_name ||
-      standardMatch?.name ||
+      ((standardMatch as any)?.name) ||
       `${baseName} PROFILE`;
-    const finalMaterial = (material || ocrMaterial || standardMatch?.material || "aluminum") as any;
+    const finalMaterial = (material || ocrMaterial || ((standardMatch as any)?.material) || "aluminum") as any;
     const finalRole = (profileRole || scanData.suggestions?.likely_role || "frame") as any;
 
     return {
@@ -161,13 +161,13 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
     <div className="space-y-6 p-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-white">Import Profile from Scan</h3>
-        <Badge variant={scanData.quality.requires_verification ? "warning" : "success"}>
+        <Badge variant={scanData.quality.requires_verification ? "default" : "secondary"} className={scanData.quality.requires_verification ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/50" : "bg-green-500/20 text-green-400 border-green-500/50"}>
           {(scanData.quality.confidence_score * 100).toFixed(0)}% Confidence
         </Badge>
       </div>
 
       {scanData.quality.requires_verification && (
-        <Alert variant="warning">
+        <Alert className="bg-yellow-900/20 border-yellow-500">
           <AlertTriangle className="w-4 h-4" />
           <AlertDescription className="text-sm">
             Manual verification recommended. Please confirm dimensions before importing.
@@ -225,10 +225,10 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
                         variant="outline"
                         className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
                       >
-                        {scanData.suggestions.egyptian_standard_match.name}
+                        {((scanData.suggestions.egyptian_standard_match as any)?.name) || 'Egyptian Standard'}
                       </Badge>
                       <span className="text-xs text-zinc-500">
-                        {(scanData.suggestions.egyptian_standard_match.match_score * 100).toFixed(0)}% match
+                        {(((scanData.suggestions.egyptian_standard_match as any)?.match_score || 0) * 100).toFixed(0)}% match
                       </span>
                     </div>
                   </div>

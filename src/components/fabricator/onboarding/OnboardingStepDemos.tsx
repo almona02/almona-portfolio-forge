@@ -4,13 +4,13 @@
  * Interactive demo components for each onboarding step
  */
 
-import React, { useState } from 'react';
-import { Ruler, Sparkles, Scissors, Download, CheckCircle2, Play } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Progress } from '@/shared/ui/ui/progress';
-import { Badge } from '@/shared/ui/ui/badge';
-import { cn } from '@/lib/utils';
+import { CheckCircle2, Download, Play, Ruler, Scissors, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
 
 /**
  * Step 1: Smart Measuring Demo
@@ -274,8 +274,11 @@ export const CNCExportDemo: React.FC = () => {
     { id: 'pdf', label: 'PDF Report', description: 'Full documentation' },
   ];
 
-  const handleExport = (formatId: 'dxf' | 'csv' | 'pdf') => {
-    setFormat(formatId);
+  const handleExport = (formatId: string) => {
+    const validFormat: 'dxf' | 'csv' | 'pdf' = (formatId === 'dxf' || formatId === 'csv' || formatId === 'pdf') 
+      ? formatId as 'dxf' | 'csv' | 'pdf'
+      : 'dxf';
+    setFormat(validFormat);
     setExporting(true);
     setTimeout(() => {
       setExporting(false);

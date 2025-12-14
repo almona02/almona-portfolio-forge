@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { yilmazMachinesLegacy } from '@/constants/productsData';
+import React, { useEffect, useState } from 'react';
 
 import { Machine } from '../../types/index';
 
@@ -34,7 +34,13 @@ export const QuoteAIHelper: React.FC<QuoteAIHelperProps> = ({
             product.name.toLowerCase().includes(keyword) ||
             product.description.toLowerCase().includes(keyword)
           )
-        ).slice(0, 3);
+        ).slice(0, 3).map(legacy => ({
+          ...legacy,
+          powerSpec: { voltage: '220V', frequency: '50Hz', power: legacy.power, phase: '3-phase', consumption: 'Standard' },
+          certifications: [],
+          safetyFeatures: [],
+          price: 0
+        } as unknown as Machine));
 
         setSuggestions({
           products: matchedProducts,

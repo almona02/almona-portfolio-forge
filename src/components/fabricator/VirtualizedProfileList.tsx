@@ -4,10 +4,9 @@
  * Replaces the non-virtualized list in ProfileManagement
  */
 
-import React from 'react';
-// @ts-expect-error - @tanstack/react-virtual types may not be available
-import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Profile } from '@/types/fabricator';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import React from 'react';
 
 interface VirtualizedProfileListProps {
   profiles: Profile[];

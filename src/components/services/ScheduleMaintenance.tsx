@@ -1,27 +1,25 @@
-import { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/shared/ui/ui/dialog";
+import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/ui/card";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/shared/ui/ui/dialog";
 import { Input } from "@/shared/ui/ui/input";
 import { Label } from "@/shared/ui/ui/label";
-import { Textarea } from "@/shared/ui/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/shared/ui/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/select";
-import { Badge } from "@/shared/ui/ui/badge";
-import { Calendar, Clock, CheckCircle2, TrendingUp, FileText, Package, AlertCircle, MapPin, Users, Settings, Shield, Zap, Tool, Cpu } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useForm } from "react-hook-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/ui/card";
-import { Progress } from "@/shared/ui/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import { Separator } from "@/shared/ui/ui/separator";
 import { Switch } from "@/shared/ui/ui/switch";
-import { RadioGroup, RadioGroupItem } from "@/shared/ui/ui/radio-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
+import { Textarea } from "@/shared/ui/ui/textarea";
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertCircle, CheckCircle2, Cpu, Settings, Shield, Users, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 interface ScheduleMaintenanceProps {
   open: boolean;
@@ -284,7 +282,7 @@ export const ScheduleMaintenance = ({
   const [selectedSlot, setSelectedSlot] = useState<AvailableSlot | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<"packages" | "custom">("packages");
-  const [selectedGovernorate, setSelectedGovernorate] = useState("Cairo");
+  const [_selectedGovernorate, _setSelectedGovernorate] = useState("Cairo");
   const [industrialZones, setIndustrialZones] = useState<string[]>([]);
 
   const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm<ScheduleFormData>({
@@ -348,15 +346,15 @@ export const ScheduleMaintenance = ({
     return total;
   };
 
-  const onSubmit = async (data: ScheduleFormData) => {
+  const onSubmit = async (_data: ScheduleFormData) => {
     setIsSubmitting(true);
     
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Generate service ID
-      const serviceId = `ALM-${Date.now().toString().slice(-8)}`;
+      // Generate service ID (for future use)
+      const _serviceId = `ALM-${Date.now().toString().slice(-8)}`;
       
       setStep("confirm");
       
@@ -385,15 +383,6 @@ export const ScheduleMaintenance = ({
     }, 300);
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "emergency": return "text-red-500";
-      case "high": return "text-orange-500";
-      case "medium": return "text-yellow-500";
-      case "low": return "text-green-500";
-      default: return "text-gray-500";
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -496,7 +485,7 @@ export const ScheduleMaintenance = ({
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <Label>نوع الخدمة | Service Type</Label>
-                          <Select value={serviceType} onValueChange={(value) => setValue("serviceType", value)}>
+                          <Select value={serviceType} onValueChange={(value) => setValue("serviceType", value as "preventive" | "corrective" | "calibration" | "emergency" | "seasonal")}>
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>
@@ -512,7 +501,7 @@ export const ScheduleMaintenance = ({
                         
                         <div>
                           <Label>أولوية الخدمة | Priority Level</Label>
-                          <Select value={priority} onValueChange={(value) => setValue("priority", value)}>
+                          <Select value={priority} onValueChange={(value) => setValue("priority", value as "low" | "medium" | "high" | "emergency")}>
                             <SelectTrigger>
                               <SelectValue />
                             </SelectTrigger>

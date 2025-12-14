@@ -1,8 +1,8 @@
+import Navbar from '@/components/layout/Navbar';
+import { useToast } from '@/hooks/useToast';
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/useToast';
 import { QuoteRequestStepper } from './QuoteRequestStepper';
-import { Navbar } from '@/components/layout/Navbar';
 
 import { Machine } from '../../types/index';
 
@@ -35,19 +35,29 @@ export const QuoteRequestPage: React.FC = () => {
     if (productId) {
       setInitialData(prev => ({
         ...prev,
-        products: [{ id: productId, name: params.get("productName") || "Product" }]
+        products: [{ 
+          id: productId, 
+          name: params.get("productName") || "Product", 
+          description: "", 
+          imageUrl: "", 
+          category: "", 
+          releaseDate: "", 
+          type: "",
+          powerSpec: { voltage: '220V', frequency: '50Hz', power: 'Standard', phase: '3-phase', consumption: 'Standard' },
+          price: 0 
+        } as unknown as Machine]
       }));
     }
     
     if (serviceId) {
       setInitialData(prev => ({
         ...prev,
-        services: [{ id: serviceId, name: params.get("serviceName") || "Service" }]
+        services: [{ id: serviceId, name: params.get("serviceName") || "Service", price: 0 }]
       }));
     }
   }, [location]);
 
-  const handleSubmit = async (quoteData: { products: Machine[], services: Service[], contactInfo: any, projectDescription: string, urgency: string }) => {
+  const handleSubmit = async (quoteData: any) => {
     try {
       // Simulate API call
       console.log('Quote submitted:', quoteData);
@@ -58,7 +68,7 @@ export const QuoteRequestPage: React.FC = () => {
       });
       
       navigate("/quotes/confirmation", { state: { quoteId: "QR-XXXXXX" } });
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to submit quote request",

@@ -3,17 +3,17 @@
  * For standard jobs: select system pack, enter dimensions, auto-generate window
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
+import type { SystemPack } from '@/data/systemPacks';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
-import { Button } from '@/shared/ui/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Zap, CheckCircle2 } from 'lucide-react';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
-import type { SystemPack } from '@/data/systemPacks';
-import type { WindowComponent } from '@/types/fabricator';
+import type { Profile, WindowComponent } from '@/types/fabricator';
+import { CheckCircle2, Zap } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 interface SystemDrivenDesignProps {
   selectedSystemPackId?: string;
@@ -47,22 +47,47 @@ export const SystemDrivenDesign: React.FC<SystemDrivenDesignProps> = ({
     // Auto-generate window components based on system pack
     // This is a simplified version - in production, this would use the system pack's
     // profile definitions and constraints to generate proper components
+    // Create placeholder profile objects - in production these would come from system pack
+    const placeholderProfile: Profile = {
+      id: 'placeholder',
+      name: 'Placeholder Profile',
+      material: 'aluminum',
+      width: 60,
+      height: 40,
+      color: 'Silver',
+      costPerMeter: 0,
+      cuttingAllowance: 0,
+      stockQuantity: 0,
+      minStockLevel: 0,
+      supplier: '',
+    };
+
     const components: WindowComponent[] = [
       {
         id: `frame-${Date.now()}`,
         type: 'frame',
-        profileId: '', // Would be populated from system pack
-        length: (width + height) * 2, // Perimeter
+        profile: placeholderProfile,
+        width: width,
+        height: height,
         quantity: 1,
-        cuttingLength: (width + height) * 2,
+        cuttingLengths: [(width + height) * 2], // Perimeter
+        angles: [90],
+        machiningOperations: [],
+        glazingType: 'double',
+        hardware: [],
       },
       {
         id: `sash-${Date.now()}`,
         type: 'sash',
-        profileId: '', // Would be populated from system pack
-        length: (width + height) * 2,
+        profile: placeholderProfile,
+        width: width,
+        height: height,
         quantity: 1,
-        cuttingLength: (width + height) * 2,
+        cuttingLengths: [(width + height) * 2],
+        angles: [90],
+        machiningOperations: [],
+        glazingType: 'double',
+        hardware: [],
       },
     ];
 

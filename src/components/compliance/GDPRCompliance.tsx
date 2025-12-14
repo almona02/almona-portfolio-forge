@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Shield, Cookie, Eye, Download, Trash2, Settings, Check, X } from 'lucide-react';
-import { useTranslation } from '../../hooks/useTranslation';
+import { Check, Cookie, Download, Eye, Settings, Shield, Trash2, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface CookiePreferences {
   necessary: boolean;

@@ -10,12 +10,12 @@
  * - Client presentation mode transitions
  */
 
-import React, { useEffect, useRef, useState, Suspense, useCallback } from 'react';
-import { LazyThreeJS } from './LazyThreeJS';
+import { Window3DModel } from '@/components/fabricator/Window3DGenerator';
 import { initCompressedModelDecoders } from '@/lib/three-optimized';
-import { Window3DModel, WindowMeasurementOverlay } from '@/components/fabricator/Window3DGenerator';
 import { WindowUnit } from '@/types/fabricator';
+import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { LazyThreeJS } from './LazyThreeJS';
 
 // Props extended to support AR, scaling, positioning, window units, and animation
 export interface Optimized3DViewerProps {
@@ -210,9 +210,7 @@ const OptimizedModel = ({
             animationProgress={windowAnimationProgress}
             onModelReady={handleWindowModelUpdate}
           />
-          {showMeasurements && (
-            <WindowMeasurementOverlay windowUnit={windowUnit} />
-          )}
+          {/* Measurement overlay removed - component doesn't exist */}
         </group>
       ) : isGLBMode && scene ? (
         <group ref={groupRef} scale={currentScale} position={position}>

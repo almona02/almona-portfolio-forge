@@ -1,10 +1,10 @@
-import React, { memo, useState, useCallback } from 'react';
+import type { Machine } from '@/constants/yilmazMachines';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/ui/card';
-import { Eye, Download, ExternalLink, Play } from 'lucide-react';
+import { Download, Eye, Play } from 'lucide-react';
+import { memo, useCallback, useState } from 'react';
 import { OptimizedImage } from './OptimizedImage';
-import type { Machine } from '@/constants/yilmazMachines';
 
 interface OptimizedProductCardProps {
   machine: Machine;

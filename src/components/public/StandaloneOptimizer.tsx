@@ -3,16 +3,16 @@
  * Public-facing optimizer for lead generation
  */
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Label } from '@/shared/ui/ui/label';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Scissors, TrendingUp, Mail, Loader2, CheckCircle2 } from 'lucide-react';
 import { WasteComparisonReport } from '@/components/analytics/WasteComparisonReport';
 import { calculateManualCuttingPlan, compareWaste } from '@/lib/analytics/WasteCalculator';
 import { supabase } from '@/lib/supabase';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Input } from '@/shared/ui/ui/input';
+import { Label } from '@/shared/ui/ui/label';
+import { CheckCircle2, Loader2, Mail, Scissors, TrendingUp } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface CutInput {
   length: number;
@@ -40,6 +40,9 @@ export const StandaloneOptimizer: React.FC = () => {
             profileId: '',
             length: cut.length,
             quantity: 1,
+            angle: 90,
+            componentId: '',
+            waste: 0,
           }))
       );
 
@@ -50,7 +53,7 @@ export const StandaloneOptimizer: React.FC = () => {
         requiredCuts.reduce((sum, c) => sum + c.length, 0) / stockLength
       );
       const optimizedWaste = optimizedBarsUsed * stockLength - requiredCuts.reduce((sum, c) => sum + c.length, 0);
-      const optimizedWastePercentage = (optimizedWaste / (optimizedBarsUsed * stockLength)) * 100;
+      const _optimizedWastePercentage = (optimizedWaste / (optimizedBarsUsed * stockLength)) * 100;
 
       const comparison = compareWaste(
         manualPlan,
@@ -60,6 +63,7 @@ export const StandaloneOptimizer: React.FC = () => {
             stockLength,
             cuts: requiredCuts,
             totalWaste: optimizedWaste,
+            utilization: optimizedBarsUsed > 0 ? ((optimizedBarsUsed * stockLength - optimizedWaste) / (optimizedBarsUsed * stockLength)) * 100 : 0,
           },
         ],
         500
@@ -78,7 +82,7 @@ export const StandaloneOptimizer: React.FC = () => {
     if (!email || !email.includes('@')) return;
 
     try {
-      await supabase.from('optimizer_leads').insert({
+      await (supabase as any).from('optimizer_leads').insert({
         email,
         optimization_result: result,
         savings_egp: savings,

@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
-import type { WindowUnit, Profile, FabricatorAccessory } from '@/types/fabricator';
 import {
-  PricingEngine,
-  type PricingConfiguration,
-  STUB_METAL_INDICES,
-  checkMetalPriceAlert,
-  type MetalAlert,
+    PricingEngine,
+    STUB_METAL_INDICES,
+    checkMetalPriceAlert,
+    type MetalAlert,
+    type PricingConfiguration,
 } from '@/lib/pricing/PricingEngine';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import type { FabricatorAccessory, Profile, WindowUnit } from '@/types/fabricator';
+import React, { useEffect, useState } from 'react';
 
 interface PricingPreviewProps {
   project: WindowUnit | null;
@@ -20,8 +20,18 @@ interface PricingPreviewProps {
 // Basic stub config – in production this will come from admin-configured
 // pricing settings per tenant/region.
 const getStubPricingConfig = (region: PricingPreviewProps['region']): PricingConfiguration => {
+  // Map extended regions to base regions
+  let baseRegion: 'turkey' | 'egypt' | 'global';
+  if (region === 'mena' || region === 'gulf') {
+    baseRegion = 'egypt';
+  } else if (region === 'turkey' || region === 'egypt' || region === 'global') {
+    baseRegion = region;
+  } else {
+    baseRegion = 'global';
+  }
+  
   return {
-    region,
+    region: baseRegion,
     currency: region === 'turkey' ? 'TRY' : region === 'egypt' ? 'EGP' : 'USD',
     isActive: true,
     materialMarkupPercentage: 35,
@@ -43,7 +53,7 @@ const getStubPricingConfig = (region: PricingPreviewProps['region']): PricingCon
 export const PricingPreview: React.FC<PricingPreviewProps> = ({
   project,
   profiles,
-  accessories = [],
+  accessories: _accessories = [],
   region,
 }) => {
   const [materialTotal, setMaterialTotal] = useState<number | null>(null);
@@ -89,7 +99,6 @@ export const PricingPreview: React.FC<PricingPreviewProps> = ({
         setMaterialTotal(materialSum);
         setMetalAlert(checkMetalPriceAlert(config.metalIndex));
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error('Pricing preview calculation failed:', err);
         setMaterialTotal(null);
         setMetalAlert(null);

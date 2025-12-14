@@ -1,40 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
-import {
-  Building2,
-  Crown,
-  Zap,
-  Target,
-  Users,
-  BarChart3,
-  Settings,
-  Globe,
-  Shield,
-  CheckCircle,
-  Clock,
-  ArrowRight,
-  DollarSign,
-  TrendingUp,
-  Award,
-  Rocket,
-  Eye,
-  Calendar,
-  FileText,
-  Phone,
-  Mail,
-} from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { track } from '@/lib/analytics';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import {
+    Building2,
+    Calendar,
+    CheckCircle,
+    Clock,
+    Crown,
+    DollarSign,
+    Eye,
+    FileText,
+    Mail,
+    Phone,
+    Rocket,
+    Target,
+    TrendingUp,
+    Users,
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Enterprise Client Types
 interface EnterpriseClient {
@@ -221,7 +212,7 @@ const ENTERPRISE_TIERS = {
  * - Success metrics and engagement tracking
  */
 export const EnterpriseClientActivation: React.FC = () => {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const [client, setClient] = useState<EnterpriseClient>(mockEnterpriseClient);
   const [activeTab, setActiveTab] = useState('overview');
   const [proposalGenerated, setProposalGenerated] = useState(false);
