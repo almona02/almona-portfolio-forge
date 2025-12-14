@@ -72,8 +72,29 @@ const Login = () => {
       // On some mobile browsers auth state propagation can be delayed; navigate optimistically.
       navigate('/', { replace: true });
     } catch (error: any) {
-      setError(error.message || 'Login failed. Please check your credentials.');
-      toast.error(error.message || 'Login failed.');
+      // Extract polished error message
+      const errorMessage = error?.message || error?.error?.message || 'We were unable to complete your login request. Please verify your credentials and try again.';
+      setError(errorMessage);
+      
+      // Show toast with refined error message
+      toast.error(errorMessage, {
+        duration: 6000, // Show for 6 seconds to ensure users can read the message
+        style: {
+          background: 'rgba(220, 38, 38, 0.95)',
+          color: '#fff',
+          fontSize: '14px',
+          padding: '16px',
+          borderRadius: '8px',
+        },
+      });
+      
+      // Log full error for debugging (detailed logging for support team)
+      console.error('Login error details:', {
+        message: errorMessage,
+        originalError: error,
+        email: email ? `${email.substring(0, 3)}***` : 'not provided',
+        timestamp: new Date().toISOString(),
+      });
     } finally {
       setLoading(false);
     }
