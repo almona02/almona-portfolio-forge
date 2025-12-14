@@ -404,24 +404,85 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (authError) throw authError;
 
       // Profile will be created automatically by the database trigger
-      // But we can update it with additional info if needed
+      // But we also ensure it exists and update it with all metadata fields
       if (authData.user) {
         setSupabaseUser(authData.user);
         
-        // Wait a moment for the trigger to create the profile, then fetch it
+        // Wait a moment for the trigger to create the profile, then ensure it's complete
         setTimeout(async () => {
           try {
+            // First, check if profile exists
+            const { data: existingProfile, error: fetchError } = await supabase
+              .from('profiles')
+              .select('id')
+              .eq('id', authData.user!.id)
+              .single();
+            
+            // If profile doesn't exist, create it manually (trigger might have failed)
+            if (fetchError || !existingProfile) {
+              console.warn('Profile not found after signup, creating manually...', fetchError);
+              
+              const { error: insertError } = await supabase
+                .from('profiles')
+                .insert({
+                  id: authData.user!.id,
+                  full_name: userData.full_name || authData.user!.email || 'User',
+                  company_name: userData.company_name || null,
+                  phone: userData.phone || null,
+                  sector: userData.sector || 'GENERAL',
+                });
+              
+              if (insertError) {
+                console.error('Error creating profile manually:', insertError);
+                // Still try to continue - maybe trigger will create it later
+              }
+            } else {
+              // Profile exists, update it with additional metadata fields
+              const profileUpdates: Record<string, any> = {};
+              if (userData.company_name) profileUpdates.company_name = userData.company_name;
+              if (userData.phone) profileUpdates.phone = userData.phone;
+              if (userData.sector) profileUpdates.sector = userData.sector;
+              
+              if (Object.keys(profileUpdates).length > 0) {
+                const { error: updateError } = await supabase
+                  .from('profiles')
+                  .update(profileUpdates)
+                  .eq('id', authData.user!.id);
+                
+                if (updateError) {
+                  console.warn('Error updating profile with metadata:', updateError);
+                  // Don't throw - profile exists, this is just additional data
+                }
+              }
+            }
+            
+            // Fetch the complete profile
             await fetchUserProfile(authData.user!.id);
           } catch (error) {
-            console.error('Error fetching new user profile:', error);
+            console.error('Error ensuring profile exists:', error);
+            // Don't throw - registration succeeded, profile can be fixed later
+            // The user can still log in and we'll retry fetching the profile
           }
-        }, 1000);
+        }, 1500); // Increased delay to give trigger more time
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Sign up error:', error);
+      // Provide more helpful error messages
+      if (error?.message) {
+        // Check for common database errors
+        if (error.message.includes('duplicate key') || error.message.includes('already exists')) {
+          throw new Error('An account with this email already exists. Please try logging in instead.');
+        }
+        if (error.message.includes('violates row-level security') || error.message.includes('RLS')) {
+          throw new Error('Registration failed due to security policy. Please contact support.');
+        }
+        if (error.message.includes('trigger') || error.message.includes('function')) {
+          throw new Error('Registration completed, but profile setup encountered an issue. Please try logging in.');
+        }
+      }
       throw error;
     } finally {
-  setActionLoading(false);
+      setActionLoading(false);
     }
   };
 

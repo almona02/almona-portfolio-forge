@@ -178,11 +178,94 @@ export const detectMaterialType = (machine: Machine): 'aluminum' | 'upvc' | 'bot
   return 'unknown';
 };
 
+// Helper function to normalize model numbers for comparison
+// Removes spaces, hyphens, and converts to lowercase
+// Example: "DC 550 PB" -> "dc550pb", "KM-215-S" -> "km215s"
+const normalizeModelNumber = (model: string): string => {
+  return model.toLowerCase().replace(/[\s\-_]/g, '').trim();
+};
+
+// Extract model numbers from query (handles comma-separated list)
+// Example: "dc 550 pb , km 215 s , kp 180 , crm 250" -> ["dc 550 pb", "km 215 s", "kp 180", "crm 250"]
+const extractModelNumbers = (query: string): string[] => {
+  // Check if query contains comma-separated model numbers
+  const commaSeparated = query.split(',').map(s => s.trim()).filter(s => s.length > 0);
+  
+  // If multiple items found, treat as model number list
+  if (commaSeparated.length > 1) {
+    return commaSeparated;
+  }
+  
+  // Otherwise, try to extract model patterns from single query
+  // Pattern: 2-3 letters, optional space/hyphen, 3-4 digits, optional space/hyphen, optional letters
+  const modelPattern = /[a-z]{2,3}[\s\-]?\d{3,4}[\s\-]?[a-z]*/gi;
+  const matches = query.match(modelPattern);
+  
+  return matches || [];
+};
+
 // Enhanced intelligent search with comprehensive machine data
 export const intelligentSearch = (query: string, machines: Machine[]): Machine[] => {
   const normalizedQuery = query.toLowerCase().trim();
   
   if (!normalizedQuery) return machines;
+  
+  // Extract model numbers from query (handles comma-separated list)
+  const modelNumbers = extractModelNumbers(normalizedQuery);
+  
+  // If model numbers are detected, prioritize exact model matching
+  if (modelNumbers.length > 0) {
+    const normalizedModelNumbers = modelNumbers.map(normalizeModelNumber);
+    
+    // Filter machines that match any of the model numbers
+    const modelMatches = machines.filter(machine => {
+      const normalizedMachineName = normalizeModelNumber(machine.name);
+      
+      // Check if machine name matches any of the queried model numbers
+      return normalizedModelNumbers.some(modelNum => {
+        // Exact match
+        if (normalizedMachineName === modelNum) return true;
+        
+        // Extract core model pattern (letters + numbers) for both
+        const corePattern = /([a-z]{2,3})(\d{3,4})/i;
+        const machineMatch = machine.name.match(corePattern);
+        const queryMatch = modelNum.match(corePattern);
+        
+        if (machineMatch && queryMatch) {
+          const machineCore = `${machineMatch[1].toLowerCase()}${machineMatch[2]}`;
+          const queryCore = `${queryMatch[1].toLowerCase()}${queryMatch[2]}`;
+          
+          // Core pattern must match (e.g., "km215" in both "km 215 s" and "KM-215-S")
+          if (machineCore === queryCore) {
+            return true;
+          }
+        }
+        
+        // Fallback: check if one contains the other (for cases like "km215" vs "km215s")
+        if (normalizedMachineName.includes(modelNum) || modelNum.includes(normalizedMachineName)) {
+          // Additional check: ensure at least the core pattern matches
+          if (machineMatch && queryMatch) {
+            const machineCore = `${machineMatch[1].toLowerCase()}${machineMatch[2]}`;
+            const queryCore = `${queryMatch[1].toLowerCase()}${queryMatch[2]}`;
+            return machineCore === queryCore;
+          }
+        }
+        
+        return false;
+      });
+    });
+    
+    // If we found matches, return only those (exact model number search)
+    if (modelMatches.length > 0) {
+      return modelMatches;
+    }
+    
+    // If no matches found but model numbers were detected, return empty
+    // This ensures we don't return unrelated machines when user searches for specific models
+    if (modelNumbers.length > 1) {
+      return [];
+    }
+  }
   
   // Extract potential categories from search query
   const queryCategories = smartCategories
@@ -213,6 +296,19 @@ export const intelligentSearch = (query: string, machines: Machine[]): Machine[]
     // Direct text match (highest priority)
     if (combinedText.includes(normalizedQuery)) return true;
     
+    // Single model number matching (e.g., "DC 421", "KM 212")
+    if (modelNumbers.length === 1) {
+      const normalizedModel = normalizeModelNumber(modelNumbers[0]);
+      const normalizedMachineName = normalizeModelNumber(machine.name);
+      
+      // Exact or partial match
+      if (normalizedMachineName === normalizedModel || 
+          normalizedMachineName.includes(normalizedModel) || 
+          normalizedModel.includes(normalizedMachineName)) {
+        return true;
+      }
+    }
+    
     // Partial word matching for better search results
     const queryWords = normalizedQuery.split(' ').filter(word => word.length > 2);
     const wordMatches = queryWords.filter(word => combinedText.includes(word));
@@ -230,7 +326,7 @@ export const intelligentSearch = (query: string, machines: Machine[]): Machine[]
       if (machineMaterial === materialType || machineMaterial === 'both') return true;
     }
     
-    // Model number matching (e.g., "DC 421", "KM 212")
+    // Legacy model number matching pattern (for backward compatibility)
     const modelPattern = /[a-z]{2,3}\s*\d{3,4}/i;
     const queryModelMatch = normalizedQuery.match(modelPattern);
     if (queryModelMatch && name.includes(queryModelMatch[0].toLowerCase())) return true;

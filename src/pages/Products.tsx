@@ -106,12 +106,22 @@ const Products = function ProductsPage() {
   const debouncedSetFilters = useMemo(
     () => debounce((key: keyof typeof filters, value: string) => {
       setFilters(prev => ({ ...prev, [key]: value }));
+      // Update URL parameter when search changes (debounced)
+      if (key === 'searchTerm') {
+        const newParams = new URLSearchParams(searchParams);
+        if (value.trim()) {
+          newParams.set('search', value.trim());
+        } else {
+          newParams.delete('search');
+        }
+        setSearchParams(newParams, { replace: true });
+      }
     }, 300),
-    []
+    [searchParams, setSearchParams]
   );
 
   const handleFilterChange = useCallback((key: keyof typeof filters, value: string) => {
-    // For search, use debounce; for others, update immediately
+    // For search, use debounce (which will update URL); for others, update immediately
     if (key === 'searchTerm') {
       debouncedSetFilters(key, value);
     } else {
