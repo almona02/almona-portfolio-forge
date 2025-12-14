@@ -5,6 +5,7 @@ import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Input } from '@/shared/ui/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { ShareFilteredResults } from './ShareFilteredResults';
 import { 
   smartCategories,
   getCategoryMachineCounts,
@@ -316,6 +317,43 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                         ))}
                       </motion.div>
                     )}
+
+                    {/* Search Results in Dropdown */}
+                    {searchQuery && searchResults.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-3 space-y-2"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs text-gray-400">Found {searchResults.length} machines:</p>
+                          <ShareFilteredResults
+                            searchQuery={searchQuery}
+                            resultCount={searchResults.length}
+                            className="text-xs"
+                          />
+                        </div>
+                        <div className="max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 space-y-1">
+                          {searchResults.slice(0, 5).map(machine => (
+                            <div
+                              key={machine.id}
+                              className="flex items-center justify-between p-2 bg-gray-700/60 md:bg-gray-700/30 rounded cursor-pointer hover:bg-gray-700/80 md:hover:bg-gray-700/50 transition-colors"
+                              onClick={() => {
+                                setSelectedMachine(machine);
+                                handleCategorySelect('all');
+                                setIsDropdownOpen(false);
+                              }}
+                            >
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-white truncate">{machine.name}</p>
+                                <p className="text-xs text-gray-400 truncate">{machine.description}</p>
+                              </div>
+                              {getMaterialBadge(machine)}
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
                 )}
 
@@ -419,26 +457,36 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-3 space-y-2 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500"
-              style={{ scrollBehavior: 'smooth' }}
+              className="mt-3 space-y-2"
             >
-              <p className="text-xs text-gray-400">Found {searchResults.length} machines:</p>
-              {searchResults.slice(0, 5).map(machine => (
-                <div
-                  key={machine.id}
-                  className="flex items-center justify-between p-2 bg-gray-700/80 md:bg-gray-700/50 rounded cursor-pointer hover:bg-gray-700/90 md:hover:bg-gray-700/70 transition-colors"
-                  onClick={() => {
-                    setSelectedMachine(machine);
-                    handleCategorySelect('all');
-                  }}
-                >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{machine.name}</p>
-                    <p className="text-xs text-gray-400 truncate">{machine.description}</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-gray-400">Found {searchResults.length} machines:</p>
+                <ShareFilteredResults
+                  searchQuery={searchQuery}
+                  resultCount={searchResults.length}
+                  className="text-xs"
+                />
+              </div>
+              <div className="max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500 space-y-2"
+                style={{ scrollBehavior: 'smooth' }}
+              >
+                {searchResults.slice(0, 5).map(machine => (
+                  <div
+                    key={machine.id}
+                    className="flex items-center justify-between p-2 bg-gray-700/80 md:bg-gray-700/50 rounded cursor-pointer hover:bg-gray-700/90 md:hover:bg-gray-700/70 transition-colors"
+                    onClick={() => {
+                      setSelectedMachine(machine);
+                      handleCategorySelect('all');
+                    }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-white truncate">{machine.name}</p>
+                      <p className="text-xs text-gray-400 truncate">{machine.description}</p>
+                    </div>
+                    {getMaterialBadge(machine)}
                   </div>
-                  {getMaterialBadge(machine)}
-                </div>
-              ))}
+                ))}
+              </div>
             </motion.div>
           )}
         </div>
