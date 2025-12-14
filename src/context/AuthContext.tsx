@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef, startTransition } from 'react';
-import { supabase, handleAuthError } from '@/lib/supabase';
 import { getProfileById, updateProfile as updateProfileDomain } from '@/lib/data/profilesClient';
+import { handleAuthError, supabase } from '@/lib/supabase';
 import { Database } from '@/types/database';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import React, { createContext, startTransition, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 // Define enhanced User interface based on our database schema
 interface User {
@@ -173,6 +173,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Only set up auth listener if Supabase is properly configured
     let subscription: any = null;
+    
+    // Capture ref value at effect start for cleanup (fixes ESLint warning)
+    const ongoingFetchesRef = ongoingFetches;
 
     const getInitialSession = async () => {
       try {
@@ -337,7 +340,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         clearTimeout(authChangeTimeout);
       }
       // Clear ongoing fetches on unmount
-      ongoingFetches.current.clear();
+      // Use the ref captured at effect start to avoid stale closure warning
+      ongoingFetchesRef.current.clear();
       if (subscription) {
         subscription.unsubscribe();
       }
@@ -361,17 +365,107 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Removed delayed fallback; placeholder now applied immediately on profile fetch failure.
 
+  // Helper function to parse Supabase auth errors into polished, prestigious user messages
+  const parseAuthError = (error: any): string => {
+    if (!error) return 'We encountered an unexpected issue. Please try again, and if the problem persists, our support team is here to assist you.';
+    
+    const errorMessage = error.message || '';
+    const status = error.status || error.statusCode || 0;
+    
+    // Handle specific error cases with refined messaging
+    if (errorMessage.includes('Invalid login credentials') || 
+        errorMessage.includes('invalid_credentials') ||
+        errorMessage.includes('Invalid email or password')) {
+      return 'The credentials you entered do not match our records. Please verify your email address and password, ensuring correct capitalization and spelling.';
+    }
+    
+    if (errorMessage.includes('Email not confirmed') || 
+        errorMessage.includes('email_not_confirmed') ||
+        errorMessage.includes('Email address not confirmed')) {
+      return 'Your account requires email verification to ensure security. Please check your inbox for our confirmation message. If you don\'t see it, please check your spam or junk folder. Should you need assistance, our support team is ready to help.';
+    }
+    
+    if (errorMessage.includes('User not found') || 
+        errorMessage.includes('user_not_found')) {
+      return 'We couldn\'t locate an account associated with this email address. Please verify your email or create a new account to get started with our platform.';
+    }
+    
+    if (errorMessage.includes('Too many requests') || 
+        errorMessage.includes('rate_limit') ||
+        status === 429) {
+      return 'For your security, we\'ve temporarily limited login attempts. Please wait a few moments before trying again. This helps us protect your account from unauthorized access.';
+    }
+    
+    if (errorMessage.includes('Email rate limit exceeded')) {
+      return 'We\'ve reached the maximum number of email requests for your account. Please allow a few minutes before requesting another email. This measure helps us maintain service quality for all users.';
+    }
+    
+    if (status === 400) {
+      if (errorMessage.includes('email')) {
+        return 'The email address format appears to be incorrect. Please review and ensure it follows the standard format (e.g., name@example.com).';
+      }
+      if (errorMessage.includes('password')) {
+        return 'The password you entered doesn\'t meet our security requirements. Please verify your password and try again.';
+      }
+      return 'The information provided doesn\'t match our records. Please carefully review your email address and password, then try again.';
+    }
+    
+    if (status === 401) {
+      return 'The credentials you entered are incorrect. Please verify your email address and password. If you\'ve forgotten your password, you can reset it through our password recovery system.';
+    }
+    
+    if (status === 403) {
+      return 'Access to your account is currently restricted. This may be due to security measures or account status. Please contact our support team for assistance, and we\'ll be happy to help restore your access.';
+    }
+    
+    if (status >= 500) {
+      return 'We\'re experiencing technical difficulties on our end. Our team has been notified and is working to resolve this promptly. Please try again in a few moments. We apologize for any inconvenience.';
+    }
+    
+    // Return a polished generic message if we can't parse the specific error
+    return errorMessage || 'We were unable to complete your login request. Please verify your credentials and try again. If the issue continues, please contact our support team for personalized assistance.';
+  };
+
   const signIn = async (email: string, password: string): Promise<void> => {
     setActionLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ 
-        email, 
+      // Validate input before making the request
+      if (!email || !email.trim()) {
+        throw new Error('Please provide your email address to continue.');
+      }
+      if (!password || !password.trim()) {
+        throw new Error('Please enter your password to access your account.');
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({ 
+        email: email.trim().toLowerCase(), 
         password 
       });
       
-      if (error) throw error;
-    } catch (error) {
+      if (error) {
+        // Parse Supabase error messages for better user feedback
+        const errorMessage = parseAuthError(error);
+        const enhancedError = new Error(errorMessage);
+        // Preserve original error for debugging
+        (enhancedError as any).originalError = error;
+        throw enhancedError;
+      }
+
+      // Check if user email is confirmed
+      if (data?.user && !data.user.email_confirmed_at) {
+        throw new Error('Your account requires email verification to ensure the highest level of security. Please check your inbox for our confirmation message. If you don\'t see it, please check your spam or junk folder. Our support team is available if you need assistance.');
+      }
+    } catch (error: any) {
       console.error('Sign in error:', error);
+      // If it's already a parsed error, just throw it
+      if (error.message && error.originalError) {
+        throw error;
+      }
+      // Otherwise, try to parse it
+      if (error?.message) {
+        const parsedMessage = parseAuthError(error);
+        throw new Error(parsedMessage);
+      }
       throw error;
     } finally {
       setActionLoading(false);
@@ -422,15 +516,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (fetchError || !existingProfile) {
               console.warn('Profile not found after signup, creating manually...', fetchError);
               
-              const { error: insertError } = await supabase
-                .from('profiles')
-                .insert({
-                  id: authData.user!.id,
-                  full_name: userData.full_name || authData.user!.email || 'User',
-                  company_name: userData.company_name || null,
-                  phone: userData.phone || null,
-                  sector: userData.sector || 'GENERAL',
-                });
+              const profileInsert: Database['public']['Tables']['profiles']['Insert'] = {
+                id: authData.user!.id,
+                full_name: userData.full_name || authData.user!.email || 'User',
+                company_name: userData.company_name || null,
+                phone: userData.phone || null,
+                sector: (userData.sector || 'GENERAL') as Database['public']['Tables']['profiles']['Row']['sector'],
+              };
+              
+              // Use type assertion to fix TypeScript inference issue
+              const { error: insertError } = await (supabase
+                .from('profiles') as any)
+                .insert(profileInsert);
               
               if (insertError) {
                 console.error('Error creating profile manually:', insertError);
@@ -438,14 +535,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }
             } else {
               // Profile exists, update it with additional metadata fields
-              const profileUpdates: Record<string, any> = {};
+              const profileUpdates: Database['public']['Tables']['profiles']['Update'] = {};
               if (userData.company_name) profileUpdates.company_name = userData.company_name;
               if (userData.phone) profileUpdates.phone = userData.phone;
-              if (userData.sector) profileUpdates.sector = userData.sector;
+              if (userData.sector) profileUpdates.sector = userData.sector as Database['public']['Tables']['profiles']['Row']['sector'];
               
               if (Object.keys(profileUpdates).length > 0) {
-                const { error: updateError } = await supabase
-                  .from('profiles')
+                // Use type assertion to fix TypeScript inference issue
+                const { error: updateError } = await (supabase
+                  .from('profiles') as any)
                   .update(profileUpdates)
                   .eq('id', authData.user!.id);
                 
