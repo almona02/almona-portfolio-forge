@@ -113,17 +113,17 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
     onClose();
   };
 
-  const handleVideoPlay = () => {
+  const _handleVideoPlay = () => {
     setActionsTaken(prev => [...prev, 'video_play']);
     toast.success('Opening product video...');
   };
 
-  const handleSpecsView = () => {
+  const _handleSpecsView = () => {
     setActiveTab('specifications');
     quickViewAnalytics.trackTabSwitch(product, 'overview', 'specifications');
   };
 
-  const handleDownloadBrochure = () => {
+  const _handleDownloadBrochure = () => {
     const conversionTime = Date.now() - openTime;
     setActionsTaken(prev => [...prev, 'brochure_download']);
     quickViewAnalytics.trackQuickViewConversion(product, 'brochure_download', conversionTime, 'quick_view_panel');

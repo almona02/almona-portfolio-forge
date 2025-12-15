@@ -10,17 +10,11 @@ import {
   Users, 
   TrendingUp, 
   AlertTriangle, 
-  CheckCircle, 
   Clock,
-  Globe,
-  Server,
-  Database,
-  Zap,
   BarChart3,
   Eye,
   MousePointer,
-  ShoppingCart,
-  MessageSquare
+  ShoppingCart
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -51,7 +45,7 @@ interface UserBehavior {
 }
 
 export function ProductionDashboard() {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const [kpiMetrics, setKpiMetrics] = useState<KPIMetric[]>([]);
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetric[]>([]);
   const [userBehavior, setUserBehavior] = useState<UserBehavior[]>([]);

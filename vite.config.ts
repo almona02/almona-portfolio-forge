@@ -72,6 +72,8 @@ export default defineConfig(({ mode }) => {
       ...(isProduction ? [VitePWA({
         registerType: "autoUpdate",
         injectRegister: "auto",
+        filename: "manifest.webmanifest", // Explicit filename
+        strategies: "generateSW", // Use generateSW for better control
         devOptions: {
           enabled: false // Disable in development for stability
         },
@@ -390,6 +392,11 @@ export default defineConfig(({ mode }) => {
             }
             
             // === UI LIBRARIES (Grouped by usage) ===
+            
+            // Lucide React icons (large bundle - split separately)
+            if (id.includes('lucide-react')) {
+              return 'ui-icons-lucide';
+            }
             
             // Chart libraries (heavy)
             if (id.includes('recharts') || id.includes('d3') || id.includes('chart.js')) {

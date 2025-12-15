@@ -33,7 +33,7 @@ const SmartSearchBox: React.FC<SmartSearchBoxProps> = ({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [popularSearches, setPopularSearches] = useState<string[]>([]);
-  const [currentSearchEventId, setCurrentSearchEventId] = useState<string | null>(null);
+  const [_currentSearchEventId, setCurrentSearchEventId] = useState<string | null>(null);
   
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);

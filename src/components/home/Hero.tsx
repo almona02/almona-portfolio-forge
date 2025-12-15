@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useMemo, lazy, Suspense, startTransit
 import { Link } from "react-router-dom";
 import { ArrowRight, Phone, CheckCircle, Award } from "lucide-react";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
-import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
 // Lazy load the heavy background component to improve LCP
@@ -41,7 +40,7 @@ const Hero = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [transitionProgress, setTransitionProgress] = useState(100);
-  const [isStatusVisible, setIsStatusVisible] = useState(true);
+  const [_isStatusVisible, setIsStatusVisible] = useState(true);
   const statusHideTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Memoize slides to prevent unnecessary re-renders

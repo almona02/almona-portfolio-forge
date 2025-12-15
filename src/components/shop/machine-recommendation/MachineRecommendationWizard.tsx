@@ -1,34 +1,31 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/shared/ui/ui/dialog';
-import { Button } from '@/shared/ui/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/shared/ui/ui/radio-group';
-import { Label } from '@/shared/ui/ui/label';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Card, CardContent } from '@/shared/ui/ui/card';
 import { yilmazMachines, type Machine } from '@/constants/yilmazMachines';
 import { useQuote } from '@/context/QuoteContext';
 import { useToast } from '@/hooks/useToast';
-import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Settings, 
-  Zap, 
-  Target, 
-  CheckCircle, 
-  ArrowRight, 
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent } from '@/shared/ui/ui/card';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/ui/dialog';
+import { Label } from '@/shared/ui/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/shared/ui/ui/radio-group';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
   ArrowLeft,
-  Building2,
-  Square,
-  Wrench,
-  Cpu,
-  Sparkles,
+  ArrowRight,
   Award,
-  TrendingUp,
+  Building2,
+  CheckCircle,
+  Cpu,
   Download,
-  ShoppingCart,
   FileText,
-  Printer
+  Printer,
+  Settings,
+  ShoppingCart,
+  Sparkles,
+  Square,
+  TrendingUp
 } from 'lucide-react';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 interface MachineRecommendationWizardProps {
   open: boolean;
@@ -113,7 +110,7 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
     }
   };
 
-  const categoryKeywordMap: Record<string, string[]> = {
+  const categoryKeywordMap: Record<string, string[]> = useMemo(() => ({
     'processing-centers': ['processing', 'milling', 'drilling', 'cnc', 'machining'],
     'cutting-machines': ['cutting', 'mitre', 'miter', 'saw'],
     'welding-machines': ['welding', 'seamless', 'fusion'],
@@ -123,7 +120,7 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
     'fabrication-equipment': ['fabrication', 'line', 'cleaning', 'robot', 'welding line'],
     routers: ['router', 'nc'],
     accessories: ['accessory', 'cooling', 'robot', 'unit']
-  };
+  }), []);
 
   const bundleIdMap: Record<'small-scale' | 'medium-scale' | 'high-volume', string[]> = {
     'small-scale': [
@@ -286,7 +283,7 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
     }
 
     return filtered;
-  }, []);
+  }, [categoryKeywordMap]);
 
   const categoryStats = useMemo(() => {
     const counts = new Map<string, number>();

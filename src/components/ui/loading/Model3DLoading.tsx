@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { LoadingSkeleton } from './LoadingSkeleton';
-import { Box, Loader2, RotateCcw } from 'lucide-react';
+import { Box, RotateCcw } from 'lucide-react';
 
 interface Model3DLoadingProps {
   className?: string;

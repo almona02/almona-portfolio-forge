@@ -1,5 +1,5 @@
 import React from 'react';
-import { getOptimizedImageUrl, generateSrcSet, optimizeImage, supportsWebP, supportsAVIF } from '@/lib/imageOptimization';
+import { generateSrcSet, optimizeImage, supportsWebP, supportsAVIF } from '@/lib/imageOptimization';
 import type { OptimizedImageOptions } from '@/lib/imageOptimization';
 
 export interface OptimizedImageProps extends OptimizedImageOptions {

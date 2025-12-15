@@ -182,7 +182,7 @@ export class QualityAuditService {
   /**
    * Check profile quality
    */
-  private checkProfileQuality(project: WindowUnit): number {
+  private checkProfileQuality(_project: WindowUnit): number {
     // Simulate profile quality check
     return 8.5; // Score out of 10
   }
@@ -190,7 +190,7 @@ export class QualityAuditService {
   /**
    * Check glazing quality
    */
-  private checkGlazingQuality(project: WindowUnit): number {
+  private checkGlazingQuality(_project: WindowUnit): number {
     // Simulate glazing quality check
     return 8.2; // Score out of 10
   }
@@ -198,7 +198,7 @@ export class QualityAuditService {
   /**
    * Check hardware installation
    */
-  private checkHardwareInstallation(project: WindowUnit): number {
+  private checkHardwareInstallation(_project: WindowUnit): number {
     // Simulate hardware installation check
     return 8.8; // Score out of 10
   }

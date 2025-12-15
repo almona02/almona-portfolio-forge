@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Filter, X } from 'lucide-react';
+import { ChevronDown, Filter } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { 
@@ -11,11 +11,8 @@ import {
   SelectValue,
 } from '@/shared/ui/ui/select';
 import { 
-  categoryHierarchy, 
   getMainCategories, 
-  getSubcategories,
-  findCategoryById,
-  machineCategoryMapping 
+  findCategoryById
 } from '@/constants/categoryHierarchy';
 
 interface CategoryFilterProps {
@@ -65,7 +62,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
     setIsOpen(false);
   }, [onCategoryChange]);
 
-  const clearFilter = useCallback(() => {
+  const _clearFilter = useCallback(() => {
     onCategoryChange('all');
   }, [onCategoryChange]);
 

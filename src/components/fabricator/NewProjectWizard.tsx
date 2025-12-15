@@ -14,7 +14,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Factory, MapPin, Users } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import type { Database, SectorType } from '@/types/database';
+import type { Database } from '@/types/database';
 import { ProjectCockpit, type ProjectType, getProjectTypeConfig } from './ProjectCockpit';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useTranslation } from 'react-i18next';
@@ -136,14 +136,12 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
           .order('created_at', { ascending: false });
 
         if (error) {
-          // eslint-disable-next-line no-console
           console.warn('Failed to load fabricator customers for project wizard:', error);
           return;
         }
 
         setCustomers((data as FabricatorCustomerRow[]) || []);
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.warn('Error loading fabricator customers for project wizard:', e);
       }
     };

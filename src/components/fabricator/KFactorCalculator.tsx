@@ -31,9 +31,9 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
 }) => {
   const { t } = useTranslation('fabricator');
   const [profileWidth, setProfileWidth] = useState<number>(profile?.width || 60);
-  const [profileHeight, setProfileHeight] = useState<number>(profile?.height || profile?.width || 40);
+  const [profileHeight, _setProfileHeight] = useState<number>(profile?.height || profile?.width || 40);
   const [materialThickness, setMaterialThickness] = useState<number>(profile?.thickness || 1.5);
-  const [cutAngle, setCutAngle] = useState<number>(45);
+  const [_cutAngle, setCutAngle] = useState<number>(45);
   const [jointType, setJointType] = useState<'miter_45' | 'butt_90' | 't_joint' | 'l_joint' | 'custom'>(
     initialJointType
   );

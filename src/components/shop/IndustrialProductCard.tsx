@@ -3,7 +3,7 @@ import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/ui/card";
 import { EnhancedImage } from "@/components/ui/EnhancedImage";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const EgyptCertificationBadge = ({ standard }: { standard: string }) => (
   <div className="flex items-center bg-[#ce1126] text-white px-1.5 py-0.5 rounded-full text-[10px]">
@@ -46,7 +46,7 @@ export const IndustrialProductCard = ({
   stock,
   actions,
   durabilityInfo,
-  onDurabilityClick,
+  onDurabilityClick: _onDurabilityClick,
 }: IndustrialProductCardProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
 

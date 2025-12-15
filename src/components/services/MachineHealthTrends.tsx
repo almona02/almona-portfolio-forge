@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, LineChart, Line, BarChart, Bar } from 'recharts';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, LineChart, Line } from 'recharts';
 import { iotSensorService } from '@/lib/iot/sensorIntegration';
 import { subDays, format } from 'date-fns';
 import { Activity, Thermometer, Vibrate, TimerReset } from 'lucide-react';
@@ -45,7 +45,7 @@ export const MachineHealthTrends: React.FC<MachineHealthTrendsProps> = ({ machin
           });
           const arr = Array.from(buckets.values()).sort((a, b) => a.ts.localeCompare(b.ts));
           next[id] = arr;
-        } catch (e) {
+        } catch (_e) {
           const mock: TrendPoint[] = Array.from({ length: days * 2 }).map((_, i) => {
             const d = subDays(end, days - Math.floor(i / 2));
             const ts = format(d, 'MM-dd HH:mm');

@@ -15,7 +15,7 @@ interface TrainingLevelCardProps {
 }
 
 export const TrainingLevelCard = ({
-  level,
+  level: _level,
   title,
   description,
   duration,

@@ -10,13 +10,10 @@ import {
   Download,
   Share2,
   Star,
-  Filter,
   Search,
   X,
   Play,
-  Pause,
-  Volume2,
-  VolumeX
+  Pause
 } from 'lucide-react';
 import { Input } from '@/shared/ui/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
@@ -66,9 +63,9 @@ export function Model3DGallery({
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedModel, setSelectedModel] = useState<Model3D | null>(null);
   const [autoPlay, setAutoPlay] = useState(false); // Disabled by default to prevent WebGL context issues with multiple canvases
-  const [isMuted, setIsMuted] = useState(false);
-  const [failedModels, setFailedModels] = useState<Set<string>>(new Set());
-  const [loadedModels, setLoadedModels] = useState<Set<string>>(new Set());
+  const [_isMuted, _setIsMuted] = useState(false);
+  const [failedModels, _setFailedModels] = useState<Set<string>>(new Set());
+  const [_loadedModels, _setLoadedModels] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   // Get unique categories

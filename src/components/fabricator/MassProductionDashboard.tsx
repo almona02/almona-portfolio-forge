@@ -121,7 +121,6 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
       setResult(unified);
       setLastSummary(optimizer.getLastRunSummary());
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Mass production optimization failed:', err);
       setError(
         err instanceof Error ? err.message : 'Failed to run mass production optimization. ',

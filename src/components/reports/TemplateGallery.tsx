@@ -10,22 +10,22 @@
  * - Template performance analytics
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Label } from '@/shared/ui/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { templateManager } from '@/lib/exports/TemplateManager';
+import { ExportFormat, ExportOptions, ExportTemplate } from '@/lib/exports/types';
 import { Badge } from '@/shared/ui/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DialogTitle
 } from '@/shared/ui/ui/dialog';
+import { Input } from '@/shared/ui/ui/input';
+import { Label } from '@/shared/ui/ui/label';
 import {
   Select,
   SelectContent,
@@ -33,21 +33,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import {
-  Search,
-  Plus,
-  Edit,
-  Trash2,
+  CheckCircle,
   Copy,
-  Star,
+  Edit,
   FileText,
-  Download,
-  Upload,
-  CheckCircle
+  Plus,
+  Search,
+  Star,
+  Trash2
 } from 'lucide-react';
-import { templateManager } from '@/lib/exports/TemplateManager';
-import { ExportTemplate, ExportFormat, ExportOptions } from '@/lib/exports/types';
+import React, { useCallback, useEffect, useState } from 'react';
 
 interface TemplateGalleryProps {
   onTemplateSelect?: (templateId: string) => void;
@@ -67,11 +63,7 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<ExportTemplate | null>(null);
 
-  useEffect(() => {
-    loadTemplates();
-  }, []);
-
-  const loadTemplates = () => {
+  const loadTemplates = useCallback(() => {
     let filtered = templateManager.getAllTemplates();
 
     // Filter by format
@@ -97,11 +89,11 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
     }
 
     setTemplates(filtered);
-  };
+  }, [searchQuery, selectedType, selectedFormatFilter]);
 
   useEffect(() => {
     loadTemplates();
-  }, [searchQuery, selectedType, selectedFormatFilter]);
+  }, [loadTemplates]);
 
   const handleCreateTemplate = () => {
     setEditingTemplate(null);
@@ -150,7 +142,7 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
     return colors[type] || 'bg-gray-100 text-gray-800';
   };
 
-  const getFormatIcon = (format: ExportFormat) => {
+  const getFormatIcon = (_format: ExportFormat) => {
     return <FileText className="h-4 w-4" />;
   };
 

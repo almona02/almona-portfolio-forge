@@ -14,7 +14,7 @@ export const ServiceViewToggle: React.FC<ServiceViewToggleProps> = ({
   onViewChange,
   className = ''
 }) => {
-  const { t } = useTranslation('services');
+  const { t: _t } = useTranslation('services');
 
   return (
     <div className={`flex justify-center mb-8 ${className}`}>

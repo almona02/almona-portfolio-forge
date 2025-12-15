@@ -6,40 +6,25 @@ import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Progress } from '@/shared/ui/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Separator } from '@/shared/ui/ui/separator';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/ui/ui/select';
-import {
   Upload,
-  CheckCircle,
   Package,
   DollarSign,
   Scale,
   FileText,
-  Shield,
-  AlertTriangle,
   FileCode,
   Loader2,
   Image,
-  Ruler,
   Brain,
   Lightbulb,
   Sparkles,
   TrendingUp,
   Target,
   Zap,
-  Eye,
   Settings,
-  RefreshCw,
-  Download,
   History,
   CheckCircle2,
   X,
@@ -176,12 +161,12 @@ const getFileTypeIcon = (type: SupportedFileType) => {
 export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
   onProfilesImported,
   userId,
-  workshopId,
+  workshopId: _workshopId,
   existingProfiles = [],
 }) => {
   const { t } = useTranslation('fabricator');
   // File upload state
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [_uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentProcessingFile, setCurrentProcessingFile] = useState<string | null>(null);

@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { motion } from 'framer-motion';
 import { 
   Thermometer,
   Gauge,
@@ -15,17 +14,14 @@ import {
   Minus,
   Wifi,
   WifiOff,
-  AlertTriangle,
   CheckCircle,
   Clock,
   BarChart3,
   Settings,
-  RefreshCw,
-  Bell
+  RefreshCw
 } from 'lucide-react';
 import { 
   SensorReading, 
-  DigitalTwinData,
   SensorType,
   PredictedFailure,
   useIoTSensorData,

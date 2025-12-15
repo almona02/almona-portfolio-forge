@@ -21,8 +21,8 @@ const TECHS: Technician[] = [
 ];
 
 export const ServiceCoverageMap: React.FC = () => {
-  const { regionState } = useRegionDetection();
-  const utils = useRegionUtils();
+  const { regionState: _regionState } = useRegionDetection();
+  const _utils = useRegionUtils();
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<maplibregl.Map | null>(null);
 

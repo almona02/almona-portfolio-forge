@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import type { FirmanValidationResult, Firman } from '@/types/firman';
 import { canOverrideFirman } from '@/types/firman';
-import { GuildSystem } from '@/lib/guild/GuildSystem';
 
 interface EngineeringValidationOverlayProps {
   validationResult: FirmanValidationResult;

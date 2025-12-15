@@ -6,7 +6,7 @@ import {
   TicketFilters
 } from '@/types/tickets'
 import { supabase } from '@/lib/supabase'
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 // Helper: map raw ticket row to ServiceTicket/TicketWithDetails
 function baseMap(row: any): ServiceTicket {

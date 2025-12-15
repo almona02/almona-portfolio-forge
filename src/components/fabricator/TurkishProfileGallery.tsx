@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Trash2, Edit, CheckCircle2, Package } from 'lucide-react';
+import { Trash2, CheckCircle2, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TurkishProfile {

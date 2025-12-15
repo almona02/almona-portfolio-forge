@@ -36,7 +36,7 @@ interface MachiningZoneEditorProps {
 
 export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
   profile,
-  crossSectionImageUrl,
+  crossSectionImageUrl: _crossSectionImageUrl,
   zones = [],
   onZonesChange,
   onSave,

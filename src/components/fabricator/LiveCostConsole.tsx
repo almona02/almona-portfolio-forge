@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 import type { WindowComponent, Profile } from '@/types/fabricator';
 import { PricingEngine } from '@/lib/pricing/PricingEngine';
-import { designAISuggestor, type ShapeAnalysis } from '@/lib/ai/DesignAISuggestor';
 import { RemnantManager } from '@/lib/inventory/RemnantManager';
 
 interface LiveCostConsoleProps {
@@ -68,7 +67,7 @@ export const LiveCostConsole: React.FC<LiveCostConsoleProps> = ({
 
       setLoading(true);
       try {
-        const pricingEngine = new PricingEngine({
+        const _pricingEngine = new PricingEngine({
           region: 'egypt',
           currency: currency as any,
         });
