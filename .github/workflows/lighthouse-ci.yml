@@ -7,44 +7,41 @@ on:
     branches: [main, master]
   schedule:
     # Run weekly on Mondays to monitor performance
-    - cron: '0 0 * * 1'
+    - cron: "0 0 * * 1"
 
 jobs:
   lighthouse:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
-          cache: 'npm'
-          
+          node-version: "20"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-        
+
       - name: Build
         run: npm run build
-        
+
       - name: Start preview server
         run: |
           npm run preview &
           sleep 10 # Wait for server to start
-        
-      - name: Run Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v9
-        with:
-          urls: |
-            http://localhost:4173/
-            http://localhost:4173/fabricator
-          uploadArtifacts: true
-          temporaryPublicStorage: true
-          configPath: './.github/lighthouserc.json'
-          
-      - name: Check performance budget
-        run: |
-          # Fail if performance score drops below 75%
-          # (Set threshold below 81% to catch regressions early)
-          npx @lhci/cli assert --config ./.github/lighthouserc.json || echo "Performance threshold not met"
 
+      - name: Run Lighthouse CI
+        run: |
+          # Run Lighthouse CI with assertions (using npx to avoid global install)
+          npx @lhci/cli autorun --config ./.github/lighthouserc.json
+
+          # Check exit code
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -eq 0 ]; then
+            echo "✅ Lighthouse CI passed all assertions"
+          else
+            echo "❌ Lighthouse CI failed - check scores above"
+            exit $EXIT_CODE
+          fi

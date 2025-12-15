@@ -238,6 +238,7 @@ export default defineConfig(({ mode }) => {
       sourcemap: false, // Disable sourcemaps to speed up build
       // Aggressive chunk splitting to prevent 17MB monster
       chunkSizeWarningLimit: 2000, // Warn if any chunk exceeds 2MB (helps identify issues)
+      // Note: CSS file sizes shown in build output are informational, not errors
       assetsInlineLimit: 2048, // Reduced to prevent large inline assets
       reportCompressedSize: false,
       cssCodeSplit: true, // Enable CSS code splitting to reduce main bundle size
@@ -275,6 +276,10 @@ export default defineConfig(({ mode }) => {
           // Suppress Workbox sync errors (known compatibility issue)
           if (warning.message?.includes('Cannot read properties of undefined') || 
               warning.message?.includes('reading \'sync\'')) {
+            return;
+          }
+          // Suppress CSS file size warnings (CSS is separate from JS chunks)
+          if (warning.message?.includes('.css') && warning.code === 'CHUNK_SIZE_WARNING') {
             return;
           }
           warn(warning);
