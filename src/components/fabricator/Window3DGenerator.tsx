@@ -248,9 +248,10 @@ export function Window3DModel({
     const sashRefs = useRef<Group[]>([]);
     const prevWindowUnitRef = useRef<{ id?: string; width: number; height: number; componentCount: number; color?: string; grid?: string } | null>(null);
 
-    // Advanced PBR materials with WebGL 2.0 shaders (with graceful fallback)
+    // Advanced PBR materials (using standard THREE.js materials for reliability)
+    // WebGL2 shaders disabled due to compilation errors - standard materials provide excellent quality
     const { createMaterial } = useAdvancedMaterials({
-        useWebGL2Shaders: true,
+        useWebGL2Shaders: false, // Disabled - using reliable standard materials
     });
 
     // Performance & feature flags

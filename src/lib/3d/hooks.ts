@@ -5,20 +5,20 @@
  * into Three.js/React Three Fiber components.
  */
 
-import { useEffect, useRef, useState, useCallback } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { PhysicsWorld, initPhysics, createWindowPhysics, HingeConstraintConfig } from './PhysicsEngine';
 import {
-  createAdvancedAluminiumMaterial,
-  createAdvancedUPVCMaterial,
-  createAdvancedGlassMaterial,
-  updateMaterialLights,
-  updateMaterialEnvMap,
   AluminiumMaterialParams,
-  UPVCMaterialParams,
   GlassMaterialParams,
+  UPVCMaterialParams,
+  createAdvancedAluminiumMaterial,
+  createAdvancedGlassMaterial,
+  createAdvancedUPVCMaterial,
+  updateMaterialEnvMap,
+  updateMaterialLights,
 } from './AdvancedShaders';
+import { HingeConstraintConfig, PhysicsWorld } from './PhysicsEngine';
 
 // ============================================================================
 // PHYSICS HOOK
@@ -151,39 +151,62 @@ export interface UseAdvancedMaterialsReturn {
 export function useAdvancedMaterials(options: UseAdvancedMaterialsOptions = {}): UseAdvancedMaterialsReturn {
   const { gl, scene } = useThree();
   const materialsRef = useRef<THREE.Material[]>([]);
+  const shaderErrorRef = useRef(false); // Track if shaders failed
   
   // Check WebGL 2.0 support
-  const isWebGL2 = gl.capabilities.isWebGL2;
-  const useShaders = options.useWebGL2Shaders !== false && isWebGL2;
+  // DISABLED: Advanced shaders are causing WebGL errors. Using standard materials instead.
+  // The standard THREE.js materials (MeshPhysicalMaterial) provide excellent quality without errors.
+  const isWebGL2 = gl?.capabilities?.isWebGL2 ?? false;
+  const shouldUseShaders = false; // Disabled due to shader compilation errors
   
   const createMaterial = useCallback((type: MaterialType, params: any = {}) => {
     let material: THREE.Material;
     
-    if (useShaders) {
-      // Use advanced WebGL 2.0 shaders
-      switch (type) {
-        case 'aluminum':
-          material = createAdvancedAluminiumMaterial({
-            ...options.defaultAluminiumParams,
-            ...params,
-          });
-          break;
-        case 'upvc':
-          material = createAdvancedUPVCMaterial({
-            ...options.defaultUPVCParams,
-            ...params,
-          });
-          break;
-        case 'glass':
-          material = createAdvancedGlassMaterial({
-            ...options.defaultGlassParams,
-            ...params,
-          });
-          break;
-        default:
-          material = new THREE.MeshStandardMaterial(params);
+    // Check if WebGL context is ready
+    if (!gl || !gl.domElement || !gl.getContext) {
+      // Fallback to standard materials if WebGL not ready
+      return new THREE.MeshStandardMaterial(params);
+    }
+    
+    if (shouldUseShaders && !shaderErrorRef.current) {
+      try {
+        // Use advanced WebGL 2.0 shaders
+        switch (type) {
+          case 'aluminum':
+            material = createAdvancedAluminiumMaterial({
+              ...options.defaultAluminiumParams,
+              ...params,
+            });
+            break;
+          case 'upvc':
+            material = createAdvancedUPVCMaterial({
+              ...options.defaultUPVCParams,
+              ...params,
+            });
+            break;
+          case 'glass':
+            material = createAdvancedGlassMaterial({
+              ...options.defaultGlassParams,
+              ...params,
+            });
+            break;
+          default:
+            material = new THREE.MeshStandardMaterial(params);
+        }
+        
+        // Verify material is valid
+        if (material && (material as any).program === undefined) {
+          // Material created but program not compiled yet - this is OK
+        }
+      } catch (error) {
+        // Fallback to standard materials if shader creation fails
+        console.warn('[Performance] Advanced shader creation failed, using fallback:', error);
+        shaderErrorRef.current = true; // Disable shaders for subsequent calls
+        material = undefined; // Force fallback
       }
-    } else {
+    }
+    
+    if (!shouldUseShaders || !material || shaderErrorRef.current) {
       // Fallback to standard Three.js materials (WebGL 1.0 compatible)
       switch (type) {
         case 'aluminum':
@@ -220,19 +243,29 @@ export function useAdvancedMaterials(options: UseAdvancedMaterialsOptions = {}):
       }
     }
     
-    materialsRef.current.push(material);
+    if (material) {
+      materialsRef.current.push(material);
+    }
     return material;
-  }, [useShaders, options.defaultAluminiumParams, options.defaultUPVCParams, options.defaultGlassParams]);
+  }, [shouldUseShaders, gl, options.defaultAluminiumParams, options.defaultUPVCParams, options.defaultGlassParams]);
   
   const updateLighting = useCallback((position: THREE.Vector3, color: THREE.Color, intensity: number) => {
-    if (useShaders) {
-      updateMaterialLights(scene, position, color, intensity);
+    if (shouldUseShaders && !shaderErrorRef.current) {
+      try {
+        updateMaterialLights(scene, position, color, intensity);
+      } catch (error) {
+        console.warn('[Performance] Failed to update material lights:', error);
+      }
     }
-  }, [useShaders, scene]);
+  }, [shouldUseShaders, scene]);
   
   const updateEnvMap = useCallback((envMap: THREE.CubeTexture) => {
-    if (useShaders) {
-      updateMaterialEnvMap(scene, envMap);
+    if (shouldUseShaders && !shaderErrorRef.current) {
+      try {
+        updateMaterialEnvMap(scene, envMap);
+      } catch (error) {
+        console.warn('[Performance] Failed to update material env map:', error);
+      }
     }
     
     // Also update standard materials
@@ -242,7 +275,7 @@ export function useAdvancedMaterials(options: UseAdvancedMaterialsOptions = {}):
         mat.needsUpdate = true;
       }
     });
-  }, [useShaders, scene]);
+  }, [shouldUseShaders, scene]);
   
   // Cleanup materials on unmount
   useEffect(() => {
