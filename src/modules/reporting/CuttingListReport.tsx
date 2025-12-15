@@ -15,6 +15,7 @@
  */
 
 import { ExportFormat, ExportProgress, ExportService, PDFExportOptions } from '@/lib/exports';
+import { getRoleBorderColor, getRoleColor } from '@/lib/fabricator/roleColorUtils';
 import { formatDate, formatNumber, formatUnit, getRTLClass, getTextAlign } from '@/lib/localization/formatUtils';
 import { injectPrintStyles } from '@/lib/localization/printStyles';
 import { cuttingListGenerator } from '@/lib/reports/CuttingListGenerator';
@@ -640,29 +641,41 @@ const CuttingDiagram: React.FC<CuttingDiagramProps> = ({ diagram }) => {
         />
 
         {/* Cuts */}
-        {diagram.cuts.map((cut: any, index: number) => (
-          <g key={index}>
-            <rect
-              x={cut.x}
-              y={cut.y}
-              width={cut.width}
-              height={cut.height}
-              fill={cut.color || '#3B82F6'}
-              fillOpacity="0.7"
-              stroke="currentColor"
-              strokeWidth="1"
-            />
-            <text
-              x={cut.x + cut.width / 2}
-              y={cut.y + cut.height / 2}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              className="text-xs font-medium fill-foreground"
-            >
-              {cut.label}
-            </text>
-          </g>
-        ))}
+        {diagram.cuts.map((cut: any, index: number) => {
+          // Use role-based color if available, otherwise fallback to provided color
+          // Dynamic import to avoid circular dependencies
+          let roleColor = cut.color || '#3B82F6';
+          let borderColor = 'currentColor';
+          
+          if (cut.role) {
+            roleColor = getRoleColor(cut.role);
+            borderColor = getRoleBorderColor(cut.role);
+          }
+          
+          return (
+            <g key={index}>
+              <rect
+                x={cut.x}
+                y={cut.y}
+                width={cut.width}
+                height={cut.height}
+                fill={roleColor}
+                fillOpacity="0.7"
+                stroke={borderColor}
+                strokeWidth="1"
+              />
+              <text
+                x={cut.x + cut.width / 2}
+                y={cut.y + cut.height / 2}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="text-xs font-medium fill-foreground"
+              >
+                {cut.label}
+              </text>
+            </g>
+          );
+        })}
 
         {/* Waste segments */}
         {diagram.waste.map((waste: any, index: number) => (

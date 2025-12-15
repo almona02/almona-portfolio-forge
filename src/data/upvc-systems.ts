@@ -158,6 +158,12 @@ export const WINTECH_6400_DETAILED: UPVCSystemPack = {
       height_mm: p.height,
     })),
   },
+  // ✅ CRITICAL: Add profiles array for UnitProfileGatherer and SmartMeasuringInterface
+  // This enables comprehensive profile gathering and role-based selection
+  profiles: WINTECH_PROFILES.map(p => ({
+    ...p,
+    systemPackIds: p.systemPackIds || ['wintech_6400_detailed'], // Link to this system pack
+  })) as Profile[],
   upvcSpec: {
     isUPVC: true,
     chambers: 4, // 6400 is 4-chamber

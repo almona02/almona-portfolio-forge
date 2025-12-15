@@ -112,9 +112,8 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
       ],
       colWidths: [1, 1] // Equal width panels
     },
-    mullions: [
-      { position: 0, type: 'standard', width: 50 } // Mullion between col 0 and 1
-    ],
+    mullions: [], // NO MULLION - Sliding sashes use interlock profile instead
+    // Interlock profile connects the two sliding sashes in the middle track
     constraints: {
       minSashWidth: 600,
       maxSashWidth: 1200,
@@ -361,9 +360,8 @@ export const EGYPTIAN_PATTERNS: EgyptianPattern[] = [
       ],
       colWidths: [1, 1]
     },
-    mullions: [
-      { position: 0, type: 'standard', width: 50 }
-    ],
+    mullions: [], // NO MULLION - Sliding doors use interlock profile instead
+    // Interlock profile connects the two sliding door panels in the middle track
     constraints: {
       minSashWidth: 900,
       maxSashWidth: 1600,

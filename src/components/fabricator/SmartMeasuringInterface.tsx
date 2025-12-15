@@ -1,6 +1,6 @@
 import {
-    getDefaultGlazing,
-    getDefaultProfileColor
+  getDefaultGlazing,
+  getDefaultProfileColor
 } from '@/data/egyptian-defaults';
 import { EGYPTIAN_PATTERNS, getPatternsForSystem, type EgyptianPattern } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
@@ -251,7 +251,17 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       index === self.findIndex((p) => ('meta' in p && 'meta' in pack) ? p.meta.id === pack.meta.id : false)
     );
     
-    return [...uniquePacks, ...customSystems];
+    // Combine and deduplicate again to ensure no duplicates between uniquePacks and customSystems
+    const combined = [...uniquePacks, ...customSystems];
+    const seenIds = new Set<string>();
+    return combined.filter((pack) => {
+      const id = 'meta' in pack ? pack.meta.id : '';
+      if (seenIds.has(id)) {
+        return false; // Skip duplicate
+      }
+      seenIds.add(id);
+      return true;
+    });
   }, [region, customSystems]);
 
   const activeSystemPack = useMemo(
@@ -523,6 +533,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       // Include rough opening if in hole mode
       roughOpeningWidth: isHoleMode ? rawWidth : undefined,
       roughOpeningHeight: isHoleMode ? rawHeight : undefined,
+      // Preserve grid layout if set in measuring step
+      grid: isGridMode ? grid : undefined,
     };
 
     // Call the callback
@@ -599,8 +611,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-gray-900 border-gray-700 text-xs max-h-60">
-                          {availableSystemPacks.map((pack) => (
-                            <SelectItem key={pack.meta.id} value={pack.meta.id} className="group">
+                          {availableSystemPacks.map((pack, index) => (
+                            <SelectItem key={`${pack.meta.id}-${index}`} value={pack.meta.id} className="group">
                               <div className="flex items-start justify-between gap-3 min-w-[220px]">
                                 <div className="flex flex-col gap-0.5">
                                   <span className="text-gray-100 flex items-center gap-2">
@@ -623,6 +635,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                                       e.preventDefault();
                                     }}
                                     onPointerDown={(e) => e.stopPropagation()}
+                                    onMouseDown={(e) => e.stopPropagation()}
                                   >
                                     <CustomSystemManager
                                       systemId={pack.meta.id}

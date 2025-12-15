@@ -13,32 +13,27 @@
  * - Print-optimized layout
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Checkbox } from '@/shared/ui/ui/checkbox';
-import { Label } from '@/shared/ui/ui/label';
+import { ExportFormat, ExportProgress, ExportService, PDFExportOptions } from '@/lib/exports';
+import { CalculatedPrice, PricingEngine } from '@/lib/pricing/PricingEngine';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Checkbox } from '@/shared/ui/ui/checkbox';
+import { FabricatorAccessory, WindowUnit } from '@/types/fabricator';
 import {
-  FileText,
-  Download,
-  FileSpreadsheet,
-  Printer,
-  Loader2,
-  CheckCircle,
   AlertCircle,
-  ShoppingCart,
-  Package,
-  DollarSign,
-  Building2,
+  CheckCircle,
   CheckSquare,
+  FileSpreadsheet,
+  FileText,
+  Loader2,
+  Printer,
+  ShoppingCart
 } from 'lucide-react';
-import { WindowUnit, FabricatorAccessory } from '@/types/fabricator';
-import { CompanyBranding } from './PDFExportService';
-import { ExportService, ExportFormat, PDFExportOptions, ExportProgress } from '@/lib/exports';
-import { PricingEngine, CalculatedPrice } from '@/lib/pricing/PricingEngine';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { CompanyBranding } from './PDFExportService';
 
 interface AccessoriesReportProps {
   project: WindowUnit;
@@ -341,21 +336,23 @@ export const AccessoriesReport: React.FC<AccessoriesReportProps> = ({
   };
 
   return (
-    <div className="space-y-6 print:space-y-4" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      {/* Header with Export Buttons */}
+    <div className="space-y-4 sm:space-y-6 print:space-y-4" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+      {/* Header with Export Buttons - Responsive */}
       <Card className="print:hidden">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <ShoppingCart className="h-5 w-5" />
-                {t('accessories.title', 'Accessories & Hardware Report')}
+        <CardHeader className="p-3 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+            <div className="flex-1 min-w-0">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                <span className="truncate">{t('accessories.title', 'Accessories & Hardware Report')}</span>
               </CardTitle>
-              <CardDescription>
-                {t('accessories.order', 'Order')}: {project.orderNumber} | {t('accessories.type', 'Type')}: {project.type}
+              <CardDescription className="text-xs sm:text-sm mt-1">
+                <span className="block sm:inline">{t('accessories.order', 'Order')}: {project.orderNumber}</span>
+                <span className="hidden sm:inline"> | </span>
+                <span className="block sm:inline">{t('accessories.type', 'Type')}: {project.type}</span>
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
               <Button variant="outline" size="sm" onClick={handlePrint} className="print:hidden">
                 <Printer className="h-4 w-4 mr-2" />
                 {t('common.print', 'Print')}
@@ -415,8 +412,8 @@ export const AccessoriesReport: React.FC<AccessoriesReportProps> = ({
         </Alert>
       )}
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Summary Cards - Responsive Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>{t('accessories.categories', 'Categories')}</CardDescription>
@@ -466,8 +463,9 @@ export const AccessoriesReport: React.FC<AccessoriesReportProps> = ({
               </div>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <div className="inline-block min-w-full align-middle">
+                  <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
                       <th className="text-left p-2">{t('accessories.name', 'Name')}</th>
@@ -514,7 +512,8 @@ export const AccessoriesReport: React.FC<AccessoriesReportProps> = ({
                       <td colSpan={2}></td>
                     </tr>
                   </tfoot>
-                </table>
+                  </table>
+                </div>
               </div>
             </CardContent>
           </Card>

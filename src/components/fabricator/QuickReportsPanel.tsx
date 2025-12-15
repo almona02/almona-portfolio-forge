@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
-import { WindowUnit, OptimizationResult } from '@/types/fabricator';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { FileText, Scissors, Package, Zap, Loader2, FileSpreadsheet, FileCode } from 'lucide-react';
-import { toast } from 'sonner';
 import { track } from '@/lib/analytics';
 import { ExportService } from '@/lib/exports';
+import { PricingEngine } from '@/lib/pricing/PricingEngine';
+import { AccessoriesReport } from '@/modules/reporting/AccessoriesReport';
+import { GlassReport } from '@/modules/reporting/GlassReport';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/ui/ui/dialog';
+import { OptimizationResult, WindowUnit } from '@/types/fabricator';
+import { FileCode, FileSpreadsheet, FileText, Loader2, Package, Scissors, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
 
 interface QuickReportsPanelProps {
   project: WindowUnit | null;
@@ -17,6 +21,9 @@ export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
   optimization,
 }) => {
   const [generatingReport, setGeneratingReport] = useState<string | null>(null);
+  const [showAccessoriesReport, setShowAccessoriesReport] = useState(false);
+  const [showGlassReport, setShowGlassReport] = useState(false);
+  const pricingEngine = new PricingEngine();
 
   const handleGenerateCuttingList = async () => {
     if (!project || !optimization || generatingReport) return;
@@ -63,18 +70,16 @@ export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
 
     setGeneratingReport('glass');
     try {
-      // Placeholder – hook into real glass report generator when available
-      toast.info('Glass report generator coming soon');
-      if (project) {
-        track('fabricator_report_triggered', {
-          type: 'glass',
-          jobId: project.id,
-          orderNumber: project.orderNumber,
-        });
-      }
+      // Open glass report in modal
+      setShowGlassReport(true);
+      track('fabricator_report_triggered', {
+        type: 'glass',
+        jobId: project.id,
+        orderNumber: project.orderNumber,
+      });
     } catch (error) {
-      console.error('Failed to generate glass report:', error);
-      toast.error('Failed to generate glass report');
+      console.error('Failed to open glass report:', error);
+      toast.error('Failed to open glass report');
     } finally {
       setGeneratingReport(null);
     }
@@ -85,18 +90,16 @@ export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
 
     setGeneratingReport('accessories');
     try {
-      // Placeholder – hook into real accessories report generator when available
-      toast.info('Accessories report generator coming soon');
-      if (project) {
-        track('fabricator_report_triggered', {
-          type: 'accessories',
-          jobId: project.id,
-          orderNumber: project.orderNumber,
-        });
-      }
+      // Open accessories report in modal
+      setShowAccessoriesReport(true);
+      track('fabricator_report_triggered', {
+        type: 'accessories',
+        jobId: project.id,
+        orderNumber: project.orderNumber,
+      });
     } catch (error) {
-      console.error('Failed to generate accessories list:', error);
-      toast.error('Failed to generate accessories list');
+      console.error('Failed to open accessories list:', error);
+      toast.error('Failed to open accessories list');
     } finally {
       setGeneratingReport(null);
     }
@@ -273,6 +276,58 @@ export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
           </div>
         )}
       </CardContent>
+
+      {/* Accessories Report Modal - Responsive */}
+      {project && (
+        <Dialog open={showAccessoriesReport} onOpenChange={setShowAccessoriesReport}>
+          <DialogContent className="w-[95vw] max-w-6xl h-[95vh] max-h-[95vh] p-0 sm:p-6 flex flex-col overflow-hidden">
+            <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-0 pb-2 flex-shrink-0">
+              <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Package className="h-4 w-4 sm:h-5 sm:w-5" />
+                Accessories & Hardware Report
+              </DialogTitle>
+              <DialogDescription className="text-xs sm:text-sm">
+                Complete list of all hardware, screws, gaskets, and accessories for {project.orderNumber}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-4 sm:pb-6 -mx-4 sm:-mx-6">
+              <div className="min-h-full">
+                <AccessoriesReport
+                  project={project}
+                  accessories={[]} // Will extract from project.hardware
+                  language="en"
+                  pricingEngine={pricingEngine}
+                />
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Glass Report Modal - Responsive */}
+      {project && (
+        <Dialog open={showGlassReport} onOpenChange={setShowGlassReport}>
+          <DialogContent className="w-[95vw] max-w-6xl h-[95vh] max-h-[95vh] p-0 sm:p-6 flex flex-col overflow-hidden">
+            <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-0 pb-2 flex-shrink-0">
+              <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Zap className="h-4 w-4 sm:h-5 sm:w-5" />
+                Glass & Glazing Report
+              </DialogTitle>
+              <DialogDescription className="text-xs sm:text-sm">
+                Detailed glass specifications and cutting plan for {project.orderNumber}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex-1 overflow-y-auto px-4 sm:px-6 pb-4 sm:pb-6 -mx-4 sm:-mx-6">
+              <div className="min-h-full">
+                <GlassReport
+                  project={project}
+                  language="en"
+                />
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </Card>
   );
 };

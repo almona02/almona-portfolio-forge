@@ -1,17 +1,16 @@
-import React from 'react';
-import { Button } from '@/shared/ui/ui/button';
+import {
+  archiveCustomSystem,
+  deleteCustomSystem,
+  duplicateCustomSystem,
+} from '@/lib/fabricator/customSystemStorage';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/shared/ui/ui/dropdown-menu';
-import { MoreVertical, Trash2, Archive, Copy, Edit } from 'lucide-react';
-import {
-  deleteCustomSystem,
-  archiveCustomSystem,
-  duplicateCustomSystem,
-} from '@/lib/fabricator/customSystemStorage';
+import { Archive, Copy, Edit, MoreVertical, Trash2 } from 'lucide-react';
+import React from 'react';
 
 interface CustomSystemManagerProps {
   systemId: string;
@@ -50,10 +49,20 @@ export const CustomSystemManager: React.FC<CustomSystemManagerProps> = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+        <div
+          role="button"
+          tabIndex={0}
+          className="inline-flex items-center justify-center rounded-md h-8 w-8 p-0 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+            }
+          }}
+        >
           <MoreVertical className="h-4 w-4" />
           <span className="sr-only">Manage custom system</span>
-        </Button>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {onEdit && (

@@ -7,14 +7,15 @@
  * - Generation of mullion components compatible with WindowUnit export
  */
 
-import type { WindowUnit, WindowComponent, Profile, WindowGrid } from '@/types/fabricator';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 import {
-  type ValidationResult,
-  type ValidationError,
-  type SystemConstraints,
-  validateProjectWithConstraints,
   deriveSystemConstraintsFromProfiles,
+  validateProjectWithConstraints,
+  type SystemConstraints,
+  type ValidationError,
+  type ValidationResult,
 } from '@/lib/fabricatorValidation';
+import type { Profile, WindowComponent, WindowGrid, WindowUnit } from '@/types/fabricator';
 
 // ---------------------------------------------------------------------------
 // Equal Spacing
@@ -314,15 +315,38 @@ export function generateComponentsFromGrid(
     (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
   ) || profiles.find(p => p.profileRole === 'frame') || profiles[0];
 
-  const sashProfile = profiles.find(p => 
-    (p.profileRole === 'sash') && 
-    (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
-  ) || profiles.find(p => p.profileRole === 'sash') || profiles[0];
+  // Find appropriate sash profile - prioritize sliding sash for sliding systems
+  const isSlidingSystem = project.type?.includes('sliding') || 
+                          grid.cells.some(cell => cell.type === 'sliding');
+  
+  const sashProfile = isSlidingSystem
+    ? profiles.find(p => 
+        (p.profileRole === 'sash_sliding') && 
+        (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
+      ) || profiles.find(p => p.profileRole === 'sash_sliding') ||
+        profiles.find(p => 
+          (p.profileRole === 'sash') && 
+          (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
+        ) || profiles.find(p => p.profileRole === 'sash') || profiles[0]
+    : profiles.find(p => 
+        (p.profileRole === 'sash') && 
+        (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
+      ) || profiles.find(p => p.profileRole === 'sash') || profiles[0];
   
   const mullionProfile = profiles.find(p => 
     (p.profileRole === 'mullion') && 
     (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
-  ) || profiles.find(p => p.profileRole === 'mullion') || profiles[0];
+  ) || profiles.find(p => p.profileRole === 'mullion');
+
+  // Find glazing bead profile
+  const beadProfile = profiles.find(p => 
+    (p.profileRole === 'glazing_bead' || p.profileRole === 'glazing_bead_inner' || p.profileRole === 'glazing_bead_outer') && 
+    (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
+  ) || profiles.find(p => p.profileRole === 'glazing_bead' || p.profileRole === 'glazing_bead_inner' || p.profileRole === 'glazing_bead_outer');
+
+  // Get system pack for UPVC-specific hardware (reinforcement bars)
+  const systemPack = systemPackId ? SYSTEM_PACKS.find(p => p.meta.id === systemPackId) : null;
+  const upvcSpec = systemPack && 'upvcSpec' in systemPack ? (systemPack as any).upvcSpec : null;
 
   if (!frameProfile) {
       return { components: [], hardware: [] };
@@ -330,6 +354,31 @@ export function generateComponentsFromGrid(
 
   const width = project.overallWidth;
   const height = project.overallHeight;
+
+  // Hardware for frame assembly
+  const isUPVC = frameProfile.material === 'upvc';
+  const framePerimeter = (width + height) * 2; // mm
+  
+  // Frame screws (for mounting to wall - typically every 400-600mm)
+  const frameScrewSpacing = 500; // mm
+  const frameScrewCount = Math.ceil(framePerimeter / frameScrewSpacing);
+  hardware.push({
+    id: `screws_frame_mounting`,
+    name: isUPVC ? 'Frame Mounting Screws (6×80mm)' : 'Frame Mounting Screws (6×60mm)',
+    type: 'screw',
+    quantity: frameScrewCount,
+    position: 'frame_perimeter'
+  });
+
+  // Frame gaskets/weather strips (outer perimeter)
+  const frameGasketLength = Math.ceil(framePerimeter / 1000); // meters
+  hardware.push({
+    id: `gasket_frame`,
+    name: 'Frame Gasket/Weather Strip',
+    type: 'gasket',
+    quantity: frameGasketLength, // in meters
+    position: 'frame_perimeter'
+  });
 
   // 1. Outer Frame (4 pieces)
   components.push({
@@ -385,9 +434,41 @@ export function generateComponentsFromGrid(
     hardware: []
   });
 
-  // 2. Internal Grid (Mullions/Transoms)
-  if (grid.cols > 1 && mullionProfile) {
-      for (let i = 1; i < grid.cols; i++) {
+  // 2. Internal Grid (Mullions/Transoms) - Maalem-Grade Precision
+  // CRITICAL: Sliding systems do NOT use mullions - sashes slide past each other with interlock
+  // isSlidingSystem already determined above when finding sash profile
+  
+  // Find interlock profile for sliding systems
+  const interlockProfile = profiles.find(p => 
+    (p.profileRole === 'interlock') && 
+    (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
+  ) || profiles.find(p => p.profileRole === 'interlock');
+
+  if (grid.cols > 1) {
+    if (isSlidingSystem) {
+      // SLIDING SYSTEM: Use interlock profile, NOT mullion
+      // Interlock connects the two sliding sashes in the middle
+      if (interlockProfile) {
+        const interlockHeight = height - (2 * frameProfile.width);
+        components.push({
+          id: `interlock_vertical_${Date.now()}`,
+          type: 'interlock',
+          profile: interlockProfile,
+          width: interlockProfile.width || 20, // Typical interlock width
+          height: interlockHeight,
+          quantity: grid.cols - 1, // One interlock per gap between sashes
+          cuttingLengths: [interlockHeight],
+          angles: [90, 90], // Vertical interlock
+          machiningOperations: [],
+          glazingType: 'none',
+          hardware: []
+        });
+      }
+      // NO MULLION for sliding systems - sashes slide past each other
+    } else {
+      // NON-SLIDING SYSTEM: Use mullion (e.g., fixed panels, casement windows)
+      if (mullionProfile) {
+        for (let i = 1; i < grid.cols; i++) {
           components.push({
             id: `mullion_v_${i}_${Date.now()}`,
             type: 'mullion',
@@ -401,7 +482,9 @@ export function generateComponentsFromGrid(
             glazingType: 'none',
             hardware: []
           });
+        }
       }
+    }
   }
 
   if (grid.rows > 1 && mullionProfile) {
@@ -422,11 +505,17 @@ export function generateComponentsFromGrid(
       }
   }
 
-  // 3. Sashes
+  // 3. Sashes - Maalem-Grade Precision
+  // For sliding systems: Each sash is a complete unit (4 pieces: top, bottom, left, right)
+  // For casement systems: Each sash is also a complete unit (4 pieces: top, bottom, left, right)
+  // Sashes slide past each other - NO mullion between them
   grid.cells.forEach(cell => {
-      if (cell.type === 'sash' && sashProfile) {
+      const isSashCell = cell.type === 'sliding' || cell.type === 'sash';
+      if (isSashCell && sashProfile) {
+          // Calculate cell dimensions accurately
+          // For sliding systems: Each sash takes full height, width is divided by number of sashes
           const cellW = (width - (2 * frameProfile.width)) / grid.cols;
-          const cellH = (height - (2 * frameProfile.width)) / grid.rows;
+          const cellH = height - (2 * frameProfile.width); // Full height for sliding sashes
           
            components.push({
             id: `sash_${cell.id}_top`,
@@ -488,6 +577,107 @@ export function generateComponentsFromGrid(
               quantity: 1,
               position: 'left'
           });
+
+          // UPVC Reinforcement Bars (if required)
+          if (isUPVC && upvcSpec?.reinforcement?.required) {
+            // Calculate if sash requires reinforcement (typically >800mm width or >1200mm height)
+            const requiresReinforcement = cellW >= 800 || cellH >= 1200;
+            if (requiresReinforcement) {
+              // Calculate reinforcement bar lengths (steel is shorter than PVC by deductionMm)
+              const reinforcementDeduction = upvcSpec.reinforcement.deductionMm || 15;
+              const horizontalBarLength = Math.max(0, cellW - reinforcementDeduction);
+              const verticalBarLength = Math.max(0, cellH - reinforcementDeduction);
+              
+              hardware.push({
+                id: `reinforcement_horizontal_${cell.id}`,
+                name: `Steel Reinforcement Bar (${upvcSpec.reinforcement.profileCode || 'U-10-30-10'})`,
+                type: 'reinforcement',
+                quantity: 2, // Top and bottom
+                length: horizontalBarLength,
+                position: 'sash_horizontal'
+              });
+              
+              hardware.push({
+                id: `reinforcement_vertical_${cell.id}`,
+                name: `Steel Reinforcement Bar (${upvcSpec.reinforcement.profileCode || 'U-10-30-10'})`,
+                type: 'reinforcement',
+                quantity: 2, // Left and right
+                length: verticalBarLength,
+                position: 'sash_vertical'
+              });
+            }
+          }
+
+          // Add glazing bead components for each sash (4 pieces: top, bottom, left, right)
+          // Glazing beads are required for all sashes with glazing (double, triple, etc.)
+          // If glazing type is not explicitly set, assume double glazing (standard for UPVC)
+          // CRITICAL: Glazing bead length = glass size (inside sash frame), not sash opening
+          const hasGlazing = project.glazing && (
+            (typeof project.glazing === 'object' && 'type' in project.glazing && project.glazing.type !== 'none') ||
+            (typeof project.glazing === 'string' && project.glazing !== 'none')
+          );
+          if (beadProfile && (hasGlazing || !project.glazing)) { // Add beads if glazing exists or if not specified (default to double)
+            // Glass dimensions: sash opening minus sash profile width on all sides
+            const glassWidth = cellW - (2 * sashProfile.width);
+            const glassHeight = cellH - (2 * sashProfile.width);
+            
+            // Top bead (horizontal) - matches glass width
+            components.push({
+              id: `bead_${cell.id}_top`,
+              type: 'glazing_bead',
+              profile: beadProfile,
+              width: glassWidth,
+              height: beadProfile.width || 20,
+              quantity: 1,
+              cuttingLengths: [Math.max(0, glassWidth)], // Ensure non-negative
+              angles: [45, 45],
+              machiningOperations: [],
+              glazingType: (typeof project.glazing === 'object' && 'type' in project.glazing) ? project.glazing.type : (project.glazing || 'double'),
+              hardware: []
+            });
+            // Bottom bead (horizontal) - matches glass width
+            components.push({
+              id: `bead_${cell.id}_bottom`,
+              type: 'glazing_bead',
+              profile: beadProfile,
+              width: glassWidth,
+              height: beadProfile.width || 20,
+              quantity: 1,
+              cuttingLengths: [Math.max(0, glassWidth)],
+              angles: [45, 45],
+              machiningOperations: [],
+              glazingType: (typeof project.glazing === 'object' && 'type' in project.glazing) ? project.glazing.type : (project.glazing || 'double'),
+              hardware: []
+            });
+            // Left bead (vertical) - matches glass height
+            components.push({
+              id: `bead_${cell.id}_left`,
+              type: 'glazing_bead',
+              profile: beadProfile,
+              width: beadProfile.width || 20,
+              height: glassHeight,
+              quantity: 1,
+              cuttingLengths: [Math.max(0, glassHeight)],
+              angles: [45, 45],
+              machiningOperations: [],
+              glazingType: (typeof project.glazing === 'object' && 'type' in project.glazing) ? project.glazing.type : (project.glazing || 'double'),
+              hardware: []
+            });
+            // Right bead (vertical) - matches glass height
+            components.push({
+              id: `bead_${cell.id}_right`,
+              type: 'glazing_bead',
+              profile: beadProfile,
+              width: beadProfile.width || 20,
+              height: glassHeight,
+              quantity: 1,
+              cuttingLengths: [Math.max(0, glassHeight)],
+              angles: [45, 45],
+              machiningOperations: [],
+              glazingType: (typeof project.glazing === 'object' && 'type' in project.glazing) ? project.glazing.type : (project.glazing || 'double'),
+              hardware: []
+            });
+          }
       }
   });
 

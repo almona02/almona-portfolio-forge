@@ -800,6 +800,17 @@ export const FabricatorWorkflow: React.FC = () => {
             windowIndex: data.windowIndex || undefined,
             remarks: data.remarks || undefined,
           } as any,
+          // Preserve all measurement inputs including preset profile selections
+          systemProfileSelections: data.systemProfileSelections,
+          measurementMode: data.measurementMode,
+          wallDeduction: data.wallDeduction,
+          manufacturingWidth: data.manufacturingWidth,
+          manufacturingHeight: data.manufacturingHeight,
+          roughOpeningWidth: data.roughOpeningWidth,
+          roughOpeningHeight: data.roughOpeningHeight,
+          flyScreenType: data.flyScreenType,
+          // Preserve grid layout if set in measuring step
+          grid: data.grid,
         };
 
         // Don't require components at measurement stage - they'll be added in design phase

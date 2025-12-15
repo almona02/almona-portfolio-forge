@@ -69,6 +69,26 @@ export interface WindowUnit {
    * @since Phase 4
    */
   grid?: WindowGrid;
+  /**
+   * Optional mapping of system-pack roles to concrete profile codes selected
+   * by the operator during measuring (e.g. frame vs sash profile numbers).
+   * This preserves user selections from the measuring step.
+   */
+  systemProfileSelections?: SystemProfileSelections;
+  /**
+   * Measurement mode and wall tolerance data from measuring step
+   * @since Phase 4
+   */
+  measurementMode?: 'hole' | 'manufacturing';
+  wallDeduction?: string; // mm deduction for wall tolerance
+  manufacturingWidth?: number;
+  manufacturingHeight?: number;
+  roughOpeningWidth?: number;
+  roughOpeningHeight?: number;
+  /**
+   * Fly screen type selection from measuring step
+   */
+  flyScreenType?: string;
 }
 
 /**
@@ -523,6 +543,8 @@ export interface MeasurementData {
   /** Rough opening dimensions (if measurementMode is 'hole') */
   roughOpeningWidth?: number;
   roughOpeningHeight?: number;
+  /** Grid layout if set in measuring step */
+  grid?: WindowGrid;
 }
 
 // Lightweight commercial draft types used by workspace context

@@ -15,28 +15,43 @@
  */
 
 import {
-    Bounds,
-    CameraControls,
-    Environment, Html,
-    Line,
-    OrbitControls,
-    Text
+  Bounds,
+  CameraControls,
+  Environment, Html,
+  Line,
+  OrbitControls,
+  Text
 } from '@react-three/drei';
 import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
 import { Bloom, EffectComposer, SSAO, Vignette } from '@react-three/postprocessing';
 import { useDrag } from '@use-gesture/react';
 import {
-    Suspense,
-    forwardRef,
-    useCallback,
-    useEffect,
-    useImperativeHandle,
-    useMemo,
-    useRef,
-    useState
+  Suspense,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState
 } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 
-import * as THREE from 'three';
+// Tree-shakeable imports
+import {
+  Color,
+  DoubleSide,
+  Euler,
+  ExtrudeGeometry,
+  Group,
+  Material,
+  Mesh,
+  MeshStandardMaterial,
+  Path,
+  Plane,
+  Shape,
+  Vector3,
+} from 'three';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter.js';
 import { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js';
@@ -49,20 +64,20 @@ import { Toggle } from '@/shared/ui/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/ui/tooltip';
 
 import {
-    AlertTriangle,
-    Download,
-    Home,
-    Layers,
-    Maximize2,
-    Moon,
-    Pause,
-    Play,
-    RotateCcw,
-    Ruler,
-    Scissors,
-    Sparkles,
-    Sun,
-    ZoomIn, ZoomOut
+  AlertTriangle,
+  Download,
+  Home,
+  Layers,
+  Maximize2,
+  Moon,
+  Pause,
+  Play,
+  RotateCcw,
+  Ruler,
+  Scissors,
+  Sparkles,
+  Sun,
+  ZoomIn, ZoomOut
 } from 'lucide-react';
 
 import { useAdvancedMaterials, useWindowPhysics } from '@/lib/3d';
@@ -83,8 +98,8 @@ extend({ CameraControls });
  * Creates the material for spacers between glass panes.
  * We keep this as a simple standard material; profiles and glass use advanced PBR.
  */
-const createSpacerMaterial = (clippingPlanes?: THREE.Plane[] | null): THREE.MeshStandardMaterial => {
-  return new THREE.MeshStandardMaterial({
+const createSpacerMaterial = (clippingPlanes?: Plane[] | null): MeshStandardMaterial => {
+  return new MeshStandardMaterial({
     color: 0x888888,
     metalness: 0.9,
     roughness: 0.3,
@@ -96,12 +111,12 @@ const createSpacerMaterial = (clippingPlanes?: THREE.Plane[] | null): THREE.Mesh
 /**
  * Renders a single, mitered part of a frame or sash.
  */
-function MiteredFramePart({ part, material, enableShadows }: { part: MiteredFrameData, material: THREE.Material, enableShadows: boolean }) {
+function MiteredFramePart({ part, material, enableShadows }: { part: MiteredFrameData, material: Material, enableShadows: boolean }) {
     const geometry = useMemo(() => {
-        const shape = new THREE.Shape(part.shape as any);
+        const shape = new Shape(part.shape as any);
         // If a hole is provided on the shape, add it for hollow profiles
         if ((part.shape as any).hole) {
-            const holePath = new THREE.Path((part.shape as any).hole);
+            const holePath = new Path((part.shape as any).hole);
             shape.holes.push(holePath);
         }
         const extrudeSettings = {
@@ -109,7 +124,7 @@ function MiteredFramePart({ part, material, enableShadows }: { part: MiteredFram
             depth: part.length,
             bevelEnabled: false,
         };
-        const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        const geom = new ExtrudeGeometry(shape, extrudeSettings);
         geom.applyMatrix4(part.matrix);
         return geom;
     }, [part]);
@@ -120,11 +135,11 @@ function MiteredFramePart({ part, material, enableShadows }: { part: MiteredFram
 /**
  * Interactive gizmo for controlling the section view plane.
  */
-function SectionViewGizmo({ plane, setPlane }: { plane: THREE.Plane, setPlane: (p: THREE.Plane) => void }) {
+function SectionViewGizmo({ plane, setPlane }: { plane: Plane, setPlane: (p: Plane) => void }) {
     // Removed unused camera and size
     useThree();
     const { t } = useTranslation('fabricator');
-    const gizmoRef = useRef<THREE.Group>(null!);
+    const gizmoRef = useRef<Group>(null!);
 
     const bind = useDrag(({ offset: [_dx, dy] }) => {
         const newPlane = plane.clone();
@@ -219,16 +234,19 @@ export function Window3DModel({
     windowUnit: WindowUnit;
     isAnimating: boolean;
     animationProgress: number;
-    onModelReady?: (model: THREE.Group) => void;
+    onModelReady?: (model: Group) => void;
     quality?: 'low' | 'medium' | 'high' | 'ultra';
     enableShadows?: boolean;
-    clippingPlanes?: THREE.Plane[] | null;
+    clippingPlanes?: Plane[] | null;
     explodedView?: boolean;
     validationResult?: ValidationResult;
 }) {
-    const groupRef = useRef<THREE.Group>(null!);
+    const { t } = useTranslation('fabricator');
+    const groupRef = useRef<Group>(null!);
     const [modelData, setModelData] = useState<FrameGeometry | null>(null);
-    const sashRefs = useRef<THREE.Group[]>([]);
+    const [isModelGenerating, setIsModelGenerating] = useState(false);
+    const sashRefs = useRef<Group[]>([]);
+    const prevWindowUnitRef = useRef<{ id?: string; width: number; height: number; componentCount: number; color?: string; grid?: string } | null>(null);
 
     // Advanced PBR materials with WebGL 2.0 shaders (with graceful fallback)
     const { createMaterial } = useAdvancedMaterials({
@@ -286,7 +304,7 @@ export function Window3DModel({
             transparent: true,
             opacity: 0.25,
             envMapIntensity: 1.5,
-            side: THREE.DoubleSide,
+            side: DoubleSide,
         });
         const spacerMaterial = createSpacerMaterial(clippingPlanes);
 
@@ -298,7 +316,41 @@ export function Window3DModel({
         };
     }, [modelData, windowUnit.color, clippingPlanes, createMaterial]);
 
-    // --- Geometry Generation Effect ---
+    // --- Debounced Geometry Generation Effect ---
+    // Debounce model generation to avoid regeneration on every state change
+    const debouncedGenerateModel = useDebouncedCallback(
+        () => {
+            if (!windowUnit) return;
+            
+            const width = windowUnit.overallWidth / 1000;
+            const height = windowUnit.overallHeight / 1000;
+
+            if (!width || !height || isNaN(width) || isNaN(height)) {
+                setModelData(null);
+                setIsModelGenerating(false);
+                return;
+            }
+
+            setIsModelGenerating(true);
+            
+            try {
+                const geometrySpec = generateModelGeometries(windowUnit);
+                setModelData(geometrySpec);
+                
+                if (onModelReady && groupRef.current) {
+                    onModelReady(groupRef.current);
+                }
+            } catch (error) {
+                console.error('Model generation error:', error);
+                setModelData(null);
+            } finally {
+                setIsModelGenerating(false);
+            }
+        },
+        300, // ✅ 300ms debounce (optimal for 3D)
+        { maxWait: 2000 } // ✅ Max 2 seconds wait
+    );
+
     useEffect(() => {
         const width = windowUnit.overallWidth / 1000;
         const height = windowUnit.overallHeight / 1000;
@@ -308,14 +360,53 @@ export function Window3DModel({
             return;
         }
 
-        // Generate the detailed geometry spec from our library
-        const geometrySpec = generateModelGeometries(windowUnit);
-        setModelData(geometrySpec);
+        // Check if critical dimensions changed (avoid regeneration for color-only changes)
+        const prev = prevWindowUnitRef.current;
+        const currentSnapshot = {
+            id: windowUnit.id,
+            width: windowUnit.overallWidth,
+            height: windowUnit.overallHeight,
+            componentCount: windowUnit.components?.length || 0,
+            color: windowUnit.color,
+            grid: windowUnit.grid ? JSON.stringify(windowUnit.grid) : undefined
+        };
 
-        if (onModelReady && groupRef.current) {
-            onModelReady(groupRef.current);
+        const shouldRegenerate = !prev || 
+            prev.id !== currentSnapshot.id ||
+            prev.width !== currentSnapshot.width ||
+            prev.height !== currentSnapshot.height ||
+            prev.componentCount !== currentSnapshot.componentCount ||
+            prev.grid !== currentSnapshot.grid;
+
+        if (!shouldRegenerate) {
+            // Only update color/material if dimensions didn't change
+            if (prev?.color !== currentSnapshot.color && groupRef.current) {
+                // Update material color without regenerating geometry
+                groupRef.current.traverse((child) => {
+                    if (child instanceof Mesh && child.material) {
+                        if (Array.isArray(child.material)) {
+                            child.material.forEach(m => {
+                                if (m instanceof MeshStandardMaterial) {
+                                    m.color.set(windowUnit.color || '#C0C0C0');
+                                }
+                            });
+                        } else if (child.material instanceof MeshStandardMaterial) {
+                            child.material.color.set(windowUnit.color || '#C0C0C0');
+                        }
+                    }
+                });
+            }
+            prevWindowUnitRef.current = currentSnapshot;
+            return;
         }
-    }, [windowUnit, onModelReady]);
+
+        prevWindowUnitRef.current = currentSnapshot;
+        debouncedGenerateModel();
+        
+        return () => {
+            debouncedGenerateModel.cancel();
+        };
+    }, [windowUnit.id, windowUnit.overallWidth, windowUnit.overallHeight, windowUnit.components?.length, windowUnit.grid, windowUnit.color, debouncedGenerateModel, onModelReady]);
 
     // --- Bridge animation flag to physics when enabled ---
     useEffect(() => {
@@ -366,6 +457,22 @@ export function Window3DModel({
         });
     });
 
+    // Show loading state while generating
+    if (isModelGenerating && !modelData) {
+        return (
+            <group ref={groupRef}>
+                <Html center>
+                    <div className="p-4 bg-gray-900/80 rounded border border-gray-700">
+                        <div className="flex items-center gap-2 text-white">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500"></div>
+                            <span className="text-sm">{t('window_3d_generator.generating_model', 'Generating 3D model...')}</span>
+                        </div>
+                    </div>
+                </Html>
+            </group>
+        );
+    }
+
     if (!modelData || !materials) return null;
 
     return (
@@ -387,8 +494,8 @@ export function Window3DModel({
                     userData={{
                         isAnimatableSash: true,
                         openingPath: sash.openingPath,
-                        restPosition: new THREE.Vector3(0,0,0), // Store initial state
-                        restRotation: new THREE.Euler(0,0,0)
+                        restPosition: new Vector3(0,0,0), // Store initial state
+                        restRotation: new Euler(0,0,0)
                     }}
                     position={sash.openingPath.position}
                     rotation={sash.openingPath.rotation}
@@ -441,7 +548,7 @@ interface Window3DGeneratorProps {
   windowUnit: WindowUnit;
   presentationMode?: boolean;
   showControls?: boolean;
-  onModelUpdate?: (model: THREE.Group) => void;
+  onModelUpdate?: (model: Group) => void;
   className?: string;
   showErrorDetection?: boolean;
   profiles?: Profile[];
@@ -730,14 +837,14 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     const [quality, setQuality] = useState(initialQuality);
     const [enableShadows, setEnableShadows] = useState(initialShadows);
     const [sectionViewEnabled, setSectionViewEnabled] = useState(false);
-    const [clippingPlane, setClippingPlane] = useState(new THREE.Plane(new THREE.Vector3(0, -1, 0), 0));
+    const [clippingPlane, setClippingPlane] = useState(new Plane(new Vector3(0, -1, 0), 0));
     
     const [isExporting, setIsExporting] = useState(false);
     const [exportFormat, setExportFormat] = useState<'GLB' | 'STL' | 'OBJ'>('GLB');
     const [_isFullscreen, setIsFullscreen] = useState(false);
     const [controlsVisible, setControlsVisible] = useState(false);
 
-    const modelRef = useRef<THREE.Group>(null!);
+    const modelRef = useRef<Group>(null!);
     const glRef = useRef<any>(null);
     const controlsRef = useRef<any>(null); // For CameraControls
     const controlsCardRef = useRef<HTMLDivElement | null>(null);
@@ -958,7 +1065,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                             radius={0.15} 
                             intensity={20} 
                             luminanceInfluence={0.5} 
-                            color={new THREE.Color('black')} 
+                            color={new Color('black')} 
                             worldDistanceThreshold={1.0}
                             worldDistanceFalloff={0}
                             worldProximityThreshold={1.0}
