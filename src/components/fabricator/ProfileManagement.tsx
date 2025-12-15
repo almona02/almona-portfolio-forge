@@ -297,7 +297,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       }
       
       // Use untyped Supabase client here to avoid friction with generated types
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const db = supabase as any;
       
       // Add timeout wrapper
@@ -473,7 +473,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   useEffect(() => {
     if (!userId) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const db = supabase as any;
     const channel = db
       .channel(`fabricator_profiles_changes_${userId}`)
@@ -645,7 +645,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     try {
       setIsUploadingPreview(profile.id);
       const path = `${userId}/${profile.id}/${Date.now()}-${file.name}`;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const storage = (supabase as unknown as { storage: any }).storage.from('profile-previews');
       const { error } = await storage.upload(path, file, { upsert: true });
       if (error) throw error;
@@ -657,7 +657,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         previewImageUrl: url,
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const db = supabase as any;
       const { error: updateError } = await db
         .from('fabricator_profiles')
@@ -717,7 +717,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         effectiveCostPerMeter = (specs as any).costPerKg * formData.weightPerMeter;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const db = supabase as any;
       const { error: insertError } = await db
         .from('fabricator_profiles')
@@ -751,7 +751,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       console.error('Error adding profile:', err);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const detailedError = (err as any)?.message || (err as any)?.details || (err as any)?.error_description || 'Unknown error';
       setError(detailedError);
       toast.error(`Error saving profile: ${detailedError}`);
@@ -790,7 +790,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         effectiveCostPerMeter = (specs as any).costPerKg * formData.weightPerMeter;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const db = supabase as any;
       const { error: updateError } = await db
         .from('fabricator_profiles')
@@ -836,7 +836,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     if (!userId) return;
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const db = supabase as any;
       const { error: deleteError } = await db
         .from('fabricator_profiles')
@@ -1065,7 +1065,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         },
       }));
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const db = supabase as any;
       const { error: insertError } = await db
         .from('fabricator_profiles')
@@ -1146,7 +1146,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         specifications: accessory.specifications || {},
       }));
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const db = supabase as any;
 
       if (profileInserts.length > 0) {
@@ -1234,7 +1234,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       }));
 
       for (const update of updates) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const db = supabase as any;
         const { error } = await db
           .from('fabricator_profiles')

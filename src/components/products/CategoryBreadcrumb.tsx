@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChevronRight, Home } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
-import { getCategoryBreadcrumb, findCategoryById } from '@/constants/categoryHierarchy';
+import { getCategoryBreadcrumb } from '@/constants/categoryHierarchy';
 
 interface CategoryBreadcrumbProps {
   currentCategoryId: string;

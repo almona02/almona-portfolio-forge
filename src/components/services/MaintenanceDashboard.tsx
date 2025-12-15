@@ -1,13 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { MachineHealthCheck } from "./MachineHealthCheck";
 
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import * as Progress from "@radix-ui/react-progress";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, Clock, CheckCircle2, AlertTriangle, HardHat } from "lucide-react";
+import { Clock, CheckCircle2, AlertTriangle } from "lucide-react";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import MachineHealthTrends from './MachineHealthTrends';
 
@@ -54,7 +51,7 @@ export const MaintenanceDashboard = withErrorBoundary(() => {
     },
   });
 
-  const [events, setEvents] = useState<MaintenanceEvent[]>([
+  const [events, _setEvents] = useState<MaintenanceEvent[]>([
     {
       id: "1",
       date: "2023-11-15",

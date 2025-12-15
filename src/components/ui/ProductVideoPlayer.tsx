@@ -32,14 +32,14 @@ const getYouTubeVideoId = (url: string): string | null => {
 
 export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
   youtubeUrl,
-  thumbnailUrl,
+  _thumbnailUrl,
   productName,
   isOpen,
   onClose,
   autoPlay = true
 }) => {
   const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(autoPlay);
+  const [_isPlaying, _setIsPlaying] = useState(autoPlay);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);

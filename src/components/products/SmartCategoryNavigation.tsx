@@ -1,15 +1,13 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, TrendingUp, Lightbulb, Filter, ChevronDown, Sparkles, Zap, Brain } from 'lucide-react';
+import { Search, TrendingUp, Lightbulb, Filter, ChevronDown, Sparkles, Brain } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Input } from '@/shared/ui/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { ShareFilteredResults } from './ShareFilteredResults';
 import { 
   smartCategories,
   getCategoryMachineCounts,
-  getMachinesByCategory,
   getSmartRecommendations,
   trackCategoryUsage,
   getPopularCategories,
@@ -52,7 +50,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
   const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
-  const [isAiThinking, setIsAiThinking] = useState(false);
+  const [_isAiThinking, _setIsAiThinking] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const categoryCounts = getCategoryMachineCounts(machines);

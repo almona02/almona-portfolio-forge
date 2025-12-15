@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronRight, 
-  ChevronDown, 
   Scissors, 
   Cpu, 
   Zap, 
@@ -15,12 +14,9 @@ import {
 } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { 
-  industrialCategoryHierarchy,
   IndustrialCategoryNode,
-  getCategoriesByMaterial,
-  findIndustrialCategoryById
+  getCategoriesByMaterial
 } from '@/constants/industrialCategoryHierarchy';
 
 interface IndustrialCategoryNavigationProps {

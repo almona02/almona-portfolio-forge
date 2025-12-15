@@ -39,7 +39,7 @@ export class UnifiedProfileCatalog {
     // Pre-fetch user profiles if userId is provided to use their roles
     if (userId) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const db = supabase as any;
         const { data: userProfiles } = await db
           .from('fabricator_profiles')
@@ -227,7 +227,7 @@ export class UnifiedProfileCatalog {
     // 3. Import from User Fabricator Profiles (Dynamic)
     if (userId) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const db = supabase as any;
         const { data: userProfiles } = await db
           .from('fabricator_profiles')

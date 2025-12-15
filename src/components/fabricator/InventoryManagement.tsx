@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Progress } from '@/shared/ui/ui/progress';
 import { Package, AlertTriangle, CheckCircle } from 'lucide-react';
-import { WindowUnit, Profile, OptimizationResult, WindowComponent } from '@/types/fabricator';
+import { WindowUnit, Profile } from '@/types/fabricator';
 
 interface InventoryManagementProps {
   inventory: Profile[];
@@ -12,7 +12,7 @@ interface InventoryManagementProps {
 
 export const InventoryManagement: React.FC<InventoryManagementProps> = ({ 
   inventory, 
-  project 
+  project: _project 
 }) => {
   if (!inventory || inventory.length === 0) {
     return (

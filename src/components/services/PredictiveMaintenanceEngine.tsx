@@ -7,9 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import { 
   Brain,
   Activity,
-  Thermometer,
-  Vibrate,
-  Camera,
   Gauge,
   TrendingUp,
   AlertTriangle,

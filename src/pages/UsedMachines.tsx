@@ -1,24 +1,20 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
-import { Input } from '@/shared/ui/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { ChevronRight, MapPin, Factory, Calendar, Gauge, Filter, Brain, TrendingUp } from 'lucide-react';
+import { Filter, Brain } from 'lucide-react';
 import { usedMachines } from '@/data/usedMachines';
 import SellUsedMachineForm from '@/components/used-machines/SellUsedMachineForm';
 import { useAuth } from '@/context/AuthContext';
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
-import OptimizedImage from '@/components/shared/OptimizedImage';
 import PriceRangeFilter from '@/components/used-machines/PriceRangeFilter';
-import ConditionBadge from '@/components/used-machines/ConditionBadge';
 import MachineSEO from '@/components/used-machines/MachineSEO';
 import MachineCard from '@/components/used-machines/MachineCard';
 import SmartSearchBox from '@/components/search/SmartSearchBox';
 import RelatedMachinesSection from '@/components/search/RelatedMachinesSection';
-import { getPriceRange, isPriceInRange } from '@/utils/priceUtils';
+import { getPriceRange } from '@/utils/priceUtils';
 import { SearchResultsManager, SearchResult } from '@/services/SearchResultsManager';
 import { ParsedQuery } from '@/services/NaturalLanguageProcessor';
 
@@ -46,7 +42,7 @@ const UsedMachines = () => {
   // Smart search state
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [parsedQuery, setParsedQuery] = useState<ParsedQuery | null>(null);
-  const [currentSearchEventId, setCurrentSearchEventId] = useState<string | null>(null);
+  const [_currentSearchEventId, setCurrentSearchEventId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   /**
@@ -110,7 +106,7 @@ const UsedMachines = () => {
   };
 
   // Get machines to display
-  const machinesToShow = searchResults.map(result => result.machine);
+  const _machinesToShow = searchResults.map(result => result.machine);
 
   return (
     <>
@@ -286,7 +282,7 @@ const UsedMachines = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {searchResults.map((result, index) => (
+                  {searchResults.map((result) => (
                     <div key={result.machine.id} className="relative">
                       {/* Relevance Score Badge */}
                       {result.relevanceScore > 0.8 && (

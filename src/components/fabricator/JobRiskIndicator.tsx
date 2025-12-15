@@ -27,7 +27,7 @@ interface JobRiskIndicatorProps {
   projectId?: string;
 }
 
-export const JobRiskIndicator: React.FC<JobRiskIndicatorProps> = ({ riskScore, projectId }) => {
+export const JobRiskIndicator: React.FC<JobRiskIndicatorProps> = ({ riskScore, projectId: _projectId }) => {
   const navigate = useNavigate();
 
   if (!riskScore) {

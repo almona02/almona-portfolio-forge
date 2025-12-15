@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Filter, X, Building2, Layers, Factory } from 'lucide-react';
+import { ChevronDown, Filter, Building2, Layers, Factory } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { 
@@ -11,8 +11,6 @@ import {
   SelectValue,
 } from '@/shared/ui/ui/select';
 import { 
-  industrialCategoryHierarchy,
-  IndustrialCategoryNode,
   getCategoriesByMaterial,
   findIndustrialCategoryById,
   industrialMachineMapping
@@ -73,7 +71,7 @@ const IndustrialCategoryFilter: React.FC<IndustrialCategoryFilterProps> = ({
     setIsOpen(false);
   }, [onCategoryChange]);
 
-  const clearFilter = useCallback(() => {
+  const _clearFilter = useCallback(() => {
     onCategoryChange('all');
   }, [onCategoryChange]);
 

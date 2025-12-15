@@ -262,7 +262,7 @@ export class CNCIntegration {
     }
 
     // Generate QR code cut list
-    const qrCutList = await this.generateQRCodeCutList(cuttingPlan, projectId, machineId);
+    const _qrCutList = await this.generateQRCodeCutList(cuttingPlan, projectId, machineId);
 
     // TODO: Implement actual CNC controller communication
     // This would send the cutting plan via the machine's API/protocol

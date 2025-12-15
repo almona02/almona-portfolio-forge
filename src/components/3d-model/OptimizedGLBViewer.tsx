@@ -31,7 +31,7 @@ const OptimizedModel = ({
   threeJS
 }: OptimizedGLBViewerProps & { threeJS: any }) => {
   const groupRef = useRef<any>(null)
-  const { gl, camera } = threeJS.useThree()
+  const { gl, camera: _camera } = threeJS.useThree()
 
   // Always call hooks in the same order
   const gltfResult = threeJS.useGLTF(modelPath)

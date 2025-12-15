@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
   Menu, 
@@ -8,8 +8,6 @@ import {
   User, 
   LogOut,
   Globe,
-  Phone,
-  Mail,
   Shield
 } from "lucide-react";
 
@@ -28,7 +26,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const navbarRef = useRef<HTMLElement>(null);
   const dropdownTimeoutRef = useRef<NodeJS.Timeout>();
 

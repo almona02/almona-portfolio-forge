@@ -4,9 +4,7 @@ import {
   getUserVariant, 
   trackConversion, 
   getExperimentConfig,
-  initABTesting,
-  Experiment,
-  ExperimentVariant
+  initABTesting
 } from '@/lib/analytics/abTesting';
 
 interface ABTestContextType {

@@ -5,7 +5,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from "@/shared/ui/ui/dialog";
 import { Button } from "@/shared/ui/ui/button";
 import { Input } from "@/shared/ui/ui/input";
@@ -13,13 +12,11 @@ import { Label } from "@/shared/ui/ui/label";
 import { Textarea } from "@/shared/ui/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/select";
 import { Badge } from "@/shared/ui/ui/badge";
-import { Calendar, Clock, CheckCircle2, TrendingUp, FileText, Package, AlertCircle, MapPin, Shield, Wrench, Zap } from "lucide-react";
+import { Calendar, CheckCircle2, MapPin, Shield, Wrench, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/ui/card";
-import { Progress } from "@/shared/ui/ui/progress";
 import { Separator } from "@/shared/ui/ui/separator";
-import { RadioGroup, RadioGroupItem } from "@/shared/ui/ui/radio-group";
 
 interface PreventiveMaintenanceDialogProps {
   open: boolean;
@@ -183,8 +180,8 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
   });
 
   const market = watch("market");
-  const serviceType = watch("serviceType");
-  const frequency = watch("frequency");
+  const _serviceType = watch("serviceType");
+  const _frequency = watch("frequency");
 
   useEffect(() => {
     if (selectedContract && market) {
@@ -193,7 +190,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
     }
   }, [selectedContract, machineCount, market]);
 
-  const onSubmit = async (data: MaintenanceFormData) => {
+  const onSubmit = async (_data: MaintenanceFormData) => {
     setIsSubmitting(true);
     
     try {
@@ -202,7 +199,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
       
       // Generate market-specific contract ID
       const contractPrefix = market === "egypt" ? "EG-PM" : "TR-PM";
-      const contractId = `${contractPrefix}-${Date.now().toString().slice(-8)}`;
+      const _contractId = `${contractPrefix}-${Date.now().toString().slice(-8)}`;
       
       setStep("confirm");
       

@@ -30,18 +30,14 @@ import {
   Play,
   Pause,
   X,
-  RefreshCw,
   Clock,
   HardDrive,
-  Cpu,
   TrendingUp,
   FileText,
-  CheckCircle,
-  AlertCircle,
   Loader2
 } from 'lucide-react';
 import { exportService } from '@/lib/exports';
-import { ExportQueueItem, ExportProgress, ExportFormat } from '@/lib/exports/types';
+import { ExportQueueItem, ExportFormat } from '@/lib/exports/types';
 
 interface ExportProgressDashboardProps {
   refreshInterval?: number; // ms
@@ -50,7 +46,7 @@ interface ExportProgressDashboardProps {
 export const ExportProgressDashboard: React.FC<ExportProgressDashboardProps> = ({
   refreshInterval = 1000
 }) => {
-  const [queueItems, setQueueItems] = useState<ExportQueueItem[]>([]);
+  const [queueItems, _setQueueItems] = useState<ExportQueueItem[]>([]);
   const [queueStatus, setQueueStatus] = useState({
     pending: 0,
     processing: 0,
@@ -100,7 +96,7 @@ export const ExportProgressDashboard: React.FC<ExportProgressDashboardProps> = (
     }
   };
 
-  const formatFileSize = (bytes: number): string => {
+  const _formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 B';
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
@@ -108,7 +104,7 @@ export const ExportProgressDashboard: React.FC<ExportProgressDashboardProps> = (
     return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
   };
 
-  const formatDuration = (ms: number): string => {
+  const _formatDuration = (ms: number): string => {
     if (ms < 1000) return `${ms}ms`;
     if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
     const minutes = Math.floor(ms / 60000);

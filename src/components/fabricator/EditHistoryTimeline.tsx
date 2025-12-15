@@ -31,7 +31,7 @@ export const EditHistoryTimeline: React.FC<EditHistoryTimelineProps> = ({
   onRollback,
   maxEntries = 50,
 }) => {
-  const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
+  const [expandedEntry, _setExpandedEntry] = useState<string | null>(null);
 
   const displayHistory = history.slice(0, maxEntries).reverse(); // Most recent first
 

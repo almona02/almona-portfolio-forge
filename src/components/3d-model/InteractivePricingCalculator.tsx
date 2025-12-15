@@ -64,7 +64,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
       }
     });
     setPartQuantities(prev => ({ ...prev, ...initialQuantities }));
-  }, [selectedParts]);
+  }, [selectedParts, partQuantities]);
 
   // Calculate pricing when parts or quantities change
   useEffect(() => {

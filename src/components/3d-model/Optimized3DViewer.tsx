@@ -53,15 +53,15 @@ const OptimizedModel = ({
   arScaleMultiplier = 0.5,
   enableShadows = false,
   enableAnimations = true,
-  enableWindowControls = true,
+  enableWindowControls: _enableWindowControls = true,
   windowAnimationSpeed = 1,
-  showMeasurements = true,
+  showMeasurements: _showMeasurements = true,
   onModelUpdate,
   threeJS
 }: Optimized3DViewerProps & { threeJS: any }) => {
   const groupRef = useRef<any>(null);
   const windowModelRef = useRef<THREE.Group | null>(null);
-  const { gl, camera } = threeJS.useThree();
+  const { gl, camera: _camera } = threeJS.useThree();
   
   // Determine viewer mode
   const isWindowMode = !!windowUnit;

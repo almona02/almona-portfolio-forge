@@ -74,7 +74,7 @@ export function EnhancedModel3DDialog({
   const [showInfo, setShowInfo] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [autoRotate, setAutoRotate] = useState(autoRotateEnabled);
-  const [isMuted, setIsMuted] = useState(false);
+  const [_isMuted, _setIsMuted] = useState(false);
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile' | 'ar' | 'compare' | 'collaborate' | 'swiftxr'>('desktop');
   
   // Check if this is FR222 to show SwiftXR option
@@ -83,15 +83,15 @@ export function EnhancedModel3DDialog({
                    modelPath?.toLowerCase().includes('fr-222') ||
                    modelPath?.toLowerCase().includes('fr222');
   const [compareModels, setCompareModels] = useState<{left?: string; right?: string}>({});
-  const [leftCamera, setLeftCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
-  const [rightCamera, setRightCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
+  const [_leftCamera, _setLeftCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
+  const [_rightCamera, _setRightCamera] = useState<{ position: [number, number, number]; target: [number, number, number] } | undefined>(undefined);
   const [sharedMeasurements, setSharedMeasurements] = useState<Array<{ id: string; distance: number; unit: 'mm' | 'cm' | 'm' | 'in' | 'ft' }>>([]);
   
   const viewerRef = useRef<any>(null);
   const { toast } = useToast();
 
   // Simulate realistic loading progress
-  const simulateLoadingProgress = useCallback(() => {
+  const _simulateLoadingProgress = useCallback(() => {
     const stages = [
       { stage: 'initializing' as const, progress: 10, message: 'Initializing 3D viewer...' },
       { stage: 'downloading' as const, progress: 30, message: 'Downloading model data...' },

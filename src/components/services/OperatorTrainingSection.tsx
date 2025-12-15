@@ -17,7 +17,7 @@ import { TrainingLevelCard } from "../services/TrainingLevelCard";
 
 export const OperatorTrainingSection = () => {
   const [selectedMaterial, setSelectedMaterial] = useState<"aluminium" | "upvc">("aluminium");
-  const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
+  const [_selectedLevel, _setSelectedLevel] = useState<string | null>(null);
 
   const aluminiumStages = [
     {

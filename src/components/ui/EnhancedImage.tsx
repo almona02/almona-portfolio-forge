@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { ImageLoading } from './loading/ImageLoading';
-import { Image, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 interface EnhancedImageProps {
   src: string;

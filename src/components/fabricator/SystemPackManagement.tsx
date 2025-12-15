@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { 
   Settings, 
@@ -20,9 +19,7 @@ import {
   Package,
   Wrench,
   Layers,
-  BoxSelect,
-  Search,
-  Filter
+  Search
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SYSTEM_PACKS } from '@/data/systemPacks';

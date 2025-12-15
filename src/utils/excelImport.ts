@@ -242,13 +242,13 @@ export const importSpareParts = async (file: File, options: ImportOptions = {}) 
           is_on_sale: payload.original_price != null && payload.price != null && payload.original_price > payload.price,
         } as const;
         // Use table helper to avoid strict generic inference to never; ok to cast on this line
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const { error } = await (table('products') as any)
           .upsert(product, { onConflict: 'sku' });
         if (error) throw error;
       } else {
         // If a separate spare_parts table exists and is exposed in Database types, map and upsert there.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         const { error } = await (supabase as any)
           .from('spare_parts')
           .upsert({

@@ -72,7 +72,7 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
 
       {/* Machines Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {machinesToShow.map((item, index) => {
+        {machinesToShow.map((item, _index) => {
           const machine = 'machine' in item ? item.machine : item;
           const recommendation = 'score' in item ? item : undefined;
           

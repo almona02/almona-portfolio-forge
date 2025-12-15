@@ -396,7 +396,7 @@ export class MassProductionOptimizer extends BaseOptimizer<OptimizationOptions> 
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
 
-      // eslint-disable-next-line no-console
+       
       console.error('[MassProductionOptimizer] optimizeAcrossProjects failed', {
         projectCount: projectIds.length,
         projectIdsSample: projectIds.slice(0, 10),

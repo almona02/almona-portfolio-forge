@@ -70,7 +70,7 @@ export function UnifiedARManager({
   enableWebXR = true,
   enableSceneViewer = true,
   enableQuickLook = true,
-  fallbackMode = '3d',
+  fallbackMode: _fallbackMode = '3d',
   onARStart,
   onAREnd,
   onError,

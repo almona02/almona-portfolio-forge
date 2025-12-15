@@ -1,13 +1,13 @@
 # flake8: noqa
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query, Request  # type: ignore
 from typing import Any, Dict, List, Optional
 import logging
 
 from supabase import Client  # type: ignore
 from models.api_v2_models import QuoteLookupResponse, QuoteSummary
-from fastapi import Body
-from pydantic import BaseModel, Field
+from fastapi import Body  # type: ignore
+from pydantic import BaseModel, Field  # type: ignore
 from typing import List as _List
 from apis.v2.deps import get_supabase
 from apis.v2.services.quote_service import QuoteService
@@ -23,33 +23,23 @@ from tasks.erp_tasks import dispatch_invoice_task
 
 logger = logging.getLogger(__name__)
 try:
-    from celery import current_app as celery_app
+    from celery import current_app as celery_app  # type: ignore
 except Exception:  # pragma: no cover - celery optional
     celery_app = None
 
 
 class QuoteItem(BaseModel):
     product_id: Optional[str] = Field(
-        None,
-        description="ID of the product to quote",
-        example="prod-cnc-xyz2000"
+        None, description="ID of the product to quote", example="prod-cnc-xyz2000"
     )
     service_id: Optional[str] = Field(
         None,
         description="ID of the service to quote",
-        example="svc-maintenance-monthly"
+        example="svc-maintenance-monthly",
     )
-    quantity: int = Field(
-        1,
-        description="Quantity of the item",
-        example=2,
-        ge=1
-    )
+    quantity: int = Field(1, description="Quantity of the item", example=2, ge=1)
     unit_price: Optional[float] = Field(
-        None,
-        description="Unit price of the item",
-        example=1500.00,
-        ge=0
+        None, description="Unit price of the item", example=1500.00, ge=0
     )
 
     @property
@@ -57,66 +47,60 @@ class QuoteItem(BaseModel):
         if self.unit_price is None:
             return None
         return self.unit_price * self.quantity
-    
+
     class Config:
         schema_extra = {
             "example": {
                 "product_id": "prod-cnc-xyz2000",
                 "service_id": None,
                 "quantity": 2,
-                "unit_price": 1500.00
+                "unit_price": 1500.00,
             }
         }
 
 
 class QuoteCreateRequest(BaseModel):
     products: _List[QuoteItem] = Field(
-        default_factory=list,
-        description="List of products to include in the quote"
+        default_factory=list, description="List of products to include in the quote"
     )
     services: _List[QuoteItem] = Field(
-        default_factory=list,
-        description="List of services to include in the quote"
+        default_factory=list, description="List of services to include in the quote"
     )
     contact_name: str = Field(
-        ...,
-        description="Name of the contact person",
-        example="Ahmed Hassan"
+        ..., description="Name of the contact person", example="Ahmed Hassan"
     )
     contact_email: str = Field(
         ...,
         description="Email address of the contact person",
-        example="ahmed.hassan@company.com"
+        example="ahmed.hassan@company.com",
     )
     contact_phone: Optional[str] = Field(
         None,
         description="Phone number of the contact person",
-        example="+20 123 456 7890"
+        example="+20 123 456 7890",
     )
     company: Optional[str] = Field(
-        None,
-        description="Company name",
-        example="Egyptian Manufacturing Co."
+        None, description="Company name", example="Egyptian Manufacturing Co."
     )
     project_description: Optional[str] = Field(
         None,
         description="Description of the project or requirements",
-        example="We need to upgrade our production line with new CNC machines for automotive parts manufacturing."
+        example="We need to upgrade our production line with new CNC machines for automotive parts manufacturing.",
     )
     urgency: Optional[str] = Field(
         default="standard",
         description="Urgency level of the quote request",
-        example="urgent"
+        example="urgent",
     )
     delivery_location: Optional[str] = Field(
         None,
         description="Delivery location address",
-        example="Cairo Industrial Zone, Building 15, Floor 3"
+        example="Cairo Industrial Zone, Building 15, Floor 3",
     )
     special_requirements: Optional[str] = Field(
         None,
         description="Any special requirements or notes",
-        example="Installation must be completed during weekend hours due to production schedule."
+        example="Installation must be completed during weekend hours due to production schedule.",
     )
     region: Optional[str] = Field(
         default=None,
@@ -136,12 +120,12 @@ class QuoteCreateRequest(BaseModel):
     related_service_ticket_id: Optional[str] = Field(
         default=None,
         description="Link to an existing service_ticket if any",
-        example="550e8400-e29b-41d4-a716-446655440001"
+        example="550e8400-e29b-41d4-a716-446655440001",
     )
     machine_id: Optional[str] = Field(
         None,
         description="ID of the machine this quote is related to",
-        example="550e8400-e29b-41d4-a716-446655440000"
+        example="550e8400-e29b-41d4-a716-446655440000",
     )
     dispatch_to_erp: bool = Field(
         default=False,
@@ -159,7 +143,7 @@ class QuoteCreateRequest(BaseModel):
         default=None,
         description="Compliance payload (e.g., tax ids) for ERP dispatch",
     )
-    
+
     class Config:
         schema_extra = {
             "example": {
@@ -168,7 +152,7 @@ class QuoteCreateRequest(BaseModel):
                         "product_id": "prod-cnc-xyz2000",
                         "service_id": None,
                         "quantity": 2,
-                        "unit_price": 1500.00
+                        "unit_price": 1500.00,
                     }
                 ],
                 "services": [
@@ -176,7 +160,7 @@ class QuoteCreateRequest(BaseModel):
                         "product_id": None,
                         "service_id": "svc-maintenance-monthly",
                         "quantity": 1,
-                        "unit_price": 500.00
+                        "unit_price": 500.00,
                     }
                 ],
                 "contact_name": "Ahmed Hassan",
@@ -188,7 +172,7 @@ class QuoteCreateRequest(BaseModel):
                 "delivery_location": "Cairo Industrial Zone, Building 15, Floor 3",
                 "special_requirements": "Installation must be completed during weekend hours due to production schedule.",
                 "related_service_ticket_id": "550e8400-e29b-41d4-a716-446655440001",
-                "machine_id": "550e8400-e29b-41d4-a716-446655440000"
+                "machine_id": "550e8400-e29b-41d4-a716-446655440000",
             }
         }
 
@@ -202,9 +186,15 @@ class QuoteCreateResponse(BaseModel):
     total_amount: Optional[float]
     related_service_ticket_id: Optional[str]
     created_at: str
-    erp_task_id: Optional[str] = Field(default=None, description="Celery task id for ERP dispatch")
-    erp_idempotency_key: Optional[str] = Field(default=None, description="Idempotency key used for ERP audit log")
-    ai_costing: Optional[Dict[str, Any]] = Field(default=None, description="Computed or provided AI costing snapshot")
+    erp_task_id: Optional[str] = Field(
+        default=None, description="Celery task id for ERP dispatch"
+    )
+    erp_idempotency_key: Optional[str] = Field(
+        default=None, description="Idempotency key used for ERP audit log"
+    )
+    ai_costing: Optional[Dict[str, Any]] = Field(
+        default=None, description="Computed or provided AI costing snapshot"
+    )
 
 
 class ErpDispatchRequest(BaseModel):
@@ -253,9 +243,7 @@ async def quotes_health_check():
 
 
 @router.get(
-    "/lookup",
-    response_model=QuoteLookupResponse,
-    responses=COMMON_ERROR_RESPONSES
+    "/lookup", response_model=QuoteLookupResponse, responses=COMMON_ERROR_RESPONSES
 )
 def lookup_quotes(
     request: Request,
@@ -269,14 +257,10 @@ def lookup_quotes(
 ):
     """Lookup quotes by number, twin code, or portal ref (RLS)."""
     try:
-        rpc_response = supabase.rpc(
-            "portal_quote_lookup", {"_query": q}
-        ).execute()
+        rpc_response = supabase.rpc("portal_quote_lookup", {"_query": q}).execute()
     except Exception as exc:
         context = create_error_context(
-            request=request,
-            operation="quote_lookup",
-            additional_data={"query": q}
+            request=request, operation="quote_lookup", additional_data={"query": q}
         )
         raise handle_supabase_error(exc, "portal_quote_lookup", context)
 
@@ -321,7 +305,7 @@ def lookup_quotes(
     - Link to existing service tickets
     - Support for both products and services
     - Urgency levels and special requirements
-    """
+    """,
 )
 def create_quote(
     request: Request,
@@ -333,21 +317,18 @@ def create_quote(
 
     # Validate payload
     if not payload.products and not payload.services:
-        context = create_error_context(
-            request=request,
-            operation="create_quote"
-        )
+        context = create_error_context(request=request, operation="create_quote")
         raise QuoteValidationError(
             message="At least one product or service must be specified",
             field="products,services",
-            context=context
+            context=context,
         )
 
     try:
         result = service.create_quote_with_items(
             {
-                "products": [i.dict() for i in payload.products],
-                "services": [i.dict() for i in payload.services],
+                "products": [i.model_dump() for i in payload.products],
+                "services": [i.model_dump() for i in payload.services],
                 "contact_name": payload.contact_name,
                 "contact_email": payload.contact_email,
                 "contact_phone": payload.contact_phone,
@@ -370,8 +351,8 @@ def create_quote(
             additional_data={
                 "contact_email": payload.contact_email,
                 "products_count": len(payload.products),
-                "services_count": len(payload.services)
-            }
+                "services_count": len(payload.services),
+            },
         )
         raise handle_supabase_error(exc, "create_quote_with_items", context)
 
@@ -514,6 +495,7 @@ def dispatch_quote_to_erp(
     description="Returns recent ERP transaction log entries for the given quote_id.",
 )
 def get_erp_status(
+    request: Request,
     quote_id: str,
     supabase: Client = Depends(get_supabase),
 ):
@@ -529,4 +511,9 @@ def get_erp_status(
         entries = getattr(resp, "data", []) or []
         return {"quote_id": quote_id, "entries": entries}
     except Exception as exc:
-        raise handle_supabase_error(exc, "fetch_erp_status", {"quote_id": quote_id})
+        context = create_error_context(
+            request=request,
+            operation="fetch_erp_status",
+            additional_data={"quote_id": quote_id},
+        )
+        raise handle_supabase_error(exc, "fetch_erp_status", context)

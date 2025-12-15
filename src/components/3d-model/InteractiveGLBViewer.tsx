@@ -242,8 +242,8 @@ function PartAnnotation({
   position: [number, number, number];
   language: string;
 }) {
-  const { t } = useTranslation();
-  const { regionState } = useRegionDetection();
+  const { t: _t } = useTranslation();
+  const { regionState: _regionState } = useRegionDetection();
   const utils = useRegionUtils();
 
   const getLocalizedName = () => {
@@ -303,7 +303,7 @@ export function InteractiveGLBViewer({
   enableWebXR = true,
   webXRHitTest = true,
   autoPlayAnimations = true,
-  webXRScaleFactor = 0.6,
+  webXRScaleFactor: _webXRScaleFactor = 0.6,
   annotations = [],
   enablePartSelection = false,
   enablePricing = false,
@@ -321,7 +321,7 @@ export function InteractiveGLBViewer({
   const utils = useRegionUtils();
   const [selectedPart, setSelectedPart] = useState<PartAnnotation | null>(null);
   const [selectedParts, setSelectedParts] = useState<Set<string>>(new Set(initialConfiguration));
-  const [hoveredPart, setHoveredPart] = useState<string | null>(null);
+  const [_hoveredPart, setHoveredPart] = useState<string | null>(null);
   const [totalPrice, setTotalPrice] = useState(0);
 
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
