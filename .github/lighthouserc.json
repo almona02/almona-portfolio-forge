@@ -26,8 +26,7 @@
       }
     },
     "upload": {
-      "target": "temporary-public-storage",
-      "githubToken": "${{ secrets.GITHUB_TOKEN }}"
+      "target": "temporary-public-storage"
     },
     "server": {
       "storage": {
