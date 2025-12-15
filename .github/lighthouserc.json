@@ -5,7 +5,9 @@
       "startServerCommand": "npm run preview",
       "url": [
         "http://localhost:4173/",
-        "http://localhost:4173/fabricator"
+        "http://localhost:4174/",
+        "http://localhost:4173/fabricator",
+        "http://localhost:4174/fabricator"
       ],
       "settings": {
         "chromeFlags": "--no-sandbox --disable-dev-shm-usage",

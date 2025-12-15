@@ -10,7 +10,7 @@ import { AlertCircle, DollarSign, Save, Plus, Trash2 } from 'lucide-react';
 import type { Profile } from '@/types/fabricator';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { SYSTEM_PACKS, JUMBO100_WINDOW_SYSTEM_SPEC, ROCK60_WINDOW_SYSTEM_TEMPLATE } from '@/data/systemPacks';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useRegionalConfig } from '@/hooks/useRegionDetection';
 
 // Helper function to guess role from JUMBO 100 profile number

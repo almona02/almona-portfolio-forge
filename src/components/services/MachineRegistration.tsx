@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { QrCodeIcon, CheckCircle2, AlertCircle, ChevronRight, Camera, Upload, FileText, Copy, Check } from "lucide-react";
+import { QrCodeIcon, CheckCircle2, AlertCircle, ChevronRight, Camera, Upload, Copy, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
@@ -116,7 +116,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
         );
         uploadedUrls = uploads
           .filter(r => r.status === 'fulfilled')
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+           
           .map(r => (r as any).value as string);
         const failed = uploads.filter(r => r.status === 'rejected').length;
         if (failed) {
@@ -141,7 +141,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
       const previous = queryClient.getQueryData(cacheKey) as unknown[] | undefined;
       queryClient.setQueryData(cacheKey, (old: unknown[] | undefined) => [optimisticMachine, ...(old || [])]);
 
-      const hadExistingQuery = !!previous;
+      const _hadExistingQuery = !!previous;
       try {
         const saved = await api.registerMachine({
           name: derivedName,

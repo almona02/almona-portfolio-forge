@@ -21,7 +21,6 @@ import {
   CheckCircle,
   AlertCircle,
   Globe,
-  Building2,
   Truck,
   Shield,
   Zap

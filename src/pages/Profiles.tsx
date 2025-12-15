@@ -40,7 +40,7 @@ const ProfilesPage: React.FC = () => {
       }
       
       // Use untyped client here to avoid friction with generated Supabase types
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const db = supabase as any;
       
       // Add timeout wrapper

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared/ui/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/ui/ui/dialog';
 import { Input } from '@/shared/ui/ui/input';
 import { Button } from '@/shared/ui/ui/button';
 import { Label } from '@/shared/ui/ui/label';
@@ -322,7 +322,7 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
                   </Button>
                 </div>
                 <div className="space-y-3">
-                  {equipmentRecommendations.map((rec, idx) => (
+                  {equipmentRecommendations.map((rec, _idx) => (
                     <Card key={rec.productId} className="bg-gray-900/50 border-gray-700">
                       <CardHeader>
                         <div className="flex items-center justify-between">

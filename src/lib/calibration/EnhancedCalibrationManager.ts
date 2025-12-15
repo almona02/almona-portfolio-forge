@@ -153,7 +153,7 @@ export class EnhancedCalibrationManager {
     }
   ): Promise<Partial<CuttingCalibration>> {
     // Get historical calibrations for this profile type and system
-    const historicalCalibrations = await this.getHistoricalCalibrations(
+    const _historicalCalibrations = await this.getHistoricalCalibrations(
       profile.id,
       systemPackId
     );
@@ -359,8 +359,8 @@ export class EnhancedCalibrationManager {
    * Detect patterns across workshops for global optimizations
    */
   async detectPatternsAcrossWorkshops(
-    profileType: string,
-    systemPackId: string
+    _profileType: string,
+    _systemPackId: string
   ): Promise<CalibrationCorrectionFactor[]> {
     // This would aggregate data across all workshops (requires proper permissions)
     // For now, return empty array - can be enhanced with federated learning later

@@ -14,7 +14,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/useToast';
 import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
 import { motion } from 'framer-motion';
 
 interface Product {
@@ -144,7 +143,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
     }
   };
 
-  const addProduct = (product: Product) => {
+  const _addProduct = (product: Product) => {
     if (product.stock <= 0) {
       toast({
         title: 'غير متوفر',
@@ -160,7 +159,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
     setSelectedProducts(prev => prev.filter(p => p.id !== productId));
   };
 
-  const addService = (service: Service) => {
+  const _addService = (service: Service) => {
     setSelectedServices(prev => [...prev, service]);
   };
 

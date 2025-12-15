@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { LazyEnhancedGLBViewer } from './LazyGLBViewer';
-import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 
 interface Model3DDialogProps {
@@ -22,11 +21,6 @@ export function Model3DDialog({
   const handleLoad = () => {
     setIsLoading(false);
     setError(null);
-  };
-
-  const handleError = (error: Error) => {
-    setError(error.message);
-    setIsLoading(false);
   };
 
   if (!isOpen) return null;

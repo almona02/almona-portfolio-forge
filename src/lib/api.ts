@@ -151,7 +151,7 @@ export const api = {
     warranty_valid?: boolean | null;
     photo_urls?: string[] | null;
   }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const { data, error } = await (supabase as unknown as { from: (table: string) => any })
       .from('machines')
       .insert([machineData])
@@ -165,7 +165,7 @@ export const api = {
   // Upload a machine photo (returns public URL). Bucket must exist in Supabase storage.
   uploadMachinePhoto: async (file: File, ownerId: string, serial: string) => {
     const path = `${ownerId}/${serial}/${Date.now()}-${file.name}`;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const storage = (supabase as unknown as { storage: any }).storage.from('machine-photos');
     const { error } = await storage.upload(path, file, { upsert: true });
     if (error) throw error;
@@ -189,7 +189,7 @@ export const api = {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     } as const;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data, error } = await (supabase as unknown as { from: (table: string) => any })
       .from('service_tickets')
       .insert([payload])
@@ -214,7 +214,7 @@ export const api = {
       spare_parts_details: params.spare_parts_details || null,
       created_at: new Date().toISOString()
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const { data, error } = await (supabase as unknown as { from: (table: string) => any })
       .from('ticket_messages')
       .insert([payload])

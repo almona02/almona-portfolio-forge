@@ -24,7 +24,7 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [validatedData, setValidatedData] = useState<ValidationResult | null>(null);
-  const [region, setRegion] = useState<'egypt' | 'turkey'>('egypt');
+  const [region, _setRegion] = useState<'egypt' | 'turkey'>('egypt');
 
   const validateSerial = async (serial: string) => {
     setValidationError(null);

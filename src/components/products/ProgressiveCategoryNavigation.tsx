@@ -1,14 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronDown, Scissors, Cpu, Zap, Factory, Wrench } from 'lucide-react';
-import { Button } from '@/shared/ui/ui/button';
+import { ChevronRight, Scissors, Cpu, Zap, Factory, Wrench } from 'lucide-react';
 import { Badge } from '@/shared/ui/ui/badge';
 import { 
-  categoryHierarchy, 
   CategoryNode, 
-  getMainCategories, 
-  getSubcategories,
-  getCategoryBreadcrumb 
+  getMainCategories
 } from '@/constants/categoryHierarchy';
 
 interface ProgressiveCategoryNavigationProps {

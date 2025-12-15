@@ -1,13 +1,12 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
 import { FileText } from 'lucide-react';
 
 interface OrderManagementProps {
   orders?: any[];
 }
 
-export const OrderManagement: React.FC<OrderManagementProps> = ({ orders = [] }) => {
+export const OrderManagement: React.FC<OrderManagementProps> = ({ orders: _orders = [] }) => {
   return (
     <Card className="bg-gray-700/50 border-gray-600">
       <CardHeader>

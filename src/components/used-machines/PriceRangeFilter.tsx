@@ -25,7 +25,7 @@ const PriceRangeFilter: React.FC<PriceRangeFilterProps> = ({
   currency = 'EGP'
 }) => {
   
-  const formatPrice = (price: number): string => {
+  const _formatPrice = (price: number): string => {
     return new Intl.NumberFormat('en-EG', {
       style: 'currency',
       currency: 'EGP',

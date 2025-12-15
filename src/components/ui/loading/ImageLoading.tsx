@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { LoadingSkeleton } from './LoadingSkeleton';
-import { Image, Camera, Loader2 } from 'lucide-react';
+import { Camera, Loader2 } from 'lucide-react';
 
 interface ImageLoadingProps {
   className?: string;

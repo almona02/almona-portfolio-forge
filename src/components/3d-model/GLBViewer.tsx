@@ -46,9 +46,9 @@ export function GLBViewer({
   enableAR = true,
   onReady,
   arScaleMultiplier = 0.5,
-  enableWindowControls = true,
-  windowAnimationSpeed = 1,
-  showMeasurements = true,
+  enableWindowControls: _enableWindowControls = true,
+  windowAnimationSpeed: _windowAnimationSpeed = 1,
+  showMeasurements: _showMeasurements = true,
   isWindowAnimating = false,
   windowAnimationProgress = 0,
   onWindowModelUpdate

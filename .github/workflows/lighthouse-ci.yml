@@ -29,8 +29,21 @@ jobs:
 
       - name: Start preview server
         run: |
+          # Kill any existing process on port 4173
+          lsof -ti:4173 | xargs kill -9 2>/dev/null || true
+          # Start preview server
           npm run preview &
-          sleep 10 # Wait for server to start
+          # Wait for server to be ready with health check
+          echo "Waiting for server to start..."
+          for i in {1..30}; do
+            if curl -f http://localhost:4173/ > /dev/null 2>&1 || curl -f http://localhost:4174/ > /dev/null 2>&1; then
+              echo "Server is ready!"
+              break
+            fi
+            sleep 2
+          done
+          # Give extra time for full initialization
+          sleep 5
 
       - name: Run Lighthouse CI
         run: |

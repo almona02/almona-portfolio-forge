@@ -3,10 +3,10 @@
  * Displays profile cross-section image with annotation support
  */
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card, CardContent } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
-import { ZoomIn, ZoomOut, RotateCw, Move, X } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCw, X } from 'lucide-react';
 
 interface Annotation {
   id: string;
@@ -37,7 +37,7 @@ export const ProfileCrossSectionViewer: React.FC<ProfileCrossSectionViewerProps>
   const [panX, setPanX] = useState(0);
   const [panY, setPanY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [_dragStart, _setDragStart] = useState({ x: 0, y: 0 });
   const [annotationMode, setAnnotationMode] = useState<'point' | 'box' | null>(null);
   const [drawingBox, setDrawingBox] = useState<{ startX: number; startY: number; endX: number; endY: number } | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);

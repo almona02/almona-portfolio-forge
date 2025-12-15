@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +8,6 @@ import {
   Star, 
   TrendingUp, 
   Clock, 
-  Users, 
   Factory, 
   Award, 
   ChevronLeft, 
@@ -193,9 +192,9 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
   showFeaturedOnly = false,
   maxStories = 3
 }) => {
-  const { t, language } = useLanguage();
+  const { t, language: _language } = useLanguage();
   const [currentStory, setCurrentStory] = useState(0);
-  const [selectedStory, setSelectedStory] = useState<CustomerStory | null>(null);
+  const [_selectedStory, setSelectedStory] = useState<CustomerStory | null>(null);
 
   const customerStories = getCustomerStories(t);
   const stories = showFeaturedOnly 
@@ -261,7 +260,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
             animate={{ x: -currentStory * 100 + '%' }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
           >
-            {stories.map((story, index) => (
+            {stories.map((story, _index) => (
               <div key={story.id} className="w-full flex-shrink-0">
                 <Card className="bg-slate-800/50 backdrop-blur-sm border border-white/10">
                   <CardContent className="p-8">

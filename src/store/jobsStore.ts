@@ -112,7 +112,7 @@ export const useJobsStore = create<JobsState>((set, get) => ({
                                   (projError as any)?.message?.includes('permission') ||
                                   (projError as any)?.message?.includes('RLS');
           if (!isExpectedError && process.env.NODE_ENV === 'development') {
-            // eslint-disable-next-line no-console
+             
             console.warn('Failed to upsert fabricator project for job sync:', projError);
           }
           return;
@@ -199,12 +199,12 @@ export const useJobsStore = create<JobsState>((set, get) => ({
                                   (posError as any)?.message?.includes('permission') ||
                                   (posError as any)?.message?.includes('RLS');
           if (!isExpectedError && process.env.NODE_ENV === 'development') {
-            // eslint-disable-next-line no-console
+             
             console.warn('Failed to upsert fabricator position for job sync:', posError);
           }
         }
       } catch (err) {
-        // eslint-disable-next-line no-console
+         
         console.error('Error syncing job to Supabase:', err);
       }
     })();
@@ -249,11 +249,11 @@ export const useJobsStore = create<JobsState>((set, get) => ({
         ]);
 
       if (projError) {
-        // eslint-disable-next-line no-console
+         
         console.error('Failed to load fabricator projects:', projError);
       }
       if (posError) {
-        // eslint-disable-next-line no-console
+         
         console.error('Failed to load fabricator positions:', posError);
       }
 

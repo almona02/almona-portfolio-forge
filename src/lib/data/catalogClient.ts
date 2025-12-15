@@ -1,5 +1,5 @@
 import { table, rpc } from './clientCore';
-import type { Database, ProductCategory } from '@/types/database';
+import type { Database } from '@/types/database';
 
 export type ProductRow = Database['public']['Tables']['products']['Row'];
 export type CategoryRow = Database['public']['Tables']['categories']['Row'];

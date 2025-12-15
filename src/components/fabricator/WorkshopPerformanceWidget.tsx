@@ -5,7 +5,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { workshopPerformanceAnalytics } from '@/lib/analytics/WorkshopPerformanceAnalytics';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface WorkshopPerformanceWidgetProps {

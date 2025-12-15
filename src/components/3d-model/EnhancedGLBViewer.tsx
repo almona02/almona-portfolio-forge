@@ -31,7 +31,7 @@ class CanvasErrorBoundary extends React.Component<React.PropsWithChildren, Canva
   render() { if (this.state.hasError && this.state.error) { return <div className="p-4 text-sm bg-red-600 text-white">3D Viewer crashed: {this.state.error.message}</div>; } return this.props.children; }
 }
 
-function FittedModel({ modelPath, onLoaded, onError, autoPlayAnimations = true }: { modelPath: string; onLoaded?: () => void; onError?: (error: Error) => void; autoPlayAnimations?: boolean }) {
+function FittedModel({ modelPath, onLoaded, onError: _onError, autoPlayAnimations = true }: { modelPath: string; onLoaded?: () => void; onError?: (error: Error) => void; autoPlayAnimations?: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
   const fired = useRef(false);
 

@@ -21,7 +21,7 @@ interface MachineRequirements {
 }
 
 export const WorkshopARView = ({ machine }: { machine: MachineRequirements }) => {
-  const { scene } = useThree();
+  const { scene: _scene } = useThree();
   const [warnings, setWarnings] = useState<string[]>([]);
 
   const analyzeSpace = async () => {

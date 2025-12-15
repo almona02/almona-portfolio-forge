@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, Info, Users, Zap, Target } from 'lucide-react';
+import { Info, Users, Zap, Target } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';

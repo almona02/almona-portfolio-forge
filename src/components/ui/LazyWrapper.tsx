@@ -126,7 +126,7 @@ export const LazyImage: React.FC<LazyImageProps> = ({
 }) => {
   const { ref, isVisible } = useIntersectionLazyLoad(threshold);
   const [imageSrc, setImageSrc] = React.useState(placeholder || '');
-  const [imageRef, setImageRef] = React.useState<HTMLImageElement | null>(null);
+  const [_imageRef, _setImageRef] = React.useState<HTMLImageElement | null>(null);
   const [hasError, setHasError] = React.useState(false);
 
   React.useEffect(() => {

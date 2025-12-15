@@ -219,6 +219,8 @@ export function monitorBundleSize(): BundleInfo[] {
       type = 'vendor';
     } else if (resource.name.includes('fabricator')) {
       type = 'fabricator';
+    } else if (resource.name.includes('ui-icons-lucide')) {
+      type = 'vendor'; // Icon libraries are vendor chunks
     }
 
     const info: BundleInfo = {
@@ -240,8 +242,11 @@ export function monitorBundleSize(): BundleInfo[] {
     console.log(`[Performance] Bundle: ${info.name} - ${info.sizeKB.toFixed(2)}KB (${info.transferSizeKB.toFixed(2)}KB transferred) - ${info.type}`);
 
     // Alert on large bundles (>500KB target to reduce noise for vendor chunks)
-    if (transferSize > 500 * 1024) {
-      console.warn(`[Performance] ⚠️ Large bundle detected: ${info.name} - ${info.transferSizeKB.toFixed(2)}KB (exceeds 500KB target)`);
+    // Icon libraries can be larger, so use a higher threshold (800KB) for them
+    const isIconLibrary = resource.name.includes('ui-icons-lucide') || resource.name.includes('lucide-react');
+    const threshold = isIconLibrary ? 800 * 1024 : 500 * 1024;
+    if (transferSize > threshold) {
+      console.warn(`[Performance] ⚠️ Large bundle detected: ${info.name} - ${info.transferSizeKB.toFixed(2)}KB (exceeds ${(threshold / 1024).toFixed(0)}KB target)`);
     }
   });
 

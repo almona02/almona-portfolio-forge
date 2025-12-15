@@ -8,7 +8,7 @@ import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
 import { ZoomIn, ZoomOut, RotateCw, Info, AlertTriangle } from 'lucide-react';
-import { cutSimulator, type FrameSimulation, type CutSimulation } from '@/lib/simulation/CutSimulator';
+import { cutSimulator, type CutSimulation } from '@/lib/simulation/CutSimulator';
 import type { WindowComponent, Profile, OptimizationResult } from '@/types/fabricator';
 
 interface CutSimulationViewerProps {

@@ -49,7 +49,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
         duration: 2000,
       });
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Failed to copy',
         description: 'Please try again',

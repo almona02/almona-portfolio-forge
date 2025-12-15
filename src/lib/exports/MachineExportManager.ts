@@ -5,11 +5,11 @@
  * (Elumatec, FOMM, Emmegi, etc.)
  */
 
-import type { Profile, Cut, OptimizationResult } from '@/types/fabricator';
+import type { Profile, OptimizationResult } from '@/types/fabricator';
 import { MACHINE_PROFILES, getMachineProfile } from './machineProfiles';
 import { DXFExportGenerator } from './DXFExportGenerator';
 import { CSVExportGenerator } from './CSVExportGenerator';
-import type { DXFExportOptions, CSVExportOptions } from './types';
+import type { DXFExportOptions } from './types';
 
 export interface MachiningMacro {
   id: string;
@@ -97,7 +97,7 @@ export class MachineExportManager {
     optimization?: OptimizationResult
   ): Promise<ExportResult> {
     const dxfGenerator = new DXFExportGenerator();
-    const csvGenerator = new CSVExportGenerator();
+    const _csvGenerator = new CSVExportGenerator();
 
     // Generate DXF with Elumatec-specific layers
     const dxfOptions: DXFExportOptions = {
@@ -187,7 +187,7 @@ export class MachineExportManager {
     optimization?: OptimizationResult
   ): Promise<ExportResult> {
     const dxfGenerator = new DXFExportGenerator();
-    const csvGenerator = new CSVExportGenerator();
+    const _csvGenerator = new CSVExportGenerator();
 
     const dxfOptions: DXFExportOptions = {
       machineProfileId: 'emmegi_quasar',
@@ -272,7 +272,7 @@ export class MachineExportManager {
     machineProfile: typeof MACHINE_PROFILES[0]
   ): string {
     const config = machineProfile.configuration || {};
-    const maxSpindleSpeed = config.maxSpindleSpeed || 18000;
+    const _maxSpindleSpeed = config.maxSpindleSpeed || 18000;
     const toolChanger = config.toolChanger || false;
 
     let gcode = '; Elumatec SBZ 151 G-code\n';

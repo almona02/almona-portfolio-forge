@@ -7,7 +7,7 @@ import { Slider } from '@/shared/ui/ui/slider';
 import { Switch } from '@/shared/ui/ui/switch';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import {
   Grid3X3,
   List,
@@ -17,29 +17,18 @@ import {
   Star,
   Ruler,
   RotateCcw,
-  ZoomIn,
-  ZoomOut,
   Smartphone,
   Monitor,
   Move3D,
   Settings,
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Camera,
   Users,
   GitCompare,
   Info,
-  Layers,
-  Palette,
   Zap
 } from 'lucide-react';
 import { LazyEnhancedGLBViewer } from '@/components/3d-model/LazyGLBViewer';
 import { ModelMeasurementTool } from '@/components/3d-model/ModelMeasurementTool';
-import { EnhancedModel3DDialog } from '@/components/3d-model/EnhancedModel3DDialog';
 import { Collaborative3DViewer } from '@/components/3d-model/Collaborative3DViewer';
-import { SwiftXRManager } from '@/components/3d-model/SwiftXRManager';
 import { useToast } from '@/hooks/useToast';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import '@/components/3d-model/SwiftXR.css';

@@ -13,7 +13,7 @@ import { Label } from "@/shared/ui/ui/label";
 import { Textarea } from "@/shared/ui/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/select";
 import { Badge } from "@/shared/ui/ui/badge";
-import { AlertTriangle, Phone, Clock, MapPin, Wrench, Zap, Settings, Activity, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, Clock, Wrench, Zap, Settings, Activity, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { sendSms } from "@/lib/smsService";

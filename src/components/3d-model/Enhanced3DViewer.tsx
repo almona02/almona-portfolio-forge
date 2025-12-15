@@ -75,8 +75,8 @@ class CanvasErrorBoundary extends React.Component<React.PropsWithChildren, Canva
 function FittedGLBModel({ 
   modelPath, 
   onLoaded, 
-  onError, 
-  autoPlayAnimations = true,
+  onError: _onError, 
+  autoPlayAnimations = true, 
   onModelUpdate 
 }: { 
   modelPath: string; 
@@ -155,14 +155,14 @@ export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
   autoPlayAnimations = true,
   autoRotate = false,
   webXRScaleFactor = 0.6,
-  enableWindowControls = true,
-  windowAnimationSpeed = 1,
+  enableWindowControls: _enableWindowControls = true,
+  windowAnimationSpeed: _windowAnimationSpeed = 1,
   presentationMode = false,
-  showMeasurements = true,
-  enableMeasurementTool = false,
+  showMeasurements: _showMeasurements = true,
+  enableMeasurementTool: _enableMeasurementTool = false,
   onModelUpdate,
-  cameraState,
-  onCameraChange,
+  cameraState: _cameraState,
+  onCameraChange: _onCameraChange,
   className = ''
 }, ref) => {
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
@@ -187,9 +187,15 @@ export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
   const [isWindowAnimating, setIsWindowAnimating] = useState(false);
   const [windowAnimationProgress, setWindowAnimationProgress] = useState(0);
 
+  // Use refs for callbacks to avoid unnecessary re-renders
+  const onCameraChangeRef = useRef(_onCameraChange);
+  useEffect(() => {
+    onCameraChangeRef.current = _onCameraChange;
+  }, [_onCameraChange]);
+
   // Propagate camera changes for synchronization
   React.useEffect(() => {
-    if (!controlsRef.current || !onCameraChange) return;
+    if (!controlsRef.current) return;
     const controls = controlsRef.current;
     const handler = () => {
       try {
@@ -197,26 +203,26 @@ export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
         const pos: [number, number, number] = [cam.position.x, cam.position.y, cam.position.z];
         const tgt = controls.target;
         const target: [number, number, number] = [tgt.x, tgt.y, tgt.z];
-        onCameraChange({ position: pos, target });
+        onCameraChangeRef.current?.({ position: pos, target });
       } catch {}
     };
     controls.addEventListener('change', handler);
     return () => { try { controls.removeEventListener('change', handler); } catch {} };
-  }, [onCameraChange]);
+  }, []); // Empty deps - using ref for callback
 
   // Apply external camera state
   React.useEffect(() => {
-    if (!controlsRef.current || !cameraState) return;
+    if (!controlsRef.current || !_cameraState) return;
     const controls = controlsRef.current;
     try {
       const cam = controls.object;
-      const [px, py, pz] = cameraState.position;
-      const [tx, ty, tz] = cameraState.target;
+      const [px, py, pz] = _cameraState.position;
+      const [tx, ty, tz] = _cameraState.target;
       cam.position.set(px, py, pz);
       controls.target.set(tx, ty, tz);
       controls.update();
     } catch {}
-  }, [cameraState]);
+  }, [_cameraState]);
 
   // Expose methods via ref
   useImperativeHandle(ref, () => ({
@@ -267,7 +273,7 @@ export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
 
     const interval = setInterval(() => {
       setWindowAnimationProgress((prev) => {
-        const next = prev + 0.02 * windowAnimationSpeed;
+        const next = prev + 0.02 * _windowAnimationSpeed;
         if (next >= 1) {
           setIsWindowAnimating(false);
           return 0;
@@ -277,7 +283,7 @@ export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
     }, 50);
 
     return () => clearInterval(interval);
-  }, [isWindowAnimating, isWindowMode, windowAnimationSpeed]);
+  }, [isWindowAnimating, isWindowMode, _windowAnimationSpeed]);
 
   const handleAndroidAR = () => {
     try {

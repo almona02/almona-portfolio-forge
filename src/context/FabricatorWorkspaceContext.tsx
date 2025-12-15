@@ -91,7 +91,7 @@ const FabricatorWorkspaceContext = createContext<{
   dispatch: React.Dispatch<FabricatorWorkspaceAction>;
 }>({
   state: initialState,
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
+   
   dispatch: () => {},
 });
 
@@ -266,7 +266,7 @@ export const FabricatorWorkspaceProvider: React.FC<{ children: ReactNode }> = ({
       .catch((error) => {
         console.warn('Failed to load fabricator workspace from sync service:', error);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   // Persist workspace to Supabase (with localStorage fallback) using debounced save

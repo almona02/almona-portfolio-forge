@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { 
   BarChart3, 
   TrendingUp, 
-  Users, 
   MousePointer, 
   Smartphone, 
   Monitor,

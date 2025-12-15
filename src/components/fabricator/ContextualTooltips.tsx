@@ -10,12 +10,12 @@
  * - Progress tracking
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { X, Lightbulb, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent } from '@/shared/ui/ui/card';
-import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Lightbulb, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export interface TooltipConfig {
   id: string;

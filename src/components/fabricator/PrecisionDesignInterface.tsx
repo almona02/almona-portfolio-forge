@@ -1,11 +1,11 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { WindowUnit, WindowGrid, GridCell, Profile, WindowComponent } from '@/types/fabricator';
+import { WindowUnit, WindowGrid, GridCell, Profile } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { generateComponentsFromGrid } from '@/algorithms/smartDraw';
 import { SimplifiedOptimizationEngine } from '@/lib/fabricator/OptimizationEngine';
 import { PricingEngine } from '@/lib/pricing/PricingEngine';
 import { cn } from '@/lib/utils';
-import { EGYPTIAN_PATTERNS, getPatternsForSystem, type EgyptianPattern } from '@/data/egyptian-window-patterns';
+import { EGYPTIAN_PATTERNS, getPatternsForSystem } from '@/data/egyptian-window-patterns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Label } from '@/shared/ui/ui/label';
 
@@ -182,8 +182,8 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
 
     // Update project dimensions to pattern's typical dimensions if needed
     if (project && pattern.typicalWidthMm && pattern.typicalHeightMm) {
-      const midWidth = Math.round((pattern.typicalWidthMm[0] + pattern.typicalWidthMm[1]) / 2);
-      const midHeight = Math.round((pattern.typicalHeightMm[0] + pattern.typicalHeightMm[1]) / 2);
+      const _midWidth = Math.round((pattern.typicalWidthMm[0] + pattern.typicalWidthMm[1]) / 2);
+      const _midHeight = Math.round((pattern.typicalHeightMm[0] + pattern.typicalHeightMm[1]) / 2);
       // Note: We can't directly update project here, but the grid change will trigger re-render
     }
 
@@ -257,7 +257,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
         totalMaterial += totalBarLength;
 
         // Calculate price
-        const pricingEngine = new PricingEngine({ region: 'egypt', currency: 'EGP' });
+        const _pricingEngine = new PricingEngine({ region: 'egypt', currency: 'EGP' });
         const lengthM = totalBarLength / 1000;
         const price = profile.costPerMeter ? lengthM * profile.costPerMeter : 0;
         totalPrice += price;
@@ -296,22 +296,27 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
   const totalColWeight = colWeights.reduce((a, b) => a + b, 0) || grid.cols;
   const totalRowWeight = rowWeights.reduce((a, b) => a + b, 0) || grid.rows;
   
-  const colStarts: number[] = [];
-  const rowStarts: number[] = [];
-  const colWidthsPx: number[] = [];
-  const rowHeightsPx: number[] = [];
+  // Memoize array calculations to prevent unnecessary re-renders
+  const { colStarts, rowStarts, colWidthsPx, rowHeightsPx } = useMemo(() => {
+    const colStarts: number[] = [];
+    const rowStarts: number[] = [];
+    const colWidthsPx: number[] = [];
+    const rowHeightsPx: number[] = [];
 
-  colWeights.reduce((acc, w) => {
-    colStarts.push(acc);
-    colWidthsPx.push((w / totalColWeight) * svgWidth);
-    return acc + (w / totalColWeight) * svgWidth;
-  }, 0);
+    colWeights.reduce((acc, w) => {
+      colStarts.push(acc);
+      colWidthsPx.push((w / totalColWeight) * svgWidth);
+      return acc + (w / totalColWeight) * svgWidth;
+    }, 0);
 
-  rowWeights.reduce((acc, w) => {
-    rowStarts.push(acc);
-    rowHeightsPx.push((w / totalRowWeight) * svgHeight);
-    return acc + (w / totalRowWeight) * svgHeight;
-  }, 0);
+    rowWeights.reduce((acc, w) => {
+      rowStarts.push(acc);
+      rowHeightsPx.push((w / totalRowWeight) * svgHeight);
+      return acc + (w / totalRowWeight) * svgHeight;
+    }, 0);
+
+    return { colStarts, rowStarts, colWidthsPx, rowHeightsPx };
+  }, [colWeights, rowWeights, totalColWeight, totalRowWeight, svgWidth, svgHeight]);
 
   // Get system max width constraint
   const maxSashWidth = useMemo(() => {
@@ -499,7 +504,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     if (!svgRef.current || dragState.type === null) return;
     const rect = svgRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const _y = e.clientY - rect.top;
 
     if (dragState.type === 'mullion-vertical' && dragState.startX !== undefined) {
       const deltaX = x - dragState.startX;

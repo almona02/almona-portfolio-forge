@@ -9,7 +9,6 @@ import {
   FileText, 
   CheckCircle, 
   AlertTriangle, 
-  Download, 
   Award,
   Building2,
   Factory,

@@ -27,7 +27,7 @@ interface BosphorusWorkflowRibbonProps {
 
 export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = ({
   steps,
-  activeStepId,
+  activeStepId: _activeStepId,
   onStepChange,
   currentStepIndex,
   totalSteps,

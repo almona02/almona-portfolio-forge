@@ -108,7 +108,7 @@ class CanvasErrorBoundary extends React.Component<React.PropsWithChildren, Canva
 function InteractiveGLBModel({ 
   modelPath, 
   onLoaded, 
-  onError, 
+  onError: _onError, 
   autoPlayAnimations = true,
   annotations = [],
   enablePartSelection = false,
@@ -343,17 +343,17 @@ function WindowPartAnnotation({
 export function Interactive3DViewer({
   modelPath,
   windowUnit,
-  usdzPath = '/models/model.usdz',
+  usdzPath: _usdzPath = '/models/model.usdz',
   enableAR = true,
   backgroundColor = '#111',
   onLoaded,
-  onError,
+  onError: _onError,
   title = 'Model',
   enableWebXR = true,
   webXRHitTest = true,
   autoPlayAnimations = true,
   autoRotate = false,
-  webXRScaleFactor = 0.6,
+  webXRScaleFactor: _webXRScaleFactor = 0.6,
   enableWindowControls = true,
   windowAnimationSpeed = 1,
   presentationMode = false,
@@ -365,10 +365,10 @@ export function Interactive3DViewer({
   highlightColor = '#ff6b35',
   showAnnotations = true,
   showMeasurements = true,
-  enableMeasurementTool = false,
+  enableMeasurementTool: _enableMeasurementTool = false,
   onModelUpdate,
-  cameraState,
-  onCameraChange,
+  cameraState: _cameraState,
+  onCameraChange: _onCameraChange,
   className = ''
 }: Interactive3DViewerProps) {
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
@@ -486,7 +486,7 @@ export function Interactive3DViewer({
     onPartSelected?.(part);
 
     if (enablePricing) {
-      const taxAmount = utils.calculateTax(part.price);
+      const _taxAmount = utils.calculateTax(part.price);
       const totalWithTax = utils.calculateTotalWithTax(part.price);
       
       toast({

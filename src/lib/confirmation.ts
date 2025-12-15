@@ -1,6 +1,5 @@
 // Confirmation and notification utilities
 import { supabase } from './supabase';
-import type { Database } from '@/types/database';
 
 export interface ConfirmationData {
   type: 'quote' | 'order' | 'service_ticket';

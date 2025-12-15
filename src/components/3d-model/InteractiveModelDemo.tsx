@@ -89,7 +89,7 @@ export const InteractiveModelDemo: React.FC<InteractiveModelDemoProps> = ({
   const { regionState } = useRegionDetection();
   
   const [selectedParts, setSelectedParts] = useState<PartAnnotation[]>([]);
-  const [totalPricing, setTotalPricing] = useState<TotalPricingCalculation | null>(null);
+  const [_totalPricing, setTotalPricing] = useState<TotalPricingCalculation | null>(null);
   const [showPricing, setShowPricing] = useState(true);
 
   const handlePartSelected = useCallback((part: PartAnnotation) => {

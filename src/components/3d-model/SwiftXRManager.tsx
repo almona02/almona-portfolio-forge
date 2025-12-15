@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
-import { launchSwiftXR, detectSwiftXR, launchARWithFallback, getRecommendedARMethod } from '@/utils/swiftXRIntegration';
+import { detectSwiftXR, launchARWithFallback } from '@/utils/swiftXRIntegration';
 import './SwiftXR.css';
 
 interface SwiftXRManagerProps {
@@ -109,7 +109,7 @@ export function SwiftXRManager({
                   hitTest = session && typeof session.requestHitTestSource === 'function';
                   lightingEstimation = session && 'light-estimation' in session;
                   if (session) session.end();
-                } catch (e) {
+                } catch {
                   // Session test failed, but AR is still supported
                 }
               }

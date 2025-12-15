@@ -7,18 +7,15 @@ import { Input } from '@/shared/ui/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { 
   Truck, 
-  MapPin, 
   Package, 
   Clock, 
   DollarSign, 
   Route,
   Ship,
   Plane,
-  Train,
   Calculator,
   Info,
   CheckCircle,
-  AlertCircle,
   Globe,
   Phone,
   Mail,

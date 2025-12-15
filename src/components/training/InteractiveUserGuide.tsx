@@ -5,16 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Play,
-  Pause,
-  SkipForward,
-  SkipBack,
   CheckCircle,
   Circle,
   HelpCircle,
   BookOpen,
-  Video,
-  MousePointer,
   Smartphone,
   Monitor,
   Zap,
@@ -245,10 +239,10 @@ export const InteractiveUserGuide: React.FC<{
   const [selectedModule, setSelectedModule] = useState<TrainingModule | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [userProgress, setUserProgress] = useState<Map<string, UserProgress>>(new Map());
+  const [_isPlaying, _setIsPlaying] = useState(false);
+  const [_userProgress, _setUserProgress] = useState<Map<string, UserProgress>>(new Map());
   
-  const highlightRef = useRef<HTMLElement | null>(null);
+  const _highlightRef = useRef<HTMLElement | null>(null);
   const spotlightRef = useRef<HTMLDivElement | null>(null);
 
   // Initialize with module if provided
@@ -274,7 +268,7 @@ export const InteractiveUserGuide: React.FC<{
   }, [selectedModule]);
 
   // Spotlight effect for guided tutorials
-  const createSpotlight = (element: HTMLElement) => {
+  const _createSpotlight = (element: HTMLElement) => {
     if (spotlightRef.current) {
       const rect = element.getBoundingClientRect();
       const spotlight = spotlightRef.current;

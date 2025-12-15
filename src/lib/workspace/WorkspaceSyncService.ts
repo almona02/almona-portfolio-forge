@@ -218,7 +218,7 @@ export class WorkspaceSyncService {
                                   message.includes('row-level security') ||
                                   message.includes('RLS');
           if (!isExpectedError && process.env.NODE_ENV === 'development') {
-            // eslint-disable-next-line no-console
+             
             console.warn('Supabase sync failed in non‑browser environment:', supabaseError);
           }
           return { success: false, usedFallback: false };
@@ -226,7 +226,7 @@ export class WorkspaceSyncService {
 
         return { success: true, usedFallback: false };
       } catch (error) {
-        // eslint-disable-next-line no-console
+         
         console.error('Workspace save failed in non‑browser environment:', error);
         return { success: false, usedFallback: false };
       }
@@ -269,7 +269,7 @@ export class WorkspaceSyncService {
                                 message.includes('violates row-level security');
         
         if (!isExpectedError && process.env.NODE_ENV === 'development') {
-          // eslint-disable-next-line no-console
+           
           console.warn('Supabase sync failed, using localStorage:', supabaseError);
         }
         // Fallback to localStorage (with compression)
@@ -286,7 +286,7 @@ export class WorkspaceSyncService {
     } catch (error) {
       // Only log unexpected errors
       if (process.env.NODE_ENV === 'development') {
-        // eslint-disable-next-line no-console
+         
         console.error('Workspace save failed completely:', error);
       }
       // Final fallback (with compression)
@@ -298,7 +298,7 @@ export class WorkspaceSyncService {
         }
       } catch (storageError) {
         if (process.env.NODE_ENV === 'development') {
-          // eslint-disable-next-line no-console
+           
           console.error(
             'Failed to persist workspace state to localStorage after Supabase error:',
             storageError,
@@ -351,7 +351,7 @@ export class WorkspaceSyncService {
                                   message.includes('violates row-level security');
           // Silently fallback for expected errors
           if (!isExpectedError && process.env.NODE_ENV === 'development') {
-            // eslint-disable-next-line no-console
+             
             console.warn('Workspace load from Supabase failed:', error);
           }
         }
@@ -372,7 +372,7 @@ export class WorkspaceSyncService {
     } catch (error) {
       // Only log unexpected errors
       if (process.env.NODE_ENV === 'development') {
-        // eslint-disable-next-line no-console
+         
         console.error('Workspace load failed:', error);
       }
       if (this.hasWindow()) {
@@ -441,7 +441,7 @@ export class WorkspaceSyncService {
         storageUsed,
       };
     } catch (error) {
-      // eslint-disable-next-line no-console
+       
       console.warn('Workspace sync status check failed:', error);
 
       const hasLocal = this.hasWindow() && !!window.localStorage.getItem(this.storageKey);

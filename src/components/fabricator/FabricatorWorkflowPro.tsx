@@ -50,7 +50,6 @@ export const FabricatorWorkflowPro: React.FC = () => {
         }
         setUserId(user?.id ?? null);
       } catch (err) {
-        // eslint-disable-next-line no-console
         console.error('Failed to resolve Supabase user for FabricatorWorkflowPro:', err);
         setUserError(
           err instanceof Error ? err.message : 'Unable to determine current user identity.',

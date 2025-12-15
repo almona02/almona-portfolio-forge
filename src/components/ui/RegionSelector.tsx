@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { RegionCode } from '@/config/regionalConfig';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Globe, ChevronDown, Check, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

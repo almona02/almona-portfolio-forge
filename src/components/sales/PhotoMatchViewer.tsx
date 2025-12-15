@@ -85,7 +85,7 @@ function detectWindowEdges(imageData: ImageData): { x: number; y: number; width:
 
   for (let y = 1; y < imageData.height - 1; y++) {
     for (let x = 1; x < imageData.width - 1; x++) {
-      const idx = y * imageData.width + x;
+      const _idx = y * imageData.width + x;
       const gx = 
         -grayData[(y - 1) * imageData.width + (x - 1)] +
         grayData[(y - 1) * imageData.width + (x + 1)] +
@@ -133,7 +133,7 @@ function detectWindowEdges(imageData: ImageData): { x: number; y: number; width:
 }
 
 // Perspective correction algorithm
-function calculatePerspectiveMatrix(correction: PerspectiveCorrection, width: number, height: number): THREE.Matrix4 {
+function _calculatePerspectiveMatrix(correction: PerspectiveCorrection, width: number, height: number): THREE.Matrix4 {
   const src = [
     correction.topLeft.x, correction.topLeft.y,
     correction.topRight.x, correction.topRight.y,
@@ -167,7 +167,7 @@ function calculatePerspectiveMatrix(correction: PerspectiveCorrection, width: nu
 function PhotoMatchScene({
   windowUnit,
   backgroundImage,
-  overlayMode,
+  _overlayMode,
   lighting,
   perspectiveCorrection,
   windowPosition,
@@ -183,11 +183,11 @@ function PhotoMatchScene({
   windowScale: number;
   onModelReady?: (model: THREE.Group) => void;
 }) {
-  const { scene, camera, gl } = useThree();
+  const { scene, camera } = useThree();
   const modelRef = useRef<THREE.Group>(null);
   const backgroundRef = useRef<THREE.Mesh>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [animationProgress, setAnimationProgress] = useState(0);
+  const [_isAnimating, _setIsAnimating] = useState(false);
+  const [_animationProgress, _setAnimationProgress] = useState(0);
 
   // Load background image as texture
   useEffect(() => {
@@ -234,7 +234,7 @@ function PhotoMatchScene({
     if (!perspectiveCorrection) return;
 
     // Adjust camera to match perspective
-    const fov = camera instanceof THREE.PerspectiveCamera ? camera.fov : 50;
+    const _fov = camera instanceof THREE.PerspectiveCamera ? camera.fov : 50;
     // In production, calculate proper camera parameters from perspective correction
   }, [perspectiveCorrection, camera]);
 
@@ -321,7 +321,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
   const [perspectiveCorrection, setPerspectiveCorrection] = useState<PerspectiveCorrection | undefined>();
   const [windowPosition, setWindowPosition] = useState({ x: 0, y: 0, z: 0 });
   const [windowScale, setWindowScale] = useState(1);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [_isFullscreen, _setIsFullscreen] = useState(false);
   const [detectedWindows, setDetectedWindows] = useState<{ x: number; y: number; width: number; height: number }[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   
@@ -552,7 +552,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
             }
             
             track('photo_match_shared', { method: 'clipboard', windowId: windowUnit?.id });
-          } catch (clipboardError) {
+          } catch (_clipboardError) {
             // If clipboard fails, fall back to download
             exportPresentation();
           }

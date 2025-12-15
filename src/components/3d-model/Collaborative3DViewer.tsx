@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Text, Html } from '@react-three/drei'
-import { Vector3, Color } from 'three'
-import { useAuth } from '@/context/AuthContext'
-import { collaboration3DService, type Participant, type Annotation } from '@/lib/collaboration/3dCollaborationService'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Users, MessageSquare, Share2, Eye, EyeOff } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { useAuth } from '@/context/AuthContext'
 import { track } from '@/lib/analytics'
+import { collaboration3DService, type Annotation, type Participant } from '@/lib/collaboration/3dCollaborationService'
+import { Html, OrbitControls } from '@react-three/drei'
+import { Canvas } from '@react-three/fiber'
+import { Eye, EyeOff, MessageSquare, Share2, Users } from 'lucide-react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { Vector3 } from 'three'
 
 interface Collaborative3DViewerProps {
   modelPath: string
@@ -157,7 +157,7 @@ export const Collaborative3DViewer: React.FC<Collaborative3DViewerProps> = ({
         setSessionId(session.id)
         
         // Subscribe to real-time updates
-        const channel = collaboration3DService.subscribeToSession(session.id, user.id, {
+        collaboration3DService.subscribeToSession(session.id, user.id, {
           onParticipantJoin: (participant) => {
             setParticipants(prev => [...prev, participant])
             track('collaboration_participant_join', { sessionId: session.id })

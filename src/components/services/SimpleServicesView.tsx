@@ -6,9 +6,8 @@ import { PackageComparisonTable } from './PackageComparisonTable';
 import ServiceCoverageMap from './ServiceCoverageMap';
 import { CustomerStories } from './CustomerStories';
 import { PackageCalculator } from './PackageCalculator';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Factory, Users, Zap, CheckCircle2, Clock, Shield, TrendingUp } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Factory, Users, Zap, CheckCircle2, Clock } from 'lucide-react';
 
 interface SimpleServicesViewProps {
   onPackageSelect?: (packageId: string) => void;
@@ -19,7 +18,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
   onPackageSelect,
   className = ''
 }) => {
-  const { t, language } = useLanguage();
+  const { t, language: _language } = useLanguage();
 
   const stats = [
     { number: "98%", label: t('services.customer_satisfaction'), icon: <CheckCircle2 className="h-6 w-6" /> },

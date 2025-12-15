@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unknown-property */
+ 
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Text, Center } from '@react-three/drei';

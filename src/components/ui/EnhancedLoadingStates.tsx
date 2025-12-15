@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Suspense, type ReactNode } from 'react';
-import { Loader2, Factory, Package, FileText, Calculator } from 'lucide-react';
+import { Factory } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LoadingSkeleton } from './loading/LoadingSkeleton';
 

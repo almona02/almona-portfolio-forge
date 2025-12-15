@@ -8,7 +8,7 @@
  * Accuracy: 99.8% (zero-error manufacturing)
  */
 
-import type { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
+import type { Profile } from '@/types/fabricator';
 
 /**
  * Window Assembly context for validation
@@ -331,7 +331,7 @@ export class EgyptianInterferenceEngine {
         }
         return true;
       },
-      errorMessage: (assembly) => {
+      errorMessage: (_assembly) => {
         return `Glass sash handle will clash with screen sash. Use a flat or recessed handle for the glass sash.`;
       },
       severity: 'warning'
@@ -348,7 +348,7 @@ export class EgyptianInterferenceEngine {
         }
         return true;
       },
-      errorMessage: (assembly) => {
+      errorMessage: (_assembly) => {
         return `For kitchen doors, consider replacing bottom glass with ACP or tempered glass for safety and privacy.`;
       },
       severity: 'warning'
@@ -503,7 +503,7 @@ export class EgyptianInterferenceEngine {
         }
         return true;
       },
-      errorMessage: (assembly) => {
+      errorMessage: (_assembly) => {
         return `Skylight inner glass layer must be Laminated (Triplex) for safety. Float or Tempered glass creates falling glass hazard. Upper pane should be Tempered, lower pane must be Laminated.`;
       },
       severity: 'block'

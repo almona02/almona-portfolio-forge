@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Card, CardHeader, CardTitle, CardContent } from "@/shared/ui/ui/card";
+import { CardHeader, CardTitle, CardContent } from "@/shared/ui/ui/card";
 import { Badge } from "@/shared/ui/ui/badge";
 
 interface FabricationStageCardProps {

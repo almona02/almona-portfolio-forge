@@ -126,7 +126,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
     });
   };
 
-  const systemCategory = system.windowSystemSpec?.category === 'upvc' ? 'upvc' : 'aluminum';
+  const _systemCategory = system.windowSystemSpec?.category === 'upvc' ? 'upvc' : 'aluminum';
 
   return (
     <div className="flex flex-col h-full space-y-4" dir="ltr">
