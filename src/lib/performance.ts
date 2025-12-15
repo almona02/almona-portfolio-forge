@@ -2,7 +2,7 @@
 // Performance monitoring setup
 // Note: web-vitals v3+ uses onCLS, onINP, etc. instead of getCLS, getFID
 // FID was deprecated and replaced with INP (Interaction to Next Paint) in v3+
-import { onCLS, onINP, onFCP, onLCP, onTTFB } from 'web-vitals';
+import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
 
 function sendToAnalytics(metric: any) {
   // Send to your analytics service
@@ -318,4 +318,147 @@ export function initializePerformanceMonitoring() {
 // Auto-initialize in production
 if (typeof window !== 'undefined' && import.meta.env.PROD) {
   initializePerformanceMonitoring();
+}
+
+// ============================================================================
+// Component-Level Performance Monitoring
+// ============================================================================
+
+interface PerformanceMetric {
+  name: string;
+  value: number;
+  timestamp: number;
+  component?: string;
+}
+
+class PerformanceMonitor {
+  private metrics: PerformanceMetric[] = [];
+  private readonly APP_VERSION = import.meta.env.VITE_APP_VERSION || '1.0.0';
+
+  /**
+   * Track a performance metric
+   */
+  track(metric: string, value: number, component?: string) {
+    const data: PerformanceMetric = {
+      name: metric,
+      value,
+      timestamp: Date.now(),
+      component,
+    };
+
+    this.metrics.push(data);
+
+    // Log to console in development
+    if (import.meta.env.DEV) {
+      const emoji = value > 100 ? '⚠️' : '✅';
+      console.log(
+        `${emoji} [Performance] ${component || 'App'}: ${metric} = ${value.toFixed(2)}ms`
+      );
+    }
+
+    // Send to analytics in production
+    if (import.meta.env.PROD && typeof window !== 'undefined') {
+      this.sendToAnalytics(data);
+    }
+  }
+
+  /**
+   * Send metrics to analytics
+   */
+  private sendToAnalytics(metric: PerformanceMetric) {
+    // Google Analytics
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'performance_metric', {
+        metric_name: metric.name,
+        metric_value: metric.value,
+        component: metric.component || 'unknown',
+        app_version: this.APP_VERSION,
+        timestamp: metric.timestamp,
+      });
+    }
+
+    // Custom analytics endpoint (if configured)
+    if (import.meta.env.VITE_ANALYTICS_ENDPOINT) {
+      fetch(import.meta.env.VITE_ANALYTICS_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(metric),
+      }).catch(() => {
+        // Silently fail if analytics endpoint is unavailable
+      });
+    }
+  }
+
+  /**
+   * Track Core Web Vitals
+   */
+  trackWebVitals() {
+    if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
+      return;
+    }
+
+    // First Contentful Paint (FCP)
+    try {
+      const paintEntries = performance.getEntriesByType('paint');
+      paintEntries.forEach((entry) => {
+        if (entry.name === 'first-contentful-paint') {
+          this.track('fcp', entry.startTime);
+        }
+      });
+    } catch (e) {
+      // FCP not available
+    }
+
+    // Largest Contentful Paint (LCP)
+    try {
+      const observer = new PerformanceObserver((list) => {
+        const entries = list.getEntries();
+        const lastEntry = entries[entries.length - 1] as any;
+        this.track('lcp', lastEntry.renderTime || lastEntry.loadTime);
+      });
+      observer.observe({ entryTypes: ['largest-contentful-paint'] });
+    } catch (e) {
+      // LCP not supported
+    }
+
+    // Cumulative Layout Shift (CLS)
+    try {
+      let clsValue = 0;
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries() as any[]) {
+          if (!entry.hadRecentInput) {
+            clsValue += entry.value;
+          }
+        }
+        this.track('cls', clsValue);
+      });
+      observer.observe({ entryTypes: ['layout-shift'] });
+    } catch (e) {
+      // CLS not supported
+    }
+  }
+
+  /**
+   * Get all tracked metrics
+   */
+  getMetrics(): PerformanceMetric[] {
+    return [...this.metrics];
+  }
+
+  /**
+   * Clear all metrics
+   */
+  clear() {
+    this.metrics = [];
+  }
+}
+
+// Singleton instance
+export const performanceMonitor = new PerformanceMonitor();
+
+// Auto-track Web Vitals on load
+if (typeof window !== 'undefined') {
+  window.addEventListener('load', () => {
+    performanceMonitor.trackWebVitals();
+  });
 }

@@ -13,31 +13,28 @@
  * - Shop-floor ready formatting
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import {
-  FileText,
-  Download,
-  FileSpreadsheet,
-  FileCode,
-  Printer,
-  Loader2,
-  CheckCircle,
-  AlertCircle,
-  Square,
-  Ruler,
-  Layers,
-  Thermometer,
-} from 'lucide-react';
-import { WindowUnit, WindowComponent } from '@/types/fabricator';
-import { CompanyBranding } from './PDFExportService';
-import { ExportService, ExportFormat, PDFExportOptions, ExportProgress } from '@/lib/exports';
-import { useTranslation } from 'react-i18next';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { ExportFormat, ExportProgress, ExportService, PDFExportOptions } from '@/lib/exports';
 import { deriveGlassSize } from '@/lib/glass/glassSizing';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { WindowComponent, WindowUnit } from '@/types/fabricator';
+import {
+  AlertCircle,
+  CheckCircle,
+  FileCode,
+  FileSpreadsheet,
+  FileText,
+  Layers,
+  Loader2,
+  Printer,
+  Square,
+} from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { CompanyBranding } from './PDFExportService';
 
 interface GlassReportProps {
   project: WindowUnit;
@@ -302,35 +299,39 @@ export const GlassReport: React.FC<GlassReportProps> = ({
   };
 
   return (
-    <div className="space-y-6 print:space-y-4" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      {/* Header with Export Buttons */}
+    <div className="space-y-4 sm:space-y-6 print:space-y-4" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+      {/* Header with Export Buttons - Responsive */}
       <Card className="print:hidden">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Square className="h-5 w-5" />
-                {t('glass.title', 'Glass & Glazing Report')}
+        <CardHeader className="p-3 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+            <div className="flex-1 min-w-0">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Square className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                <span className="truncate">{t('glass.title', 'Glass & Glazing Report')}</span>
               </CardTitle>
-              <CardDescription>
-                {t('glass.order', 'Order')}: {project.orderNumber} | {t('glass.type', 'Type')}: {project.type}
+              <CardDescription className="text-xs sm:text-sm mt-1">
+                <span className="block sm:inline">{t('glass.order', 'Order')}: {project.orderNumber}</span>
+                <span className="hidden sm:inline"> | </span>
+                <span className="block sm:inline">{t('glass.type', 'Type')}: {project.type}</span>
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handlePrint} className="print:hidden">
-                <Printer className="h-4 w-4 mr-2" />
-                {t('common.print', 'Print')}
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <Button variant="outline" size="sm" onClick={handlePrint} className="print:hidden text-xs sm:text-sm">
+                <Printer className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">{t('common.print', 'Print')}</span>
+                <span className="sm:hidden">Print</span>
               </Button>
               <Button
                 variant="default"
                 size="sm"
                 onClick={() => handleExport('pdf')}
                 disabled={isExporting}
+                className="text-xs sm:text-sm"
               >
                 {isExporting && exportProgress?.format === 'pdf' ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
                 ) : (
-                  <FileText className="h-4 w-4 mr-2" />
+                  <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                 )}
                 PDF
               </Button>
@@ -339,11 +340,12 @@ export const GlassReport: React.FC<GlassReportProps> = ({
                 size="sm"
                 onClick={() => handleExport('csv')}
                 disabled={isExporting}
+                className="text-xs sm:text-sm"
               >
                 {isExporting && exportProgress?.format === 'csv' ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
                 ) : (
-                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  <FileSpreadsheet className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                 )}
                 CSV
               </Button>
@@ -352,11 +354,12 @@ export const GlassReport: React.FC<GlassReportProps> = ({
                 size="sm"
                 onClick={() => handleExport('dxf')}
                 disabled={isExporting}
+                className="text-xs sm:text-sm"
               >
                 {isExporting && exportProgress?.format === 'dxf' ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" />
                 ) : (
-                  <FileCode className="h-4 w-4 mr-2" />
+                  <FileCode className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                 )}
                 DXF
               </Button>
@@ -389,8 +392,8 @@ export const GlassReport: React.FC<GlassReportProps> = ({
         </Alert>
       )}
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Summary Cards - Responsive Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>{t('glass.components', 'Components')}</CardDescription>

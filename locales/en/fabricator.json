@@ -1132,6 +1132,8 @@
   "engineering_bay": {
     "title": "Engineering Bay",
     "confirm_design": "Confirm Design & Proceed to Optimization",
+    "back_to_measuring": "Back to Measuring",
+    "save_and_next": "Save & Next Pose",
     "3d_engine_mode": "3D Engine Mode",
     "standard_3d": "Standard 3D",
     "pro_3d": "Pro 3D",
@@ -1147,6 +1149,49 @@
     "live_digital_twin": "Live Digital Twin (Apex Engine v6.0)",
     "loading_3d": "Loading 3D Preview...",
     "bill_of_materials": "Real-time Bill of Materials",
+    "bom_precision_note": "Maalem-grade precision - All components from unit preset",
+    "bom_frame": "Frame Profiles",
+    "bom_sash": "Sash Profiles",
+    "bom_structural": "Structural Profiles",
+    "bom_glazing": "Glazing Profiles",
+    "bom_accessory": "Accessory Profiles",
+    "bom_other": "Other Components",
+    "bom_glass": "Glass & Glazing",
+    "bom_hardware": "Hardware",
+    "bom_summary": "Unit Summary",
+    "glass_sash": "Sash",
+    "total_glass_area": "Total Glass Area",
+    "total_glass_weight": "Total Glass Weight",
+    "total_material_cost": "Total Material Cost",
+    "total_profile_weight": "Total Profile Weight",
+    "total_unit_weight": "Total Unit Weight",
+    "unit_dimensions": "Dimensions",
+    "system_pack": "System Pack",
+    "flat_number": "Flat",
+    "floor": "Floor",
+    "not_specified": "Not specified",
+    "currency": "EGP",
+    "verification": {
+      "verified": "Verified against system pack",
+      "not_verified": "Not verified",
+      "missing": "Missing:",
+      "mismatch": "Mismatch:",
+      "profile_not_found": "Profile not found in system pack"
+    },
+    "specs": {
+      "width": "width",
+      "height": "height",
+      "costPerMeter": "costPerMeter",
+      "weightPerMeter": "weightPerMeter"
+    },
+    "units": {
+      "mm": "mm",
+      "kg": "kg",
+      "m2": "m²",
+      "quantity": "x",
+      "meters": "m",
+      "bars": "bars"
+    },
     "no_project_data": "No Project Data",
     "complete_measurement": "Please complete the measurement phase first to create a project."
   },
@@ -1209,7 +1254,8 @@
     "section_view": "Section View",
     "issues": "{count} Issues",
     "explode": "Explode",
-    "section_label": "Section: {position}mm"
+    "section_label": "Section: {position}mm",
+    "generating_model": "Generating 3D model..."
   },
   "optimization_equalizer": {
     "title": "Optimization Strategy Equalizer",
