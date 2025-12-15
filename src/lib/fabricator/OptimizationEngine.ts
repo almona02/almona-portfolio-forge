@@ -1,22 +1,36 @@
 /**
- * Simplified Optimization Engine - Phase 1: Foundational Precision
+ * Simplified Optimization Engine - Phase 2: University-Grade Precision
  * 
  * This is the ENGINE that saves the business.
  * No complex algorithms, no AI, just math that works.
  * 
+ * Enhanced to support all 25+ profile roles with comprehensive type safety.
+ * Maintains backward compatibility with legacy role names.
+ * 
  * Focus: Achieve 99.8% accuracy through micron-level precision.
+ * 
+ * @version 2.0.0
  */
 
+import type { Profile } from '@/types/fabricator';
 import { micronEngine } from './MicronEngine';
 
 /**
- * Cut definition
+ * Cut definition with comprehensive role support
+ * 
+ * Supports all 25+ profile roles from Profile['profileRole'] type.
+ * Legacy role names are maintained for backward compatibility.
  */
 export interface Cut {
   id: string;
   label: string;
   plannedLength: number; // mm - Original design length
-  role: 'frame' | 'sash' | 'mullion' | 'transom' | 'bead' | 'screen_sash';
+  /** 
+   * Profile role - supports all 25+ roles from Profile['profileRole']
+   * Legacy roles ('frame', 'sash', 'mullion', 'transom', 'bead', 'screen_sash') 
+   * are maintained for backward compatibility
+   */
+  role: Profile['profileRole'] | 'frame' | 'sash' | 'mullion' | 'transom' | 'bead' | 'screen_sash';
   profileId: string;
   quantity: number;
 }
@@ -75,12 +89,18 @@ export class SimplifiedOptimizationEngine {
     const correctedCuts = cuts.map(cut => {
       let correctedLength = cut.plannedLength;
 
-      // Apply transom milling if needed
-      if (cut.role === 'transom' && systemPackId) {
-        correctedLength = this.micronEngine.calculateTransomMillingLength(
-          cut.plannedLength,
-          systemPackId
-        );
+      // Apply role-specific corrections
+      if (systemPackId) {
+        // Transom milling for transom profiles
+        if (cut.role === 'transom') {
+          correctedLength = this.micronEngine.calculateTransomMillingLength(
+            cut.plannedLength,
+            systemPackId
+          );
+        }
+        // Note: Other role-specific corrections (e.g., glazing bead deductions)
+        // are already applied in UnitProfileGatherer via cutting formulas
+        // This engine focuses on manufacturing corrections (milling, kerf, etc.)
       }
 
       return {

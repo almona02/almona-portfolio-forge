@@ -102,6 +102,33 @@ export default defineConfig(({ mode }) => {
                 networkTimeoutSeconds: 10,
               },
             },
+            // Cache JS chunks aggressively
+            {
+              urlPattern: /\.(?:js|mjs)$/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'js-chunks',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+            // Cache CSS files
+            {
+              urlPattern: /\.(?:css)$/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'css-files',
+                expiration: {
+                  maxEntries: 30,
+                  maxAgeSeconds: 7 * 24 * 60 * 60, // 7 days
+                },
+              },
+            },
             {
               urlPattern: /\.(?:png|jpg|jpeg|webp|gif)$/,
               handler: 'CacheFirst',
@@ -295,29 +322,115 @@ export default defineConfig(({ mode }) => {
           assetFileNames: `assets/[name]-[hash].[ext]`,
           // Refined: keep pure engines split; put all React-touching deps together
           manualChunks: (id) => {
-            // Exclude app code
+            // Exclude app code (let Vite handle app code splitting)
             if (id.includes('/src/') || id.includes('\\src\\')) {
               return undefined;
             }
 
-            // Pure, non-React engines (lazy)
-            if (id.includes('hls.js')) {
-              return 'video-engine';
-            }
-            if (id.includes('maplibre-gl') || id.includes('mapbox-gl')) {
-              return 'map-engine';
-            }
-            if (id.includes('node_modules/three/') && !id.includes('postprocessing')) {
+            // === HEAVY ENGINES (Separate chunks) ===
+            
+            // Three.js ecosystem (3D rendering)
+            if (id.includes('node_modules/three/')) {
+              if (id.includes('postprocessing')) {
+                return 'three-postprocessing';
+              }
+              if (id.includes('@react-three/')) {
+                return 'react-three';
+              }
               return 'three-engine';
             }
+            
+            // Physics engine
             if (id.includes('node_modules/ammo.js/')) {
               return 'physics-engine';
             }
-
-            // Everything else (React + wrappers + utilities)
-            if (id.includes('node_modules')) {
-              return 'react-vendor';
+            
+            // Video processing
+            if (id.includes('hls.js')) {
+              return 'video-engine';
             }
+            
+            // Maps
+            if (id.includes('maplibre-gl') || id.includes('mapbox-gl')) {
+              return 'map-engine';
+            }
+            
+            // === AI/ML LIBRARIES (Separate chunks) ===
+            
+            // TensorFlow.js (very heavy)
+            if (id.includes('@tensorflow/tfjs')) {
+              return 'ai-tensorflow';
+            }
+            
+            // Google Generative AI
+            if (id.includes('@google/generative-ai')) {
+              return 'ai-google';
+            }
+            
+            // Hugging Face
+            if (id.includes('@huggingface/inference')) {
+              return 'ai-huggingface';
+            }
+            
+            // === DOCUMENT PROCESSING (Separate chunks) ===
+            
+            // Excel processing
+            if (id.includes('exceljs')) {
+              return 'doc-excel';
+            }
+            
+            // PDF processing
+            if (id.includes('pdfjs-dist') || id.includes('pdf-lib')) {
+              return 'doc-pdf';
+            }
+            
+            // === UI LIBRARIES (Grouped by usage) ===
+            
+            // Chart libraries (heavy)
+            if (id.includes('recharts') || id.includes('d3') || id.includes('chart.js')) {
+              return 'ui-charts';
+            }
+            
+            // Radix UI components (group together)
+            if (id.includes('@radix-ui/')) {
+              return 'ui-radix';
+            }
+            
+            // === UTILITIES (Grouped) ===
+            
+            // Date libraries
+            if (id.includes('date-fns') || id.includes('dayjs') || id.includes('moment')) {
+              return 'utils-date';
+            }
+            
+            // Form libraries
+            if (id.includes('react-hook-form') || id.includes('formik')) {
+              return 'utils-forms';
+            }
+            
+            // === REACT ECOSYSTEM (Core vendor) ===
+            
+            // React core
+            if (id.includes('react/') || id.includes('react-dom/')) {
+              return 'react-core';
+            }
+            
+            // React Router
+            if (id.includes('react-router')) {
+              return 'react-router';
+            }
+            
+            // React Query
+            if (id.includes('@tanstack/react-query')) {
+              return 'react-query';
+            }
+            
+            // === EVERYTHING ELSE (Fallback vendor) ===
+            if (id.includes('node_modules')) {
+              return 'vendor-misc';
+            }
+            
+            return undefined;
           },
 
         },

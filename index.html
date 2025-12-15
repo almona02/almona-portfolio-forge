@@ -130,6 +130,11 @@
     <!-- Prefetch likely next pages -->
     <link rel="prefetch" href="/fabricator/projects" as="document">
     <link rel="prefetch" href="/products" as="document">
+    
+    <!-- Performance: Resource Hints for Critical 3D Assets -->
+    <link rel="preload" href="/src/lib/3d/windowGeometry.ts" as="script" crossorigin>
+    <link rel="preload" href="/src/components/fabricator/EngineeringBay.tsx" as="script" crossorigin>
+    <link rel="modulepreload" href="/src/lib/ai/algorithmPredictor.ts" crossorigin>
   </head>
 
   <body>
