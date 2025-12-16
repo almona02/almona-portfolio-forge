@@ -81,37 +81,51 @@ class CriticalErrorBoundary extends React.Component<
 }
 
 // Initialize polyfills and performance monitoring
+// CRITICAL: Only initialize what's needed for initial render
 try {
+  // Critical: Initialize polyfills synchronously (needed for app to work)
   initializePolyfills();
+  
+  // Critical: Initialize performance monitoring (lightweight)
   initializePerformanceMonitoring();
   
-  // Initialize critical CSS
-  import('./lib/criticalCSS').then(({ initializeCriticalCSS }) => {
-    initializeCriticalCSS();
-  });
-  
-  // Preload critical Fabricator chunks for faster navigation
-  // This runs after initial render to avoid blocking
-  setTimeout(() => {
+  // NON-CRITICAL: Defer everything else to avoid blocking initial render
+  // Use requestIdleCallback for better performance
+  const deferNonCritical = () => {
+    // Initialize critical CSS (deferred)
+    import('./lib/criticalCSS').then(({ initializeCriticalCSS }) => {
+      initializeCriticalCSS();
+    }).catch(() => {
+      // Non-critical, fail silently
+    });
+    
+    // Preload critical Fabricator chunks (deferred)
     import('./lib/quickPerformance').then(({ quickPerformanceWins }) => {
       quickPerformanceWins.preloadCriticalChunks();
-    }).catch((err) => {
-      // Non-critical, just log in dev
-      if (import.meta.env.DEV) {
-        console.debug('[Performance] Chunk preloading not available:', err);
-      }
+    }).catch(() => {
+      // Non-critical, fail silently
     });
-  }, 100);
+    
+    // Initialize Web Vitals monitoring (deferred)
+    if (import.meta.env.PROD) {
+      import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }) => {
+        onCLS(() => {});
+        onINP(() => {});
+        onFCP(() => {});
+        onLCP(() => {}); // Removed console.log for production
+        onTTFB(() => {});
+      }).catch(() => {
+        // Non-critical, fail silently
+      });
+    }
+  };
   
-  // Initialize Web Vitals monitoring
-  if (import.meta.env.PROD) {
-    import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }) => {
-      onCLS(() => {});
-      onINP(() => {});
-      onFCP(() => {});
-      onLCP(console.log);
-      onTTFB(() => {});
-    });
+  // Defer non-critical initialization using requestIdleCallback or setTimeout
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(deferNonCritical, { timeout: 2000 });
+  } else {
+    // Fallback for browsers without requestIdleCallback
+    setTimeout(deferNonCritical, 100);
   }
 } catch (error) {
   console.error('Failed to initialize polyfills or performance monitoring:', error);

@@ -437,7 +437,41 @@ export default defineConfig(({ mode }) => {
               return 'react-query';
             }
             
-            // === EVERYTHING ELSE (Fallback vendor) ===
+            // === ANIMATION LIBRARIES (Separate chunks) ===
+            if (id.includes('framer-motion')) {
+              return 'ui-animations';
+            }
+            
+            // === THEME & STYLING (Separate chunks) ===
+            if (id.includes('next-themes')) {
+              return 'ui-theme';
+            }
+            
+            // === UTILITY LIBRARIES (Grouped) ===
+            if (id.includes('clsx') || id.includes('class-variance-authority') || id.includes('tailwind-merge')) {
+              return 'utils-styling';
+            }
+            
+            if (id.includes('zod') || id.includes('yup')) {
+              return 'utils-validation';
+            }
+            
+            // === I18N & LOCALIZATION ===
+            if (id.includes('i18next') || id.includes('react-i18next')) {
+              return 'utils-i18n';
+            }
+            
+            // === ANALYTICS & MONITORING (Defer these) ===
+            if (id.includes('@vercel/analytics') || id.includes('@vercel/speed-insights')) {
+              return 'analytics';
+            }
+            
+            // === HELMET & SEO ===
+            if (id.includes('react-helmet')) {
+              return 'utils-seo';
+            }
+            
+            // === EVERYTHING ELSE (Fallback vendor - should be much smaller now) ===
             if (id.includes('node_modules')) {
               return 'vendor-misc';
             }
