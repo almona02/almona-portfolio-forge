@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/shared/ui/ui/sonner.tsx";
 import { TooltipProvider } from "@/shared/ui/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, memo } from "react";
 import { ThemeProvider } from "next-themes";
 import SEO from "./components/SEO";
 import { PageLoadingWrapper } from "./components/ui/PageLoadingWrapper";
@@ -158,7 +158,9 @@ const GlobalDynamicImportGuard = () => {
   return null;
 };
 
-const App = () => (
+// Memoize App component to prevent unnecessary re-renders
+const App = memo(() => {
+  return (
   <ChunkLoadingErrorBoundary>
     <ErrorBoundary>
       <PrestigeLoader>
@@ -182,7 +184,12 @@ const App = () => (
                     >
                       <GlobalDynamicImportGuard />
                       <RoutePrefetchingHelper />
-                      {isProd && <Analytics />}
+                      {/* Defer analytics to avoid blocking initial render */}
+                      {isProd && (
+                        <Suspense fallback={null}>
+                          <Analytics />
+                        </Suspense>
+                      )}
                       <RegionAwareLayout showRegionalFeatures={true} enableRegionSwitching={true}>
                         <Routes>
                   {/* Core pages */}
@@ -443,6 +450,9 @@ const App = () => (
     </ErrorBoundary>
     {isProd && <SpeedInsights />}
   </ChunkLoadingErrorBoundary>
-);
+  );
+});
+
+App.displayName = 'App';
 
 export default App;
