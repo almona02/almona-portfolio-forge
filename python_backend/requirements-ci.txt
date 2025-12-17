@@ -4,11 +4,12 @@
 -r requirements-production.txt
 
 # CPU-only ML to avoid huge CUDA wheels in CI
-# CRITICAL SECURITY FIX: Upgraded from 2.3.1 to 2.8.0 to fix CVE-2025-32434 (RCE vulnerability)
+# CRITICAL SECURITY FIX: Upgraded from 2.3.1 to 2.6.0 to fix CVE-2025-32434 (RCE vulnerability)
 # See: https://github.com/advisories/GHSA-53q9-r3pm-6pq6
+# Note: torchvision 0.21.0+cpu requires torch==2.6.0, so we match that requirement
 # Note: +cpu local version label requires == operator, not >=
 --extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.8.0+cpu
+torch==2.6.0+cpu
 torchvision==0.21.0+cpu
 
 # Testing
