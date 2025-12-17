@@ -135,6 +135,7 @@ app.add_middleware(
 # CORS middleware (production domains)
 app.add_middleware(
     CORSMiddleware,
+    allow_origin_regex=r"https://.*\.vercel\.app",  # Allow all Vercel preview domains
     allow_origins=[
         "http://localhost:3000",  # Development
         "http://localhost:3001",  # Development
@@ -147,8 +148,6 @@ app.add_middleware(
         "https://www.almona02.com",  # Production domain
         "https://almona-portfolio-forge.vercel.app",  # Vercel production
         "https://almona-portfolio-forge-git-main.vercel.app",  # Vercel main branch
-        # Allow all Vercel preview deployments (for CI/CD and PR previews)
-        "https://*.vercel.app",  # All Vercel preview domains
     ],
     allow_credentials=True,
     allow_methods=["*"],
