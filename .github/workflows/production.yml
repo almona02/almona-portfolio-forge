@@ -239,6 +239,11 @@ jobs:
     environment:
       name: production
       url: https://www.almona02.com
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout code
