@@ -50,9 +50,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && find /usr/lib/python3.11 -name "*.pyc" -delete \
     && find /usr/lib/python3.11 -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
-# 2. Install ONLY production dependencies (no cache, no deps check for speed)
+# 2. Install ONLY production dependencies (no cache, but install deps for uvicorn)
 COPY requirements-prod.txt .
-RUN pip install --no-cache-dir --no-deps -r requirements-prod.txt \
+RUN pip install --no-cache-dir -r requirements-prod.txt \
     # AGGRESSIVE CLEANUP - Remove pip cache immediately
     && pip cache purge \
     && rm -rf /root/.cache/pip \
