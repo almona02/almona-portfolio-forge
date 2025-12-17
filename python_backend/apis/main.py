@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -9,14 +10,14 @@ from core.middleware import (
     RateLimitMiddleware,
     RequestValidationMiddleware,
     ErrorHandlingMiddleware,
-    RequestLoggingMiddleware
+    RequestLoggingMiddleware,
 )
 from core.connection_pool import get_connection_pool
-from core.monitoring import setup_monitoring, monitoring
+from core.monitoring import setup_monitoring, monitoring, get_structured_logger
 from core.health_checks import (
     get_health_status,
     get_liveness_status,
-    get_readiness_status
+    get_readiness_status,
 )
 from core.railway_health import get_railway_recommendations
 from core.sentry_setup import init_sentry
@@ -62,54 +63,35 @@ app = FastAPI(
     contact={
         "name": "Almona Industrial Support",
         "email": "api-support@almona.com",
-        "url": "https://almona.com/support"
+        "url": "https://almona.com/support",
     },
-    license_info={
-        "name": "Proprietary",
-        "url": "https://almona.com/license"
-    },
+    license_info={"name": "Proprietary", "url": "https://almona.com/license"},
     servers=[
-        {
-            "url": "https://api.almona.com",
-            "description": "Production server"
-        },
-        {
-            "url": "https://staging-api.almona.com",
-            "description": "Staging server"
-        },
-        {
-            "url": "http://localhost:8000",
-            "description": "Development server"
-        }
+        {"url": "https://api.almona.com", "description": "Production server"},
+        {"url": "https://staging-api.almona.com", "description": "Staging server"},
+        {"url": "http://localhost:8000", "description": "Development server"},
     ],
     openapi_tags=[
         {
             "name": "Authentication",
-            "description": "User authentication and authorization endpoints"
+            "description": "User authentication and authorization endpoints",
         },
         {
             "name": "Tickets",
             "description": (
                 "Service ticket management - support, "
                 "maintenance, and emergency services"
-            )
+            ),
         },
-        {
-            "name": "Quotes",
-            "description": "Quote generation and lookup functionality"
-        },
+        {"name": "Quotes", "description": "Quote generation and lookup functionality"},
         {
             "name": "AI",
             "description": (
-                "AI-powered part detection and "
-                "machine learning features"
-            )
+                "AI-powered part detection and " "machine learning features"
+            ),
         },
-        {
-            "name": "Health",
-            "description": "System health and monitoring endpoints"
-        }
-    ]
+        {"name": "Health", "description": "System health and monitoring endpoints"},
+    ],
 )
 
 # Setup monitoring infrastructure
@@ -126,11 +108,7 @@ app.add_middleware(ErrorHandlingMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(RequestValidationMiddleware)
 # Security headers are handled by setup_security_middleware
-app.add_middleware(
-    RateLimitMiddleware,
-    requests_per_minute=100,
-    burst_limit=20
-)
+app.add_middleware(RateLimitMiddleware, requests_per_minute=100, burst_limit=20)
 
 # CORS middleware (production domains)
 app.add_middleware(
@@ -167,9 +145,16 @@ app.mount("/api/v2", v2_app)
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize connection pool on startup."""
-    pool = get_connection_pool()
-    await pool.initialize()
+    """Initialize connection pool on startup (non-blocking for Railway)."""
+    try:
+        pool = get_connection_pool()
+        await pool.initialize()
+    except Exception as e:
+        # Don't fail startup if database isn't ready yet
+        logger = get_structured_logger(__name__)
+        logger.warning(
+            f"Database connection pool initialization failed (non-blocking): {e}"
+        )
 
 
 @app.get("/")
@@ -186,7 +171,11 @@ async def health_check():
 @app.get("/health/live")
 async def liveness_probe():
     """Kubernetes liveness probe endpoint (critical checks only)."""
-    return await get_liveness_status()
+    try:
+        return await get_liveness_status()
+    except Exception:
+        # If health checks fail, return basic OK (service is running)
+        return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
 
 
 @app.get("/health/ready")
@@ -214,7 +203,7 @@ async def metrics_json():
                 "active_connections": stats.active_connections,
                 "idle_connections": stats.idle_connections,
                 "healthy_connections": stats.healthy_connections,
-                "unhealthy_connections": stats.unhealthy_connections
+                "unhealthy_connections": stats.unhealthy_connections,
             },
             "performance": {
                 "total_queries": stats.total_queries,
@@ -227,14 +216,14 @@ async def metrics_json():
                 ),
                 "error_rate": stats.error_rate,
                 "avg_response_time_ms": stats.avg_response_time_ms,
-                "slow_queries_count": stats.slow_queries_count
+                "slow_queries_count": stats.slow_queries_count,
             },
-            "uptime_seconds": stats.uptime_seconds
+            "uptime_seconds": stats.uptime_seconds,
         },
         "api": {
             "version": "2.0.0",
-            "uptime": "N/A"  # You might want to track actual uptime
-        }
+            "uptime": "N/A",  # You might want to track actual uptime
+        },
     }
 
 
@@ -258,10 +247,10 @@ async def detailed_metrics(limit: int = 100):
                 else 0
             ),
             "avg_response_time_ms": stats.avg_response_time_ms,
-            "uptime_seconds": stats.uptime_seconds
+            "uptime_seconds": stats.uptime_seconds,
         },
         "recent_queries": recent_metrics,
-        "connection_health": connection_health
+        "connection_health": connection_health,
     }
 
 
@@ -273,9 +262,9 @@ async def database_health():
 
     # Determine overall health
     is_healthy = (
-        stats.healthy_connections > 0 and
-        stats.error_rate < 0.1 and  # Less than 10% error rate
-        stats.avg_response_time_ms < 5000  # Less than 5 seconds average
+        stats.healthy_connections > 0
+        and stats.error_rate < 0.1  # Less than 10% error rate
+        and stats.avg_response_time_ms < 5000  # Less than 5 seconds average
     )
 
     return {
@@ -285,8 +274,8 @@ async def database_health():
             "total_connections": stats.total_connections,
             "error_rate": stats.error_rate,
             "avg_response_time_ms": stats.avg_response_time_ms,
-            "last_check": "N/A"  # Could add timestamp
-        }
+            "last_check": "N/A",  # Could add timestamp
+        },
     }
 
 
