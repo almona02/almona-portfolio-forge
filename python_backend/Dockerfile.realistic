@@ -78,6 +78,8 @@ COPY ai_services/ ai_services/
 RUN mkdir -p templates/
 # Copy templates if they exist in build context
 COPY templates/ templates/
+# Copy startup script
+COPY start.sh start.sh
 
 # 4. Remove cache, temporary files, and Python artifacts
 RUN find /app -name "*.pyc" -delete \
@@ -89,7 +91,8 @@ RUN find /app -name "*.pyc" -delete \
 
 # 5. Create non-root user for security
 RUN useradd -m -u 1000 -s /bin/bash appuser \
-    && chown -R appuser:appuser /app
+    && chown -R appuser:appuser /app \
+    && chmod +x /app/start.sh
 
 USER appuser
 
