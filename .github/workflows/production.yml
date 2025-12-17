@@ -259,6 +259,7 @@ jobs:
           vercel-args: "--prod"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           github-deployment: true
+          github-comment: false
         env:
           # Pass build-time environment variables
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
