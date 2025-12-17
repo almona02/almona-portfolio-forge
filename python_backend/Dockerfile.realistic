@@ -73,10 +73,11 @@ COPY core/ core/
 COPY services/ services/
 COPY models/ models/
 COPY ai_services/ ai_services/
-# Copy templates directory (ensure it exists, Railway should have it in build context)
-# If templates/ doesn't exist in build context, create empty directory
+# Copy templates directory (create directory first, then copy if exists)
+# Railway build context should include python_backend/ directory
 RUN mkdir -p templates/
-COPY templates/ templates/
+# Use wildcard to handle missing directory gracefully
+COPY templates/*.html templates/ 2>/dev/null || true
 
 # 4. Remove cache, temporary files, and Python artifacts
 RUN find /app -name "*.pyc" -delete \
