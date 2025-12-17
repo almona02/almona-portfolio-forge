@@ -73,9 +73,9 @@ COPY core/ core/
 COPY services/ services/
 COPY models/ models/
 COPY ai_services/ ai_services/
-# Copy templates directory (ensure it exists)
+# Copy templates directory (create if missing, copy if exists)
 RUN mkdir -p templates/
-COPY templates/*.html templates/ 2>/dev/null || true
+COPY templates/ templates/ || echo "templates/ not found in build context, using empty directory"
 
 # 4. Remove cache, temporary files, and Python artifacts
 RUN find /app -name "*.pyc" -delete \
