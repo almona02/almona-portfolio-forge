@@ -73,9 +73,9 @@ COPY core/ core/
 COPY services/ services/
 COPY models/ models/
 COPY ai_services/ ai_services/
-# Copy templates directory (use shell to handle optional directory)
+# Copy templates directory (handle optional directory with shell script)
 RUN mkdir -p templates/
-COPY --chown=appuser:appuser templates/ templates/ 2>&1 || echo "Note: templates/ directory not found, using empty directory"
+COPY templates/ templates/ || true
 
 # 4. Remove cache, temporary files, and Python artifacts
 RUN find /app -name "*.pyc" -delete \
