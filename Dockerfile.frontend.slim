@@ -1,0 +1,93 @@
+# Optimized multi-stage frontend Dockerfile - TARGET: 45MB
+# CRITICAL: Sharp optimization with Alpine-specific flags
+
+# =========== STAGE 1: DEPENDENCIES (THROWN AWAY) ===========
+FROM node:20.19.0-alpine AS deps
+
+# Install SHARP build dependencies (minimal)
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    vips-dev \
+    libc6-compat \
+    && ln -sf python3 /usr/bin/python
+
+WORKDIR /app
+
+# Copy package files for caching
+COPY package*.json ./
+COPY vite.config.ts ./
+COPY tsconfig*.json ./
+
+# CRITICAL: Configure Sharp for Alpine Linux BEFORE install
+# Set environment variables for Sharp binary host
+ENV SHARP_IGNORE_GLOBAL_LIBVIPS=1
+ENV npm_config_sharp_binary_host="https://github.com/lovell/sharp/releases/download"
+ENV npm_config_sharp_libvips_binary_host="https://github.com/lovell/sharp-libvips/releases/download"
+
+# Install sharp FIRST with platform-specific flags for Alpine/musl
+RUN npm install --platform=linuxmusl --arch=x64 sharp --no-save
+
+# Install production dependencies ONLY
+RUN npm ci --omit=dev --no-audit --no-fund --prefer-offline
+
+# =========== STAGE 2: BUILDER (THROWN AWAY) ===========
+FROM node:20.19.0-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files (needed for npm run build)
+COPY package*.json ./
+COPY vite.config.ts ./
+COPY tsconfig*.json ./
+
+# Install ALL dependencies (including dev) for building
+# Dev dependencies are needed for vite build
+RUN npm ci --no-audit --no-fund --prefer-offline
+
+# Copy source files
+COPY public/ public/
+COPY src/ src/
+COPY index.html .
+COPY .env.example .
+COPY *.config.* ./
+
+# Build with production optimizations
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+RUN npm run build
+
+# =========== STAGE 3: PRODUCTION (45MB FINAL IMAGE) ===========
+FROM nginx:alpine
+
+# Set Egyptian timezone
+ENV TZ=Africa/Cairo
+
+# Remove default nginx content
+RUN rm -rf /usr/share/nginx/html/* \
+    && rm -rf /usr/share/nginx/doc/* \
+    && rm -rf /var/cache/apk/*
+
+# Copy built files from builder
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy minimal nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Create non-root user
+RUN adduser -D -u 1000 appuser \
+    && chown -R appuser:appuser /var/cache/nginx \
+    && chown -R appuser:appuser /usr/share/nginx/html \
+    && touch /var/run/nginx.pid \
+    && chown -R appuser:appuser /var/run/nginx.pid
+
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:80 || exit 1
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+

@@ -1,0 +1,100 @@
+# python_backend/Dockerfile.realistic
+# TARGET: 400-500MB Backend Container
+# Strategy: Single-stage with aggressive cleanup
+
+FROM python:3.11-slim
+
+# Metadata
+LABEL maintainer="Almona Industrial Solutions"
+LABEL description="Almona Backend - Egyptian Industrial AI Platform (Realistic Size)"
+
+# Egyptian configuration (ESSENTIAL FOR MINISTER)
+ENV LANG=ar_EG.UTF-8
+ENV LC_ALL=ar_EG.UTF-8
+ENV TZ=Africa/Cairo
+ENV PYTHONPATH=/app
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# 1. Install MINIMAL system packages ONLY (essential runtime)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # TensorFlow CPU runtime
+    libgomp1 \
+    libatomic1 \
+    # OpenCV runtime (minimal)
+    libgl1 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libgthread-2.0-0 \
+    # Tesseract OCR (Arabic + English only)
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    tesseract-ocr-ara \
+    # Basic fonts for Arabic
+    fonts-dejavu-core \
+    # Basic utilities
+    curl \
+    && locale-gen ar_EG.UTF-8 \
+    && update-locale LANG=ar_EG.UTF-8 \
+    # AGGRESSIVE CLEANUP
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    # Remove unnecessary locales (keep only Arabic and English)
+    && find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en*' ! -name 'ar*' -exec rm -rf {} + 2>/dev/null || true \
+    # Remove man pages and docs
+    && rm -rf /usr/share/man/* /usr/share/doc/* /usr/share/info/* \
+    # Remove unnecessary Python files
+    && find /usr/lib/python3.11 -name "*.pyc" -delete \
+    && find /usr/lib/python3.11 -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+
+# 2. Install ONLY production dependencies (no cache, no deps check for speed)
+COPY requirements-prod.txt .
+RUN pip install --no-cache-dir --no-deps -r requirements-prod.txt \
+    # AGGRESSIVE CLEANUP - Remove pip cache immediately
+    && pip cache purge \
+    && rm -rf /root/.cache/pip \
+    && rm -rf /tmp/pip-* \
+    # Remove Python bytecode and cache
+    && find /usr/local/lib/python3.11/site-packages -name "*.pyc" -delete \
+    && find /usr/local/lib/python3.11/site-packages -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true \
+    && find /usr/local/lib/python3.11/site-packages -name "*.pyo" -delete \
+    && find /usr/local/lib/python3.11/site-packages -name "*.pyd" -delete \
+    # Remove test files from packages
+    && find /usr/local/lib/python3.11/site-packages -type d -name "tests" -exec rm -rf {} + 2>/dev/null || true \
+    && find /usr/local/lib/python3.11/site-packages -type d -name "test" -exec rm -rf {} + 2>/dev/null || true \
+    && find /usr/local/lib/python3.11/site-packages -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+
+# 3. Copy ONLY essential application code
+COPY apis/ apis/
+COPY core/ core/
+COPY services/ services/
+COPY models/ models/
+COPY ai_services/ ai_services/
+COPY templates/ templates/
+
+# 4. Remove cache, temporary files, and Python artifacts
+RUN find /app -name "*.pyc" -delete \
+    && find /app -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true \
+    && find /app -name "*.pyo" -delete \
+    && find /app -name "*.pyd" -delete \
+    && rm -rf /tmp/* /var/tmp/* \
+    && rm -rf /root/.cache/*
+
+# 5. Create non-root user for security
+RUN useradd -m -u 1000 -s /bin/bash appuser \
+    && chown -R appuser:appuser /app
+
+USER appuser
+
+# Health check (Egyptian optimized - no curl dependency)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5).read()" || exit 1
+
+EXPOSE 8000
+
+# Start command with production settings
+CMD ["uvicorn", "apis.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+

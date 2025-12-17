@@ -1,0 +1,65 @@
+# docker-compose.prod.yml
+# Production deployment configuration for Almona Industrial Platform
+# Week 0 Day 5: Production-ready docker-compose
+
+version: '3.8'
+
+services:
+  backend:
+    image: almona-backend:latest
+    container_name: almona-backend-prod
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8002}:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - TZ=Africa/Cairo
+      - LANG=ar_EG.UTF-8
+      - LC_ALL=ar_EG.UTF-8
+      - PYTHONPATH=/app
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5).read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - almona-network
+    depends_on:
+      - redis
+
+  frontend:
+    image: almona-frontend:latest
+    container_name: almona-frontend-prod
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-80}:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - almona-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: almona-redis-prod
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - almona-network
+    command: redis-server --appendonly yes
+
+networks:
+  almona-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+    driver: local
+

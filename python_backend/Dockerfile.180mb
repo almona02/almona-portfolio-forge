@@ -1,0 +1,67 @@
+# TARGET: 500MB Backend Container (Realistic with TensorFlow)
+FROM python:3.11-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Copy requirements (OPTIMIZED - removed ortools/pandas)
+COPY requirements-optimized.txt .
+
+# Install to user directory with NO cache
+RUN pip install --user --no-warn-script-location --no-cache-dir -r requirements-optimized.txt
+
+# =========== RUNTIME ===========
+FROM python:3.11-slim
+
+# Egyptian configuration (FIXED: Use available locale)
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV TZ=Africa/Cairo
+ENV PYTHONPATH=/app
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Install MINIMAL runtime dependencies (FIXED: No Arabic locale)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    fonts-dejavu \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Copy ONLY Python packages from builder
+COPY --from=builder /root/.local /root/.local
+
+# ✅ CRITICAL FIX: Add user packages to Python path for imports
+ENV PATH=/root/.local/bin:$PATH
+ENV PYTHONPATH=/root/.local/lib/python3.11/site-packages:$PYTHONPATH
+
+# Copy application code
+COPY apis/ apis/
+COPY core/ core/
+COPY services/ services/
+COPY models/ models/
+COPY ai_services/ ai_services/
+
+# Clean cache and pyc files
+RUN find /app -type f -name "*.pyc" -delete \
+    && find /app -type d -name "__pycache__" -delete \
+    && rm -rf /root/.cache/pip \
+    && rm -rf /tmp/* /var/tmp/*
+
+# Non-root user
+RUN useradd -m -u 1000 -s /bin/bash appuser \
+    && chown -R appuser:appuser /app \
+    && chown -R appuser:appuser /root/.local
+
+# Set PYTHONPATH for appuser (packages are in /root/.local)
+ENV PYTHONPATH=/root/.local/lib/python3.11/site-packages:$PYTHONPATH
+
+USER appuser
+
+EXPOSE 8000
+CMD ["uvicorn", "apis.main:app", "--host", "0.0.0.0", "--port", "8000"]
