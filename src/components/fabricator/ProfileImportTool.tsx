@@ -451,7 +451,12 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
         // Dynamic import - will fail gracefully if pdfjs-dist is not installed
         pdfjsLib = await import('pdfjs-dist' as any);
         if (pdfjsLib && pdfjsLib.getDocument) {
-          pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version || '3.11.174'}/pdf.worker.min.js`;
+          // Bundle worker locally for production (offline PWA support)
+          // Use CDN only in development
+          const pdfWorkerPath = import.meta.env.PROD
+            ? new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).href
+            : `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version || '3.11.174'}/pdf.worker.min.js`;
+          pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerPath;
         } else {
           throw new Error('PDF.js not properly loaded');
         }

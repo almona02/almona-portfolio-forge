@@ -1,0 +1,39 @@
+# Dockerfile.frontend.slim.fixed
+# TARGET: 250MB Frontend Container
+# Strategy: Minimal nginx, copy only built dist, no overhead
+
+FROM nginx:alpine
+
+# Set Egyptian timezone
+ENV TZ=Africa/Cairo
+
+# Remove ALL default nginx content immediately
+RUN rm -rf /usr/share/nginx/html/* \
+    && rm -rf /usr/share/nginx/doc/* \
+    && rm -rf /var/cache/apk/*
+
+# Copy ONLY your built dist (from local machine)
+# Note: Build locally first with: npm run build (sourcemap: false)
+COPY dist/ /usr/share/nginx/html/
+
+# Use pre-built nginx config (not generating in RUN to avoid layer bloat)
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Minimal user setup (single RUN to reduce layers)
+RUN addgroup -g 1000 -S appgroup && \
+    adduser -S -D -H -u 1000 -h /var/cache/nginx -s /sbin/nologin -G appgroup -g app appuser && \
+    chown -R appuser:appgroup /usr/share/nginx/html && \
+    chown -R appuser:appgroup /var/cache/nginx && \
+    touch /var/run/nginx.pid && \
+    chown appuser:appgroup /var/run/nginx.pid
+
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:80 || exit 1
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+

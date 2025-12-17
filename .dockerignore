@@ -8,7 +8,6 @@ python_backend/venv
 python_backend/env
 
 # Build outputs
-dist
 build
 python_backend/build
 python_backend/dist

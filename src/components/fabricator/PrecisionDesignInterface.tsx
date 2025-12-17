@@ -2,6 +2,7 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { WindowUnit, WindowGrid, GridCell, Profile } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { generateComponentsFromGrid } from '@/algorithms/smartDraw';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { SimplifiedOptimizationEngine } from '@/lib/fabricator/OptimizationEngine';
 import { PricingEngine } from '@/lib/pricing/PricingEngine';
 import { cn } from '@/lib/utils';
@@ -205,10 +206,12 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     return project?.color || 'N/A';
   }, [project?.color]);
 
-  // Generate components from grid
+  // Generate components from grid (Gold Tier: with system pack integration)
   const components = useMemo(() => {
     if (!project || !grid) return [];
-    const result = generateComponentsFromGrid(project, grid, profiles, project.systemPackId || null);
+    const systemPackId = project.systemPackId || null;
+    const systemPack = systemPackId ? SYSTEM_PACKS.find(p => p.meta.id === systemPackId) || null : null;
+    const result = generateComponentsFromGrid(project, grid, profiles, systemPackId, systemPack);
     return result.components;
   }, [project, grid, profiles]);
 

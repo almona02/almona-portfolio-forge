@@ -1,6 +1,30 @@
-pytest
-requests
-pytest
-httpx
-respx
-pytest-asyncio
+# Development dependencies - includes production + dev tools
+# This file includes ALL dependencies needed for development and testing
+# DO NOT use this in production Docker images
+
+-r requirements-prod.txt  # Includes all production dependencies
+
+# Testing (DEVELOPMENT ONLY - NOT FOR PRODUCTION)
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-timeout==2.2.0
+pytest-mock==3.12.0
+locust==2.32.1
+respx==0.21.1
+psutil==5.9.6
+
+# Development Tools (DEVELOPMENT ONLY)
+black==24.10.0
+isort==5.12.0
+flake8==6.1.0
+mypy==1.7.1
+bandit==1.7.10
+pip-audit==2.10.0
+
+# ML Training (DEVELOPMENT ONLY - NOT FOR PRODUCTION)
+# These are for training models, not for running inference
+albumentations==1.4.18  # Only for data augmentation during training
+# torch and torchvision are NOT included - use only for model training/conversion
+
+# NOTE: For production inference, models should be converted to ONNX format
+# and run with onnxruntime (already in requirements-prod.txt)

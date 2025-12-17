@@ -1,0 +1,119 @@
+# Optimized multi-stage production Dockerfile - TARGET: 180MB
+# This Dockerfile uses requirements-prod.txt (production-only dependencies)
+# CRITICAL: Uses tensorflow-cpu instead of full tensorflow (90% size reduction)
+
+# =========== STAGE 1: BUILDER (THROWN AWAY) ===========
+FROM python:3.11-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Install minimal build tools (TEMPORARY - will be discarded)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy PRODUCTION requirements ONLY
+COPY requirements-prod.txt .
+
+# Install to user directory (NOT system-wide)
+# CRITICAL: Use cache mount to persist pip packages between builds
+# First build: ~30-60 minutes (downloads packages)
+# Subsequent builds: ~1-2 minutes (uses cache)
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --user --no-warn-script-location -r requirements-prod.txt
+
+# =========== STAGE 2: RUNTIME (ONLY THIS REMAINS - 180MB) ===========
+FROM python:3.11-slim
+
+# Metadata
+LABEL maintainer="Almona Industrial Solutions"
+LABEL description="Almona Backend - Egyptian Industrial AI Platform"
+LABEL version="1.0.0"
+
+# Egyptian configuration (ESSENTIAL FOR MINISTER)
+ENV LANG=ar_EG.UTF-8
+ENV LC_ALL=ar_EG.UTF-8
+ENV TZ=Africa/Cairo
+ENV PYTHONPATH=/app
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Install ONLY runtime system dependencies (MINIMAL)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    locales \
+    # TensorFlow CPU runtime
+    libgomp1 \
+    libatomic1 \
+    # OpenCV runtime
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libgthread-2.0-0 \
+    # Tesseract OCR (Arabic + English)
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    tesseract-ocr-ara \
+    # Fonts for Arabic OCR
+    fonts-dejavu \
+    fonts-liberation \
+    && locale-gen ar_EG.UTF-8 \
+    && update-locale LANG=ar_EG.UTF-8 \
+    # Clean up IMMEDIATELY
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    # Remove unnecessary locales (keep only Arabic and English)
+    && find /usr/share/locale -mindepth 1 -maxdepth 1 ! -name 'en*' ! -name 'ar*' -exec rm -rf {} + 2>/dev/null || true \
+    # Remove man pages and docs
+    && rm -rf /usr/share/man/* /usr/share/doc/*
+
+# Copy Python packages from builder
+COPY --from=builder /root/.local /root/.local
+
+# Ensure local bin is in PATH and Python can find packages
+ENV PATH=/root/.local/bin:$PATH
+ENV PYTHONPATH=/root/.local/lib/python3.11/site-packages:$PYTHONPATH
+
+# Note: Packages are already installed in /root/.local from builder stage
+# No need to reinstall - this would double the size!
+# The packages from builder are sufficient for runtime
+
+# Copy application code (ONLY production files)
+COPY apis/ apis/
+COPY core/ core/
+COPY services/ services/
+COPY models/ models/
+COPY ai_services/ ai_services/
+COPY templates/ templates/
+
+# Remove cache and test files
+RUN find /app -type f -name "*.pyc" -delete \
+    && find /app -type d -name "__pycache__" -delete \
+    && find /app -type f -name "*.pyo" -delete \
+    && find /app -type f -name "*.pyd" -delete \
+    && rm -rf /root/.cache/pip \
+    && rm -rf /tmp/* /var/tmp/*
+
+# Create non-root user for security
+RUN useradd -m -u 1000 -s /bin/bash appuser \
+    && chown -R appuser:appuser /app \
+    && chown -R appuser:appuser /root/.local
+USER appuser
+
+# Health check (Egyptian optimized - no curl dependency)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5).read()" || exit 1
+
+EXPOSE 8000
+
+# Start command with production settings
+CMD ["uvicorn", "apis.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+

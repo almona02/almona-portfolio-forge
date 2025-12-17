@@ -1,0 +1,39 @@
+# Dockerfile.frontend.ultraslim
+# TARGET: 220MB Frontend Container
+# Strategy: Use ultra-slim nginx, minimal config, no overhead
+
+FROM nginxinc/nginx-unprivileged:alpine-slim
+
+# Set Egyptian timezone
+ENV TZ=Africa/Cairo
+
+# Switch to root temporarily to clean default content
+USER root
+
+# Remove ALL default content immediately
+RUN rm -rf /usr/share/nginx/html/* \
+    && rm -rf /usr/share/nginx/doc/* \
+    && rm -rf /var/cache/apk/*
+
+# Copy ONLY your built files (from local machine)
+# Note: Build locally first with: npm run build (sourcemap: false)
+COPY dist/ /usr/share/nginx/html/
+
+# Use minimal nginx config (pre-built, not generated in RUN)
+COPY nginx-minimal.conf /etc/nginx/nginx.conf
+
+# Set proper ownership and permissions, then switch back to unprivileged user
+RUN chown -R 101:101 /usr/share/nginx/html \
+    && chmod -R 755 /usr/share/nginx/html
+
+# Switch back to unprivileged user (UID 101 is nginx user in this image)
+USER 101
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080 || exit 1
+
+EXPOSE 8080
+
+CMD ["nginx", "-g", "daemon off;"]
+

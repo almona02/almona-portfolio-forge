@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  backend:
+    image: almona-backend:pilot
+    container_name: almona-backend
+    restart: unless-stopped
+    ports:
+      - "8002:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql://user:pass@localhost:5432/almona}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - TZ=Africa/Cairo
+      - LANG=ar_EG.UTF-8
+      - LC_ALL=ar_EG.UTF-8
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5).read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - almona-network
+    depends_on:
+      - redis
+
+  frontend:
+    image: almona-frontend:pilot
+    container_name: almona-frontend
+    restart: unless-stopped
+    ports:
+      - "80:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - almona-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: almona-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - almona-network
+
+networks:
+  almona-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+    driver: local

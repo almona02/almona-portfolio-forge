@@ -1,0 +1,32 @@
+# MINIMAL Production Requirements - TARGET: 500MB
+# Based on actual dependency analysis, not fantasy
+
+# Core Framework
+fastapi==0.123.8
+uvicorn[standard]==0.24.0
+pydantic==2.9.0
+python-multipart==0.0.20
+
+# Database
+supabase==2.8.0
+psycopg2-binary==2.9.9
+sqlalchemy[asyncio]==2.0.23
+
+# ML Inference (CRITICAL - MINIMAL SET)
+tensorflow-cpu==2.17.1  # ~350-400MB (NOT 971MB)
+onnxruntime==1.20.0     # ~40MB
+
+# Computer Vision (MINIMAL)
+opencv-python-headless==4.10.0.84  # ~60MB
+pytesseract==0.3.10     # Thin wrapper only
+
+# Optimization
+ortools==9.8.3296       # ~60MB
+
+# Utilities (MINIMAL)
+numpy==1.26.4           # ~40MB
+requests==2.32.5
+pillow==10.4.0          # ~20MB
+
+# Security
+python-jose[cryptography]==3.4.0

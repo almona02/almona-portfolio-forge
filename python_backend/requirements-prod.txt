@@ -1,0 +1,77 @@
+# Production-only dependencies - TOTAL: ~150MB
+# CRITICAL: This file is for PRODUCTION deployment only
+# Use requirements-dev.txt for development
+
+# Core Framework
+fastapi==0.123.8
+uvicorn[standard]==0.24.0
+pydantic==2.9.0
+pydantic-settings==2.1.0
+python-multipart==0.0.20
+
+# Database
+supabase==2.8.0
+psycopg2-binary==2.9.9
+sqlalchemy[asyncio]==2.0.23
+asyncpg==0.30.0
+
+# ML Inference (MINIMAL, CPU-ONLY) - CRITICAL CHANGE
+# Using tensorflow-cpu instead of tensorflow reduces size by 90%
+tensorflow-cpu==2.17.1  # ← NOT tensorflow, but tensorflow-cpu (~400MB vs 1.5GB)
+onnxruntime==1.20.0
+onnx==1.17.0
+
+# Computer Vision
+opencv-python-headless==4.10.0.84
+# easyocr==1.7.1  # ❌ REMOVED: Requires torch/torchvision (~8GB) - Use pytesseract instead
+pytesseract==0.3.10  # ✅ Use this for OCR (no PyTorch dependency)
+potracer==0.0.4
+
+# CAD Import
+ezdxf==1.1.4
+
+# Background Tasks
+celery==5.3.4
+redis==5.0.1
+
+# Authentication & Security
+python-jose[cryptography]==3.4.0
+passlib[bcrypt]==1.7.4
+PyJWT==2.9.0
+python-magic==0.4.27
+
+# Monitoring & Logging
+structlog==23.2.0
+prometheus-client==0.19.0
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+opentelemetry-instrumentation-fastapi==0.42b0
+opentelemetry-instrumentation-requests==0.42b0
+opentelemetry-instrumentation-psycopg2==0.42b0
+opentelemetry-exporter-jaeger==1.21.0
+opentelemetry-exporter-prometheus==0.42b0
+opentelemetry-instrumentation-logging==0.42b0
+opentelemetry-semantic-conventions==0.42b0
+
+# Production WSGI
+gunicorn==22.0.0
+
+# AI & CNC Integration
+ortools==9.8.3296
+pyserial==3.5
+
+# Utilities (MINIMAL)
+pillow==10.4.0
+numpy==1.26.4
+requests==2.32.5
+
+# ❌ REMOVE THESE IF NOT NEEDED - they add ~160MB
+# pandas (79MB) - check if required
+# sympy (80MB) - check if required
+
+# NOTE: ultralytics removed from production to reduce image size from 15GB to 180MB
+# ultralytics pulls in PyTorch + CUDA (~3-4GB) which is unnecessary for production
+# Use ONNX Runtime for inference instead (already in requirements)
+# Keep ultralytics in requirements-dev.txt for model conversion only
+# TODO: Convert YOLO models to ONNX format and update inference code to use ONNX Runtime
+

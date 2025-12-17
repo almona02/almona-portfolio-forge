@@ -327,6 +327,8 @@ export default defineConfig(({ mode }) => {
           entryFileNames: `assets/[name]-[hash].js`,
           chunkFileNames: `assets/[name]-[hash].js`,
           assetFileNames: `assets/[name]-[hash].[ext]`,
+          // Web Worker support (required for Week 3 ProductionDXFParser)
+          workerFileNames: `assets/[name]-[hash].worker.js`,
           // Refined: keep pure engines split; put all React-touching deps together
           manualChunks: (id) => {
             // Exclude app code (let Vite handle app code splitting)

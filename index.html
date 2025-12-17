@@ -170,5 +170,34 @@
       })();
     </script>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Prevent service worker registration errors in preview mode -->
+    <script>
+      // Intercept and suppress service worker registration errors in preview mode
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        const originalRegister = navigator.serviceWorker?.register;
+        if (originalRegister) {
+          navigator.serviceWorker.register = function(scriptURL, options) {
+            // Prevent registration of manifest.webmanifest as a service worker
+            if (typeof scriptURL === 'string' && scriptURL.includes('manifest.webmanifest')) {
+              console.warn('[SW] Skipping manifest.webmanifest registration in preview mode');
+              return Promise.reject(new Error('Service worker registration disabled in preview mode'));
+            }
+            // Allow other registrations to proceed
+            return originalRegister.call(this, scriptURL, options);
+          };
+        }
+        // Suppress unhandled promise rejections from service worker registration
+        window.addEventListener('unhandledrejection', function(event) {
+          if (event.reason && (
+            event.reason.message?.includes('ServiceWorker') ||
+            event.reason.message?.includes('manifest.webmanifest') ||
+            event.reason.message?.includes('unsupported MIME type')
+          )) {
+            console.warn('[SW] Suppressed service worker error in preview mode:', event.reason.message);
+            event.preventDefault();
+          }
+        });
+      }
+    </script>
   </body>
 </html>

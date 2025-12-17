@@ -1,0 +1,58 @@
+# Dockerfile.frontend.realistic
+# TARGET: 150MB Frontend Container
+# Strategy: Use ultra-slim Nginx, copy only built files
+
+# Use ultra-slim Nginx base
+FROM nginx:alpine
+
+# Set Egyptian timezone
+ENV TZ=Africa/Cairo
+
+# Remove all default content and cache
+RUN rm -rf /usr/share/nginx/html/* \
+    && rm -rf /usr/share/nginx/doc/* \
+    && rm -rf /var/cache/apk/* \
+    && apk del --no-cache nginx-module-* 2>/dev/null || true
+
+# Copy ONLY built files (assumes dist/ is built locally)
+# Note: Build frontend locally first with: npm run build
+COPY ./dist /usr/share/nginx/html
+
+# Minimal nginx config (inline to avoid extra file)
+RUN echo 'worker_processes 1; \
+events { worker_connections 1024; } \
+http { \
+    include /etc/nginx/mime.types; \
+    default_type application/octet-stream; \
+    sendfile on; \
+    keepalive_timeout 65; \
+    gzip on; \
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript; \
+    server { \
+        listen 80; \
+        root /usr/share/nginx/html; \
+        index index.html; \
+        location / { \
+            try_files $uri $uri/ /index.html; \
+        } \
+    } \
+}' > /etc/nginx/nginx.conf
+
+# Create non-root user for security
+RUN addgroup -g 1000 -S appgroup && \
+    adduser -S -D -H -u 1000 -h /var/cache/nginx -s /sbin/nologin -G appgroup -g app appuser && \
+    chown -R appuser:appgroup /usr/share/nginx/html && \
+    chown -R appuser:appgroup /var/cache/nginx && \
+    touch /var/run/nginx.pid && \
+    chown appuser:appgroup /var/run/nginx.pid
+
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:80 || exit 1
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
