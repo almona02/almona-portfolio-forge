@@ -116,6 +116,12 @@ const NationalDashboard = lazy(() => import("./pages/NationalDashboard.tsx"));
 
 const queryClient = new QueryClient();
 const isProd = import.meta.env.PROD;
+// Only enable Vercel Analytics/Speed Insights when actually deployed on Vercel
+const isVercel = typeof window !== 'undefined' && (
+  window.location.hostname.includes('vercel.app') ||
+  window.location.hostname.includes('vercel.com') ||
+  import.meta.env.VITE_VERCEL === 'true'
+);
 
 // Optimized loading components
 const LoadingSpinner = ({ message = "Loading..." }: { message?: string }) => (
@@ -184,8 +190,8 @@ const App = memo(() => {
                     >
                       <GlobalDynamicImportGuard />
                       <RoutePrefetchingHelper />
-                      {/* Defer analytics to avoid blocking initial render */}
-                      {isProd && (
+                      {/* Defer analytics to avoid blocking initial render - only on Vercel */}
+                      {isProd && isVercel && (
                         <Suspense fallback={null}>
                           <Analytics />
                         </Suspense>
@@ -448,7 +454,7 @@ const App = memo(() => {
         </QueryClientProvider>
       </PrestigeLoader>
     </ErrorBoundary>
-    {isProd && <SpeedInsights />}
+    {isProd && isVercel && <SpeedInsights />}
   </ChunkLoadingErrorBoundary>
   );
 });

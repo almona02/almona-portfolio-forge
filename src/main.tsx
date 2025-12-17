@@ -291,8 +291,11 @@ setTimeout(() => {
   try {
     const ENABLE_SW = import.meta.env.VITE_ENABLE_SW === 'true';
     const VITEPWA_ENABLED = true; // VitePWA is enabled in vite.config.ts
+    // Disable service worker in preview mode (localhost) to avoid registration errors
+    const isPreviewMode = typeof window !== 'undefined' && 
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
     
-    if (import.meta.env.PROD) {
+    if (import.meta.env.PROD && !isPreviewMode) {
       // Clean up any old/conflicting service workers first
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then((registrations) => {

@@ -36,6 +36,7 @@ const Window3DGenerator = React.lazy(() => import('./Window3DGenerator'));
 import { generateComponentsFromGrid } from '@/algorithms/smartDraw';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateDesign } from '@/lib/fabricator/ConstraintEngine';
+import { connectHardwareForWindowType } from '@/lib/fabricator/hardwareConnector';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
@@ -70,27 +71,137 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     const [isPro3D, setIsPro3D] = useState<boolean>(true);
     
     // --- Derived State & Memos ---
+    // Get system pack for Gold Tier integration
+    const systemPack = useMemo(() => {
+        return activeSystemPackId 
+            ? SYSTEM_PACKS.find(p => p.meta.id === activeSystemPackId) || null
+            : null;
+    }, [activeSystemPackId]);
+
+    // Gold Tier: Prioritize system pack profiles and use systemProfileSelections
+    const effectiveProfiles = useMemo(() => {
+        // Start with system pack profiles if available
+        if (systemPack?.profiles && systemPack.profiles.length > 0) {
+            const systemProfileIds = new Set(systemPack.profiles.map(p => p.id));
+            // Merge: system pack profiles first, then add missing from passed profiles
+            return [
+                ...systemPack.profiles,
+                ...profiles.filter(p => !systemProfileIds.has(p.id))
+            ];
+        }
+        return profiles;
+    }, [systemPack, profiles]);
+
+    // Gold Tier: Use systemProfileSelections to map profile codes to actual profiles
+    const selectedProfiles = useMemo(() => {
+        if (!project?.systemProfileSelections || !systemPack) {
+            return effectiveProfiles;
+        }
+
+        const selections = project.systemProfileSelections;
+        const mappedProfiles: Profile[] = [];
+
+        // Map frame profile
+        if (selections.frameProfileCode) {
+            const frameProfile = effectiveProfiles.find(p => 
+                p.code === selections.frameProfileCode || p.id === selections.frameProfileCode
+            );
+            if (frameProfile) {
+                mappedProfiles.push({ ...frameProfile, profileRole: 'frame' });
+            }
+        }
+
+        // Map sash profile
+        if (selections.sashProfileCode) {
+            const sashProfile = effectiveProfiles.find(p => 
+                p.code === selections.sashProfileCode || p.id === selections.sashProfileCode
+            );
+            if (sashProfile) {
+                mappedProfiles.push({ ...sashProfile, profileRole: 'sash' });
+            }
+        }
+
+        // Map bead profile
+        if (selections.beadProfileCode) {
+            const beadProfile = effectiveProfiles.find(p => 
+                p.code === selections.beadProfileCode || p.id === selections.beadProfileCode
+            );
+            if (beadProfile) {
+                mappedProfiles.push({ ...beadProfile, profileRole: 'glazing_bead' });
+            }
+        }
+
+        // Add any missing required profiles from system pack
+        const requiredRoles = ['frame', 'sash', 'glazing_bead'];
+        requiredRoles.forEach(role => {
+            if (!mappedProfiles.some(p => p.profileRole === role)) {
+                const roleProfile = systemPack.profiles?.find(p => p.profileRole === role);
+                if (roleProfile) {
+                    const matched = effectiveProfiles.find(p => 
+                        p.id === roleProfile.id || 
+                        (p.code === roleProfile.code && p.profileRole === role)
+                    );
+                    if (matched) {
+                        mappedProfiles.push({ ...matched, profileRole: role });
+                    }
+                }
+            }
+        });
+
+        return mappedProfiles.length > 0 ? mappedProfiles : effectiveProfiles;
+    }, [project?.systemProfileSelections, effectiveProfiles, systemPack]);
+
     // The "live" project object that reflects the current state of the engineering design
     const liveProject = useMemo<WindowUnit | null>(() => {
         if (!project) return null;
 
-        // Generate the component list and hardware from the current grid layout
-        const { components, hardware } = generateComponentsFromGrid(
+        // Gold Tier: Generate components with system pack integration
+        const { components, hardware: generatedHardware } = generateComponentsFromGrid(
             project,
             currentGrid,
-            profiles, // Pass available profiles for selection
-            activeSystemPackId
+            selectedProfiles, // Use system-aware profiles
+            activeSystemPackId,
+            systemPack // Pass system pack for glass allowances and hardware
         );
+
+        // Gold Tier: Auto-connect hardware based on window type
+        const connectedHardware = connectHardwareForWindowType(
+            { ...project, components },
+            components,
+            systemPack
+        );
+
+        // Merge generated hardware with connected hardware (avoid duplicates)
+        const hardwareMap = new Map<string, any>();
+        
+        // Add generated hardware first
+        generatedHardware.forEach(hw => {
+            hardwareMap.set(hw.id || `${hw.type}-${hw.name}`, hw);
+        });
+        
+        // Add connected hardware (override if same type/name)
+        connectedHardware.forEach(hw => {
+            const key = hw.id || `${hw.type}-${hw.name}`;
+            const existing = hardwareMap.get(key);
+            if (existing) {
+                // Merge quantities if same type
+                hardwareMap.set(key, { ...existing, quantity: existing.quantity + hw.quantity });
+            } else {
+                hardwareMap.set(key, hw);
+            }
+        });
+        
+        const allHardware = Array.from(hardwareMap.values());
 
         return {
             ...project,
             grid: currentGrid,
             components,
-            hardware,
+            hardware: allHardware,
             systemPackId: activeSystemPackId,
             updatedAt: new Date(),
         };
-    }, [project, currentGrid, profiles, activeSystemPackId]);
+    }, [project, currentGrid, selectedProfiles, activeSystemPackId, systemPack]);
 
     // --- Performance: Memoized BOM Data Calculations ---
     const bomData = useMemo(() => {

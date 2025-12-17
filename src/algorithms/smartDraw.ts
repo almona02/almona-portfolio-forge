@@ -300,7 +300,8 @@ export function generateComponentsFromGrid(
   project: WindowUnit | null,
   grid: WindowGrid,
   profiles: Profile[],
-  systemPackId: string | null
+  systemPackId: string | null,
+  systemPack?: any | null // Gold Tier: System pack for glass allowances and hardware
 ): { components: WindowComponent[]; hardware: any[] } {
   if (!project || !grid) {
     return { components: [], hardware: [] };
@@ -309,44 +310,86 @@ export function generateComponentsFromGrid(
   const components: WindowComponent[] = [];
   const hardware: any[] = [];
 
+  // Gold Tier: Use systemProfileSelections if available
+  const systemProfileSelections = project.systemProfileSelections || {};
+  
+  // Helper to find profile by role with systemProfileSelections priority
+  const getProfileByRole = (role: string, fallbackRole?: string): Profile | null => {
+    // 1. Try systemProfileSelections first
+    if (role === 'frame' && systemProfileSelections.frameProfileCode) {
+      const selected = profiles.find(p => 
+        p.code === systemProfileSelections.frameProfileCode || 
+        p.id === systemProfileSelections.frameProfileCode
+      );
+      if (selected) return selected;
+    }
+    if (role === 'sash' && systemProfileSelections.sashProfileCode) {
+      const selected = profiles.find(p => 
+        p.code === systemProfileSelections.sashProfileCode || 
+        p.id === systemProfileSelections.sashProfileCode
+      );
+      if (selected) return selected;
+    }
+    if ((role === 'glazing_bead' || role === 'bead') && systemProfileSelections.beadProfileCode) {
+      const selected = profiles.find(p => 
+        p.code === systemProfileSelections.beadProfileCode || 
+        p.id === systemProfileSelections.beadProfileCode
+      );
+      if (selected) return selected;
+    }
+    
+    // 2. Try system pack profiles
+    if (systemPack?.profiles) {
+      const systemProfile = systemPack.profiles.find((p: Profile) => p.profileRole === role);
+      if (systemProfile) {
+        const matched = profiles.find(p => 
+          p.id === systemProfile.id || 
+          (p.code === systemProfile.code && p.profileRole === role)
+        );
+        if (matched) return matched;
+      }
+    }
+    
+    // 3. Fallback to generic search
+    const found = profiles.find(p => 
+      p.profileRole === role && 
+      (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
+    );
+    if (found) return found;
+    
+    // 4. Try fallback role
+    if (fallbackRole) {
+      return profiles.find(p => p.profileRole === fallbackRole) || null;
+    }
+    
+    return null;
+  };
+
   // Find appropriate profiles based on systemPackId or defaults
-  const frameProfile = profiles.find(p => 
-    (p.profileRole === 'frame') && 
-    (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
-  ) || profiles.find(p => p.profileRole === 'frame') || profiles[0];
+  const frameProfile = getProfileByRole('frame') || profiles.find(p => p.profileRole === 'frame') || profiles[0];
 
   // Find appropriate sash profile - prioritize sliding sash for sliding systems
   const isSlidingSystem = project.type?.includes('sliding') || 
                           grid.cells.some(cell => cell.type === 'sliding');
   
   const sashProfile = isSlidingSystem
-    ? profiles.find(p => 
-        (p.profileRole === 'sash_sliding') && 
-        (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
-      ) || profiles.find(p => p.profileRole === 'sash_sliding') ||
-        profiles.find(p => 
-          (p.profileRole === 'sash') && 
-          (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
-        ) || profiles.find(p => p.profileRole === 'sash') || profiles[0]
-    : profiles.find(p => 
-        (p.profileRole === 'sash') && 
-        (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
-      ) || profiles.find(p => p.profileRole === 'sash') || profiles[0];
+    ? getProfileByRole('sash_sliding') || getProfileByRole('sash') || profiles.find(p => p.profileRole === 'sash_sliding') || profiles.find(p => p.profileRole === 'sash') || profiles[0]
+    : getProfileByRole('sash') || profiles.find(p => p.profileRole === 'sash') || profiles[0];
   
-  const mullionProfile = profiles.find(p => 
-    (p.profileRole === 'mullion') && 
-    (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
-  ) || profiles.find(p => p.profileRole === 'mullion');
+  const mullionProfile = getProfileByRole('mullion') || profiles.find(p => p.profileRole === 'mullion') || null;
 
   // Find glazing bead profile
-  const beadProfile = profiles.find(p => 
-    (p.profileRole === 'glazing_bead' || p.profileRole === 'glazing_bead_inner' || p.profileRole === 'glazing_bead_outer') && 
-    (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
-  ) || profiles.find(p => p.profileRole === 'glazing_bead' || p.profileRole === 'glazing_bead_inner' || p.profileRole === 'glazing_bead_outer');
+  const beadProfile = getProfileByRole('glazing_bead', 'bead') || 
+    profiles.find(p => 
+      (p.profileRole === 'glazing_bead' || p.profileRole === 'glazing_bead_inner' || p.profileRole === 'glazing_bead_outer') && 
+      (!systemPackId || (p.systemPackIds && p.systemPackIds.includes(systemPackId)))
+    ) || profiles.find(p => p.profileRole === 'glazing_bead' || p.profileRole === 'glazing_bead_inner' || p.profileRole === 'glazing_bead_outer') || null;
 
-  // Get system pack for UPVC-specific hardware (reinforcement bars)
-  const systemPack = systemPackId ? SYSTEM_PACKS.find(p => p.meta.id === systemPackId) : null;
+  // Get UPVC-specific hardware (reinforcement bars)
   const upvcSpec = systemPack && 'upvcSpec' in systemPack ? (systemPack as any).upvcSpec : null;
+  
+  // Gold Tier: Get glass allowances from system pack
+  const glassAllowances = systemPack?.glassAllowances;
 
   if (!frameProfile) {
       return { components: [], hardware: [] };
@@ -617,9 +660,20 @@ export function generateComponentsFromGrid(
             (typeof project.glazing === 'string' && project.glazing !== 'none')
           );
           if (beadProfile && (hasGlazing || !project.glazing)) { // Add beads if glazing exists or if not specified (default to double)
-            // Glass dimensions: sash opening minus sash profile width on all sides
-            const glassWidth = cellW - (2 * sashProfile.width);
-            const glassHeight = cellH - (2 * sashProfile.width);
+            // Gold Tier: Glass dimensions using system pack glassAllowances
+            let glassWidth: number;
+            let glassHeight: number;
+            
+            if (glassAllowances) {
+              // Use system pack glass allowance rules (e.g., edgeClearanceMm)
+              const edgeClearance = glassAllowances.edgeClearanceMm || 0;
+              glassWidth = Math.max(0, cellW - (2 * edgeClearance));
+              glassHeight = Math.max(0, cellH - (2 * edgeClearance));
+            } else {
+              // Fallback: sash opening minus sash profile width on all sides
+              glassWidth = cellW - (2 * sashProfile.width);
+              glassHeight = cellH - (2 * sashProfile.width);
+            }
             
             // Top bead (horizontal) - matches glass width
             components.push({
