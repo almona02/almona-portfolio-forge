@@ -75,7 +75,8 @@ export default defineConfig(({ mode }) => {
         filename: "manifest.webmanifest", // Explicit filename
         strategies: "generateSW", // Use generateSW for better control
         devOptions: {
-          enabled: false // Disable in development for stability
+          enabled: true, // Allow PWA to work in dev mode (creates virtual module)
+          type: 'module',
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
