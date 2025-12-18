@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { yilmazMachines } from '@/constants/yilmazMachines';
+import { useYilmazMachines } from './useYilmazMachines';
 import { intelligentSearch, categorizeMachine } from '@/constants/smartCategories';
 import type { Machine } from '@/constants/yilmazMachines';
 
@@ -25,7 +25,9 @@ export function useVirtualizedMachines({
   pageSize = 12
 }: UseVirtualizedMachinesOptions = {}): VirtualizedResult {
   const [currentPage, setCurrentPage] = useState(1);
+  const { data: yilmazMachines = [], isLoading: isDataLoading } = useYilmazMachines();
   const [isLoading, setIsLoading] = useState(false);
+  const isLoadingData = isDataLoading || isLoading;
 
   // Memoize filtered and sorted machines to prevent unnecessary recalculations
   const filteredAndSortedMachines = useMemo(() => {
@@ -89,6 +91,6 @@ export function useVirtualizedMachines({
     totalCount,
     hasMore,
     loadMore,
-    isLoading
+    isLoading: isLoadingData
   };
 }

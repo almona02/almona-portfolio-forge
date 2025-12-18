@@ -179,6 +179,32 @@ const _createPowerSpec = (powerStr: string): PowerSpecification => {
   };
 };
 
+// DEPRECATED: Use useYilmazMachines() hook instead for async loading
+// This export is kept for backward compatibility but will be removed
+// The data is now loaded from /data/yilmazMachines.json
+let _yilmazMachinesCache: Machine[] | null = null;
+
+export async function getYilmazMachines(): Promise<Machine[]> {
+  if (_yilmazMachinesCache) {
+    return _yilmazMachinesCache;
+  }
+  
+  try {
+    const response = await fetch('/data/yilmazMachines.json');
+    if (response.ok) {
+      _yilmazMachinesCache = await response.json();
+      return _yilmazMachinesCache;
+    }
+  } catch (error) {
+    console.warn('Failed to fetch machines from /data, using fallback:', error);
+  }
+  
+  // Fallback: return empty array (data should be in JSON file)
+  return [];
+}
+
+// Legacy export - will be removed in future version
+// Use getYilmazMachines() or useYilmazMachines() hook instead
 export const yilmazMachines: Machine[] = [
   {
     id: "aim-3410",

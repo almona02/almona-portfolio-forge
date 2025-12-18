@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useRegionDetection, useRegionUtils } from '@/hooks/useRegionDetection';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+// Lazy load MapLibre to reduce initial bundle size (~744KB saved)
+let maplibregl: typeof import('maplibre-gl').default | null = null;
 
 interface Technician {
   id: string;
@@ -24,10 +24,29 @@ export const ServiceCoverageMap: React.FC = () => {
   const { regionState: _regionState } = useRegionDetection();
   const _utils = useRegionUtils();
   const mapRef = useRef<HTMLDivElement | null>(null);
-  const mapInstance = useRef<maplibregl.Map | null>(null);
+  const mapInstance = useRef<any>(null);
+  const [isMapLoaded, setIsMapLoaded] = React.useState(false);
+
+  // Lazy load MapLibre
+  useEffect(() => {
+    if (maplibregl) {
+      setIsMapLoaded(true);
+      return;
+    }
+    
+    Promise.all([
+      import('maplibre-gl'),
+      import('maplibre-gl/dist/maplibre-gl.css')
+    ]).then(([mapLib]) => {
+      maplibregl = mapLib.default;
+      setIsMapLoaded(true);
+    }).catch((err) => {
+      console.error('Failed to load MapLibre:', err);
+    });
+  }, []);
 
   useEffect(() => {
-    if (!mapRef.current || mapInstance.current) return;
+    if (!mapRef.current || mapInstance.current || !isMapLoaded || !maplibregl) return;
     const map = new maplibregl.Map({
       container: mapRef.current,
       style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
@@ -78,7 +97,7 @@ export const ServiceCoverageMap: React.FC = () => {
 
     mapInstance.current = map;
     return () => { map.remove(); mapInstance.current = null; };
-  }, []);
+  }, [isMapLoaded]);
 
   return (
     <Card className="bg-gradient-to-br from-gray-900 to-black border border-orange-500/20">
@@ -92,7 +111,16 @@ export const ServiceCoverageMap: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <div className="aspect-[16/9] w-full rounded-xl border border-white/10 overflow-hidden">
-              <div ref={mapRef} className="h-full w-full" />
+              {!isMapLoaded ? (
+                <div className="h-full w-full flex items-center justify-center bg-gray-900">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-2"></div>
+                    <p className="text-xs text-gray-400">Loading map...</p>
+                  </div>
+                </div>
+              ) : (
+                <div ref={mapRef} className="h-full w-full" />
+              )}
             </div>
             <p className="text-xs text-gray-400 mt-2">Map data © OpenStreetMap contributors, style © Carto.</p>
           </div>
