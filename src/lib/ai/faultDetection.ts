@@ -91,7 +91,7 @@ export const detectFaults = async (
   if (audioBuffer) {
     try {
       const model = await loadFaultDetectionModel();
-      const features = extractAudioFeatures(audioBuffer);
+      const features = await extractAudioFeatures(audioBuffer);
       const prediction = model.predict(features) as tf.Tensor;
       const predictionValue = (await prediction.data())[0];
       
