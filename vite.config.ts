@@ -68,8 +68,8 @@ export default defineConfig(({ mode }) => {
           }
         }
       },
-      // PWA Configuration - Stable, Production-Ready
-      ...(isProduction ? [VitePWA({
+      // PWA Configuration - Always enabled to provide virtual module in dev mode
+      VitePWA({
         registerType: "autoUpdate",
         injectRegister: "auto",
         filename: "manifest.webmanifest", // Explicit filename
@@ -197,7 +197,7 @@ export default defineConfig(({ mode }) => {
             }
           ]
         }
-      })] : []),
+      }),
       ...(isProduction && process.env.ANALYZE === 'true'
         ? [
             visualizer({
