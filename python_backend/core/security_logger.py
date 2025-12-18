@@ -51,7 +51,7 @@ class SecurityLogger:
         try:
             self._write_to_db(event)
         except Exception as e:
-            self.logger.error("failed_to_write_security_event_to_db", error=str(e))
+            self.logger.error(f"failed_to_write_security_event_to_db: {str(e)}", exc_info=True)
             
         # Also log to security-specific file
         try:
