@@ -1,4 +1,5 @@
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Types for heavy cutting optimization against the Python backend.
@@ -70,11 +71,26 @@ export interface HeavyOptimizationResponse {
 }
 
 /**
- * Call the Python heavy optimization endpoint directly.
+ * Job status response from async endpoints
  */
-export async function optimizeCuttingHeavy(
+export interface JobStatusResponse {
+  job_id: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'unknown';
+  message?: string;
+  result?: HeavyOptimizationResponse;
+  error?: string;
+  estimated_time_seconds?: number;
+  completed_at?: string;
+  processing_time_seconds?: number;
+}
+
+/**
+ * Enqueue heavy cutting optimization job for async processing.
+ * Returns immediately with job_id for status tracking.
+ */
+export async function enqueueCuttingOptimization(
   req: HeavyOptimizationRequest,
-): Promise<HeavyOptimizationResponse> {
+): Promise<{ job_id: string; estimated_time_seconds: number }> {
   const payload = {
     cuts: req.cuts.map((c) => ({
       id: c.id,
@@ -111,12 +127,136 @@ export async function optimizeCuttingHeavy(
   if (!res.ok) {
     const text = await res.text();
     throw new Error(
-      text || `Python heavy optimization failed: HTTP ${res.status}`,
+      text || `Failed to enqueue optimization job: HTTP ${res.status}`,
     );
   }
 
-  const data = (await res.json()) as HeavyOptimizationResponse;
-  return data;
+  const data = await res.json();
+  return {
+    job_id: data.job_id,
+    estimated_time_seconds: data.estimated_time_seconds || 30
+  };
+}
+
+/**
+ * Check status of optimization job
+ */
+export async function getOptimizationJobStatus(jobId: string): Promise<JobStatusResponse> {
+  const res = await fetch(`/api/v2/heavy/job/${jobId}`);
+
+  if (!res.ok) {
+    if (res.status === 404) {
+      throw new Error(`Job ${jobId} not found`);
+    }
+    const text = await res.text();
+    throw new Error(text || `Failed to get job status: HTTP ${res.status}`);
+  }
+
+  return await res.json();
+}
+
+/**
+ * Wait for job completion using Supabase Realtime (recommended)
+ * This provides instant updates without polling
+ */
+export async function waitForOptimizationJobRealtime(
+  jobId: string,
+  timeoutMs: number = 120000 // 2 minutes default
+): Promise<HeavyOptimizationResponse> {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      subscription.unsubscribe();
+      reject(new Error(`Job ${jobId} timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    // Subscribe to job status changes
+    const subscription = supabase
+      .channel(`job-${jobId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'jobs',
+          filter: `job_id=eq.${jobId}`,
+        },
+        (payload) => {
+          const job = payload.new as any;
+
+          if (job.status === 'completed' && job.result_data) {
+            clearTimeout(timeout);
+            subscription.unsubscribe();
+            resolve(job.result_data);
+          } else if (job.status === 'failed') {
+            clearTimeout(timeout);
+            subscription.unsubscribe();
+            reject(new Error(job.error_message || 'Optimization job failed'));
+          }
+        }
+      )
+      .subscribe();
+
+    // Check initial status
+    getOptimizationJobStatus(jobId).then(status => {
+      if (status.status === 'completed' && status.result) {
+        clearTimeout(timeout);
+        subscription.unsubscribe();
+        resolve(status.result);
+      } else if (status.status === 'failed') {
+        clearTimeout(timeout);
+        subscription.unsubscribe();
+        reject(new Error(status.error || 'Optimization job failed'));
+      }
+    }).catch(err => {
+      clearTimeout(timeout);
+      subscription.unsubscribe();
+      reject(err);
+    });
+  });
+}
+
+/**
+ * Poll for job completion with timeout (fallback method)
+ * @deprecated Use waitForOptimizationJobRealtime instead for instant updates
+ */
+export async function waitForOptimizationJob(
+  jobId: string,
+  timeoutMs: number = 120000, // 2 minutes default
+  pollIntervalMs: number = 2000 // poll every 2 seconds
+): Promise<HeavyOptimizationResponse> {
+  console.warn('waitForOptimizationJob is deprecated. Use waitForOptimizationJobRealtime for instant updates.');
+
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < timeoutMs) {
+    const status = await getOptimizationJobStatus(jobId);
+
+    if (status.status === 'completed' && status.result) {
+      return status.result;
+    }
+
+    if (status.status === 'failed') {
+      throw new Error(status.error || 'Optimization job failed');
+    }
+
+    // Wait before next poll
+    await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+  }
+
+  throw new Error(`Job ${jobId} timed out after ${timeoutMs}ms`);
+}
+
+/**
+ * Legacy function for backward compatibility - now uses async flow
+ * @deprecated Use enqueueCuttingOptimization + waitForOptimizationJob instead
+ */
+export async function optimizeCuttingHeavy(
+  req: HeavyOptimizationRequest,
+): Promise<HeavyOptimizationResponse> {
+  console.warn('optimizeCuttingHeavy is deprecated. Use enqueueCuttingOptimization + waitForOptimizationJob for better UX.');
+
+  const { job_id } = await enqueueCuttingOptimization(req);
+  return await waitForOptimizationJob(job_id);
 }
 
 /**
