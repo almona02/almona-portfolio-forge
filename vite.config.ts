@@ -178,12 +178,13 @@ export default defineConfig(({ mode }) => {
       ...(isProduction && process.env.ANALYZE === 'true'
         ? [
             visualizer({
-              filename: "dist/stats.json",
-              template: "raw-data", // emit JSON for programmatic analysis
-              open: false,
+              filename: "dist/bundle-analysis.html",
+              template: "treemap", // Generate interactive HTML treemap
+              open: false, // Don't auto-open (user will open manually)
               gzipSize: true,
               brotliSize: true,
               sourcemap: false,
+              json: true, // Also generate stats.json for programmatic analysis
             }),
           ]
         : []),
@@ -336,17 +337,19 @@ export default defineConfig(({ mode }) => {
               return undefined;
             }
 
-            // === HEAVY ENGINES (Separate chunks) ===
-            
-            // Three.js ecosystem (3D rendering)
-            if (id.includes('node_modules/three/')) {
-              if (id.includes('postprocessing')) {
-                return 'three-postprocessing';
-              }
-              if (id.includes('@react-three/')) {
-                return 'react-three';
-              }
-              return 'three-engine';
+            // === THE 3D ECOSYSTEM (Massive savings - catches all three.js related libraries) ===
+            // Catches three, fiber, drei, postprocessing, stdlib, mesh-bvh, troika
+            if (
+              id.includes('three') ||
+              id.includes('@react-three') ||
+              id.includes('postprocessing') ||
+              id.includes('troika') ||
+              id.includes('drei') ||
+              id.includes('fiber') ||
+              id.includes('three-stdlib') ||
+              id.includes('three-mesh-bvh')
+            ) {
+              return 'three-ecosystem';
             }
             
             // Physics engine
@@ -369,6 +372,11 @@ export default defineConfig(({ mode }) => {
             // TensorFlow.js (very heavy)
             if (id.includes('@tensorflow/tfjs')) {
               return 'ai-tensorflow';
+            }
+            
+            // MediaPipe Vision (huge AI library)
+            if (id.includes('@mediapipe') || id.includes('tasks-vision')) {
+              return 'ai-vision';
             }
             
             // Google Generative AI
@@ -394,6 +402,31 @@ export default defineConfig(({ mode }) => {
             }
             
             // === UI LIBRARIES (Grouped by usage) ===
+            
+            // MARKDOWN EDITOR ECOSYSTEM (Surprisingly large - react-md-editor, markdown-it, micromark, etc.)
+            if (
+              id.includes('react-md-editor') ||
+              id.includes('@uiw/react-md-editor') ||
+              id.includes('markdown-it') ||
+              id.includes('micromark') ||
+              id.includes('hast-') ||
+              id.includes('mdast-') ||
+              id.includes('unified') ||
+              id.includes('remark') ||
+              id.includes('rehype')
+            ) {
+              return 'ui-markdown';
+            }
+            
+            // ANT DESIGN & INTERNALS (Captures antd AND the rc- components it depends on)
+            if (
+              id.includes('antd') ||
+              id.includes('@ant-design') ||
+              id.includes('rc-') ||
+              id.includes('@rc-component')
+            ) {
+              return 'ui-antd';
+            }
             
             // Lucide React icons (large bundle - split separately)
             if (id.includes('lucide-react')) {
@@ -434,9 +467,16 @@ export default defineConfig(({ mode }) => {
               return 'react-router';
             }
             
-            // React Query
-            if (id.includes('@tanstack/react-query')) {
-              return 'react-query';
+            // === DATA & STATE MANAGEMENT ===
+            
+            // Tanstack (Query, Table, Virtual - all together)
+            if (id.includes('@tanstack') || id.includes('react-query')) {
+              return 'data-query';
+            }
+            
+            // Supabase client
+            if (id.includes('@supabase')) {
+              return 'data-supabase';
             }
             
             // === ANIMATION LIBRARIES (Separate chunks) ===
@@ -450,6 +490,12 @@ export default defineConfig(({ mode }) => {
             }
             
             // === UTILITY LIBRARIES (Grouped) ===
+            
+            // Lodash (if present - can be large)
+            if (id.includes('lodash')) {
+              return 'utils-lodash';
+            }
+            
             if (id.includes('clsx') || id.includes('class-variance-authority') || id.includes('tailwind-merge')) {
               return 'utils-styling';
             }
@@ -471,6 +517,28 @@ export default defineConfig(({ mode }) => {
             // === HELMET & SEO ===
             if (id.includes('react-helmet')) {
               return 'utils-seo';
+            }
+            
+            // === ADDITIONAL UTILITIES ===
+            
+            // Axios HTTP client
+            if (id.includes('axios')) {
+              return 'utils-http';
+            }
+            
+            // File handling utilities
+            if (id.includes('file-saver') || id.includes('qrcode')) {
+              return 'utils-files';
+            }
+            
+            // DXF Writer
+            if (id.includes('dxf-writer')) {
+              return 'utils-dxf';
+            }
+            
+            // Dropzone
+            if (id.includes('react-dropzone')) {
+              return 'ui-dropzone';
             }
             
             // === EVERYTHING ELSE (Fallback vendor - should be much smaller now) ===
