@@ -336,13 +336,11 @@ async def get_job_status(job_id: str) -> Dict[str, Any]:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error("Error checking job status", job_id=job_id, error=str(e))
+        logger.error(f"Error checking job status for job_id={job_id}: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=f"Error checking job status: {str(e)}"
         )
-    except HTTPException:
-        raise
     except Exception as exc:  # pragma: no cover - defensive logging
         raise HTTPException(
             status_code=500,
