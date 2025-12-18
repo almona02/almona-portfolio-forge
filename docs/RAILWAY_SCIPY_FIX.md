@@ -7,10 +7,9 @@ The Railway deployment was failing with:
 ModuleNotFoundError: No module named 'scipy'
 ```
 
-The error occurred in `python_backend/ai_services/scanning/scale_engine/line_detector.py` when trying to import:
-```python
-from scipy.spatial import KDTree
-```
+The error occurred in two files:
+1. `python_backend/ai_services/scanning/scale_engine/line_detector.py` - importing `from scipy.spatial import KDTree`
+2. `python_backend/ai_services/scanning/scale_engine/scale_computer.py` - importing `from scipy import stats`
 
 ## Root Cause
 
@@ -26,10 +25,17 @@ Made `scipy` an **optional dependency** with a fallback implementation:
 
 ### Changes Made
 
-**File**: `python_backend/ai_services/scanning/scale_engine/line_detector.py`
+**File 1**: `python_backend/ai_services/scanning/scale_engine/line_detector.py`
 
 - Added optional import with `SCIPY_AVAILABLE` flag
 - Modified `associate_text_with_lines` to use KDTree when available, or fallback to NumPy-based brute-force search
+- Added logging to warn when scipy is not available
+
+**File 2**: `python_backend/ai_services/scanning/scale_engine/scale_computer.py`
+
+- Added optional import with `SCIPY_AVAILABLE` flag
+- Created fallback functions: `_trim_mean_fallback()` and `_median_abs_deviation_fallback()` using NumPy
+- Modified `compute_scale()` and `_robust_std()` to use scipy when available, or fallback to NumPy implementations
 - Added logging to warn when scipy is not available
 
 ### Code Changes
@@ -59,9 +65,12 @@ The `associate_text_with_lines` method now checks `SCIPY_AVAILABLE` and uses eit
 ## Impact
 
 - ✅ **Service can start** even without `scipy`
-- ✅ **Scale detection still works** (using slower but functional fallback)
+- ✅ **Scale detection still works** (using NumPy-based fallbacks)
 - ✅ **No breaking changes** to the API
-- ⚠️ **Performance**: Nearest neighbor search is slower without `scipy`, but acceptable for production use
+- ⚠️ **Performance**: 
+  - Nearest neighbor search is slower without `scipy.spatial.KDTree` (uses brute-force)
+  - Statistical functions use NumPy-based implementations instead of optimized scipy functions
+  - Both are acceptable for production use, but scipy provides better performance
 
 ## Optional: Add `scipy` to Production
 

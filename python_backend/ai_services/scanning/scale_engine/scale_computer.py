@@ -1,7 +1,42 @@
+import logging
 from typing import Dict, List, Optional
 
 import numpy as np
-from scipy import stats
+
+try:
+    from scipy import stats
+    SCIPY_AVAILABLE = True
+except ImportError:
+    SCIPY_AVAILABLE = False
+    stats = None  # type: ignore
+
+logger = logging.getLogger(__name__)
+
+if not SCIPY_AVAILABLE:
+    logger.warning("scipy not available. Scale computation will use NumPy-based fallbacks.")
+
+
+def _trim_mean_fallback(data: np.ndarray, proportiontocut: float = 0.2) -> float:
+    """Fallback implementation of trim_mean using NumPy."""
+    if len(data) == 0:
+        return 0.0
+    sorted_data = np.sort(data)
+    n = len(sorted_data)
+    cut = int(n * proportiontocut)
+    if cut == 0:
+        return float(np.mean(sorted_data))
+    trimmed = sorted_data[cut : n - cut]
+    return float(np.mean(trimmed)) if len(trimmed) > 0 else float(np.mean(sorted_data))
+
+
+def _median_abs_deviation_fallback(data: np.ndarray) -> float:
+    """Fallback implementation of median_abs_deviation using NumPy."""
+    if len(data) == 0:
+        return 0.0
+    median = np.median(data)
+    abs_dev = np.abs(data - median)
+    mad = np.median(abs_dev)
+    return float(mad)
 
 
 class ScaleComputer:
@@ -36,7 +71,10 @@ class ScaleComputer:
         scale_median = float(np.median(arr))
 
         if use_robust_stats:
-            trimmed_mean = float(stats.trim_mean(arr, proportiontocut=0.2))
+            if SCIPY_AVAILABLE and stats is not None:
+                trimmed_mean = float(stats.trim_mean(arr, proportiontocut=0.2))
+            else:
+                trimmed_mean = _trim_mean_fallback(arr, proportiontocut=0.2)
             weights = np.array([assoc["confidence"] for assoc in valid_associations])
             weighted_mean = float(np.average(arr, weights=weights))
             scales = [scale_median, trimmed_mean, weighted_mean]
@@ -54,7 +92,10 @@ class ScaleComputer:
             method_used = "median"
             final_std = float(np.std(arr))
 
-        mad = stats.median_abs_deviation(arr)
+        if SCIPY_AVAILABLE and stats is not None:
+            mad = stats.median_abs_deviation(arr)
+        else:
+            mad = _median_abs_deviation_fallback(arr)
         median = np.median(arr)
         outlier_mask = np.abs(arr - median) > (2.5 * mad)
         outliers = arr[outlier_mask].tolist()
@@ -88,7 +129,10 @@ class ScaleComputer:
             abs_dev = np.abs(data - center)
             weighted_mad = float(np.average(abs_dev, weights=weights))
             return float(weighted_mad * 1.4826)
-        mad = stats.median_abs_deviation(data)
+        if SCIPY_AVAILABLE and stats is not None:
+            mad = stats.median_abs_deviation(data)
+        else:
+            mad = _median_abs_deviation_fallback(data)
         return float(mad * 1.4826)
 
     @staticmethod
