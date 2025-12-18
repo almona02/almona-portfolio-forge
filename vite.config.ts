@@ -280,6 +280,8 @@ export default defineConfig(({ mode }) => {
       // PERFORMANCE OPTIMIZATIONS
       rollupOptions: {
         maxParallelFileOps: 5,
+        // Better handling of circular dependencies
+        preserveEntrySignatures: 'allow-extension',
         treeshake: {
           moduleSideEffects: true,
           propertyReadSideEffects: false,
@@ -421,7 +423,9 @@ export default defineConfig(({ mode }) => {
             
             // === UI LIBRARIES (Grouped by usage) ===
             
-            // MARKDOWN EDITOR ECOSYSTEM (Surprisingly large - react-md-editor, markdown-it, micromark, etc.)
+            // MARKDOWN EDITOR ECOSYSTEM - Isolated chunk for fault isolation
+            // If this chunk has issues, only the Ticket Wizard will fail, not the entire app
+            // This is better than bundling into vendor-misc which loads immediately
             if (
               id.includes('react-md-editor') ||
               id.includes('@uiw/react-md-editor') ||
@@ -451,26 +455,20 @@ export default defineConfig(({ mode }) => {
               return 'ui-icons-lucide';
             }
             
-            // Chart libraries (heavy)
-            if (id.includes('recharts') || id.includes('d3') || id.includes('chart.js')) {
-              return 'ui-charts';
-            }
+            // === UTILITY LIBRARIES (Grouped) ===
             
-            // Radix UI components (group together)
-            if (id.includes('@radix-ui/')) {
-              return 'ui-radix';
-            }
-            
-            // === UTILITIES (Grouped) ===
+            // NOTE: lodash, react-hook-form, and recharts are bundled into vendor-misc
+            // to avoid circular dependency issues. The ~70KB size difference is negligible
+            // compared to the 2.2MB saved by lazy-loading the 3D engine.
             
             // Date libraries
             if (id.includes('date-fns') || id.includes('dayjs') || id.includes('moment')) {
               return 'utils-date';
             }
             
-            // Form libraries
-            if (id.includes('react-hook-form') || id.includes('formik')) {
-              return 'utils-forms';
+            // Radix UI components (group together)
+            if (id.includes('@radix-ui/')) {
+              return 'ui-radix';
             }
             
             // === REACT ECOSYSTEM (Core vendor) ===
@@ -505,13 +503,6 @@ export default defineConfig(({ mode }) => {
             // === THEME & STYLING (Separate chunks) ===
             if (id.includes('next-themes')) {
               return 'ui-theme';
-            }
-            
-            // === UTILITY LIBRARIES (Grouped) ===
-            
-            // Lodash (if present - can be large)
-            if (id.includes('lodash')) {
-              return 'utils-lodash';
             }
             
             if (id.includes('clsx') || id.includes('class-variance-authority') || id.includes('tailwind-merge')) {
@@ -582,6 +573,7 @@ export default defineConfig(({ mode }) => {
             'doc-pdf',              // PDF.js
             'physics-engine',       // Ammo.js physics
             'map-engine',           // MapLibre/Mapbox
+            'ui-markdown',          // Markdown editor (has circular deps - isolate from main bundle)
           ];
           
           // Filter out heavy chunks from being preloaded
@@ -606,7 +598,20 @@ export default defineConfig(({ mode }) => {
         "seedrandom", // Include seedrandom to fix require errors
         "pako" // Include pako for PDF compression (must load before pdfjs)
       ],
-      exclude: ["@google/generative-ai","@huggingface/inference","@tensorflow/tfjs","three"],
+      exclude: [
+        "@google/generative-ai",
+        "@huggingface/inference",
+        "@tensorflow/tfjs",
+        "three",
+        // Exclude markdown editor packages to avoid circular dependencies
+        // They are dynamically imported at runtime
+        "@uiw/react-md-editor",
+        "markdown-it",
+        "micromark",
+        "unified",
+        "remark-*",
+        "rehype-*"
+      ],
       // Force re-optimization to ensure long package is properly handled
       force: true,
       esbuildOptions: {
