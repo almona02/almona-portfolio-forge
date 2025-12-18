@@ -91,11 +91,30 @@ async function getAuthToken(): Promise<string> {
   return session?.access_token || "";
 }
 
-export async function scanSingleProfile(
+/**
+ * Job status response from async endpoints
+ */
+export interface ScanJobStatusResponse {
+  job_id: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'unknown';
+  message?: string;
+  result?: SmartScanResult;
+  error?: string;
+  estimated_time_seconds?: number;
+  completed_at?: string;
+  processing_time_ms?: number;
+}
+
+/**
+ * Enqueue single profile scan job for async processing.
+ * Returns immediately with job_id for status tracking.
+ */
+export async function enqueueSingleProfileScan(
   file: File,
   knownWidthMm?: number,
-): Promise<SmartScanResult> {
+): Promise<{ job_id: string; estimated_time_seconds: number; filename: string }> {
   const token = await getAuthToken();
+  if (!token) throw new Error("No auth token");
 
   const formData = new FormData();
   formData.append("file", file);
@@ -103,7 +122,6 @@ export async function scanSingleProfile(
     formData.append("known_width_mm", String(knownWidthMm));
   }
   formData.append("auto_detect_scale", "true");
-  formData.append("require_validation", "true");
 
   const response = await fetch(`${API_BASE}/api/v2/smart-scan/single`, {
     method: "POST",
@@ -117,10 +135,83 @@ export async function scanSingleProfile(
     const errorData = await response
       .json()
       .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
-    throw new Error(errorData.detail || "SmartScan failed");
+    throw new Error(errorData.detail || "Failed to enqueue scan job");
   }
 
-  return response.json();
+  const data = await response.json();
+  return {
+    job_id: data.job_id,
+    estimated_time_seconds: data.estimated_time_seconds || 10,
+    filename: data.filename
+  };
+}
+
+/**
+ * Check status of scan job
+ */
+export async function getScanJobStatus(jobId: string): Promise<ScanJobStatusResponse> {
+  const token = await getAuthToken();
+  if (!token) throw new Error("No auth token");
+
+  const response = await fetch(`${API_BASE}/api/v2/smart-scan/job/${jobId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error(`Job ${jobId} not found`);
+    }
+    const errorData = await response
+      .json()
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
+    throw new Error(errorData.detail || "Failed to get job status");
+  }
+
+  return await response.json();
+}
+
+/**
+ * Poll for scan job completion with timeout
+ */
+export async function waitForScanJob(
+  jobId: string,
+  timeoutMs: number = 60000, // 1 minute default
+  pollIntervalMs: number = 2000 // poll every 2 seconds
+): Promise<SmartScanResult> {
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < timeoutMs) {
+    const status = await getScanJobStatus(jobId);
+
+    if (status.status === 'completed' && status.result) {
+      return status.result;
+    }
+
+    if (status.status === 'failed') {
+      throw new Error(status.error || 'Scan job failed');
+    }
+
+    // Wait before next poll
+    await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+  }
+
+  throw new Error(`Job ${jobId} timed out after ${timeoutMs}ms`);
+}
+
+/**
+ * Legacy function for backward compatibility - now uses async flow
+ * @deprecated Use enqueueSingleProfileScan + waitForScanJob instead
+ */
+export async function scanSingleProfile(
+  file: File,
+  knownWidthMm?: number,
+): Promise<SmartScanResult> {
+  console.warn('scanSingleProfile is deprecated. Use enqueueSingleProfileScan + waitForScanJob for better UX.');
+
+  const { job_id } = await enqueueSingleProfileScan(file, knownWidthMm);
+  return await waitForScanJob(job_id);
 }
 
 export async function scanBatchProfiles(

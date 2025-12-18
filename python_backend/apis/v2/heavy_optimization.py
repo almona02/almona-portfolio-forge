@@ -15,6 +15,9 @@ from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, conint, confloat
+import logging
+
+logger = logging.getLogger(__name__)
 
 from services.optimization.defect_aware_solver import (
     CutDef,
@@ -165,82 +168,179 @@ def _map_objective(obj: OptimizationObjectiveEnum) -> OptimizationObjective:
 
 @router.post(
     "/optimize/cutting",
-    response_model=CuttingOptimizationResponse,
-    summary="Heavy cutting optimization (Python backend)",
+    summary="Heavy cutting optimization (Async - Returns Job ID)",
+    responses={
+        202: {
+            "description": "Optimization job enqueued successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "job_id": "123e4567-e89b-12d3-a456-426614174000",
+                        "status": "enqueued",
+                        "message": "Heavy optimization job has been enqueued. Track progress via job_id.",
+                        "estimated_time_seconds": 30
+                    }
+                }
+            }
+        }
+    }
 )
-@cached(ttl=600, key_prefix="heavy_cutting")
-async def optimize_cutting(req: CuttingOptimizationRequest) -> Dict[str, Any]:
+async def optimize_cutting_async(req: CuttingOptimizationRequest) -> Dict[str, Any]:
     """
-    Run heavy 1D cutting / stock optimization in Python.
+    ENQUEUE heavy 1D cutting / stock optimization job for async processing.
+
+    This endpoint returns IMMEDIATELY with a job_id. The actual computation
+    happens in the background via Celery workers.
+
+    Frontend should:
+    1. Call this endpoint
+    2. Show "Optimization in progress..." message
+    3. Poll job status or listen via Supabase Realtime
+    4. Display results when job completes
 
     Intended for:
     - 100+ cuts
     - 500–1000+ window projects
-    - scenarios where the browser GA would freeze on low‑end machines
+    - scenarios where computation would block the API
     """
+    # Input validation only - no heavy computation
     if not req.cuts:
         raise HTTPException(status_code=400, detail="At least one cut is required")
     if not req.stock:
         raise HTTPException(status_code=400, detail="At least one stock bar is required")
 
     try:
-        optimizer = DefectAwareOptimizer(
-            kerf_width=req.kerf_width_mm,
-            min_usable_remnant=req.min_usable_remnant_mm,
-            time_limit_seconds=req.time_limit_seconds,
+        # Import services here to avoid circular imports
+        from tasks.heavy_computation_tasks import optimize_cutting_task
+        from services.job_service import job_service
+
+        # Convert Pydantic model to dict for Celery serialization
+        request_data = req.model_dump()
+
+        # Enqueue the task - returns immediately
+        task = optimize_cutting_task.delay(request_data)
+
+        # Create job record in database for Supabase Realtime
+        await job_service.create_job(
+            job_id=task.id,
+            job_type="optimization",
+            workshop_id=req.workshop_id,
+            project_ids=req.project_ids,
+            input_data={
+                "cuts_count": len(req.cuts),
+                "stock_count": len(req.stock),
+                "objective": req.objective,
+                "time_limit_seconds": req.time_limit_seconds
+            },
+            estimated_time_seconds=30,
+            metadata={"endpoint": "heavy_optimization.cutting"}
         )
 
-        cuts = [
-            CutDef(
-                id=c.id,
-                length=c.length_mm,
-                quantity=c.quantity,
-                priority=c.priority,
-                profile_id=c.profile_id or "",
-                allow_defects=c.allow_defects,
-            )
-            for c in req.cuts
-        ]
-        stock = [
-            StockBarDef(
-                id=s.id,
-                length=s.length_mm,
-                quantity=s.quantity,
-                cost_per_unit=s.cost_per_unit,
-                is_remnant=s.is_remnant,
-                defects=[],
-                profile_id=s.profile_id or "",
-            )
-            for s in req.stock
-        ]
+        logger.info("Heavy cutting optimization job enqueued and tracked",
+                   job_id=task.id,
+                   workshop_id=req.workshop_id,
+                   cuts_count=len(req.cuts),
+                   stock_count=len(req.stock))
 
-        solution = optimizer.optimize(
-            cuts=cuts,
-            stock=stock,
-            objective=_map_objective(req.objective),
-        )
-
-        payload = solution.to_dict()
-
-        egyptian_context: Dict[str, Any] = {
-            "workshop_id": req.workshop_id,
-            "project_ids": req.project_ids or [],
-            "optimized_for_egypt": True,
-            "notes": (
-                "Tuned for low‑RAM workshop PCs; moves heavy LP/CP compute to Python "
-                "instead of the browser."
-            ),
-        }
         return {
-            "assignments": payload["assignments"],
-            "bars_used": payload["bars_used"],
-            "metrics": payload["metrics"],
-            "solve_time_ms": payload["solve_time_ms"],
-            "solver_status": payload["solver_status"],
-            "computed_in": "python_backend",
-            "engine": "defect_aware_solver",
-            "egyptian_context": egyptian_context,
+            "job_id": task.id,
+            "status": "enqueued",
+            "message": "Heavy optimization job has been enqueued. Track progress via job_id.",
+            "estimated_time_seconds": 30,  # Conservative estimate
+            "workshop_id": req.workshop_id,
         }
+
+    except Exception as e:
+        logger.error("Failed to enqueue heavy cutting optimization job", error=str(e))
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to enqueue optimization job: {str(e)}"
+        )
+
+
+@router.get(
+    "/job/{job_id}",
+    summary="Check optimization job status",
+    responses={
+        200: {
+            "description": "Job completed successfully",
+            "content": {"application/json": {"example": {"status": "completed", "result": {...}}}}
+        },
+        202: {
+            "description": "Job still processing",
+            "content": {"application/json": {"example": {"status": "processing", "progress": "75%"}}}
+        },
+        404: {"description": "Job not found"}
+    }
+)
+async def get_job_status(job_id: str) -> Dict[str, Any]:
+    """
+    Check the status of an optimization job via Supabase database.
+    This endpoint reads from the jobs table for realtime-compatible status.
+
+    Returns:
+    - 200: Job completed with results
+    - 202: Job still processing
+    - 404: Job not found
+    """
+    try:
+        # Import job service here to avoid circular imports
+        from services.job_service import job_service
+
+        # Get job status from database
+        job_record = await job_service.get_job_status(job_id)
+
+        if not job_record:
+            raise HTTPException(status_code=404, detail="Job not found")
+
+        status = job_record["status"]
+
+        if status == "pending":
+            return {
+                "job_id": job_id,
+                "status": "pending",
+                "message": "Job is queued and waiting to be processed",
+                "estimated_time_seconds": job_record.get("estimated_time_seconds", 30),
+                "created_at": job_record.get("created_at"),
+            }
+        elif status == "processing":
+            return {
+                "job_id": job_id,
+                "status": "processing",
+                "message": "Optimization is currently running",
+                "started_at": job_record.get("started_at"),
+            }
+        elif status == "completed":
+            return {
+                "job_id": job_id,
+                "status": "completed",
+                "result": job_record.get("result_data"),
+                "completed_at": job_record.get("completed_at"),
+                "processing_time_seconds": job_record.get("processing_time_seconds", 0),
+            }
+        elif status == "failed":
+            return {
+                "job_id": job_id,
+                "status": "failed",
+                "error": job_record.get("error_message", "Unknown error"),
+                "message": "Optimization job failed",
+                "completed_at": job_record.get("completed_at"),
+            }
+        else:
+            return {
+                "job_id": job_id,
+                "status": status,
+                "message": f"Job is in {status} state",
+            }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("Error checking job status", job_id=job_id, error=str(e))
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error checking job status: {str(e)}"
+        )
     except HTTPException:
         raise
     except Exception as exc:  # pragma: no cover - defensive logging
