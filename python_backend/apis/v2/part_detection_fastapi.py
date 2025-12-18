@@ -32,6 +32,13 @@ async def detect_parts(
 
         part_detector = PartDetector(version=model_version)
         
+        # Check if part detection is available
+        if part_detector.model is None:
+            raise HTTPException(
+                status_code=503,
+                detail="Part detection service is currently unavailable. ultralytics package is not installed in production."
+            )
+        
         result = await part_detector.detect_parts(
             image.file,
             confidence_threshold=confidence_threshold
@@ -47,6 +54,8 @@ async def detect_parts(
             }
         )
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error identifying part: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error processing image: {str(e)}")

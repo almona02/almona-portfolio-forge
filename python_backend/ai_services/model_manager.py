@@ -7,7 +7,14 @@ from pathlib import Path
 from typing import Dict, Any, Optional
 import json
 from datetime import datetime
-from ultralytics import YOLO
+
+try:
+    from ultralytics import YOLO
+    ULTRALYTICS_AVAILABLE = True
+except ImportError:
+    ULTRALYTICS_AVAILABLE = False
+    YOLO = None  # type: ignore
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -34,7 +41,7 @@ class LocalModelManager:
         with open(self.metadata_file, 'w') as f:
             json.dump(self.metadata, f, indent=2)
     
-    def load_model(self, model_name: str = "yolov8n.pt") -> YOLO:
+    def load_model(self, model_name: str = "yolov8n.pt"):
         """
         Load a YOLO model from local storage
         
@@ -42,14 +49,18 @@ class LocalModelManager:
             model_name: Name of the model file
             
         Returns:
-            YOLO model instance
+            YOLO model instance (or None if ultralytics not available)
         """
+        if not ULTRALYTICS_AVAILABLE:
+            logger.error("ultralytics not available - cannot load YOLO model")
+            return None
+        
         model_path = self.model_dir / model_name
         
         if not model_path.exists():
             logger.warning(f"Model {model_name} not found locally, downloading...")
             try:
-                model = YOLO(model_name)
+                model = YOLO(model_name)  # type: ignore
                 model.save(str(model_path))
                 logger.info(f"Model {model_name} downloaded and saved to {model_path}")
             except Exception as e:
@@ -60,7 +71,7 @@ class LocalModelManager:
                     return model
                 raise
         else:
-            model = YOLO(str(model_path))
+            model = YOLO(str(model_path))  # type: ignore
         
         # Track model usage
         if model_name not in self.metadata["models"]:
