@@ -357,11 +357,6 @@ export default defineConfig(({ mode }) => {
               return 'physics-engine';
             }
             
-            // Video processing
-            if (id.includes('hls.js')) {
-              return 'video-engine';
-            }
-            
             // Maps
             if (id.includes('maplibre-gl') || id.includes('mapbox-gl')) {
               return 'map-engine';
@@ -563,7 +558,6 @@ export default defineConfig(({ mode }) => {
             'doc-excel',            // ExcelJS
             'doc-pdf',              // PDF.js
             'physics-engine',       // Ammo.js physics
-            'video-engine',         // HLS.js
             'map-engine',           // MapLibre/Mapbox
           ];
           
