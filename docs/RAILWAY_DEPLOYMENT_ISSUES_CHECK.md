@@ -92,7 +92,8 @@ The service should now:
 
 ## 📝 Notes
 
-- The Dockerfile CMD has `--workers 4`, but Railway uses `start.sh` which doesn't specify workers (single worker). This is fine for Railway's free tier.
+- **Railway Hobby Tier**: `start.sh` is configured to use 2 workers by default (optimal for Hobby tier with 1-2 vCPU and 512MB-1GB RAM). You can override with `WORKERS` environment variable if needed.
+- The Dockerfile CMD has `--workers 4`, but Railway uses `start.sh` which overrides it with 2 workers (better for Hobby tier resources).
 - All warnings are expected and non-blocking. The service will function correctly.
 - The Arabic locale warning is cosmetic - the app will work, but some locale-specific features may use fallbacks.
 
