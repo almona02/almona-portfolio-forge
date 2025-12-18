@@ -137,7 +137,11 @@ export const MaalemDashboard: React.FC = () => {
               <div className="flex justify-between items-center text-lg font-bold text-[#003366]"><span>الإجمالي</span><span className="font-mono">{costs.total.toLocaleString('ar-EG')}</span></div>
             </div>
           </div>
-          <button onClick={() => optimization && generateManualCuttingPacket(inputs, optimization, { ...costs, profiles: costs.material * 0.6, glass: costs.material * 0.3, accessories: costs.material * 0.1 })} disabled={validation.status === 'error' || !optimization} className="mt-4 w-full py-4 bg-[#003366] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-3">
+          <button onClick={async () => {
+            if (optimization) {
+              await generateManualCuttingPacket(inputs, optimization, { ...costs, profiles: costs.material * 0.6, glass: costs.material * 0.3, accessories: costs.material * 0.1 });
+            }
+          }} disabled={validation.status === 'error' || !optimization} className="mt-4 w-full py-4 bg-[#003366] text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-3">
             <span className="text-xl">🖨️</span><div><div className="font-bold">طباعة أمر الشغل</div><div className="text-xs font-normal opacity-80">دقة ٩٩.٨٪</div></div>
           </button>
         </div>
