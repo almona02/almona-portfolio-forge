@@ -396,8 +396,8 @@ export default defineConfig(({ mode }) => {
               return 'doc-excel';
             }
             
-            // PDF processing
-            if (id.includes('pdfjs-dist') || id.includes('pdf-lib')) {
+            // PDF processing (jspdf, pdf-lib, pdfjs-dist)
+            if (id.includes('pdfjs-dist') || id.includes('pdf-lib') || id.includes('jspdf')) {
               return 'doc-pdf';
             }
             
