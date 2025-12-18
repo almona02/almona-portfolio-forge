@@ -73,8 +73,37 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         
         return await call_next(request)
 
+class RailwayHealthCheckMiddleware(BaseHTTPMiddleware):
+    """Bypass host validation for Railway health checks"""
+    
+    async def dispatch(self, request: Request, call_next):
+        # Allow Railway health checks from internal network
+        # Railway uses 100.64.0.0/10 for internal networking
+        client_ip = request.client.host if request.client else None
+        
+        # Skip host validation for health endpoints or Railway internal IPs
+        if (
+            request.url.path.startswith("/health") or
+            (client_ip and client_ip.startswith("100.64."))
+        ):
+            # Bypass TrustedHostMiddleware by setting a valid host
+            headers = list(request.scope.get("headers", []))
+            for i, (key, value) in enumerate(headers):
+                if key == b"host":
+                    headers[i] = (b"host", b"localhost")
+                    break
+            else:
+                headers.append((b"host", b"localhost"))
+            request.scope["headers"] = headers
+        
+        return await call_next(request)
+
+
 def setup_security_middleware(app: FastAPI):
     """Configure all security middleware"""
+    
+    # Add Railway health check bypass FIRST (before TrustedHostMiddleware)
+    app.add_middleware(RailwayHealthCheckMiddleware)
     
     # Add TrustedHostMiddleware (adjust allowed hosts as needed)
     allowed_hosts = [
