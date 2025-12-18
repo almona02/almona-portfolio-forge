@@ -236,11 +236,13 @@ async def optimize_cutting_async(req: CuttingOptimizationRequest) -> Dict[str, A
             metadata={"endpoint": "heavy_optimization.cutting"}
         )
 
-        logger.info("Heavy cutting optimization job enqueued and tracked",
-                   job_id=task.id,
-                   workshop_id=req.workshop_id,
-                   cuts_count=len(req.cuts),
-                   stock_count=len(req.stock))
+        # Fix: Use f-string for standard Python logging
+        logger.info(
+            f"Heavy cutting optimization job enqueued: job_id={task.id}, "
+            f"workshop_id={req.workshop_id}, cuts_count={len(req.cuts)}, "
+            f"stock_count={len(req.stock)}",
+            extra={"job_id": task.id, "workshop_id": req.workshop_id}
+        )
 
         return {
             "job_id": task.id,
