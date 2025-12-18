@@ -1,11 +1,13 @@
-import { jsPDF } from 'jspdf';
+// Lazy load jsPDF to reduce initial bundle size (~935KB saved)
 import type { MaalemDashboardState, PilotOptimizationResult, PilotCostBreakdown } from '@/types/pilot';
 
-export function generateManualCuttingPacket(
+export async function generateManualCuttingPacket(
   inputs: MaalemDashboardState,
   optimization: PilotOptimizationResult,
   costs: PilotCostBreakdown
-): void {
+): Promise<void> {
+  // Load jsPDF library ONLY when function is called
+  const { jsPDF } = await import('jspdf');
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   let yPos = 20;
