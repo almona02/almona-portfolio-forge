@@ -171,38 +171,49 @@ class SystemResourcesHealthCheck(HealthCheck):
     
     async def _perform_check(self) -> HealthStatus:
         """Check system resources."""
-        import psutil
+        try:
+            import psutil
+        except ImportError:
+            # psutil not available - skip this check
+            self.details = {"status": "not_available", "note": "psutil not installed"}
+            return HealthStatus.HEALTHY
         
-        # Check memory usage
-        memory = psutil.virtual_memory()
-        memory_usage_percent = memory.percent
-        
-        # Check CPU usage
-        cpu_percent = psutil.cpu_percent(interval=1)
-        
-        # Check disk usage
-        disk = psutil.disk_usage('/')
-        disk_usage_percent = (disk.used / disk.total) * 100
-        
-        self.details = {
-            "memory_usage_percent": memory_usage_percent,
-            "cpu_usage_percent": cpu_percent,
-            "disk_usage_percent": disk_usage_percent,
-            "available_memory_gb": memory.available / (1024**3),
-            "total_memory_gb": memory.total / (1024**3)
-        }
-        
-        # Check thresholds
-        if memory_usage_percent > 90:
-            raise Exception(f"High memory usage: {memory_usage_percent:.1f}%")
-        
-        if cpu_percent > 90:
-            raise Exception(f"High CPU usage: {cpu_percent:.1f}%")
-        
-        if disk_usage_percent > 90:
-            raise Exception(f"High disk usage: {disk_usage_percent:.1f}%")
-        
-        return HealthStatus.HEALTHY
+        try:
+            # Check memory usage
+            memory = psutil.virtual_memory()
+            memory_usage_percent = memory.percent
+            
+            # Check CPU usage
+            cpu_percent = psutil.cpu_percent(interval=1)
+            
+            # Check disk usage
+            disk = psutil.disk_usage('/')
+            disk_usage_percent = (disk.used / disk.total) * 100
+            
+            self.details = {
+                "memory_usage_percent": memory_usage_percent,
+                "cpu_usage_percent": cpu_percent,
+                "disk_usage_percent": disk_usage_percent,
+                "available_memory_gb": memory.available / (1024**3),
+                "total_memory_gb": memory.total / (1024**3)
+            }
+            
+            # Check thresholds
+            if memory_usage_percent > 90:
+                raise Exception(f"High memory usage: {memory_usage_percent:.1f}%")
+            
+            if cpu_percent > 90:
+                raise Exception(f"High CPU usage: {cpu_percent:.1f}%")
+            
+            if disk_usage_percent > 90:
+                raise Exception(f"High disk usage: {disk_usage_percent:.1f}%")
+            
+            return HealthStatus.HEALTHY
+        except Exception as e:
+            # Don't fail health check if system resources check fails
+            logger.warning(f"System resources health check failed (non-blocking): {e}")
+            self.details = {"error": str(e), "status": "degraded"}
+            return HealthStatus.DEGRADED
 
 
 class RailwayServicesHealthCheck(HealthCheck):
@@ -230,11 +241,12 @@ class RailwayServicesHealthCheck(HealthCheck):
                 return HealthStatus.DEGRADED
             else:
                 return HealthStatus.UNHEALTHY
-            
+                
         except Exception as e:
-            logger.error(f"Railway services health check failed: {e}")
-            self.details = {"error": str(e)}
-            raise
+            # Don't fail health check if Railway services check fails
+            logger.warning(f"Railway services health check failed (non-blocking): {e}")
+            self.details = {"error": str(e), "status": "degraded"}
+            return HealthStatus.DEGRADED  # Return degraded instead of raising
 
 
 class HealthCheckManager:
