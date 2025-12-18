@@ -143,7 +143,15 @@ logger = logging.getLogger(__name__)
 
 # Get raw Redis URL for debugging
 raw_redis_url = settings.REDIS_URL or ""
-logger.info(f"Raw REDIS_URL from settings: {raw_redis_url[:50]}..." if len(raw_redis_url) > 50 else f"Raw REDIS_URL: {raw_redis_url}")
+# Log at ERROR level to ensure it shows up in Railway logs
+logger.error(f"[DEBUG] Raw REDIS_URL length: {len(raw_redis_url)}")
+if raw_redis_url:
+    # Mask password but show structure
+    masked_raw = re.sub(r':([^:@]+)@', r':****@', raw_redis_url)
+    logger.error(f"[DEBUG] Raw REDIS_URL (masked): {masked_raw}")
+    logger.error(f"[DEBUG] Raw REDIS_URL starts with redis://: {raw_redis_url.startswith('redis://')}")
+else:
+    logger.error("[DEBUG] Raw REDIS_URL is empty!")
 
 redis_url = normalize_redis_url(raw_redis_url)
 
@@ -169,24 +177,90 @@ if not redis_url.startswith(('redis://', 'rediss://')):
 # Celery expects: redis://[:password@]host[:port][/database]
 try:
     final_parsed = urlparse(redis_url)
-    # Reconstruct to ensure clean format
-    if final_parsed.username and final_parsed.password:
-        redis_url = f"{final_parsed.scheme}://{final_parsed.username}:{final_parsed.password}@{final_parsed.hostname}:{final_parsed.port or 6379}{final_parsed.path or ''}"
-    elif final_parsed.username:
-        redis_url = f"{final_parsed.scheme}://{final_parsed.username}@{final_parsed.hostname}:{final_parsed.port or 6379}{final_parsed.path or ''}"
+    
+    # Validate parsed components
+    if not final_parsed.hostname:
+        raise ValueError(f"Invalid URL: missing hostname in {redis_url}")
+    
+    # Extract port - ensure it's a valid integer
+    port = final_parsed.port
+    if port is None:
+        port = 6379  # Default Redis port
     else:
-        redis_url = f"{final_parsed.scheme}://{final_parsed.hostname}:{final_parsed.port or 6379}{final_parsed.path or ''}"
+        # Validate port is actually an integer
+        try:
+            port = int(port)
+            if not (1 <= port <= 65535):
+                raise ValueError(f"Port {port} out of range")
+        except (ValueError, TypeError):
+            logger.warning(f"Invalid port '{final_parsed.port}', using default 6379")
+            port = 6379
+    
+    # Reconstruct URL with validated components
+    if final_parsed.username and final_parsed.password:
+        redis_url = f"{final_parsed.scheme}://{final_parsed.username}:{final_parsed.password}@{final_parsed.hostname}:{port}{final_parsed.path or ''}"
+    elif final_parsed.username:
+        redis_url = f"{final_parsed.scheme}://{final_parsed.username}@{final_parsed.hostname}:{port}{final_parsed.path or ''}"
+    else:
+        redis_url = f"{final_parsed.scheme}://{final_parsed.hostname}:{port}{final_parsed.path or ''}"
+    
+    # Final validation: parse again to ensure it's valid
+    test_parse = urlparse(redis_url)
+    if not test_parse.hostname or test_parse.port is None:
+        raise ValueError(f"Reconstructed URL is invalid: {redis_url}")
+        
 except Exception as e:
-    logger.warning(f"Final URL cleanup failed: {e}, using original: {redis_url}")
+    logger.error(f"Final URL cleanup failed: {e}, original URL: {redis_url[:100]}")
+    # Try fallback
+    if settings.REDIS_HOST and settings.REDIS_HOST != 'localhost':
+        redis_url = f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT or 6379}"
+        logger.warning(f"Using fallback Redis URL: redis://{settings.REDIS_HOST}:{settings.REDIS_PORT or 6379}")
+    else:
+        raise ValueError(f"Cannot construct valid Redis URL: {e}")
 
 logger.info(f"Celery configured with Redis broker/backend: {re.sub(r':([^:@]+)@', r':****@', redis_url)}")
 
-celery_app = Celery(
-    "ai_services",
-    broker=redis_url,
-    backend=redis_url,
-    include=["ai_services.part_detection.tasks", "tasks.erp_tasks"]
-)
+# Validate URL one more time before passing to Celery
+try:
+    validation_parse = urlparse(redis_url)
+    if not validation_parse.scheme or not validation_parse.hostname:
+        raise ValueError(f"Invalid Redis URL structure: {redis_url}")
+    if validation_parse.port is not None:
+        int(validation_parse.port)  # Ensure port is a valid integer
+except Exception as e:
+    logger.error(f"Redis URL validation failed: {e}")
+    # Use fallback
+    if settings.REDIS_HOST and settings.REDIS_HOST != 'localhost':
+        redis_url = f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT or 6379}"
+        logger.warning(f"Using fallback Redis URL: {redis_url}")
+    else:
+        raise ValueError(f"Cannot use invalid Redis URL: {e}")
+
+# Initialize Celery with error handling
+try:
+    logger.error(f"[DEBUG] Initializing Celery with Redis URL: {re.sub(r':([^:@]+)@', r':****@', redis_url)}")
+    celery_app = Celery(
+        "ai_services",
+        broker=redis_url,
+        backend=redis_url,
+        include=["ai_services.part_detection.tasks", "tasks.erp_tasks"]
+    )
+    logger.error("[DEBUG] Celery app initialized successfully")
+except Exception as e:
+    logger.error(f"[DEBUG] Celery initialization failed: {type(e).__name__}: {str(e)}")
+    logger.error(f"[DEBUG] Redis URL that failed: {re.sub(r':([^:@]+)@', r':****@', redis_url)}")
+    # Try with a simple fallback
+    if settings.REDIS_HOST and settings.REDIS_HOST != 'localhost':
+        fallback_url = f"redis://{settings.REDIS_HOST}:{settings.REDIS_PORT or 6379}"
+        logger.error(f"[DEBUG] Trying fallback URL: {fallback_url}")
+        celery_app = Celery(
+            "ai_services",
+            broker=fallback_url,
+            backend=fallback_url,
+            include=["ai_services.part_detection.tasks", "tasks.erp_tasks"]
+        )
+    else:
+        raise
 
 celery_app.conf.update(
     # Explicitly set broker URL to ensure correct format
