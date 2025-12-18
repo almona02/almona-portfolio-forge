@@ -8,7 +8,13 @@ from pathlib import Path
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
-from ultralytics import YOLO
+try:
+    from ultralytics import YOLO
+    ULTRALYTICS_AVAILABLE = True
+except ImportError:
+    ULTRALYTICS_AVAILABLE = False
+    YOLO = None  # type: ignore
+
 import cv2
 import numpy as np
 
@@ -30,6 +36,15 @@ class PartDetector:
             model_path: Path to YOLO model file (.pt format)
             version: Model version (kept for compatibility but not used with MLflow)
         """
+        if not ULTRALYTICS_AVAILABLE:
+            logger.warning("ultralytics not available - part detection will be disabled")
+            self.model = None
+            self.model_path = None
+            self.version = version
+            self.model_manager = None
+            self.executor = None
+            return
+        
         self.model_path = model_path or settings.MODEL_PATH
         self.version = version
         self.model_manager = LocalModelManager()
@@ -37,13 +52,16 @@ class PartDetector:
         self.model = self._load_model()
         logger.info(f"PartDetector initialized with model: {self.model_path}")
     
-    def _load_model(self) -> YOLO:
+    def _load_model(self):
         """
         Load YOLO model from local path
         
         Returns:
-            YOLO model instance
+            YOLO model instance (or None if ultralytics not available)
         """
+        if not ULTRALYTICS_AVAILABLE:
+            return None
+        
         try:
             # Determine model name from path or version
             model_name = Path(self.model_path).name
@@ -66,6 +84,9 @@ class PartDetector:
         """
         Detect spare parts in the provided image (Async wrapper for compatibility)
         """
+        if not ULTRALYTICS_AVAILABLE or self.model is None:
+            raise RuntimeError("ultralytics not available - part detection is disabled")
+        
         try:
             # Read image
             image_data = await image_file.read() if hasattr(image_file, 'read') and asyncio.iscoroutinefunction(image_file.read) else image_file.read()
@@ -116,6 +137,10 @@ class PartDetector:
         Returns:
             List of detections with bounding boxes and confidence
         """
+        if not ULTRALYTICS_AVAILABLE or self.model is None:
+            logger.error("ultralytics not available - part detection is disabled")
+            return []
+        
         if image is None or image.size == 0:
             logger.warning("Empty image provided for detection")
             return []
@@ -187,8 +212,18 @@ class PartDetector:
         Returns:
             Dictionary with model information
         """
+        if not ULTRALYTICS_AVAILABLE or self.model is None:
+            return {
+                "model_path": None,
+                "model_type": "YOLO",
+                "framework": "Ultralytics",
+                "version": self.version or "local",
+                "status": "unavailable",
+                "message": "ultralytics package not installed"
+            }
+        
         return {
-            "model_path": str(self.model_path),
+            "model_path": str(self.model_path) if self.model_path else None,
             "model_type": "YOLO",
             "framework": "Ultralytics",
             "version": self.version or "local",
