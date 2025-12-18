@@ -90,8 +90,28 @@ export default defineConfig(({ mode }) => {
           cleanupOutdatedCaches: true,
           skipWaiting: true,
           clientsClaim: true,
-          maximumFileSizeToCacheInBytes: 12 * 1024 * 1024, // 12MB limit to handle large JS bundles
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit for heavy 3D chunks
           runtimeCaching: [
+            {
+              // CRITICAL: NEVER CACHE API REQUESTS - We want live cutting data, not stale cache
+              urlPattern: ({ url }) => url.pathname.startsWith('/api'),
+              handler: 'NetworkOnly',
+            },
+            {
+              // Google Fonts - Cache aggressively
+              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
             {
               urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
               handler: 'NetworkFirst',
