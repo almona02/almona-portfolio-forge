@@ -1,4 +1,6 @@
-import { EnhancedModel3DDialog } from "@/components/3d-model/EnhancedModel3DDialog";
+// Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)
+const EnhancedModel3DDialog = React.lazy(() => import("@/components/3d-model/EnhancedModel3DDialog").then(module => ({ default: module.EnhancedModel3DDialog })));
+
 import SEO from "@/components/SEO";
 import CompareBar from "@/components/comparison/CompareBar";
 import CompareDialog from "@/components/comparison/CompareDialog";
@@ -26,7 +28,7 @@ import { Separator } from "@/shared/ui/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import type { Machine as UiMachine } from "@/types/index";
 import { Eye, X } from "lucide-react";
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useSearchParams } from "react-router-dom";
 
@@ -879,29 +881,39 @@ const Products = function ProductsPage() {
         />
       </Suspense>
 
+      {/* Enhanced 3D Dialog - Lazy loaded to save 2.2MB on initial load */}
       {selectedMachineFor3D && (
-        <EnhancedModel3DDialog
-          isOpen={show3DModel}
-          onClose={() => {
-            setShow3DModel(false);
-            // Clear selection after a brief delay to allow animation
-            setTimeout(() => setSelectedMachineFor3D(null), 300);
-          }}
-          machineName={selectedMachineFor3D.name}
-          modelPath={
-            selectedMachineFor3D.modelPath ||
-            "/models/demo-machine.glb"
-          }
-          machineData={{
-            dimensions: selectedMachineFor3D.dimensions ? {
-              length: selectedMachineFor3D.dimensions.length,
-              width: selectedMachineFor3D.dimensions.width,
-              height: selectedMachineFor3D.dimensions.height
-            } : undefined,
-            power: selectedMachineFor3D.powerSpec?.consumption,
-            features: selectedMachineFor3D.tags
-          }}
-        />
+        <Suspense fallback={
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+              <p className="text-white">Loading 3D Engine...</p>
+            </div>
+          </div>
+        }>
+          <EnhancedModel3DDialog
+            isOpen={show3DModel}
+            onClose={() => {
+              setShow3DModel(false);
+              // Clear selection after a brief delay to allow animation
+              setTimeout(() => setSelectedMachineFor3D(null), 300);
+            }}
+            machineName={selectedMachineFor3D.name}
+            modelPath={
+              selectedMachineFor3D.modelPath ||
+              "/models/demo-machine.glb"
+            }
+            machineData={{
+              dimensions: selectedMachineFor3D.dimensions ? {
+                length: selectedMachineFor3D.dimensions.length,
+                width: selectedMachineFor3D.dimensions.width,
+                height: selectedMachineFor3D.dimensions.height
+              } : undefined,
+              power: selectedMachineFor3D.powerSpec?.consumption,
+              features: selectedMachineFor3D.tags
+            }}
+          />
+        </Suspense>
       )}
 
       <MachineRecommendationWizard

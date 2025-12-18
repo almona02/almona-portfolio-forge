@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Model3DGallery as Model3DGalleryComponent } from '@/components/3d-model/Model3DGallery';
-import { EnhancedModel3DDialog } from '@/components/3d-model/EnhancedModel3DDialog';
+// Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)
+const EnhancedModel3DDialog = React.lazy(() => import('@/components/3d-model/EnhancedModel3DDialog').then(module => ({ default: module.EnhancedModel3DDialog })));
 import { ModelMeasurementTool } from '@/components/3d-model/ModelMeasurementTool';
 import { SwiftXRIframe } from '@/components/swiftxr/SwiftXRIframe';
 import { Button } from '@/shared/ui/ui/button';
@@ -225,23 +226,32 @@ export default function Model3DGalleryPage() {
           />
         </motion.div>
 
-        {/* Enhanced 3D Dialog */}
+        {/* Enhanced 3D Dialog - Lazy loaded to save 2.2MB on initial load */}
         {selectedModel && (
-          <EnhancedModel3DDialog
-            isOpen={show3DDialog}
-            onClose={() => {
-              setShow3DDialog(false);
-              setSelectedModel(null);
-            }}
-            machineName={selectedModel.name}
-            modelPath={selectedModel.modelPath}
-            machineData={{
-              dimensions: selectedModel.dimensions,
-              features: selectedModel.tags
-            }}
-            autoRotateEnabled={autoRotateEnabled}
-            onAutoRotateChange={setAutoRotateEnabled}
-          />
+          <Suspense fallback={
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                <p className="text-white">Loading 3D Engine...</p>
+              </div>
+            </div>
+          }>
+            <EnhancedModel3DDialog
+              isOpen={show3DDialog}
+              onClose={() => {
+                setShow3DDialog(false);
+                setSelectedModel(null);
+              }}
+              machineName={selectedModel.name}
+              modelPath={selectedModel.modelPath}
+              machineData={{
+                dimensions: selectedModel.dimensions,
+                features: selectedModel.tags
+              }}
+              autoRotateEnabled={autoRotateEnabled}
+              onAutoRotateChange={setAutoRotateEnabled}
+            />
+          </Suspense>
         )}
 
         {/* Measurement Tool */}
