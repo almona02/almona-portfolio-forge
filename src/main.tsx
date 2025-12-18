@@ -287,32 +287,34 @@ requestAnimationFrame(() => {
 // PWA Service Worker Registration
 // VitePWA with injectRegister: "auto" handles registration automatically
 // This code provides user feedback and handles updates
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  import('virtual:pwa-register').then(({ registerSW }) => {
-    const updateSW = registerSW({
-      immediate: true, // Register immediately
-      onNeedRefresh() {
-        // This runs when a new version is deployed
-        if (confirm('تحديث جديد متاح. هل تريد التحديث الآن؟\nNew update available. Reload?')) {
-          updateSW(true);
-        }
-      },
-      onOfflineReady() {
-        console.log('✅ App is ready for offline use.');
-      },
-      onRegistered(registration) {
-        console.log('✅ Service Worker registered:', registration);
-      },
-      onRegisterError(error) {
-        console.error('❌ Service Worker registration error:', error);
-      },
-    });
-  }).catch((error) => {
-    // VitePWA might not be available in dev mode - that's OK
-    if (import.meta.env.DEV) {
-      console.debug('[PWA] Service Worker not available in dev mode');
-    } else {
+if ('serviceWorker' in navigator) {
+  // Dynamic import to avoid errors in dev mode if PWA is disabled
+  if (import.meta.env.PROD) {
+    // Production: Register service worker with update prompts
+    import('virtual:pwa-register').then(({ registerSW }) => {
+      const updateSW = registerSW({
+        immediate: true, // Register immediately
+        onNeedRefresh() {
+          // This runs when a new version is deployed
+          if (confirm('تحديث جديد متاح. هل تريد التحديث الآن؟\nNew update available. Reload?')) {
+            updateSW(true);
+          }
+        },
+        onOfflineReady() {
+          console.log('✅ App is ready for offline use.');
+        },
+        onRegistered(registration) {
+          console.log('✅ Service Worker registered:', registration);
+        },
+        onRegisterError(error) {
+          console.error('❌ Service Worker registration error:', error);
+        },
+      });
+    }).catch((error) => {
       console.warn('[PWA] Failed to load service worker registration:', error);
-    }
-  });
+    });
+  } else {
+    // Development: Log that PWA is available but not active
+    console.debug('[PWA] Service Worker available in dev mode (enabled in config)');
+  }
 }
