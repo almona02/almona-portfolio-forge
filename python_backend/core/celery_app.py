@@ -12,6 +12,20 @@ def normalize_redis_url(url: str) -> str:
     # Remove any whitespace
     url = url.strip()
     
+    # Fix common malformed patterns BEFORE parsing
+    # More aggressive pattern matching for Railway's malformed URLs
+    # Pattern: "6379redis:6379" -> extract just the last port
+    url = re.sub(r':(\d+)redis:(\d+)', r':\2', url)  # "6379redis:6379" -> ":6379"
+    url = re.sub(r':(\d+)redis:', r':\1', url)  # "6379redis:" -> ":6379"
+    url = re.sub(r':(\d+)redis$', r':\1', url)  # "6379redis" at end -> ":6379"
+    # Handle patterns like "host:6379redis:6379" -> "host:6379"
+    url = re.sub(r'(\d+)redis:(\d+)', r'\2', url)  # Remove "redis:" between numbers
+    url = re.sub(r'redis:(\d+)', r'\1', url)  # Remove "redis:" before number
+    # Remove duplicate ports (e.g., ":6379:6379" -> ":6379")
+    url = re.sub(r':(\d+):\1(?!\d)', r':\1', url)
+    # Remove any remaining "redis" text in port section
+    url = re.sub(r':(\d*redis\d*)', lambda m: ':' + re.sub(r'[^\d]', '', m.group(1)), url)
+    
     # Ensure URL starts with redis:// or rediss://
     if not url.startswith(('redis://', 'rediss://')):
         # If it looks like a Railway internal URL, add redis://
@@ -44,14 +58,20 @@ def normalize_redis_url(url: str) -> str:
                 host_parts = netloc.split(':')
                 if len(host_parts) == 2:
                     hostname, port_str = host_parts
-                    # Extract only numeric port, remove any trailing text
-                    port_match = re.search(r'^(\d+)', port_str)
-                    if port_match:
-                        port = port_match.group(1)
-                        # Validate port is a valid integer
+                    # Extract only numeric port, handle patterns like "6379redis:6379" or "6379redis"
+                    # First, try to find the last valid port number
+                    port_matches = re.findall(r'(\d+)', port_str)
+                    if port_matches:
+                        # Use the last numeric match (most likely the actual port)
+                        port = port_matches[-1]
+                        # Validate port is a valid integer and in valid range
                         try:
-                            int(port)
-                            netloc = f"{hostname}:{port}"
+                            port_int = int(port)
+                            if 1 <= port_int <= 65535:
+                                netloc = f"{hostname}:{port}"
+                            else:
+                                # Invalid port range, use default 6379
+                                netloc = f"{hostname}:6379"
                         except ValueError:
                             # Invalid port, use default 6379
                             netloc = f"{hostname}:6379"
@@ -102,6 +122,8 @@ logger = logging.getLogger(__name__)
 
 # Get raw Redis URL for debugging
 raw_redis_url = settings.REDIS_URL or ""
+logger.info(f"Raw REDIS_URL from settings: {raw_redis_url[:50]}..." if len(raw_redis_url) > 50 else f"Raw REDIS_URL: {raw_redis_url}")
+
 redis_url = normalize_redis_url(raw_redis_url)
 
 # Log the Redis URL (mask password for security)
