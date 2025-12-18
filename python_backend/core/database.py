@@ -11,6 +11,10 @@ from core.config import settings
 # Database configuration
 DATABASE_URL = settings.DATABASE_URL
 
+# Convert postgresql:// URL to use asyncpg driver if needed
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+
 # Create async engine
 engine = create_async_engine(
     DATABASE_URL,

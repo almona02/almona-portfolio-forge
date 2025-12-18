@@ -251,7 +251,7 @@ async def optimize_cutting_async(req: CuttingOptimizationRequest) -> Dict[str, A
         }
 
     except Exception as e:
-        logger.error("Failed to enqueue heavy cutting optimization job", error=str(e))
+        logger.error(f"Failed to enqueue heavy cutting optimization job: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=f"Failed to enqueue optimization job: {str(e)}"
