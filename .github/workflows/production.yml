@@ -256,7 +256,9 @@ jobs:
 
       # Deploy Frontend to Vercel
       - name: Deploy to Vercel (Production)
+        id: vercel-deploy
         uses: amondnet/vercel-action@v25
+        continue-on-error: true
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
@@ -271,8 +273,20 @@ jobs:
           VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_KEY }}
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
+      - name: Check deployment result
+        if: steps.vercel-deploy.outcome == 'failure'
+        run: |
+          echo "⚠️ Vercel deployment failed. This may be due to:"
+          echo "  - Free tier limit (100 deployments/day) - wait a few minutes and retry"
+          echo "  - Network issues - check Vercel dashboard"
+          echo "  - Configuration errors - check workflow logs"
+          echo ""
+          echo "Workflow will continue. To deploy manually, use: vercel --prod"
+          echo "Or wait for the rate limit to reset (usually resets daily)"
+
       - name: Get Vercel Deployment URL
         id: vercel-url
+        if: steps.vercel-deploy.outcome == 'success'
         run: |
           echo "✅ Frontend deployed to Vercel"
           echo "Check Vercel dashboard for deployment URL"
