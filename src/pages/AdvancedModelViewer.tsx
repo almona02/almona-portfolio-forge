@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { Suspense, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Button } from '@/shared/ui/ui/button';
@@ -28,7 +28,8 @@ import {
 } from 'lucide-react';
 import { LazyEnhancedGLBViewer } from '@/components/3d-model/LazyGLBViewer';
 import { ModelMeasurementTool } from '@/components/3d-model/ModelMeasurementTool';
-import { Collaborative3DViewer } from '@/components/3d-model/Collaborative3DViewer';
+// Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)
+const Collaborative3DViewer = React.lazy(() => import('@/components/3d-model/Collaborative3DViewer').then(module => ({ default: module.Collaborative3DViewer })));
 import { useToast } from '@/hooks/useToast';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import '@/components/3d-model/SwiftXR.css';
@@ -659,9 +660,18 @@ export function AdvancedModelViewer() {
                   </CardHeader>
                   <CardContent className="p-0">
                     <div className="h-[70vh]">
-                      <Collaborative3DViewer
-                        modelPath={selectedModel?.modelPath || modelsData[0].modelPath}
-                      />
+                      <Suspense fallback={
+                        <div className="flex items-center justify-center h-96 bg-gray-900 rounded-lg">
+                          <div className="text-center">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                            <p className="text-white">Loading 3D Collaboration Engine...</p>
+                          </div>
+                        </div>
+                      }>
+                        <Collaborative3DViewer
+                          modelPath={selectedModel?.modelPath || modelsData[0].modelPath}
+                        />
+                      </Suspense>
                     </div>
                   </CardContent>
                 </Card>
