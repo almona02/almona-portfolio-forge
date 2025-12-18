@@ -4,6 +4,7 @@ This allows gradual migration without breaking existing functionality.
 """
 
 import logging
+import re
 from typing import Optional, AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -93,8 +94,14 @@ class DatabaseAdapter:
     def _setup_redis(self):
         """Setup Redis connection."""
         if settings.REDIS_URL:
+            # Debug: Log raw Redis URL from Railway
+            raw_redis_url = settings.REDIS_URL
+            logger.error(f"[DEBUG-DB] Raw REDIS_URL from settings (length: {len(raw_redis_url)}): {raw_redis_url[:100]}..." if len(raw_redis_url) > 100 else f"[DEBUG-DB] Raw REDIS_URL: {raw_redis_url}")
+            logger.error(f"[DEBUG-DB] REDIS_URL starts with redis://: {raw_redis_url.startswith('redis://')}")
+            
             # Normalize Redis URL before parsing
             normalized_url = self._normalize_redis_url(settings.REDIS_URL)
+            logger.error(f"[DEBUG-DB] Normalized Redis URL (masked): {re.sub(r':([^:@]+)@', r':****@', normalized_url) if normalized_url else 'None'}")
             if normalized_url:
                 # Parse Redis URL for connection
                 self.redis_client = redis.from_url(
