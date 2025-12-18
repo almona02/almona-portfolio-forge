@@ -4,8 +4,14 @@ import tempfile
 from typing import Any, Dict, List, Optional
 
 import cv2
-import easyocr
 import numpy as np
+
+try:
+    import easyocr
+    EASYOCR_AVAILABLE = True
+except ImportError:
+    EASYOCR_AVAILABLE = False
+    easyocr = None  # type: ignore
 
 from .scale_engine import ScaleDetectionPipeline
 
@@ -18,8 +24,14 @@ class ScaleDetectorService:
     """
 
     def __init__(self, use_gpu: bool = False):
+        if not EASYOCR_AVAILABLE:
+            logger.warning("EasyOCR not available - ScaleDetectorService will be disabled")
+            self.reader = None
+            self.pipeline = None
+            return
+        
         logger.info(f"Initializing EasyOCR (GPU={use_gpu})...")
-        self.reader = easyocr.Reader(["en"], gpu=use_gpu, verbose=False)
+        self.reader = easyocr.Reader(["en"], gpu=use_gpu, verbose=False)  # type: ignore
         self.pipeline = ScaleDetectionPipeline(
             min_line_length=20,
             max_line_gap=10,
@@ -29,6 +41,10 @@ class ScaleDetectorService:
 
     def _run_ocr(self, img: np.ndarray) -> List[Dict[str, Any]]:
         """Run EasyOCR and map bboxes to x1,y1,x2,y2 rectangles."""
+        if not EASYOCR_AVAILABLE or self.reader is None:
+            logger.error("EasyOCR not available - cannot run OCR")
+            return []
+        
         results = self.reader.readtext(img, detail=1)
         mapped: List[Dict[str, Any]] = []
         for (bbox, text, conf) in results:
@@ -50,6 +66,12 @@ class ScaleDetectorService:
 
     def detect_scale(self, image_bytes: bytes) -> Dict[str, Any]:
         """Decode image, run OCR, and execute the scale detection pipeline."""
+        if not EASYOCR_AVAILABLE or self.reader is None or self.pipeline is None:
+            return {
+                "detected": False,
+                "error": "EasyOCR not available - scale detection is disabled"
+            }
+        
         nparr = np.frombuffer(image_bytes, np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         if img is None:

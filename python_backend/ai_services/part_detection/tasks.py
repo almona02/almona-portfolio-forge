@@ -5,7 +5,14 @@ from celery import current_task
 import cv2
 import numpy as np
 from PIL import Image
-import torch
+
+try:
+    import torch
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+    torch = None  # type: ignore
+
 from pathlib import Path
 
 from core.celery_app import celery_app
@@ -23,6 +30,21 @@ def detect_parts(self, image_path: str) -> Dict[str, Any]:
     Returns:
         Dictionary containing detection results
     """
+    if not TORCH_AVAILABLE:
+        current_task.update_state(
+            state='FAILURE',
+            meta={
+                'status': 'failed',
+                'error': 'PyTorch not available - part detection is disabled',
+                'error_type': 'ImportError'
+            }
+        )
+        return {
+            'task_id': self.request.id,
+            'status': 'failed',
+            'error': 'PyTorch not available - part detection is disabled'
+        }
+    
     try:
         # Update task state
         current_task.update_state(state='PROCESSING', meta={'status': 'Loading model...'})
