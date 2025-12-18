@@ -1,12 +1,26 @@
 """
 Enhanced health check endpoints with OCR and SmartScan diagnostics.
 """
+
 from datetime import datetime
 from typing import Any, Dict, Optional
-
+import logging
 import os
-import psutil
+
 from fastapi import APIRouter
+
+try:
+    import psutil
+
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
+    psutil = None  # type: ignore
+
+logger = logging.getLogger(__name__)
+
+if not PSUTIL_AVAILABLE:
+    logger.warning("psutil not available. System metrics will be limited.")
 
 router = APIRouter()
 
@@ -61,17 +75,34 @@ def check_scale_detector() -> Dict[str, Any]:
 
 
 def get_system_metrics() -> Dict[str, Any]:
-    process = psutil.Process(os.getpid())
-    return {
-        "cpu_percent": process.cpu_percent(interval=0.1),
-        "memory_mb": round(process.memory_info().rss / 1024 / 1024, 2),
-        "memory_percent": round(process.memory_percent(), 2),
-        "open_files": len(process.open_files()),
-        "threads": process.num_threads(),
-        "uptime_seconds": int(
-            (datetime.utcnow() - datetime.fromtimestamp(process.create_time())).total_seconds()
-        ),
-    }
+    if PSUTIL_AVAILABLE and psutil is not None:
+        try:
+            process = psutil.Process(os.getpid())
+            return {
+                "cpu_percent": process.cpu_percent(interval=0.1),
+                "memory_mb": round(process.memory_info().rss / 1024 / 1024, 2),
+                "memory_percent": round(process.memory_percent(), 2),
+                "open_files": len(process.open_files()),
+                "threads": process.num_threads(),
+                "uptime_seconds": int(
+                    (
+                        datetime.utcnow()
+                        - datetime.fromtimestamp(process.create_time())
+                    ).total_seconds()
+                ),
+            }
+        except Exception as e:
+            logger.warning(f"Failed to get system metrics: {e}")
+            return {
+                "status": "limited",
+                "note": "psutil metrics unavailable",
+                "error": str(e),
+            }
+    else:
+        return {
+            "status": "limited",
+            "note": "psutil not available - system metrics disabled",
+        }
 
 
 @router.get("/health")
@@ -87,7 +118,11 @@ async def health_check():
             "file_conversion": "available",
         },
     }
-    unhealthy = [k for k, v in checks.items() if isinstance(v, dict) and v.get("status") == "unhealthy"]
+    unhealthy = [
+        k
+        for k, v in checks.items()
+        if isinstance(v, dict) and v.get("status") == "unhealthy"
+    ]
     overall = "unhealthy" if unhealthy else "healthy"
     return {
         "status": overall,
@@ -141,4 +176,3 @@ async def metrics_endpoint():
     except Exception:
         pass
     return metrics
-

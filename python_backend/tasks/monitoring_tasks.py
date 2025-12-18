@@ -6,8 +6,19 @@ from celery.exceptions import Retry
 from typing import Dict, Any, List, Optional
 import logging
 import time
-import psutil
 from datetime import datetime, timedelta
+
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
+    psutil = None  # type: ignore
+
+logger = logging.getLogger(__name__)
+
+if not PSUTIL_AVAILABLE:
+    logger.warning("psutil not available. System resource monitoring will be disabled.")
 
 from celery_app import celery_app
 from core.supabase_client import get_enhanced_supabase_client
@@ -106,26 +117,33 @@ def system_health_check(self):
         )
         
         try:
-            # CPU usage
-            cpu_percent = psutil.cpu_percent(interval=1)
-            
-            # Memory usage
-            memory = psutil.virtual_memory()
-            
-            # Disk usage
-            disk = psutil.disk_usage('/')
-            
-            health_data["checks"]["system_resources"] = {
-                "status": "healthy" if cpu_percent < 80 and memory.percent < 80 else "degraded",
-                "cpu_percent": cpu_percent,
-                "memory_percent": memory.percent,
-                "memory_available_gb": round(memory.available / (1024**3), 2),
-                "disk_percent": disk.percent,
-                "disk_free_gb": round(disk.free / (1024**3), 2)
-            }
-            
-            if cpu_percent > 80 or memory.percent > 80:
-                health_data["overall_status"] = "degraded"
+            if PSUTIL_AVAILABLE and psutil is not None:
+                # CPU usage
+                cpu_percent = psutil.cpu_percent(interval=1)
+                
+                # Memory usage
+                memory = psutil.virtual_memory()
+                
+                # Disk usage
+                disk = psutil.disk_usage('/')
+                
+                health_data["checks"]["system_resources"] = {
+                    "status": "healthy" if cpu_percent < 80 and memory.percent < 80 else "degraded",
+                    "cpu_percent": cpu_percent,
+                    "memory_percent": memory.percent,
+                    "memory_available_gb": round(memory.available / (1024**3), 2),
+                    "disk_percent": disk.percent,
+                    "disk_free_gb": round(disk.free / (1024**3), 2)
+                }
+                
+                if cpu_percent > 80 or memory.percent > 80:
+                    health_data["overall_status"] = "degraded"
+            else:
+                # psutil not available - skip system resources check
+                health_data["checks"]["system_resources"] = {
+                    "status": "healthy",
+                    "note": "psutil not available - system resource monitoring disabled"
+                }
                 
         except Exception as e:
             health_data["checks"]["system_resources"] = {
