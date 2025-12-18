@@ -73,6 +73,8 @@ COPY core/ core/
 COPY services/ services/
 COPY models/ models/
 COPY ai_services/ ai_services/
+COPY tasks/ tasks/
+COPY celery_app.py celery_app.py
 # Copy templates directory (ensure directory exists first)
 # Railway build context should include python_backend/ directory
 RUN mkdir -p templates/
