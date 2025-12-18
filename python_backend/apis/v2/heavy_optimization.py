@@ -169,6 +169,7 @@ def _map_objective(obj: OptimizationObjectiveEnum) -> OptimizationObjective:
 @router.post(
     "/optimize/cutting",
     summary="Heavy cutting optimization (Async - Returns Job ID)",
+    status_code=202,  # Accepted - job enqueued for async processing
     responses={
         202: {
             "description": "Optimization job enqueued successfully",
