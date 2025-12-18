@@ -2,14 +2,14 @@ name: Full Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 env:
   NODE_ENV: production
-  PYTHON_VERSION: '3.11'
+  PYTHON_VERSION: "3.11"
   CACHE_VERSION: v1
 
 jobs:
@@ -21,8 +21,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
       - name: Install deps (include devDependencies)
         run: npm ci --no-audit --no-fund
         env:
@@ -57,14 +57,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: true
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: false
+        run: |
+          echo "Freeing up disk space..."
+          # Remove large packages and caches
+          sudo apt-get clean
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost "$AGENT_TOOLSDIRECTORY"
+          # Clean Docker
+          docker system prune -af || true
+          # Clean npm/yarn cache
+          npm cache clean --force || true
+          yarn cache clean || true
+          # Show disk usage
+          df -h
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -103,25 +107,25 @@ jobs:
         continue-on-error: true
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'almona-ai-service'
-          format: 'table'
-          exit-code: '0'
-          severity: 'CRITICAL,HIGH'
+          image-ref: "almona-ai-service"
+          format: "table"
+          exit-code: "0"
+          severity: "CRITICAL,HIGH"
       - name: Trivy FS Fallback
         if: steps.trivy.outcome == 'failure'
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'fs'
-          scan-ref: 'python_backend'
-          format: 'table'
-          exit-code: '0'
-          severity: 'CRITICAL,HIGH'
+          scan-type: "fs"
+          scan-ref: "python_backend"
+          format: "table"
+          exit-code: "0"
+          severity: "CRITICAL,HIGH"
       - name: Export SBOM (Syft)
         continue-on-error: true
         uses: anchore/sbom-action@v0
         with:
-          image: 'almona-ai-service'
-          format: 'spdx-json'
+          image: "almona-ai-service"
+          format: "spdx-json"
       - name: Upload SBOM
         if: always()
         uses: actions/upload-artifact@v4
