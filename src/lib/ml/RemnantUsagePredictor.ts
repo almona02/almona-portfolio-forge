@@ -1,9 +1,20 @@
 /**
  * Remnant Usage Predictor with TensorFlow.js
  * Evolves from rule-based to true machine learning predictions
+ * 
+ * Uses lazy loading for TensorFlow.js to reduce initial bundle size (~870KB saved)
  */
 
-import * as tf from '@tensorflow/tfjs';
+// Lazy load TensorFlow.js - only loads when ML features are used
+let tf: typeof import('@tensorflow/tfjs') | null = null;
+
+const loadTensorFlow = async () => {
+  if (!tf) {
+    tf = await import('@tensorflow/tfjs');
+  }
+  return tf;
+};
+
 import type { Remnant } from '@/lib/inventory/RemnantManager';
 import { remnantPredictor } from '@/lib/inventory/RemnantPredictor';
 
@@ -31,7 +42,7 @@ export interface PredictionResult {
 }
 
 export class RemnantUsagePredictor {
-  private model: tf.LayersModel | null = null;
+  private model: any = null; // tf.LayersModel | null, but using any to avoid type issues with lazy loading
   private modelVersion: string = '1.0.0';
   private minConfidenceThreshold: number = 80; // Use ML if confidence >= 80%
   private isModelLoaded: boolean = false;
@@ -41,12 +52,15 @@ export class RemnantUsagePredictor {
    */
   async loadModel(modelUrl?: string): Promise<void> {
     try {
+      // Lazy load TensorFlow.js
+      const tfModule = await loadTensorFlow();
+      
       if (modelUrl) {
-        this.model = await tf.loadLayersModel(modelUrl);
+        this.model = await tfModule.loadLayersModel(modelUrl);
       } else {
         // Try to load from IndexedDB (browser storage)
         try {
-          this.model = await tf.loadLayersModel('indexeddb://remnant-predictor-model');
+          this.model = await tfModule.loadLayersModel('indexeddb://remnant-predictor-model');
         } catch {
           // Model not found in storage, will use fallback
           console.warn('ML model not found, using rule-based fallback');
@@ -135,14 +149,17 @@ export class RemnantUsagePredictor {
       throw new Error('Model not loaded');
     }
 
+    // Lazy load TensorFlow.js if not already loaded
+    const tfModule = await loadTensorFlow();
+
     // Normalize features to 0-1 range
     const normalizedFeatures = this.normalizeFeatures(features);
 
     // Create tensor input
-    const input = tf.tensor2d([normalizedFeatures], [1, 8]);
+    const input = tfModule.tensor2d([normalizedFeatures], [1, 8]);
 
     // Predict
-    const prediction = this.model.predict(input) as tf.Tensor;
+    const prediction = this.model.predict(input) as any; // tf.Tensor
     const predictionValue = await prediction.data();
 
     // Clean up tensors

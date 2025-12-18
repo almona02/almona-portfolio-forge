@@ -1,9 +1,20 @@
 /**
  * Model Trainer
  * Automated model training pipeline for remnant usage prediction
+ * 
+ * Uses lazy loading for TensorFlow.js to reduce initial bundle size (~870KB saved)
  */
 
-import * as tf from '@tensorflow/tfjs';
+// Lazy load TensorFlow.js - only loads when training is needed
+let tf: typeof import('@tensorflow/tfjs') | null = null;
+
+const loadTensorFlow = async () => {
+  if (!tf) {
+    tf = await import('@tensorflow/tfjs');
+  }
+  return tf;
+};
+
 import type { RemnantFeatures } from './RemnantUsagePredictor';
 import { supabase } from '../supabase';
 
@@ -22,8 +33,8 @@ export interface TrainingConfig {
 }
 
 export interface TrainingResult {
-  model: tf.LayersModel;
-  history: tf.History;
+  model: any; // tf.LayersModel, but using any to avoid type issues with lazy loading
+  history: any; // tf.History
   accuracy: number;
   loss: number;
   trainingTime: number;
@@ -118,30 +129,33 @@ export class ModelTrainer {
   /**
    * Create and compile model architecture
    */
-  createModel(): tf.LayersModel {
-    const model = tf.sequential({
+  async createModel(): Promise<any> {
+    // Lazy load TensorFlow.js
+    const tfModule = await loadTensorFlow();
+    
+    const model = tfModule.sequential({
       layers: [
         // Input layer: 8 features
-        tf.layers.dense({
+        tfModule.layers.dense({
           inputShape: [8],
           units: 64,
           activation: 'relu',
           name: 'hidden1',
         }),
-        tf.layers.dropout({ rate: 0.2 }),
-        tf.layers.dense({
+        tfModule.layers.dropout({ rate: 0.2 }),
+        tfModule.layers.dense({
           units: 32,
           activation: 'relu',
           name: 'hidden2',
         }),
-        tf.layers.dropout({ rate: 0.2 }),
-        tf.layers.dense({
+        tfModule.layers.dropout({ rate: 0.2 }),
+        tfModule.layers.dense({
           units: 16,
           activation: 'relu',
           name: 'hidden3',
         }),
         // Output layer: single value (reuse likelihood 0-1)
-        tf.layers.dense({
+        tfModule.layers.dense({
           units: 1,
           activation: 'sigmoid',
           name: 'output',
@@ -151,7 +165,7 @@ export class ModelTrainer {
 
     // Compile model
     model.compile({
-      optimizer: tf.train.adam(this.defaultConfig.learningRate),
+      optimizer: tfModule.train.adam(this.defaultConfig.learningRate),
       loss: 'binaryCrossentropy',
       metrics: ['accuracy'],
     });
@@ -173,10 +187,10 @@ export class ModelTrainer {
     const effectiveConfig = { ...this.defaultConfig, ...config };
 
     // Prepare data
-    const { features, labels } = this.prepareData(trainingData);
+    const { features, labels } = await this.prepareData(trainingData);
 
     // Create model
-    const model = this.createModel();
+    const model = await this.createModel();
 
     // Train model
     const startTime = performance.now();
@@ -197,7 +211,7 @@ export class ModelTrainer {
     const trainingTime = performance.now() - startTime;
 
     // Evaluate model
-    const evaluation = model.evaluate(features, labels) as tf.Scalar[];
+    const evaluation = model.evaluate(features, labels) as any[]; // tf.Scalar[]
     const loss = (await evaluation[0].data())[0];
     const accuracy = (await evaluation[1].data())[0];
 
@@ -218,10 +232,13 @@ export class ModelTrainer {
   /**
    * Prepare data for training (convert to tensors)
    */
-  private prepareData(trainingData: TrainingData[]): {
-    features: tf.Tensor2D;
-    labels: tf.Tensor2D;
-  } {
+  private async prepareData(trainingData: TrainingData[]): Promise<{
+    features: any; // tf.Tensor2D
+    labels: any; // tf.Tensor2D
+  }> {
+    // Lazy load TensorFlow.js
+    const tfModule = await loadTensorFlow();
+    
     const featuresArray: number[][] = [];
     const labelsArray: number[] = [];
 
@@ -232,8 +249,8 @@ export class ModelTrainer {
       labelsArray.push(data.label);
     }
 
-    const features = tf.tensor2d(featuresArray);
-    const labels = tf.tensor2d(labelsArray, [labelsArray.length, 1]);
+    const features = tfModule.tensor2d(featuresArray);
+    const labels = tfModule.tensor2d(labelsArray, [labelsArray.length, 1]);
 
     return { features, labels };
   }
