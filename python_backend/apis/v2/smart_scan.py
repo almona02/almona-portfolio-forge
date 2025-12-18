@@ -87,13 +87,19 @@ async def get_supported_formats():
 
 
 @router.post("/single")
-async def scan_single_profile(
+async def scan_single_profile_async(
     file: UploadFile = File(...),
     known_width_mm: Optional[float] = Form(None),
     auto_detect_scale: bool = Form(True),
 ):
-    start = time.time()
+    """
+    ENQUEUE single profile scan job for async processing.
+
+    Returns immediately with job_id. Actual scanning happens in background.
+    Frontend should poll job status or listen via Supabase Realtime.
+    """
     try:
+        # Input validation only - no heavy computation
         can_convert, error = FormatConverter.can_convert(file.filename)
         if not can_convert:
             raise HTTPException(status_code=400, detail=error)
@@ -103,29 +109,109 @@ async def scan_single_profile(
             raise HTTPException(status_code=400, detail="Empty file")
         validate_file_size(content)
 
-        images = FormatConverter.convert_to_images(content, file.filename, max_images=1)
-        if not images:
-            raise HTTPException(status_code=400, detail="No images extracted")
+        # Import Celery task here to avoid circular imports
+        from tasks.heavy_computation_tasks import smart_scan_single_task
 
-        scanner = ProfileScanner(enable_ocr=auto_detect_scale)
-        result = scanner.process_image(images[0], known_width_mm=known_width_mm)
+        # Enqueue the task - returns immediately
+        task = smart_scan_single_task.delay(
+            content, file.filename, known_width_mm, auto_detect_scale
+        )
 
-        proc_ms = round((time.time() - start) * 1000, 1)
+        logger.info("Smart scan single job enqueued",
+                   job_id=task.id,
+                   filename=file.filename,
+                   file_size_bytes=len(content))
+
         return JSONResponse(
             content={
-                "success": True,
+                "job_id": task.id,
+                "status": "enqueued",
+                "message": "Profile scan job has been enqueued. Track progress via job_id.",
                 "filename": file.filename,
-                "file_size_bytes": len(content),
-                "processing_time_ms": proc_ms,
-                "data": result,
+                "estimated_time_seconds": 10,
             },
-            status_code=200,
+            status_code=202,  # Accepted - job enqueued
         )
+
     except HTTPException:
         raise
     except Exception as exc:
-        logger.error("Scan failed: %s", exc, exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Scan failed: {str(exc)}")
+        logger.error("Failed to enqueue scan job: %s", exc, exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to enqueue scan job: {str(exc)}")
+
+
+@router.get("/job/{job_id}")
+async def get_scan_job_status(job_id: str):
+    """
+    Check the status of a smart scan job.
+
+    Returns:
+    - 200: Job completed with results
+    - 202: Job still processing
+    - 404: Job not found
+    """
+    try:
+        # Import Celery task here to avoid circular imports
+        from tasks.heavy_computation_tasks import smart_scan_single_task
+
+        # Check if task exists and get its state
+        task = smart_scan_single_task.AsyncResult(job_id)
+
+        if task.state == "PENDING":
+            return JSONResponse(
+                content={
+                    "job_id": job_id,
+                    "status": "pending",
+                    "message": "Scan job is queued and waiting to be processed",
+                    "estimated_time_seconds": 10
+                },
+                status_code=202
+            )
+        elif task.state == "PROGRESS":
+            return JSONResponse(
+                content={
+                    "job_id": job_id,
+                    "status": "processing",
+                    "message": "Profile scan is currently running",
+                },
+                status_code=202
+            )
+        elif task.state == "SUCCESS":
+            result = task.result
+            return JSONResponse(
+                content={
+                    "job_id": job_id,
+                    "status": "completed",
+                    "result": result,
+                    "completed_at": result.get("completed_at"),
+                    "processing_time_ms": result.get("processing_time_ms", 0)
+                },
+                status_code=200
+            )
+        elif task.state == "FAILURE":
+            return JSONResponse(
+                content={
+                    "job_id": job_id,
+                    "status": "failed",
+                    "error": str(task.info) if task.info else "Unknown error",
+                    "message": "Profile scan job failed"
+                },
+                status_code=500
+            )
+        else:
+            return JSONResponse(
+                content={
+                    "job_id": job_id,
+                    "status": "unknown",
+                    "state": task.state,
+                    "message": f"Job is in unknown state: {task.state}"
+                },
+                status_code=202
+            )
+
+    except Exception as exc:
+        logger.error("Error checking scan job status: %s", exc, exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error checking job status: {str(exc)}")
 
 
 @router.post("/batch")
