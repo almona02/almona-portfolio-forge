@@ -137,6 +137,14 @@ class DatabaseAdapter:
         # Remove any whitespace
         url = url.strip()
 
+        # CRITICAL FIX: Detect duplicated URL (Railway bug: URL+URL)
+        # If we find "redis://" appearing a second time, cut the string there.
+        if url.count("redis://") > 1:
+            second_occurrence = url.find("redis://", 1)  # Find second occurrence (skip first)
+            if second_occurrence != -1:
+                logger.warning(f"Detected duplicated Redis URL. Truncating at index {second_occurrence}")
+                url = url[:second_occurrence]
+
         # Fix common malformed patterns BEFORE parsing
         # More aggressive pattern matching for Railway's malformed URLs
         # Pattern: "6379redis:6379" -> extract just the last port
