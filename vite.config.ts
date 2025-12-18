@@ -313,35 +313,56 @@ export default defineConfig(({ mode }) => {
           warn(warning);
         },
         input: "index.html",
-        external: [],
-        // Exclude markdown editor CSS from main bundle
+        external: [
+          // Exclude markdown editor from bundle - loaded from CDN at runtime
+          '@uiw/react-md-editor',
+          'markdown-it',
+          'micromark',
+        ],
+        // Exclude markdown editor from bundle completely
         plugins: [
           {
-            name: 'exclude-md-editor-css',
+            name: 'exclude-md-editor-bundle',
+            resolveId(id) {
+              // Exclude markdown editor and its dependencies from bundling
+              if (
+                id === '@uiw/react-md-editor' ||
+                id.startsWith('@uiw/react-md-editor/') ||
+                id === 'markdown-it' ||
+                id.startsWith('markdown-it/') ||
+                id === 'micromark' ||
+                id.startsWith('micromark/') ||
+                id.includes('hast-') ||
+                id.includes('mdast-') ||
+                id.includes('unified') ||
+                id.includes('remark') ||
+                id.includes('rehype')
+              ) {
+                return { id, external: true };
+              }
+              return null;
+            },
             generateBundle(options, bundle) {
-              // Remove markdown editor CSS imports and emitted files from @uiw/react-md-editor only
+              // Remove any markdown editor chunks that might have been created
               Object.keys(bundle).forEach(fileName => {
                 const asset = bundle[fileName];
+                if (fileName.includes('ui-markdown') || 
+                    fileName.includes('markdown') ||
+                    fileName.includes('@uiw')) {
+                  delete (bundle as any)[fileName];
+                }
+                // Remove markdown editor CSS imports from chunks
                 if ((asset as any).type === 'chunk' && (asset as any).code) {
                   (asset as any).code = (asset as any).code.replace(
                     /import\s+['"][^'"\n]*@uiw\/react-md-editor[^'"\n]*\.css['"];?\s*/g,
                     ''
                   );
                 }
-                if (fileName.includes('vendor-markdown')) {
-                  delete (bundle as any)[fileName];
-                }
-              });
-            }
-          },
-          {
-            name: 'remove-md-editor-css',
-            generateBundle(options, bundle) {
-              // Drop emitted vendor-uiw CSS assets entirely to avoid extra CSS chunk
-              Object.keys(bundle).forEach(fileName => {
-                const asset = bundle[fileName];
+                // Remove markdown editor CSS assets
                 if ((asset as any).type === 'asset' && fileName.endsWith('.css')) {
-                  if (fileName.includes('vendor-uiw') || fileName.includes('@uiw')) {
+                  if (fileName.includes('ui-markdown') || 
+                      fileName.includes('vendor-uiw') || 
+                      fileName.includes('@uiw')) {
                     delete (bundle as any)[fileName];
                   }
                 }
@@ -423,22 +444,9 @@ export default defineConfig(({ mode }) => {
             
             // === UI LIBRARIES (Grouped by usage) ===
             
-            // MARKDOWN EDITOR ECOSYSTEM - Isolated chunk for fault isolation
-            // If this chunk has issues, only the Ticket Wizard will fail, not the entire app
-            // This is better than bundling into vendor-misc which loads immediately
-            if (
-              id.includes('react-md-editor') ||
-              id.includes('@uiw/react-md-editor') ||
-              id.includes('markdown-it') ||
-              id.includes('micromark') ||
-              id.includes('hast-') ||
-              id.includes('mdast-') ||
-              id.includes('unified') ||
-              id.includes('remark') ||
-              id.includes('rehype')
-            ) {
-              return 'ui-markdown';
-            }
+            // MARKDOWN EDITOR ECOSYSTEM - Excluded from bundle
+            // These are loaded dynamically from CDN at runtime to avoid circular dependencies
+            // No need to chunk them - they're excluded via optimizeDeps.exclude
             
             // ANT DESIGN & INTERNALS (Captures antd AND the rc- components it depends on)
             if (
@@ -563,7 +571,7 @@ export default defineConfig(({ mode }) => {
       // CRITICAL: Disable module preload for heavy lazy-loaded chunks
       // This prevents the browser from downloading 2.2MB+ chunks on initial page load
       modulePreload: {
-        resolveDependencies: (filename, deps, context) => {
+        resolveDependencies: (filename, deps, _context) => {
           // List of heavy chunks that should NOT be preloaded (lazy loaded on demand)
           const heavyChunks = [
             'three-ecosystem',      // 2.2MB - 3D engine
@@ -573,7 +581,6 @@ export default defineConfig(({ mode }) => {
             'doc-pdf',              // PDF.js
             'physics-engine',       // Ammo.js physics
             'map-engine',           // MapLibre/Mapbox
-            'ui-markdown',          // Markdown editor (has circular deps - isolate from main bundle)
           ];
           
           // Filter out heavy chunks from being preloaded
@@ -602,6 +609,9 @@ export default defineConfig(({ mode }) => {
         "@google/generative-ai",
         "@huggingface/inference",
         "@tensorflow/tfjs",
+        "@uiw/react-md-editor",
+        "markdown-it",
+        "micromark",
         "three",
         // Exclude markdown editor packages to avoid circular dependencies
         // They are dynamically imported at runtime
