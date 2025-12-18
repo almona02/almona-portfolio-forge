@@ -3,17 +3,33 @@ Job service for managing async computation jobs.
 Provides database operations for job tracking and Supabase Realtime updates.
 """
 import json
+import logging
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 import uuid
 
 from core.supabase_client import get_enhanced_supabase_client
+from core.config import settings
+
+logger = logging.getLogger(__name__)
 
 class JobService:
     """Service for managing async job status and realtime updates."""
 
     def __init__(self):
-        self.supabase = get_enhanced_supabase_client()
+        # Fix: Ensure Supabase credentials exist before initializing
+        try:
+            if not settings.SUPABASE_URL or not settings.SUPABASE_SERVICE_KEY:
+                logger.warning(
+                    "Supabase credentials missing. Job tracking will be disabled. "
+                    "Set SUPABASE_URL and SUPABASE_SERVICE_KEY environment variables."
+                )
+                self.supabase = None
+            else:
+                self.supabase = get_enhanced_supabase_client()
+        except Exception as e:
+            logger.error(f"Failed to initialize Supabase client for job service: {e}")
+            self.supabase = None
 
     async def create_job(
         self,
@@ -27,6 +43,20 @@ class JobService:
         metadata: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """Create a new job record in the database."""
+        # Fix: Handle missing Supabase gracefully
+        if self.supabase is None:
+            logger.warning(
+                f"Supabase not available. Creating minimal job record for job_id={job_id}"
+            )
+            return {
+                "id": str(uuid.uuid4()),
+                "job_id": job_id,
+                "job_type": job_type,
+                "status": "pending",
+                "created_at": datetime.utcnow().isoformat(),
+                "estimated_time_seconds": estimated_time_seconds,
+            }
+
         job_data = {
             "job_id": job_id,
             "job_type": job_type,
@@ -53,7 +83,7 @@ class JobService:
 
         except Exception as e:
             # Log error but don't fail the job creation
-            print(f"Failed to create job record: {e}")
+            logger.error(f"Failed to create job record: {e}", exc_info=True)
             # Return a minimal job record for backward compatibility
             return {
                 "id": str(uuid.uuid4()),
@@ -73,6 +103,11 @@ class JobService:
         processing_time_seconds: Optional[float] = None
     ) -> bool:
         """Update job status in database (triggers Supabase Realtime)."""
+        # Fix: Handle missing Supabase gracefully
+        if self.supabase is None:
+            logger.warning(f"Supabase not available. Cannot update job status for job_id={job_id}")
+            return False
+
         update_data = {
             "status": status,
             "updated_at": datetime.utcnow().isoformat(),
@@ -102,18 +137,23 @@ class JobService:
 
             success = len(response.data) > 0
             if success:
-                print(f"✅ Job {job_id} status updated to {status}")
+                logger.info(f"✅ Job {job_id} status updated to {status}")
             else:
-                print(f"⚠️  Job {job_id} not found for status update")
+                logger.warning(f"⚠️  Job {job_id} not found for status update")
 
             return success
 
         except Exception as e:
-            print(f"❌ Failed to update job {job_id} status: {e}")
+            logger.error(f"❌ Failed to update job {job_id} status: {e}", exc_info=True)
             return False
 
     async def get_job_status(self, job_id: str) -> Optional[Dict[str, Any]]:
         """Get job status from database."""
+        # Fix: Handle missing Supabase gracefully
+        if self.supabase is None:
+            logger.warning(f"Supabase not available. Cannot get job status for job_id={job_id}")
+            return None
+
         try:
             response = (
                 self.supabase.client.table("jobs")
@@ -128,7 +168,7 @@ class JobService:
                 return None
 
         except Exception as e:
-            print(f"❌ Failed to get job {job_id} status: {e}")
+            logger.error(f"❌ Failed to get job {job_id} status: {e}", exc_info=True)
             return None
 
     async def get_user_jobs(
@@ -138,6 +178,11 @@ class JobService:
         status_filter: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """Get user's recent jobs."""
+        # Fix: Handle missing Supabase gracefully
+        if self.supabase is None:
+            logger.warning(f"Supabase not available. Cannot get user jobs for user_id={user_id}")
+            return []
+
         try:
             query = (
                 self.supabase.client.table("jobs")
@@ -154,7 +199,7 @@ class JobService:
             return response.data or []
 
         except Exception as e:
-            print(f"❌ Failed to get user jobs: {e}")
+            logger.error(f"❌ Failed to get user jobs: {e}", exc_info=True)
             return []
 
 # Global job service instance
