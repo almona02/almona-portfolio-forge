@@ -551,6 +551,29 @@ export default defineConfig(({ mode }) => {
 
         },
       },
+      // CRITICAL: Disable module preload for heavy lazy-loaded chunks
+      // This prevents the browser from downloading 2.2MB+ chunks on initial page load
+      modulePreload: {
+        resolveDependencies: (filename, deps, context) => {
+          // List of heavy chunks that should NOT be preloaded (lazy loaded on demand)
+          const heavyChunks = [
+            'three-ecosystem',      // 2.2MB - 3D engine
+            'ai-vision',            // MediaPipe vision library
+            'ai-tensorflow',        // TensorFlow.js
+            'doc-excel',            // ExcelJS
+            'doc-pdf',              // PDF.js
+            'physics-engine',       // Ammo.js physics
+            'video-engine',         // HLS.js
+            'map-engine',           // MapLibre/Mapbox
+          ];
+          
+          // Filter out heavy chunks from being preloaded
+          return deps.filter(dep => {
+            // If the dependency filename contains any of our heavy chunk names, SKIP IT
+            return !heavyChunks.some(chunkName => dep.includes(chunkName));
+          });
+        },
+      },
     },
 
     optimizeDeps: {
