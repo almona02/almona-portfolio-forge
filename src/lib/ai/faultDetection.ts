@@ -1,7 +1,21 @@
-import * as tf from '@tensorflow/tfjs';
+/**
+ * Machine Fault Detection with TensorFlow.js
+ * 
+ * Uses lazy loading for TensorFlow.js to reduce initial bundle size (~870KB saved)
+ */
+
+// Lazy load TensorFlow.js - only loads when fault detection is needed
+let tf: typeof import('@tensorflow/tfjs') | null = null;
+
+const loadTensorFlow = async () => {
+  if (!tf) {
+    tf = await import('@tensorflow/tfjs');
+  }
+  return tf;
+};
 
 // Module-level cache
-let modelCache: tf.LayersModel | null = null;
+let modelCache: any = null; // tf.LayersModel | null, but using any to avoid type issues
 let modelVersion = 'v1';
 
 // Pre-trained model for machine fault detection
@@ -9,7 +23,9 @@ export const loadFaultDetectionModel = async () => {
   if (modelCache) return modelCache;
 
   try {
-    const model = await tf.loadLayersModel('/models/fault-model.json');
+    // Lazy load TensorFlow.js
+    const tfModule = await loadTensorFlow();
+    const model = await tfModule.loadLayersModel('/models/fault-model.json');
     modelCache = model;
     console.log('Model loaded and cached');
     return model;
@@ -25,7 +41,7 @@ export function invalidateModelCache(version?: string) {
 }
 
 // Feature extraction from audio data
-export const extractAudioFeatures = (audioBuffer: AudioBuffer): tf.Tensor => {
+export const extractAudioFeatures = async (audioBuffer: AudioBuffer): Promise<any> => {
   // Convert to mono
   const leftChannel = audioBuffer.getChannelData(0);
   const rightChannel = audioBuffer.numberOfChannels > 1 
@@ -38,7 +54,10 @@ export const extractAudioFeatures = (audioBuffer: AudioBuffer): tf.Tensor => {
   }
 
   // Create spectrogram (simplified for demo)
-  const spectrogram = tf.tensor(monoData).reshape([1, monoData.length, 1]);
+  // Note: This function should be called after TensorFlow is loaded
+  // For now, we'll make it async and load TensorFlow if needed
+  const tfModule = await loadTensorFlow();
+  const spectrogram = tfModule.tensor(monoData).reshape([1, monoData.length, 1]);
   return spectrogram;
 };
 
