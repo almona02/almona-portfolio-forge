@@ -284,51 +284,35 @@ requestAnimationFrame(() => {
   setTimeout(() => rootElement.classList.remove('app-fade-enter'), 300);
 });
 
-// Service worker initialization (async to not block app)
-// Note: VitePWA plugin with injectRegister: "auto" will automatically register the service worker
-// This code only runs if VitePWA is disabled or if manual registration is needed
-setTimeout(() => {
-  try {
-    const ENABLE_SW = import.meta.env.VITE_ENABLE_SW === 'true';
-    const VITEPWA_ENABLED = true; // VitePWA is enabled in vite.config.ts
-    // Disable service worker in preview mode (localhost) to avoid registration errors
-    const isPreviewMode = typeof window !== 'undefined' && 
-      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-    
-    if (import.meta.env.PROD && !isPreviewMode) {
-      // Clean up any old/conflicting service workers first
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then((registrations) => {
-          // Unregister any old service workers that might conflict
-          const oldWorkers = registrations.filter(reg => {
-            const scriptURL = reg.active?.scriptURL || reg.installing?.scriptURL || reg.waiting?.scriptURL || '';
-            // Unregister old sw.js or service-worker.js if they exist
-            return scriptURL.includes('/sw.js') || scriptURL.includes('/service-worker.js');
-          });
-          
-          if (oldWorkers.length > 0 && VITEPWA_ENABLED) {
-            console.info(`[SW] Unregistering ${oldWorkers.length} old service worker(s) to prevent conflicts`);
-            Promise.all(oldWorkers.map(reg => reg.unregister())).catch(err => {
-              console.warn('[SW] Error unregistering old workers:', err);
-            });
-          }
-        }).catch(() => {
-          // Ignore errors during cleanup
-        });
-      }
-      
-      if (ENABLE_SW && !VITEPWA_ENABLED) {
-        // Only register manually if VitePWA is not handling it
-        registerServiceWorker();
-      } else if (!ENABLE_SW) {
-        unregisterServiceWorker();
-        console.info('[SW] Disabled by config. Unregistered and cleared caches.');
-      } else if (VITEPWA_ENABLED) {
-        // VitePWA handles registration automatically, just log
-        console.info('[SW] Service worker registration handled by VitePWA plugin');
-      }
+// PWA Service Worker Registration
+// VitePWA with injectRegister: "auto" handles registration automatically
+// This code provides user feedback and handles updates
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  import('virtual:pwa-register').then(({ registerSW }) => {
+    const updateSW = registerSW({
+      immediate: true, // Register immediately
+      onNeedRefresh() {
+        // This runs when a new version is deployed
+        if (confirm('تحديث جديد متاح. هل تريد التحديث الآن؟\nNew update available. Reload?')) {
+          updateSW(true);
+        }
+      },
+      onOfflineReady() {
+        console.log('✅ App is ready for offline use.');
+      },
+      onRegistered(registration) {
+        console.log('✅ Service Worker registered:', registration);
+      },
+      onRegisterError(error) {
+        console.error('❌ Service Worker registration error:', error);
+      },
+    });
+  }).catch((error) => {
+    // VitePWA might not be available in dev mode - that's OK
+    if (import.meta.env.DEV) {
+      console.debug('[PWA] Service Worker not available in dev mode');
+    } else {
+      console.warn('[PWA] Failed to load service worker registration:', error);
     }
-  } catch (error) {
-    console.error('Service worker init error:', error);
-  }
-}, 100);
+  });
+}
