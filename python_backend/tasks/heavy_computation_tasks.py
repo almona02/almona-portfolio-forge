@@ -8,7 +8,6 @@ from datetime import datetime
 
 from core.celery_app import celery_app
 from core.monitoring import get_structured_logger
-from core.database import get_connection_pool
 
 logger = get_structured_logger(__name__)
 
