@@ -22,97 +22,97 @@ import { useRoutePrefetching } from "./hooks/useRoutePrefetching";
 import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // Core pages (essential) - loaded immediately
-const Index = lazy(() => import("./pages/Index.tsx"));
-const Products = lazy(() => import("./pages/Products.tsx"));
-const Services = lazy(() => import("./pages/Services.tsx"));
-const Contact = lazy(() => import("./pages/Contact.tsx"));
-const About = lazy(() => import("./pages/About.tsx"));
-const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const Index = lazy(() => import("./pages/Index"));
+const Products = lazy(() => import("./pages/Products"));
+const Services = lazy(() => import("./pages/Services"));
+const Contact = lazy(() => import("./pages/Contact"));
+const About = lazy(() => import("./pages/About"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 // 3D Gallery - lazy loaded
-const Model3DGallery = lazy(() => import("./pages/Model3DGallery.tsx"));
-const AdvancedModelViewer = lazy(() => import("./pages/AdvancedModelViewer.tsx"));
+const Model3DGallery = lazy(() => import("./pages/Model3DGallery"));
+const AdvancedModelViewer = lazy(() => import("./pages/AdvancedModelViewer"));
 
 // Test components - lazy loaded
-const LocalizationTest = lazy(() => import("./components/test/LocalizationTest.tsx"));
-const TestScannerPage = lazy(() => import("./pages/TestScanner.tsx"));
-const SmartScanAssembly = lazy(() => import("./pages/SmartScanAssembly.tsx"));
+const LocalizationTest = lazy(() => import("./components/test/LocalizationTest"));
+const TestScannerPage = lazy(() => import("./pages/TestScanner"));
+const SmartScanAssembly = lazy(() => import("./pages/SmartScanAssembly"));
 
 // Shop and e-commerce - lazy loaded with prefetch
 const Shop = lazy(() => import("./pages/Shop"));
-const UsedMachines = lazy(() => import("./pages/UsedMachines.tsx"));
-const UsedMachineDetailPage = lazy(() => import("./pages/UsedMachineDetail.tsx"));
-const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine.tsx"));
-const SpareParts = lazy(() => import("./pages/SpareParts.tsx"));
+const UsedMachines = lazy(() => import("./pages/UsedMachines"));
+const UsedMachineDetailPage = lazy(() => import("./pages/UsedMachineDetail"));
+const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine"));
+const SpareParts = lazy(() => import("./pages/SpareParts"));
 
 // Product details - lazy loaded
-const MachineDetail = lazy(() => import("./pages/machines/MachineDetail.tsx"));
-const ProfileDetail = lazy(() => import("./pages/profiles/ProfileDetail.tsx"));
+const MachineDetail = lazy(() => import("./pages/machines/MachineDetail"));
+const ProfileDetail = lazy(() => import("./pages/profiles/ProfileDetail"));
 
 // New Yilmaz Dealer Pages - lazy loaded
-const YilmazDealer = lazy(() => import("./pages/YilmazDealer.tsx"));
-const YilmazService = lazy(() => import("./pages/YilmazService.tsx"));
-const YilmazTraining = lazy(() => import("./pages/YilmazTraining.tsx"));
+const YilmazDealer = lazy(() => import("./pages/YilmazDealer"));
+const YilmazService = lazy(() => import("./pages/YilmazService"));
+const YilmazTraining = lazy(() => import("./pages/YilmazTraining"));
 
 // Digital Egypt Initiative - lazy loaded
-const DigitalEgypt = lazy(() => import("./pages/DigitalEgypt.tsx"));
+const DigitalEgypt = lazy(() => import("./pages/DigitalEgypt"));
 
 // Workflow and fabrication - lazy loaded
-const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail.tsx"));
-const FabricationWorkflowDetail = lazy(() => import("./pages/FabricationWorkflowDetail.tsx"));
-const FabricationServices = lazy(() => import("./pages/FabricationServices.tsx"));
-const FabricatorWorkflow = lazy(() => import("./pages/FabricatorWorkflow.tsx"));
-const FabricatorWorkflowPro = lazy(() => import("./components/fabricator/FabricatorWorkflowPro.tsx"));
-const FabricatorDashboard = lazy(() => import("./pages/FabricatorDashboard.tsx"));
+const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail"));
+const FabricationWorkflowDetail = lazy(() => import("./pages/FabricationWorkflowDetail"));
+const FabricationServices = lazy(() => import("./pages/FabricationServices"));
+const FabricatorWorkflow = lazy(() => import("./pages/FabricatorWorkflow"));
+const FabricatorWorkflowPro = lazy(() => import("./components/fabricator/FabricatorWorkflowPro"));
+const FabricatorDashboard = lazy(() => import("./pages/FabricatorDashboard"));
 const FabricatorPricingConfiguration = lazy(() =>
-  import("./components/fabricator/PricingConfiguration.tsx").then((m) => ({
+  import("./components/fabricator/PricingConfiguration").then((m) => ({
     default: m.PricingConfiguration,
   })),
 );
-const FabricatorBrandingSettings = lazy(() => import("./pages/FabricatorBrandingSettings.tsx"));
-const CustomersPage = lazy(() => import("./pages/Customers.tsx"));
-const InventoryPage = lazy(() => import("./pages/Inventory.tsx"));
-const FabricatorReportsPage = lazy(() => import("./pages/FabricatorReports.tsx"));
-const ProjectsPage = lazy(() => import("./pages/Projects.tsx"));
-const ProfilesPage = lazy(() => import("./pages/Profiles.tsx"));
-const PublicOptimizer = lazy(() => import("./pages/PublicOptimizer.tsx"));
+const FabricatorBrandingSettings = lazy(() => import("./pages/FabricatorBrandingSettings"));
+const CustomersPage = lazy(() => import("./pages/Customers"));
+const InventoryPage = lazy(() => import("./pages/Inventory"));
+const FabricatorReportsPage = lazy(() => import("./pages/FabricatorReports"));
+const ProjectsPage = lazy(() => import("./pages/Projects"));
+const ProfilesPage = lazy(() => import("./pages/Profiles"));
+const PublicOptimizer = lazy(() => import("./pages/PublicOptimizer"));
 const FabricatorWorkspaceLayout = lazy(
-  () => import("./components/fabricator/FabricatorWorkspaceLayout.tsx"),
+  () => import("./components/fabricator/FabricatorWorkspaceLayout"),
 );
-const ProfileStudioLite = lazy(() => import("./components/fabricator/ProfileStudioLite.tsx").then(m => ({ default: m.ProfileStudioLite })));
-const TurkishProfileGallery = lazy(() => import("./components/fabricator/TurkishProfileGallery.tsx").then(m => ({ default: m.TurkishProfileGallery })));
-const SystemPackTuningStudio = lazy(() => import("./components/fabricator/SystemPackTuningStudio.tsx").then(m => ({ default: m.SystemPackTuningStudio })));
-const NoDXFTuningStudio = lazy(() => import("./components/fabricator/NoDXFTuningStudio.tsx").then(m => ({ default: m.NoDXFTuningStudio })));
-const CommercialPage = lazy(() => import("./pages/CommercialPage.tsx").catch(() => ({
+const ProfileStudioLite = lazy(() => import("./components/fabricator/ProfileStudioLite").then(m => ({ default: m.ProfileStudioLite })));
+const TurkishProfileGallery = lazy(() => import("./components/fabricator/TurkishProfileGallery").then(m => ({ default: m.TurkishProfileGallery })));
+const SystemPackTuningStudio = lazy(() => import("./components/fabricator/SystemPackTuningStudio").then(m => ({ default: m.SystemPackTuningStudio })));
+const NoDXFTuningStudio = lazy(() => import("./components/fabricator/NoDXFTuningStudio").then(m => ({ default: m.NoDXFTuningStudio })));
+const CommercialPage = lazy(() => import("./pages/CommercialPage").catch(() => ({
   default: () => null,
 })));
-const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
+const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage"));
 
 // Quote system - lazy loaded
-const QuotePage = lazy(() => import("./pages/QuotePage.tsx"));
-const QuoteConfirmationPage = lazy(() => import("./pages/QuoteConfirmationPage.tsx"));
+const QuotePage = lazy(() => import("./pages/QuotePage"));
+const QuoteConfirmationPage = lazy(() => import("./pages/QuoteConfirmationPage"));
 
 // 3D model viewers - lazy loaded (heavy components)
-const ModelViewerDemo = lazy(() => import("./pages/ModelViewerDemo.tsx"));
-const ModelViewerTest = lazy(() => import("./pages/ModelViewerTest.tsx"));
-const SwiftXRTest = lazy(() => import("./pages/SwiftXRTest.tsx"));
+const ModelViewerDemo = lazy(() => import("./pages/ModelViewerDemo"));
+const ModelViewerTest = lazy(() => import("./pages/ModelViewerTest"));
+const SwiftXRTest = lazy(() => import("./pages/SwiftXRTest"));
 
 // Authentication - lazy loaded
-const Login = lazy(() => import("./pages/Login.tsx"));
-const Register = lazy(() => import("./pages/Register.tsx"));
-const CustomerPortal = lazy(() => import("./pages/CustomerPortal.tsx"));
-const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute.tsx"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const CustomerPortal = lazy(() => import("./pages/CustomerPortal"));
+const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute"));
 
 // Admin and support - lazy loaded (admin features)
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
-const CreateTicketPage = lazy(() => import("./pages/CreateTicketPage.tsx"));
-const RegisterMachinePage = lazy(() => import("./pages/RegisterMachinePage.tsx"));
-const CustomerSupport = lazy(() => import("./pages/CustomerSupport.tsx"));
-const RegionalFeaturesDemo = lazy(() => import("./pages/RegionalFeaturesDemo.tsx"));
-const AIRecommendationDemo = lazy(() => import("./pages/AIRecommendationDemo.tsx"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const CreateTicketPage = lazy(() => import("./pages/CreateTicketPage"));
+const RegisterMachinePage = lazy(() => import("./pages/RegisterMachinePage"));
+const CustomerSupport = lazy(() => import("./pages/CustomerSupport"));
+const RegionalFeaturesDemo = lazy(() => import("./pages/RegionalFeaturesDemo"));
+const AIRecommendationDemo = lazy(() => import("./pages/AIRecommendationDemo"));
 
 // National Service Dashboard - Egypt Vision 2030
-const NationalDashboard = lazy(() => import("./pages/NationalDashboard.tsx"));
+const NationalDashboard = lazy(() => import("./pages/NationalDashboard"));
 
 const queryClient = new QueryClient();
 const isProd = import.meta.env.PROD;
