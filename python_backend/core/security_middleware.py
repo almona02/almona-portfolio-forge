@@ -6,7 +6,6 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 import time
-from typing import Optional
 import logging
 
 logger = logging.getLogger(__name__)
@@ -73,39 +72,42 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         
         return await call_next(request)
 
-class RailwayHealthCheckMiddleware(BaseHTTPMiddleware):
-    """Bypass host validation for Railway health checks"""
+class RailwayAwareTrustedHostMiddleware(TrustedHostMiddleware):
+    """Custom TrustedHostMiddleware that allows Railway health checks"""
     
-    async def dispatch(self, request: Request, call_next):
-        # Allow Railway health checks from internal network
-        # Railway uses 100.64.0.0/10 for internal networking
-        client_ip = request.client.host if request.client else None
+    async def __call__(self, scope, receive, send):
+        # Check if this is a health check request
+        if scope["type"] == "http":
+            path = scope.get("path", "")
+            client_ip = None
+            if scope.get("client"):
+                client_ip = scope["client"][0] if isinstance(scope["client"], tuple) else None
+            
+            # Allow health checks or Railway internal IPs
+            if (
+                path.startswith("/health") or
+                (client_ip and client_ip.startswith("100.64."))
+            ):
+                # Modify scope headers in place to set localhost host
+                headers = list(scope.get("headers", []))
+                host_modified = False
+                for i, (key, value) in enumerate(headers):
+                    if key == b"host":
+                        headers[i] = (b"host", b"localhost")
+                        host_modified = True
+                        break
+                if not host_modified:
+                    headers.append((b"host", b"localhost"))
+                scope["headers"] = headers
         
-        # Skip host validation for health endpoints or Railway internal IPs
-        if (
-            request.url.path.startswith("/health") or
-            (client_ip and client_ip.startswith("100.64."))
-        ):
-            # Bypass TrustedHostMiddleware by setting a valid host
-            headers = list(request.scope.get("headers", []))
-            for i, (key, value) in enumerate(headers):
-                if key == b"host":
-                    headers[i] = (b"host", b"localhost")
-                    break
-            else:
-                headers.append((b"host", b"localhost"))
-            request.scope["headers"] = headers
-        
-        return await call_next(request)
+        # Call parent middleware with (possibly modified) scope
+        return await super().__call__(scope, receive, send)
 
 
 def setup_security_middleware(app: FastAPI):
     """Configure all security middleware"""
     
-    # Add Railway health check bypass FIRST (before TrustedHostMiddleware)
-    app.add_middleware(RailwayHealthCheckMiddleware)
-    
-    # Add TrustedHostMiddleware (adjust allowed hosts as needed)
+    # Use custom TrustedHostMiddleware that allows Railway health checks
     allowed_hosts = [
         "localhost",
         "127.0.0.1",
@@ -113,7 +115,7 @@ def setup_security_middleware(app: FastAPI):
         "*.almona.com",
         "testserver",  # allow FastAPI TestClient host to avoid 400 in tests
     ]
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
+    app.add_middleware(RailwayAwareTrustedHostMiddleware, allowed_hosts=allowed_hosts)
     
     # Add security headers
     app.add_middleware(SecurityHeadersMiddleware)
