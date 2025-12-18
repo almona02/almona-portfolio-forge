@@ -99,12 +99,33 @@ def normalize_redis_url(url: str) -> str:
             else:
                 parsed = parsed._replace(netloc=netloc)
         
-        # Reconstruct URL
+        # Reconstruct URL with proper format for Celery
+        # Celery expects: redis://[:password@]host[:port][/database]
         normalized = urlunparse(parsed)
         
         # Final validation: ensure URL is properly formatted
         if not normalized.startswith(('redis://', 'rediss://')):
             raise ValueError(f"Normalized URL missing protocol: {normalized}")
+        
+        # Additional validation: ensure the URL can be parsed by urllib again
+        # This catches any remaining malformed parts
+        try:
+            test_parsed = urlparse(normalized)
+            if not test_parsed.netloc or not test_parsed.hostname:
+                raise ValueError(f"Invalid URL structure after normalization: {normalized}")
+            
+            # Ensure port is a valid integer if present
+            if test_parsed.port is not None:
+                int(test_parsed.port)  # This will raise ValueError if port is not an integer
+        except (ValueError, AttributeError) as e:
+            logger.warning(f"URL validation failed, reconstructing: {e}")
+            # Reconstruct from components
+            if parsed.username and parsed.password:
+                normalized = f"{parsed.scheme}://{parsed.username}:{parsed.password}@{parsed.hostname}:{parsed.port or 6379}{parsed.path}"
+            elif parsed.username:
+                normalized = f"{parsed.scheme}://{parsed.username}@{parsed.hostname}:{parsed.port or 6379}{parsed.path}"
+            else:
+                normalized = f"{parsed.scheme}://{parsed.hostname}:{parsed.port or 6379}{parsed.path}"
         
         return normalized
     except Exception as e:
@@ -144,6 +165,20 @@ if not redis_url.startswith(('redis://', 'rediss://')):
     logger.error(f"Invalid Redis URL format: {redis_url}")
     raise ValueError(f"Redis URL must start with redis:// or rediss://, got: {redis_url}")
 
+# Final cleanup: ensure URL is in exact format Celery expects
+# Celery expects: redis://[:password@]host[:port][/database]
+try:
+    final_parsed = urlparse(redis_url)
+    # Reconstruct to ensure clean format
+    if final_parsed.username and final_parsed.password:
+        redis_url = f"{final_parsed.scheme}://{final_parsed.username}:{final_parsed.password}@{final_parsed.hostname}:{final_parsed.port or 6379}{final_parsed.path or ''}"
+    elif final_parsed.username:
+        redis_url = f"{final_parsed.scheme}://{final_parsed.username}@{final_parsed.hostname}:{final_parsed.port or 6379}{final_parsed.path or ''}"
+    else:
+        redis_url = f"{final_parsed.scheme}://{final_parsed.hostname}:{final_parsed.port or 6379}{final_parsed.path or ''}"
+except Exception as e:
+    logger.warning(f"Final URL cleanup failed: {e}, using original: {redis_url}")
+
 logger.info(f"Celery configured with Redis broker/backend: {re.sub(r':([^:@]+)@', r':****@', redis_url)}")
 
 celery_app = Celery(
@@ -154,6 +189,9 @@ celery_app = Celery(
 )
 
 celery_app.conf.update(
+    # Explicitly set broker URL to ensure correct format
+    broker_url=redis_url,
+    result_backend=redis_url,
     task_serializer="json",
     accept_content=["json"],
     result_serializer="json",
