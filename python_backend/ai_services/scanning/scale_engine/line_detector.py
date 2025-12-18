@@ -1,9 +1,21 @@
+import logging
 import math
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 import cv2
 import numpy as np
-from scipy.spatial import KDTree
+
+try:
+    from scipy.spatial import KDTree
+    SCIPY_AVAILABLE = True
+except ImportError:
+    SCIPY_AVAILABLE = False
+    KDTree = None  # type: ignore
+
+logger = logging.getLogger(__name__)
+
+if not SCIPY_AVAILABLE:
+    logger.warning("scipy not available. Line detection will use slower brute-force nearest neighbor search.")
 
 
 class DimensionLineDetector:
@@ -139,27 +151,64 @@ class DimensionLineDetector:
         centers = [line["center"] for line in lines]
         if not centers:
             return associations
-        tree = KDTree(centers)
 
-        for text in text_detections:
-            tx, ty = text.get("center", (0, 0))
-            dists, idxs = tree.query([tx, ty], k=min(3, len(lines)))
-            for dist, idx in zip(dists, idxs):
-                if dist >= max_distance:
-                    continue
-                line = lines[idx]
-                conf = self._calculate_association_confidence(
-                    text, line, float(dist), max_distance
-                )
-                if conf > 0.3:
-                    assoc = {
-                        "text": text,
-                        "line": line,
-                        "distance": float(dist),
-                        "confidence": float(conf),
-                        "scale_candidate": self._calculate_scale_candidate(text, line),
-                    }
-                    associations.append(assoc)
+        # Use KDTree if scipy is available, otherwise use brute-force search
+        if SCIPY_AVAILABLE and KDTree is not None:
+            tree = KDTree(centers)
+            for text in text_detections:
+                tx, ty = text.get("center", (0, 0))
+                k = min(3, len(lines))
+                result = tree.query([tx, ty], k=k)
+                # Handle both single result (k=1) and multiple results (k>1)
+                if k == 1:
+                    dists = [result[0]]
+                    idxs = [result[1]]
+                else:
+                    dists = result[0]
+                    idxs = result[1]
+                for dist, idx in zip(dists, idxs):
+                    if dist >= max_distance:
+                        continue
+                    line = lines[idx]
+                    conf = self._calculate_association_confidence(
+                        text, line, float(dist), max_distance
+                    )
+                    if conf > 0.3:
+                        assoc = {
+                            "text": text,
+                            "line": line,
+                            "distance": float(dist),
+                            "confidence": float(conf),
+                            "scale_candidate": self._calculate_scale_candidate(text, line),
+                        }
+                        associations.append(assoc)
+        else:
+            # Fallback: brute-force nearest neighbor search using numpy
+            centers_array = np.array(centers)
+            for text in text_detections:
+                tx, ty = text.get("center", (0, 0))
+                query_point = np.array([tx, ty])
+                distances = np.linalg.norm(centers_array - query_point, axis=1)
+                # Get k nearest neighbors
+                k = min(3, len(lines))
+                nearest_indices = np.argsort(distances)[:k]
+                for idx in nearest_indices:
+                    dist = float(distances[idx])
+                    if dist >= max_distance:
+                        continue
+                    line = lines[idx]
+                    conf = self._calculate_association_confidence(
+                        text, line, dist, max_distance
+                    )
+                    if conf > 0.3:
+                        assoc = {
+                            "text": text,
+                            "line": line,
+                            "distance": dist,
+                            "confidence": float(conf),
+                            "scale_candidate": self._calculate_scale_candidate(text, line),
+                        }
+                        associations.append(assoc)
 
         associations.sort(key=lambda x: x["confidence"], reverse=True)
         unique: List[Dict] = []
