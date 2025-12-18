@@ -149,15 +149,17 @@ export default defineConfig(({ mode }) => {
         },
         includeAssets: ["favicon.ico", "apple-touch-icon.png", "pwa-192x192.png", "pwa-512x512.png"],
         manifest: {
-          name: "Almona Precision - Factory Calibration",
-          short_name: "Almona Precision",
-          description: "Factory floor calibration tool for precision window fabrication",
-          theme_color: "#0d0f12",
-          background_color: "#ffffff",
+          name: "Almona Portfolio Forge",
+          short_name: "Almona Forge",
+          description: "Industrial Aluminium & UPVC Fabrication Platform",
+          theme_color: "#f97316", // Almona Orange
+          background_color: "#1a1a1a", // Almona Dark
           display: "standalone",
-          orientation: "portrait",
+          orientation: "landscape", // Preferred for fabrication dashboards
           start_url: "/",
           scope: "/",
+          lang: "ar", // Default to Arabic for Egypt
+          dir: "rtl",
           categories: ["business", "productivity"],
           icons: [
             {
