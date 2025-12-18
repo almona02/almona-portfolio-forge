@@ -4,6 +4,17 @@ on:
   push:
     branches:
       - main
+    paths:
+      # Only deploy when frontend files change
+      - 'src/**'
+      - 'public/**'
+      - 'index.html'
+      - 'vite.config.ts'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'tailwind.config.js'
+      - '.github/workflows/vercel-deploy.yml'
   workflow_dispatch:
 
 jobs:
@@ -36,7 +47,9 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy to Vercel (Production)
+        id: vercel-deploy
         uses: amondnet/vercel-action@v25
+        continue-on-error: true
         with:
           # IMPORTANT: Do NOT paste raw tokens or IDs here. Store them in repository Secrets
           # Settings > Secrets and variables > Actions:
@@ -53,5 +66,17 @@ jobs:
           # Some tools still look for env var VERCEL_TOKEN
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
+      - name: Check deployment result
+        if: steps.vercel-deploy.outcome == 'failure'
+        run: |
+          echo "⚠️ Vercel deployment failed. This may be due to:"
+          echo "  - Free tier limit (100 deployments/day) - wait a few minutes and retry"
+          echo "  - Network issues - check Vercel dashboard"
+          echo "  - Configuration errors - check workflow logs"
+          echo ""
+          echo "Workflow will continue. To deploy manually, use: vercel --prod"
+          echo "Or wait for the rate limit to reset (usually resets daily)"
+
       - name: Output deployment url
-        run: echo "Deployment complete."
+        if: steps.vercel-deploy.outcome == 'success'
+        run: echo "✅ Deployment complete."
