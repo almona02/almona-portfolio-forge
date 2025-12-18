@@ -22,6 +22,14 @@ from core.health_checks import (
 from core.railway_health import get_railway_recommendations
 from core.sentry_setup import init_sentry
 from core.config import settings
+# Force import of celery_app to trigger Redis URL debugging on startup
+try:
+    from core.celery_app import celery_app
+    logger = get_structured_logger(__name__)
+    logger.info("Celery app imported at startup for Redis URL debugging")
+except Exception as e:
+    logger = get_structured_logger(__name__)
+    logger.error(f"Failed to import celery_app at startup: {e}")
 
 app = FastAPI(
     title="Almona Industrial API",
