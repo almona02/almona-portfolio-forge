@@ -362,3 +362,32 @@ export function getBaselineTracker(): BaselineTracker {
   return baselineTrackerInstance;
 }
 
+/**
+ * Convenience functions for baseline tracking
+ */
+export function recordPerformanceBaseline(
+  workflowDuration: number,
+  accuracyRate: number,
+  errorRate: number,
+  metadata?: Record<string, any>
+): void {
+  getBaselineTracker().recordPerformanceBaseline(workflowDuration, accuracyRate, errorRate, metadata);
+}
+
+export function detectRegression(
+  workflowDuration: number,
+  accuracyRate: number,
+  errorRate: number,
+  thresholds?: {
+    workflowDuration?: number;
+    accuracyRate?: number;
+    errorRate?: number;
+  }
+): {
+  hasRegression: boolean;
+  regressions: any[];
+  improvements: any[];
+} {
+  return getBaselineTracker().detectRegression(workflowDuration, accuracyRate, errorRate, thresholds);
+}
+
