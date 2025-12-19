@@ -1,16 +1,16 @@
 // CRITICAL: Import React FIRST to ensure it's available before any other code
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { HelmetProvider } from "react-helmet-async";
+import App from "./App";
 // Ensure React is fully loaded before importing anything else
 if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
   throw new Error('React or ReactDOM failed to load');
 }
-import { HelmetProvider } from "react-helmet-async";
-import App from "./App";
-import { registerServiceWorker, unregisterServiceWorker } from "./lib/serviceWorkerRegistration";
+// Service worker registration is handled by VitePWA plugin
+import "./index.css";
 import { initializePerformanceMonitoring } from "./lib/performance";
 import { initializePolyfills } from "./lib/polyfills";
-import "./index.css";
 import "./styles/mobile-scaling.css";
 
 // Initialize i18n BEFORE any component uses useTranslation
@@ -61,7 +61,7 @@ class CriticalErrorBoundary extends React.Component<
             >
               Refresh Page
             </button>
-            {import.meta.env.DEV && this.state.error && (
+            {(import.meta as any).env?.DEV && this.state.error && (
               <details className="mt-4 text-left">
                 <summary className="cursor-pointer text-sm text-muted-foreground">
                   Error Details (Development)
@@ -80,6 +80,10 @@ class CriticalErrorBoundary extends React.Component<
   }
 }
 
+// PHASE 1.7: Main Thread Optimization - Deferred initialization
+// Performance monitoring start time
+const startTime = performance.now();
+
 // Initialize polyfills and performance monitoring
 // CRITICAL: Only initialize what's needed for initial render
 try {
@@ -89,8 +93,36 @@ try {
   // Critical: Initialize performance monitoring (lightweight)
   initializePerformanceMonitoring();
   
+  // PHASE 1.7: Deferred non-critical initialization
+  const initializeNonCriticalFeatures = () => {
+    const features = [
+      initializeDeferredAnalytics,
+      initializeBackgroundTasks,
+      initializeCacheWarming,
+      initializeWebWorkers
+    ];
+    
+    features.forEach(fn => {
+      try {
+        fn();
+      } catch (error) {
+        const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+        if (isDev) {
+          console.warn('Non-critical feature failed:', error);
+        }
+      }
+    });
+  };
+  
+  // Defer non-critical initialization using requestIdleCallback or setTimeout
+  if ('requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(initializeNonCriticalFeatures, { timeout: 5000 });
+  } else {
+    // Fallback: Wait 3 seconds then initialize
+    setTimeout(initializeNonCriticalFeatures, 3000);
+  }
+  
   // NON-CRITICAL: Defer everything else to avoid blocking initial render
-  // Use requestIdleCallback for better performance
   const deferNonCritical = () => {
     // Initialize critical CSS (deferred)
     import('./lib/criticalCSS').then(({ initializeCriticalCSS }) => {
@@ -107,8 +139,9 @@ try {
     });
     
     // Initialize Web Vitals monitoring (deferred)
-    if (import.meta.env.PROD) {
-      import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }) => {
+    const isProdEnv = (import.meta as any).env?.PROD || process.env.NODE_ENV === 'production';
+    if (isProdEnv) {
+      import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }: any) => {
         onCLS(() => {});
         onINP(() => {});
         onFCP(() => {});
@@ -131,19 +164,105 @@ try {
   console.error('Failed to initialize polyfills or performance monitoring:', error);
 }
 
-// Performance monitoring - Load web-vitals only in production
-if (import.meta.env.PROD) {
-  // Load performance monitoring only in production
-  import('web-vitals').then(({ onCLS, onFID, onLCP, onINP, onTTFB }) => {
-    onCLS(console.log);
-    onFID(console.log);
-    onLCP(console.log);
-    onINP(console.log);
-    onTTFB(console.log);
-  }).catch(() => {
-    // Non-critical, fail silently
+// PHASE 1.7: Deferred Analytics - Load after critical rendering
+const initializeDeferredAnalytics = () => {
+  const isProd = (import.meta as any).env?.PROD || process.env.NODE_ENV === 'production';
+  if (!isProd) return;
+  
+  // Google Analytics is already deferred in index.html
+  // This is for any additional analytics setup
+  
+  // Log Egyptian connection info for monitoring
+  const connection = (navigator as any).connection;
+  const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+  if (connection && isDev) {
+    console.log('Egypt Connection Info:', {
+      effectiveType: connection.effectiveType,
+      downlink: connection.downlink,
+      rtt: connection.rtt,
+      saveData: connection.saveData
+    });
+  }
+};
+
+// PHASE 1.7: Background tasks for Egypt workflow
+const initializeBackgroundTasks = () => {
+  // Pre-fetch next likely Egypt workflow data
+  setTimeout(() => {
+    const userId = localStorage.getItem('almona_user_id');
+    if (userId) {
+      // Pre-fetch user's recent projects (low priority)
+      // Note: priority API not widely supported, using headers instead
+      fetch(`/api/egypt/users/${userId}/recent-projects`, {
+        headers: { 'X-Prefetch': 'true' }
+      }).catch(() => {
+        // Ignore prefetch errors
+      });
+      
+      // Pre-fetch common materials for Egypt (low priority)
+      fetch('/api/egypt/materials/common', {
+        headers: { 'X-Prefetch': 'true' }
+      }).catch(() => {
+        // Ignore prefetch errors
+      });
+    }
+  }, 10000); // Wait 10 seconds
+};
+
+// PHASE 1.7: Cache warming for Egypt-specific assets
+const initializeCacheWarming = () => {
+  // Warm cache for Egypt workflow images (lazy loading)
+  const imagesToWarm = [
+    '/images/egypt-workflow-step1.webp',
+    '/images/egypt-workflow-step2.webp',
+    '/images/katra-pro-red-logo.webp',
+    '/images/foxywin-logo.webp',
+    '/images/caluminium-ps-logo.webp'
+  ];
+  
+  imagesToWarm.forEach(src => {
+    const img = new Image();
+    img.src = src;
+    img.loading = 'lazy';
+    img.decoding = 'async';
   });
-}
+  
+  // Pre-connect to likely next origins
+  const origins = [
+    'https://storage.supabase.co',
+    'https://fonts.gstatic.com'
+  ];
+  
+  origins.forEach(origin => {
+    const link = document.createElement('link');
+    link.rel = 'preconnect';
+    link.href = origin;
+    link.crossOrigin = 'anonymous';
+    document.head.appendChild(link);
+  });
+};
+
+// PHASE 1.7: Initialize Web Workers for heavy computation
+const initializeWebWorkers = () => {
+  // Check if Web Workers are supported
+  if (!window.Worker) {
+    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    if (isDev) {
+      console.log('Web Workers not supported, falling back to main thread');
+    }
+    return;
+  }
+  
+  // Pre-load worker URLs (Vite will handle the actual worker files)
+  // This is just for documentation - actual worker initialization happens on demand
+  const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+  if (isDev) {
+    console.log('[Almona Egypt] Web Workers ready for optimization algorithms');
+  }
+};
+
+// Performance monitoring - Load web-vitals only in production (deferred)
+// Note: This is already handled in deferNonCritical above, so we skip duplicate initialization here
 
 // Report bundle loading issues
 window.addEventListener('error', (event) => {
@@ -200,7 +319,8 @@ window.addEventListener('unhandledrejection', (event) => {
       errorMessage.includes('chrome-extension://') ||
       errorMessage.includes('moz-extension://')) {
     // These are harmless browser extension errors - suppress them
-    if (import.meta.env.DEV) {
+    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    if (isDev) {
       console.debug('[Suppressed] Browser extension error:', errorMessage);
     }
     event.preventDefault();
@@ -259,7 +379,8 @@ window.addEventListener('error', (event) => {
     
     if (isExternalError) {
       event.preventDefault();
-      if (import.meta.env.DEV) {
+      const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+      if (isDev) {
         console.debug('[Suppressed] External HTTP2 error:', errorSource);
       }
       return false;
@@ -273,7 +394,8 @@ window.addEventListener('error', (event) => {
     event.filename.includes('moz-extension://')
   )) {
     event.preventDefault();
-    if (import.meta.env.DEV) {
+    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    if (isDev) {
       console.debug('[Suppressed] Browser extension error:', event.filename, event.message);
     }
     return false;
@@ -290,10 +412,12 @@ window.addEventListener('error', (event) => {
 }, true); // Use capture phase to catch errors early
 
 // Environment validation
-if (import.meta.env.DEV) {
+const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+if (isDev) {
   console.log("🔧 Development mode active");
   const requiredEnvVars = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY'];
-  const missingEnvVars = requiredEnvVars.filter(envVar => !import.meta.env[envVar]);
+  const env = (import.meta as any).env || {};
+  const missingEnvVars = requiredEnvVars.filter(envVar => !env[envVar]);
   if (missingEnvVars.length > 0) {
     console.warn('⚠️ Missing environment variables:', missingEnvVars);
   }
@@ -302,39 +426,134 @@ if (import.meta.env.DEV) {
 }
 
 // Get root element and create React root
-const rootElement = document.getElementById("root");
-if (!rootElement) {
-  throw new Error("Root element not found. Check your index.html file.");
+// FIX: Ensure DOM is ready before rendering to prevent white page
+const renderApp = () => {
+  const rootElement = document.getElementById("root");
+  if (!rootElement) {
+    console.error("Root element not found. Check your index.html file.");
+    // Show error message to user
+    document.body.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #0d0f12; color: white; font-family: system-ui;">
+        <div style="text-align: center; padding: 2rem;">
+          <h1>Application Error</h1>
+          <p>Root element not found. Please refresh the page.</p>
+          <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #f97316; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Create React root (with HMR support)
+  let root = (rootElement as HTMLElement & { _reactRootContainer?: ReactDOM.Root })._reactRootContainer;
+  if (!root) {
+    root = ReactDOM.createRoot(rootElement);
+    (rootElement as HTMLElement & { _reactRootContainer?: ReactDOM.Root })._reactRootContainer = root;
+  }
+
+  // Render application
+  try {
+    root.render(
+      <React.StrictMode>
+        <CriticalErrorBoundary>
+          {/* @ts-expect-error - HelmetProvider types may be incorrect, but it works at runtime */}
+          <HelmetProvider>
+            <App />
+          </HelmetProvider>
+        </CriticalErrorBoundary>
+      </React.StrictMode>
+    );
+
+    // Trigger fade-in animation
+    requestAnimationFrame(() => {
+      rootElement.classList.add('app-fade-enter-active');
+      setTimeout(() => rootElement.classList.remove('app-fade-enter'), 300);
+    });
+  } catch (error) {
+    console.error('Failed to render application:', error);
+    rootElement.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #0d0f12; color: white; font-family: system-ui;">
+        <div style="text-align: center; padding: 2rem;">
+          <h1>Rendering Error</h1>
+          <p>Failed to render application. Please refresh the page.</p>
+          <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #f97316; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    `;
+  }
+};
+
+// Ensure DOM is ready before rendering
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderApp);
+} else {
+  // DOM is already ready
+  renderApp();
 }
 
-// Create React root (with HMR support)
-let root = (rootElement as HTMLElement & { _reactRootContainer?: ReactDOM.Root })._reactRootContainer;
-if (!root) {
-  root = ReactDOM.createRoot(rootElement);
-  (rootElement as HTMLElement & { _reactRootContainer?: ReactDOM.Root })._reactRootContainer = root;
-}
+// PHASE 1.7: Log initial load time for Egyptian users
+// LCP FIX: Add LCP timeout protection
+const LCP_TIMEOUT = 4000; // 4 seconds max for LCP
 
-// Render application
-root.render(
-  <React.StrictMode>
-    <CriticalErrorBoundary>
-      <HelmetProvider>
-        <App />
-      </HelmetProvider>
-    </CriticalErrorBoundary>
-  </React.StrictMode>
-);
-
-// Trigger fade-in animation
-requestAnimationFrame(() => {
-  rootElement.classList.add('app-fade-enter-active');
-  setTimeout(() => rootElement.classList.remove('app-fade-enter'), 300);
+window.addEventListener('load', () => {
+  const loadTime = performance.now() - startTime;
+  const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+  if (isDev) {
+    console.log(`[Almona Egypt] Initial load completed in ${Math.round(loadTime)}ms`);
+  }
+  
+  // LCP timeout protection - ensure LCP doesn't block too long
+  setTimeout(() => {
+    const lcpEntries = performance.getEntriesByType('largest-contentful-paint');
+    if (lcpEntries.length > 0) {
+      const lastLCP = lcpEntries[lcpEntries.length - 1];
+      if (lastLCP.startTime > LCP_TIMEOUT) {
+        console.warn(`[LCP Fix] LCP timeout detected: ${Math.round(lastLCP.startTime)}ms`);
+        // Force any blocking images to switch to lazy loading
+        const blockingImages = document.querySelectorAll('img[loading="eager"]:not([data-lcp-protected])');
+        blockingImages.forEach((imgElement) => {
+          const img = imgElement as HTMLImageElement;
+          if (!img.complete) {
+            img.loading = 'lazy';
+            img.setAttribute('data-lcp-protected', 'true');
+            const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+            if (isDev) {
+              console.log('[LCP Fix] Switched blocking image to lazy:', img.src);
+            }
+          }
+        });
+      }
+    }
+  }, LCP_TIMEOUT);
+  
+  // Measure Time to Interactive
+  setTimeout(() => {
+    const tti = performance.now() - startTime;
+    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    if (isDev) {
+      console.log(`[Almona Egypt] Time to Interactive ~${Math.round(tti)}ms`);
+    }
+    
+    // Report to analytics if available
+    if ((window as any).analytics) {
+      (window as any).analytics.track('app_loaded', {
+        load_time: Math.round(loadTime),
+        tti: Math.round(tti),
+        country: 'Egypt'
+      });
+    }
+  }, 1000);
 });
 
 // PWA Service Worker Registration
 // VitePWA with injectRegister: "auto" handles registration automatically
 // This code provides user feedback and handles updates
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+const isProdEnv = (import.meta as any).env?.PROD || process.env.NODE_ENV === 'production';
+if ('serviceWorker' in navigator && isProdEnv) {
   // Dynamic import with error handling - virtual module only exists in production
   import('virtual:pwa-register').then(({ registerSW }) => {
     const updateSW = registerSW({
@@ -357,7 +576,8 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
     });
   }).catch((error) => {
     // Virtual module doesn't exist in dev mode - this is expected
-    if (import.meta.env.DEV) {
+    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    if (isDev) {
       // Silently ignore in dev mode
     } else {
       console.warn('[PWA] Failed to load service worker registration:', error);

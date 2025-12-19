@@ -20,6 +20,7 @@ import { Analytics } from "@vercel/analytics/react";
 import RegionAwareLayout from "./components/layout/RegionAwareLayout";
 import { useRoutePrefetching } from "./hooks/useRoutePrefetching";
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { PerformanceDashboard } from "./components/dev/PerformanceDashboard";
 
 // Core pages (essential) - loaded immediately
 const Index = lazy(() => import("./pages/Index.tsx"));
@@ -142,8 +143,30 @@ const getLoadingComponent = (path: string) => {
 };
 
 // Lightweight helper to activate route prefetching hook
+// Phase 1.5: Enhanced with critical Egypt route prefetching
 const RoutePrefetchingHelper = () => {
-  useRoutePrefetching();
+  const { prefetchRoute } = useRoutePrefetching();
+  
+  // Prefetch critical Egypt workflow routes after initial load
+  useEffect(() => {
+    // Wait for initial render to complete before prefetching
+    const timer = setTimeout(() => {
+      const criticalRoutes = [
+        '/fabricator-workflow',
+        '/fabricator/tuning-studio-no-dxf',
+        '/egyptian-project-wizard'
+      ];
+      
+      criticalRoutes.forEach(route => prefetchRoute(route));
+      
+      if (import.meta.env.DEV) {
+        console.log('[Almona Egypt] Critical routes prefetched');
+      }
+    }, 3000); // 3 seconds after initial load
+    
+    return () => clearTimeout(timer);
+  }, [prefetchRoute]);
+  
   return null;
 };
 
@@ -442,6 +465,8 @@ const App = memo(() => {
                   <Route path="*" element={<Suspense fallback={getLoadingComponent('/404')}><NotFound /></Suspense>} />
                         </Routes>
                       </RegionAwareLayout>
+                      {/* Phase 1 Performance Dashboard - Development Only */}
+                      {import.meta.env.DEV && <PerformanceDashboard />}
                     </BrowserRouter>
                         </FabricatorWorkspaceProvider>
                       </QuoteProvider>

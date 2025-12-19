@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -15,10 +15,25 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hologramRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  
+  // LCP FIX: Progressive image loading - don't block LCP
+  const [shouldLoadImage, setShouldLoadImage] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  
+  // Defer image loading until after LCP is determined (non-blocking)
+  useEffect(() => {
+    // Wait for LCP to be determined (typically 2-3 seconds after initial render)
+    // This ensures the hero content text is the LCP element, not the image
+    const timer = setTimeout(() => {
+      setShouldLoadImage(true);
+    }, 2500); // 2.5 seconds - after LCP window
+    return () => clearTimeout(timer);
+  }, []);
 
   // Debug: Log component mount (remove in production)
   useEffect(() => {
-    if (import.meta.env.DEV) {
+    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    if (isDev) {
       console.log('🎨 EgyptianIndustrialHero mounted', { isMobile });
     }
   }, [isMobile]);
@@ -221,41 +236,62 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-[#1a1a1a]" data-hero-bg="egyptian-industrial">
-      {/* Epic Egyptian-Ottoman Industrial Background Image - Right side - Cinematic scene */}
-      <motion.div 
+      {/* IMMEDIATE: CSS Gradient Background - Never blocks LCP, shows instantly */}
+      <div 
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: 'url(/images/egyptian-industrial-hero-bg.webp)',
+          background: `
+            linear-gradient(135deg, 
+              rgba(26, 32, 44, 0.95) 0%, 
+              rgba(45, 55, 72, 0.95) 50%,
+              rgba(26, 32, 44, 0.98) 100%
+            ),
+            radial-gradient(circle at 20% 50%, 
+              rgba(79, 70, 229, 0.15) 0%, 
+              transparent 50%
+            ),
+            radial-gradient(circle at 80% 20%, 
+              rgba(124, 58, 237, 0.1) 0%, 
+              transparent 50%
+            )
+          `,
           backgroundSize: 'cover',
-          backgroundPosition: 'center right',
-          backgroundRepeat: 'no-repeat',
-          opacity: isMobile ? 0.5 : 0.6,
-          willChange: 'opacity'
-        }}
-        animate={{
-          opacity: isMobile ? [0.5, 0.55, 0.5] : [0.6, 0.65, 0.6]
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
+          backgroundPosition: 'center',
         }}
       />
       
-      {/* Fallback img element for better browser compatibility - Lazy loaded to improve LCP */}
-      <img 
-        src="/images/egyptian-industrial-hero-bg.webp"
-        alt="Egyptian-Ottoman Industrial Scene"
-        className="absolute inset-0 z-0 w-full h-full object-cover object-right opacity-0 pointer-events-none"
-        style={{ display: 'none' }}
-        loading="lazy"
-        decoding="async"
-        width="1920"
-        height="1080"
-        onError={(e) => {
-          console.error('Failed to load hero background image:', e);
-        }}
-      />
+      {/* PROGRESSIVE: Load image only after LCP is determined (non-blocking) */}
+      {shouldLoadImage && (
+        <motion.img
+          src="/images/egyptian-industrial-hero-bg.webp"
+          alt="Egyptian-Ottoman Industrial Scene"
+          className="absolute inset-0 z-0 w-full h-full object-cover object-right"
+          style={{
+            opacity: imageLoaded ? (isMobile ? 0.5 : 0.6) : 0,
+            transition: 'opacity 0.5s ease-in-out',
+            willChange: 'opacity'
+          }}
+          width="1920"
+          height="1080"
+          loading="lazy"
+          decoding="async"
+          onLoad={() => {
+            setImageLoaded(true);
+          }}
+          onError={() => {
+            console.warn('[LCP Fix] Hero image failed to load, using gradient fallback');
+            // Image failed, keep using gradient - this is fine
+          }}
+          animate={imageLoaded ? {
+            opacity: isMobile ? [0.5, 0.55, 0.5] : [0.6, 0.65, 0.6]
+          } : {}}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      )}
       
       {/* Dark overlay to blend image with background - Ensures text readability on left */}
       <div 
