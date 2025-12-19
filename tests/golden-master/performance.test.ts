@@ -117,13 +117,14 @@ describe('Golden Master Performance Tests', () => {
         startWorkflow();
         startTiming(stage, stage);
 
-        // Simulate work (use 10% of target for test speed)
-        await new Promise(resolve => setTimeout(resolve, targetDuration * 0.1));
+        // Simulate work (use 10% of target for test speed, but cap at 1000ms for test speed)
+        const testDuration = Math.min(targetDuration * 0.1, 1000);
+        await new Promise(resolve => setTimeout(resolve, testDuration));
 
         const stageResult = endTiming(stage);
         expect(stageResult).toBeDefined();
         expect(stageResult?.duration).toBeLessThan(targetDuration);
-      });
+      }, 10000); // Increase timeout to 10 seconds for longer stages
     });
   });
 
@@ -222,8 +223,9 @@ describe('Golden Master Performance Tests', () => {
       }
       endTiming('test');
 
-      // Manually set duration for test
-      workflowProfiler['workflowEndTime'] = performance.now() + fastDuration;
+      // Manually set workflow end time to simulate fast completion
+      // Access private property for testing
+      (workflowProfiler as any).workflowEndTime = (workflowProfiler as any).workflowStartTime + fastDuration;
 
       const efficiency = workflowProfiler.getWorkflowEfficiency();
       expect(efficiency.achieved).toBe(true);
