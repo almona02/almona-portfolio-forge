@@ -1,0 +1,30 @@
+[bandit]
+# Bandit configuration for Almona Portfolio Forge
+# Excludes test files and known false positives
+
+# Skip test files (they often contain example credentials)
+exclude_dirs = tests,test_,*_test.py,*_tests.py,test_*.py
+
+# Skip specific security checks that are false positives
+# B101: assert_used - We use asserts in tests and validation
+# B601: shell_injection_subprocess - We control subprocess inputs
+# B108: hardcoded_tmp_directory - We use tempfile module correctly
+skips = B101,B601,B108
+
+# Severity levels to report
+# Only report HIGH and CRITICAL issues
+severity_level = medium
+
+# Confidence levels to report
+# Only report issues with medium or high confidence
+confidence_level = medium
+
+# Exclude specific lines/files with known false positives
+exclude = 
+    # Test files
+    */test_*.py
+    */tests/*.py
+    # Configuration files that use environment variables
+    */config.py
+    */settings.py
+
