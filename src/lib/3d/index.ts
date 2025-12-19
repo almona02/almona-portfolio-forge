@@ -63,4 +63,25 @@ export {
   type MuntinConfig,
 } from './windowGeometry';
 
+// Production 3D Renderer (Week 4 Task 4.1)
+export {
+  Production3DRenderer,
+  production3DRenderer,
+  type RendererConfig,
+  type GeometryLoadProgress,
+  type RendererStatus,
+  type RendererStatusListener,
+} from './Production3DRenderer';
+
+// Memory Monitor (Week 4 Task 4.1)
+export {
+  MemoryMonitor,
+  memoryMonitor,
+  type MemoryStats,
+  type MemoryThreshold,
+  type MemoryEventType,
+  type MemoryEvent,
+  type MemoryEventListener,
+} from './MemoryMonitor';
+
 

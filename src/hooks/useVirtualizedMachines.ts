@@ -63,7 +63,7 @@ export function useVirtualizedMachines({
           return a.featured ? -1 : b.featured ? 1 : 0;
       }
     });
-  }, [searchTerm, categoryFilter, sortOption]);
+  }, [yilmazMachines, searchTerm, categoryFilter, sortOption]);
 
   // Get current page of machines
   const machines = useMemo(() => {

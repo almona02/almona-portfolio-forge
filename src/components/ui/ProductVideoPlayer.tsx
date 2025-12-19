@@ -64,13 +64,8 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
       }).toString()
     : null;
 
-  useEffect(() => {
-    if (!isOpen) {
-      setIsPlaying(false);
-    } else if (autoPlay) {
-      setIsPlaying(true);
-    }
-  }, [isOpen, autoPlay]);
+  // Note: Video playback is controlled via iframe autoplay parameter
+  // No need for local isPlaying state as YouTube handles it
 
   // Handle escape key to close or exit fullscreen
   useEffect(() => {

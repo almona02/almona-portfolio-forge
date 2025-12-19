@@ -14,12 +14,20 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* Linting */
-    "strict": false,
+    /* Linting - Gradual strict mode (Week 1 hardening) */
+    "strict": true,
+    "strictNullChecks": false,  // Enable later - too many existing null checks needed
+    "noImplicitAny": false,     // Enable later - too many existing any types
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": false,  // Enable later
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noImplicitAny": false,
     "noFallthroughCasesInSwitch": false,
+    
+    /* Type definitions - suppress implicit type library warnings */
+    "types": [],
+    "typeRoots": ["./node_modules/@types"],
 
     "baseUrl": ".",
     "paths": {
