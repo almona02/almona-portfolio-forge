@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Almona Portfolio Forge - Offline</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+      color: white;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 2rem;
+    }
+    .features {
+      text-align: left;
+      margin: 2rem 0;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      border-radius: 10px;
+    }
+    .features h3 {
+      margin-top: 0;
+    }
+    .features ul {
+      padding-left: 1.5rem;
+    }
+    .features li {
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">⚡</div>
+    <h1>You're Offline</h1>
+    <p>Almona Portfolio Forge can still work without an internet connection.</p>
+    
+    <div class="features">
+      <h3>Available Offline Features:</h3>
+      <ul>
+        <li>View and edit existing projects</li>
+        <li>Access saved profiles and materials</li>
+        <li>Generate cut lists from saved data</li>
+        <li>View optimization history</li>
+        <li>Review CNC export templates</li>
+      </ul>
+      
+      <h3>When You're Back Online:</h3>
+      <ul>
+        <li>New optimizations will sync automatically</li>
+        <li>Updated profiles will be saved</li>
+        <li>Project changes will be synchronized</li>
+      </ul>
+    </div>
+    
+    <p><strong>Made in Egypt, for Egypt</strong> - Working reliably even with intermittent connectivity.</p>
+  </div>
+  
+  <script>
+    // Try to reload when connection returns
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+    
+    // Check connection every 30 seconds
+    setInterval(() => {
+      if (navigator.onLine) {
+        window.location.reload();
+      }
+    }, 30000);
+  </script>
+</body>
+</html>
+
