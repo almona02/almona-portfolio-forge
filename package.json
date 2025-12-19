@@ -1,6 +1,6 @@
 {
   "overrides": {
-    "rollup": "^4.27.0",
+    "rollup": "^4.43.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-reconciler": "^0.29.0",
@@ -9,7 +9,10 @@
     "glob": "^11.0.0",
     "js-yaml": "^4.1.0",
     "mdast-util-to-hast": "^13.0.0",
-    "inflight": "npm:@npmcli/inflight@^1.0.0"
+    "inflight": "npm:@npmcli/inflight@^1.0.0",
+    "antd": "^5.29.1",
+    "@ant-design/icons": "^5.6.1",
+    "rc-util": "^5.44.4"
   },
   "resolutions": {
     "glob": "^11.0.0",
@@ -29,6 +32,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build --mode production",
+    "build:analyze": "cross-env ANALYZE=true vite build --mode production",
+    "build:optimized": "node scripts/optimize-build.js && vite build --mode production",
     "lint": "eslint \"src\" --ext ts,tsx",
     "preview": "vite preview",
     "i18n:audit": "node scripts/i18n-audit.js",
@@ -46,11 +51,19 @@
     "test:react": "vitest run src/hooks/__tests__ --coverage",
     "test:security": "cd python_backend && python -m pytest tests/security_test_fixed.py -v",
     "test:performance": "cd python_backend && python -m pytest tests/load_test.py -v",
+    "test:golden-master": "vitest run tests/golden-master",
+    "test:golden-master:accuracy": "vitest run tests/golden-master/accuracy.test.ts",
+    "test:golden-master:performance": "vitest run tests/golden-master/performance.test.ts",
+    "test:verification": "vitest run tests/verification",
+    "test:verification:stress": "vitest run tests/verification/comprehensive-verification.test.ts -t 'Stress Test'",
+    "test:verification:load": "vitest run tests/verification/comprehensive-verification.test.ts -t 'Load Test'",
+    "test:verification:recovery": "vitest run tests/verification/comprehensive-verification.test.ts -t 'Recovery Test'",
     "test:full": "npm run test:api && npm run test:react && npm run test:security && npm run test:performance",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "build:ci": "vite build --mode production",
-    "analyze": "vite build --mode analyze",
+    "analyze": "cross-env ANALYZE=true vite build --mode production",
+    "debug:forms": "node scripts/debug-utils-forms.cjs",
     "analyze:bundle": "npm run build && node scripts/analyze-bundle.js",
     "performance": "node scripts/performance-optimize.js",
     "performance:audit": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html",
@@ -208,6 +221,7 @@
     "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.20",
     "baseline-browser-mapping": "^2.8.32",
+    "cross-env": "^10.1.0",
     "cssnano": "^7.1.1",
     "eslint": "^9.9.0",
     "eslint-plugin-react": "^7.37.1",

@@ -4,7 +4,7 @@ import type { AssemblyResponse, AssemblyComponent } from "@/types/assembly";
 const getApiBase = (): string => {
   const envUrl = import.meta.env.VITE_API_URL;
   if (envUrl) return envUrl;
-  if (import.meta.env.DEV) return "http://localhost:8002";
+  if (import.meta.env.DEV) return "http://localhost:8000";
   return window.location.origin;
 };
 

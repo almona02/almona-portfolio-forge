@@ -1,3 +1,4 @@
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 // Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)
 const EnhancedModel3DDialog = React.lazy(() => import("@/components/3d-model/EnhancedModel3DDialog").then(module => ({ default: module.EnhancedModel3DDialog })));
 
@@ -28,7 +29,6 @@ import { Separator } from "@/shared/ui/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import type { Machine as UiMachine } from "@/types/index";
 import { Eye, X } from "lucide-react";
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useSearchParams } from "react-router-dom";
 
@@ -593,7 +593,12 @@ const Products = function ProductsPage() {
               />
 
               {/* Machine listings with responsive virtualization */}
-              {enhancedMachines.length === 0 ? (
+              {isLoadingMore ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                  <p className="text-gray-400">{t('machines.loading') || 'Loading machines...'}</p>
+                </div>
+              ) : enhancedMachines.length === 0 ? (
                 <div className="text-center py-12">
                   <h3 className="text-xl font-medium mb-2">
                     {t('machines.noMachines.title')}

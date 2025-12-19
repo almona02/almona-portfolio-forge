@@ -69,11 +69,13 @@ export default defineConfig(({ mode }) => {
         }
       },
       // PWA Configuration - Stable, Production-Ready
-      ...(isProduction ? [VitePWA({
+      // Always include plugin to provide virtual module, but only enable SW in production
+      VitePWA({
         registerType: "autoUpdate",
         injectRegister: "auto",
         devOptions: {
-          enabled: false // Disable in development for stability
+          enabled: false, // Disable service worker in development for stability
+          type: 'module', // Provide virtual module in dev mode
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
@@ -133,7 +135,7 @@ export default defineConfig(({ mode }) => {
             }
           ]
         }
-      })] : []),
+      }),
       ...(isProduction && process.env.ANALYZE === 'true'
         ? [
             visualizer({
@@ -195,13 +197,17 @@ export default defineConfig(({ mode }) => {
       outDir: 'dist',
       assetsDir: 'assets',
       target: "esnext",
-      minify: isProduction ? "esbuild" : false, // FIXED: Use esbuild instead of terser to avoid circular reference issues
-      sourcemap: false, // Disable sourcemaps to speed up build
-      // Aggressive chunk splitting to prevent 17MB monster
-      chunkSizeWarningLimit: 2000, // Warn if any chunk exceeds 2MB (helps identify issues)
-      assetsInlineLimit: 2048, // Reduced to prevent large inline assets
+      minify: isProduction ? "esbuild" : false,
+      sourcemap: false,
+      chunkSizeWarningLimit: 2000,
+      assetsInlineLimit: 2048,
       reportCompressedSize: false,
-      cssCodeSplit: true, // Enable CSS code splitting to reduce main bundle size
+      cssCodeSplit: true,
+      // Disable automatic preloading of assets to prevent warnings
+      modulePreload: {
+        polyfill: false, // Disable module preload polyfill
+        resolveDependencies: () => [], // Don't auto-preload any modules
+      },
       // Ensure proper module resolution for React and CommonJS packages like 'long'
       commonjsOptions: {
         include: [/node_modules/, /long/],

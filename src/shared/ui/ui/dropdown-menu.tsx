@@ -11,7 +11,7 @@ const DropdownMenuTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
 >(({ children, asChild, ...props }, ref) => (
-  <DropdownMenuPrimitive.Trigger ref={ref} asChild={asChild} {...props}>
+  <DropdownMenuPrimitive.Trigger ref={ref} {...props}>
     {children}
   </DropdownMenuPrimitive.Trigger>
 ))

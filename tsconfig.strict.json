@@ -1,0 +1,28 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    /* Full strict mode for new hardening files */
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "src/lib/hardening/**/*",
+    "src/lib/security/**/*",
+    "src/lib/performance/**/*",
+    "src/lib/fabricator/Production*.ts",
+    "src/lib/imports/Production*.ts",
+    "src/algorithms/Production*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
+

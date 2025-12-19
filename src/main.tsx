@@ -131,10 +131,57 @@ try {
   console.error('Failed to initialize polyfills or performance monitoring:', error);
 }
 
+// Performance monitoring - Load web-vitals only in production
+if (import.meta.env.PROD) {
+  // Load performance monitoring only in production
+  import('web-vitals').then(({ onCLS, onFID, onLCP, onINP, onTTFB }) => {
+    onCLS(console.log);
+    onFID(console.log);
+    onLCP(console.log);
+    onINP(console.log);
+    onTTFB(console.log);
+  }).catch(() => {
+    // Non-critical, fail silently
+  });
+}
+
+// Report bundle loading issues
+window.addEventListener('error', (event) => {
+  if (event.error && event.error.message.includes('chunk')) {
+    console.error('Chunk loading failed:', event.error);
+    // Optionally reload the page if chunk error persists
+    if (!window.location.href.includes('chunk-error')) {
+      // Mark that we've tried to reload to prevent infinite loop
+      const reloadKey = 'chunk-error-reload-attempted';
+      if (!sessionStorage.getItem(reloadKey)) {
+        sessionStorage.setItem(reloadKey, 'true');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    }
+  }
+}, true);
+
 // Global error handler for unhandled Supabase auth errors and browser extension errors
 window.addEventListener('unhandledrejection', (event) => {
   const error = event.reason;
   const errorMessage = error?.message || String(error || '');
+  
+  // Handle chunk loading errors
+  if (errorMessage.includes('chunk') || errorMessage.includes('Failed to fetch dynamically imported module')) {
+    console.error('Chunk loading error:', errorMessage);
+    // Try to reload once
+    const reloadKey = 'chunk-error-reload-attempted';
+    if (!sessionStorage.getItem(reloadKey)) {
+      sessionStorage.setItem(reloadKey, 'true');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+    event.preventDefault();
+    return;
+  }
   
   // Suppress Supabase auth errors
   if (errorMessage.includes('refresh_token') || 
@@ -287,34 +334,33 @@ requestAnimationFrame(() => {
 // PWA Service Worker Registration
 // VitePWA with injectRegister: "auto" handles registration automatically
 // This code provides user feedback and handles updates
-if ('serviceWorker' in navigator) {
-  // Dynamic import to avoid errors in dev mode if PWA is disabled
-  if (import.meta.env.PROD) {
-    // Production: Register service worker with update prompts
-    import('virtual:pwa-register').then(({ registerSW }) => {
-      const updateSW = registerSW({
-        immediate: true, // Register immediately
-        onNeedRefresh() {
-          // This runs when a new version is deployed
-          if (confirm('تحديث جديد متاح. هل تريد التحديث الآن؟\nNew update available. Reload?')) {
-            updateSW(true);
-          }
-        },
-        onOfflineReady() {
-          console.log('✅ App is ready for offline use.');
-        },
-        onRegistered(registration) {
-          console.log('✅ Service Worker registered:', registration);
-        },
-        onRegisterError(error) {
-          console.error('❌ Service Worker registration error:', error);
-        },
-      });
-    }).catch((error) => {
-      console.warn('[PWA] Failed to load service worker registration:', error);
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  // Dynamic import with error handling - virtual module only exists in production
+  import('virtual:pwa-register').then(({ registerSW }) => {
+    const updateSW = registerSW({
+      immediate: true, // Register immediately
+      onNeedRefresh() {
+        // This runs when a new version is deployed
+        if (confirm('تحديث جديد متاح. هل تريد التحديث الآن؟\nNew update available. Reload?')) {
+          updateSW(true);
+        }
+      },
+      onOfflineReady() {
+        console.log('✅ App is ready for offline use.');
+      },
+      onRegistered(registration) {
+        console.log('✅ Service Worker registered:', registration);
+      },
+      onRegisterError(error) {
+        console.error('❌ Service Worker registration error:', error);
+      },
     });
-  } else {
-    // Development: Log that PWA is available but not active
-    console.debug('[PWA] Service Worker available in dev mode (enabled in config)');
-  }
+  }).catch((error) => {
+    // Virtual module doesn't exist in dev mode - this is expected
+    if (import.meta.env.DEV) {
+      // Silently ignore in dev mode
+    } else {
+      console.warn('[PWA] Failed to load service worker registration:', error);
+    }
+  });
 }

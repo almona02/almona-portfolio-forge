@@ -196,6 +196,28 @@ def create_v2_app() -> FastAPI:
 
     # Enhanced SmartScan health endpoints (prefixed to avoid clashes)
     app.include_router(health_router.router, prefix="/health")
+    
+    # DXF Parser endpoints (Week 3 Task 3.1)
+    try:
+        from apis.v2 import dxf_parser
+        app.include_router(dxf_parser.router)
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).warning(
+            "DXF parser router not loaded: %s",
+            exc,
+        )
+    
+    # Security endpoints (Week 2 Task 2.1)
+    try:
+        from apis.v2 import security
+        app.include_router(security.router)
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).warning(
+            "Security router not loaded: %s",
+            exc,
+        )
 
     # Add v2-specific endpoints
     @app.get("/health")
