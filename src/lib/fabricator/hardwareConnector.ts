@@ -36,7 +36,7 @@ export function connectHardwareForWindowType(
   const sashCount = components.filter(c => c.type === 'sash').length;
   
   // Get hardware definitions from system pack if available
-  const systemHardware = systemPack?.windowSystemSpec?.accessories_list || [];
+  const _systemHardware = systemPack?.windowSystemSpec?.accessories_list || [];
   
   // Connect based on window type
   if (windowType.includes('sliding') || windowType.includes('sliding_door')) {

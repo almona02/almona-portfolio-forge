@@ -408,12 +408,12 @@ export class GlobalPerformanceOptimizer {
     // Preconnect to optimal CDN
     this.preconnectToDomains([this.getOptimalCDNEndpoint()]);
 
-    // Preload critical resources
-    this.preloadCriticalResources([
-      { href: '/fonts/inter-var.woff2', as: 'font', crossorigin: true, type: 'font/woff2' },
-      { href: '/styles/critical.css', as: 'style' },
-      { href: '/scripts/critical.js', as: 'script' }
-    ]);
+    // Preload critical resources - DISABLED: fonts come from Google Fonts CDN, not local files
+    // this.preloadCriticalResources([
+    //   { href: '/fonts/inter-var.woff2', as: 'font', crossorigin: true, type: 'font/woff2' },
+    //   { href: '/styles/critical.css', as: 'style' },
+    //   { href: '/scripts/critical.js', as: 'script' }
+    // ]);
 
     // Apply connection-aware optimizations
     if (this.connectionSpeed === 'slow-2g' || this.connectionSpeed === '2g') {
@@ -579,9 +579,10 @@ export const OptimizedImage: React.FC<{
 // Global performance singleton
 export const globalOptimizer = new GlobalPerformanceOptimizer();
 
-// Export utility functions
+// Export utility functions - DISABLED to prevent preload warnings
 export const applyGlobalOptimizations = () => {
-  globalOptimizer.applyDynamicOptimizations();
+  // DISABLED: applyDynamicOptimizations was preloading fonts/images that don't exist locally
+  // globalOptimizer.applyDynamicOptimizations();
 };
 
 export const getOptimalCDN = () => {

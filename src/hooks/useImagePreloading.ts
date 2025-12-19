@@ -96,33 +96,30 @@ export function useRouteImagePreloading(routeImages: Record<string, PreloadConfi
   };
 }
 
-// Hook for preloading critical images
+// Hook for preloading critical images - DISABLED to prevent preload warnings
 export function useCriticalImagePreloading() {
   const [criticalImagesLoaded, setCriticalImagesLoaded] = useState(false);
 
-  useEffect(() => {
-    // Preload critical images immediately
-    const criticalImages = [
-      { src: '/Screenshot%202025-12-05%20014011.png', options: { width: 200, height: 60, quality: 90 } },
-      { src: '/images/hero-bg.jpg', options: { width: 1920, height: 1080, quality: 85 } },
-      { src: '/images/placeholder-machine.jpg', options: { width: 400, height: 300, quality: 80 } }
-    ];
-
-    const preloadCritical = async () => {
-      try {
-        await preloadImages(criticalImages);
-        setCriticalImagesLoaded(true);
-        console.log('Critical images preloaded');
-      } catch (error) {
-        console.warn('Failed to preload critical images:', error);
-      }
-    };
-
-    preloadCritical();
-  }, []);
+  // DISABLED: Images are lazy-loaded, no need to preload
+  // useEffect(() => {
+  //   const criticalImages = [
+  //     { src: '/Screenshot%202025-12-05%20014011.png', options: { width: 200, height: 60, quality: 90 } },
+  //     { src: '/images/hero-bg.jpg', options: { width: 1920, height: 1080, quality: 85 } },
+  //     { src: '/images/placeholder-machine.jpg', options: { width: 400, height: 300, quality: 80 } }
+  //   };
+  //   const preloadCritical = async () => {
+  //     try {
+  //       await preloadImages(criticalImages);
+  //       setCriticalImagesLoaded(true);
+  //     } catch (error) {
+  //       console.warn('Failed to preload critical images:', error);
+  //     }
+  //   };
+  //   preloadCritical();
+  // }, []);
 
   return {
-    criticalImagesLoaded
+    criticalImagesLoaded: true // Return true immediately since we're not preloading
   };
 }
 
