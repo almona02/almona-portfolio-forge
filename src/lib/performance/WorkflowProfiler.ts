@@ -139,7 +139,7 @@ export class WorkflowProfiler {
   getWorkflowEfficiency(): {
     totalDuration: number;
     targetDuration: number;
-    efficiency: number; // percentage (0-100)
+    efficiency: number; // percentage (can exceed 100 if better than target)
     reduction: number; // percentage reduction needed
     achieved: boolean;
   } {
@@ -153,7 +153,7 @@ export class WorkflowProfiler {
     return {
       totalDuration,
       targetDuration: this.targetDuration,
-      efficiency: Math.min(100, efficiency),
+      efficiency, // Allow values > 100% to indicate better than target performance
       reduction,
       achieved: totalDuration < this.targetDuration,
     };
