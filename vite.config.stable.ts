@@ -76,19 +76,12 @@ export default defineConfig(({ mode }) => {
           enabled: false // Disable in development for stability
         },
         workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
-          globIgnores: [
-            '**/hero01*.png',
-            '**/egyptian-industrial-hero-bg.png',
-            '**/about-page-image.png',
-            '**/*-large.png',
-            '**/*-hero*.png'
-          ],
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
           globDirectory: 'dist',
           cleanupOutdatedCaches: true,
           skipWaiting: true,
           clientsClaim: true,
-          maximumFileSizeToCacheInBytes: 12 * 1024 * 1024, // 12MB limit to handle large JS bundles
+          maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit for stability
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
@@ -106,17 +99,15 @@ export default defineConfig(({ mode }) => {
         },
         includeAssets: ["favicon.ico", "apple-touch-icon.png", "pwa-192x192.png", "pwa-512x512.png"],
         manifest: {
-          name: "Almona Portfolio Forge",
-          short_name: "Almona Forge",
-          description: "Industrial Aluminium & UPVC Fabrication Platform",
-          theme_color: "#f97316", // Almona Orange
-          background_color: "#1a1a1a", // Almona Dark
+          name: "Almona Precision - Factory Calibration",
+          short_name: "Almona Precision",
+          description: "Factory floor calibration tool for precision window fabrication",
+          theme_color: "#0d0f12",
+          background_color: "#ffffff",
           display: "standalone",
-          orientation: "landscape", // Preferred for fabrication dashboards
+          orientation: "portrait",
           start_url: "/",
           scope: "/",
-          lang: "ar", // Default to Arabic for Egypt
-          dir: "rtl",
           categories: ["business", "productivity"],
           icons: [
             {
