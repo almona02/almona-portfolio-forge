@@ -2,6 +2,7 @@
 Heavy computation tasks for async processing.
 Contains Celery tasks for optimization, scanning, and other CPU-intensive operations.
 """
+
 import time
 from typing import Dict, Any, Optional, List
 from datetime import datetime
@@ -12,7 +13,9 @@ from core.monitoring import get_structured_logger
 logger = get_structured_logger(__name__)
 
 
-@celery_app.task(bind=True, name="heavy_optimization.cutting", max_retries=2, time_limit=600)
+@celery_app.task(
+    bind=True, name="heavy_optimization.cutting", max_retries=2, time_limit=600
+)
 def optimize_cutting_task(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Async task for heavy cutting optimization.
@@ -30,10 +33,15 @@ def optimize_cutting_task(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
     finally:
         loop.close()
 
-async def _run_optimization_task(task_instance, request_data: Dict[str, Any]) -> Dict[str, Any]:
+
+async def _run_optimization_task(
+    task_instance, request_data: Dict[str, Any]
+) -> Dict[str, Any]:
     """Async implementation of the optimization task."""
     try:
-        logger.info("Starting heavy cutting optimization task", task_id=task_instance.request.id)
+        logger.info(
+            "Starting heavy cutting optimization task", task_id=task_instance.request.id
+        )
 
         # Update status to processing
         await job_service.update_job_status(task_instance.request.id, "processing")
@@ -44,7 +52,7 @@ async def _run_optimization_task(task_instance, request_data: Dict[str, Any]) ->
             DefectAwareOptimizer,
             CutDef,
             StockBarDef,
-            _map_objective
+            _map_objective,
         )
 
         # Parse request data
@@ -119,43 +127,51 @@ async def _run_optimization_task(task_instance, request_data: Dict[str, Any]) ->
             task_instance.request.id,
             "completed",
             result_data=result,
-            processing_time_seconds=payload["processing_time_seconds"]
+            processing_time_seconds=payload["processing_time_seconds"],
         )
 
         if success:
-            logger.info("Heavy cutting optimization completed and status updated",
-                       task_id=task_instance.request.id,
-                       processing_time=payload["processing_time_seconds"])
+            logger.info(
+                "Heavy cutting optimization completed and status updated",
+                task_id=task_instance.request.id,
+                processing_time=payload["processing_time_seconds"],
+            )
         else:
-            logger.warning("Heavy cutting optimization completed but status update failed",
-                         task_id=task_instance.request.id)
+            logger.warning(
+                "Heavy cutting optimization completed but status update failed",
+                task_id=task_instance.request.id,
+            )
 
         return result
 
     except Exception as e:
         error_msg = str(e)
-        logger.error("Heavy cutting optimization failed",
-                    task_id=task_instance.request.id,
-                    error=error_msg)
+        logger.error(
+            "Heavy cutting optimization failed",
+            task_id=task_instance.request.id,
+            error=error_msg,
+        )
 
         # Update job status to failed
         await job_service.update_job_status(
-            task_instance.request.id,
-            "failed",
-            error_message=error_msg
+            task_instance.request.id, "failed", error_message=error_msg
         )
 
         raise task_instance.retry(countdown=60, exc=e)
 
 
-@celery_app.task(bind=True, name="heavy_optimization.mass_production", max_retries=2, time_limit=900)
+@celery_app.task(
+    bind=True, name="heavy_optimization.mass_production", max_retries=2, time_limit=900
+)
 def optimize_mass_production_task(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Async task for mass production optimization.
     Handles large-scale production planning.
     """
     try:
-        logger.info("Starting mass production optimization task", task_id=self.request.id)
+        logger.info(
+            "Starting mass production optimization task", task_id=self.request.id
+        )
 
         # Import here to avoid circular imports
         from apis.v2.heavy_optimization import MassProductionOptimizationRequest
@@ -175,30 +191,35 @@ def optimize_mass_production_task(self, request_data: Dict[str, Any]) -> Dict[st
         return result
 
     except Exception as e:
-        logger.error("Mass production optimization failed",
-                    task_id=self.request.id,
-                    error=str(e))
+        logger.error(
+            "Mass production optimization failed", task_id=self.request.id, error=str(e)
+        )
         raise self.retry(countdown=60, exc=e)
 
 
 @celery_app.task(bind=True, name="smart_scan.single", max_retries=2, time_limit=300)
-def smart_scan_single_task(self, file_content: bytes, filename: str,
-                          known_width_mm: Optional[float] = None,
-                          auto_detect_scale: bool = True) -> Dict[str, Any]:
+def smart_scan_single_task(
+    self,
+    file_content: bytes,
+    filename: str,
+    known_width_mm: Optional[float] = None,
+    auto_detect_scale: bool = True,
+) -> Dict[str, Any]:
     """
     Async task for single profile scanning.
     Processes uploaded files and extracts profile information.
     """
     try:
-        logger.info("Starting smart scan single task",
-                   task_id=self.request.id,
-                   filename=filename)
+        logger.info(
+            f"Starting smart scan single task: task_id={self.request.id}, file_name={filename}",
+            task_id=self.request.id,
+        )
 
         # Import here to avoid circular imports
         from apis.v2.smart_scan import (
             FormatConverter,
             ProfileScanner,
-            validate_file_size
+            validate_file_size,
         )
 
         start = time.time()
@@ -224,23 +245,27 @@ def smart_scan_single_task(self, file_content: bytes, filename: str,
 
         proc_ms = round((time.time() - start) * 1000, 1)
 
-        result.update({
-            "task_id": self.request.id,
-            "processing_time_ms": proc_ms,
-            "completed_at": datetime.utcnow().isoformat(),
-        })
+        result.update(
+            {
+                "task_id": self.request.id,
+                "processing_time_ms": proc_ms,
+                "completed_at": datetime.utcnow().isoformat(),
+            }
+        )
 
-        logger.info("Smart scan single completed",
-                   task_id=self.request.id,
-                   processing_time_ms=proc_ms)
+        logger.info(
+            "Smart scan single completed",
+            task_id=self.request.id,
+            processing_time_ms=proc_ms,
+        )
 
         return result
 
     except Exception as e:
-        logger.error("Smart scan single failed",
-                    task_id=self.request.id,
-                    filename=filename,
-                    error=str(e))
+        logger.error(
+            f"Smart scan single failed: task_id={self.request.id}, file_name={filename}, error={str(e)}",
+            task_id=self.request.id,
+        )
         raise self.retry(countdown=30, exc=e)
 
 
@@ -251,9 +276,11 @@ def smart_scan_batch_task(self, files_data: List[Dict[str, Any]]) -> Dict[str, A
     Processes multiple files in sequence.
     """
     try:
-        logger.info("Starting smart scan batch task",
-                   task_id=self.request.id,
-                   file_count=len(files_data))
+        logger.info(
+            "Starting smart scan batch task",
+            task_id=self.request.id,
+            file_count=len(files_data),
+        )
 
         results = []
         total_start = time.time()
@@ -264,25 +291,38 @@ def smart_scan_batch_task(self, files_data: List[Dict[str, Any]]) -> Dict[str, A
             try:
                 # Process each file using the single scan logic
                 result = smart_scan_single_task.apply(
-                    args=[file_data['content'], file_data['filename'],
-                          file_data.get('known_width_mm'),
-                          file_data.get('auto_detect_scale', True)]
-                ).get(timeout=250)  # 4+ minute timeout per file
+                    args=[
+                        file_data["content"],
+                        file_data["filename"],
+                        file_data.get("known_width_mm"),
+                        file_data.get("auto_detect_scale", True),
+                    ]
+                ).get(
+                    timeout=250
+                )  # 4+ minute timeout per file
 
-                results.append({
-                    "file_index": file_data['index'],
-                    "success": True,
-                    "result": result,
-                    "processing_time_ms": round((time.time() - file_start) * 1000, 1)
-                })
+                results.append(
+                    {
+                        "file_index": file_data["index"],
+                        "success": True,
+                        "result": result,
+                        "processing_time_ms": round(
+                            (time.time() - file_start) * 1000, 1
+                        ),
+                    }
+                )
 
             except Exception as e:
-                results.append({
-                    "file_index": file_data['index'],
-                    "success": False,
-                    "error": str(e),
-                    "processing_time_ms": round((time.time() - file_start) * 1000, 1)
-                })
+                results.append(
+                    {
+                        "file_index": file_data["index"],
+                        "success": False,
+                        "error": str(e),
+                        "processing_time_ms": round(
+                            (time.time() - file_start) * 1000, 1
+                        ),
+                    }
+                )
 
         total_proc_ms = round((time.time() - total_start) * 1000, 1)
 
@@ -296,16 +336,16 @@ def smart_scan_batch_task(self, files_data: List[Dict[str, Any]]) -> Dict[str, A
             "completed_at": datetime.utcnow().isoformat(),
         }
 
-        logger.info("Smart scan batch completed",
-                   task_id=self.request.id,
-                   successful_scans=final_result["successful_scans"],
-                   failed_scans=final_result["failed_scans"],
-                   total_processing_time_ms=total_proc_ms)
+        logger.info(
+            "Smart scan batch completed",
+            task_id=self.request.id,
+            successful_scans=final_result["successful_scans"],
+            failed_scans=final_result["failed_scans"],
+            total_processing_time_ms=total_proc_ms,
+        )
 
         return final_result
 
     except Exception as e:
-        logger.error("Smart scan batch failed",
-                    task_id=self.request.id,
-                    error=str(e))
+        logger.error("Smart scan batch failed", task_id=self.request.id, error=str(e))
         raise self.retry(countdown=60, exc=e)
