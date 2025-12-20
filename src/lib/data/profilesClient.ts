@@ -87,6 +87,17 @@ export async function getProfileById(id: string): Promise<ProfileRow | null> {
       monitorSupabasePerformance(`getProfileById(${id})`, startTime);
 
       if (error) {
+        // Handle RLS infinite recursion error specifically
+        if (error.code === '42P17') {
+          console.error(
+            'RLS Policy Error: Infinite recursion detected in profiles table policy.',
+            'This is a database configuration issue. Please check Supabase RLS policies.',
+            { profileId: id, error }
+          );
+          // Cache the error to prevent retries for this profile
+          profileCache.set(id, { data: null, timestamp: Date.now() });
+          return null;
+        }
         console.error('Profile fetch error:', error);
         throw error;
       }
@@ -94,7 +105,18 @@ export async function getProfileById(id: string): Promise<ProfileRow | null> {
       // Cache successful result (including null) for a short period
       profileCache.set(id, { data, timestamp: Date.now() });
       return data;
-    } catch (error) {
+    } catch (error: any) {
+      // Handle RLS infinite recursion error in catch block too
+      if (error?.code === '42P17') {
+        console.error(
+          'RLS Policy Error: Infinite recursion detected in profiles table policy.',
+          'This is a database configuration issue. Please check Supabase RLS policies.',
+          { profileId: id, error }
+        );
+        // Cache the error to prevent retries for this profile
+        profileCache.set(id, { data: null, timestamp: Date.now() });
+        return null;
+      }
       console.error('Failed to fetch profile:', id, error);
       throw error;
     } finally {
