@@ -89,6 +89,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
     
+    // If there's an RLS error for this user, skip fetching to prevent retries
+    if (sessionStorage.getItem(`${cacheKey}-rls-error`)) {
+      return;
+    }
+    
     // If there's already an ongoing fetch for this user, skip
     if (ongoingFetches.current.has(userId)) {
       return;
@@ -115,7 +120,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         sessionStorage.setItem(cacheKey, now.toString());
         sessionStorage.setItem(`${cacheKey}-data`, JSON.stringify(profile));
       }
-    } catch (error) {
+    } catch (error: any) {
+      // Handle RLS infinite recursion error - don't retry
+      if (error?.code === '42P17') {
+        console.error(
+          'RLS Policy Error: Cannot fetch profile due to infinite recursion in RLS policy.',
+          'This is a Supabase database configuration issue. The profile may have been saved but cannot be read.',
+          'Please check and fix the RLS policies on the profiles table in Supabase.',
+          { userId, error }
+        );
+        // Mark this user as having an RLS error to prevent retries
+        sessionStorage.setItem(`${cacheKey}-rls-error`, 'true');
+        ongoingFetches.current.delete(userId);
+        return;
+      }
+      
       // Only log error once per session to avoid console spam
       if (!sessionStorage.getItem('profile-fetch-error-logged')) {
         console.error('Error fetching user profile:', error);
@@ -503,18 +522,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSupabaseUser(authData.user);
         
         // Wait a moment for the trigger to create the profile, then ensure it's complete
+        // Use a ref to prevent multiple simultaneous checks
+        const profileCheckKey = `profile-check-${authData.user!.id}`;
+        if (sessionStorage.getItem(profileCheckKey)) {
+          // Already checking or checked, skip
+          return;
+        }
+        sessionStorage.setItem(profileCheckKey, 'true');
+        
         setTimeout(async () => {
           try {
-            // First, check if profile exists
-            const { data: existingProfile, error: fetchError } = await supabase
-              .from('profiles')
-              .select('id')
-              .eq('id', authData.user!.id)
-              .single();
+            // First, check if profile exists - use getProfileById which has caching
+            const existingProfile = await getProfileById(authData.user!.id);
             
             // If profile doesn't exist, create it manually (trigger might have failed)
-            if (fetchError || !existingProfile) {
-              console.warn('Profile not found after signup, creating manually...', fetchError);
+            if (!existingProfile) {
+              console.warn('Profile not found after signup, creating manually...');
               
               const profileInsert: Database['public']['Tables']['profiles']['Insert'] = {
                 id: authData.user!.id,
@@ -560,6 +583,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.error('Error ensuring profile exists:', error);
             // Don't throw - registration succeeded, profile can be fixed later
             // The user can still log in and we'll retry fetching the profile
+          } finally {
+            // Clear the check flag after a delay to allow retry if needed
+            setTimeout(() => {
+              sessionStorage.removeItem(profileCheckKey);
+            }, 10000); // Allow retry after 10 seconds if needed
           }
         }, 1500); // Increased delay to give trigger more time
       }
