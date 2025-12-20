@@ -3,8 +3,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from apis.v1 import router as v1_router
-from apis.v2.app import v2_app
 from apis.v2 import business, assembly_intelligence
+from apis.v2.routers import router as v2_router
 from core.security_middleware import setup_security_middleware
 from core.middleware import (
     RateLimitMiddleware,
@@ -22,9 +22,11 @@ from core.health_checks import (
 from core.railway_health import get_railway_recommendations
 from core.sentry_setup import init_sentry
 from core.config import settings
+
 # Force import of celery_app to trigger Redis URL debugging on startup
 try:
     from core.celery_app import celery_app
+
     logger = get_structured_logger(__name__)
     logger.info("Celery app imported at startup for Redis URL debugging")
 except Exception as e:
@@ -148,8 +150,37 @@ app.include_router(business.router)
 # Assembly intelligence endpoints
 app.include_router(assembly_intelligence.router)
 
-# Mount v2 app as a sub-application to preserve v2-specific middleware
-app.mount("/api/v2", v2_app)
+# Include v2 routers with /api/v2 prefix
+# Using include_router instead of mount to ensure routes are accessible
+app.include_router(v2_router, prefix="/api/v2")
+
+# Include SmartScan routers with prefix
+try:
+    from apis.v2 import (
+        smart_scan,
+        smart_scan_enhanced,
+        smart_scan_assembly,
+    )
+
+    app.include_router(smart_scan.router, prefix="/api/v2")
+    app.include_router(smart_scan_enhanced.router, prefix="/api/v2")
+    app.include_router(smart_scan_assembly.router, prefix="/api/v2")
+except Exception as exc:
+    logger = get_structured_logger(__name__)
+    logger.warning("SmartScan routers not loaded: %s", exc)
+
+
+# Add v2 health endpoint (from v2_app)
+@app.get("/api/v2/health")
+async def v2_health_check():
+    """V2-specific health check endpoint."""
+    from apis.v2.middleware import is_rate_limiting_enabled
+
+    return {
+        "status": "healthy",
+        "version": "2.0.0",
+        "rate_limiting_enabled": is_rate_limiting_enabled(),
+    }
 
 
 @app.on_event("startup")
