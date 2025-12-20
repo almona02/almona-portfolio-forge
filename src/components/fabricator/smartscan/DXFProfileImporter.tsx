@@ -36,7 +36,25 @@ interface DXFProfileImporterProps {
   onProfileSaved?: (profileId: string) => void;
 }
 
-const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) || '';
+// Get API base URL - use env var if set, otherwise use relative path for same-origin
+const getApiBase = (): string => {
+  const envUrl = import.meta.env.VITE_API_URL as string | undefined;
+  if (envUrl) {
+    // Remove trailing slash if present
+    return envUrl.replace(/\/$/, '');
+  }
+  if (import.meta.env.DEV) {
+    return "http://localhost:8003";
+  }
+  // Production fallback - but this should not happen if VITE_API_URL is set
+  console.error(
+    "⚠️ VITE_API_URL not set in production! DXF import will fail. " +
+    "Please set VITE_API_URL in your deployment environment variables."
+  );
+  return typeof window !== 'undefined' ? window.location.origin : '';
+};
+
+const API_BASE = getApiBase();
 
 async function ingestProfileViaApi(file: File): Promise<ImportedProfile> {
   const formData = new FormData();
@@ -59,15 +77,47 @@ async function ingestProfileViaApi(file: File): Promise<ImportedProfile> {
   
   // Prefer actual profile dimensions over full bounding box
   // (bounding box includes text labels, etc.)
-  const width = metrics.profile_width_mm ?? (metrics.bounding_box?.[2] - metrics.bounding_box?.[0]);
-  const height = metrics.profile_height_mm ?? (metrics.bounding_box?.[3] - metrics.bounding_box?.[1]);
+  let width: number | undefined;
+  let height: number | undefined;
+  
+  // Try profile_width_mm/profile_height_mm first (from largest polygon)
+  if (metrics.profile_width_mm != null && Number.isFinite(metrics.profile_width_mm)) {
+    width = Number(metrics.profile_width_mm);
+  }
+  if (metrics.profile_height_mm != null && Number.isFinite(metrics.profile_height_mm)) {
+    height = Number(metrics.profile_height_mm);
+  }
+  
+  // Fallback to bounding box if profile dimensions not available
+  if (width == null || height == null) {
+    const bbox = metrics.bounding_box;
+    if (Array.isArray(bbox) && bbox.length >= 4) {
+      // bounding_box format: [min_x, min_y, max_x, max_y]
+      const bboxWidth = bbox[2] - bbox[0];
+      const bboxHeight = bbox[3] - bbox[1];
+      if (width == null && Number.isFinite(bboxWidth)) width = bboxWidth;
+      if (height == null && Number.isFinite(bboxHeight)) height = bboxHeight;
+    }
+  }
+  
+  // Debug logging in development
+  if (import.meta.env.DEV) {
+    console.log('DXF Import Response:', {
+      profile_width_mm: metrics.profile_width_mm,
+      profile_height_mm: metrics.profile_height_mm,
+      bounding_box: metrics.bounding_box,
+      extracted_width: width,
+      extracted_height: height,
+      has_svg: Boolean(json?.svg_preview),
+    });
+  }
 
   return {
     id: `${file.name}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     fileName: file.name,
     name: file.name.replace(/\.(dxf|dwg)$/i, ''),
-    widthMm: Number.isFinite(width) ? width : undefined,
-    heightMm: Number.isFinite(height) ? height : undefined,
+    widthMm: width,
+    heightMm: height,
     areaMm2: json?.profile_metrics?.area_mm2,
     perimeterMm: json?.profile_metrics?.perimeter_mm,
     weightKgPerM: json?.profile_metrics?.weight_kg_per_m,
