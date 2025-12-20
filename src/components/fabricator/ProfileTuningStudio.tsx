@@ -951,7 +951,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                   {t('profile_tuning_studio.cutting_rules.corner_technology', 'Corner Technology')}
                                 </label>
                                 <select
-                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-100 [&>option]:bg-gray-900 [&>option]:text-gray-100"
                                   value={cuttingConfig.cornerTechnology}
                                   onChange={(e) =>
                                     setCuttingConfig((prev) => ({
@@ -1125,7 +1125,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                     {t('profile_tuning_studio.structural.physics_stiffness', 'Physics Stiffness Class')}
                                   </label>
                                   <select
-                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-100 [&>option]:bg-gray-900 [&>option]:text-gray-100"
                                     value={structuralConfig.physicsStiffnessClass}
                                     onChange={(e) =>
                                       setStructuralConfig((prev) => ({
@@ -1850,9 +1850,10 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                     { count: profiles.length, width: firstProfile.widthMm, height: firstProfile.heightMm }
                                   )
                                 );
-                                // Optionally update profile geometry from imported data
-                                if (firstProfile.widthMm && firstProfile.heightMm) {
-                                  // Could update profile.specifications here if needed
+                                // Auto-apply configuration if dimensions are available
+                                if (firstProfile.widthMm && firstProfile.heightMm && enableAutoConfig) {
+                                  // Auto-config will be applied when profile is saved
+                                  toast.info(t('profile_tuning_studio.dxf_import.auto_config', 'Auto-configuration will be applied on save'));
                                 }
                               }
                             }}
@@ -1861,8 +1862,12 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               setSelectedProfileId(id);
                             }}
                             userId={userId}
+                            defaultRole={profile.profileRole || 'frame'}
+                            defaultWindowType={profile.systemType || 'sliding'}
+                            defaultSystemPack={profile.systemBrand}
+                            enableAutoConfig={true}
                             onProfileSaved={(_profileId) => {
-                              toast.success(t('profile_tuning_studio.dxf_import.saved', 'Profile saved to library'));
+                              toast.success(t('profile_tuning_studio.dxf_import.saved', 'Profile saved to library with auto-configuration'));
                               onProfileUpdated?.();
                             }}
                           />

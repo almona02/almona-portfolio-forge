@@ -65,11 +65,11 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
     return kFactorEngine.calculateCutLength(testFinalDimension, calculatedKFactor);
   }, [testFinalDimension, calculatedKFactor]);
 
-  // Validate K-factor
+  // Validate K-factor (pass jointType for sliding frame validation)
   const validation = useMemo(() => {
     if (calculatedKFactor === null) return null;
-    return kFactorEngine.validateKFactor(calculatedKFactor);
-  }, [calculatedKFactor]);
+    return kFactorEngine.validateKFactor(calculatedKFactor, jointType);
+  }, [calculatedKFactor, jointType]);
 
   const handleJointTypeChange = (value: string) => {
     const newJointType = value as typeof jointType;
@@ -187,6 +187,12 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
           <div className="text-3xl font-bold text-blue-400 mb-2">
             {calculatedKFactor !== null ? `${calculatedKFactor.toFixed(2)} mm` : '—'}
           </div>
+          {/* Show info message for positive K-factors in sliding frames (not a warning) */}
+          {calculatedKFactor !== null && calculatedKFactor > 0 && (jointType === 'miter_45' || jointType === 'l_joint') && !validation?.warning && (
+            <div className="mt-2 p-2 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-blue-300">
+              ✓ Positive K-factor is correct for sliding frames with corner joints. You cut MORE than the final dimension to account for miter joint geometry.
+            </div>
+          )}
           {validation?.warning && (
             <Alert className={`mt-2 ${validation.isValid ? 'bg-yellow-500/10 border-yellow-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
               <AlertTriangle className="h-4 w-4" />

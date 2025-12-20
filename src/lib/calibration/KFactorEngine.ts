@@ -59,8 +59,14 @@ export class KFactorEngine {
 
     let explanation = `For a ${cutAngle}° cut on a ${profileWidth}mm profile with ${materialThickness}mm material thickness, `;
     explanation += `the K-factor is ${roundedKFactor.toFixed(2)}mm. `;
-    explanation += `This means you need to cut ${Math.abs(roundedKFactor).toFixed(2)}mm ${roundedKFactor < 0 ? 'less' : 'more'} `;
-    explanation += `than the final dimension to achieve the correct joint.`;
+    if (roundedKFactor > 0) {
+      explanation += `This is a POSITIVE K-factor, meaning you need to cut ${roundedKFactor.toFixed(2)}mm MORE than the final dimension. `;
+      explanation += `This is normal for sliding frames with corner joints - the miter cut geometry requires extra material. `;
+      explanation += `Example: For a 1000mm final dimension, cut at ${(1000 + roundedKFactor).toFixed(2)}mm.`;
+    } else {
+      explanation += `This means you need to cut ${Math.abs(roundedKFactor).toFixed(2)}mm LESS `;
+      explanation += `than the final dimension to achieve the correct joint.`;
+    }
 
     return {
       kFactor: roundedKFactor,
@@ -119,26 +125,57 @@ export class KFactorEngine {
 
   /**
    * Validate K-factor is within reasonable range
+   * 
+   * Note: For sliding frames with corner joints, positive K-factors are normal
+   * (you cut MORE than final dimension to account for miter joint geometry)
    */
-  validateKFactor(kFactor: number): { isValid: boolean; warning?: string } {
+  validateKFactor(kFactor: number, jointType?: string): { isValid: boolean; warning?: string } {
+    // For sliding frames with corner joints, positive K-factors up to 300mm are acceptable
+    const isSlidingFrame = jointType === 'miter_45' || jointType === 'l_joint';
+    const maxPositiveKFactor = isSlidingFrame ? 300 : 50;
+    
+    // Handle extremely negative values
     if (kFactor < -100) {
       return {
         isValid: false,
         warning: 'K-factor is extremely negative. Verify profile dimensions and cut angle.',
       };
     }
-    if (kFactor > 50) {
+    
+    // Handle values exceeding maximum (only show error if truly excessive)
+    if (kFactor > maxPositiveKFactor) {
       return {
         isValid: false,
-        warning: 'K-factor is unusually positive. Verify profile dimensions and cut angle.',
+        warning: `K-factor is unusually positive (${kFactor.toFixed(2)}mm). Verify profile dimensions and cut angle. For sliding frames, positive K-factors up to 300mm are normal.`,
       };
     }
+    
+    // IMPORTANT: For sliding frames with positive K-factors, NO WARNING - this is correct!
+    // Positive K-factor means you cut MORE than final dimension, which is expected for corner joints
+    if (kFactor > 0 && isSlidingFrame) {
+      return {
+        isValid: true,
+        // Explicitly no warning - positive K-factor is expected and correct for sliding frames
+      };
+    }
+    
+    // Handle moderately negative values
     if (kFactor < -50) {
       return {
         isValid: true,
         warning: 'K-factor is quite negative. Double-check calculations for accuracy.',
       };
     }
+    
+    // Handle positive values for non-sliding frames (may need verification)
+    if (kFactor > 50 && !isSlidingFrame) {
+      return {
+        isValid: true,
+        warning: 'K-factor is positive. For sliding frames with corner joints, this is normal. For other joint types, verify calculations.',
+      };
+    }
+    
+    // All other cases are valid with no warning
     return { isValid: true };
   }
 
