@@ -5,7 +5,7 @@ import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { FileText, UploadCloud, Save } from 'lucide-react';
 import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
 export interface ImportedProfile {
@@ -194,7 +194,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
         },
       };
 
-      const { supabase } = await import('@/lib/supabase/client');
+      const { supabase } = await import('@/lib/supabase');
       const { data, error: saveError } = await supabase
         .from('fabricator_profiles')
         .insert(profileData)
