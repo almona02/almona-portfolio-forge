@@ -35,7 +35,7 @@ echo Ports cleaned! Services ready to start.
 echo ==========================================
 echo.
 echo Starting backend server in new window...
-start "Backend Server" cmd /k "cd /d %~dp0 && set REDIS_URL=redis://localhost:6379 && python -m uvicorn apis.v2.app:v2_app --host 0.0.0.0 --port 8003"
+start "Backend Server" cmd /k "cd /d %~dp0 && set REDIS_URL=redis://localhost:6379 && python -m uvicorn apis.main:app --host 0.0.0.0 --port 8003"
 
 echo.
 echo Starting Celery worker in new window...

@@ -38,7 +38,7 @@ try:
 except requests.exceptions.ConnectionError:
     print("[ERROR] Server not running on port 8003")
     print(
-        "Start server with: cd python_backend && uvicorn apis.v2.app:app --reload --port 8003"
+        "Start server with: cd python_backend && uvicorn apis.main:app --reload --port 8003"
     )
     sys.exit(1)
 except Exception as e:
