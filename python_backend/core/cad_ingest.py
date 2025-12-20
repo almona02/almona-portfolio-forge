@@ -1,8 +1,8 @@
 """
 Production-hardened CAD ingestion engine for DXF profiles.
 
-Universal geometry support for real-world DXF files including LWPOLYLINE, 
-POLYLINE, and support for curves/bulges. Extracts geometry, area, perimeter, 
+Universal geometry support for real-world DXF files including LWPOLYLINE,
+POLYLINE, and support for curves/bulges. Extracts geometry, area, perimeter,
 weight, and validation suitable for certified CAD imports.
 """
 
@@ -34,11 +34,15 @@ class CadProfileIngestor:
     """Processes DXF files to extract physical properties for aluminium/UPVC profiles."""
 
     ALUMINIUM_DENSITY = 2.7  # g/cm^3
-    UPVC_DENSITY = 1.4       # g/cm^3
+    UPVC_DENSITY = 1.4  # g/cm^3
 
     def __init__(self, material_type: str = "aluminium"):
         self.material_type = material_type
-        self.density = self.ALUMINIUM_DENSITY if material_type == "aluminium" else self.UPVC_DENSITY
+        self.density = (
+            self.ALUMINIUM_DENSITY
+            if material_type == "aluminium"
+            else self.UPVC_DENSITY
+        )
 
     def process_dxf(self, file_bytes: bytes) -> Dict:
         """Primary ingestion method for DXF files. Returns structured metrics."""
@@ -50,26 +54,36 @@ class CadProfileIngestor:
             text_stream = io.TextIOWrapper(buffer, encoding="utf-8", errors="ignore")
             doc = ezdxf.read(text_stream)
             msp = doc.modelspace()
-            
+
             # Log DXF version and entity count for debugging
             entity_count = len(list(msp))
-            logger.debug(f"Processing DXF version: {doc.dxfversion}, entities: {entity_count}")
-            
+            logger.debug(
+                f"Processing DXF version: {doc.dxfversion}, entities: {entity_count}"
+            )
+
             # Quick check for empty DXF
             if entity_count == 0:
-                return self._error_response("Empty DXF file - no entities found in modelspace")
-            
+                return self._error_response(
+                    "Empty DXF file - no entities found in modelspace"
+                )
+
             # Check if this might be a 3D DXF (we only handle 2D profiles)
-            has_3d_entities = any(e.dxftype() in ['3DFACE', '3DSOLID', 'BODY', 'REGION'] for e in msp)
+            has_3d_entities = any(
+                e.dxftype() in ["3DFACE", "3DSOLID", "BODY", "REGION"] for e in msp
+            )
             if has_3d_entities:
-                logger.warning("3D entities detected - this ingestor only processes 2D profiles")
-                return self._error_response("3D entities detected - please provide 2D profile drawings only")
+                logger.warning(
+                    "3D entities detected - this ingestor only processes 2D profiles"
+                )
+                return self._error_response(
+                    "3D entities detected - please provide 2D profile drawings only"
+                )
 
             # --- STRATEGY 1: Universal Geometry Support ---
             polygons = []
-            
+
             # Iterate through all polyline types (LWPOLYLINE and POLYLINE)
-            for entity in msp.query('LWPOLYLINE POLYLINE'):
+            for entity in msp.query("LWPOLYLINE POLYLINE"):
                 try:
                     if entity.is_closed:
                         # Convert to path to handle bulges (arcs) correctly
@@ -85,7 +99,9 @@ class CadProfileIngestor:
                         if len(points) > 2:
                             start_point = Vec2(points[0][0], points[0][1])
                             end_point = Vec2(points[-1][0], points[-1][1])
-                            if start_point.distance(end_point) < 0.001:  # 1 micron tolerance
+                            if (
+                                start_point.distance(end_point) < 0.001
+                            ):  # 1 micron tolerance
                                 # Treat as closed
                                 p = make_path(entity)
                                 verts = list(p.flattening(distance=0.01))
@@ -101,27 +117,31 @@ class CadProfileIngestor:
                 # This is more computationally expensive but handles exploded profiles
                 try:
                     all_entities = list(msp)
-                    lines = [e for e in all_entities if e.dxftype() == 'LINE']
-                    arcs = [e for e in all_entities if e.dxftype() == 'ARC']
-                    circles = [e for e in all_entities if e.dxftype() == 'CIRCLE']
-                    splines = [e for e in all_entities if e.dxftype() == 'SPLINE']
-                    
+                    lines = [e for e in all_entities if e.dxftype() == "LINE"]
+                    arcs = [e for e in all_entities if e.dxftype() == "ARC"]
+                    circles = [e for e in all_entities if e.dxftype() == "CIRCLE"]
+                    splines = [e for e in all_entities if e.dxftype() == "SPLINE"]
+
                     # Log detailed entity information for debugging
-                    logger.debug(f"Entity breakdown - Lines: {len(lines)}, Arcs: {len(arcs)}, Circles: {len(circles)}, Splines: {len(splines)}")
-                    
+                    logger.debug(
+                        f"Entity breakdown - Lines: {len(lines)}, Arcs: {len(arcs)}, Circles: {len(circles)}, Splines: {len(splines)}"
+                    )
+
                     # If we have lots of lines/arcs/splines, it's likely an exploded profile
                     if len(lines) > 10 or len(arcs) > 5 or len(splines) > 2:
                         # For pilot, we'll provide helpful error message
                         entity_counts = {}
                         for e in msp:
-                            entity_counts[e.dxftype()] = entity_counts.get(e.dxftype(), 0) + 1
-                        
+                            entity_counts[e.dxftype()] = (
+                                entity_counts.get(e.dxftype(), 0) + 1
+                            )
+
                         return self._error_response(
                             f"Exploded geometry detected: {entity_counts}. "
                             f"Please use 'JOIN' or 'BOUNDARY' command in AutoCAD to create a closed profile, "
                             f"or convert to a single LWPOLYLINE/POLYLINE for automatic processing."
                         )
-                        
+
                 except Exception as e:
                     logger.warning(f"Error analyzing exploded geometry: {e}")
                     pass
@@ -131,7 +151,7 @@ class CadProfileIngestor:
                 entity_counts = {}
                 for e in msp:
                     entity_counts[e.dxftype()] = entity_counts.get(e.dxftype(), 0) + 1
-                
+
                 return self._error_response(
                     f"No closed loops found. Entities detected: {entity_counts}. "
                     f"Please use 'JOIN' or 'BOUNDARY' command in AutoCAD to create a closed profile."
@@ -140,7 +160,7 @@ class CadProfileIngestor:
             # --- Physics Calculation ---
             total_area_mm2 = 0.0
             total_perimeter_mm = 0.0
-            
+
             for poly in polygons:
                 area = self._calculate_area(poly)
                 # Simple check to filter out tiny noise (e.g. screw holes < 1mm)
@@ -153,14 +173,41 @@ class CadProfileIngestor:
 
             weight_per_m = (total_area_mm2 * self.density) / 1000.0
             is_thermal_break = len(polygons) > 1
-            
-            # Log processing summary for debugging
-            logger.info(f"Processed {len(polygons)} polygon(s), total area: {total_area_mm2:.2f} mm², perimeter: {total_perimeter_mm:.2f} mm")
 
-            # Calculate bounding box from all polygons
+            # Log processing summary for debugging
+            logger.info(
+                f"Processed {len(polygons)} polygon(s), total area: {total_area_mm2:.2f} mm², perimeter: {total_perimeter_mm:.2f} mm"
+            )
+
+            # Calculate bounding box from all polygons (full drawing extent)
             all_points = np.vstack(polygons)
-            min_x, min_y = np.min(all_points, axis=0)
-            max_x, max_y = np.max(all_points, axis=0)
+            min_vals = np.min(all_points, axis=0)
+            max_vals = np.max(all_points, axis=0)
+            min_x, min_y = min_vals[0], min_vals[1]
+            max_x, max_y = max_vals[0], max_vals[1]
+
+            # Calculate actual profile cross-section dimensions
+            # Use the largest polygon (main profile) to get actual dimensions
+            profile_width_mm = None
+            profile_height_mm = None
+            if polygons:
+                # Find the polygon with the largest area (main profile)
+                largest_poly_idx = max(
+                    range(len(polygons)),
+                    key=lambda i: self._calculate_area(polygons[i]),
+                )
+                largest_poly = polygons[largest_poly_idx]
+
+                # Calculate bounding box of the main profile
+                poly_min = np.min(largest_poly, axis=0)
+                poly_max = np.max(largest_poly, axis=0)
+                profile_width_mm = float(poly_max[0] - poly_min[0])
+                profile_height_mm = float(poly_max[1] - poly_min[1])
+
+                logger.info(
+                    f"Profile cross-section: {profile_width_mm:.2f} × {profile_height_mm:.2f} mm "
+                    f"(Full bounding box: {max_x - min_x:.2f} × {max_y - min_y:.2f} mm)"
+                )
 
             metrics = CadProfileMetrics(
                 area_mm2=float(total_area_mm2),
@@ -174,7 +221,12 @@ class CadProfileIngestor:
 
             validation = self._validate_for_egyptian_standards(metrics)
 
-            return {
+            # Generate SVG preview (pass polygons for fallback)
+            svg_preview = self._generate_svg_preview(
+                doc, msp, metrics.bounding_box, polygons
+            )
+
+            result = {
                 "status": "success",
                 "accuracy_score": 100.0,
                 "confidence": "certified_cad",
@@ -190,7 +242,19 @@ class CadProfileIngestor:
                     "is_closed": metrics.is_closed,
                 },
                 "validation_warnings": validation["warnings"],
+                "svg_preview": svg_preview,
             }
+
+            # Add actual profile cross-section dimensions (excluding text labels, etc.)
+            if profile_width_mm is not None and profile_height_mm is not None:
+                result["profile_metrics"]["profile_width_mm"] = round(
+                    profile_width_mm, 2
+                )
+                result["profile_metrics"]["profile_height_mm"] = round(
+                    profile_height_mm, 2
+                )
+
+            return result
         except ezdxf.DXFStructureError as exc:
             logger.error("Invalid DXF structure: %s", exc, exc_info=True)
             return self._error_response(f"Invalid DXF structure: {exc}")
@@ -205,7 +269,9 @@ class CadProfileIngestor:
 
     def _calculate_perimeter(self, points: np.ndarray) -> float:
         """Calculate perimeter by summing distances between points"""
-        return np.sum(np.sqrt(np.sum(np.diff(points, axis=0, append=points[:1])**2, axis=1)))
+        return np.sum(
+            np.sqrt(np.sum(np.diff(points, axis=0, append=points[:1]) ** 2, axis=1))
+        )
 
     def _validate_for_egyptian_standards(self, metrics: CadProfileMetrics) -> Dict:
         warnings: List[str] = []
@@ -217,13 +283,139 @@ class CadProfileIngestor:
             warnings.append("Large perimeter may indicate incorrect scaling")
         if not metrics.is_closed:
             warnings.append("Profile is not closed - may cause manufacturing issues")
-        
+
         # Additional validation for Egyptian standards
         if metrics.area_mm2 < 100:  # Very small area might indicate scaling issues
             warnings.append("Very small profile area detected - check drawing scale")
 
         return {"is_compliant": len(warnings) == 0, "warnings": warnings}
 
+    def _generate_svg_preview(
+        self,
+        doc,
+        msp,
+        bounding_box: Tuple[float, float, float, float],
+        polygons: List = None,
+    ) -> str:
+        """Generate SVG preview from DXF geometry."""
+        try:
+            from ezdxf.addons.drawing import RenderContext, Frontend
+            from ezdxf.addons.drawing.svg import SVGBackend
+            from ezdxf.addons.drawing.config import Configuration
+            from ezdxf.addons.drawing import layout
+
+            # Create SVG backend
+            svg_backend = SVGBackend()
+
+            # Create render context
+            ctx = RenderContext(doc)
+            ctx.set_current_layout(msp)
+
+            # Configure drawing with proper API
+            config = Configuration().with_changes(min_lineweight=0.1)
+
+            # Draw layout
+            frontend = Frontend(ctx, svg_backend, config)
+            frontend.draw_layout(msp)
+
+            # Get SVG as string
+            min_x, min_y, max_x, max_y = bounding_box
+            width = max_x - min_x
+            height = max_y - min_y
+
+            # Create page layout
+            page = layout.Page(width, height, margins=layout.Margins.all(5))
+            settings = layout.Settings()
+
+            # Get SVG string - check API signature
+            try:
+                svg_string = svg_backend.get_string(
+                    page, settings, xml_declaration=False
+                )
+            except TypeError:
+                # Try without settings parameter
+                svg_string = svg_backend.get_string(page, xml_declaration=False)
+
+            return svg_string
+
+        except ImportError:
+            logger.warning("SVG backend not available, generating SVG from polygons")
+            return (
+                self._generate_svg_from_polygons(bounding_box, polygons)
+                if polygons
+                else self._generate_simple_svg(bounding_box)
+            )
+        except Exception as e:
+            logger.warning(f"SVG generation failed: {e}, using polygon fallback")
+            return (
+                self._generate_svg_from_polygons(bounding_box, polygons)
+                if polygons
+                else self._generate_simple_svg(bounding_box)
+            )
+
+    def _generate_svg_from_polygons(
+        self, bounding_box: Tuple[float, float, float, float], polygons: List
+    ) -> str:
+        """Generate SVG from polygon data."""
+        min_x, min_y, max_x, max_y = bounding_box
+        width = max_x - min_x
+        height = max_y - min_y
+
+        # Add margin
+        margin = max(width, height) * 0.1
+        view_width = width + (margin * 2)
+        view_height = height + (margin * 2)
+
+        # Build SVG paths from polygons
+        paths = []
+        for poly in polygons:
+            if len(poly) < 3:
+                continue
+            # Convert polygon to SVG path
+            path_data = f"M {poly[0][0]:.2f},{poly[0][1]:.2f}"
+            for point in poly[1:]:
+                path_data += f" L {point[0]:.2f},{point[1]:.2f}"
+            path_data += " Z"  # Close path
+            paths.append(
+                f'<path d="{path_data}" fill="none" stroke="#333" stroke-width="0.5"/>'
+            )
+
+        svg_paths = (
+            "\n  ".join(paths)
+            if paths
+            else f'<rect x="{min_x:.1f}" y="{min_y:.1f}" width="{width:.1f}" height="{height:.1f}" fill="none" stroke="#333" stroke-width="0.5"/>'
+        )
+
+        svg = f"""<svg width="{view_width:.1f}" height="{view_height:.1f}" viewBox="{min_x - margin:.1f} {min_y - margin:.1f} {view_width:.1f} {view_height:.1f}" xmlns="http://www.w3.org/2000/svg">
+  {svg_paths}
+  <text x="{(min_x + max_x) / 2:.1f}" y="{max_y + margin / 2:.1f}" text-anchor="middle" font-size="2" fill="#666">{width:.1f} × {height:.1f} mm</text>
+</svg>"""
+        return svg
+
+    def _generate_simple_svg(
+        self, bounding_box: Tuple[float, float, float, float]
+    ) -> str:
+        """Generate a simple SVG preview from bounding box."""
+        min_x, min_y, max_x, max_y = bounding_box
+        width = max_x - min_x
+        height = max_y - min_y
+
+        # Add margin
+        margin = max(width, height) * 0.1
+        view_width = width + (margin * 2)
+        view_height = height + (margin * 2)
+
+        svg = f"""<svg width="{view_width:.1f}" height="{view_height:.1f}" viewBox="{min_x - margin:.1f} {min_y - margin:.1f} {view_width:.1f} {view_height:.1f}" xmlns="http://www.w3.org/2000/svg">
+  <rect x="{min_x:.1f}" y="{min_y:.1f}" width="{width:.1f}" height="{height:.1f}" fill="none" stroke="#333" stroke-width="0.5"/>
+  <text x="{(min_x + max_x) / 2:.1f}" y="{max_y + margin / 2:.1f}" text-anchor="middle" font-size="2" fill="#666">{width:.1f} × {height:.1f} mm</text>
+</svg>"""
+        return svg
+
     def _error_response(self, message: str) -> Dict:
         logger.warning(f"CAD ingestion failed: {message}")
-        return {"status": "error", "accuracy_score": 0.0, "confidence": "failed", "error": message}
+        return {
+            "status": "error",
+            "accuracy_score": 0.0,
+            "confidence": "failed",
+            "error": message,
+        }

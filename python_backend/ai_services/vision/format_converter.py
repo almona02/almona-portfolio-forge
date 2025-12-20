@@ -95,7 +95,12 @@ class FormatConverter:
             from ezdxf.addons.drawing.matplotlib import MatplotlibBackend
             import matplotlib.pyplot as plt
 
-            doc = ezdxf.read(io.BytesIO(dxf_bytes))
+            # ezdxf.read expects a text stream; normalize to bytes then wrap safely
+            if isinstance(dxf_bytes, str):
+                dxf_bytes = dxf_bytes.encode("utf-8", errors="ignore")
+            buffer = io.BytesIO(dxf_bytes)
+            text_stream = io.TextIOWrapper(buffer, encoding="utf-8", errors="ignore")
+            doc = ezdxf.read(text_stream)
             msp = doc.modelspace()
             if len(msp) == 0:
                 raise ValueError("Empty DXF file (no modelspace entities)")
@@ -127,16 +132,14 @@ class FormatConverter:
             ax.set_aspect("equal")
             ax.axis("off")
 
+            from ezdxf.addons.drawing.config import Configuration
+            
             ctx = RenderContext(doc)
             ctx.set_current_layout(msp)
-            config = {
-                "lineweight_scaling": 1.0,
-                "lineweight": line_width,
-                "color": (0, 0, 0),
-                "background_color": (1, 1, 1),
-            }
-            backend = MatplotlibBackend(ax, config=config)
-            Frontend(ctx, backend).draw_layout(msp)
+            config = Configuration().with_changes(min_lineweight=line_width)
+            backend = MatplotlibBackend(ax)
+            backend.configure(config)
+            Frontend(ctx, backend, config).draw_layout(msp)
 
             buf = io.BytesIO()
             plt.savefig(
