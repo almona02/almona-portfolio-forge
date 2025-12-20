@@ -1,11 +1,24 @@
 import { supabase } from "@/lib/supabase";
-import type { AssemblyResponse, AssemblyComponent } from "@/types/assembly";
+import type { AssemblyComponent, AssemblyResponse } from "@/types/assembly";
 
 const getApiBase = (): string => {
+  // In production, VITE_API_URL must be set in environment variables
   const envUrl = import.meta.env.VITE_API_URL;
-  if (envUrl) return envUrl;
-  if (import.meta.env.DEV) return "http://localhost:8000";
-  return window.location.origin;
+  if (envUrl) {
+    // Remove trailing slash if present
+    return envUrl.replace(/\/$/, '');
+  }
+  if (import.meta.env.DEV) {
+    return "http://localhost:8003"; // Backend runs on 8003, not 8000
+  }
+  // Production fallback - but this should not happen if VITE_API_URL is set
+  console.error(
+    "⚠️ VITE_API_URL not set in production! API calls will fail. " +
+    "Please set VITE_API_URL in your deployment environment variables."
+  );
+  // Try to infer from window.location if on same domain
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  return origin;
 };
 
 const API_BASE = getApiBase();
@@ -177,7 +190,7 @@ export async function getScanJobStatus(jobId: string): Promise<ScanJobStatusResp
  */
 export async function waitForScanJob(
   jobId: string,
-  timeoutMs: number = 60000, // 1 minute default
+  timeoutMs: number = 300000, // 5 minutes default (matches Celery time_limit)
   pollIntervalMs: number = 2000 // poll every 2 seconds
 ): Promise<SmartScanResult> {
   const startTime = Date.now();

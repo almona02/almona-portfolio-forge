@@ -421,9 +421,14 @@
             });
           }, 3600000); // 1 hour
         });
-      } else if (import.meta.env?.DEV) {
+      } else {
         // In development, unregister any existing service workers to prevent conflicts
-        window.addEventListener('load', () => {
+        // Check if we're in dev mode by checking hostname
+        const isDev = window.location.hostname === 'localhost' || 
+                     window.location.hostname === '127.0.0.1' ||
+                     window.location.hostname.includes('localhost');
+        if (isDev) {
+          window.addEventListener('load', () => {
           navigator.serviceWorker.getRegistrations().then(registrations => {
             registrations.forEach(registration => {
               // Only unregister our custom service worker, not VitePWA's
@@ -435,6 +440,7 @@
             });
           });
         });
+        }
       }
       
       // Prevent service worker registration errors in preview mode

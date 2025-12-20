@@ -1,6 +1,7 @@
 """
 Heavy computation tasks for async processing.
-Contains Celery tasks for optimization, scanning, and other CPU-intensive operations.
+Contains Celery tasks for optimization, scanning, and other
+CPU-intensive operations.
 """
 
 import time
@@ -14,7 +15,10 @@ logger = get_structured_logger(__name__)
 
 
 @celery_app.task(
-    bind=True, name="heavy_optimization.cutting", max_retries=2, time_limit=600
+    bind=True,
+    name="heavy_optimization.cutting",
+    max_retries=2,
+    time_limit=600,
 )
 def optimize_cutting_task(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -23,7 +27,6 @@ def optimize_cutting_task(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
     Updates job status in database for Supabase Realtime.
     """
     import asyncio
-    from services.job_service import job_service
 
     # Run async task
     loop = asyncio.new_event_loop()
@@ -38,9 +41,12 @@ async def _run_optimization_task(
     task_instance, request_data: Dict[str, Any]
 ) -> Dict[str, Any]:
     """Async implementation of the optimization task."""
+    from services.job_service import job_service
+
     try:
         logger.info(
-            "Starting heavy cutting optimization task", task_id=task_instance.request.id
+            "Starting heavy cutting optimization task",
+            task_id=task_instance.request.id,
         )
 
         # Update status to processing
@@ -116,7 +122,10 @@ async def _run_optimization_task(
                 "workshop_id": req.workshop_id,
                 "project_ids": req.project_ids or [],
                 "optimized_for_egypt": True,
-                "notes": "Tuned for low-RAM workshop PCs; heavy LP/CP compute moved to Python backend.",
+                "notes": (
+                    "Tuned for low-RAM workshop PCs; "
+                    "heavy LP/CP compute moved to Python backend."
+                ),
             },
             "task_id": task_instance.request.id,
             "completed_at": datetime.utcnow().isoformat(),
@@ -132,13 +141,13 @@ async def _run_optimization_task(
 
         if success:
             logger.info(
-                "Heavy cutting optimization completed and status updated",
+                ("Heavy cutting optimization completed " "and status updated"),
                 task_id=task_instance.request.id,
                 processing_time=payload["processing_time_seconds"],
             )
         else:
             logger.warning(
-                "Heavy cutting optimization completed but status update failed",
+                ("Heavy cutting optimization completed " "but status update failed"),
                 task_id=task_instance.request.id,
             )
 
@@ -161,7 +170,10 @@ async def _run_optimization_task(
 
 
 @celery_app.task(
-    bind=True, name="heavy_optimization.mass_production", max_retries=2, time_limit=900
+    bind=True,
+    name="heavy_optimization.mass_production",
+    max_retries=2,
+    time_limit=900,
 )
 def optimize_mass_production_task(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -170,16 +182,19 @@ def optimize_mass_production_task(self, request_data: Dict[str, Any]) -> Dict[st
     """
     try:
         logger.info(
-            "Starting mass production optimization task", task_id=self.request.id
+            "Starting mass production optimization task",
+            task_id=self.request.id,
         )
 
         # Import here to avoid circular imports
-        from apis.v2.heavy_optimization import MassProductionOptimizationRequest
-
-        req = MassProductionOptimizationRequest(**request_data)
+        from apis.v2.heavy_optimization import (
+            MassProductionOptimizationRequest,
+        )
 
         # TODO: Implement mass production optimization logic
         # For now, return a placeholder result
+        # Parse request (currently unused but validates input)
+        _ = MassProductionOptimizationRequest(**request_data)
         result = {
             "status": "completed",
             "message": "Mass production optimization not yet implemented",
@@ -187,12 +202,17 @@ def optimize_mass_production_task(self, request_data: Dict[str, Any]) -> Dict[st
             "completed_at": datetime.utcnow().isoformat(),
         }
 
-        logger.info("Mass production optimization completed", task_id=self.request.id)
+        logger.info(
+            "Mass production optimization completed",
+            task_id=self.request.id,
+        )
         return result
 
     except Exception as e:
         logger.error(
-            "Mass production optimization failed", task_id=self.request.id, error=str(e)
+            "Mass production optimization failed",
+            task_id=self.request.id,
+            error=str(e),
         )
         raise self.retry(countdown=60, exc=e)
 
@@ -211,7 +231,10 @@ def smart_scan_single_task(
     """
     try:
         logger.info(
-            f"Starting smart scan single task: task_id={self.request.id}, file_name={filename}",
+            (
+                f"Starting smart scan single task: "
+                f"task_id={self.request.id}, file_name={filename}"
+            ),
             task_id=self.request.id,
         )
 
@@ -263,7 +286,11 @@ def smart_scan_single_task(
 
     except Exception as e:
         logger.error(
-            f"Smart scan single failed: task_id={self.request.id}, file_name={filename}, error={str(e)}",
+            (
+                f"Smart scan single failed: "
+                f"task_id={self.request.id}, file_name={filename}, "
+                f"error={str(e)}"
+            ),
             task_id=self.request.id,
         )
         raise self.retry(countdown=30, exc=e)
@@ -347,5 +374,9 @@ def smart_scan_batch_task(self, files_data: List[Dict[str, Any]]) -> Dict[str, A
         return final_result
 
     except Exception as e:
-        logger.error("Smart scan batch failed", task_id=self.request.id, error=str(e))
+        logger.error(
+            "Smart scan batch failed",
+            task_id=self.request.id,
+            error=str(e),
+        )
         raise self.retry(countdown=60, exc=e)

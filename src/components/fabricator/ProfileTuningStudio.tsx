@@ -46,6 +46,7 @@ import { CalibrationWizard } from './CalibrationWizard';
 import { MachiningZoneEditor, type MachiningZone } from './MachiningZoneEditor';
 import './ProfileTuningStudio.css';
 import { ProfileIconGenerator, type ProfileIconHandle } from './assets/ProfileIconGenerator';
+import { DXFProfileImporter, type ImportedProfile } from './smartscan/DXFProfileImporter';
 import { ProfileScannerUploader } from './smartscan/ProfileScannerUploader';
 import SmartScanUploader from './smartscan/SmartScanUploader';
 
@@ -80,6 +81,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
 }) => {
   const { t } = useTranslation('fabricator');
   const location = useLocation();
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
     | 'calibration'
     | 'cutting-rules'
@@ -1818,14 +1820,64 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                     </TabsContent>
 
                     <TabsContent value="smartscan" className="mt-0 space-y-4">
+                      {/* DXF Direct Import - Synchronous, no Celery required - SHOW FIRST */}
+                      {/* Always visible - no conditions */}
+                      <Card className="bg-green-900/20 border-green-500/50 shadow-lg border-2">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-base flex items-center gap-2 text-green-400 font-semibold">
+                            <Ruler className="h-5 w-5 text-green-400" />
+                            {t('profile_tuning_studio.dxf_import.title', 'DXF/DWG Direct Import')}
+                            <Badge variant="outline" className="ml-2 border-green-500/50 text-green-400 text-xs bg-green-900/30">
+                              Recommended for DXF
+                            </Badge>
+                          </CardTitle>
+                          <CardDescription className="text-sm text-gray-300 mt-2">
+                            {t('profile_tuning_studio.dxf_import.description', 'Upload DXF or DWG files for instant parsing. Extracts dimensions and generates SVG preview immediately. No Celery/Redis required.')}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <DXFProfileImporter
+                            onImported={(profiles: ImportedProfile[]) => {
+                              if (profiles.length > 0) {
+                                const firstProfile = profiles[0];
+                                setSelectedProfileId(firstProfile.id);
+                                const dimsText = firstProfile.widthMm && firstProfile.heightMm
+                                  ? `${firstProfile.widthMm} × ${firstProfile.heightMm} mm`
+                                  : 'dimensions pending';
+                                toast.success(
+                                  t('profile_tuning_studio.dxf_import.success', 
+                                    `Imported ${profiles.length} profile(s). ${dimsText}`,
+                                    { count: profiles.length, width: firstProfile.widthMm, height: firstProfile.heightMm }
+                                  )
+                                );
+                                // Optionally update profile geometry from imported data
+                                if (firstProfile.widthMm && firstProfile.heightMm) {
+                                  // Could update profile.specifications here if needed
+                                }
+                              }
+                            }}
+                            selectedProfileId={selectedProfileId}
+                            onSelectProfile={(id) => {
+                              setSelectedProfileId(id);
+                            }}
+                            userId={userId}
+                            onProfileSaved={(_profileId) => {
+                              toast.success(t('profile_tuning_studio.dxf_import.saved', 'Profile saved to library'));
+                              onProfileUpdated?.();
+                            }}
+                          />
+                        </CardContent>
+                      </Card>
+
+                      {/* SmartScan - For images/PDFs - Async, requires Celery */}
                       <Card className="bg-gray-900/80 border-gray-700">
                         <CardHeader>
                           <CardTitle className="text-sm flex items-center gap-2">
                             <Scan className="h-4 w-4 text-blue-400" />
-                            {t('profile_tuning_studio.smartscan.title', 'SmartScan Import')}
+                            {t('profile_tuning_studio.smartscan.title', 'SmartScan (Images & PDFs)')}
                           </CardTitle>
                           <CardDescription className="text-xs text-gray-400">
-                            {t('profile_tuning_studio.smartscan.description', 'Upload catalog images, PDFs, or DXF files. SmartScan will vectorize and extract dimensions automatically.')}
+                            {t('profile_tuning_studio.smartscan.description', 'Upload catalog images or PDFs. SmartScan will vectorize and extract dimensions automatically. Requires async processing.')}
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
