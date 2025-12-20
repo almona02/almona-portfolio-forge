@@ -136,7 +136,11 @@ export const ProfileStudioLite: React.FC = () => {
       formData.append('material_type', profile.material === 'upvc' ? 'upvc' : 'aluminium');
 
       try {
-        const response = await fetch('/api/v2/profile-import/ingest', {
+        // Get API base URL - use env var if set, otherwise use localhost:8003 for dev
+        const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) || 
+          (import.meta.env.DEV ? 'http://localhost:8003' : window.location.origin);
+        
+        const response = await fetch(`${API_BASE}/api/v2/profile-import/ingest`, {
           method: 'POST',
           body: formData,
         });

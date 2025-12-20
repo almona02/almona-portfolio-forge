@@ -18,6 +18,14 @@ export default {
 		'bg-almona-dark',
 		'text-almona-dark',
 		'border-almona-dark',
+		// Green card classes for DXF Direct Import (prevent purging in production)
+		'bg-green-900/20',
+		'bg-green-900/30',
+		'border-green-500/50',
+		'text-green-400',
+		'border-green-500/30',
+		'from-green-500/10',
+		'to-blue-500/10',
 	],
 	corePlugins: {
 		// Keep all core plugins as they are being used
