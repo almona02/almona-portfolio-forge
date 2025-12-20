@@ -7,6 +7,8 @@ import { FileText, UploadCloud, Save } from 'lucide-react';
 import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { autoConfigureFromDXF, mergeAutoConfigIntoProfile, type DXFImportData, type AutoConfigOptions } from '@/lib/fabricator/autoConfigFromDXF';
+import type { Profile } from '@/types/fabricator';
 
 export interface ImportedProfile {
   id: string;
@@ -34,6 +36,11 @@ interface DXFProfileImporterProps {
   onSelectProfile?: (id: string) => void;
   userId?: string;
   onProfileSaved?: (profileId: string) => void;
+  // Auto-configuration options
+  defaultRole?: AutoConfigOptions['role'];
+  defaultWindowType?: AutoConfigOptions['windowType'];
+  defaultSystemPack?: string;
+  enableAutoConfig?: boolean; // Default: true
 }
 
 // Get API base URL - use env var if set, otherwise use relative path for same-origin
@@ -138,6 +145,10 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
   onSelectProfile,
   userId,
   onProfileSaved,
+  defaultRole = 'frame',
+  defaultWindowType = 'sliding',
+  defaultSystemPack,
+  enableAutoConfig = true,
 }) => {
   const [error, setError] = useState<string | null>(null);
   const [profiles, setProfiles] = useState<ImportedProfile[]>([]);
@@ -214,13 +225,14 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
     setError(null);
 
     try {
-      const profileData = {
+      // Base profile data
+      const baseProfileData: Partial<Profile> = {
         user_id: userId,
         name: profile.name || profile.fileName.replace(/\.(dxf|dwg)$/i, ''),
         material: 'aluminum' as const,
         width: profile.widthMm || 50,
         height: profile.heightMm || 50,
-        thickness: 1.5, // Default, can be tuned later
+        thickness: 1.5, // Will be refined by auto-config
         color: '#C0C0C0',
         cost_per_meter: 0,
         cutting_allowance: 3,
@@ -228,7 +240,9 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
         min_stock_level: 0,
         max_stock_level: 1000,
         supplier: 'Imported from DXF',
-        system_brand: 'Custom',
+        system_brand: defaultSystemPack || 'Custom',
+        profileRole: defaultRole,
+        systemType: defaultWindowType,
         specifications: {
           importSource: 'dxf',
           dxfFileName: profile.fileName,
@@ -236,13 +250,43 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
           perimeterMm: profile.perimeterMm,
           weightKgPerM: profile.weightKgPerM,
           isThermalBreak: profile.isThermalBreak,
-          svgPreview: profile.svgPreview, // Save SVG preview in specifications
+          svgPreview: profile.svgPreview,
           profileWidthMm: profile.widthMm,
           profileHeightMm: profile.heightMm,
           importDate: new Date().toISOString(),
           ...(profile.metadata || {}),
         },
       };
+
+      // Auto-configure if enabled
+      let finalProfileData = baseProfileData;
+      if (enableAutoConfig && profile.widthMm && profile.heightMm) {
+        const dxfData: DXFImportData = {
+          widthMm: profile.widthMm,
+          heightMm: profile.heightMm,
+          areaMm2: profile.areaMm2,
+          perimeterMm: profile.perimeterMm,
+          weightKgPerM: profile.weightKgPerM,
+          isThermalBreak: profile.isThermalBreak,
+          svgPreview: profile.svgPreview,
+        };
+
+        const autoConfigOptions: AutoConfigOptions = {
+          role: defaultRole,
+          windowType: defaultWindowType,
+          systemPack: defaultSystemPack,
+        };
+
+        const autoConfig = autoConfigureFromDXF(dxfData, autoConfigOptions);
+        finalProfileData = mergeAutoConfigIntoProfile(baseProfileData as Profile, autoConfig);
+        
+        // Update thickness from auto-config if available
+        if (autoConfig.geometryConfig?.wallThicknessMm) {
+          finalProfileData.thickness = autoConfig.geometryConfig.wallThicknessMm;
+        }
+      }
+
+      const profileData = finalProfileData;
 
       const { supabase } = await import('@/lib/supabase');
       const { data, error: saveError } = await supabase
