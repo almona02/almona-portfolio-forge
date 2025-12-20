@@ -117,10 +117,11 @@ async def scan_single_profile_async(
             content, file.filename, known_width_mm, auto_detect_scale
         )
 
-        logger.info("Smart scan single job enqueued",
-                   job_id=task.id,
-                   filename=file.filename,
-                   file_size_bytes=len(content))
+        logger.info(
+            f"Smart scan single job enqueued: job_id={task.id}, "
+            f"filename={file.filename}, file_size_bytes={len(content)}",
+            extra={"job_id": task.id, "filename": file.filename, "file_size_bytes": len(content)}
+        )
 
         return JSONResponse(
             content={
