@@ -11,7 +11,7 @@ import { RoleTagger, ProfileRole } from './smartscan/RoleTagger';
 import { HardwareLinker } from './smartscan/HardwareLinker';
 import { MachiningZoneEditor, type MachiningZone } from './smartscan/MachiningZoneEditor';
 import { buildCustomSystemPack } from '@/lib/fabricator/systemPackBuilder';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase';
 
 interface SystemTuningStudioProps {
   open: boolean;
