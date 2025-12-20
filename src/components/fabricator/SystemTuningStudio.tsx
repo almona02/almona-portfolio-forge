@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared/ui/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
@@ -11,6 +11,7 @@ import { RoleTagger, ProfileRole } from './smartscan/RoleTagger';
 import { HardwareLinker } from './smartscan/HardwareLinker';
 import { MachiningZoneEditor, type MachiningZone } from './smartscan/MachiningZoneEditor';
 import { buildCustomSystemPack } from '@/lib/fabricator/systemPackBuilder';
+import { supabase } from '@/lib/supabase/client';
 
 interface SystemTuningStudioProps {
   open: boolean;
@@ -31,6 +32,17 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [linkedHardware, setLinkedHardware] = useState<any[]>([]);
   const [machiningZones, setMachiningZones] = useState<MachiningZone[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getUserId = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id || null);
+    };
+    if (open) {
+      getUserId();
+    }
+  }, [open]);
 
   const readyToSave = useMemo(() => {
     return importedProfiles.length > 0 && importedProfiles.every((p) => roles[p.id]);
@@ -116,6 +128,11 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
                 }}
                 selectedProfileId={selectedProfileId}
                 onSelectProfile={(id) => setSelectedProfileId(id)}
+                userId={userId}
+                onProfileSaved={(profileId) => {
+                  // Optionally reload or update UI after save
+                  console.log('Profile saved:', profileId);
+                }}
               />
             </CardContent>
           </Card>

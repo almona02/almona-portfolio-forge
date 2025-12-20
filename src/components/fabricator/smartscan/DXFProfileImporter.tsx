@@ -3,8 +3,10 @@ import { Input } from '@/shared/ui/ui/input';
 import { Button } from '@/shared/ui/ui/button';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
-import { FileText, UploadCloud } from 'lucide-react';
+import { FileText, UploadCloud, Save } from 'lucide-react';
 import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
+import { supabase } from '@/lib/supabase/client';
+import { toast } from 'sonner';
 
 export interface ImportedProfile {
   id: string;
@@ -30,6 +32,8 @@ interface DXFProfileImporterProps {
   onImported: (profiles: ImportedProfile[]) => void;
   selectedProfileId?: string | null;
   onSelectProfile?: (id: string) => void;
+  userId?: string;
+  onProfileSaved?: (profileId: string) => void;
 }
 
 const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) || '';
@@ -51,9 +55,12 @@ async function ingestProfileViaApi(file: File): Promise<ImportedProfile> {
   }
 
   const json = await res.json();
-  const bbox = json?.profile_metrics?.bounding_box || [0, 0, 0, 0];
-  const width = bbox[2] - bbox[0];
-  const height = bbox[3] - bbox[1];
+  const metrics = json?.profile_metrics || {};
+  
+  // Prefer actual profile dimensions over full bounding box
+  // (bounding box includes text labels, etc.)
+  const width = metrics.profile_width_mm ?? (metrics.bounding_box?.[2] - metrics.bounding_box?.[0]);
+  const height = metrics.profile_height_mm ?? (metrics.bounding_box?.[3] - metrics.bounding_box?.[1]);
 
   return {
     id: `${file.name}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
@@ -79,10 +86,13 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
   onImported,
   selectedProfileId,
   onSelectProfile,
+  userId,
+  onProfileSaved,
 }) => {
   const [error, setError] = useState<string | null>(null);
   const [profiles, setProfiles] = useState<ImportedProfile[]>([]);
   const [isParsing, setIsParsing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -128,10 +138,13 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
   const renderPreview = (p: ImportedProfile) => {
     if (p.svgPreview) {
       return (
-        <div
-          className="mt-2 border bg-white rounded p-2 overflow-auto max-h-64"
-          dangerouslySetInnerHTML={{ __html: p.svgPreview }}
-        />
+        <div className="mt-2 border bg-white rounded p-2 overflow-auto max-h-96 flex items-center justify-center">
+          <div
+            className="w-full"
+            style={{ maxHeight: '384px' }}
+            dangerouslySetInnerHTML={{ __html: p.svgPreview }}
+          />
+        </div>
       );
     }
     return (
@@ -139,6 +152,71 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
         No preview available. Dimensions: {p.widthMm || '?'} × {p.heightMm || '?'} mm
       </div>
     );
+  };
+
+  const handleSaveProfile = async (profile: ImportedProfile) => {
+    if (!userId) {
+      setError('User ID required to save profile');
+      return;
+    }
+
+    setIsSaving(true);
+    setError(null);
+
+    try {
+      const profileData = {
+        user_id: userId,
+        name: profile.name || profile.fileName.replace(/\.(dxf|dwg)$/i, ''),
+        material: 'aluminum' as const,
+        width: profile.widthMm || 50,
+        height: profile.heightMm || 50,
+        thickness: 1.5, // Default, can be tuned later
+        color: '#C0C0C0',
+        cost_per_meter: 0,
+        cutting_allowance: 3,
+        stock_quantity: 0,
+        min_stock_level: 0,
+        max_stock_level: 1000,
+        supplier: 'Imported from DXF',
+        system_brand: 'Custom',
+        specifications: {
+          importSource: 'dxf',
+          dxfFileName: profile.fileName,
+          areaMm2: profile.areaMm2,
+          perimeterMm: profile.perimeterMm,
+          weightKgPerM: profile.weightKgPerM,
+          isThermalBreak: profile.isThermalBreak,
+          svgPreview: profile.svgPreview, // Save SVG preview in specifications
+          profileWidthMm: profile.widthMm,
+          profileHeightMm: profile.heightMm,
+          importDate: new Date().toISOString(),
+          ...(profile.metadata || {}),
+        },
+      };
+
+      const { supabase } = await import('@/lib/supabase/client');
+      const { data, error: saveError } = await supabase
+        .from('fabricator_profiles')
+        .insert(profileData)
+        .select()
+        .single();
+
+      if (saveError) {
+        throw saveError;
+      }
+
+      if (data && onProfileSaved) {
+        onProfileSaved(data.id);
+      }
+
+      // Show success message
+      toast.success(`Profile "${profile.name}" saved to library`);
+    } catch (err: any) {
+      console.error('Error saving profile:', err);
+      setError(err.message || 'Failed to save profile');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -216,18 +294,67 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
       </div>
 
       {selected && (
-        <div className="mt-3 rounded border border-gray-800 bg-gray-900/60 p-3 text-sm text-gray-200 flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <UploadCloud className="h-4 w-4 text-orange-400" />
-            Selected: {selected.name} ({selected.widthMm} × {selected.heightMm} mm)
+        <div className="mt-3 rounded border border-gray-800 bg-gray-900/60 p-4 text-sm text-gray-200 flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <UploadCloud className="h-4 w-4 text-orange-400" />
+              <div>
+                <div className="font-semibold text-white">{selected.name}</div>
+                <div className="text-xs text-gray-400">
+                  {selected.widthMm} × {selected.heightMm} mm
+                </div>
+              </div>
+            </div>
+            {userId && (
+              <Button
+                onClick={() => handleSaveProfile(selected)}
+                disabled={isSaving}
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+                size="sm"
+              >
+                {isSaving ? 'Saving...' : 'Save to Library'}
+              </Button>
+            )}
           </div>
-          {renderPreview(selected)}
-          <div className="flex flex-wrap gap-2 text-[11px] text-gray-400">
-            {selected.areaMm2 && <span>Area: {selected.areaMm2.toFixed(1)} mm²</span>}
-            {selected.perimeterMm && <span>Perimeter: {selected.perimeterMm.toFixed(1)} mm</span>}
-            {selected.weightKgPerM && <span>Weight: {selected.weightKgPerM.toFixed(4)} kg/m</span>}
+          
+          {/* Enhanced Preview Section */}
+          <div className="border-t border-gray-700 pt-3">
+            <div className="text-xs font-medium text-gray-300 mb-2">Profile Preview</div>
+            {renderPreview(selected)}
+          </div>
+
+          {/* Profile Details */}
+          <div className="flex flex-wrap gap-3 text-[11px] text-gray-400 border-t border-gray-700 pt-3">
+            {selected.areaMm2 && (
+              <div>
+                <span className="text-gray-500">Area:</span>{' '}
+                <span className="text-gray-300">{selected.areaMm2.toFixed(1)} mm²</span>
+              </div>
+            )}
+            {selected.perimeterMm && (
+              <div>
+                <span className="text-gray-500">Perimeter:</span>{' '}
+                <span className="text-gray-300">{selected.perimeterMm.toFixed(1)} mm</span>
+              </div>
+            )}
+            {selected.weightKgPerM && (
+              <div>
+                <span className="text-gray-500">Weight:</span>{' '}
+                <span className="text-gray-300">{selected.weightKgPerM.toFixed(4)} kg/m</span>
+              </div>
+            )}
             {selected.isThermalBreak !== undefined && (
-              <span>{selected.isThermalBreak ? 'Thermal Break' : 'Solid'}</span>
+              <div>
+                <span className="text-gray-500">Type:</span>{' '}
+                <span className="text-gray-300">
+                  {selected.isThermalBreak ? 'Thermal Break' : 'Solid'}
+                </span>
+              </div>
+            )}
+            {selected.metadata?.hasSvgPreview && (
+              <div>
+                <span className="text-green-400">✓ SVG Preview Available</span>
+              </div>
             )}
           </div>
         </div>
