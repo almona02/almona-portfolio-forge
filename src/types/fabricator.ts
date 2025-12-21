@@ -210,6 +210,8 @@ export interface Profile {
   system?: string;
   systemBrand?: string; // 'Yilmaz', 'Local Brand', etc.
   weightPerMeter?: number;
+  unitWeight?: number; // Alternative naming for weightPerMeter
+  barLength?: number; // Standard bar length for this profile
   grainDirection?: 'horizontal' | 'vertical' | null;
   /** Category of profile: window, door, curtain_wall, structural, accessory */
   category?: 'window' | 'door' | 'curtain_wall' | 'structural' | 'accessory';
