@@ -3,11 +3,22 @@ import { Input } from '@/shared/ui/ui/input';
 import { Button } from '@/shared/ui/ui/button';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
-import { FileText, UploadCloud, Save } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/shared/ui/ui/alert-dialog';
+import { FileText, UploadCloud, Save, AlertTriangle } from 'lucide-react';
 import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { autoConfigureFromDXF, mergeAutoConfigIntoProfile, type DXFImportData, type AutoConfigOptions } from '@/lib/fabricator/autoConfigFromDXF';
+import { extractMultipleProfilesFromDXF } from '@/lib/fabricator/multiProfileDXFExtractor';
 import type { Profile } from '@/types/fabricator';
 
 export interface ImportedProfile {
@@ -41,6 +52,7 @@ interface DXFProfileImporterProps {
   defaultWindowType?: AutoConfigOptions['windowType'];
   defaultSystemPack?: string;
   enableAutoConfig?: boolean; // Default: true
+  extractMultipleProfiles?: boolean; // Extract multiple profiles from single DXF (for system packs)
 }
 
 // Get API base URL - use env var if set, otherwise use relative path for same-origin
@@ -81,7 +93,35 @@ async function ingestProfileViaApi(file: File): Promise<ImportedProfile> {
 
   const json = await res.json();
   const metrics = json?.profile_metrics || {};
+  const allProfiles = json?.all_profiles || [];
   
+  // If backend returned multiple profiles, return the full response for multi-profile extraction
+  if (allProfiles.length > 1) {
+    // Return the full API response so multi-profile extractor can use it
+    return {
+      id: `${file.name}-multi-${Date.now()}`,
+      fileName: file.name,
+      name: file.name.replace(/\.(dxf|dwg)$/i, ''),
+      widthMm: undefined, // Will be extracted from all_profiles
+      heightMm: undefined,
+      areaMm2: metrics.area_mm2,
+      perimeterMm: metrics.perimeter_mm,
+      weightKgPerM: metrics.weight_kg_per_m,
+      isThermalBreak: metrics.is_thermal_break,
+      warnings: json?.validation_warnings,
+      svgPreview: json?.svg_preview,
+      metadata: {
+        source: 'backend',
+        units: 'mm',
+        hasSvgPreview: Boolean(json?.svg_preview),
+        isMultiProfile: true,
+        totalProfiles: allProfiles.length,
+        apiResponse: json, // Store full response for multi-profile extraction
+      },
+    };
+  }
+  
+  // Single profile extraction (legacy behavior)
   // Prefer actual profile dimensions over full bounding box
   // (bounding box includes text labels, etc.)
   let width: number | undefined;
@@ -116,6 +156,8 @@ async function ingestProfileViaApi(file: File): Promise<ImportedProfile> {
       extracted_width: width,
       extracted_height: height,
       has_svg: Boolean(json?.svg_preview),
+      total_profiles: allProfiles.length,
+      all_profiles: allProfiles.length > 0 ? `${allProfiles.length} profiles detected` : 'single profile',
     });
   }
 
@@ -135,6 +177,9 @@ async function ingestProfileViaApi(file: File): Promise<ImportedProfile> {
       source: 'backend',
       units: 'mm',
       hasSvgPreview: Boolean(json?.svg_preview),
+      isMultiProfile: allProfiles.length > 1,
+      totalProfiles: allProfiles.length,
+      apiResponse: json, // Store full response for potential multi-profile extraction
     },
   };
 }
@@ -149,11 +194,14 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
   defaultWindowType = 'sliding',
   defaultSystemPack,
   enableAutoConfig = true,
+  extractMultipleProfiles = false, // Set to true for system pack DXF files
 }) => {
   const [error, setError] = useState<string | null>(null);
   const [profiles, setProfiles] = useState<ImportedProfile[]>([]);
   const [isParsing, setIsParsing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+  const [profileToSave, setProfileToSave] = useState<ImportedProfile | null>(null);
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -165,7 +213,51 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
       try {
         if (API_BASE) {
           const prof = await ingestProfileViaApi(file);
-          imported.push(prof);
+          
+          // Check if we should extract multiple profiles
+          // Auto-detect if backend returned multiple profiles OR if filename suggests system pack
+          const isMultiProfileFile = prof.metadata?.isMultiProfile || 
+                                    prof.metadata?.totalProfiles > 1 ||
+                                    extractMultipleProfiles || 
+                                    file.name.toLowerCase().includes('system') || 
+                                    file.name.toLowerCase().includes('pack') ||
+                                    file.name.toLowerCase().includes('tango') ||
+                                    file.name.toLowerCase().includes('rock') ||
+                                    file.name.toLowerCase().includes('jumbo');
+          
+          if (isMultiProfileFile && prof.metadata?.apiResponse) {
+            try {
+              // Use full API response for accurate multi-profile extraction
+              const multiProfileResult = await extractMultipleProfilesFromDXF(
+                file.name,
+                prof.metadata.apiResponse, // Full API response with all_profiles array
+                defaultWindowType,
+                defaultSystemPack || file.name.replace(/\.(dxf|dwg)$/i, '').replace(/\s*(new|v2|v3)\s*/i, '').trim()
+              );
+              
+              // Add all extracted profiles
+              imported.push(...multiProfileResult.profiles);
+              
+              // Show notification
+              if (multiProfileResult.profiles.length > 1) {
+                toast.success(
+                  `Extracted ${multiProfileResult.profiles.length} profiles from DXF file. Roles auto-detected.`
+                );
+              }
+              
+              // Show system pack notification if created
+              if (multiProfileResult.systemPack) {
+                toast.info(
+                  `System pack "${multiProfileResult.systemPack.name}" created with ${multiProfileResult.profiles.length} profiles.`
+                );
+              }
+            } catch (multiError) {
+              console.warn('Multi-profile extraction failed, using single profile:', multiError);
+              imported.push(prof);
+            }
+          } else {
+            imported.push(prof);
+          }
         } else {
           throw new Error('API base not configured');
         }
@@ -215,7 +307,18 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
     );
   };
 
-  const handleSaveProfile = async (profile: ImportedProfile) => {
+  const handleSaveProfileClick = (profile: ImportedProfile) => {
+    if (!userId) {
+      setError('User ID required to save profile');
+      return;
+    }
+    
+    // Show confirmation dialog
+    setProfileToSave(profile);
+    setShowSaveConfirm(true);
+  };
+
+  const handleSaveProfile = async (profile: ImportedProfile, preserveExisting: boolean = false) => {
     if (!userId) {
       setError('User ID required to save profile');
       return;
@@ -223,6 +326,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
 
     setIsSaving(true);
     setError(null);
+    setShowSaveConfirm(false);
 
     try {
       // Base profile data
@@ -256,6 +360,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
           importDate: new Date().toISOString(),
           ...(profile.metadata || {}),
         },
+        // Note: thumbnail_url will be set when user saves geometry in Profile Tuning Studio
       };
 
       // Auto-configure if enabled
@@ -272,7 +377,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
         };
 
         const autoConfigOptions: AutoConfigOptions = {
-          role: defaultRole,
+          role: (profile.metadata?.detectedRole as any) || defaultRole,
           windowType: defaultWindowType,
           systemPack: defaultSystemPack,
         };
@@ -289,6 +394,22 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
       const profileData = finalProfileData;
 
       const { supabase } = await import('@/lib/supabase');
+      
+      // Verify user session and get authenticated user ID
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session?.user) {
+        throw new Error('User not authenticated. Please log in again.');
+      }
+      
+      // Ensure user_id matches authenticated user (RLS policy requirement)
+      const authenticatedUserId = session.user.id;
+      if (userId !== authenticatedUserId) {
+        console.warn('userId prop does not match authenticated user, using authenticated user ID');
+      }
+      
+      // Use authenticated user ID to satisfy RLS policy
+      profileData.user_id = authenticatedUserId;
+
       const { data, error: saveError } = await supabase
         .from('fabricator_profiles')
         .insert(profileData)
@@ -296,6 +417,11 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
         .single();
 
       if (saveError) {
+        console.error('Supabase insert error:', saveError);
+        // Provide more helpful error message
+        if (saveError.code === '42501' || saveError.message?.includes('row-level security')) {
+          throw new Error('Permission denied: Unable to save profile. Please ensure you are logged in and have the correct permissions.');
+        }
         throw saveError;
       }
 
@@ -401,7 +527,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
             </div>
             {userId && (
               <Button
-                onClick={() => handleSaveProfile(selected)}
+                onClick={() => handleSaveProfileClick(selected)}
                 disabled={isSaving}
                 className="bg-orange-600 hover:bg-orange-700 text-white"
                 size="sm"

@@ -7,7 +7,18 @@
 
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
+import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/shared/ui/ui/alert-dialog';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
@@ -20,16 +31,22 @@ import {
   ArrowRight,
   BoxSelect,
   CheckCircle2,
+  Edit,
   Gauge,
   Layers,
+  Plus,
   Settings,
   Sparkles,
+  Trash2,
   Wrench,
   Zap
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
+import { ProfileDefinitionWizard } from './ProfileDefinitionWizard';
 import { ProfileTuningStudio } from './ProfileTuningStudio';
+import { UnsavedChangesDialog } from './UnsavedChangesDialog';
 
 interface SystemPackProfile {
   id: string;
@@ -65,15 +82,37 @@ export const SystemPackTuningStudio: React.FC = () => {
   const [selectedProfileIndex, setSelectedProfileIndex] = useState<number>(0);
   const [tunedProfiles, setTunedProfiles] = useState<Set<string>>(new Set());
   const [tuningProfile, setTuningProfile] = useState<Profile | null>(null);
-  const [userId] = useState<string>('current-user'); // TODO: Get from auth context
+  const [userId, setUserId] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
-  const [viewMode, setViewMode] = useState<'tabs' | 'cards'>('cards'); // New: cards view for better profile overview
+  const [viewMode, setViewMode] = useState<'tabs' | 'cards'>('cards');
+  const [showProfileWizard, setShowProfileWizard] = useState(false);
+  const [editingProfile, setEditingProfile] = useState<SystemPackProfile | null>(null);
+  const [deletingProfile, setDeletingProfile] = useState<SystemPackProfile | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pendingWizardOpen, setPendingWizardOpen] = useState(false);
+
+  // Get user ID from auth
+  useEffect(() => {
+    const getUserId = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id || null);
+    };
+    getUserId();
+  }, []);
+
+  // Open wizard when userId becomes available and we're pending
+  useEffect(() => {
+    if (userId && pendingWizardOpen) {
+      setPendingWizardOpen(false);
+      setShowProfileWizard(true);
+    }
+  }, [userId, pendingWizardOpen]);
 
   // Load system pack from localStorage or original systems
   useEffect(() => {
     if (!systemPackId) {
-      navigate('/fabricator-workflow');
+      navigate('/fabricator/system-packs');
       return;
     }
 
@@ -133,10 +172,10 @@ export const SystemPackTuningStudio: React.FC = () => {
       }
 
       // Pack not found, redirect back
-      navigate('/fabricator-workflow');
+      navigate('/fabricator/system-packs');
     } catch (error) {
       console.error('Error loading system pack:', error);
-      navigate('/fabricator-workflow');
+      navigate('/fabricator/system-packs');
     }
   }, [systemPackId, navigate]);
 
@@ -189,13 +228,15 @@ export const SystemPackTuningStudio: React.FC = () => {
     };
   };
 
+  const [showSwitchProfileDialog, setShowSwitchProfileDialog] = useState(false);
+  const [pendingProfile, setPendingProfile] = useState<SystemPackProfile | null>(null);
+
   const handleOpenTuning = (profile: SystemPackProfile) => {
     // Check for unsaved changes before opening new profile
     if (hasUnsavedChanges && tuningProfile) {
-      const confirmed = window.confirm(
-        'You have unsaved changes in the current profile tuning. Open a different profile without saving?'
-      );
-      if (!confirmed) return;
+      setPendingProfile(profile);
+      setShowSwitchProfileDialog(true);
+      return;
     }
     
     const profileForTuning = convertToProfile(profile);
@@ -203,27 +244,73 @@ export const SystemPackTuningStudio: React.FC = () => {
     setHasUnsavedChanges(false); // Reset for new profile
   };
 
-  const handleTuningClose = (hasChanges: boolean = false) => {
+  const handleConfirmSwitchProfile = () => {
+    if (pendingProfile) {
+      const profileForTuning = convertToProfile(pendingProfile);
+      setTuningProfile(profileForTuning);
+      setHasUnsavedChanges(false);
+      setPendingProfile(null);
+      setShowSwitchProfileDialog(false);
+    }
+  };
+
+  const handleTuningClose = async (hasChanges: boolean = false) => {
     if (hasChanges) {
       setHasUnsavedChanges(true);
     }
-    
-    setTuningProfile(null);
-    // Reload system pack to get any updates
-    if (systemPackId) {
-      const stored = localStorage.getItem(`custom-profile-${systemPackId}`);
-      if (stored) {
-        const pack = JSON.parse(stored);
-        setSystemPack(pack);
-        const tuned = new Set<string>();
-        pack.profiles?.forEach((p: SystemPackProfile) => {
-          if (p.tuningStatus === 'tuned') {
-            tuned.add(p.id);
-          }
-        });
-        setTunedProfiles(tuned);
+
+    // If profile was updated, refresh the system pack data
+    if (tuningProfile && userId) {
+      try {
+        // Fetch the latest profile data from database
+        const { data: updatedProfileData, error } = await supabase
+          .from('fabricator_profiles')
+          .select('*')
+          .eq('id', tuningProfile.id)
+          .eq('user_id', userId)
+          .single();
+
+        if (!error && updatedProfileData && systemPack) {
+          // Update the system pack with fresh database data
+          const updatedProfiles = systemPack.profiles.map(p => {
+            if (p.id === tuningProfile.id) {
+              return {
+                ...p,
+                width: updatedProfileData.width || p.width,
+                height: updatedProfileData.height || p.height,
+                thickness: updatedProfileData.thickness || p.thickness,
+                specifications: updatedProfileData.specifications || p.specifications,
+                tuningStatus: (updatedProfileData.specifications as any)?.tuningStatus || p.tuningStatus,
+              };
+            }
+            return p;
+          });
+
+          const updatedPack = {
+            ...systemPack,
+            profiles: updatedProfiles,
+          };
+
+          localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
+          setSystemPack(updatedPack);
+
+          const tuned = new Set<string>();
+          updatedPack.profiles?.forEach((p: SystemPackProfile) => {
+            if (p.tuningStatus === 'tuned') {
+              tuned.add(p.id);
+            }
+          });
+          setTunedProfiles(tuned);
+        }
+      } catch (err) {
+        console.error('Error refreshing system pack after tuning close:', err);
       }
     }
+
+    setTuningProfile(null);
+
+    // Always navigate back to system packs gallery after closing
+    navigate('/fabricator/system-packs');
   };
 
   const handleExit = () => {
@@ -235,7 +322,7 @@ export const SystemPackTuningStudio: React.FC = () => {
   };
 
   const handleConfirmExit = () => {
-    // Get return URL or default to workflow
+    // Get return URL or default to System Packs Gallery
     const returnUrl = sessionStorage.getItem('tuning_return_url');
     if (returnUrl) {
       try {
@@ -243,15 +330,101 @@ export const SystemPackTuningStudio: React.FC = () => {
         sessionStorage.removeItem('tuning_return_url');
         navigate(data.url, { state: data.params || {} });
       } catch {
-        navigate('/fabricator-workflow');
+        navigate('/fabricator/system-packs');
       }
     } else {
-      navigate('/fabricator-workflow');
+      navigate('/fabricator/system-packs');
     }
   };
 
   const handleCancelExit = () => {
     setShowExitConfirm(false);
+  };
+
+  const handleAddProfile = (profile: Profile) => {
+    if (!systemPack || !systemPackId) return;
+    
+    const newProfile: SystemPackProfile = {
+      id: profile.id || `profile_${Date.now()}`,
+      name: profile.name,
+      type: (profile.profileRole || profile.type || 'frame') as SystemPackProfile['type'],
+      material: profile.material || 'aluminum',
+      unitWeight: profile.unitWeight,
+      barLength: profile.barLength,
+      width: profile.width,
+      height: profile.height,
+      thickness: profile.thickness,
+      micronConfig: profile.specifications,
+      tuningStatus: 'untuned',
+    };
+    
+    const updatedPack: SystemPack = {
+      ...systemPack,
+      profiles: [...systemPack.profiles, newProfile],
+      updatedAt: new Date().toISOString(),
+    };
+    
+    localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
+    setSystemPack(updatedPack);
+    setShowProfileWizard(false);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleEditProfile = (profile: Profile) => {
+    if (!systemPack || !systemPackId || !editingProfile) return;
+    
+    const updatedProfiles = systemPack.profiles.map(p =>
+      p.id === editingProfile.id
+        ? {
+            ...p,
+            name: profile.name,
+            type: (profile.profileRole || profile.type || p.type) as SystemPackProfile['type'],
+            material: profile.material || p.material,
+            unitWeight: profile.unitWeight ?? p.unitWeight,
+            barLength: profile.barLength ?? p.barLength,
+            width: profile.width ?? p.width,
+            height: profile.height ?? p.height,
+            thickness: profile.thickness ?? p.thickness,
+            micronConfig: profile.specifications || p.micronConfig,
+          }
+        : p
+    );
+    
+    const updatedPack: SystemPack = {
+      ...systemPack,
+      profiles: updatedProfiles,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
+    setSystemPack(updatedPack);
+    setEditingProfile(null);
+    setShowProfileWizard(false);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleDeleteProfile = () => {
+    if (!systemPack || !systemPackId || !deletingProfile) return;
+    
+    const updatedProfiles = systemPack.profiles.filter(p => p.id !== deletingProfile.id);
+    const updatedPack: SystemPack = {
+      ...systemPack,
+      profiles: updatedProfiles,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
+    setSystemPack(updatedPack);
+    setDeletingProfile(null);
+    setShowDeleteConfirm(false);
+    setHasUnsavedChanges(true);
+    
+    // Remove from tuned profiles if it was tuned
+    setTunedProfiles(prev => {
+      const next = new Set(prev);
+      next.delete(deletingProfile.id);
+      return next;
+    });
   };
 
   const handleProfileTuned = (profileId: string) => {
@@ -330,7 +503,7 @@ export const SystemPackTuningStudio: React.FC = () => {
           } 
         });
       } catch {
-        navigate('/fabricator-workflow', {
+        navigate('/fabricator/system-packs', {
           state: {
             systemPackId: systemPackId,
             systemTuned: true,
@@ -339,7 +512,7 @@ export const SystemPackTuningStudio: React.FC = () => {
         });
       }
     } else {
-      navigate('/fabricator-workflow', {
+      navigate('/fabricator/system-packs', {
         state: {
           systemPackId: systemPackId,
           systemTuned: true,
@@ -397,61 +570,47 @@ export const SystemPackTuningStudio: React.FC = () => {
                 </div>
                 <Button
                   variant="outline"
-                  onClick={handleExit}
-                  className="border-slate-600 bg-slate-800/50 text-slate-200 hover:bg-slate-700/50"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleExit();
+                  }}
+                  className="border-slate-600 bg-slate-800/50 text-slate-200 hover:bg-slate-700/50 relative z-10"
+                  data-testid="system-pack-tuning-back-button"
+                  type="button"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  {hasUnsavedChanges ? 'Exit (Unsaved Changes)' : 'Back to Workflow'}
+                  {hasUnsavedChanges ? 'Exit (Unsaved Changes)' : 'Back to System Packs Gallery'}
                 </Button>
               </div>
             </CardHeader>
           </Card>
         </motion.div>
 
-        {/* Exit Confirmation Dialog */}
-        {showExitConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={handleCancelExit}
-          >
-            <Card 
-              className="bg-slate-900 border-slate-700 shadow-2xl max-w-md w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-yellow-400" />
-                  Unsaved Changes
-                </CardTitle>
-                <CardDescription className="text-slate-300">
-                  You have unsaved changes in profile tuning. Are you sure you want to exit?
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-sm text-slate-400">
-                  Your changes will be lost if you exit without saving.
-                </p>
-                <div className="flex gap-2 justify-end">
-                  <Button
-                    variant="outline"
-                    onClick={handleCancelExit}
-                    className="border-slate-600"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleConfirmExit}
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    Exit Without Saving
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
+        {/* Prestige Exit Confirmation Dialog */}
+        <UnsavedChangesDialog
+          open={showExitConfirm}
+          onOpenChange={setShowExitConfirm}
+          onConfirm={handleConfirmExit}
+          onCancel={handleCancelExit}
+          context={`System Pack Tuning Studio - ${systemPack?.name || 'Custom System'}`}
+          title="Unsaved Changes in System Pack Tuning"
+          description="You have unsaved tuning changes that will be lost if you exit."
+        />
+
+        {/* Prestige Switch Profile Confirmation Dialog */}
+        <UnsavedChangesDialog
+          open={showSwitchProfileDialog}
+          onOpenChange={setShowSwitchProfileDialog}
+          onConfirm={handleConfirmSwitchProfile}
+          onCancel={() => {
+            setPendingProfile(null);
+            setShowSwitchProfileDialog(false);
+          }}
+          context={`System Pack Tuning Studio - ${systemPack?.name || 'Custom System'}`}
+          title="Switch Profile with Unsaved Changes?"
+          description="You have unsaved changes in the current profile tuning. Opening a different profile will discard these changes."
+        />
 
         {/* System Pack Overview */}
         <motion.div
@@ -470,6 +629,49 @@ export const SystemPackTuningStudio: React.FC = () => {
                   <Badge className={allProfilesTuned ? 'bg-green-500/20 text-green-300 border-green-500/40' : 'bg-amber-500/20 text-amber-300 border-amber-500/40'}>
                     {allProfilesTuned ? 'All Tuned' : `${tunedProfiles.size}/${systemPack.profiles.length} Tuned`}
                   </Badge>
+                  <Button
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      
+                      try {
+                        // Clear editing profile first
+                        setEditingProfile(null);
+                        
+                        // Ensure userId is available before opening wizard
+                        if (!userId) {
+                          const { data: { session }, error } = await supabase.auth.getSession();
+                          if (error) {
+                            console.error('Auth error:', error);
+                            toast.error('Authentication error. Please log in again.');
+                            return;
+                          }
+                          if (session?.user?.id) {
+                            // Set userId and mark that we want to open the wizard
+                            setUserId(session.user.id);
+                            setPendingWizardOpen(true);
+                            // The useEffect will handle opening the wizard once userId is set
+                          } else {
+                            toast.error('Please log in to add profiles');
+                            return;
+                          }
+                        } else {
+                          // userId is available, open wizard immediately
+                          setShowProfileWizard(true);
+                        }
+                      } catch (error) {
+                        console.error('Error opening profile wizard:', error);
+                        toast.error('Failed to open profile wizard');
+                      }
+                    }}
+                    size="sm"
+                    className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 relative z-10"
+                    type="button"
+                    data-testid="add-profile-button"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Profile
+                  </Button>
                   <div className="flex gap-2">
                     <Button
                       variant={viewMode === 'cards' ? 'default' : 'outline'}
@@ -552,15 +754,38 @@ export const SystemPackTuningStudio: React.FC = () => {
                             )}
                           </div>
                           
-                          <Button
-                            onClick={() => handleOpenTuning(profile)}
-                            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                            size="sm"
-                          >
-                            <Wrench className="h-4 w-4 mr-2" />
-                            Go to Profile Tuning
-                            <ArrowRight className="h-4 w-4 ml-2" />
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              onClick={() => handleOpenTuning(profile)}
+                              className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                              size="sm"
+                            >
+                              <Wrench className="h-4 w-4 mr-2" />
+                              Tune
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                setEditingProfile(profile);
+                                setShowProfileWizard(true);
+                              }}
+                              variant="outline"
+                              size="sm"
+                              className="border-slate-600 text-slate-300 hover:bg-slate-700/50"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                setDeletingProfile(profile);
+                                setShowDeleteConfirm(true);
+                              }}
+                              variant="outline"
+                              size="sm"
+                              className="border-red-600/50 text-red-300 hover:bg-red-500/10"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                           
                           {!isTuned && (
                             <Button
@@ -761,30 +986,159 @@ export const SystemPackTuningStudio: React.FC = () => {
           profile={tuningProfile}
           userId={userId}
           onClose={handleTuningClose}
-          onProfileUpdated={() => {
-            // When profile is updated in tuning studio, update the system pack
-            if (systemPack && tuningProfile) {
-              const updatedProfiles = systemPack.profiles.map(p => {
-                if (p.id === tuningProfile.id) {
-                  // Merge tuning studio updates back to system pack profile
-                  return {
-                    ...p,
-                    tuningStatus: (tuningProfile.specifications as any)?.tuningStatus || p.tuningStatus,
-                  };
+          onProfileUpdated={async () => {
+            // When profile is updated in tuning studio, fetch updated data from database
+            if (systemPack && tuningProfile && userId) {
+              try {
+                // The tuningProfile.id may have been updated to a UUID in ProfileTuningStudio
+                const profileIdToFetch = tuningProfile.id;
+                console.log('🔄 Fetching updated profile data for ID:', profileIdToFetch);
+
+                // Fetch the updated profile from database
+                let { data: updatedProfileData, error } = await supabase
+                  .from('fabricator_profiles')
+                  .select('*')
+                  .eq('id', profileIdToFetch)
+                  .eq('user_id', userId)
+                  .single();
+
+                if (error) {
+                  console.error('❌ Error fetching updated profile:', error, { profileId: profileIdToFetch, tuningProfileId: tuningProfile.id });
+                  // If the profile ID changed, try to find it by name
+                  if (error.code === 'PGRST116') { // Not found
+                    console.log('🔍 Profile not found by ID, trying to find by name...');
+                    const { data: profilesByName, error: nameError } = await supabase
+                      .from('fabricator_profiles')
+                      .select('*')
+                      .eq('name', tuningProfile.name)
+                      .eq('user_id', userId)
+                      .order('created_at', { ascending: false })
+                      .limit(1);
+
+                    if (nameError) {
+                      console.error('❌ Error fetching by name:', nameError);
+                      return;
+                    }
+
+                    if (profilesByName && profilesByName.length > 0) {
+                      updatedProfileData = profilesByName[0];
+                      console.log('✅ Found profile by name:', updatedProfileData.id);
+                    } else {
+                      console.error('❌ Profile not found by name either');
+                      return;
+                    }
+                  } else {
+                    return;
+                  }
                 }
-                return p;
-              });
-              const updatedPack = {
-                ...systemPack,
-                profiles: updatedProfiles,
-              };
-              localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
-              setSystemPack(updatedPack);
-              handleTuningClose();
+
+                // Update the system pack with the fresh database data
+                // Note: The profile ID may have changed from a static ID (like "KATRA-S120-FRAME") to a UUID
+                const updatedProfiles = systemPack.profiles.map(p => {
+                  // Match by the original tuningProfile ID or by name if ID changed
+                  if (p.id === tuningProfile.id || (p.name === tuningProfile.name && p.id !== updatedProfileData.id)) {
+                    console.log('🔄 Updating system pack profile:', { oldId: p.id, newId: updatedProfileData.id, name: p.name });
+                    return {
+                      ...p,
+                      // Update the ID to the database UUID
+                      id: updatedProfileData.id,
+                      // Update basic properties
+                      width: updatedProfileData.width,
+                      height: updatedProfileData.height,
+                      thickness: updatedProfileData.thickness,
+                      // Update specifications
+                      specifications: updatedProfileData.specifications,
+                      // Update tuning status from specs
+                      tuningStatus: (updatedProfileData.specifications as any)?.tuningStatus || p.tuningStatus,
+                    };
+                  }
+                  return p;
+                });
+
+                const updatedPack = {
+                  ...systemPack,
+                  profiles: updatedProfiles,
+                };
+
+                // Save to localStorage and update state
+                localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
+                setSystemPack(updatedPack);
+
+                // Update tuned profiles set
+                const tuned = new Set<string>();
+                updatedPack.profiles?.forEach((p: SystemPackProfile) => {
+                  if (p.tuningStatus === 'tuned') {
+                    tuned.add(p.id);
+                  }
+                });
+                setTunedProfiles(tuned);
+
+                console.log('✅ System pack updated with database changes');
+              } catch (err) {
+                console.error('Error updating system pack after profile save:', err);
+              }
             }
           }}
         />
       )}
+
+      {/* Profile Definition Wizard */}
+      {userId && (
+        <ProfileDefinitionWizard
+          open={showProfileWizard}
+          onOpenChange={(open) => {
+            setShowProfileWizard(open);
+            if (!open) {
+              setEditingProfile(null);
+            }
+          }}
+          userId={userId}
+          initialData={editingProfile ? {
+            profileCode: editingProfile.id,
+            systemName: systemPack?.name,
+            width: editingProfile.width,
+            height: editingProfile.height,
+            materialThickness: editingProfile.thickness,
+            weightPerMeter: editingProfile.unitWeight,
+            role: editingProfile.type,
+            material: editingProfile.material as 'aluminum' | 'upvc' | 'wood',
+          } : {
+            systemName: systemPack?.name,
+            role: 'frame',
+            material: 'aluminum',
+          }}
+          onProfileCreated={(profile) => {
+            if (editingProfile) {
+              handleEditProfile(profile);
+            } else {
+              handleAddProfile(profile);
+            }
+          }}
+        />
+      )}
+
+      {/* Delete Profile Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="bg-slate-900 border-slate-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Profile</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-300">
+              Are you sure you want to delete the profile "{deletingProfile?.name}"? This action cannot be undone and will remove all tuning data associated with this profile.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteProfile}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete Profile
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

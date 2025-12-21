@@ -41,7 +41,20 @@ import {
   ChevronDown,
   Sparkles,
   Shield,
+  AlertTriangle,
+  X,
+  Ruler,
 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/shared/ui/ui/alert-dialog';
 import { Profile, Accessory, MachiningMacro, SystemPack } from '@/types/fabricator';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
@@ -147,6 +160,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>('custom');
   const [tuningProfile, setTuningProfile] = useState<Profile | null>(null);
   const [tuningFilter, setTuningFilter] = useState<'all' | 'tuned' | 'in_progress' | 'untuned'>('all');
+  const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const autoTuningOpenedRef = useRef(false);
 
   const getTuningStatus = (profile: Profile): 'untuned' | 'in_progress' | 'tuned' => {
@@ -426,6 +441,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           supplier: p.supplier || '',
           systemBrand: p.system_brand,
           grainDirection: p.grain_direction,
+          thumbnailUrl: p.thumbnail_url || (specs as any).thumbnailUrl || undefined,
           weightPerMeter:
             typeof specs.weightPerMeterKg === 'number'
               ? specs.weightPerMeterKg
@@ -831,26 +847,36 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     }
   };
 
-  const handleDeleteProfile = async (id: string) => {
-    if (!confirm(t('profileManagement.confirmDelete', 'Are you sure you want to delete this profile?'))) return;
-    if (!userId) return;
+  const handleDeleteProfile = (profile: Profile) => {
+    setProfileToDelete(profile);
+  };
 
+  const confirmDeleteProfile = async () => {
+    if (!profileToDelete || !userId) return;
+
+    setIsDeleting(true);
     try {
-       
       const db = supabase as any;
       const { error: deleteError } = await db
         .from('fabricator_profiles')
         .delete()
-        .eq('id', id)
+        .eq('id', profileToDelete.id)
         .eq('user_id', userId);
 
       if (deleteError) throw deleteError;
 
       await loadProfiles();
-      toast.success(t('profileManagement.profileDeletedSuccess', 'Profile deleted successfully'));
+      toast.success(
+        t('profileManagement.profileDeletedSuccess', 'Profile "{name}" deleted successfully', { 
+          name: profileToDelete.name 
+        })
+      );
+      setProfileToDelete(null);
     } catch (err) {
       console.error('Error deleting profile:', err);
       toast.error(t('profileManagement.errorDeletingProfile', 'Error deleting profile'));
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -2266,6 +2292,17 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
+                          {/* Profile Thumbnail */}
+                          {profile.thumbnailUrl && (
+                            <img 
+                              src={profile.thumbnailUrl} 
+                              alt={profile.name}
+                              className="w-10 h-10 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }}
+                            />
+                          )}
                           <h4 className="font-semibold">{profile.name}</h4>
                           <Badge variant="outline">{profile.material}</Badge>
                           {profile.systemBrand && (
@@ -2348,11 +2385,20 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                         </div>
                       </div>
                       <div className="flex flex-col items-end gap-2 ml-4">
-                        {specs.previewImageUrl && (
+                        {/* Show thumbnail from Supabase if available, otherwise fallback to previewImageUrl */}
+                        {(profile.thumbnailUrl || specs.previewImageUrl) && (
                           <img
-                            src={specs.previewImageUrl as string}
+                            src={profile.thumbnailUrl || (specs.previewImageUrl as string)}
                             alt={profile.name}
-                            className="w-24 h-24 rounded border border-gray-600 object-cover"
+                            className="w-24 h-24 rounded border border-gray-600 object-contain bg-white/5"
+                            onError={(e) => {
+                              // Fallback to previewImageUrl if thumbnail fails
+                              if (profile.thumbnailUrl && specs.previewImageUrl) {
+                                (e.target as HTMLImageElement).src = specs.previewImageUrl as string;
+                              } else {
+                                (e.target as HTMLImageElement).style.display = 'none';
+                              }
+                            }}
                           />
                         )}
                         <div className="flex gap-2">
@@ -2402,8 +2448,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleDeleteProfile(profile.id)}
-                            className="text-red-400 hover:text-red-300"
+                            onClick={() => handleDeleteProfile(profile)}
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -2420,6 +2466,121 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
         </CollapsibleContent>
       </Collapsible>
+
+      {/* Prestige Delete Confirmation Dialog */}
+      <AlertDialog open={!!profileToDelete} onOpenChange={(open) => !open && setProfileToDelete(null)}>
+        <AlertDialogContent className="bg-gray-900 border-gray-700 max-w-md">
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/15 border border-red-500/30">
+                <AlertTriangle className="h-6 w-6 text-red-400" />
+              </div>
+              <div className="flex-1">
+                <AlertDialogTitle className="text-lg font-semibold text-gray-100">
+                  {t('profileManagement.deleteConfirmTitle', 'Delete Profile?')}
+                </AlertDialogTitle>
+                <AlertDialogDescription className="text-sm text-gray-400 mt-1">
+                  {t('profileManagement.deleteConfirmSubtitle', 'This action cannot be undone')}
+                </AlertDialogDescription>
+              </div>
+            </div>
+          </AlertDialogHeader>
+
+          {profileToDelete && (
+            <div className="space-y-4 py-4">
+              {/* Profile Preview */}
+              <div className="flex items-start gap-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                {/* Thumbnail */}
+                {(profileToDelete.thumbnailUrl || (profileToDelete.specifications as any)?.previewImageUrl) && (
+                  <img
+                    src={profileToDelete.thumbnailUrl || (profileToDelete.specifications as any)?.previewImageUrl}
+                    alt={profileToDelete.name}
+                    className="w-16 h-16 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                )}
+                
+                {/* Profile Details */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h4 className="font-semibold text-gray-100 truncate">{profileToDelete.name}</h4>
+                    <Badge variant="outline" className="border-gray-600 text-gray-300">
+                      {profileToDelete.material}
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-1 text-xs text-gray-400">
+                    <div className="flex items-center gap-2">
+                      <Ruler className="h-3 w-3" />
+                      <span>
+                        {profileToDelete.width}mm × {profileToDelete.height || 'N/A'}mm
+                      </span>
+                    </div>
+                    {profileToDelete.systemBrand && (
+                      <div className="flex items-center gap-2">
+                        <Package className="h-3 w-3" />
+                        <span>{profileToDelete.systemBrand}</span>
+                      </div>
+                    )}
+                    {profileToDelete.profileRole && (
+                      <div className="flex items-center gap-2">
+                        <Settings className="h-3 w-3" />
+                        <span className="capitalize">{profileToDelete.profileRole}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Warning Details */}
+              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1 text-xs text-amber-200">
+                    <p className="font-semibold mb-1">
+                      {t('profileManagement.deleteWarning', 'What will be deleted:')}
+                    </p>
+                    <ul className="space-y-1 text-amber-300/80">
+                      <li>• {t('profileManagement.deleteWarningProfile', 'Profile configuration and specifications')}</li>
+                      <li>• {t('profileManagement.deleteWarningTuning', 'All tuning data and calibrations')}</li>
+                      <li>• {t('profileManagement.deleteWarningThumbnail', 'Profile thumbnail and preview images')}</li>
+                      <li>• {t('profileManagement.deleteWarningMachining', 'Machining zones and macros')}</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel 
+              disabled={isDeleting}
+              className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-gray-100"
+            >
+              {t('profileManagement.cancel', 'Cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteProfile}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white focus:ring-red-500"
+            >
+              {isDeleting ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  {t('profileManagement.deleting', 'Deleting...')}
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {t('profileManagement.deleteConfirm', 'Delete Profile')}
+                </>
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Profile Definition Wizard */}
       {userId && (

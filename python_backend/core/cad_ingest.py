@@ -249,6 +249,40 @@ class CadProfileIngestor:
                 doc, msp, metrics.bounding_box, polygons
             )
 
+            # Extract ALL polygons as separate profiles for multi-profile DXF files
+            all_profiles = []
+            for idx, poly in enumerate(polygons):
+                poly_area = self._calculate_area(poly)
+                if poly_area > 1.0:  # Filter out tiny noise
+                    poly_min = np.min(poly, axis=0)
+                    poly_max = np.max(poly, axis=0)
+                    poly_width = float(poly_max[0] - poly_min[0])
+                    poly_height = float(poly_max[1] - poly_min[1])
+                    poly_perimeter = self._calculate_perimeter(poly)
+                    poly_weight = (poly_area * self.density) / 1000.0
+                    
+                    all_profiles.append({
+                        "index": idx,
+                        "area_mm2": round(poly_area, 2),
+                        "perimeter_mm": round(poly_perimeter, 2),
+                        "weight_kg_per_m": round(poly_weight, 4),
+                        "width_mm": round(poly_width, 2),
+                        "height_mm": round(poly_height, 2),
+                        "bounding_box": (
+                            float(poly_min[0]),
+                            float(poly_min[1]),
+                            float(poly_max[0]),
+                            float(poly_max[1])
+                        ),
+                        "center": (
+                            float((poly_min[0] + poly_max[0]) / 2),
+                            float((poly_min[1] + poly_max[1]) / 2)
+                        ),
+                    })
+
+            # Sort profiles by area (largest first) for role detection
+            all_profiles.sort(key=lambda p: p["area_mm2"], reverse=True)
+
             result = {
                 "status": "success",
                 "accuracy_score": 100.0,
@@ -277,6 +311,10 @@ class CadProfileIngestor:
                 result["profile_metrics"]["profile_height_mm"] = round(
                     profile_height_mm, 2
                 )
+            
+            # Add all profiles array (for multi-profile DXF files)
+            result["all_profiles"] = all_profiles
+            result["total_profiles"] = len(all_profiles)
 
             return result
         except ezdxf.DXFStructureError as exc:

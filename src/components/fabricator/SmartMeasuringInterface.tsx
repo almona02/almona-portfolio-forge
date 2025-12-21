@@ -237,8 +237,15 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   };
 
   const availableSystemPacks = useMemo(() => {
-    // Include both SYSTEM_PACKS (which now includes UPVC) and EGYPTIAN_UPVC_SYSTEMS for completeness
-    const allPacks = [...SYSTEM_PACKS, ...EGYPTIAN_UPVC_SYSTEMS];
+    // SYSTEM_PACKS already includes EGYPTIAN_UPVC_SYSTEMS, so deduplicate
+    const systemsMap = new Map<string, any>();
+    SYSTEM_PACKS.forEach(system => {
+      systemsMap.set(system.meta.id, system);
+    });
+    customSystems.forEach(system => {
+      systemsMap.set(system.meta.id, system);
+    });
+    const allPacks = Array.from(systemsMap.values());
     
     const base = region && region !== 'global'
       ? allPacks.filter(
@@ -246,22 +253,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
         )
       : allPacks;
     
-    // Remove duplicates by ID, then add custom systems
-    const uniquePacks = base.filter((pack, index, self) => 
-      index === self.findIndex((p) => ('meta' in p && 'meta' in pack) ? p.meta.id === pack.meta.id : false)
-    );
-    
-    // Combine and deduplicate again to ensure no duplicates between uniquePacks and customSystems
-    const combined = [...uniquePacks, ...customSystems];
-    const seenIds = new Set<string>();
-    return combined.filter((pack) => {
-      const id = 'meta' in pack ? pack.meta.id : '';
-      if (seenIds.has(id)) {
-        return false; // Skip duplicate
-      }
-      seenIds.add(id);
-      return true;
-    });
+    return base;
   }, [region, customSystems]);
 
   const activeSystemPack = useMemo(

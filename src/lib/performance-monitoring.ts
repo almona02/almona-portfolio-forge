@@ -213,7 +213,17 @@ class PerformanceMonitoringService {
           list.getEntries().forEach(callback);
         });
         
-        observer.observe({ entryTypes: [entryType] });
+        // Use new API format for supported entry types
+        try {
+          observer.observe({ type: entryType, buffered: true });
+        } catch (e) {
+          // Fallback to old format for entry types that don't support new API
+          try {
+            observer.observe({ entryTypes: [entryType] });
+          } catch (e2) {
+            console.warn(`Failed to observe ${entryType}:`, e2);
+          }
+        }
       } catch (error) {
         console.warn(`Failed to observe ${entryType}:`, error);
       }

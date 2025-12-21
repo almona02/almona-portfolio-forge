@@ -119,14 +119,37 @@
       }
     });
     
-    // LCP (simplified check)
-    const lcpEntries = performance.getEntriesByType('largest-contentful-paint');
-    if (lcpEntries.length > 0) {
-      const lcp = lcpEntries[lcpEntries.length - 1];
-      const lcpTime = lcp.renderTime || lcp.loadTime;
-      const status = lcpTime < 2000 ? '✅' : '⚠️';
-      console.log(`   ${status} LCP: ${lcpTime.toFixed(0)}ms (target: <2000ms)`);
+    // LCP (using PerformanceObserver instead of deprecated getEntriesByType)
+    const lcpEntries = [];
+    const lcpObserver = new PerformanceObserver((entryList) => {
+      const entries = entryList.getEntries();
+      lcpEntries.push(...entries);
+    });
+    
+    try {
+      // Try modern API first
+      lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+    } catch (e) {
+      // Fallback for older browsers
+      try {
+        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+      } catch (e2) {
+        console.log('   ⚠️  LCP: PerformanceObserver not supported');
+      }
     }
+    
+    // Small delay to allow observer to collect entries
+    setTimeout(() => {
+      if (lcpEntries.length > 0) {
+        const lcp = lcpEntries[lcpEntries.length - 1];
+        const lcpTime = lcp.renderTime || lcp.loadTime || lcp.startTime;
+        const status = lcpTime < 2000 ? '✅' : '⚠️';
+        console.log(`   ${status} LCP: ${lcpTime.toFixed(0)}ms (target: <2000ms)`);
+      } else {
+        console.log('   ⚠️  LCP: No entries found');
+      }
+      lcpObserver.disconnect();
+    }, 100);
   }
   console.log('');
 

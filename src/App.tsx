@@ -20,7 +20,8 @@ import { Analytics } from "@vercel/analytics/react";
 import RegionAwareLayout from "./components/layout/RegionAwareLayout";
 import { useRoutePrefetching } from "./hooks/useRoutePrefetching";
 import { SpeedInsights } from '@vercel/speed-insights/react';
-import { PerformanceDashboard } from "./components/dev/PerformanceDashboard";
+// Lazy load PerformanceDashboard to avoid loading it in production
+const PerformanceDashboard = lazy(() => import("./components/dev/PerformanceDashboard").then(m => ({ default: m.PerformanceDashboard })));
 
 // Core pages (essential) - loaded immediately
 const Index = lazy(() => import("./pages/Index.tsx"));
@@ -87,6 +88,7 @@ const NoDXFTuningStudio = lazy(() => import("./components/fabricator/NoDXFTuning
 const CommercialPage = lazy(() => import("./pages/CommercialPage.tsx").catch(() => ({
   default: () => null,
 })));
+const SystemPacksPage = lazy(() => import("./pages/SystemPacksPage.tsx").then(m => ({ default: m.SystemPacksPage })));
 const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
 
 // Quote system - lazy loaded
@@ -335,6 +337,14 @@ const App = memo(() => {
                       }
                     />
                     <Route
+                      path="system-packs"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/system-packs')}>
+                          <SystemPacksPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
                       path="pricing"
                       element={
                         <Suspense fallback={getLoadingComponent('/fabricator/pricing')}>
@@ -466,7 +476,11 @@ const App = memo(() => {
                         </Routes>
                       </RegionAwareLayout>
                       {/* Phase 1 Performance Dashboard - Development Only */}
-                      {import.meta.env.DEV && <PerformanceDashboard />}
+                      {import.meta.env.DEV && (
+                        <Suspense fallback={null}>
+                          <PerformanceDashboard />
+                        </Suspense>
+                      )}
                     </BrowserRouter>
                         </FabricatorWorkspaceProvider>
                       </QuoteProvider>

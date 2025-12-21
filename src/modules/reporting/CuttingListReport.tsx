@@ -464,10 +464,25 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
             return (
               <Card key={planIndex} className="print:break-inside-avoid">
                 <CardHeader>
-                  <CardTitle>Plan #{plan.sequence} - {plan.profile.name}</CardTitle>
-                  <CardDescription>
-                    Stock Length: {plan.stockLength} mm | Utilization: {plan.utilization.toFixed(1)}%
-                  </CardDescription>
+                  <div className="flex items-center gap-3">
+                    {/* Profile Thumbnail in Cut List */}
+                    {plan.profile.thumbnailUrl && (
+                      <img 
+                        src={plan.profile.thumbnailUrl} 
+                        alt={plan.profile.name}
+                        className="w-12 h-12 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    )}
+                    <div className="flex-1">
+                      <CardTitle>Plan #{plan.sequence} - {plan.profile.name}</CardTitle>
+                      <CardDescription>
+                        Stock Length: {plan.stockLength} mm | Utilization: {plan.utilization.toFixed(1)}%
+                      </CardDescription>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Frame Cuts Section */}

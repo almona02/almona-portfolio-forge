@@ -6,7 +6,6 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/shared/ui/ui/button';
 import { Globe, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
@@ -73,11 +72,8 @@ export const LanguageSwitcher: React.FC<{
 
     return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className={`${className} group relative overflow-hidden transition-all duration-200 font-semibold text-xs xl:text-xs 2xl:text-sm ${baseButtonClasses}`}
+      <DropdownMenuTrigger 
+        className={`${className} group relative overflow-hidden transition-all duration-200 font-semibold text-xs xl:text-xs 2xl:text-sm inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-sm font-medium shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 ${baseButtonClasses}`}
         >
           <span className="relative z-10 flex items-center gap-1.5 xl:gap-2">
             {textVariant === 'both' && <Globe className="h-3.5 w-3.5 xl:h-4 xl:w-4 transition-transform group-hover:rotate-12" />}
@@ -95,7 +91,6 @@ export const LanguageSwitcher: React.FC<{
           {!solid && (
             <span className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
           )}
-        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={isRTLMode ? 'start' : 'end'}

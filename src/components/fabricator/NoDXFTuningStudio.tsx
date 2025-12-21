@@ -73,7 +73,7 @@ export const NoDXFTuningStudio: React.FC = () => {
   // Load system pack
   useEffect(() => {
     if (!systemPackId) {
-      navigate('/fabricator-workflow');
+      navigate('/fabricator/system-packs');
       return;
     }
 
@@ -81,7 +81,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                  EGYPTIAN_UPVC_SYSTEMS.find((p) => (p as any).meta?.id === systemPackId);
     
     if (!pack) {
-      navigate('/fabricator-workflow');
+      navigate('/fabricator/system-packs');
       return;
     }
 
@@ -297,7 +297,7 @@ export const NoDXFTuningStudio: React.FC = () => {
             } 
           });
         } else {
-          navigate('/fabricator-workflow', {
+          navigate('/fabricator/system-packs', {
             state: {
               systemPackId: tunedPack.meta.id,
               systemTuned: true,
@@ -352,7 +352,7 @@ export const NoDXFTuningStudio: React.FC = () => {
               if (returnUrl) {
                 navigate(returnUrl.url, { state: returnUrl.params });
               } else {
-                navigate('/fabricator-workflow');
+                navigate('/fabricator/system-packs');
               }
             }}
           >

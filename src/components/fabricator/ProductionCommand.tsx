@@ -441,8 +441,21 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                 <CardContent className="space-y-6">
                     {optimization.cuttingPlan.map((plan, index) => (
                         <div key={index}>
-                            <div className="flex justify-between items-baseline mb-2">
-                                <h4 className="font-semibold text-gray-200">{plan.profile.name}</h4>
+                            <div className="flex justify-between items-center mb-2">
+                                <div className="flex items-center gap-2">
+                                    {/* Profile Thumbnail in Production Command */}
+                                    {plan.profile.thumbnailUrl && (
+                                        <img 
+                                            src={plan.profile.thumbnailUrl} 
+                                            alt={plan.profile.name}
+                                            className="w-10 h-10 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).style.display = 'none';
+                                            }}
+                                        />
+                                    )}
+                                    <h4 className="font-semibold text-gray-200">{plan.profile.name}</h4>
+                                </div>
                                 <Badge variant="outline" className="font-mono text-xs">
                                     {t('production_command.utilization', '{value}% Utilization', { value: plan.utilization?.toFixed(1) })}
                                 </Badge>

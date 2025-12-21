@@ -30,7 +30,17 @@ export default defineConfig(({ mode }) => {
       historyApiFallback: true,
       hmr: {
         overlay: true,
+        // Optimize HMR for faster updates in dev
+        clientPort: 3000,
       },
+      // Optimize dev server performance
+      fs: {
+        // Allow serving files from one level up to the project root
+        allow: ['..'],
+        strict: false,
+      },
+      // Reduce middleware overhead in dev
+      middlewareMode: false,
       proxy: {
         '/api': {
           target: 'http://localhost:8002',
@@ -349,8 +359,8 @@ export default defineConfig(({ mode }) => {
         "pako" // Include pako for PDF compression (must load before pdfjs)
       ],
       exclude: ["@google/generative-ai","@huggingface/inference","@tensorflow/tfjs","three"],
-      // Force re-optimization to ensure long package is properly handled
-      force: true,
+      // Only force re-optimization in production builds, not in dev for faster startup
+      force: isProduction,
       esbuildOptions: {
         define: {
           global: "globalThis",

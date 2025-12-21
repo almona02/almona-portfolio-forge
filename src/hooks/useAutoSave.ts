@@ -149,7 +149,8 @@ export function useAutoSave<T>(
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+      // Prestige message for browser's native confirmation dialog
+      e.returnValue = 'You have unsaved changes in Fabricator Pro. Are you sure you want to leave? All unsaved work will be lost.';
       return e.returnValue;
     };
 

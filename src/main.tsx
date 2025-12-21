@@ -9,11 +9,12 @@ if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
 }
 // Service worker registration is handled by VitePWA plugin
 import "./index.css";
-import { initializePerformanceMonitoring } from "./lib/performance";
-import { initializePolyfills } from "./lib/polyfills";
 import "./styles/mobile-scaling.css";
 
-// Initialize i18n BEFORE any component uses useTranslation
+import { initializePolyfills } from "./lib/polyfills";
+// Performance monitoring will be initialized after isDev is declared (see below)
+
+// Initialize i18n - needed for translations but optimized loading
 import "@/lib/i18n";
 
 // Set initial dir/lang attributes early
@@ -425,6 +426,10 @@ if (isDev) {
   console.log("🚀 Production mode active");
 }
 
+// Initialize performance monitoring (lightweight, doesn't block)
+import { initializePerformanceMonitoring } from "./lib/performance";
+initializePerformanceMonitoring();
+
 // Get root element and create React root
 // FIX: Ensure DOM is ready before rendering to prevent white page
 const renderApp = () => {
@@ -507,12 +512,32 @@ window.addEventListener('load', () => {
   }
   
   // LCP timeout protection - ensure LCP doesn't block too long
-  setTimeout(() => {
-    const lcpEntries = performance.getEntriesByType('largest-contentful-paint');
-    if (lcpEntries.length > 0) {
-      const lastLCP = lcpEntries[lcpEntries.length - 1];
-      if (lastLCP.startTime > LCP_TIMEOUT) {
-        console.warn(`[LCP Fix] LCP timeout detected: ${Math.round(lastLCP.startTime)}ms`);
+  // Use PerformanceObserver instead of deprecated getEntriesByType
+  let lastLCPEntry: any = null;
+  
+  if ('PerformanceObserver' in window) {
+    const lcpObserver = new PerformanceObserver((entryList) => {
+      const entries = entryList.getEntries();
+      if (entries.length > 0) {
+        lastLCPEntry = entries[entries.length - 1];
+      }
+    });
+    
+    try {
+      lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+    } catch (e) {
+      // Fallback if buffered option not supported
+      try {
+        (lcpObserver as any).observe({ entryTypes: ['largest-contentful-paint'] });
+      } catch (e2) {
+        console.warn('[LCP Fix] PerformanceObserver not supported');
+      }
+    }
+    
+    // Check after timeout
+    setTimeout(() => {
+      if (lastLCPEntry && lastLCPEntry.startTime > LCP_TIMEOUT) {
+        console.warn(`[LCP Fix] LCP timeout detected: ${Math.round(lastLCPEntry.startTime)}ms`);
         // Force any blocking images to switch to lazy loading
         const blockingImages = document.querySelectorAll('img[loading="eager"]:not([data-lcp-protected])');
         blockingImages.forEach((imgElement) => {
@@ -527,8 +552,10 @@ window.addEventListener('load', () => {
           }
         });
       }
-    }
-  }, LCP_TIMEOUT);
+      // Disconnect observer after timeout check
+      lcpObserver.disconnect();
+    }, LCP_TIMEOUT);
+  }
   
   // Measure Time to Interactive
   setTimeout(() => {

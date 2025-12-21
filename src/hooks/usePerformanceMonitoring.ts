@@ -56,7 +56,7 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
       }
     });
 
-    observer.observe({ entryTypes: ['largest-contentful-paint'] });
+    observer.observe({ type: 'largest-contentful-paint', buffered: true });
     
     return () => observer.disconnect();
   }, [onMetricsUpdate, reportMetrics]);
@@ -78,7 +78,7 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
       });
     });
 
-    observer.observe({ entryTypes: ['first-input'] });
+    observer.observe({ type: 'first-input', buffered: true });
     
     return () => observer.disconnect();
   }, [onMetricsUpdate, reportMetrics]);
@@ -103,7 +103,7 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
       console.log('CLS:', clsValue);
     });
 
-    observer.observe({ entryTypes: ['layout-shift'] });
+    observer.observe({ type: 'layout-shift', buffered: true });
     
     return () => observer.disconnect();
   }, [onMetricsUpdate, reportMetrics]);
@@ -127,7 +127,12 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
       });
     });
 
-    observer.observe({ entryTypes: ['paint'] });
+    try {
+      observer.observe({ type: 'paint', buffered: true });
+    } catch (e) {
+      // Fallback for browsers that don't support new format
+      observer.observe({ entryTypes: ['paint'] });
+    }
     
     return () => observer.disconnect();
   }, [onMetricsUpdate, reportMetrics]);
@@ -151,7 +156,12 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
       });
     });
 
-    observer.observe({ entryTypes: ['navigation'] });
+    try {
+      observer.observe({ type: 'navigation', buffered: true });
+    } catch (e) {
+      // Fallback for browsers that don't support new format
+      observer.observe({ entryTypes: ['navigation'] });
+    }
     
     return () => observer.disconnect();
   }, [onMetricsUpdate, reportMetrics]);

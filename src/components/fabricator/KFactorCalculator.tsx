@@ -30,9 +30,46 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
   initialJointType = 'miter_45',
 }) => {
   const { t } = useTranslation('fabricator');
-  const [profileWidth, setProfileWidth] = useState<number>(profile?.width || 60);
-  const [profileHeight, _setProfileHeight] = useState<number>(profile?.height || profile?.width || 40);
-  const [materialThickness, setMaterialThickness] = useState<number>(profile?.thickness || 1.5);
+  const [profileWidth, setProfileWidth] = useState<number>(profile?.width || 62);
+
+  // Update profile width and height when profile changes
+  React.useEffect(() => {
+    if (profile?.width) {
+      setProfileWidth(profile.width);
+    }
+    if (profile?.height) {
+      setProfileHeight(profile.height);
+    } else if (profile?.width) {
+      // If no height specified, use width as default
+      setProfileHeight(profile.width);
+    }
+  }, [profile]);
+  const [profileHeight, setProfileHeight] = useState<number>(profile?.height || profile?.width || 40);
+  // Get wall thickness from profile specifications, fallback to profile.thickness, then 1.5mm
+  const getWallThickness = (profile?: Profile): number => {
+    if (profile?.specifications) {
+      // Try different possible field names for wall thickness
+      const wallThickness = (profile.specifications as any).wallThicknessMm ||
+                           (profile.specifications as any).thicknessMm ||
+                           (profile.specifications as any).materialThicknessMm;
+      if (wallThickness && typeof wallThickness === 'number') {
+        return wallThickness;
+      }
+    }
+    // Fallback to profile.thickness, but only if it's reasonable (wall thickness should be 0.5-3mm)
+    if (profile?.thickness && profile.thickness >= 0.5 && profile.thickness <= 3) {
+      return profile.thickness;
+    }
+    // Default to 1.5mm for UPVC profiles
+    return 1.5;
+  };
+
+  const [materialThickness, setMaterialThickness] = useState<number>(getWallThickness(profile));
+
+  // Update material thickness when profile changes
+  React.useEffect(() => {
+    setMaterialThickness(getWallThickness(profile));
+  }, [profile]);
   const [_cutAngle, setCutAngle] = useState<number>(45);
   const [jointType, setJointType] = useState<'miter_45' | 'butt_90' | 't_joint' | 'l_joint' | 'custom'>(
     initialJointType
@@ -99,7 +136,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Input Parameters */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <Label htmlFor="profile-width" className="text-gray-300">
               {t('calibration_wizard.k_factor.profile_width', 'Profile Width (mm)')}
@@ -111,6 +148,20 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
               value={profileWidth}
               onChange={(e) => setProfileWidth(parseFloat(e.target.value) || 0)}
               className="mt-1 bg-gray-900 border-gray-600 text-white"
+            />
+          </div>
+          <div>
+            <Label htmlFor="profile-height" className="text-gray-300">
+              {t('calibration_wizard.k_factor.profile_height', 'Profile Height (mm)')}
+            </Label>
+            <Input
+              id="profile-height"
+              type="number"
+              step="0.1"
+              value={profileHeight}
+              disabled
+              className="mt-1 bg-gray-800 border-gray-600 text-gray-400 cursor-not-allowed"
+              title={t('calibration_wizard.k_factor.height_readonly', 'Profile height is for verification only - not used in K-factor calculation')}
             />
           </div>
           <div>
