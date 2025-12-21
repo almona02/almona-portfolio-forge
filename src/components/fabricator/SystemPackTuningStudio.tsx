@@ -59,6 +59,7 @@ interface SystemPackProfile {
   height?: number;
   thickness?: number;
   micronConfig?: any;
+  specifications?: any;
   tuningStatus?: 'untuned' | 'in_progress' | 'tuned';
 }
 
@@ -71,6 +72,7 @@ interface SystemPack {
   isComplete: boolean;
   tuningStatus?: 'untuned' | 'in_progress' | 'tuned';
   createdAt: string;
+  updatedAt?: string;
 }
 
 export const SystemPackTuningStudio: React.FC = () => {
@@ -271,16 +273,25 @@ export const SystemPackTuningStudio: React.FC = () => {
           .single();
 
         if (!error && updatedProfileData && systemPack) {
+          // Type guard: ensure updatedProfileData has the expected structure
+          const profileData = updatedProfileData as {
+            id: string;
+            width?: number;
+            height?: number;
+            thickness?: number;
+            specifications?: any;
+          };
+
           // Update the system pack with fresh database data
           const updatedProfiles = systemPack.profiles.map(p => {
             if (p.id === tuningProfile.id) {
               return {
                 ...p,
-                width: updatedProfileData.width || p.width,
-                height: updatedProfileData.height || p.height,
-                thickness: updatedProfileData.thickness || p.thickness,
-                specifications: updatedProfileData.specifications || p.specifications,
-                tuningStatus: (updatedProfileData.specifications as any)?.tuningStatus || p.tuningStatus,
+                width: profileData.width ?? p.width,
+                height: profileData.height ?? p.height,
+                thickness: profileData.thickness ?? p.thickness,
+                specifications: profileData.specifications ?? p.specifications,
+                tuningStatus: (profileData.specifications as any)?.tuningStatus ?? p.tuningStatus,
               };
             }
             return p;
@@ -995,7 +1006,6 @@ export const SystemPackTuningStudio: React.FC = () => {
                 console.log('🔄 Fetching updated profile data for ID:', profileIdToFetch);
 
                 // Fetch the updated profile from database
-                let updatedProfileData;
                 const { data, error } = await supabase
                   .from('fabricator_profiles')
                   .select('*')
@@ -1003,7 +1013,17 @@ export const SystemPackTuningStudio: React.FC = () => {
                   .eq('user_id', userId)
                   .single();
 
-                updatedProfileData = data;
+                // Type definition for profile data from database
+                type ProfileData = {
+                  id: string;
+                  name: string;
+                  width?: number;
+                  height?: number;
+                  thickness?: number;
+                  specifications?: any;
+                } | null;
+
+                let updatedProfileData: ProfileData = data;
 
                 if (error) {
                   console.error('❌ Error fetching updated profile:', error, { profileId: profileIdToFetch, tuningProfileId: tuningProfile.id });
@@ -1023,7 +1043,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                       return;
                     }
 
-                    if (profilesByName && profilesByName.length > 0) {
+                    if (profilesByName && profilesByName.length > 0 && profilesByName[0]) {
                       updatedProfileData = profilesByName[0];
                       console.log('✅ Found profile by name:', updatedProfileData.id);
                     } else {
@@ -1035,28 +1055,37 @@ export const SystemPackTuningStudio: React.FC = () => {
                   }
                 }
 
+                // Ensure we have valid profile data before updating
+                if (!updatedProfileData) {
+                  console.error('❌ No profile data available to update system pack');
+                  return;
+                }
+
+                // Type assertion: we've confirmed updatedProfileData is not null
+                const profileData = updatedProfileData as NonNullable<typeof updatedProfileData>;
+
                 // Update the system pack with the fresh database data
                 // Note: The profile ID may have changed from a static ID (like "KATRA-S120-FRAME") to a UUID
-              const updatedProfiles = systemPack.profiles.map(p => {
+                const updatedProfiles = systemPack.profiles.map(p => {
                   // Match by the original tuningProfile ID or by name if ID changed
-                  if (p.id === tuningProfile.id || (p.name === tuningProfile.name && p.id !== updatedProfileData.id)) {
-                    console.log('🔄 Updating system pack profile:', { oldId: p.id, newId: updatedProfileData.id, name: p.name });
-                  return {
-                    ...p,
+                  if (p.id === tuningProfile.id || (p.name === tuningProfile.name && p.id !== profileData.id)) {
+                    console.log('🔄 Updating system pack profile:', { oldId: p.id, newId: profileData.id, name: p.name });
+                    return {
+                      ...p,
                       // Update the ID to the database UUID
-                      id: updatedProfileData.id,
+                      id: profileData.id,
                       // Update basic properties
-                      width: updatedProfileData.width,
-                      height: updatedProfileData.height,
-                      thickness: updatedProfileData.thickness,
+                      width: profileData.width ?? p.width,
+                      height: profileData.height ?? p.height,
+                      thickness: profileData.thickness ?? p.thickness,
                       // Update specifications
-                      specifications: updatedProfileData.specifications,
+                      specifications: profileData.specifications ?? p.specifications,
                       // Update tuning status from specs
-                      tuningStatus: (updatedProfileData.specifications as any)?.tuningStatus || p.tuningStatus,
-                  };
-                }
-                return p;
-              });
+                      tuningStatus: (profileData.specifications as any)?.tuningStatus ?? p.tuningStatus,
+                    };
+                  }
+                  return p;
+                });
 
               const updatedPack = {
                 ...systemPack,
@@ -1103,7 +1132,7 @@ export const SystemPackTuningStudio: React.FC = () => {
             height: editingProfile.height,
             materialThickness: editingProfile.thickness,
             weightPerMeter: editingProfile.unitWeight,
-            role: editingProfile.type,
+            role: editingProfile.type === 'bead' ? 'glazing_bead' : editingProfile.type,
             material: editingProfile.material as 'aluminum' | 'upvc' | 'wood',
           } : {
             systemName: systemPack?.name,
