@@ -4,7 +4,6 @@ import {
 } from '@/data/egyptian-defaults';
 import { EGYPTIAN_PATTERNS, getPatternsForSystem, type EgyptianPattern } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
-import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
 import { calibrationAnalytics } from '@/lib/analytics/CalibrationAnalytics';
 import { addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 import { ValidationError, getConstraintsForSystemPack, validateMeasurements } from '@/lib/fabricatorValidation';

@@ -182,7 +182,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
   // K-factor learning state
   const [kFactorLearningEnabled, setKFactorLearningEnabled] = useState(true);
   const [learnedKFactors, setLearnedKFactors] = useState<KFactorLearningData[]>([]);
-  const [isLearning, setIsLearning] = useState(false);
+  const [_isLearning, _setIsLearning] = useState(false);
   const [autoOptimizeAll, setAutoOptimizeAll] = useState(false);
 
   // Pricing state
@@ -816,7 +816,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
       : `Default K-factor (${suggestedKFactor.toFixed(3)}) for standard aluminum profile.`;
   };
 
-  const learnFromMeasurement = async (
+  const _learnFromMeasurement = async (
     profileId: string,
     measuredKFactor: number
   ) => {

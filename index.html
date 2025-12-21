@@ -106,18 +106,41 @@
 
     <!-- Google Analytics - Deferred until after page load for better performance -->
     <script>
-      // Defer Google Analytics until after page load
-      window.addEventListener('load', function() {
-        var script = document.createElement('script');
-        script.async = true;
-        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-321C22X7E3';
-        document.head.appendChild(script);
-        
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-321C22X7E3');
-      });
+      // Check if analytics should be disabled (respect user privacy)
+      const analyticsDisabled = localStorage.getItem('disable-analytics') === 'true' ||
+                               navigator.doNotTrack === '1' ||
+                               window.location.hostname === 'localhost';
+
+      if (!analyticsDisabled) {
+        try {
+          // Defer Google Analytics until after page load
+          window.addEventListener('load', function() {
+            var script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-321C22X7E3';
+            script.onerror = function() {
+              console.warn('Google Analytics failed to load - likely blocked by privacy extension');
+            };
+            document.head.appendChild(script);
+
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', 'G-321C22X7E3', {
+              // Disable advertising features for privacy
+              allow_ad_features: false,
+              allow_ad_personalization_signals: false
+            });
+          });
+        } catch (error) {
+          console.warn('Google Analytics initialization failed:', error);
+        }
+      } else {
+        // Provide a no-op gtag function for code that expects it
+        window.gtag = function() { /* Analytics disabled */ };
+        console.log('Analytics disabled for privacy');
+      }
     </script>
 
     <!-- PHASE 1.1: CRITICAL CSS - Inlined for immediate render (FCP optimization) -->

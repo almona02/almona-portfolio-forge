@@ -21,13 +21,11 @@ import {
   TrendingDown,
   AlertTriangle,
   CheckCircle,
-  Clock,
   Target,
   MemoryStick,
   Shield,
   Users,
   BarChart3,
-  Zap,
 } from 'lucide-react';
 import {
   ProductionMonitor,
@@ -36,7 +34,7 @@ import {
 } from '@/lib/monitoring/ProductionMonitor';
 
 export function ProductionDashboard() {
-  const { t, i18n } = useTranslation();
+  const { t: _t, i18n } = useTranslation();
   const locale = i18n.language.startsWith('ar') ? 'ar' : 'en';
   const [metrics, setMetrics] = useState<ProductionMetrics | null>(null);
   const [alerts, setAlerts] = useState<ProductionAlert[]>([]);

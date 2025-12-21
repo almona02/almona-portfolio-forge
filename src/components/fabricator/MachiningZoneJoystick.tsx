@@ -11,8 +11,7 @@ import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Plus, Trash2, Settings, Info, Move, Maximize2, RotateCw, Grid, Target } from 'lucide-react';
+import { Plus, Trash2, Info, Move, Maximize2, Grid, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { MachiningZone } from './MachiningZoneEditor';
 
@@ -71,7 +70,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
   }, []);
 
   // Convert zone coordinates to canvas coordinates
-  const zoneToCanvas = useCallback((zone: MachiningZone) => {
+  const _zoneToCanvas = useCallback((zone: MachiningZone) => {
     const centerX = canvasSize.width / 2;
     const centerY = canvasSize.height / 2;
     
@@ -104,37 +103,6 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
     };
   }, [canvasSize, profileWidth, profileHeight, scale]);
 
-  // Convert canvas coordinates to zone coordinates
-  const canvasToZone = useCallback((canvasX: number, canvasY: number, zone: MachiningZone) => {
-    const centerX = canvasSize.width / 2;
-    const centerY = canvasSize.height / 2;
-    
-    const x = (canvasX - centerX) / scale + profileWidth / 2;
-    const y = (canvasY - centerY) / scale + profileHeight / 2;
-    
-    let xOffset = 0, yOffset = 0;
-    switch (zone.referenceCorner) {
-      case 'top_left':
-        xOffset = x;
-        yOffset = y;
-        break;
-      case 'top_right':
-        xOffset = profileWidth - x - zone.width;
-        yOffset = y;
-        break;
-      case 'bottom_left':
-        xOffset = x;
-        yOffset = profileHeight - y - zone.height;
-        break;
-      case 'bottom_right':
-        xOffset = profileWidth - x - zone.width;
-        yOffset = profileHeight - y - zone.height;
-        break;
-    }
-    
-    return { xOffset: Math.max(0, xOffset), yOffset: Math.max(0, yOffset) };
-  }, [canvasSize, profileWidth, profileHeight, scale]);
-
   // Handle mouse/touch start
   const handlePointerDown = (e: React.PointerEvent, zone: MachiningZone, type: 'position' | 'resize') => {
     e.preventDefault();
@@ -143,7 +111,6 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
 
     const canvasX = e.clientX - rect.left;
     const canvasY = e.clientY - rect.top;
-    const canvas = zoneToCanvas(zone);
 
     setJoystickState({
       activeZoneId: zone.id,
@@ -359,7 +326,6 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                 {/* Zones */}
                 <AnimatePresence>
                   {zones.map((zone) => {
-                    const canvas = zoneToCanvas(zone);
                     const isSelected = selectedZone?.id === zone.id;
                     const isActive = joystickState.activeZoneId === zone.id;
 

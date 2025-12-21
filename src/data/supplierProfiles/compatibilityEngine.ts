@@ -4,8 +4,7 @@
  */
 
 import { Profile } from '@/types/fabricator';
-import { getProfileById, getAllProfiles, getProfilesByMaterial } from './profileDatabase';
-import { getMaterialSpec, MaterialSpec } from './materialSpecs';
+import { getAllProfiles } from './profileDatabase';
 
 export interface CompatibilityMatch {
   profile: Profile;

@@ -33,9 +33,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   ctaText, 
   ctaLink, 
   onCtaClick,
-  badge,
+  badge: _badge,
   isSelected = false,
-  onSelect,
+  onSelect: _onSelect,
   specPdf,
   youtubeUrl
 }) => {

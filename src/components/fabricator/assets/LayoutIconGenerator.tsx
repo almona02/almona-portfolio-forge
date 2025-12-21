@@ -23,7 +23,7 @@ interface LayoutIconGeneratorProps {
  * LayoutIconGenerator: tries a high-fidelity 3D capture first, falls back to schematic SVG.
  */
 export const LayoutIconGenerator = forwardRef<LayoutIconHandle, LayoutIconGeneratorProps>(
-  ({ windowUnit, width = 512, height = 512, widthMm = 1200, heightMm = 1200, className }, ref) => {
+  ({ windowUnit, width = 512, height = 512, widthMm: _widthMm = 1200, heightMm: _heightMm = 1200, className }, ref) => {
     const schematicRef = useRef<SchematicIconHandle>(null);
     const glRef = useRef<THREE.WebGLRenderer | null>(null);
 
