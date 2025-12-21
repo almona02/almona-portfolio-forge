@@ -6,12 +6,12 @@ import { cn } from "@/lib/utils"
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 
-// Wrap Trigger to avoid asChild slot issues when consumers pass non-forwardRef children
+// Wrap Trigger to properly handle asChild prop
 const DropdownMenuTrigger = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
 >(({ children, asChild, ...props }, ref) => (
-  <DropdownMenuPrimitive.Trigger ref={ref} {...props}>
+  <DropdownMenuPrimitive.Trigger ref={ref} asChild={asChild} {...props}>
     {children}
   </DropdownMenuPrimitive.Trigger>
 ))

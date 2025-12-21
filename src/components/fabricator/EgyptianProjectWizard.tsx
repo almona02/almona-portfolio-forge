@@ -211,7 +211,15 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
 
   const recommendedSystems = useMemo(() => {
     const recs = new Set<string>();
-    const allSystems = [...SYSTEM_PACKS, ...EGYPTIAN_UPVC_SYSTEMS, ...customSystems];
+    // SYSTEM_PACKS already includes EGYPTIAN_UPVC_SYSTEMS, so deduplicate
+    const systemsMap = new Map<string, any>();
+    SYSTEM_PACKS.forEach(system => {
+      systemsMap.set(system.meta.id, system);
+    });
+    customSystems.forEach(system => {
+      systemsMap.set(system.meta.id, system);
+    });
+    const allSystems = Array.from(systemsMap.values());
     
     // Filter by material preference first
     const materialFiltered = allSystems.filter(pack => {

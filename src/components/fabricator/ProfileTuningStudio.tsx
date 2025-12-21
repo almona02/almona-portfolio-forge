@@ -40,8 +40,9 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { autoConfigureFromDXF, type DXFImportData, type AutoConfigOptions } from '@/lib/fabricator/autoConfigFromDXF';
 import { CalibrationWizard } from './CalibrationWizard';
 import { MachiningZoneEditor, type MachiningZone } from './MachiningZoneEditor';
 import './ProfileTuningStudio.css';
@@ -49,6 +50,7 @@ import { ProfileIconGenerator, type ProfileIconHandle } from './assets/ProfileIc
 import { DXFProfileImporter, type ImportedProfile } from './smartscan/DXFProfileImporter';
 import { ProfileScannerUploader } from './smartscan/ProfileScannerUploader';
 import SmartScanUploader from './smartscan/SmartScanUploader';
+import { UnsavedChangesDialog } from './UnsavedChangesDialog';
 
 interface ProfileTuningStudioProps {
   profile: Profile;
@@ -71,6 +73,8 @@ type GeometryConfig = {
   svgPath?: string;
   scannedWidth?: number;
   scannedHeight?: number;
+  thumbnailOffsetX?: number;
+  thumbnailOffsetY?: number;
 };
 
 export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
@@ -81,6 +85,10 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
 }) => {
   const { t } = useTranslation('fabricator');
   const location = useLocation();
+  const navigate = useNavigate();
+  // Enable auto-configuration by default for DXF imports
+  const enableAutoConfig = true;
+  const [importedProfileData, setImportedProfileData] = useState<ImportedProfile | null>(null);
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
     | 'calibration'
@@ -121,6 +129,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
   const profileIconRef = useRef<ProfileIconHandle>(null);
   const [isDirty, setIsDirty] = useState(false);
   const dirtyInitRef = useRef(false);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
 
   const specs = profile.specifications || {};
 
@@ -303,41 +312,351 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
     systemPackId,
   ]);
 
-  // Warn on tab close/refresh when dirty
+  // Prestige warning on tab close/refresh when dirty
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
       if (!isDirty) return;
       e.preventDefault();
-      e.returnValue = '';
+      // Prestige message for browser's native confirmation dialog
+      e.returnValue = 'You have unsaved changes in Profile Tuning Studio. Are you sure you want to leave? All unsaved tuning data will be permanently lost.';
+      return e.returnValue;
     };
     if (isDirty) window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
   }, [isDirty]);
 
-  const handleGuardedClose = () => {
-    if (isDirty) {
-      const confirmed = window.confirm(
-        'You have unsaved changes. Leave without saving?'
-      );
-      if (!confirmed) return;
-      onClose(true); // Pass hasChanges = true
-    } else {
-      onClose(false); // Pass hasChanges = false
-    }
-  };
 
-  const markAsTuned = async () => {
+  // Simple save function that saves all current changes
+  const saveAllChanges = async () => {
     try {
       setSavingStatus(true);
+
+      // Check authentication and profile validity
+      if (!userId) {
+        throw new Error('User not authenticated. Please log in again.');
+      }
+
+      if (!profile?.id) {
+        throw new Error('Profile data is invalid. Please refresh and try again.');
+      }
+
       const db = supabase as unknown as { from: (table: string) => any };
+
+      // Collect all current changes into specifications first
       const nextSpecs = {
         ...(profile.specifications || {}),
-        tuningStatus: 'tuned',
+        // Geometry config
+        geometryConfig: geometryConfig,
+        // Machining zones
+        machiningZones: zones,
+        // Cutting config
+        borderExtraAllowanceMm: cuttingConfig.borderExtraAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.borderExtraAllowanceMm as any)
+          : undefined,
+        preferredBarLengthMm: cuttingConfig.preferredBarLengthMm !== ''
+          ? parseFloat(cuttingConfig.preferredBarLengthMm as any)
+          : undefined,
+        minOffcutMm: cuttingConfig.minOffcutMm !== ''
+          ? parseFloat(cuttingConfig.minOffcutMm as any)
+          : undefined,
+        roundToNearestMm: cuttingConfig.roundToNearestMm !== ''
+          ? parseFloat(cuttingConfig.roundToNearestMm as any)
+          : undefined,
+        cornerTechnology: cuttingConfig.cornerTechnology,
+        miter45JointAllowanceMm: cuttingConfig.miter45JointAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.miter45JointAllowanceMm as any)
+          : undefined,
+        butt90JointAllowanceMm: cuttingConfig.butt90JointAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.butt90JointAllowanceMm as any)
+          : undefined,
+        tJointAllowanceMm: cuttingConfig.tJointAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.tJointAllowanceMm as any)
+          : undefined,
+        mullionJointAllowanceMm: cuttingConfig.mullionJointAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.mullionJointAllowanceMm as any)
+          : undefined,
+        // Glazing config
+        glazingMinMm: glazingConfig.glazingMinMm !== ''
+          ? parseFloat(glazingConfig.glazingMinMm as any)
+          : undefined,
+        glazingMaxMm: glazingConfig.glazingMaxMm !== ''
+          ? parseFloat(glazingConfig.glazingMaxMm as any)
+          : undefined,
+        gasketCompressionTargetMm: glazingConfig.gasketCompressionTargetMm !== ''
+          ? parseFloat(glazingConfig.gasketCompressionTargetMm as any)
+          : undefined,
+        allowedGlassPackages: glazingConfig.allowedGlassPackagesText
+          ? glazingConfig.allowedGlassPackagesText.split(',').map(s => s.trim()).filter(Boolean)
+          : undefined,
+        // Structural config
+        maxFrameSpanMm: structuralConfig.maxFrameSpanMm !== ''
+          ? parseFloat(structuralConfig.maxFrameSpanMm as any)
+          : undefined,
+        maxMullionSpanMm: structuralConfig.maxMullionSpanMm !== ''
+          ? parseFloat(structuralConfig.maxMullionSpanMm as any)
+          : undefined,
+        maxSashWidthMm: structuralConfig.maxSashWidthMm !== ''
+          ? parseFloat(structuralConfig.maxSashWidthMm as any)
+          : undefined,
+        maxSashHeightMm: structuralConfig.maxSashHeightMm !== ''
+          ? parseFloat(structuralConfig.maxSashHeightMm as any)
+          : undefined,
+        maxSashWeightKg: structuralConfig.maxSashWeightKg !== ''
+          ? parseFloat(structuralConfig.maxSashWeightKg as any)
+          : undefined,
+        maxUnitWidthMm: structuralConfig.maxUnitWidthMm !== ''
+          ? parseFloat(structuralConfig.maxUnitWidthMm as any)
+          : undefined,
+        maxUnitHeightMm: structuralConfig.maxUnitHeightMm !== ''
+          ? parseFloat(structuralConfig.maxUnitHeightMm as any)
+          : undefined,
+        structuralNotes: structuralConfig.structuralNotes,
+        physicsStiffnessClass: structuralConfig.physicsStiffnessClass,
+        // Hardware config
+        primaryHingeFamily: hardwareConfig.primaryHingeFamily,
+        primaryLockFamily: hardwareConfig.primaryLockFamily,
+        preferredHandleFamily: hardwareConfig.preferredHandleFamily,
+        hardwarePackTags: hardwareConfig.hardwarePackTagsText
+          ? hardwareConfig.hardwarePackTagsText.split(',').map(s => s.trim()).filter(Boolean)
+          : undefined,
+        // Cost config
+        aluminumPricePerKg: costConfig.aluminumPricePerKg !== ''
+          ? parseFloat(costConfig.aluminumPricePerKg as any)
+          : undefined,
+        machiningCostPerOp: costConfig.machiningCostPerOp !== ''
+          ? parseFloat(costConfig.machiningCostPerOp as any)
+          : undefined,
+        coatingCostPerSqm: costConfig.coatingCostPerSqm !== ''
+          ? parseFloat(costConfig.coatingCostPerSqm as any)
+          : undefined,
+        scrapCostPerKg: costConfig.scrapCostPerKg !== ''
+          ? parseFloat(costConfig.scrapCostPerKg as any)
+          : undefined,
+        erpItemCode: costConfig.erpItemCode,
+        warehouseLocation: costConfig.warehouseLocation,
+        // QA config
+        cutToleranceMm: qaConfig.cutToleranceMm !== ''
+          ? parseFloat(qaConfig.cutToleranceMm as any)
+          : undefined,
+        assemblyToleranceMm: qaConfig.assemblyToleranceMm !== ''
+          ? parseFloat(qaConfig.assemblyToleranceMm as any)
+          : undefined,
+        qaNotes: qaConfig.qaNotes,
       };
+
+      // Check if this is a static profile that needs to be inserted first
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id);
+
+      if (!isUUID) {
+        console.log('🔄 Profile has non-UUID ID, checking if it exists in database...');
+
+        // Check if profile already exists in database (by name and user_id)
+        const { data: existingProfile, error: checkError } = await db
+          .from('fabricator_profiles')
+          .select('id')
+          .eq('name', profile.name)
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (checkError) {
+          console.error('❌ Error checking existing profile:', checkError);
+          throw new Error(`Failed to check existing profile: ${checkError.message}`);
+        }
+
+        if (existingProfile) {
+          console.log('✅ Found existing profile in database, will update it');
+          // Update the profile ID to the database UUID
+          profile.id = existingProfile.id;
+        } else {
+          console.log('📝 Profile not in database, inserting first...');
+
+          // Insert the profile first to get a UUID
+          const { data: insertedProfile, error: insertError } = await db
+            .from('fabricator_profiles')
+            .insert({
+              user_id: userId,
+              name: profile.name,
+              material: profile.material,
+              width: profile.width,
+              height: profile.height || profile.width,
+              thickness: profile.thickness,
+              specifications: nextSpecs, // Include specs on insert
+            })
+            .select('id')
+            .single();
+
+          if (insertError) {
+            console.error('❌ Error inserting profile:', insertError);
+            throw new Error(`Failed to create profile: ${insertError.message}`);
+          }
+
+          console.log('✅ Profile inserted with ID:', insertedProfile.id);
+          // Update profile ID for future operations
+          profile.id = insertedProfile.id;
+          return true; // Successfully inserted, no need to update
+        }
+      }
+
+
+      console.log('📊 Updating profile:', { profileId: profile.id, isUUID: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id), userId, specsKeys: Object.keys(nextSpecs) });
+
       const { error } = await db
         .from('fabricator_profiles')
         .update({ specifications: nextSpecs })
         .eq('id', profile.id)
+        .eq('user_id', userId);
+
+      if (error) {
+        console.error('❌ Database error:', error);
+        throw error;
+      }
+
+      console.log('✅ Profile updated successfully');
+      toast.success('All changes saved');
+      onProfileUpdated?.();
+      setIsDirty(false);
+      return true;
+    } catch (err) {
+      console.error('💥 Error saving changes:', {
+        error: err,
+        profileId: profile.id,
+        userId,
+        errorMessage: err?.message,
+        errorDetails: err
+      });
+      toast.error(`Failed to save changes: ${err?.message || 'Unknown error'}`);
+      return false;
+    } finally {
+      setSavingStatus(false);
+    }
+  };
+
+  // SIMPLE: Back button with prestige confirmation for unsaved changes
+  const handleBackButton = () => {
+    if (isDirty && tuningStatus !== 'tuned') {
+      // Show prestigious confirmation dialog for untuned packs with changes
+      setShowUnsavedDialog(true);
+    } else {
+      // No changes or already tuned - just close the component
+      // The parent component will handle navigation back
+      onClose(false);
+    }
+  };
+
+  // Handle saving all changes and then closing
+  const handleSaveAndBack = async () => {
+    setShowUnsavedDialog(false);
+    console.log('🔄 Starting save process...', { userId, profileId: profile.id });
+    const saved = await saveAllChanges();
+    console.log('💾 Save result:', saved);
+    if (saved) {
+      onClose(false); // Let parent handle navigation
+    }
+  };
+
+  // Handle leaving without saving
+  const handleLeaveWithoutSaving = () => {
+    setShowUnsavedDialog(false);
+    onClose(false); // Let parent handle navigation
+  };
+
+
+  const markAsTuned = async () => {
+    try {
+      setSavingStatus(true);
+
+      // Debug: Check authentication and environment
+      console.log('🔍 Mark as Tuned Debug Info:');
+      console.log('  - Environment:', import.meta.env.DEV ? 'Development' : 'Production');
+      console.log('  - User ID:', userId);
+      console.log('  - Profile ID:', profile.id);
+      console.log('  - Is UUID:', /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id));
+      console.log('  - Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+      console.log('  - Supabase Key:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Present' : 'Missing');
+
+      const db = supabase as unknown as { from: (table: string) => any };
+
+      // Check authentication
+      if (!userId) {
+        throw new Error('User not authenticated. Please log in again.');
+      }
+
+      // Check if this is a static profile that needs to be inserted first
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id);
+
+      let profileIdToUse = profile.id;
+
+      if (!isUUID) {
+        console.log('🔄 Mark as tuned: Profile has non-UUID ID, checking if it exists in database...');
+
+        // Check if profile already exists in database (by name and user_id)
+        const { data: existingProfile, error: checkError } = await db
+          .from('fabricator_profiles')
+          .select('id')
+          .eq('name', profile.name)
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (checkError) {
+          console.error('❌ Error checking existing profile:', checkError);
+          throw new Error(`Failed to check existing profile: ${checkError.message}`);
+        }
+
+        if (existingProfile) {
+          console.log('✅ Found existing profile in database, will update it');
+          profileIdToUse = existingProfile.id;
+          // Update the profile ID for future operations
+          profile.id = existingProfile.id;
+        } else {
+          console.log('📝 Profile not in database, inserting first...');
+
+          // Insert the profile first to get a UUID
+          const { data: insertedProfile, error: insertError } = await db
+            .from('fabricator_profiles')
+            .insert({
+              user_id: userId,
+              name: profile.name,
+              material: profile.material,
+              width: profile.width,
+              height: profile.height || profile.width,
+              thickness: profile.thickness,
+              specifications: {
+                ...(profile.specifications || {}),
+                tuningStatus: 'tuned',
+              }, // Include tuning status immediately
+            })
+            .select('id')
+            .single();
+
+          if (insertError) {
+            console.error('❌ Error inserting profile:', insertError);
+            throw new Error(`Failed to create profile: ${insertError.message}`);
+          }
+
+          console.log('✅ Profile inserted with ID:', insertedProfile.id);
+          // Update profile ID for future operations
+          profile.id = insertedProfile.id;
+          profileIdToUse = insertedProfile.id;
+
+          toast.success(`Profile "${profile.name}" created and marked as tuned`);
+          onProfileUpdated?.();
+          setIsDirty(false);
+          return; // Successfully inserted, no need for separate update
+        }
+      }
+
+      // Update the profile with tuning status
+      const nextSpecs = {
+        ...(profile.specifications || {}),
+        tuningStatus: 'tuned',
+      };
+
+      console.log('💾 Marking profile as tuned:', { profileId: profileIdToUse, userId });
+
+      const { error } = await db
+        .from('fabricator_profiles')
+        .update({ specifications: nextSpecs })
+        .eq('id', profileIdToUse)
         .eq('user_id', userId);
 
       if (error) throw error;
@@ -346,8 +665,16 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
       onProfileUpdated?.();
       setIsDirty(false);
     } catch (err) {
-      console.error('Error marking profile as tuned:', err);
-      toast.error('Failed to mark profile as tuned');
+      console.error('❌ Error marking profile as tuned:', {
+        error: err,
+        message: err?.message,
+        profileId: profile.id,
+        userId,
+        environment: import.meta.env.DEV ? 'Development' : 'Production',
+        supabaseUrl: import.meta.env.VITE_SUPABASE_URL ? 'Set' : 'Not Set',
+        supabaseKey: import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Set' : 'Not Set'
+      });
+      toast.error(`Failed to mark profile as tuned: ${err?.message || 'Unknown error'}`);
     } finally {
       setSavingStatus(false);
     }
@@ -638,17 +965,48 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
   };
 
   return (
-    <div className="profile-tuning-studio fixed inset-0 z-[200] bg-black/70 backdrop-blur-xl flex items-start justify-center p-4 sm:p-6 overflow-y-auto">
-      <div className="w-full max-w-6xl max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)] overflow-y-auto rounded-2xl border border-orange-500/40 bg-gradient-to-br from-gray-950 via-gray-900 to-black shadow-[0_0_60px_rgba(248,113,113,0.35)]">
+    <div 
+      className="profile-tuning-studio fixed inset-0 z-[200] bg-black/70 backdrop-blur-xl flex items-start justify-center p-4 sm:p-6 overflow-y-auto"
+      onClick={(e) => {
+        // Close on backdrop click - only if no unsaved changes
+        if (e.target === e.currentTarget) {
+          if (isDirty && tuningStatus !== 'tuned') {
+            setShowUnsavedDialog(true);
+          } else {
+            onClose(false);
+          }
+        }
+      }}
+    >
+      <div 
+        className="w-full max-w-6xl max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)] overflow-y-auto rounded-2xl border border-orange-500/40 bg-gradient-to-br from-gray-950 via-gray-900 to-black shadow-[0_0_60px_rgba(248,113,113,0.35)] relative z-10"
+        onClick={(e) => e.stopPropagation()}
+      >
         <Card className="bg-transparent border-none h-full flex flex-col">
           <CardHeader className="border-b border-orange-500/30 pb-3">
             <div className="flex items-center justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="mt-1 flex h-9 w-9 items-center justify-center rounded-full bg-orange-500/20 border border-orange-400/60">
+              {/* Left side: Back button */}
+              <div className="flex items-center">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleBackButton}
+                  className="border-gray-600 text-gray-200 hover:bg-gray-800 relative z-10"
+                  data-testid="profile-tuning-back-button"
+                  type="button"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-1" />
+                  {t('profile_tuning_studio.actions.back', 'Back')}
+                </Button>
+              </div>
+
+              {/* Center: Title and description */}
+              <div className="flex items-start gap-3 flex-1 justify-center">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500/20 border border-orange-400/60">
                   <Sparkles className="h-5 w-5 text-orange-300" />
                 </div>
-                <div>
-                  <CardTitle className="text-lg md:text-xl flex items-center gap-2">
+                <div className="text-center">
+                  <CardTitle className="text-lg md:text-xl flex items-center gap-2 justify-center">
                     {t('profile_tuning_studio.title', 'Profile Tuning Studio')}
                     {statusBadge}
                   </CardTitle>
@@ -659,16 +1017,9 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                   </CardDescription>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleGuardedClose}
-                  className="border-gray-600 text-gray-200 hover:bg-gray-800"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-1" />
-                  {t('profile_tuning_studio.actions.back', 'Back')}
-                </Button>
+
+              {/* Right side: Mark as Tuned button */}
+              <div className="flex items-center">
                 <Button
                   size="sm"
                   onClick={markAsTuned}
@@ -676,7 +1027,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                   className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
                   <CheckCircle2 className="h-4 w-4 mr-1" />
-                  {tuningStatus === 'tuned' 
+                  {tuningStatus === 'tuned'
                     ? t('profile_tuning_studio.actions.already_tuned', 'Already Tuned')
                     : t('profile_tuning_studio.actions.mark_as_tuned', 'Mark as Tuned')}
                 </Button>
@@ -1752,21 +2103,78 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
+                            <div className="md:col-span-2">
+                              <h4 className="text-[11px] text-gray-300 mb-1">{t('profile_tuning_studio.geometry.thumbnail_preview', 'Thumbnail Preview & Editor')}</h4>
+                              <div className="border border-gray-700 rounded-lg p-3 bg-gray-950 relative overflow-hidden" style={{ minHeight: '300px' }}>
+                                {/* SVG Preview from DXF if available */}
+                                {importedProfileData?.svgPreview && (
+                                  <div 
+                                    className="absolute inset-0 flex items-center justify-center bg-white/5 p-4 cursor-move"
+                                    style={{ 
+                                      transform: `translate(${geometryConfig.thumbnailOffsetX || 0}px, ${geometryConfig.thumbnailOffsetY || 0}px)`,
+                                      transition: 'transform 0.1s ease-out'
+                                    }}
+                                    onMouseDown={(e) => {
+                                      const startX = e.clientX - (geometryConfig.thumbnailOffsetX || 0);
+                                      const startY = e.clientY - (geometryConfig.thumbnailOffsetY || 0);
+                                      const handleMove = (moveEvent: MouseEvent) => {
+                                        setGeometryConfig(prev => ({
+                                          ...prev,
+                                          thumbnailOffsetX: moveEvent.clientX - startX,
+                                          thumbnailOffsetY: moveEvent.clientY - startY,
+                                        }));
+                                      };
+                                      const handleUp = () => {
+                                        document.removeEventListener('mousemove', handleMove);
+                                        document.removeEventListener('mouseup', handleUp);
+                                      };
+                                      document.addEventListener('mousemove', handleMove);
+                                      document.addEventListener('mouseup', handleUp);
+                                    }}
+                                  >
+                                    <div 
+                                      className="max-w-full max-h-full"
+                                      dangerouslySetInnerHTML={{ __html: importedProfileData.svgPreview }}
+                                    />
+                                  </div>
+                                )}
+                                
+                                {/* Fallback to ProfileIconGenerator if no SVG */}
+                                {!importedProfileData?.svgPreview && (
+                                  <div className="flex flex-col items-center justify-center h-full">
+                                    <ProfileIconGenerator
+                                      ref={profileIconRef}
+                                      widthMm={profile.width}
+                                      heightMm={profile.height || profile.width}
+                                      wallThicknessMm={geometryConfig.wallThicknessMm}
+                                      glazingPocketDepthMm={geometryConfig.glazingPocketDepthMm}
+                                      glazingPocketWidthMm={geometryConfig.glazingPocketWidthMm}
+                                      flangeWidthMm={geometryConfig.flangeWidthMm}
+                                      className="w-48 h-48"
+                                    />
+                                  </div>
+                                )}
+                                
+                                <p className="text-[10px] text-gray-500 mt-2 text-center absolute bottom-2 left-0 right-0">
+                                  {importedProfileData?.svgPreview 
+                                    ? 'Drag to position thumbnail. Click "Save Geometry" to capture.'
+                                    : t('profile_tuning_studio.geometry.preview_updates', 'Preview updates with geometry settings.')}
+                                </p>
+                              </div>
+                            </div>
                             <div className="md:col-span-1">
-                              <h4 className="text-[11px] text-gray-300 mb-1">{t('profile_tuning_studio.geometry.thumbnail_preview', 'Thumbnail Preview')}</h4>
-                              <div className="border border-gray-700 rounded-lg p-3 bg-gray-950 flex flex-col items-center">
-                                <ProfileIconGenerator
-                                  ref={profileIconRef}
-                                  widthMm={profile.width}
-                                  heightMm={profile.height || profile.width}
-                                  wallThicknessMm={geometryConfig.wallThicknessMm}
-                                  glazingPocketDepthMm={geometryConfig.glazingPocketDepthMm}
-                                  glazingPocketWidthMm={geometryConfig.glazingPocketWidthMm}
-                                  flangeWidthMm={geometryConfig.flangeWidthMm}
-                                  className="w-24 h-24"
-                                />
-                                <p className="text-[10px] text-gray-500 mt-2 text-center">
-                                  {t('profile_tuning_studio.geometry.preview_updates', 'Preview updates with geometry settings.')}
+                              <h4 className="text-[11px] text-gray-300 mb-1">Thumbnail Controls</h4>
+                              <div className="space-y-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setGeometryConfig(prev => ({ ...prev, thumbnailOffsetX: 0, thumbnailOffsetY: 0 }))}
+                                  className="w-full text-xs"
+                                >
+                                  Reset Position
+                                </Button>
+                                <p className="text-[10px] text-gray-500">
+                                  Position: X: {geometryConfig.thumbnailOffsetX || 0}, Y: {geometryConfig.thumbnailOffsetY || 0}
                                 </p>
                               </div>
                             </div>
@@ -1778,12 +2186,56 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               onClick={async () => {
                                 try {
                                   setSavingStatus(true);
+                                  
+                                  // Capture thumbnail from SVG preview if available, otherwise from ProfileIconGenerator
+                                  let thumbnailUrl: string | null = null;
+                                  if (importedProfileData?.svgPreview) {
+                                    // Capture from SVG preview with current position
+                                    const svgElement = document.querySelector('.border-gray-700 svg') as SVGElement;
+                                    if (svgElement) {
+                                      const svgData = new XMLSerializer().serializeToString(svgElement);
+                                      const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
+                                      const canvas = document.createElement('canvas');
+                                      const ctx = canvas.getContext('2d');
+                                      const img = new Image();
+                                      const url = URL.createObjectURL(svgBlob);
+                                      
+                                      await new Promise((resolve, reject) => {
+                                        img.onload = () => {
+                                          canvas.width = 200;
+                                          canvas.height = 200;
+                                          ctx?.drawImage(img, 0, 0, 200, 200);
+                                          canvas.toBlob((blob) => {
+                                            if (blob) {
+                                              const fileName = `${userId}/${profile.id}-${Date.now()}.png`;
+                                              (supabase as any).storage
+                                                .from('profile-thumbnails')
+                                                .upload(fileName, blob, { cacheControl: '3600', upsert: true })
+                                                .then(({ data: urlData }: any) => {
+                                                  const { data } = (supabase as any).storage.from('profile-thumbnails').getPublicUrl(fileName);
+                                                  thumbnailUrl = data.publicUrl;
+                                                  resolve(null);
+                                                })
+                                                .catch(reject);
+                                            } else {
+                                              resolve(null);
+                                            }
+                                          }, 'image/png');
+                                          URL.revokeObjectURL(url);
+                                        };
+                                        img.onerror = reject;
+                                        img.src = url;
+                                      });
+                                    }
+                                  } else {
+                                    // Fallback to ProfileIconGenerator capture
+                                    thumbnailUrl = await uploadThumbnailFromCapture();
+                                  }
+                                  
                                   const nextSpecs = {
                                     ...(profile.specifications || {}),
                                     geometryConfig,
                                   };
-
-                                  const thumbnailUrl = await uploadThumbnailFromCapture();
 
                                   const { error } = await (supabase as any)
                                     .from('fabricator_profiles')
@@ -1801,6 +2253,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                   }
 
                                   toast.success('Geometry saved and thumbnail updated');
+                                  setIsDirty(false);
                                   onProfileUpdated?.();
                                 } catch (err) {
                                   console.error('Error saving geometry config:', err);
@@ -1841,6 +2294,8 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               if (profiles.length > 0) {
                                 const firstProfile = profiles[0];
                                 setSelectedProfileId(firstProfile.id);
+                                setImportedProfileData(firstProfile);
+                                
                                 const dimsText = firstProfile.widthMm && firstProfile.heightMm
                                   ? `${firstProfile.widthMm} × ${firstProfile.heightMm} mm`
                                   : 'dimensions pending';
@@ -1850,10 +2305,11 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                     { count: profiles.length, width: firstProfile.widthMm, height: firstProfile.heightMm }
                                   )
                                 );
-                                // Auto-apply configuration if dimensions are available
+                                
+                                // Auto-apply configuration to ALL tabs immediately
                                 if (firstProfile.widthMm && firstProfile.heightMm && enableAutoConfig) {
-                                  // Auto-config will be applied when profile is saved
-                                  toast.info(t('profile_tuning_studio.dxf_import.auto_config', 'Auto-configuration will be applied on save'));
+                                  applyAutoConfigToAllTabs(firstProfile);
+                                  toast.success('All tabs auto-filled with extracted data');
                                 }
                               }
                             }}
@@ -1972,10 +2428,24 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
           </CardContent>
         </Card>
       </div>
+
+      {/* Prestige Unsaved Changes Dialog - Only for untuned packs */}
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onOpenChange={setShowUnsavedDialog}
+        onConfirm={handleLeaveWithoutSaving}
+        onSave={handleSaveAndBack}
+        showSaveOption={true}
+        isSaving={savingStatus}
+        context={`Profile Tuning Studio - ${profile.name}`}
+        title="⚡ Save Your Tuning Progress"
+        description="You've made important tuning adjustments to this profile. Would you like to save your work before returning to the system pack?"
+      />
     </div>
   );
 };
 
 export default ProfileTuningStudio;
+
 
 

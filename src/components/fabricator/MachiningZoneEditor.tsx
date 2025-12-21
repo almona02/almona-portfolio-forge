@@ -1,6 +1,7 @@
 /**
  * Machining Zone Editor
  * Visual editor for defining machining zones (hinge slots, lock pockets, etc.)
+ * Now with interactive joystick-style calibration
  */
 
 import React, { useState } from 'react';
@@ -10,8 +11,10 @@ import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Plus, Trash2, Settings, Info } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { Plus, Trash2, Settings, Info, Target, List } from 'lucide-react';
 import type { Profile } from '@/types/fabricator';
+import { MachiningZoneJoystick } from './MachiningZoneJoystick';
 
 export interface MachiningZone {
   id: string;
@@ -32,6 +35,7 @@ interface MachiningZoneEditorProps {
   zones?: MachiningZone[];
   onZonesChange?: (zones: MachiningZone[]) => void;
   onSave?: (zones: MachiningZone[]) => Promise<void>;
+  useJoystickMode?: boolean; // Enable joystick-style calibration
 }
 
 export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
@@ -40,9 +44,11 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
   zones = [],
   onZonesChange,
   onSave,
+  useJoystickMode = true, // Default to joystick mode
 }) => {
   const [editingZone, setEditingZone] = useState<MachiningZone | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [viewMode, setViewMode] = useState<'joystick' | 'form'>('joystick');
 
   const handleAddZone = () => {
     const newZone: MachiningZone = {
@@ -105,17 +111,50 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
     }
   };
 
+  // Get profile dimensions for visual scaling
+  const profileWidth = profile.width || 100;
+  const profileHeight = profile.height || 100;
+
   return (
     <Card className="bg-gray-800/50 border-gray-700">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Settings className="h-5 w-5 text-purple-400" /> Machining Zone Editor
-        </CardTitle>
-        <CardDescription className="text-gray-400">
-          Define machining operations (hinge slots, lock pockets, etc.) for {profile.name}
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Settings className="h-5 w-5 text-purple-400" /> Machining Zone Editor
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Define machining operations (hinge slots, lock pockets, etc.) for {profile.name}
+            </CardDescription>
+          </div>
+          {useJoystickMode && (
+            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="w-auto">
+              <TabsList className="bg-gray-900 border-gray-700">
+                <TabsTrigger value="joystick" className="text-xs">
+                  <Target className="h-3 w-3 mr-1" />
+                  Interactive
+                </TabsTrigger>
+                <TabsTrigger value="form" className="text-xs">
+                  <List className="h-3 w-3 mr-1" />
+                  Form
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        {useJoystickMode && viewMode === 'joystick' ? (
+          <MachiningZoneJoystick
+            zones={zones}
+            onZonesChange={(updated) => {
+              onZonesChange?.(updated);
+            }}
+            profileWidth={profileWidth}
+            profileHeight={profileHeight}
+          />
+        ) : (
+          <>
         {/* Info Alert */}
         <Alert>
           <Info className="h-4 w-4" />
@@ -376,6 +415,8 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
               </>
             )}
           </Button>
+        )}
+          </>
         )}
       </CardContent>
     </Card>

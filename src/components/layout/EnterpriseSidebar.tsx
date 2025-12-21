@@ -71,12 +71,22 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showHomeConfirm, setShowHomeConfirm] = useState(false);
   const sidebarRef = useRef<HTMLElement>(null);
+  const logoClickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { branding } = useCompanyBranding();
 
   // Collapse all menus on route change to reduce noise
   useEffect(() => {
     setActiveMenu(null);
   }, [location.pathname]);
+
+  // Cleanup logo click timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (logoClickTimeoutRef.current) {
+        clearTimeout(logoClickTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Responsive sidebar sizing
   const sidebarConfig = useMemo(() => {
@@ -422,13 +432,25 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           transition={{ duration: 0.2 }}
           className="flex items-center gap-3 overflow-hidden flex-1"
         >
-          <Link
-            to="/"
+          <div
             onClick={(e) => {
               e.preventDefault();
+              // Clear any pending single click
+              if (logoClickTimeoutRef.current) {
+                clearTimeout(logoClickTimeoutRef.current);
+                logoClickTimeoutRef.current = null;
+                // This is a double click - show exit confirmation
               setShowHomeConfirm(true);
+              } else {
+                // Set timeout for single click detection
+                logoClickTimeoutRef.current = setTimeout(() => {
+                  // Single click - navigate to projects
+                  navigate('/fabricator/projects');
+                  logoClickTimeoutRef.current = null;
+                }, 300); // 300ms delay to detect double click
+              }
             }}
-            className="flex items-center gap-3 group relative"
+            className="flex items-center gap-3 group relative cursor-pointer"
           >
             
             <motion.div
@@ -457,7 +479,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 </span>
               </motion.div>
             )}
-          </Link>
+          </div>
         </motion.div>
         
         {/* Compact Animated Toggle Button - Right Side */}
