@@ -258,7 +258,7 @@ export const SystemPackTuningStudio: React.FC = () => {
     if (hasChanges) {
       setHasUnsavedChanges(true);
     }
-
+    
     // If profile was updated, refresh the system pack data
     if (tuningProfile && userId) {
       try {
@@ -294,14 +294,14 @@ export const SystemPackTuningStudio: React.FC = () => {
           localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
           setSystemPack(updatedPack);
 
-          const tuned = new Set<string>();
+        const tuned = new Set<string>();
           updatedPack.profiles?.forEach((p: SystemPackProfile) => {
-            if (p.tuningStatus === 'tuned') {
-              tuned.add(p.id);
-            }
-          });
-          setTunedProfiles(tuned);
-        }
+          if (p.tuningStatus === 'tuned') {
+            tuned.add(p.id);
+          }
+        });
+        setTunedProfiles(tuned);
+      }
       } catch (err) {
         console.error('Error refreshing system pack after tuning close:', err);
       }
@@ -755,14 +755,14 @@ export const SystemPackTuningStudio: React.FC = () => {
                           </div>
                           
                           <div className="flex gap-2">
-                            <Button
-                              onClick={() => handleOpenTuning(profile)}
+                          <Button
+                            onClick={() => handleOpenTuning(profile)}
                               className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                              size="sm"
-                            >
-                              <Wrench className="h-4 w-4 mr-2" />
+                            size="sm"
+                          >
+                            <Wrench className="h-4 w-4 mr-2" />
                               Tune
-                            </Button>
+                          </Button>
                             <Button
                               onClick={() => {
                                 setEditingProfile(profile);
@@ -995,12 +995,15 @@ export const SystemPackTuningStudio: React.FC = () => {
                 console.log('🔄 Fetching updated profile data for ID:', profileIdToFetch);
 
                 // Fetch the updated profile from database
-                let { data: updatedProfileData, error } = await supabase
+                let updatedProfileData;
+                const { data, error } = await supabase
                   .from('fabricator_profiles')
                   .select('*')
                   .eq('id', profileIdToFetch)
                   .eq('user_id', userId)
                   .single();
+
+                updatedProfileData = data;
 
                 if (error) {
                   console.error('❌ Error fetching updated profile:', error, { profileId: profileIdToFetch, tuningProfileId: tuningProfile.id });
@@ -1034,12 +1037,12 @@ export const SystemPackTuningStudio: React.FC = () => {
 
                 // Update the system pack with the fresh database data
                 // Note: The profile ID may have changed from a static ID (like "KATRA-S120-FRAME") to a UUID
-                const updatedProfiles = systemPack.profiles.map(p => {
+              const updatedProfiles = systemPack.profiles.map(p => {
                   // Match by the original tuningProfile ID or by name if ID changed
                   if (p.id === tuningProfile.id || (p.name === tuningProfile.name && p.id !== updatedProfileData.id)) {
                     console.log('🔄 Updating system pack profile:', { oldId: p.id, newId: updatedProfileData.id, name: p.name });
-                    return {
-                      ...p,
+                  return {
+                    ...p,
                       // Update the ID to the database UUID
                       id: updatedProfileData.id,
                       // Update basic properties
@@ -1050,19 +1053,19 @@ export const SystemPackTuningStudio: React.FC = () => {
                       specifications: updatedProfileData.specifications,
                       // Update tuning status from specs
                       tuningStatus: (updatedProfileData.specifications as any)?.tuningStatus || p.tuningStatus,
-                    };
-                  }
-                  return p;
-                });
+                  };
+                }
+                return p;
+              });
 
-                const updatedPack = {
-                  ...systemPack,
-                  profiles: updatedProfiles,
-                };
+              const updatedPack = {
+                ...systemPack,
+                profiles: updatedProfiles,
+              };
 
                 // Save to localStorage and update state
-                localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
-                setSystemPack(updatedPack);
+              localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
+              setSystemPack(updatedPack);
 
                 // Update tuned profiles set
                 const tuned = new Set<string>();

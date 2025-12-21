@@ -42,7 +42,6 @@ import {
   Sparkles,
   Shield,
   AlertTriangle,
-  X,
   Ruler,
 } from 'lucide-react';
 import {

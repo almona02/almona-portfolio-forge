@@ -9,7 +9,6 @@ export type {
 } from '../types';
 
 // Import the Profile type directly for use in the arrays
-import type { Profile } from '../types';
 
 // Import the new typed machines
 export { yilmazMachines } from './yilmazMachines';

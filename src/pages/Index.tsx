@@ -1,5 +1,4 @@
 import { lazy, Suspense, memo } from 'react';
-import { Helmet } from 'react-helmet-async';
 import Hero from "@/components/home/Hero";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 

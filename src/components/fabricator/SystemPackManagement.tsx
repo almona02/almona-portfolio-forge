@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
-import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
 import { loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 import { getSystemPackTuningStatus, saveReturnUrl } from '@/lib/fabricator/systemTuningUtils';
 import { Input } from '@/shared/ui/ui/input';

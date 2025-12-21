@@ -9,13 +9,18 @@ function sendToAnalytics(metric: any) {
   console.log('Performance Metric:', metric);
 
   // Example: Send to Google Analytics
-  if (typeof (window as any).gtag !== 'undefined') {
-    (window as any).gtag('event', metric.name, {
-      event_category: 'Web Vitals',
-      event_label: metric.id,
-      value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
-      non_interaction: true,
-    });
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    try {
+      (window as any).gtag('event', metric.name, {
+        event_category: 'Web Vitals',
+        event_label: metric.id,
+        value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+        non_interaction: true,
+      });
+    } catch (error) {
+      // Silently fail - analytics might be blocked by privacy extensions
+      console.debug('Analytics blocked or unavailable:', error.message);
+    }
   }
 }
 
@@ -373,13 +378,18 @@ class PerformanceMonitor {
   private sendToAnalytics(metric: PerformanceMetric) {
     // Google Analytics
     if (typeof window !== 'undefined' && (window as any).gtag) {
-      (window as any).gtag('event', 'performance_metric', {
-        metric_name: metric.name,
-        metric_value: metric.value,
-        component: metric.component || 'unknown',
-        app_version: this.APP_VERSION,
-        timestamp: metric.timestamp,
-      });
+      try {
+        (window as any).gtag('event', 'performance_metric', {
+          metric_name: metric.name,
+          metric_value: metric.value,
+          component: metric.component || 'unknown',
+          app_version: this.APP_VERSION,
+          timestamp: metric.timestamp,
+        });
+      } catch (error) {
+        // Silently fail - analytics might be blocked by privacy extensions
+        console.debug('Analytics blocked or unavailable:', error.message);
+      }
     }
 
     // Custom analytics endpoint (if configured)
@@ -470,6 +480,55 @@ class PerformanceMonitor {
 
 // Singleton instance
 export const performanceMonitor = new PerformanceMonitor();
+
+// Analytics utility functions for graceful error handling
+export const analyticsUtils = {
+  /**
+   * Check if analytics is enabled
+   */
+  isEnabled(): boolean {
+    if (typeof window === 'undefined') return false;
+    return !(
+      localStorage.getItem('disable-analytics') === 'true' ||
+      navigator.doNotTrack === '1' ||
+      window.location.hostname === 'localhost'
+    );
+  },
+
+  /**
+   * Enable analytics
+   */
+  enable(): void {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('disable-analytics');
+      console.log('Analytics enabled');
+    }
+  },
+
+  /**
+   * Disable analytics
+   */
+  disable(): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('disable-analytics', 'true');
+      console.log('Analytics disabled');
+    }
+  },
+
+  /**
+   * Safe gtag wrapper that won't throw if analytics is blocked
+   */
+  gtag(...args: any[]): void {
+    if (typeof window !== 'undefined' && (window as any).gtag && this.isEnabled()) {
+      try {
+        (window as any).gtag(...args);
+      } catch (error) {
+        // Silently fail - analytics might be blocked
+        console.debug('Analytics blocked or unavailable');
+      }
+    }
+  }
+};
 
 // Auto-track Web Vitals on load
 if (typeof window !== 'undefined') {

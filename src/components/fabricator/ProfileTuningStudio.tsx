@@ -42,7 +42,6 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { autoConfigureFromDXF, type DXFImportData, type AutoConfigOptions } from '@/lib/fabricator/autoConfigFromDXF';
 import { CalibrationWizard } from './CalibrationWizard';
 import { MachiningZoneEditor, type MachiningZone } from './MachiningZoneEditor';
 import './ProfileTuningStudio.css';
@@ -85,7 +84,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
 }) => {
   const { t } = useTranslation('fabricator');
   const location = useLocation();
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   // Enable auto-configuration by default for DXF imports
   const enableAutoConfig = true;
   const [importedProfileData, setImportedProfileData] = useState<ImportedProfile | null>(null);
@@ -2211,7 +2210,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                               (supabase as any).storage
                                                 .from('profile-thumbnails')
                                                 .upload(fileName, blob, { cacheControl: '3600', upsert: true })
-                                                .then(({ data: urlData }: any) => {
+                                                .then(({ data: _urlData }: any) => {
                                                   const { data } = (supabase as any).storage.from('profile-thumbnails').getPublicUrl(fileName);
                                                   thumbnailUrl = data.publicUrl;
                                                   resolve(null);

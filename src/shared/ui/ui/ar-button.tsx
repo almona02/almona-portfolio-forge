@@ -7,7 +7,7 @@ interface ArButtonProps {
   onClick?: () => void;
 }
 
-export const ArButton = ({ productId, onClick }: ArButtonProps) => {
+export const ArButton = ({ productId: _productId, onClick }: ArButtonProps) => {
   const [isArSupported, setIsArSupported] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 

@@ -33,13 +33,13 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
 }) => {
   const { t } = useTranslation();
   const { regionState } = useRegionDetection();
-  const utils = useRegionUtils();
-  
+  const _utils = useRegionUtils();
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [userInfo, setUserInfo] = useState({
+  const [_userInfo, _setUserInfo] = useState({
     name: '',
     email: '',
     phone: ''

@@ -3,19 +3,8 @@ import { Input } from '@/shared/ui/ui/input';
 import { Button } from '@/shared/ui/ui/button';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/shared/ui/ui/alert-dialog';
-import { FileText, UploadCloud, Save, AlertTriangle } from 'lucide-react';
+import { FileText, UploadCloud } from 'lucide-react';
 import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
-import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { autoConfigureFromDXF, mergeAutoConfigIntoProfile, type DXFImportData, type AutoConfigOptions } from '@/lib/fabricator/autoConfigFromDXF';
 import { extractMultipleProfilesFromDXF } from '@/lib/fabricator/multiProfileDXFExtractor';
@@ -200,8 +189,6 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
   const [profiles, setProfiles] = useState<ImportedProfile[]>([]);
   const [isParsing, setIsParsing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
-  const [profileToSave, setProfileToSave] = useState<ImportedProfile | null>(null);
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -318,7 +305,7 @@ export const DXFProfileImporter: React.FC<DXFProfileImporterProps> = ({
     setShowSaveConfirm(true);
   };
 
-  const handleSaveProfile = async (profile: ImportedProfile, preserveExisting: boolean = false) => {
+  const _handleSaveProfile = async (profile: ImportedProfile, _preserveExisting: boolean = false) => {
     if (!userId) {
       setError('User ID required to save profile');
       return;

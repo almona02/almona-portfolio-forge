@@ -1,12 +1,10 @@
-import { 
-  Machine, 
-  PowerSpecification, 
-  Certification, 
-  SafetyStandard
+import {
+  Machine,
+  PowerSpecification
 } from '../types';
 
 // Helper function to parse dimensions
-const parseDimensions = (dimensionStr: string) => {
+const _parseDimensions = (dimensionStr: string) => {
   const parts = dimensionStr.split(' × ');
   return {
     length: parts[0] as `${number}mm`,
@@ -16,7 +14,7 @@ const parseDimensions = (dimensionStr: string) => {
 };
 
 // Helper function to create power specification
-const createPowerSpec = (powerStr: string): PowerSpecification => {
+const _createPowerSpec = (powerStr: string): PowerSpecification => {
   const powerMatch = powerStr.match(/([\d.]+)\s*kW/);
   const power = powerMatch ? `${powerMatch[1]} kW` as const : '0 kW' as const;
   

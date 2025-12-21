@@ -451,15 +451,16 @@ class PerformanceMonitoringService {
   private async sendToAnalytics(metric: PerformanceMetric) {
     try {
       // Send to your analytics service (Google Analytics, Mixpanel, etc.)
-      if (window.gtag) {
-        window.gtag('event', 'performance_metric', {
+      if (typeof window !== 'undefined' && (window as any).gtag) {
+        (window as any).gtag('event', 'performance_metric', {
           custom_parameter: metric.name,
           value: metric.value,
           custom_parameter_2: metric.unit
         });
       }
     } catch (error) {
-      console.warn('Failed to send analytics:', error);
+      // Silently fail - analytics might be blocked by privacy extensions
+      console.debug('Analytics blocked or unavailable:', error.message);
     }
   }
 

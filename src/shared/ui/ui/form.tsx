@@ -7,7 +7,6 @@ import {
   FieldPath,
   FieldValues,
   FormProvider,
-  useFormContext,
 } from "react-hook-form"
 
 import { cn } from "@/lib/utils"
@@ -15,13 +14,6 @@ import { Label } from "@/shared/ui/ui/label"
 import { FormFieldContext, FormItemContext, useFormField } from "./formContext";
 
 const Form = FormProvider
-
-type FormFieldContextValue<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> = {
-  name: TName
-}
 
 const FormItem = React.forwardRef<
   HTMLDivElement,

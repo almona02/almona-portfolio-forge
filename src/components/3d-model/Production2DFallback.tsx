@@ -35,7 +35,7 @@ export function Production2DFallback({
   errorAr,
   locale = 'en',
 }: Production2DFallbackProps) {
-  const { t, i18n } = useTranslation();
+  const { t: _t, i18n } = useTranslation();
   const currentLocale = locale || (i18n.language.startsWith('ar') ? 'ar' : 'en');
 
   const width = windowUnit?.overallWidth || 1000;
