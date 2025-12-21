@@ -7,7 +7,6 @@
  * - Generation of mullion components compatible with WindowUnit export
  */
 
-import { SYSTEM_PACKS } from '@/data/systemPacks';
 import {
   deriveSystemConstraintsFromProfiles,
   validateProjectWithConstraints,

@@ -200,7 +200,6 @@
     "@gltf-transform/cli": "^3.10.0",
     "@gltf-transform/extensions": "^3.10.0",
     "@gltf-transform/functions": "^3.10.0",
-    "@lhci/cli": "^0.15.1",
     "@storybook/addon-a11y": "^9.0.16",
     "@storybook/addon-docs": "^9.0.16",
     "@storybook/addon-onboarding": "^9.0.16",

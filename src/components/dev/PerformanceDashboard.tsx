@@ -43,7 +43,7 @@ export const PerformanceDashboard: React.FC = () => {
       });
       fcpObserver.observe({ type: 'paint', buffered: true });
       observers.push(fcpObserver);
-    } catch (e) {
+    } catch {
       console.warn('FCP observer not supported');
     }
 
@@ -58,7 +58,7 @@ export const PerformanceDashboard: React.FC = () => {
       });
       lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
       observers.push(lcpObserver);
-    } catch (e) {
+    } catch {
       console.warn('LCP observer not supported');
     }
 
@@ -75,7 +75,7 @@ export const PerformanceDashboard: React.FC = () => {
       });
       clsObserver.observe({ type: 'layout-shift', buffered: true });
       observers.push(clsObserver);
-    } catch (e) {
+    } catch {
       console.warn('CLS observer not supported');
     }
 
@@ -94,12 +94,12 @@ export const PerformanceDashboard: React.FC = () => {
       try {
         tbtObserver.observe({ type: 'longtask', buffered: true });
         observers.push(tbtObserver);
-      } catch (e) {
+      } catch {
         // Fallback for older browsers
         (tbtObserver as any).observe({ entryTypes: ['longtask'] });
         observers.push(tbtObserver);
       }
-    } catch (e) {
+    } catch {
       console.warn('TBT observer not supported');
     }
 

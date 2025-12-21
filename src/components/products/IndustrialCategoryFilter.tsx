@@ -10,10 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui/ui/select';
-import { 
+import {
   getCategoriesByMaterial,
-  findIndustrialCategoryById,
-  industrialMachineMapping
+  findIndustrialCategoryById
 } from '@/constants/industrialCategoryHierarchy';
 
 interface IndustrialCategoryFilterProps {

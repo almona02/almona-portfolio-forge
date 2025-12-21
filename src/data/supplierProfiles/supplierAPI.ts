@@ -4,7 +4,7 @@
  */
 
 import { Profile } from '@/types/fabricator';
-import { SupplierProfile, getSupplierById } from './profileDatabase';
+import { getSupplierById } from './profileDatabase';
 
 export interface SupplierInventory {
   profileId: string;
@@ -138,7 +138,6 @@ export class SupplierAPI {
         throw new Error(`Profile ${profileId} not found`);
       }
       
-      const quantity = quantities[index] || 1;
       const basePrice = profile.costPerMeter;
       
       // Calculate quantity discounts

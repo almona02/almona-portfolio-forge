@@ -13,7 +13,7 @@
 import type { Cut, OptimizationResult } from '@/types/fabricator';
 import { getWorkflowProfiler, startTiming, endTiming } from '@/lib/performance/WorkflowProfiler';
 import { getBaselineTracker } from '@/lib/performance/BaselineTracker';
-import { getAccuracyTracker, trackAccuracyCheckpoint } from '@/lib/fabricator/AccuracyTracker';
+import { trackAccuracyCheckpoint } from '@/lib/fabricator/AccuracyTracker';
 
 export interface ProductionOptimizationOptions {
   strategy?: 'fast' | 'balanced' | 'optimal';
@@ -71,7 +71,7 @@ export class ProductionOptimizer {
       onProgress,
     } = options;
 
-    const profiler = getWorkflowProfiler();
+    const _profiler = getWorkflowProfiler();
     startTiming('optimization', 'Cutting Optimization');
 
     const progress: OptimizationProgress[] = [];
@@ -214,7 +214,7 @@ export class ProductionOptimizer {
   private fastHeuristicOptimization(
     cuts: Cut[],
     stockLength: number,
-    deterministic: boolean
+    _deterministic: boolean
   ): OptimizationResult {
     // Sort cuts by length (descending) for best-fit
     const sortedCuts = [...cuts].sort((a, b) => {
@@ -409,7 +409,7 @@ export class ProductionOptimizer {
     progress: OptimizationProgress[],
     onProgress: ((progress: OptimizationProgress) => void) | undefined,
     update: OptimizationProgress,
-    language: 'en' | 'ar'
+    _language: 'en' | 'ar'
   ): void {
     progress.push(update);
     if (onProgress) {

@@ -290,7 +290,7 @@ function WindowPartAnnotation({
   position: [number, number, number];
   language: string;
 }) {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const utils = useRegionUtils();
 
   const getLocalizedName = () => {

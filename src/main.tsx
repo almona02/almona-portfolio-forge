@@ -525,11 +525,11 @@ window.addEventListener('load', () => {
     
     try {
       lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
-    } catch (e) {
+    } catch (_e) {
       // Fallback if buffered option not supported
       try {
         (lcpObserver as any).observe({ entryTypes: ['largest-contentful-paint'] });
-      } catch (e2) {
+      } catch (_e2) {
         console.warn('[LCP Fix] PerformanceObserver not supported');
       }
     }

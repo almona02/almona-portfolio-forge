@@ -11,7 +11,7 @@ import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Plus, Trash2, Settings, Info, Target, List } from 'lucide-react';
 import type { Profile } from '@/types/fabricator';
 import { MachiningZoneJoystick } from './MachiningZoneJoystick';
