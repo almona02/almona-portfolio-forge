@@ -421,7 +421,12 @@ class PerformanceMonitor {
         const lastEntry = entries[entries.length - 1] as any;
         this.track('lcp', lastEntry.renderTime || lastEntry.loadTime);
       });
-      observer.observe({ entryTypes: ['largest-contentful-paint'] });
+      try {
+        observer.observe({ type: 'largest-contentful-paint', buffered: true });
+      } catch (e) {
+        // Fallback for browsers that don't support new format
+        observer.observe({ entryTypes: ['largest-contentful-paint'] });
+      }
     } catch (e) {
       // LCP not supported
     }
@@ -437,7 +442,12 @@ class PerformanceMonitor {
         }
         this.track('cls', clsValue);
       });
-      observer.observe({ entryTypes: ['layout-shift'] });
+      try {
+        observer.observe({ type: 'layout-shift', buffered: true });
+      } catch (e) {
+        // Fallback for browsers that don't support new format
+        observer.observe({ entryTypes: ['layout-shift'] });
+      }
     } catch (e) {
       // CLS not supported
     }

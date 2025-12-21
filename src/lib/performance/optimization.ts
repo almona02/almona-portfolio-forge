@@ -203,7 +203,12 @@ class PerformanceOptimizer {
             this.updateCoreWebVital('fcp', fcpEntry.startTime);
           }
         });
-        fcpObserver.observe({ entryTypes: ['paint'] });
+        try {
+          fcpObserver.observe({ type: 'paint', buffered: true });
+        } catch (e) {
+          // Fallback for browsers that don't support new format
+          fcpObserver.observe({ entryTypes: ['paint'] });
+        }
         this.observers.push(fcpObserver);
       } catch (error) {
         console.warn('FCP observer not supported:', error);
@@ -218,7 +223,7 @@ class PerformanceOptimizer {
             this.updateCoreWebVital('lcp', lastEntry.startTime);
           }
         });
-        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+        lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
         this.observers.push(lcpObserver);
       } catch (error) {
         console.warn('LCP observer not supported:', error);
@@ -235,7 +240,7 @@ class PerformanceOptimizer {
             }
           });
         });
-        fidObserver.observe({ entryTypes: ['first-input'] });
+        fidObserver.observe({ type: 'first-input', buffered: true });
         this.observers.push(fidObserver);
       } catch (error) {
         console.warn('FID observer not supported:', error);
@@ -253,7 +258,7 @@ class PerformanceOptimizer {
           });
           this.updateCoreWebVital('cls', clsValue);
         });
-        clsObserver.observe({ entryTypes: ['layout-shift'] });
+        clsObserver.observe({ type: 'layout-shift', buffered: true });
         this.observers.push(clsObserver);
       } catch (error) {
         console.warn('CLS observer not supported:', error);
@@ -270,7 +275,12 @@ class PerformanceOptimizer {
             this.analyzeResource(entry as PerformanceResourceTiming);
           });
         });
-        resourceObserver.observe({ entryTypes: ['resource'] });
+        try {
+          resourceObserver.observe({ type: 'resource', buffered: true });
+        } catch (e) {
+          // Fallback for browsers that don't support new format
+          resourceObserver.observe({ entryTypes: ['resource'] });
+        }
         this.observers.push(resourceObserver);
       } catch (error) {
         console.warn('Resource observer not supported:', error);
@@ -289,7 +299,12 @@ class PerformanceOptimizer {
             this.updateCoreWebVital('tti', navEntry.domContentLoadedEventEnd - navEntry.navigationStart);
           });
         });
-        navObserver.observe({ entryTypes: ['navigation'] });
+        try {
+          navObserver.observe({ type: 'navigation', buffered: true });
+        } catch (e) {
+          // Fallback for browsers that don't support new format
+          navObserver.observe({ entryTypes: ['navigation'] });
+        }
         this.observers.push(navObserver);
       } catch (error) {
         console.warn('Navigation observer not supported:', error);
@@ -307,7 +322,12 @@ class PerformanceOptimizer {
             // Report to analytics or alert system
           });
         });
-        longTaskObserver.observe({ entryTypes: ['longtask'] });
+        try {
+          longTaskObserver.observe({ type: 'longtask', buffered: true });
+        } catch (e) {
+          // Fallback for browsers that don't support new format
+          longTaskObserver.observe({ entryTypes: ['longtask'] });
+        }
         this.observers.push(longTaskObserver);
       } catch (error) {
         console.warn('Long task observer not supported:', error);

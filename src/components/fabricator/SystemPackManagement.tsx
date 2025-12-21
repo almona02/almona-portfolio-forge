@@ -48,7 +48,21 @@ export const SystemPackManagement: React.FC = () => {
   }, []);
 
   const allSystems = useMemo(() => {
-    return [...SYSTEM_PACKS, ...EGYPTIAN_UPVC_SYSTEMS, ...customSystems];
+    // SYSTEM_PACKS already includes EGYPTIAN_UPVC_SYSTEMS, so we don't need to add it again
+    // Deduplicate by meta.id to ensure unique keys
+    const systemsMap = new Map<string, any>();
+    
+    // Add SYSTEM_PACKS first (includes EGYPTIAN_UPVC_SYSTEMS)
+    SYSTEM_PACKS.forEach(system => {
+      systemsMap.set(system.meta.id, system);
+    });
+    
+    // Add custom systems (will overwrite if duplicate ID exists, which is fine)
+    customSystems.forEach(system => {
+      systemsMap.set(system.meta.id, system);
+    });
+    
+    return Array.from(systemsMap.values());
   }, [customSystems]);
 
   const filteredSystems = useMemo(() => {
@@ -77,7 +91,7 @@ export const SystemPackManagement: React.FC = () => {
 
   const handleTuneSystem = (systemPackId: string) => {
     // Save return URL
-    saveReturnUrl('/fabricator-workflow', {
+    saveReturnUrl('/fabricator/system-packs', {
       returnToSystemPacks: 'true',
     });
     // Navigate to tuning studio
@@ -86,7 +100,7 @@ export const SystemPackManagement: React.FC = () => {
 
   const handleTuneProfile = (systemPackId: string, profileId?: string) => {
     // Save return URL
-    saveReturnUrl('/fabricator-workflow', {
+    saveReturnUrl('/fabricator/system-packs', {
       returnToSystemPacks: 'true',
     });
     // Navigate to system pack tuning studio (with DXF support)

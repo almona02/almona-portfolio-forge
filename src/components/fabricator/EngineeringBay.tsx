@@ -848,6 +848,17 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                                 >
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-1.5">
+                                                            {/* Profile Thumbnail in BOM */}
+                                                            {item.profile?.thumbnailUrl && (
+                                                                <img 
+                                                                    src={item.profile.thumbnailUrl} 
+                                                                    alt={item.profile.name || item.type}
+                                                                    className="w-6 h-6 sm:w-8 sm:h-8 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
+                                                                    onError={(e) => {
+                                                                        (e.target as HTMLImageElement).style.display = 'none';
+                                                                    }}
+                                                                />
+                                                            )}
                                                             <div className="font-medium text-white text-xs sm:text-sm truncate">
                                                                 {item.profile?.name || item.type}
                                                             </div>

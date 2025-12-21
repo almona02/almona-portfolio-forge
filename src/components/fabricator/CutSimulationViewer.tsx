@@ -259,18 +259,37 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
           </div>
         )}
 
-        {/* Cut List Summary */}
+        {/* Cut List Summary with Profile Thumbnails */}
         <div className="p-3 bg-gray-900 rounded border border-gray-700">
           <h4 className="text-sm font-semibold text-gray-300 mb-2">Cut Summary</h4>
           <div className="space-y-1 text-xs">
-            {simulation.cuts.slice(0, 5).map((cut, idx) => (
-              <div key={idx} className="flex justify-between text-gray-400">
-                <span>{cut.componentName}</span>
-                <span className="text-green-400">
-                  {cut.originalDimension}mm → {cut.cutLength.toFixed(2)}mm
-                </span>
-              </div>
-            ))}
+            {simulation.cuts.slice(0, 5).map((cut, idx) => {
+              // Find profile for this cut
+              const profile = profiles.find(p => 
+                components.find(c => c.id === cut.componentId)?.profile?.id === p.id
+              );
+              return (
+                <div key={idx} className="flex items-center gap-2 justify-between text-gray-400">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    {/* Profile Thumbnail in Cut Summary */}
+                    {profile?.thumbnailUrl && (
+                      <img 
+                        src={profile.thumbnailUrl} 
+                        alt={profile.name}
+                        className="w-6 h-6 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    )}
+                    <span className="truncate">{cut.componentName}</span>
+                  </div>
+                  <span className="text-green-400 flex-shrink-0">
+                    {cut.originalDimension}mm → {cut.cutLength.toFixed(2)}mm
+                  </span>
+                </div>
+              );
+            })}
             {simulation.cuts.length > 5 && (
               <p className="text-gray-500 mt-1">... and {simulation.cuts.length - 5} more cuts</p>
             )}

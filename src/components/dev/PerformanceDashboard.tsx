@@ -79,6 +79,30 @@ export const PerformanceDashboard: React.FC = () => {
       console.warn('CLS observer not supported');
     }
 
+    // TBT Observer - Use PerformanceObserver instead of deprecated getEntriesByType
+    let tbtValue = 0;
+    try {
+      const tbtObserver = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry: any) => {
+          // Long tasks contribute to TBT if they block for more than 50ms
+          // TBT is the sum of blocking time (duration - 50ms) for all long tasks
+          const blockingTime = Math.max(0, (entry.duration || 0) - 50);
+          tbtValue += blockingTime;
+          setMetrics(prev => ({ ...prev, tbt: tbtValue }));
+        });
+      });
+      try {
+        tbtObserver.observe({ type: 'longtask', buffered: true });
+        observers.push(tbtObserver);
+      } catch (e) {
+        // Fallback for older browsers
+        (tbtObserver as any).observe({ entryTypes: ['longtask'] });
+        observers.push(tbtObserver);
+      }
+    } catch (e) {
+      console.warn('TBT observer not supported');
+    }
+
     // Check connection
     const conn = (navigator as any).connection || 
                  (navigator as any).mozConnection || 
@@ -138,20 +162,6 @@ export const PerformanceDashboard: React.FC = () => {
     // Re-check periodically
     const checkInterval = setInterval(checkOptimizations, 2000);
 
-    // Calculate TBT
-    const calculateTBT = () => {
-      try {
-        const longTasks = performance.getEntriesByType('longtask') as PerformanceEntry[];
-        return longTasks.reduce((total, task: any) => total + (task.duration || 0), 0);
-      } catch {
-        return 0;
-      }
-    };
-
-    const tbtInterval = setInterval(() => {
-      setMetrics(prev => ({ ...prev, tbt: calculateTBT() }));
-    }, 1000);
-
     // Measure load time
     const loadTime = performance.timing ? 
       performance.timing.loadEventEnd - performance.timing.navigationStart : 0;
@@ -160,7 +170,6 @@ export const PerformanceDashboard: React.FC = () => {
     return () => {
       observers.forEach(observer => observer.disconnect());
       clearInterval(checkInterval);
-      clearInterval(tbtInterval);
     };
   }, []);
 

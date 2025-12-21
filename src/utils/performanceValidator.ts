@@ -68,8 +68,59 @@ export const validatePhase1Optimizations = (): ValidationResults => {
   const fcpEntry = paintEntries.find(entry => entry.name === 'first-contentful-paint');
   const fcp = fcpEntry ? fcpEntry.startTime : 0;
 
-  const lcpEntries = performance.getEntriesByType('largest-contentful-paint');
-  const lcp = lcpEntries.length > 0 ? lcpEntries[lcpEntries.length - 1].startTime : 0;
+  // Use PerformanceObserver instead of deprecated getEntriesByType for LCP
+  // Note: Since PerformanceObserver is async, we use a promise-based approach
+  // but return synchronously with a fallback value
+  let lcp = 0;
+  if ('PerformanceObserver' in window) {
+    try {
+      const lcpEntries: any[] = [];
+      let observerDisconnected = false;
+      
+      const lcpObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries();
+        lcpEntries.push(...entries);
+        // Update LCP value when callback fires
+        if (lcpEntries.length > 0) {
+          lcp = lcpEntries[lcpEntries.length - 1].startTime;
+        }
+        if (observerDisconnected === false) {
+          lcpObserver.disconnect();
+          observerDisconnected = true;
+        }
+      });
+      
+      // Observe with buffered: true to get historical entries
+      try {
+        lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+        // The callback will fire asynchronously, but for validation purposes
+        // we'll proceed with lcp=0 if not available yet
+      } catch (e) {
+        // Fallback for older browsers
+        try {
+          (lcpObserver as any).observe({ entryTypes: ['largest-contentful-paint'] });
+        } catch (e2) {
+          // PerformanceObserver not supported, lcp remains 0
+        }
+      }
+      
+      // Small delay to allow observer callback to fire (for validation tool)
+      // This is acceptable since it's a dev/validation function
+      const startTime = Date.now();
+      while (lcpEntries.length === 0 && (Date.now() - startTime) < 50) {
+        // Busy wait for up to 50ms to allow callback to fire
+        // This is acceptable for a validation tool
+      }
+      if (lcpEntries.length > 0) {
+        lcp = lcpEntries[lcpEntries.length - 1].startTime;
+      }
+      if (!observerDisconnected) {
+        lcpObserver.disconnect();
+      }
+    } catch (e) {
+      // PerformanceObserver not available, lcp remains 0
+    }
+  }
 
   // Calculate TBT (simplified - sum of long tasks)
   const longTasks = performance.getEntriesByType('longtask') as PerformanceEntry[];
