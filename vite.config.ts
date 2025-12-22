@@ -299,14 +299,20 @@ export default defineConfig(({ mode }) => {
           entryFileNames: `assets/[name]-[hash].js`,
           chunkFileNames: `assets/[name]-[hash].js`,
           assetFileNames: `assets/[name]-[hash].[ext]`,
-          // AGGRESSIVE chunk splitting to isolate 17MB monster
+          // Minimal safe chunk splitting - only split standalone engines
+          // Keep all React-dependent code together to avoid initialization issues
           manualChunks: (id) => {
             // Exclude app code from vendor chunks
             if (id.includes('/src/') || id.includes('\\src\\')) {
               return undefined;
             }
 
-            // STEP 1: isolate only safe heavy engines
+            // Only process node_modules
+            if (!id.includes('node_modules')) {
+              return undefined;
+            }
+
+            // Only split standalone engines that don't depend on React
             if (id.includes('node_modules/three/') && !id.includes('@react-three')) {
               return 'three-engine';
             }
@@ -325,22 +331,16 @@ export default defineConfig(({ mode }) => {
               id.includes('node_modules/jspdf/') ||
               id.includes('node_modules/html2canvas/') ||
               id.includes('node_modules/exceljs/') ||
-              id.includes('node_modules/pdfjs-dist/')
+              id.includes('node_modules/pdfjs-dist/') ||
+              id.includes('node_modules/@pdf-lib/') ||
+              id.includes('node_modules/pdf-lib/') ||
+              id.includes('node_modules/dxf-writer/')
             ) {
               return 'document-vendor';
             }
-            if (
-              id.includes('node_modules/chart.js/') ||
-              id.includes('node_modules/d3/') ||
-              id.includes('node_modules/victory/')
-            ) {
-              return 'chart-vendor';
-            }
 
-            // STEP 2: everything else -> react-vendor (safety net)
-            if (id.includes('node_modules')) {
-              return 'react-vendor';
-            }
+            // Everything else stays in react-vendor (safe, no circular deps)
+            return 'react-vendor';
           },
 
         },
