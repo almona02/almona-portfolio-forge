@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/shared/ui/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Suspense, lazy, useEffect, memo } from "react";
+import { lazyRetry } from "./utils/lazyImport";
 import { ThemeProvider } from "next-themes";
 import SEO from "./components/SEO";
 import { PageLoadingWrapper } from "./components/ui/PageLoadingWrapper";
@@ -23,10 +24,10 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 // Lazy load PerformanceDashboard to avoid loading it in production
 const PerformanceDashboard = lazy(() => import("./components/dev/PerformanceDashboard").then(m => ({ default: m.PerformanceDashboard })));
 
-// Core pages (essential) - loaded immediately
+// Core pages (essential) - loaded immediately (lightweight)
 const Index = lazy(() => import("./pages/Index.tsx"));
 const Products = lazy(() => import("./pages/Products.tsx"));
-const Services = lazy(() => import("./pages/Services.tsx"));
+const Services = lazyRetry(() => import("./pages/Services.tsx"), "Services"); // Heavy page
 const Contact = lazy(() => import("./pages/Contact.tsx"));
 const About = lazy(() => import("./pages/About.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
@@ -40,12 +41,12 @@ const LocalizationTest = lazy(() => import("./components/test/LocalizationTest.t
 const TestScannerPage = lazy(() => import("./pages/TestScanner.tsx"));
 const SmartScanAssembly = lazy(() => import("./pages/SmartScanAssembly.tsx"));
 
-// Shop and e-commerce - lazy loaded with prefetch
-const Shop = lazy(() => import("./pages/Shop"));
-const UsedMachines = lazy(() => import("./pages/UsedMachines.tsx"));
-const UsedMachineDetailPage = lazy(() => import("./pages/UsedMachineDetail.tsx"));
-const SellUsedMachine = lazy(() => import("./pages/SellUsedMachine.tsx"));
-const SpareParts = lazy(() => import("./pages/SpareParts.tsx"));
+// Shop and e-commerce - lazy loaded with retry (HEAVY ROUTES)
+const Shop = lazyRetry(() => import("./pages/Shop"), "Shop");
+const UsedMachines = lazyRetry(() => import("./pages/UsedMachines.tsx"), "UsedMachines");
+const UsedMachineDetailPage = lazyRetry(() => import("./pages/UsedMachineDetail.tsx"), "UsedMachineDetail");
+const SellUsedMachine = lazyRetry(() => import("./pages/SellUsedMachine.tsx"), "SellUsedMachine");
+const SpareParts = lazyRetry(() => import("./pages/SpareParts.tsx"), "SpareParts");
 
 // Product details - lazy loaded
 const MachineDetail = lazy(() => import("./pages/machines/MachineDetail.tsx"));
@@ -59,13 +60,13 @@ const YilmazTraining = lazy(() => import("./pages/YilmazTraining.tsx"));
 // Digital Egypt Initiative - lazy loaded
 const DigitalEgypt = lazy(() => import("./pages/DigitalEgypt.tsx"));
 
-// Workflow and fabrication - lazy loaded
-const WorkflowDetail = lazy(() => import("./pages/workflows/WorkflowDetail.tsx"));
-const FabricationWorkflowDetail = lazy(() => import("./pages/FabricationWorkflowDetail.tsx"));
-const FabricationServices = lazy(() => import("./pages/FabricationServices.tsx"));
-const FabricatorWorkflow = lazy(() => import("./pages/FabricatorWorkflow.tsx"));
-const FabricatorWorkflowPro = lazy(() => import("./components/fabricator/FabricatorWorkflowPro.tsx"));
-const FabricatorDashboard = lazy(() => import("./pages/FabricatorDashboard.tsx"));
+// Workflow and fabrication - lazy loaded with retry (HEAVY ROUTES)
+const WorkflowDetail = lazyRetry(() => import("./pages/workflows/WorkflowDetail.tsx"), "WorkflowDetail");
+const FabricationWorkflowDetail = lazyRetry(() => import("./pages/FabricationWorkflowDetail.tsx"), "FabricationWorkflowDetail");
+const FabricationServices = lazyRetry(() => import("./pages/FabricationServices.tsx"), "FabricationServices");
+const FabricatorWorkflow = lazyRetry(() => import("./pages/FabricatorWorkflow.tsx"), "FabricatorWorkflow");
+const FabricatorWorkflowPro = lazyRetry(() => import("./components/fabricator/FabricatorWorkflowPro.tsx"), "FabricatorWorkflowPro");
+const FabricatorDashboard = lazyRetry(() => import("./pages/FabricatorDashboard.tsx"), "FabricatorDashboard");
 const FabricatorPricingConfiguration = lazy(() =>
   import("./components/fabricator/PricingConfiguration.tsx").then((m) => ({
     default: m.PricingConfiguration,
@@ -100,19 +101,19 @@ const ModelViewerDemo = lazy(() => import("./pages/ModelViewerDemo.tsx"));
 const ModelViewerTest = lazy(() => import("./pages/ModelViewerTest.tsx"));
 const SwiftXRTest = lazy(() => import("./pages/SwiftXRTest.tsx"));
 
-// Authentication - lazy loaded
+// Authentication - lazy loaded with retry (HEAVY ROUTES)
 const Login = lazy(() => import("./pages/Login.tsx"));
 const Register = lazy(() => import("./pages/Register.tsx"));
-const CustomerPortal = lazy(() => import("./pages/CustomerPortal.tsx"));
+const CustomerPortal = lazyRetry(() => import("./pages/CustomerPortal.tsx"), "CustomerPortal");
 const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute.tsx"));
 
-// Admin and support - lazy loaded (admin features)
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
-const CreateTicketPage = lazy(() => import("./pages/CreateTicketPage.tsx"));
-const RegisterMachinePage = lazy(() => import("./pages/RegisterMachinePage.tsx"));
-const CustomerSupport = lazy(() => import("./pages/CustomerSupport.tsx"));
-const RegionalFeaturesDemo = lazy(() => import("./pages/RegionalFeaturesDemo.tsx"));
-const AIRecommendationDemo = lazy(() => import("./pages/AIRecommendationDemo.tsx"));
+// Admin and support - lazy loaded with retry (HEAVY ROUTES)
+const AdminDashboard = lazyRetry(() => import("./pages/AdminDashboard.tsx"), "AdminDashboard");
+const CreateTicketPage = lazyRetry(() => import("./pages/CreateTicketPage.tsx"), "CreateTicketPage");
+const RegisterMachinePage = lazyRetry(() => import("./pages/RegisterMachinePage.tsx"), "RegisterMachinePage");
+const CustomerSupport = lazyRetry(() => import("./pages/CustomerSupport.tsx"), "CustomerSupport");
+const RegionalFeaturesDemo = lazyRetry(() => import("./pages/RegionalFeaturesDemo.tsx"), "RegionalFeaturesDemo");
+const AIRecommendationDemo = lazyRetry(() => import("./pages/AIRecommendationDemo.tsx"), "AIRecommendationDemo");
 
 // National Service Dashboard - Egypt Vision 2030
 const NationalDashboard = lazy(() => import("./pages/NationalDashboard.tsx"));
