@@ -18,7 +18,8 @@ import {
 import { WindowUnit, OptimizationResult } from '@/types/fabricator';
 import { QuotingEngine, type Quote } from '@/modules/commercial/QuotingEngine';
 import { loadQuoteForProject, saveQuoteForProject } from '@/modules/commercial/FabricatorQuoteStore';
-import { PDFExportService } from '@/modules/reporting';
+// PHASE 4: PDFExportService is now lazy-loaded - see handleExportPDF
+import { lazyExportQuotationPDF } from '@/lib/exports/lazyExportHandlers';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
@@ -132,9 +133,9 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
     try {
       setExportingPdf(true);
       const thumbUrl = layoutThumbnailUrl || (await captureAndUploadLayoutThumbnail());
-      const pdfService = new PDFExportService(branding);
-
-      const blob = await pdfService.generateQuotationPDF(project, quote, {
+      
+      // PHASE 4: Lazy load PDF export library only when user clicks export
+      const blob = await lazyExportQuotationPDF(project, quote, {
         branding,
         includeCuttingList: false,
         includeAccessories: false,
