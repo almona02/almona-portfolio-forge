@@ -175,8 +175,6 @@ export default defineConfig(({ mode }) => {
         "https": path.resolve(__dirname, "./src/lib/polyfills/https.ts"),
         "url": path.resolve(__dirname, "./src/lib/polyfills/url.ts"),
         "zlib": path.resolve(__dirname, "./src/lib/polyfills/zlib.ts"),
-        // Redirect hls.js to mock (VideoTexture not used)
-        "hls.js": path.resolve(__dirname, "./src/lib/mocks/hls-mock.ts"),
       },
       // Ensure CommonJS modules like 'long' are properly resolved
       conditions: ['import', 'module', 'browser', 'default'],
@@ -360,7 +358,7 @@ export default defineConfig(({ mode }) => {
         "seedrandom", // Include seedrandom to fix require errors
         "pako" // Include pako for PDF compression (must load before pdfjs)
       ],
-      exclude: ["@google/generative-ai","@huggingface/inference","@tensorflow/tfjs","three","hls.js"],
+      exclude: ["@google/generative-ai","@huggingface/inference","@tensorflow/tfjs","three"],
       // Only force re-optimization in production builds, not in dev for faster startup
       force: isProduction,
       esbuildOptions: {
