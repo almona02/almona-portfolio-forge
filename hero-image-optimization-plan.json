@@ -1,0 +1,43 @@
+{
+  "timestamp": "2025-12-22T16:01:43.463Z",
+  "images": [
+    {
+      "name": "egyptian-industrial-hero-bg",
+      "currentSize": "4.24MB",
+      "targetSize": "<500KB",
+      "priority": 1
+    },
+    {
+      "name": "about-page-image",
+      "currentSize": "4.01MB",
+      "targetSize": "<500KB",
+      "priority": 2
+    },
+    {
+      "name": "hero01 (1)",
+      "currentSize": "3.20MB",
+      "targetSize": "<500KB",
+      "priority": 3
+    },
+    {
+      "name": "hero01 (2)",
+      "currentSize": "3.65MB",
+      "targetSize": "<500KB",
+      "priority": 4
+    },
+    {
+      "name": "hero01 (3)",
+      "currentSize": "3.60MB",
+      "targetSize": "<500KB",
+      "priority": 5
+    }
+  ],
+  "strategy": "Re-optimize WebP with higher compression + responsive sizes",
+  "tools": [
+    "sharp",
+    "imagemin",
+    "Squoosh.app"
+  ],
+  "expectedSavings": "~15MB total",
+  "expectedLCPImprovement": "~1,100ms (40%)"
+}

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ResponsiveImage } from '@/components/ui/ResponsiveImage';
 
 interface EgyptianIndustrialHeroProps {
   children: React.ReactNode;
@@ -262,25 +263,12 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
       
       {/* PROGRESSIVE: Load image only after LCP is determined (non-blocking) */}
       {shouldLoadImage && (
-        <motion.img
-          src="/images/egyptian-industrial-hero-bg.webp"
-          alt="Egyptian-Ottoman Industrial Scene"
-          className="absolute inset-0 z-0 w-full h-full object-cover object-right"
+        <motion.div
+          className="absolute inset-0 z-0 w-full h-full"
           style={{
             opacity: imageLoaded ? (isMobile ? 0.5 : 0.6) : 0,
             transition: 'opacity 0.5s ease-in-out',
             willChange: 'opacity'
-          }}
-          width="1920"
-          height="1080"
-          loading="lazy"
-          decoding="async"
-          onLoad={() => {
-            setImageLoaded(true);
-          }}
-          onError={() => {
-            console.warn('[LCP Fix] Hero image failed to load, using gradient fallback');
-            // Image failed, keep using gradient - this is fine
           }}
           animate={imageLoaded ? {
             opacity: isMobile ? [0.5, 0.55, 0.5] : [0.6, 0.65, 0.6]
@@ -290,7 +278,19 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
             repeat: Infinity,
             ease: "easeInOut"
           }}
-        />
+        >
+          <ResponsiveImage
+            src="/images/egyptian-industrial-hero-bg.webp"
+            alt="Egyptian-Ottoman Industrial Scene"
+            className="w-full h-full object-cover object-right"
+            width={1920}
+            height={1080}
+            sizes="100vw"
+            priority={false}
+            fallback="/images/egyptian-industrial-hero-bg.webp"
+            onImageLoad={() => setImageLoaded(true)}
+          />
+        </motion.div>
       )}
       
       {/* Dark overlay to blend image with background - Ensures text readability on left */}

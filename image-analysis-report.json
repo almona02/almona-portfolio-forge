@@ -1,0 +1,60 @@
+{
+  "timestamp": "2025-12-22T16:00:35.743Z",
+  "totalImages": 165,
+  "totalSizeMB": 84.31591892242432,
+  "largeImages": 47,
+  "largeImagesSizeMB": 78.6168327331543,
+  "topCandidates": [
+    {
+      "path": "public\\images\\egyptian-industrial-hero-bg.png",
+      "sizeKB": "9753.5",
+      "extension": ".png"
+    },
+    {
+      "path": "public\\images\\about-page-image.png",
+      "sizeKB": "9596.0",
+      "extension": ".png"
+    },
+    {
+      "path": "public\\images\\hero01 (2).png",
+      "sizeKB": "8204.1",
+      "extension": ".png"
+    },
+    {
+      "path": "public\\images\\hero01 (1).png",
+      "sizeKB": "7305.8",
+      "extension": ".png"
+    },
+    {
+      "path": "public\\images\\hero01 (3).png",
+      "sizeKB": "5998.1",
+      "extension": ".png"
+    },
+    {
+      "path": "public\\images\\egyptian-industrial-hero-bg.webp",
+      "sizeKB": "4340.3",
+      "extension": ".webp"
+    },
+    {
+      "path": "public\\images\\about-page-image.webp",
+      "sizeKB": "4109.9",
+      "extension": ".webp"
+    },
+    {
+      "path": "public\\images\\hero01 (2).webp",
+      "sizeKB": "3734.4",
+      "extension": ".webp"
+    },
+    {
+      "path": "public\\images\\hero01 (3).webp",
+      "sizeKB": "3684.5",
+      "extension": ".webp"
+    },
+    {
+      "path": "public\\images\\hero01 (1).webp",
+      "sizeKB": "3279.4",
+      "extension": ".webp"
+    }
+  ],
+  "webpSavingsMB": 55.031782913208005
+}

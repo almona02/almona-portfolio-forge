@@ -265,21 +265,13 @@ const initializeWebWorkers = () => {
 // Performance monitoring - Load web-vitals only in production (deferred)
 // Note: This is already handled in deferNonCritical above, so we skip duplicate initialization here
 
-// Report bundle loading issues
+// Report bundle loading issues - DISABLED AUTO-RELOAD (too aggressive)
+// Only log errors, don't auto-reload on first load
 window.addEventListener('error', (event) => {
   if (event.error && event.error.message.includes('chunk')) {
     console.error('Chunk loading failed:', event.error);
-    // Optionally reload the page if chunk error persists
-    if (!window.location.href.includes('chunk-error')) {
-      // Mark that we've tried to reload to prevent infinite loop
-      const reloadKey = 'chunk-error-reload-attempted';
-      if (!sessionStorage.getItem(reloadKey)) {
-        sessionStorage.setItem(reloadKey, 'true');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      }
-    }
+    // Don't auto-reload - let user decide or use manual retry
+    // Auto-reload was causing double page loads on first visit
   }
 }, true);
 
@@ -288,26 +280,13 @@ window.addEventListener('unhandledrejection', (event) => {
   const error = event.reason;
   const errorMessage = error?.message || String(error || '');
   
-  // Handle chunk loading errors
+  // Handle chunk loading errors - DISABLED AUTO-RELOAD (too aggressive)
+  // Only log errors, don't auto-reload on first load
   if (errorMessage.includes('chunk') || errorMessage.includes('Failed to fetch dynamically imported module')) {
     console.error('Chunk loading error:', errorMessage);
-    // Use unified reload key with timestamp to prevent rapid reloads
-    const reloadKey = 'chunk-error-reload-attempted';
-    const lastReload = sessionStorage.getItem(reloadKey);
-    const now = Date.now();
-    
-    // Only reload if we haven't reloaded in the last 5 seconds (prevents rapid loops)
-    if (!lastReload || (now - parseInt(lastReload)) > 5000) {
-      sessionStorage.setItem(reloadKey, now.toString());
-      setTimeout(() => {
-        // Double-check before reloading
-        if (sessionStorage.getItem(reloadKey) === now.toString()) {
-          window.location.reload();
-        }
-      }, 1000);
-    } else {
-      console.error('Chunk error reload already attempted recently, stopping to prevent infinite loop');
-    }
+    // Don't auto-reload - let user decide or use manual retry
+    // Auto-reload was causing double page loads on first visit
+    // The lazyRetry utility in lazyImport.ts handles retries more gracefully
     event.preventDefault();
     return;
   }

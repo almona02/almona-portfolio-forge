@@ -1,4 +1,4 @@
-import { lazy, ComponentType } from 'react';
+import { ComponentType, lazy } from 'react';
 
 /**
  * Enhanced React.lazy with retry logic for network failures
@@ -22,13 +22,47 @@ export function lazyRetry<T extends ComponentType<any>>(
       window.sessionStorage.setItem(`page-refreshed-${componentName}`, 'false');
       return component;
     } catch (error) {
-      if (!pageHasBeenForceRefreshed) {
-        // Likely a chunk load error due to version mismatch or network issue
-        console.warn(`Chunk load failed for ${componentName}, refreshing page...`);
-        window.sessionStorage.setItem(`page-refreshed-${componentName}`, 'true');
-        window.location.reload();
-        // Return a promise that never resolves - page will refresh
-        return new Promise(() => {});
+      // Only reload if this is a persistent error (not first load)
+      // Check if we've already tried loading this component before
+      const hasTriedBefore = window.sessionStorage.getItem(`chunk-load-attempt-${componentName}`);
+      
+      if (!pageHasBeenForceRefreshed && !hasTriedBefore) {
+        // First attempt failed - mark that we tried and wait a bit before retrying
+        window.sessionStorage.setItem(`chunk-load-attempt-${componentName}`, 'true');
+        console.warn(`Chunk load failed for ${componentName}, will retry once...`);
+        
+        // Retry once after a short delay (network might be slow)
+        try {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          const component = await componentImport();
+          window.sessionStorage.setItem(`page-refreshed-${componentName}`, 'false');
+          window.sessionStorage.removeItem(`chunk-load-attempt-${componentName}`);
+          return component;
+        } catch (retryError) {
+          // Retry also failed - only now reload if it's a version mismatch
+          const errorMsg = String(retryError).toLowerCase();
+          if (errorMsg.includes('404') || errorMsg.includes('not found')) {
+            // Chunk file doesn't exist - likely version mismatch, reload page
+            console.warn(`Chunk ${componentName} not found (version mismatch?), refreshing page...`);
+            window.sessionStorage.setItem(`page-refreshed-${componentName}`, 'true');
+            window.location.reload();
+            return new Promise(() => {}); // Never resolves - page will refresh
+          }
+          // Network error or other issue - throw to show error boundary
+          throw retryError;
+        }
+      } else if (!pageHasBeenForceRefreshed && hasTriedBefore) {
+        // Already tried once, this is a persistent error
+        // Only reload if it's a 404 (version mismatch), otherwise show error
+        const errorMsg = String(error).toLowerCase();
+        if (errorMsg.includes('404') || errorMsg.includes('not found')) {
+          console.warn(`Chunk ${componentName} not found (version mismatch?), refreshing page...`);
+          window.sessionStorage.setItem(`page-refreshed-${componentName}`, 'true');
+          window.location.reload();
+          return new Promise(() => {}); // Never resolves - page will refresh
+        }
+        // Network error - throw to show error boundary instead of reloading
+        throw error;
       }
       throw error;
     }
