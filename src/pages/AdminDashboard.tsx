@@ -45,15 +45,19 @@ import { RecentOrders } from '../components/admin/RecentOrders'
 import { TopProducts } from '../components/admin/TopProducts'
 import { LowStockAlerts } from '../components/admin/LowStockAlerts'
 import { CustomerActivity } from '../components/admin/CustomerActivity'
-const SalesChart = React.lazy(() => import('../components/admin/SalesChart'))
-const ProductsPanel = React.lazy(() => import('@/components/admin/panels/ProductsPanel'))
-const OrdersPanel = React.lazy(() => import('@/components/admin/panels/OrdersPanel'))
-const CustomersPanel = React.lazy(() => import('@/components/admin/panels/CustomersPanel'))
-const InventoryPanel = React.lazy(() => import('@/components/admin/panels/InventoryPanel'))
-const FinancePanel = React.lazy(() => import('@/components/admin/panels/FinancePanel'))
-const ReportsPanel = React.lazy(() => import('@/components/admin/panels/ReportsPanel'))
-const SettingsPanel = React.lazy(() => import('@/components/admin/panels/SettingsPanel'))
-const BusinessKPIDashboard = React.lazy(() => import('../components/analytics/BusinessKPIDashboard'))
+// PHASE 4: Use lazyRetry for better reliability
+import { lazyRetry } from '@/utils/lazyImport';
+
+const SalesChart = lazyRetry(() => import('../components/admin/SalesChart'), 'SalesChart')
+const ProductsPanel = lazyRetry(() => import('@/components/admin/panels/ProductsPanel'), 'ProductsPanel')
+const OrdersPanel = lazyRetry(() => import('@/components/admin/panels/OrdersPanel'), 'OrdersPanel')
+const CustomersPanel = lazyRetry(() => import('@/components/admin/panels/CustomersPanel'), 'CustomersPanel')
+const InventoryPanel = lazyRetry(() => import('@/components/admin/panels/InventoryPanel'), 'InventoryPanel')
+const FinancePanel = lazyRetry(() => import('@/components/admin/panels/FinancePanel'), 'FinancePanel')
+const ReportsPanel = lazyRetry(() => import('@/components/admin/panels/ReportsPanel'), 'ReportsPanel')
+const SettingsPanel = lazyRetry(() => import('@/components/admin/panels/SettingsPanel'), 'SettingsPanel')
+// BusinessKPIDashboard is heavy (charts + ML) - lazy load only when analytics tab is opened
+const BusinessKPIDashboard = lazyRetry(() => import('../components/analytics/BusinessKPIDashboard'), 'BusinessKPIDashboard')
 
 type Notification = { id: string; title: string; message: string; created_at: string }
 

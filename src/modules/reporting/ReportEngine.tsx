@@ -13,7 +13,8 @@ import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { FileText, Download, Loader2, CheckCircle, AlertCircle, ShoppingCart, Square, FileSpreadsheet, FileCode } from 'lucide-react';
 import { WindowUnit, OptimizationResult, FabricatorAccessory } from '@/types/fabricator';
 import { Quote } from '@/modules/commercial/QuotingEngine';
-import { PDFExportService, CompanyBranding, PDFOptions } from './PDFExportService';
+// PHASE 4: PDFExportService is now lazy-loaded - see handleGenerateReport
+import type { CompanyBranding, PDFOptions } from './PDFExportService';
 import { ExportService, ExportFormat, PDFExportOptions as ExportPDFOptions, ExportProgress } from '@/lib/exports';
 import { AccessoriesReport } from './AccessoriesReport';
 import { GlassReport } from './GlassReport';
@@ -122,7 +123,8 @@ export const ReportEngine: React.FC<ReportEngineProps> = ({
           setError(result.error || 'Export failed');
         }
       } else {
-        // Legacy report types use PDFExportService
+        // PHASE 4: Lazy load PDF export library only when generating report
+        const { PDFExportService } = await import('@/modules/reporting/PDFExportService');
         const pdfService = new PDFExportService(branding);
         let blob: Blob;
 

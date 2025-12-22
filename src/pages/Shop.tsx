@@ -27,7 +27,9 @@ import SmartCategoryNavigation from "@/components/products/SmartCategoryNavigati
 import CategoryBreadcrumb from "@/components/products/CategoryBreadcrumb";
 import SmartCategoryFilter from "@/components/products/SmartCategoryFilter";
 // import { EquipmentComparisonTool } from "@/components/shop/EquipmentComparisonTool";
-const AiEquipmentAdvisor = lazy(() => import("@/components/shop/ai-advisor/AiEquipmentAdvisor"));
+// PHASE 4: Use lazyRetry for better reliability
+import { lazyRetry } from '@/utils/lazyImport';
+const AiEquipmentAdvisor = lazyRetry(() => import("@/components/shop/ai-advisor/AiEquipmentAdvisor"), "AiEquipmentAdvisor");
 import FreightCalculator from "@/components/shop/FreightCalculator";
 import EgyptianStandardsGuide from "@/components/shop/EgyptianStandardsGuide";
 import EgyptianTechnicalSupportHub from "@/components/shop/EgyptianTechnicalSupportHub";

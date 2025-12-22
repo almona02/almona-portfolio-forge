@@ -24,8 +24,9 @@ import { calculateManualCuttingPlan, compareWaste } from '@/lib/analytics/WasteC
 import { ExportService } from '@/lib/exports';
 import { ALM6510ExportOptions, alm6510MDBExport } from '@/lib/exports/ALM6510MDBExport';
 import { downloadSplitPO } from '@/lib/exports/SplitPOExport';
+import { lazyExportPDF } from '@/lib/exports/lazyExportHandlers';
 import type { InstallationCostBreakdown, InstallationVariables } from '@/lib/installation/EgyptianInstallationCalculator';
-import { PDFExportService } from '@/modules/reporting';
+// PDFExportService is now lazy-loaded via lazyExportPDF() - see handleExportCuttingReport
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -233,8 +234,9 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
         if (!project || !optimization) return;
 
         try {
-            const pdfService = new PDFExportService(branding);
-            const blob = await pdfService.generateCuttingListPDF(project, optimization, { branding });
+            // PHASE 4: Lazy load PDF export library only when user clicks export
+            // This prevents loading ~1.9MB document-vendor chunk until needed
+            const blob = await lazyExportPDF(project, optimization, { branding });
 
             // Download the PDF
             const url = URL.createObjectURL(blob);
