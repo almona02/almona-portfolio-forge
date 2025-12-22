@@ -1,6 +1,8 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+// PHASE 4: Use lazyRetry for better reliability and chunk loading
+import { lazyRetry } from '@/utils/lazyImport';
 // Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)
-const EnhancedModel3DDialog = React.lazy(() => import("@/components/3d-model/EnhancedModel3DDialog").then(module => ({ default: module.EnhancedModel3DDialog })));
+const EnhancedModel3DDialog = lazyRetry(() => import("@/components/3d-model/EnhancedModel3DDialog").then(module => ({ default: module.EnhancedModel3DDialog })), 'EnhancedModel3DDialog');
 
 import SEO from "@/components/SEO";
 import CompareBar from "@/components/comparison/CompareBar";
