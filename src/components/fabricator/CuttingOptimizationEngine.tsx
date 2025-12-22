@@ -22,7 +22,8 @@ import {
 import { WindowUnit, Profile, OptimizationResult, CuttingPlan } from '@/types/fabricator';
 import { YilmazGCodeGenerator, YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
 import { MachineValidator } from '@/integrations/yilmaz/MachineValidator';
-import { PDFExportService } from '@/modules/reporting';
+// PHASE 4: PDFExportService is now lazy-loaded - see handleExportReport
+import { lazyExportPDF } from '@/lib/exports/lazyExportHandlers';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { WasteComparisonReport } from '@/components/analytics/WasteComparisonReport';
 import { calculateManualCuttingPlan, compareWaste } from '@/lib/analytics/WasteCalculator';
@@ -194,8 +195,8 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
     setExportError(null);
 
     try {
-      const pdfService = new PDFExportService(branding);
-      const blob = await pdfService.generateCuttingListPDF(project, optimization, { branding });
+      // PHASE 4: Lazy load PDF export library only when user clicks export
+      const blob = await lazyExportPDF(project, optimization, { branding });
 
       // Download the PDF
       const url = URL.createObjectURL(blob);

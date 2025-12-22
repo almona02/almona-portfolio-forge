@@ -30,75 +30,92 @@ import { useTranslation } from 'react-i18next';
 
 // NOTE: Heavy Fabricator Pro modules are lazy‑loaded per tab to keep
 // initial bundle size and TTI low for heavy‑duty usage.
-const SmartMeasuringInterface = React.lazy(() =>
-  import('@/components/fabricator/SmartMeasuringInterface').then((m) => ({
+// PHASE 4: Using lazyRetry for better reliability
+import { lazyRetry } from '@/utils/lazyImport';
+
+const SmartMeasuringInterface = lazyRetry(
+  () => import('@/components/fabricator/SmartMeasuringInterface').then((m) => ({
     default: m.SmartMeasuringInterface,
   })),
+  'SmartMeasuringInterface'
 );
-const DesignInterface = React.lazy(() =>
-  import('@/components/fabricator/DesignInterface').then((m) => ({
+const DesignInterface = lazyRetry(
+  () => import('@/components/fabricator/DesignInterface').then((m) => ({
     default: m.DesignInterface,
   })),
+  'DesignInterface'
 );
-const ProductionCommand = React.lazy(() =>
-  import('@/components/fabricator/ProductionCommand').then((m) => ({
+const ProductionCommand = lazyRetry(
+  () => import('@/components/fabricator/ProductionCommand').then((m) => ({
     default: m.ProductionCommand,
   })),
+  'ProductionCommand'
 );
-const OptimizationEqualizer = React.lazy(() =>
-  import('@/components/fabricator/OptimizationEqualizer').then((m) => ({
+const OptimizationEqualizer = lazyRetry(
+  () => import('@/components/fabricator/OptimizationEqualizer').then((m) => ({
     default: m.OptimizationEqualizer,
   })),
+  'OptimizationEqualizer'
 );
-const PersonalAnalyticsDashboard = React.lazy(() =>
-  import('@/components/fabricator/PersonalAnalyticsDashboard').then((m) => ({
+const PersonalAnalyticsDashboard = lazyRetry(
+  () => import('@/components/fabricator/PersonalAnalyticsDashboard').then((m) => ({
     default: m.PersonalAnalyticsDashboard,
   })),
+  'PersonalAnalyticsDashboard'
 );
-const InventoryDashboard = React.lazy(() =>
-  import('@/components/fabricator/InventoryDashboard').then((m) => ({
+const InventoryDashboard = lazyRetry(
+  () => import('@/components/fabricator/InventoryDashboard').then((m) => ({
     default: m.InventoryDashboard,
   })),
+  'InventoryDashboard'
 );
-const ProfileManagement = React.lazy(() =>
-  import('@/components/fabricator/ProfileManagement').then((m) => ({
+const ProfileManagement = lazyRetry(
+  () => import('@/components/fabricator/ProfileManagement').then((m) => ({
     default: m.ProfileManagement,
   })),
+  'ProfileManagement'
 );
-const SystemPackManagement = React.lazy(() =>
-  import('@/components/fabricator/SystemPackManagement').then((m) => ({
+const SystemPackManagement = lazyRetry(
+  () => import('@/components/fabricator/SystemPackManagement').then((m) => ({
     default: m.SystemPackManagement,
   })),
+  'SystemPackManagement'
 );
-const ProfileImportTool = React.lazy(() =>
-  import('@/components/fabricator/ProfileImportTool').then((m) => ({
+const ProfileImportTool = lazyRetry(
+  () => import('@/components/fabricator/ProfileImportTool').then((m) => ({
     default: m.ProfileImportTool,
   })),
+  'ProfileImportTool'
 );
-const ProductionScheduler = React.lazy(() =>
-  import('@/components/fabricator/ProductionScheduler').then((m) => ({
+const ProductionScheduler = lazyRetry(
+  () => import('@/components/fabricator/ProductionScheduler').then((m) => ({
     default: m.ProductionScheduler,
   })),
+  'ProductionScheduler'
 );
-const QualityControl = React.lazy(() =>
-  import('@/components/fabricator/QualityControl').then((m) => ({
+const QualityControl = lazyRetry(
+  () => import('@/components/fabricator/QualityControl').then((m) => ({
     default: m.QualityControl,
   })),
+  'QualityControl'
 );
-const RealTimeMonitoring = React.lazy(() =>
-  import('@/components/fabricator/RealTimeMonitoring').then((m) => ({
+const RealTimeMonitoring = lazyRetry(
+  () => import('@/components/fabricator/RealTimeMonitoring').then((m) => ({
     default: m.RealTimeMonitoring,
   })),
+  'RealTimeMonitoring'
 );
-const PrecisionDesignInterface = React.lazy(() =>
-  import('@/components/fabricator/PrecisionDesignInterface').then((m) => ({
+const PrecisionDesignInterface = lazyRetry(
+  () => import('@/components/fabricator/PrecisionDesignInterface').then((m) => ({
     default: m.PrecisionDesignInterface,
   })),
+  'PrecisionDesignInterface'
 );
-const JobSummaryPanel = React.lazy(() =>
-  import('@/components/fabricator/JobSummaryPanel').then((m) => ({
+const JobSummaryPanel = lazyRetry(
+  () => import('@/components/fabricator/JobSummaryPanel').then((m) => ({
     default: m.JobSummaryPanel,
   })),
+  'JobSummaryPanel'
 );
 const InventoryStatusPanel = React.lazy(() =>
   import('@/components/fabricator/InventoryStatusPanel').then((m) => ({
@@ -150,10 +167,11 @@ const NewProjectWizard = React.lazy(() =>
     default: m.NewProjectWizard,
   })),
 );
-const CalibrationWizard = React.lazy(() =>
-  import('@/components/fabricator/CalibrationWizard').then((m) => ({
+const CalibrationWizard = lazyRetry(
+  () => import('@/components/fabricator/CalibrationWizard').then((m) => ({
     default: m.CalibrationWizard,
   })),
+  'CalibrationWizard'
 );
 
 import { EnhancedAdaptiveSolver } from '@/algorithms/EnhancedAdaptiveSolver';

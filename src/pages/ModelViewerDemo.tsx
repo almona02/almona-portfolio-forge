@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { LazyEnhancedGLBViewer } from '../components/3d-model/LazyGLBViewer';
+// PHASE 4: Use LazyModelWrapper for interaction-first loading
+import { LazyModelWrapper } from '../components/3d-model/LazyModelWrapper';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -65,8 +66,11 @@ export function ModelViewerDemo() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="h-[500px] p-0">
-                <LazyEnhancedGLBViewer
+                {/* PHASE 4: Use LazyModelWrapper for interaction-first loading */}
+                <LazyModelWrapper
                   modelPath={modelPath}
+                  viewerType="glb"
+                  height="500px"
                 />
               </CardContent>
             </Card>
