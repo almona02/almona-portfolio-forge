@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 
 const AboutSection = () => {
   const { t } = useTranslation('home');
@@ -61,49 +62,45 @@ const AboutSection = () => {
             <div className="relative z-10 grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
               <div className="space-y-2 sm:space-y-3 md:space-y-4">
                 <div className="h-32 sm:h-36 md:h-40 bg-almona-dark-light rounded-lg overflow-hidden opacity-90 sm:opacity-100">
-                  <img 
+                  <ResponsiveImage 
                     src="/images/hero01 (1).webp" 
                     alt="ALMONA Workshop" 
                     className="w-full h-full object-cover"
-                    loading="lazy"
-                    width="400"
-                    height="300"
-                    decoding="async"
+                    width={400}
+                    height={300}
+                    sizes="(max-width: 768px) 50vw, 25vw"
                   />
                 </div>
                 <div className="h-48 sm:h-56 md:h-64 bg-almona-dark-light rounded-lg overflow-hidden opacity-90 sm:opacity-100">
-                  <img 
+                  <ResponsiveImage 
                     src="/images/hero01 (2).webp" 
                     alt="ALMONA Team" 
                     className="w-full h-full object-cover"
-                    loading="lazy"
-                    width="400"
-                    height="500"
-                    decoding="async"
+                    width={400}
+                    height={500}
+                    sizes="(max-width: 768px) 50vw, 25vw"
                   />
                 </div>
               </div>
               <div className="space-y-2 sm:space-y-3 md:space-y-4 mt-4 sm:mt-6 md:mt-8">
                 <div className="h-48 sm:h-56 md:h-64 bg-almona-dark-light rounded-lg overflow-hidden opacity-90 sm:opacity-100">
-                  <img 
+                  <ResponsiveImage 
                     src="/images/hero01 (3).webp" 
                     alt="ALMONA Machines" 
                     className="w-full h-full object-cover"
-                    loading="lazy"
-                    width="400"
-                    height="500"
-                    decoding="async"
+                    width={400}
+                    height={500}
+                    sizes="(max-width: 768px) 50vw, 25vw"
                   />
                 </div>
                 <div className="h-32 sm:h-36 md:h-40 bg-almona-dark-light rounded-lg overflow-hidden opacity-90 sm:opacity-100">
-                  <img 
+                  <ResponsiveImage 
                     src="/images/hero01 (4).webp" 
                     alt="ALMONA Office" 
                     className="w-full h-full object-cover"
-                    loading="lazy"
-                    width="400"
-                    height="300"
-                    decoding="async"
+                    width={400}
+                    height={300}
+                    sizes="(max-width: 768px) 50vw, 25vw"
                   />
                 </div>
               </div>

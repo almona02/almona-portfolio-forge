@@ -1,0 +1,83 @@
+{
+  "timestamp": "2025-12-22T15:51:00.515Z",
+  "libraries": [
+    {
+      "library": "Ant Design",
+      "size": "~1.2MB",
+      "filesUsing": 1,
+      "components": [
+        "Alert",
+        "Button",
+        "Card",
+        "Collapse",
+        "Descriptions",
+        "InputNumber",
+        "Modal",
+        "Progress",
+        "Space",
+        "Tag"
+      ],
+      "usageFiles": [
+        "src\\components\\fabricator\\smartscan\\ProfileScannerUploader.tsx"
+      ]
+    },
+    {
+      "library": "Recharts",
+      "size": "~230KB",
+      "filesUsing": 9,
+      "components": [],
+      "usageFiles": [
+        "src\\components\\admin\\SalesChart.tsx",
+        "src\\components\\analytics\\BusinessKPIDashboard.tsx",
+        "src\\components\\analytics\\PredictiveInsights.tsx",
+        "src\\components\\analytics\\WasteComparisonReport.tsx",
+        "src\\components\\national\\NationalManufacturingDashboard.tsx"
+      ]
+    },
+    {
+      "library": "Framer Motion",
+      "size": "~150KB",
+      "filesUsing": 66,
+      "components": [],
+      "usageFiles": [
+        "src\\components\\3d-model\\EnhancedModel3DDialog.tsx",
+        "src\\components\\3d-model\\Model3DGallery.tsx",
+        "src\\components\\3d-model\\ModelMeasurementTool.tsx",
+        "src\\components\\about\\CompanyTimeline.tsx",
+        "src\\components\\auth\\SmsOtpModal.tsx"
+      ]
+    },
+    {
+      "library": "TensorFlow.js",
+      "size": "~230KB",
+      "filesUsing": 5,
+      "components": [],
+      "usageFiles": [
+        "src\\lib\\ai\\faultDetection.ts",
+        "src\\lib\\dynamicImports.ts",
+        "src\\lib\\ml\\ModelTrainer.ts",
+        "src\\lib\\ml\\RemnantUsagePredictor.ts",
+        "src\\lib\\optimized-imports.ts"
+      ]
+    },
+    {
+      "library": "Three.js",
+      "size": "~149KB",
+      "filesUsing": 22,
+      "components": [],
+      "usageFiles": [
+        "src\\components\\3d-model\\Collaborative3DViewer.tsx",
+        "src\\components\\3d-model\\Enhanced3DViewer.tsx",
+        "src\\components\\3d-model\\GLBViewer.tsx",
+        "src\\components\\3d-model\\Interactive3DViewer.tsx",
+        "src\\components\\3d-model\\InteractiveGLBViewer.tsx"
+      ]
+    }
+  ],
+  "recommendations": {
+    "reactVendor": "Tree-shake unused Ant Design components, lazy load Recharts/Framer Motion",
+    "documentVendor": "Already optimized - verify lazy loading works",
+    "mlEngine": "Already optimized - verify lazy loading works",
+    "threeEngine": "Already optimized - verify lazy loading works"
+  }
+}
