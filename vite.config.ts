@@ -299,8 +299,11 @@ export default defineConfig(({ mode }) => {
           entryFileNames: `assets/[name]-[hash].js`,
           chunkFileNames: `assets/[name]-[hash].js`,
           assetFileNames: `assets/[name]-[hash].[ext]`,
-          // Minimal safe chunk splitting - only split standalone engines
-          // Keep all React-dependent code together to avoid initialization issues
+          // TBT OPTIMIZATION: Safe chunk splitting strategy
+          // 1. Split ONLY standalone engines (no React dependencies) - SAFE
+          // 2. Let React.lazy() handle React-dependent code splitting via dynamic imports
+          //    This avoids circular dependency errors while reducing initial bundle size
+          // 3. Route-based splitting is handled by React.lazy() in App.tsx
           manualChunks: (id) => {
             // Exclude app code from vendor chunks
             if (id.includes('/src/') || id.includes('\\src\\')) {
