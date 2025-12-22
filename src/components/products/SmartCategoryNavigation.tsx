@@ -50,7 +50,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
   const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
-  const [_isAiThinking, _setIsAiThinking] = useState(false);
+  const [isAiThinking, setIsAiThinking] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const categoryCounts = getCategoryMachineCounts(machines);

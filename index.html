@@ -382,10 +382,30 @@
     <!-- White Page Fix: Add error handler before main script -->
     <script>
       // Catch any errors during initial load
+      // Use a unified reload key to prevent multiple handlers from reloading
       window.addEventListener('error', function(event) {
-        if (event.message && event.message.includes('Failed to fetch dynamically imported module')) {
-          console.warn('[White Page Fix] Dynamic import failed, will reload...');
-          setTimeout(() => window.location.reload(), 1000);
+        // Only handle specific chunk/module loading errors
+        const errorMsg = event.message || event.error?.message || '';
+        if (errorMsg.includes('Failed to fetch dynamically imported module') || 
+            errorMsg.includes('Loading chunk') && errorMsg.includes('failed')) {
+          // Prevent infinite reload loop - only reload once per session
+          const reloadKey = 'chunk-error-reload-attempted';
+          const lastReload = sessionStorage.getItem(reloadKey);
+          const now = Date.now();
+          
+          // Only reload if we haven't reloaded in the last 5 seconds (prevents rapid loops)
+          if (!lastReload || (now - parseInt(lastReload)) > 5000) {
+            console.warn('[White Page Fix] Dynamic import failed, will reload once...');
+            sessionStorage.setItem(reloadKey, now.toString());
+            setTimeout(() => {
+              // Double-check before reloading
+              if (sessionStorage.getItem(reloadKey) === now.toString()) {
+                window.location.reload();
+              }
+            }, 1000);
+          } else {
+            console.error('[White Page Fix] Reload already attempted recently, stopping to prevent infinite loop');
+          }
         }
       }, true);
       

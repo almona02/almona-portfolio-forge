@@ -177,10 +177,27 @@ const GlobalDynamicImportGuard = () => {
   useEffect(() => {
     const handler = (ev: PromiseRejectionEvent) => {
       const msg = String(ev.reason?.message || ev.reason || '').toLowerCase();
-      if (msg.includes('failed to fetch dynamically imported module')) {
-        console.warn('Dynamic import failed, attempting recovery...');
-        // Simple recovery: reload page after a short delay
-        setTimeout(() => window.location.reload(), 1000);
+      // Only handle specific chunk/module loading errors, not all rejections
+      if (msg.includes('failed to fetch dynamically imported module') || 
+          (msg.includes('loading chunk') && msg.includes('failed'))) {
+        // Use unified reload key to coordinate with other handlers
+        const reloadKey = 'chunk-error-reload-attempted';
+        const lastReload = sessionStorage.getItem(reloadKey);
+        const now = Date.now();
+        
+        // Only reload if we haven't reloaded in the last 5 seconds (prevents rapid loops)
+        if (!lastReload || (now - parseInt(lastReload)) > 5000) {
+          console.warn('Dynamic import failed, attempting recovery (one-time reload)...');
+          sessionStorage.setItem(reloadKey, now.toString());
+          setTimeout(() => {
+            // Double-check before reloading
+            if (sessionStorage.getItem(reloadKey) === now.toString()) {
+              window.location.reload();
+            }
+          }, 1000);
+        } else {
+          console.error('Dynamic import reload already attempted recently, stopping to prevent infinite loop');
+        }
       }
     };
     window.addEventListener('unhandledrejection', handler);

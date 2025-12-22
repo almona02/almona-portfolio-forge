@@ -291,13 +291,22 @@ window.addEventListener('unhandledrejection', (event) => {
   // Handle chunk loading errors
   if (errorMessage.includes('chunk') || errorMessage.includes('Failed to fetch dynamically imported module')) {
     console.error('Chunk loading error:', errorMessage);
-    // Try to reload once
+    // Use unified reload key with timestamp to prevent rapid reloads
     const reloadKey = 'chunk-error-reload-attempted';
-    if (!sessionStorage.getItem(reloadKey)) {
-      sessionStorage.setItem(reloadKey, 'true');
+    const lastReload = sessionStorage.getItem(reloadKey);
+    const now = Date.now();
+    
+    // Only reload if we haven't reloaded in the last 5 seconds (prevents rapid loops)
+    if (!lastReload || (now - parseInt(lastReload)) > 5000) {
+      sessionStorage.setItem(reloadKey, now.toString());
       setTimeout(() => {
-        window.location.reload();
+        // Double-check before reloading
+        if (sessionStorage.getItem(reloadKey) === now.toString()) {
+          window.location.reload();
+        }
       }, 1000);
+    } else {
+      console.error('Chunk error reload already attempted recently, stopping to prevent infinite loop');
     }
     event.preventDefault();
     return;
