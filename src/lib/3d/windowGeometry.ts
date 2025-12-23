@@ -17,10 +17,15 @@
  */
 
 import { Profile, WindowUnit } from '@/types/fabricator';
+import { getPatternById, type EgyptianPattern } from '@/lib/fabricator/presetUtils';
+import { renderFrameLevelMullions, renderSashLevelMullions } from './manualMullionRenderer';
+import { FeatureFlagManager } from '../featureFlags';
+import { addOpeningMechanisms } from './openingMechanisms';
 // Tree-shakeable imports - only import what we use
 import {
   BufferGeometry,
   BoxGeometry,
+  Box3,
   Vector2,
   Vector3,
   Euler,
@@ -65,6 +70,9 @@ export interface MiteredFrameData {
     shape: Vector2[];
     length: number;
     matrix: Matrix4; // The transformation to position and orient the piece
+    // Optional: Use BoxGeometry for simpler positioning (temporary fix)
+    useBoxGeometry?: boolean;
+    boxSize?: { width: number; height: number; depth: number };
 }
 
 /** Describes a complete, animatable sash unit. */
@@ -229,40 +237,61 @@ export function createMiteredFrame(width: number, height: number, profile: Profi
 
     const createMatrix = (pos: [number, number, number], rot: [number, number, number]): Matrix4 => {
         const m = new Matrix4();
+        // Create rotation matrix
         const q = new Quaternion().setFromEuler(new Euler(...rot));
+        // Create translation matrix
         const p = new Vector3(...pos);
-        const s = new Vector3(1, 1, 1);
-        m.compose(p, q, s);
+        // Compose: first rotate, then translate (scale is identity)
+        m.compose(p, q, new Vector3(1, 1, 1));
         return m;
     };
 
-    // Top
+    // Frame structure: 4 connected bars forming a rectangle
+    // Gold Tier: Bars overlap at corners for seamless welded appearance
+    // Strategy: All bars extend to edges, creating overlapping corners
+    
+    const profileDepth = profile.depth || 0.05; // Frame depth (thickness)
+    const profileHeight = profile.width || 0.05; // Frame height (width of bar)
+    
+    // Top bar: horizontal bar at top edge, spans full width
+    // Positioned so its bottom edge is at y=halfH (top of window)
     parts.push({
         shape: profile.shape,
         length: width,
-        matrix: createMatrix([0, halfH - profileW / 2, 0], [0, 0, -Math.PI/2]),
+        matrix: createMatrix([0, halfH - profileHeight/2, 0], [0, 0, 0]),
+        useBoxGeometry: true,
+        boxSize: { width: width, height: profileHeight, depth: profileDepth }
     });
 
-    // Bottom
+    // Bottom bar: horizontal bar at bottom edge, spans full width
+    // Positioned so its top edge is at y=-halfH (bottom of window)
     parts.push({
         shape: profile.shape,
         length: width,
-        matrix: createMatrix([0, -halfH + profileW / 2, 0], [0, 0, -Math.PI/2]),
+        matrix: createMatrix([0, -halfH + profileHeight/2, 0], [0, 0, 0]),
+        useBoxGeometry: true,
+        boxSize: { width: width, height: profileHeight, depth: profileDepth }
     });
 
-    // Left (vertical)
-    // Length is height - 2*profileW to fit inside top/bottom
+    // Left bar: vertical bar at left edge, spans full height
+    // Overlaps with top and bottom bars at corners
+    // Positioned so its right edge is at x=-halfW (left of window)
     parts.push({
         shape: profile.shape,
-        length: height - profileW * 2, // Butt joint inset
-        matrix: createMatrix([-halfW + profileW / 2, 0, 0], [0, 0, 0]), // Vertical
+        length: height,
+        matrix: createMatrix([-halfW + profileHeight/2, 0, 0], [0, 0, 0]),
+        useBoxGeometry: true,
+        boxSize: { width: profileHeight, height: height, depth: profileDepth }
     });
     
-    // Right (vertical)
+    // Right bar: vertical bar at right edge, spans full height
+    // Overlaps with top and bottom bars at corners
     parts.push({
         shape: profile.shape,
-        length: height - profileW * 2,
-        matrix: createMatrix([halfW - profileW / 2, 0, 0], [0, 0, 0]),
+        length: height,
+        matrix: createMatrix([halfW - profileHeight/2, 0, 0], [0, 0, 0]),
+        useBoxGeometry: true,
+        boxSize: { width: profileHeight, height: height, depth: profileDepth }
     });
 
     return parts;
@@ -275,8 +304,289 @@ export function createMiteredFrame(width: number, height: number, profile: Profi
 /**
  * The main exported function. Generates the complete, render-ready geometry
  * specification for a given WindowUnit.
+ * 
+ * @param windowUnit - The window unit to generate geometry for
+ * @param pattern - Optional Egyptian pattern to use for preset-aware generation
  */
-export function generateModelGeometries(windowUnit: WindowUnit): FrameGeometry {
+export function generateModelGeometries(
+  windowUnit: WindowUnit,
+  pattern?: EgyptianPattern | null
+): FrameGeometry {
+  // If pattern is provided, use preset-aware generation
+  if (pattern) {
+    return generatePresetAwareGeometries(windowUnit, pattern);
+  }
+  
+  // Fallback: try to get pattern from windowUnit.presetId
+  if (windowUnit.presetId) {
+    const patternFromId = getPatternById(windowUnit.presetId);
+    if (patternFromId) {
+      return generatePresetAwareGeometries(windowUnit, patternFromId);
+    }
+  }
+  
+  // Default: use existing generic generation logic
+  return generateGenericGeometries(windowUnit);
+}
+
+/**
+ * Generate geometry using preset pattern specifications.
+ * This ensures the 3D model matches the pattern's engineering specs.
+ */
+function generatePresetAwareGeometries(
+  windowUnit: WindowUnit,
+  pattern: EgyptianPattern
+): FrameGeometry {
+  // Store pattern data in windowUnit for use in generateGenericGeometries
+  const windowUnitWithPattern = {
+    ...windowUnit,
+    presetData: {
+      ...windowUnit.presetData,
+      transoms: pattern.transoms,
+      mullions: pattern.mullions
+    }
+  };
+  
+  // Start with base geometry generation (with pattern data available)
+  const baseGeometry = generateGenericGeometries(windowUnitWithPattern);
+  
+  // KEY VISUAL TEST: Handle Mullions based on pattern
+  // This is the most visible and testable change.
+  if (pattern.mullions && pattern.mullions.length > 0) {
+    // Pattern SPECIFIES mullions (e.g., 'casement-double')
+    // Generate mullion geometry at positions from pattern.mullions[]
+    baseGeometry.fixedSpacers = createMullionsFromSpec(pattern.mullions, windowUnit, baseGeometry.fixedSpacers);
+  } else {
+    // Pattern has NO mullions (e.g., 'sliding-2s' uses interlock)
+    // CLEAR all mullion geometry from fixedSpacers (keep only glass spacers)
+    // Filter out vertical mullions (between columns) but keep glass spacers
+    baseGeometry.fixedSpacers = baseGeometry.fixedSpacers.filter((spacer: BufferGeometry) => {
+      // Keep only glass spacers (smaller, square-ish) not mullions (tall vertical bars)
+      // Mullions are typically taller than they are wide
+      const bbox = new Box3().setFromBufferAttribute(spacer.attributes.position as any);
+      if (!bbox.isEmpty()) {
+        const size = bbox.getSize(new Vector3());
+        // Mullions are vertical bars (height >> width), glass spacers are more square
+        const isMullion = size.y > size.x * 1.5; // Height is 1.5x width = mullion
+        return !isMullion; // Keep only non-mullions
+      }
+      return true; // Keep if we can't determine
+    });
+  }
+  
+  // Handle Transoms (horizontal divisions)
+  if (pattern.transoms && pattern.transoms.length > 0) {
+    const transomGeometries = createTransomsFromSpec(pattern.transoms, windowUnit);
+    baseGeometry.fixedSpacers = [...baseGeometry.fixedSpacers, ...transomGeometries];
+  }
+  
+  // Handle Manual Mullions (user-drawn, takes precedence over presets)
+  // Frame-level mullions are added to fixedSpacers
+  if (windowUnit.grid?.manualMullions) {
+    const frameMullions = renderFrameLevelMullions(windowUnit, baseGeometry.frame.profile);
+    baseGeometry.fixedSpacers = [...baseGeometry.fixedSpacers, ...frameMullions];
+  }
+  
+  // WEEK 1: Add opening mechanism visualization (ADDITIVE - feature flagged)
+  // This enhances the 3D preview without modifying existing geometry
+  if (pattern.openingMechanism) {
+    try {
+      // Check feature flag
+      if (FeatureFlagManager.isEnabled('ENABLE_OPENING_MECHANISMS')) {
+        const mechanisms = addOpeningMechanisms(windowUnit, pattern);
+        
+        // Add mechanism geometries to fixedSpacers for rendering
+        if (mechanisms.tracks) {
+          baseGeometry.fixedSpacers = [...baseGeometry.fixedSpacers, ...mechanisms.tracks];
+        }
+        if (mechanisms.hinges) {
+          baseGeometry.fixedSpacers = [...baseGeometry.fixedSpacers, ...mechanisms.hinges];
+        }
+        if (mechanisms.pivots) {
+          baseGeometry.fixedSpacers = [...baseGeometry.fixedSpacers, ...mechanisms.pivots];
+        }
+        if (mechanisms.indicators) {
+          baseGeometry.fixedSpacers = [...baseGeometry.fixedSpacers, ...mechanisms.indicators];
+        }
+      }
+    } catch (error) {
+      // Graceful fallback if opening mechanisms module fails
+      console.warn('Failed to load opening mechanisms visualization:', error);
+    }
+  }
+  
+  return baseGeometry;
+}
+
+/**
+ * Helper function to create mullion geometry from pattern specifications
+ */
+function createMullionsFromSpec(
+  mullions: Array<{
+    position: number;
+    type: 'standard' | 'structural' | 'corner';
+    width?: number;
+    reinforcement?: boolean;
+  }>,
+  windowUnit: WindowUnit,
+  existingSpacers: BufferGeometry[]
+): BufferGeometry[] {
+  const width = windowUnit.overallWidth / 1000;
+  const height = windowUnit.overallHeight / 1000;
+  
+  // Get frame profile for sizing
+  const defaultProfile: Profile = { 
+    id: 'default', name: 'Default', width: 50, height: 50, material: 'aluminum', color: '#cccccc',
+    costPerMeter: 0, cuttingAllowance: 0, stockQuantity: 0, minStockLevel: 0, supplier: '' 
+  };
+  const baseProfile = windowUnit.components?.[0]?.profile || defaultProfile;
+  const frameProfile = generateProfileCrossSection(baseProfile);
+  
+  const mullionGeometries: BufferGeometry[] = [];
+  const mullionGap = Math.min(0.008, frameProfile.width * 0.45);
+  const mullionDepth = Math.max(frameProfile.depth || 0.03, 0.02);
+  
+  // If we have a grid, use it to calculate positions
+  if (windowUnit.grid && windowUnit.grid.cols > 1) {
+    const { cols, colWidths } = windowUnit.grid;
+    const colVals = colWidths && colWidths.length === cols ? colWidths : Array(cols).fill(1);
+    const colTotal = colVals.reduce((a, b) => a + b, 0) || cols;
+    const colSizes = colVals.map((v) => (v / colTotal) * width);
+    
+    // Calculate column start positions (left edge of each column)
+    const colStarts: number[] = [];
+    let currentX = -width / 2; // Start at left edge of window
+    colSizes.forEach((w) => {
+      colStarts.push(currentX);
+      currentX += w;
+    });
+    
+    // Create mullions at pattern-specified positions
+    // position: 0 = between col 0 and 1, 1 = between col 1 and 2, etc.
+    // Mullion should be at the right edge of column[position]
+    mullions.forEach(mullion => {
+      if (mullion.position >= 0 && mullion.position < cols - 1) {
+        // Mullion is between column[mullion.position] and column[mullion.position + 1]
+        const leftColStart = colStarts[mullion.position];
+        const leftColWidth = colSizes[mullion.position];
+        const x = leftColStart + leftColWidth; // Right edge of left column = mullion position
+        
+        const mullionWidth = mullion.width ? mullion.width / 1000 : mullionGap;
+        // Mullion height should fit between top and bottom frame bars
+        const mullionHeight = height - frameProfile.width * 2;
+        const bar = new BoxGeometry(mullionWidth, mullionHeight, mullionDepth);
+        bar.translate(x, 0, 0);
+        mullionGeometries.push(bar);
+      }
+    });
+  } else {
+    // Fallback: create mullions at equal spacing
+    mullions.forEach((mullion) => {
+      const totalMullions = mullions.length;
+      const spacing = width / (totalMullions + 1);
+      const x = -width / 2 + spacing * (mullion.position + 1);
+      const mullionWidth = mullion.width ? mullion.width / 1000 : mullionGap;
+      const bar = new BoxGeometry(mullionWidth, height - frameProfile.width * 2, mullionDepth);
+      bar.translate(x, 0, 0);
+      mullionGeometries.push(bar);
+    });
+  }
+  
+  // Keep existing glass spacers, add mullions
+  const glassSpacers = existingSpacers.filter((spacer: BufferGeometry) => {
+    // Filter logic same as above - keep only glass spacers
+    const bbox = new Box3().setFromBufferAttribute(spacer.attributes.position as any);
+    if (!bbox.isEmpty()) {
+      const size = bbox.getSize(new Vector3());
+      const isMullion = size.y > size.x * 1.5;
+      return !isMullion;
+    }
+    return true;
+  });
+  
+  return [...glassSpacers, ...mullionGeometries];
+}
+
+/**
+ * Helper function to create transom geometry from pattern specifications
+ */
+function createTransomsFromSpec(
+  transoms: Array<{
+    position: number;
+    type: 'standard' | 'structural';
+    height?: number;
+    reinforcement?: boolean;
+  }>,
+  windowUnit: WindowUnit
+): BufferGeometry[] {
+  const width = windowUnit.overallWidth / 1000;
+  const height = windowUnit.overallHeight / 1000;
+  
+  // Get frame profile for sizing
+  const defaultProfile: Profile = { 
+    id: 'default', name: 'Default', width: 50, height: 50, material: 'aluminum', color: '#cccccc',
+    costPerMeter: 0, cuttingAllowance: 0, stockQuantity: 0, minStockLevel: 0, supplier: '' 
+  };
+  const baseProfile = windowUnit.components?.[0]?.profile || defaultProfile;
+  const frameProfile = generateProfileCrossSection(baseProfile);
+  
+  const transomGeometries: BufferGeometry[] = [];
+  const transomGap = Math.min(0.008, frameProfile.width * 0.45);
+  const transomDepth = Math.max(frameProfile.depth || 0.03, 0.02);
+  
+  // If we have a grid, use it to calculate positions
+  if (windowUnit.grid && windowUnit.grid.rows > 1) {
+    const { rows, rowHeights } = windowUnit.grid;
+    const rowVals = rowHeights && rowHeights.length === rows ? rowHeights : Array(rows).fill(1);
+    const rowTotal = rowVals.reduce((a, b) => a + b, 0) || rows;
+    const rowSizes = rowVals.map((v) => (v / rowTotal) * height);
+    
+    // Calculate row start positions (top edge of each row)
+    const rowStarts: number[] = [];
+    let currentY = height / 2; // Start at top edge of window
+    rowSizes.forEach((h) => {
+      rowStarts.push(currentY);
+      currentY -= h;
+    });
+    
+    // Create transoms at pattern-specified positions
+    // position: 0 = between row 0 and 1, 1 = between row 1 and 2, etc.
+    // Transom should be at the bottom edge of row[position]
+    transoms.forEach(transom => {
+      if (transom.position >= 0 && transom.position < rows - 1) {
+        // Transom is between row[transom.position] and row[transom.position + 1]
+        const topRowStart = rowStarts[transom.position];
+        const topRowHeight = rowSizes[transom.position];
+        const y = topRowStart - topRowHeight; // Bottom edge of top row = transom position
+        
+        const transomHeight = transom.height ? transom.height / 1000 : transomGap;
+        // Transom width should fit between left and right frame bars
+        const transomWidth = width - frameProfile.width * 2;
+        const bar = new BoxGeometry(transomWidth, transomHeight, transomDepth);
+        bar.translate(0, y, 0);
+        transomGeometries.push(bar);
+      }
+    });
+  } else {
+    // Fallback: create transoms at equal spacing
+    transoms.forEach((transom) => {
+      const totalTransoms = transoms.length;
+      const spacing = height / (totalTransoms + 1);
+      const y = height / 2 - spacing * (transom.position + 1);
+      const transomHeight = transom.height ? transom.height / 1000 : transomGap;
+      const bar = new BoxGeometry(width - frameProfile.width * 2, transomHeight, transomDepth);
+      bar.translate(0, y, 0);
+      transomGeometries.push(bar);
+    });
+  }
+  
+  return transomGeometries;
+}
+
+/**
+ * Generate geometry using generic logic (existing implementation)
+ */
+function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
     const width = windowUnit.overallWidth / 1000;
     const height = windowUnit.overallHeight / 1000;
     const defaultProfile: Profile = { 
@@ -309,13 +619,15 @@ export function generateModelGeometries(windowUnit: WindowUnit): FrameGeometry {
 
         const colStarts: number[] = [];
         const rowStarts: number[] = [];
+        // Column starts: from left edge (-width/2) going right
         colSizes.reduce((acc, w) => {
             colStarts.push(acc);
             return acc + w;
         }, -width / 2);
+        // Row starts: from top edge (height/2) going down (subtracting heights)
         rowSizes.reduce((acc, h) => {
             rowStarts.push(acc);
-            return acc + h;
+            return acc - h; // Subtract because we're going DOWN from top
         }, height / 2);
 
         const sashInset = Math.min(frameProfile.width * 0.4, 0.01); // tighter fit than subtracting full profile width
@@ -323,22 +635,27 @@ export function generateModelGeometries(windowUnit: WindowUnit): FrameGeometry {
         const mullionGap = Math.min(0.008, frameProfile.width * 0.45);
         const mullionDepth = Math.max(frameProfile.depth || 0.03, 0.02);
 
-        // Add mullion bars between columns/rows for visual separation
-        if (cols > 1) {
+        // NOTE: Mullion/transom generation is now handled by preset-aware geometry
+        // Only add automatic mullions if NO preset is being used (fallback for manual grids)
+        // This prevents conflicts with pattern-specific mullion positioning
+        if (!windowUnit.presetId && !windowUnit.presetData) {
+          // Add mullion bars between columns/rows for visual separation (legacy behavior)
+          if (cols > 1) {
             for (let c = 1; c < cols; c++) {
-                const x = colStarts[c];
-                const bar = new BoxGeometry(mullionGap, height - frameProfile.width * 2, mullionDepth);
-                bar.translate(x, 0, 0);
-                fixedSpacers.push(bar);
+              const x = colStarts[c];
+              const bar = new BoxGeometry(mullionGap, height - frameProfile.width * 2, mullionDepth);
+              bar.translate(x, 0, 0);
+              fixedSpacers.push(bar);
             }
-        }
-        if (rows > 1) {
+          }
+          if (rows > 1) {
             for (let r = 1; r < rows; r++) {
-                const y = rowStarts[r];
-                const bar = new BoxGeometry(width - frameProfile.width * 2, mullionGap, mullionDepth);
-                bar.translate(0, y, 0);
-                fixedSpacers.push(bar);
+              const y = rowStarts[r];
+              const bar = new BoxGeometry(width - frameProfile.width * 2, mullionGap, mullionDepth);
+              bar.translate(0, y, 0);
+              fixedSpacers.push(bar);
             }
+          }
         }
 
         cells.forEach(cell => {
@@ -346,63 +663,129 @@ export function generateModelGeometries(windowUnit: WindowUnit): FrameGeometry {
 
             const cellW = colSizes[cell.col];
             const cellH = rowSizes[cell.row];
+            // Cell X center: column start + half column width
             const cellX = colStarts[cell.col] + cellW / 2;
+            // Cell Y center: row start (top edge) - half row height (going down from top)
             const cellY = rowStarts[cell.row] - cellH / 2;
             
             const isSash = cell.type === 'sash' || (cell as any).type === 'sliding';
 
             if (isSash) {
+                // Each sash is a 4-bar frame (like the main frame but smaller)
+                // Sash dimensions: inset from cell edges
                 const sashW = Math.max(0.05, cellW - sashInset * 2);
                 const sashH = Math.max(0.05, cellH - sashInset * 2);
-
-                // Build a hollow sash frame (outer shape + hole)
-                const frameThickness = Math.min(0.06, Math.min(sashW, sashH) * 0.18); // ~60mm or 18% of span
-                const outer = [
-                    new Vector2(-sashW / 2, -sashH / 2),
-                    new Vector2(sashW / 2, -sashH / 2),
-                    new Vector2(sashW / 2, sashH / 2),
-                    new Vector2(-sashW / 2, sashH / 2),
-                ];
-                const inner = [
-                    new Vector2(-sashW / 2 + frameThickness, -sashH / 2 + frameThickness),
-                    new Vector2(sashW / 2 - frameThickness, -sashH / 2 + frameThickness),
-                    new Vector2(sashW / 2 - frameThickness, sashH / 2 - frameThickness),
-                    new Vector2(-sashW / 2 + frameThickness, sashH / 2 - frameThickness),
-                ];
-                const shape = new Shape(outer);
-                shape.holes.push(new Path(inner));
-
-                // Note: sashFrameGeom is not used directly - sash parts use MiteredFrameData structure
-                // The geometry is created during rendering from the shape data
-
-                const glassW = Math.max(0.02, sashW - frameThickness * 2 - glassInset * 2);
-                const glassH = Math.max(0.02, sashH - frameThickness * 2 - glassInset * 2);
+                
+                // Check for transoms both ABOVE and BELOW this cell
+                // Transom at position r is between row r and row r+1
+                let transomInsetTop = 0;
+                let transomInsetBottom = 0;
+                
+                if (windowUnit.presetData?.transoms && Array.isArray(windowUnit.presetData.transoms)) {
+                    const transoms = windowUnit.presetData.transoms;
+                    
+                    // Check for transom ABOVE this cell (at position cell.row - 1)
+                    const transomAbove = transoms.find((t: any) => t.position === cell.row - 1);
+                    if (transomAbove) {
+                        transomInsetTop = transomAbove.height ? transomAbove.height / 1000 : 0.008;
+                    }
+                    
+                    // Check for transom BELOW this cell (at position cell.row)
+                    const transomBelow = transoms.find((t: any) => t.position === cell.row);
+                    if (transomBelow) {
+                        transomInsetBottom = transomBelow.height ? transomBelow.height / 1000 : 0.008;
+                    }
+                }
+                
+                // Create 4-bar frame for this sash using createMiteredFrame
+                const sashFrameParts = createMiteredFrame(sashW, sashH, sashProfile);
+                
+                // Glass fits inside the sash frame (accounting for sash profile width AND transoms)
+                const sashProfileW = sashProfile.width;
+                const glassW = Math.max(0.02, sashW - sashProfileW * 2 - glassInset * 2);
+                // Reduce glass height to account for transoms above and below, but keep it centered
+                const glassH = Math.max(0.02, sashH - sashProfileW * 2 - glassInset * 2 - transomInsetTop - transomInsetBottom);
+                
+                // Glass stays centered in the sash (don't shift Y position)
+                // The reduced height naturally accounts for the transom space
                 const glassGeom = new BoxGeometry(glassW, glassH, 0.006);
-                glassGeom.translate(0, 0, -0.006); // recess glass for depth
+                glassGeom.translate(cellX, cellY, -0.006); // Position at cell center, recessed
                 
                 const spacerGeom = new BoxGeometry(Math.max(0.01, glassW - 0.01), Math.max(0.01, glassH - 0.01), 0.01);
+                spacerGeom.translate(cellX, cellY, 0);
 
+                // Transform sash frame parts to be positioned at cell center
+                const transformedSashParts = sashFrameParts.map(part => {
+                    const newMatrix = new Matrix4();
+                    // Clone the original matrix
+                    newMatrix.copy(part.matrix);
+                    // Translate to cell position
+                    const translation = new Matrix4().makeTranslation(cellX, cellY, 0);
+                    newMatrix.multiplyMatrices(translation, newMatrix);
+                    return {
+                        ...part,
+                        matrix: newMatrix
+                    };
+                });
+
+                // Add sash-level mullions if any
+                const sashMullions = renderSashLevelMullions(
+                    windowUnit,
+                    sashProfile,
+                    cell.id,
+                    cellX,
+                    cellY,
+                    sashW,
+                    sashH
+                );
+                
                 sashes.push({
-                    parts: [
-                        {
-                            shape: outer,
-                            length: frameProfile.depth,
-                            matrix: new Matrix4(),
-                        },
-                    ],
+                    parts: transformedSashParts,
                     glass: [glassGeom], 
-                    spacers: [spacerGeom],
+                    spacers: [spacerGeom, ...sashMullions], // Include sash-level mullions
                     openingPath: { 
                         position: new Vector3(cellX, cellY, 0),
                         rotation: new Euler(0, 0, 0),
                     }
                 });
             } else if (cell.type === 'fixed' || cell.type === 'panel') {
-                const inset = Math.min(frameProfile.width * 0.4, 0.01);
-                const glassW = Math.max(0.02, cellW - inset * 2);
-                const glassH = Math.max(0.02, cellH - inset * 2);
+                // Fixed glass: must fit inside the cell, accounting for frame bars AND transoms
+                // Glass should be inset from cell edges by frame profile width
+                const frameInset = frameProfile.width; // Account for frame bar width
+                
+                // Check for transoms both ABOVE and BELOW this cell
+                // Transom at position r is between row r and row r+1
+                // So for cell in row r:
+                //   - Transom at position r-1 is ABOVE (between row r-1 and r)
+                //   - Transom at position r is BELOW (between row r and r+1)
+                let transomInsetTop = 0;
+                let transomInsetBottom = 0;
+                
+                if (windowUnit.presetData?.transoms && Array.isArray(windowUnit.presetData.transoms)) {
+                    const transoms = windowUnit.presetData.transoms;
+                    
+                    // Check for transom ABOVE this cell (at position cell.row - 1)
+                    const transomAbove = transoms.find((t: any) => t.position === cell.row - 1);
+                    if (transomAbove) {
+                        transomInsetTop = transomAbove.height ? transomAbove.height / 1000 : 0.008;
+                    }
+                    
+                    // Check for transom BELOW this cell (at position cell.row)
+                    const transomBelow = transoms.find((t: any) => t.position === cell.row);
+                    if (transomBelow) {
+                        transomInsetBottom = transomBelow.height ? transomBelow.height / 1000 : 0.008;
+                    }
+                }
+                
+                // Glass width: account for frame bars on left/right
+                const glassW = Math.max(0.02, cellW - frameInset * 2);
+                // Glass height: account for frame bars on top/bottom AND transoms above/below
+                const glassH = Math.max(0.02, cellH - frameInset * 2 - transomInsetTop - transomInsetBottom);
+                
+                // Glass stays centered in the cell (don't shift Y position)
+                // The reduced height naturally accounts for the transom space
                 const glassGeom = new BoxGeometry(glassW, glassH, 0.006);
-                glassGeom.translate(cellX, cellY, -0.006);
+                glassGeom.translate(cellX, cellY, -0.006); // Position at cell center, recessed
                 fixedGlass.push(glassGeom);
                 
                 const spacerGeom = new BoxGeometry(Math.max(0.01, glassW - 0.01), Math.max(0.01, glassH - 0.01), 0.01);
@@ -411,6 +794,12 @@ export function generateModelGeometries(windowUnit: WindowUnit): FrameGeometry {
             }
             // 'empty' already skipped
         });
+        
+        // Add frame-level manual mullions (user-drawn, not from presets)
+        if (windowUnit.grid?.manualMullions) {
+            const frameMullions = renderFrameLevelMullions(windowUnit, frameProfile);
+            fixedSpacers.push(...frameMullions);
+        }
 
     } else {
         // Handle Legacy Preset Mode - Check window type to determine if it's fixed or has sashes

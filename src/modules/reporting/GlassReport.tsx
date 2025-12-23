@@ -154,8 +154,9 @@ export const GlassReport: React.FC<GlassReportProps> = ({
       const area = (glassWidth * glassHeight) / 1_000_000; // Convert to m²
       const totalComponentArea = area * paneCount;
       
-      // Glass thickness (typically 4mm per pane)
-      const glassThickness = project.glazing?.thickness || 4;
+      // Glass thickness: 5mm for single glazing, 4mm per pane for double/triple
+      const defaultThickness = glazingType === 'single' ? 5 : 4; // 5mm for single glazing bead system
+      const glassThickness = project.glazing?.thickness || defaultThickness;
       
       // Spacer information
       const spacerThickness = project.glazing?.spacer || 12;

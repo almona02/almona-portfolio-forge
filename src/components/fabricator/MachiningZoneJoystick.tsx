@@ -12,7 +12,7 @@ import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Plus, Trash2, Info, Move, Maximize2, Grid, Target } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import type { MachiningZone } from './MachiningZoneEditor';
 
 interface MachiningZoneJoystickProps {
@@ -324,13 +324,13 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                 <div className="absolute bottom-2 right-2 text-[10px] text-gray-500">BR</div>
 
                 {/* Zones */}
-                <AnimatePresence>
+                <LazyAnimatePresence>
                   {zones.map((zone) => {
                     const isSelected = selectedZone?.id === zone.id;
                     const isActive = joystickState.activeZoneId === zone.id;
 
                     return (
-                      <motion.div
+                      <LazyMotionDiv
                         key={zone.id}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{
@@ -379,22 +379,22 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
 
                         {/* Position Indicator */}
                         {isSelected && (
-                          <motion.div
+                          <LazyMotionDiv
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             className="absolute -top-2 -left-2 w-6 h-6 bg-purple-500 rounded-full border-2 border-white flex items-center justify-center"
                           >
                             <Move className="w-3 h-3 text-white" />
-                          </motion.div>
+                          </LazyMotionDiv>
                         )}
-                      </motion.div>
+                      </LazyMotionDiv>
                     );
                   })}
-                </AnimatePresence>
+                </LazyAnimatePresence>
 
                 {/* Joystick Feedback Overlay */}
                 {joystickState.isDragging && (
-                  <motion.div
+                          <LazyMotionDiv
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="absolute top-4 right-4 bg-purple-500/90 text-white px-3 py-2 rounded-lg text-xs font-semibold backdrop-blur-sm"
@@ -410,7 +410,7 @@ export const MachiningZoneJoystick: React.FC<MachiningZoneJoystickProps> = ({
                         Resizing Zone
                       </>
                     )}
-                  </motion.div>
+                          </LazyMotionDiv>
                 )}
               </div>
             </CardContent>

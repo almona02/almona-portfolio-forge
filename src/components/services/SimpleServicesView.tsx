@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { LazyMotionDiv, LazyMotion } from '@/utils/lazyMotion';
 import { useLanguage } from '@/context/LanguageContext';
 import { ServicePackageGrid } from './ServicePackageGrid';
 import { PackageComparisonTable } from './PackageComparisonTable';
@@ -96,7 +96,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
       <section className="py-20 px-4 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-purple-500/10" />
         <div className="relative max-w-7xl mx-auto text-center">
-          <motion.h1 
+          <LazyMotion component="h1" 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-6xl font-bold mb-6"
@@ -104,17 +104,17 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
             <span className="bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
               {t('services.premium_services')}
             </span>
-          </motion.h1>
-          <motion.p 
+          </LazyMotion>
+          <LazyMotion component="p" 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="text-xl md:text-2xl text-gray-300 mb-6 max-w-4xl mx-auto leading-relaxed"
           >
             {t('services.complete_care_solutions')}
-          </motion.p>
+          </LazyMotion>
           
-          <motion.div 
+          <LazyMotionDiv 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -129,7 +129,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
                 <div className="text-gray-400 text-sm">{stat.label}</div>
               </div>
             ))}
-          </motion.div>
+          </LazyMotionDiv>
         </div>
       </section>
 
@@ -147,7 +147,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {serviceCategories.map((category, index) => (
-              <motion.div
+              <LazyMotionDiv
                 key={category.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -175,7 +175,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
                     </ul>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </LazyMotionDiv>
             ))}
           </div>
         </div>
@@ -192,7 +192,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {processSteps.map((item, index) => (
-              <motion.div
+              <LazyMotionDiv
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -204,7 +204,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
                 <p className="text-gray-400 text-sm">{item.description}</p>
-              </motion.div>
+              </LazyMotionDiv>
             ))}
           </div>
         </div>

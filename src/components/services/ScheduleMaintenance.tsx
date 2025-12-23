@@ -16,7 +16,7 @@ import { Separator } from "@/shared/ui/ui/separator";
 import { Switch } from "@/shared/ui/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import { Textarea } from "@/shared/ui/ui/textarea";
-import { AnimatePresence, motion } from "framer-motion";
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { AlertCircle, CheckCircle2, Cpu, Settings, Shield, Users, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -387,9 +387,9 @@ export const ScheduleMaintenance = ({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-almona-dark border-almona-light/20 text-white">
-        <AnimatePresence mode="wait">
+        <LazyAnimatePresence mode="wait">
           {step === "select" && (
-            <motion.div
+            <LazyMotionDiv
               key="select"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -415,7 +415,7 @@ export const ScheduleMaintenance = ({
                 <TabsContent value="packages" className="mt-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {servicePackages.map((pkg) => (
-                      <motion.div
+                      <LazyMotionDiv
                         key={pkg.id}
                         className={`relative p-6 rounded-lg border-2 transition-all duration-300 ${
                           selectedPackage?.id === pkg.id
@@ -465,13 +465,13 @@ export const ScheduleMaintenance = ({
                         </div>
                         
                         {selectedPackage?.id === pkg.id && (
-                          <motion.div
+                          <LazyMotionDiv
                             className="absolute inset-0 rounded-lg border-2 border-orange-500"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                           />
                         )}
-                      </motion.div>
+                      </LazyMotionDiv>
                     ))}
                   </div>
                 </TabsContent>
@@ -595,11 +595,11 @@ export const ScheduleMaintenance = ({
                   التالي | Continue
                 </Button>
               </div>
-            </motion.div>
+            </LazyMotionDiv>
           )}
 
           {step === "details" && (
-            <motion.div
+            <LazyMotionDiv
               key="details"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -793,11 +793,11 @@ export const ScheduleMaintenance = ({
                   </Button>
                 </div>
               </form>
-            </motion.div>
+            </LazyMotionDiv>
           )}
 
           {step === "schedule" && (
-            <motion.div
+            <LazyMotionDiv
               key="schedule"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -816,7 +816,7 @@ export const ScheduleMaintenance = ({
                     <h3 className="font-semibold mb-4">المواعيد المتاحة | Available Time Slots</h3>
                     <div className="space-y-3">
                       {filteredSlots.map((slot, index) => (
-                        <motion.div
+                        <LazyMotionDiv
                           key={index}
                           className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                             selectedSlot === slot
@@ -849,7 +849,7 @@ export const ScheduleMaintenance = ({
                               </div>
                             </div>
                           </div>
-                        </motion.div>
+                        </LazyMotionDiv>
                       ))}
                     </div>
                   </div>
@@ -969,18 +969,18 @@ export const ScheduleMaintenance = ({
                   </Button>
                 </div>
               </div>
-            </motion.div>
+            </LazyMotionDiv>
           )}
 
           {step === "confirm" && (
-            <motion.div
+            <LazyMotionDiv
               key="confirm"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               className="text-center py-12"
             >
-              <motion.div
+              <LazyMotionDiv
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
@@ -988,7 +988,7 @@ export const ScheduleMaintenance = ({
                 <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle2 className="h-10 w-10 text-white" />
                 </div>
-              </motion.div>
+              </LazyMotionDiv>
               <h3 className="text-2xl font-bold mb-2">تم جدولة الخدمة! | Service Scheduled!</h3>
               <p className="text-gray-400 mb-4">
                 تم جدولة خدمة الصيانة بنجاح. ستتلقى تأكيدًا عبر البريد الإلكتروني والرسائل القصيرة.
@@ -1007,9 +1007,9 @@ export const ScheduleMaintenance = ({
                   <p>✓ خبير تركي متاح | Turkish expert available</p>
                 )}
               </div>
-            </motion.div>
+            </LazyMotionDiv>
           )}
-        </AnimatePresence>
+        </LazyAnimatePresence>
       </DialogContent>
     </Dialog>
   );

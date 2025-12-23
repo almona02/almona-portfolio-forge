@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv, LazyMotionButton } from '@/utils/lazyMotion';
 import { ChevronDown, Filter, Building2, Layers, Factory } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -191,17 +191,17 @@ const IndustrialCategoryFilter: React.FC<IndustrialCategoryFilterProps> = ({
             </Badge>
           )}
         </div>
-        <motion.div
+        <LazyMotionDiv
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
           <ChevronDown className="h-4 w-4" />
-        </motion.div>
+        </LazyMotionDiv>
       </Button>
 
-      <AnimatePresence>
+      <LazyAnimatePresence>
         {isOpen && (
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -241,7 +241,7 @@ const IndustrialCategoryFilter: React.FC<IndustrialCategoryFilterProps> = ({
               )}
 
               {showAllOption && (
-                <motion.button
+                <LazyMotionButton
                   onClick={() => handleCategorySelect('all')}
                   className={`
                     w-full text-left p-3 rounded-lg transition-colors
@@ -259,13 +259,13 @@ const IndustrialCategoryFilter: React.FC<IndustrialCategoryFilterProps> = ({
                       {getSelectedCategoryCount()}
                     </Badge>
                   </div>
-                </motion.button>
+                </LazyMotionButton>
               )}
 
               <div className="mt-2 space-y-1">
                 {currentCategories.map(category => (
                   <div key={category.id}>
-                    <motion.button
+                    <LazyMotionButton
                       onClick={() => handleCategorySelect(category.id)}
                       className={`
                         w-full text-left p-3 rounded-lg transition-colors
@@ -290,12 +290,12 @@ const IndustrialCategoryFilter: React.FC<IndustrialCategoryFilterProps> = ({
                       {category.description && (
                         <p className="text-xs text-gray-400 mt-1">{category.description}</p>
                       )}
-                    </motion.button>
+                    </LazyMotionButton>
 
                     {/* Subcategories */}
                     <div className="ml-4 mt-1 space-y-1">
                       {category.children?.map(subCategory => (
-                        <motion.button
+                        <LazyMotionButton
                           key={subCategory.id}
                           onClick={() => handleCategorySelect(subCategory.id)}
                           className={`
@@ -316,16 +316,16 @@ const IndustrialCategoryFilter: React.FC<IndustrialCategoryFilterProps> = ({
                               </Badge>
                             )}
                           </div>
-                        </motion.button>
+                        </LazyMotionButton>
                       ))}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          </motion.div>
+          </LazyMotionDiv>
         )}
-      </AnimatePresence>
+      </LazyAnimatePresence>
 
       {/* Overlay to close dropdown */}
       {isOpen && (

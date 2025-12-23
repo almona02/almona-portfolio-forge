@@ -13,7 +13,7 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent } from '@/shared/ui/ui/card';
-import { AnimatePresence, motion } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { Lightbulb, X } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -213,9 +213,9 @@ export const ContextualTooltips: React.FC<ContextualTooltipsProps> = ({
       />
 
       {/* Tooltip */}
-      <AnimatePresence>
+      <LazyAnimatePresence>
         {activeTooltip && (
-          <motion.div
+          <LazyMotionDiv
             ref={tooltipRef}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -266,9 +266,9 @@ export const ContextualTooltips: React.FC<ContextualTooltipsProps> = ({
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </LazyMotionDiv>
         )}
-      </AnimatePresence>
+      </LazyAnimatePresence>
     </>
   );
 };

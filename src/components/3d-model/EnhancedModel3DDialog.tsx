@@ -2,7 +2,7 @@ import { SwiftXRIframe } from '@/components/swiftxr/SwiftXRIframe';
 import { useToast } from '@/hooks/useToast';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
-import { AnimatePresence, motion } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv, LazyMotion } from '@/utils/lazyMotion';
 import {
     Camera,
     Download,
@@ -228,8 +228,8 @@ export function EnhancedModel3DDialog({
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div 
+    <LazyAnimatePresence>
+      <LazyMotionDiv 
         className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
         variants={overlayVariants}
         initial="initial"
@@ -237,7 +237,7 @@ export function EnhancedModel3DDialog({
         exit="exit"
         onClick={onClose}
       >
-        <motion.div 
+        <LazyMotionDiv 
           className={`bg-gradient-to-br from-gray-900 to-black rounded-2xl shadow-2xl border border-orange-500/20 ${
             isFullscreen ? 'w-full h-full max-w-none max-h-none' : 'max-w-7xl w-full max-h-[95vh]'
           } overflow-hidden`}
@@ -250,14 +250,14 @@ export function EnhancedModel3DDialog({
           {/* Header */}
           <div className="flex justify-between items-center p-6 border-b border-gray-700">
             <div className="flex items-center gap-4">
-              <motion.h2 
+              <LazyMotion component="h2" 
                 className="text-2xl font-bold text-white"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
               >
                 {machineName} - 3D Model
-              </motion.h2>
+              </LazyMotion>
               {isARSupported && (
                 <Badge className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white border-0">
                   <Smartphone className="w-3 h-3 mr-1" />
@@ -428,15 +428,15 @@ export function EnhancedModel3DDialog({
                 )}
                 
                 {/* Loading Overlay */}
-                <AnimatePresence>
+                <LazyAnimatePresence>
                   {loadingProgress.stage !== 'complete' && !error && (
-                    <motion.div 
+                    <LazyMotionDiv 
                       className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center text-white"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                     >
-                      <motion.div
+                      <LazyMotionDiv
                         className="text-center space-y-4"
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
@@ -446,7 +446,7 @@ export function EnhancedModel3DDialog({
                         <div className="space-y-2">
                           <p className="text-lg font-semibold">{loadingProgress.message}</p>
                           <div className="w-64 bg-gray-700 rounded-full h-2">
-                            <motion.div 
+                            <LazyMotionDiv 
                               className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full"
                               initial={{ width: 0 }}
                               animate={{ width: `${loadingProgress.progress}%` }}
@@ -455,15 +455,15 @@ export function EnhancedModel3DDialog({
                           </div>
                           <p className="text-sm text-gray-400">{loadingProgress.progress}%</p>
                         </div>
-                      </motion.div>
-                    </motion.div>
+                      </LazyMotionDiv>
+                    </LazyMotionDiv>
                   )}
-                </AnimatePresence>
+                </LazyAnimatePresence>
 
                 {/* Error Overlay */}
-                <AnimatePresence>
+                <LazyAnimatePresence>
                   {error && (
-                    <motion.div 
+                    <LazyMotionDiv 
                       className="absolute inset-0 bg-red-900/80 backdrop-blur-sm flex items-center justify-center text-white"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -478,9 +478,9 @@ export function EnhancedModel3DDialog({
                           <p className="text-sm text-gray-300 mt-2">{error}</p>
                         </div>
                       </div>
-                    </motion.div>
+                    </LazyMotionDiv>
                   )}
-                </AnimatePresence>
+                </LazyAnimatePresence>
 
                 {/* Control Overlay */}
                 <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -539,7 +539,7 @@ export function EnhancedModel3DDialog({
             <div className="w-full lg:w-80 border-l border-gray-700 bg-gray-900/50 backdrop-blur-sm">
               <div className="p-6 space-y-6">
                 {/* Machine Info */}
-                <motion.div
+                <LazyMotionDiv
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 }}
@@ -582,10 +582,10 @@ export function EnhancedModel3DDialog({
                       )}
                     </div>
                   )}
-                </motion.div>
+                </LazyMotionDiv>
 
                 {/* Actions */}
-                <motion.div
+                <LazyMotionDiv
                   className="space-y-3"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -614,10 +614,10 @@ export function EnhancedModel3DDialog({
                       Share
                     </Button>
                   </div>
-                </motion.div>
+                </LazyMotionDiv>
 
                 {/* Controls */}
-                <motion.div
+                <LazyMotionDiv
                   className="space-y-3"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -645,7 +645,7 @@ export function EnhancedModel3DDialog({
                       </div>
                     )}
                   </div>
-                </motion.div>
+                </LazyMotionDiv>
               </div>
             </div>
           </div>
@@ -661,9 +661,9 @@ export function EnhancedModel3DDialog({
           onMeasurementAdd={(m) => setSharedMeasurements(prev => [...prev, { id: m.id, distance: m.distance, unit: m.unit }])}
           onMeasurementRemove={(id) => setSharedMeasurements(prev => prev.filter(x => x.id !== id))}
         />
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+        </LazyMotionDiv>
+      </LazyMotionDiv>
+    </LazyAnimatePresence>
   );
 }
 

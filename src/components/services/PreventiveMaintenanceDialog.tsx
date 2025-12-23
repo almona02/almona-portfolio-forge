@@ -13,7 +13,7 @@ import { Textarea } from "@/shared/ui/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/select";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Calendar, CheckCircle2, MapPin, Shield, Wrench, Zap } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/ui/card";
 import { Separator } from "@/shared/ui/ui/separator";
@@ -248,9 +248,9 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-almona-dark border-almona-light/20 text-white">
-        <AnimatePresence mode="wait">
+            <LazyAnimatePresence mode="wait">
           {step === "market" && (
-            <motion.div
+            <LazyMotionDiv
               key="market"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -268,7 +268,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
               </DialogHeader>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                <motion.div
+                <LazyMotionDiv
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${
@@ -297,9 +297,9 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       EGP pricing
                     </div>
                   </div>
-                </motion.div>
+                </LazyMotionDiv>
 
-                <motion.div
+                <LazyMotionDiv
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${
@@ -328,13 +328,13 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       Fast response times
                     </div>
                   </div>
-                </motion.div>
+                </LazyMotionDiv>
               </div>
-            </motion.div>
+            </LazyMotionDiv>
           )}
 
           {step === "select" && (
-            <motion.div
+            <LazyMotionDiv
               key="select"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -358,7 +358,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   </Label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {serviceContracts.map((contract) => (
-                      <motion.div
+                      <LazyMotionDiv
                         key={contract.id}
                         className={`relative p-4 rounded-lg border-2 transition-all duration-300 ${
                           selectedContract?.id === contract.id
@@ -393,13 +393,13 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                           )}
                         </div>
                         {selectedContract?.id === contract.id && (
-                          <motion.div
+                          <LazyMotionDiv
                             className="absolute inset-0 rounded-lg border-2 border-orange-500"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                           />
                         )}
-                      </motion.div>
+                      </LazyMotionDiv>
                     ))}
                   </div>
                 </div>
@@ -434,11 +434,11 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   </Button>
                 </div>
               </div>
-            </motion.div>
+            </LazyMotionDiv>
           )}
 
           {step === "details" && selectedContract && (
-            <motion.div
+            <LazyMotionDiv
               key="details"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -725,18 +725,18 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   </Button>
                 </div>
               </form>
-            </motion.div>
+            </LazyMotionDiv>
           )}
 
           {step === "confirm" && (
-            <motion.div
+            <LazyMotionDiv
               key="confirm"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               className="text-center py-12"
             >
-              <motion.div
+              <LazyMotionDiv
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
@@ -744,7 +744,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                 <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle2 className="h-10 w-10 text-white" />
                 </div>
-              </motion.div>
+              </LazyMotionDiv>
               <h3 className="text-2xl font-bold mb-2">
                 {selectedMarket === "egypt" ? "الصيانة المجدولة! (Maintenance Scheduled!)" : "Bakım Planlandı! (Maintenance Scheduled!)"}
               </h3>
@@ -763,9 +763,9 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                 <p>✓ {selectedMarket === "egypt" ? "وصول إلى البوابة الإلكترونية" : "Müşteri portalı erişimi verildi"}</p>
                 <p>✓ {selectedMarket === "egypt" ? "دعم محلي باللغة العربية/التركية" : "Yerel Türkçe/Arapça destek"}</p>
               </div>
-            </motion.div>
+            </LazyMotionDiv>
           )}
-        </AnimatePresence>
+            </LazyAnimatePresence>
       </DialogContent>
     </Dialog>
   );

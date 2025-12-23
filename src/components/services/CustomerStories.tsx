@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -230,7 +230,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
   return (
     <div className={`space-y-12 ${className}`}>
       {/* Header */}
-      <motion.div
+      <LazyMotionDiv
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="text-center"
@@ -245,17 +245,17 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
         <p className="text-xl text-gray-400 max-w-3xl mx-auto">
           {t('services.see_how_almona_transformed')}
         </p>
-      </motion.div>
+      </LazyMotionDiv>
 
       {/* Featured Story Carousel */}
-      <motion.div
+      <LazyMotionDiv
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         className="relative"
       >
         <div className="overflow-hidden rounded-2xl">
-          <motion.div
+          <LazyMotionDiv
             className="flex"
             animate={{ x: -currentStory * 100 + '%' }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
@@ -353,7 +353,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
                 </Card>
               </div>
             ))}
-          </motion.div>
+          </LazyMotionDiv>
         </div>
 
         {/* Navigation */}
@@ -390,10 +390,10 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
             </Button>
           </div>
         )}
-      </motion.div>
+      </LazyMotionDiv>
 
       {/* All Stories Grid */}
-      <motion.div
+      <LazyMotionDiv
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
@@ -444,10 +444,10 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
             </CardContent>
           </Card>
         ))}
-      </motion.div>
+      </LazyMotionDiv>
 
       {/* CTA */}
-      <motion.div
+      <LazyMotionDiv
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
@@ -469,7 +469,7 @@ export const CustomerStories: React.FC<CustomerStoriesProps> = ({
             </Button>
           </div>
         </div>
-      </motion.div>
+      </LazyMotionDiv>
     </div>
   );
 };

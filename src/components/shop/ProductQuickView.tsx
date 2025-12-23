@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { X, Star, Truck, Shield, Zap, Scale, Heart, Eye, Settings, Monitor, Smartphone, Globe, FileText } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -168,11 +168,11 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
   };
 
   return (
-    <AnimatePresence>
+            <LazyAnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50">
           {/* Backdrop */}
-          <motion.div
+          <LazyMotionDiv
             variants={overlayVariants}
             initial="hidden"
             animate="visible"
@@ -182,7 +182,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
           />
           
           {/* Slide-out Panel - Full width on mobile, max-w-xl on tablet, max-w-2xl on desktop */}
-          <motion.div
+          <LazyMotionDiv
             ref={panelRef}
             variants={slideVariants}
             initial="hidden"
@@ -882,9 +882,9 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                 </Button>
               </div>
             </div>
-          </motion.div>
+          </LazyMotionDiv>
         </div>
       )}
-    </AnimatePresence>
+            </LazyAnimatePresence>
   );
 };

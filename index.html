@@ -351,10 +351,9 @@
     <link rel="prefetch" href="/fabricator/projects" as="document">
     <link rel="prefetch" href="/products" as="document">
     
-    <!-- 3. Preconnect to critical origins -->
+    <!-- 3. Preconnect to critical origins (max 4 to avoid warning) -->
     <link rel="preconnect" href="https://shfsebdncjnncqqnewfj.supabase.co" crossorigin>
-    <link rel="preconnect" href="https://storage.supabase.co" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <!-- Removed unused preconnects: storage.supabase.co, cdn.jsdelivr.net (not used on initial load) -->
     
     <!-- 4. DNS prefetch for external resources -->
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
@@ -473,14 +472,17 @@
             // Non-critical - app works without custom service worker
           });
           
-          // Periodic updates (every 1 hour)
+          // Periodic updates (every 1 hour) - but don't auto-reload
+          // With skipWaiting: false, updates won't activate until user confirms
           setInterval(() => {
             navigator.serviceWorker.ready.then((registration) => {
-              registration.update();
+              registration.update().catch(() => {
+                // Ignore update errors
+              });
             }).catch(() => {
               // Ignore update errors
             });
-          }, 3600000); // 1 hour
+          }, 3600000); // 1 hour - check for updates but don't auto-reload
         });
       } else {
         // In development, unregister any existing service workers to prevent conflicts

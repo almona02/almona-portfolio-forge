@@ -21,7 +21,7 @@ import {
   Layers,
   Search
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 import { getSystemPackTuningStatus, saveReturnUrl } from '@/lib/fabricator/systemTuningUtils';
@@ -113,7 +113,7 @@ export const SystemPackManagement: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <motion.div
+        <LazyMotionDiv
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center justify-between"
@@ -127,7 +127,7 @@ export const SystemPackManagement: React.FC = () => {
               View all system packs, check tuning status, and configure profiles for accurate cut lists
             </p>
           </div>
-        </motion.div>
+        </LazyMotionDiv>
 
         {/* Filters */}
         <Card className="bg-gray-900/60 border-gray-700">
