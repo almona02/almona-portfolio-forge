@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { 
   CheckCircle,
   Circle,
@@ -380,8 +380,8 @@ export const InteractiveUserGuide: React.FC<{
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
+    <LazyAnimatePresence>
+      <LazyMotionDiv
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -394,7 +394,7 @@ export const InteractiveUserGuide: React.FC<{
           style={{ display: 'none', zIndex: 60 }}
         />
 
-        <motion.div
+        <LazyMotionDiv
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
@@ -415,7 +415,7 @@ export const InteractiveUserGuide: React.FC<{
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {TRAINING_MODULES.map((module) => (
-                  <motion.div
+                  <LazyMotionDiv
                     key={module.id}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -460,7 +460,7 @@ export const InteractiveUserGuide: React.FC<{
                         </div>
                       </CardContent>
                     </Card>
-                  </motion.div>
+                  </LazyMotionDiv>
                 ))}
               </div>
             </div>
@@ -505,9 +505,9 @@ export const InteractiveUserGuide: React.FC<{
 
               {/* Content */}
               <div className="flex-1 p-6 overflow-y-auto">
-                <AnimatePresence mode="wait">
+                <LazyAnimatePresence mode="wait">
                   {selectedModule.steps[currentStep] && (
-                    <motion.div
+                    <LazyMotionDiv
                       key={currentStep}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -583,9 +583,9 @@ export const InteractiveUserGuide: React.FC<{
                           )}
                         </Button>
                       </div>
-                    </motion.div>
+                    </LazyMotionDiv>
                   )}
-                </AnimatePresence>
+                </LazyAnimatePresence>
               </div>
 
               {/* Footer Navigation */}
@@ -632,9 +632,9 @@ export const InteractiveUserGuide: React.FC<{
               </div>
             </div>
           )}
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+        </LazyMotionDiv>
+      </LazyMotionDiv>
+    </LazyAnimatePresence>
   );
 };
 

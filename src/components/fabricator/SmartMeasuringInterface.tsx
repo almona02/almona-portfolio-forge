@@ -61,7 +61,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
     windowType: 'sliding_window', // Default to sliding
     color: egyptianDefaults.color,
     glazingType: egyptianDefaults.glazingType,
-    glassColor: egyptianDefaults.glassColor,
+    glassColor: egyptianDefaults.glassColor || 'clear', // Default to 'clear' (first option) - selected by default
     flyScreenType: '',
     flatNumber: '',
     buildingBlock: '',
@@ -526,6 +526,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       roughOpeningHeight: isHoleMode ? rawHeight : undefined,
       // Preserve grid layout if set in measuring step
       grid: isGridMode ? grid : undefined,
+      // Preserve preset pattern selection
+      presetId: selectedPatternId || undefined,
     };
 
     // Call the callback
@@ -962,6 +964,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                             grid={grid}
                             onGridChange={setGrid}
                             className="border border-orange-500/20 rounded-lg p-2 bg-orange-500/5"
+                            availablePatterns={availablePatterns}
+                            selectedPatternId={selectedPatternId}
+                            onPatternSelect={setSelectedPatternId}
+                            systemPackId={selectedSystemPackId}
                          />
                       </div>
                     ) : (
@@ -1054,8 +1060,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
                     <div>
                       <Label htmlFor="glassColor">{t('smart_measuring.specs.glass_color', 'Glass Color / Tint')}</Label>
                       <Select
-                        value={measurements.glassColor}
+                        value={measurements.glassColor || 'clear'}
                         onValueChange={(value) => handleInputChange('glassColor', value)}
+                        defaultValue="clear"
                       >
                         <SelectTrigger
                           id="glassColor"

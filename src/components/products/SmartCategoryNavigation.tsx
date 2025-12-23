@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv, LazyMotionButton } from '@/utils/lazyMotion';
 import { Search, TrendingUp, Lightbulb, Filter, ChevronDown, Sparkles, Brain } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -216,7 +216,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
     return (
       <div className={`relative ${className}`} ref={dropdownRef}>
         {/* Compact Dropdown Trigger */}
-        <motion.button
+        <LazyMotionButton
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           aria-label="Toggle AI Smart Categories"
           className="relative w-full flex items-center justify-between p-4 rounded-xl border border-gray-700/60 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-800/70 hover:border-orange-500/60 shadow-[0_10px_40px_rgba(0,0,0,0.35)] overflow-hidden transition-all duration-200 group"
@@ -241,22 +241,22 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
               <Badge variant="secondary" className="text-xs bg-orange-500/15 text-orange-200 border border-orange-400/30">
                 {selectedCategoryInfo ? (categoryCounts[selectedCategory] || 0) : Object.values(categoryCounts).reduce((a, b) => a + b, 0)}
               </Badge>
-              <motion.div
+              <LazyMotionDiv
                 animate={{ rotate: isDropdownOpen ? 180 : 0 }}
                 transition={{ duration: 0.2 }}
                 className="rounded-full bg-gray-800/60 border border-gray-700 p-1 text-gray-300"
               >
                 <ChevronDown className="h-4 w-4" />
-              </motion.div>
+              </LazyMotionDiv>
             </div>
             <span className="text-[11px] text-gray-400">Tap to personalize</span>
           </div>
-        </motion.button>
+        </LazyMotionButton>
 
         {/* AI-Powered Dropdown */}
-        <AnimatePresence>
+        <LazyAnimatePresence>
           {isDropdownOpen && (
-            <motion.div
+            <LazyMotionDiv
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -278,7 +278,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                       />
                       {isSearching && (
                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                          <motion.div
+                          <LazyMotionDiv
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                             className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full"
@@ -289,7 +289,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                     
                     {/* AI Suggestions */}
                     {aiSuggestions.length > 0 && (
-                      <motion.div
+                      <LazyMotionDiv
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         className="mt-2 space-y-1"
@@ -299,7 +299,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                           <span>AI Suggestions</span>
                         </div>
                         {aiSuggestions.map((suggestion, index) => (
-                          <motion.button
+                          <LazyMotionButton
                             key={suggestion}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -311,14 +311,14 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                             className="w-full text-left p-2 text-xs bg-gray-700/80 md:bg-gray-700/50 rounded hover:bg-gray-700/90 md:hover:bg-gray-700/70 transition-colors text-gray-300 hover:text-white"
                           >
                             {suggestion}
-                          </motion.button>
+                          </LazyMotionButton>
                         ))}
-                      </motion.div>
+                      </LazyMotionDiv>
                     )}
 
                     {/* Search Results in Dropdown */}
                     {searchQuery && searchResults.length > 0 && (
-                      <motion.div
+                      <LazyMotionDiv
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="mt-3 space-y-2"
@@ -350,7 +350,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                             </div>
                           ))}
                         </div>
-                      </motion.div>
+                      </LazyMotionDiv>
                     )}
                   </div>
                 )}
@@ -362,7 +362,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                     const count = categoryCounts[category.id] || 0;
                     
                     return (
-                      <motion.button
+                      <LazyMotionButton
                         key={category.id}
                         onClick={() => {
                           handleCategorySelect(category.id);
@@ -390,7 +390,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                             {count}
                           </Badge>
                         </div>
-                      </motion.button>
+                      </LazyMotionButton>
                     );
                   })}
                 </div>
@@ -423,9 +423,9 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                   </div>
                 )}
               </div>
-            </motion.div>
+            </LazyMotionDiv>
           )}
-        </AnimatePresence>
+        </LazyAnimatePresence>
       </div>
     );
   }
@@ -452,7 +452,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
           
           {/* Search Results */}
           {searchQuery && searchResults.length > 0 && (
-            <motion.div
+            <LazyMotionDiv
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               className="mt-3 space-y-2"
@@ -485,7 +485,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                   </div>
                 ))}
               </div>
-            </motion.div>
+            </LazyMotionDiv>
           )}
         </div>
       )}
@@ -531,7 +531,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
             const count = categoryCounts[category.id] || 0;
             
             return (
-              <motion.button
+              <LazyMotionButton
                 key={category.id}
                 onClick={() => handleCategorySelect(category.id)}
                 className={`
@@ -560,7 +560,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                     {count}
                   </Badge>
                 </div>
-              </motion.button>
+              </LazyMotionButton>
             );
           })}
         </div>

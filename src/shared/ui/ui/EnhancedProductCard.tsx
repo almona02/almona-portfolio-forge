@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv, LazyMotion } from '@/utils/lazyMotion';
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Eye, ShoppingCart, GitCompare, Play, Pause, Download } from "lucide-react";
@@ -131,7 +131,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
   };
 
   return (
-      <motion.div
+      <LazyMotionDiv
         variants={cardVariants}
         initial="initial"
         animate="animate"
@@ -144,9 +144,9 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         }`}
       >
       {/* 3D Model Badge - Clickable */}
-      <AnimatePresence>
+      <LazyAnimatePresence>
         {show3DBadge && machine.has3DModel && (
-          <motion.div 
+          <LazyMotionDiv 
             className="absolute top-3 left-3 z-10"
             variants={badgeVariants}
             initial="initial"
@@ -165,15 +165,15 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
               <Eye className="w-3 h-3 mr-1" />
               3D View
             </Badge>
-          </motion.div>
+          </LazyMotionDiv>
         )}
-      </AnimatePresence>
+      </LazyAnimatePresence>
 
       {/* Video and Featured Badges - Stacked when both exist */}
       <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 items-end">
-        <AnimatePresence>
+        <LazyAnimatePresence>
           {machine.youtubeUrl && (
-            <motion.div
+            <LazyMotionDiv
               variants={badgeVariants}
               initial="initial"
               animate="animate"
@@ -202,13 +202,13 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                   </>
                 )}
               </Badge>
-            </motion.div>
+            </LazyMotionDiv>
           )}
-        </AnimatePresence>
+        </LazyAnimatePresence>
 
-        <AnimatePresence>
+        <LazyAnimatePresence>
           {machine.featured && (
-            <motion.div
+            <LazyMotionDiv
               variants={badgeVariants}
               initial="initial"
               animate="animate"
@@ -217,15 +217,15 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
               <Badge variant="secondary" className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 shadow-lg">
                 Featured
               </Badge>
-            </motion.div>
+            </LazyMotionDiv>
           )}
-        </AnimatePresence>
+        </LazyAnimatePresence>
       </div>
 
       {/* Image Container with Fixed Aspect Ratio - KEY CHANGE: object-contain */}
       <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-gradient-to-br from-gray-800 to-gray-900">
         {/* Product Image */}
-        <motion.div
+        <LazyMotionDiv
           variants={imageVariants}
           initial="initial"
           animate="animate"
@@ -240,7 +240,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
             loading="lazy"
             quality={85}
           />
-        </motion.div>
+        </LazyMotionDiv>
 
         {/* Embedded Video Player */}
         {machine.youtubeUrl && (
@@ -283,7 +283,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
       </div>
 
       {/* Content */}
-      <motion.div 
+      <LazyMotionDiv 
         className="p-4 space-y-3 flex-1 flex flex-col"
         variants={contentVariants}
         initial="initial"
@@ -291,13 +291,13 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
       >
         {/* Title and Description */}
         <div className="space-y-2">
-          <motion.h3 
+          <LazyMotion component="h3" 
             className="font-semibold text-white text-lg leading-tight line-clamp-2"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.2 }}
           >
             {machine.name}
-          </motion.h3>
+          </LazyMotion>
           <p className="text-gray-400 text-sm leading-relaxed line-clamp-2">
             {machine.description}
           </p>
@@ -306,24 +306,24 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         {/* Specifications */}
         <div className="grid grid-cols-2 gap-2 text-xs">
           {machine.powerSpec?.consumption && (
-            <motion.div 
+            <LazyMotionDiv 
               className="text-gray-400"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
               <div className="text-gray-500 text-xs">Power</div>
               <div className="text-white font-medium">{machine.powerSpec.consumption}</div>
-            </motion.div>
+            </LazyMotionDiv>
           )}
           {machine.category && (
-            <motion.div 
+            <LazyMotionDiv 
               className="text-gray-400"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
               <div className="text-gray-500 text-xs">Category</div>
               <div className="text-white font-medium capitalize">{machine.category}</div>
-            </motion.div>
+            </LazyMotionDiv>
           )}
         </div>
 
@@ -331,7 +331,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         {machine.tags && machine.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {machine.tags.slice(0, 3).map((tag: string, index: number) => (
-              <motion.div
+              <LazyMotionDiv
                 key={index}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -345,7 +345,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 <Badge variant="outline" className="text-xs text-gray-400 border-gray-600">
                   {tag}
                 </Badge>
-              </motion.div>
+              </LazyMotionDiv>
             ))}
           </div>
         )}
@@ -353,7 +353,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2 mt-auto">
           {machine.specPdf && (
-            <motion.div
+            <LazyMotionDiv
               className="flex-1"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -372,11 +372,11 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                   PDF
                 </Button>
               </a>
-            </motion.div>
+            </LazyMotionDiv>
           )}
 
           {onSelect && (
-            <motion.div
+            <LazyMotionDiv
               className="flex-1"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -393,11 +393,11 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 <GitCompare className="w-4 h-4 mr-1" />
                 {isSelected ? 'Remove' : 'Compare'}
               </Button>
-            </motion.div>
+            </LazyMotionDiv>
           )}
 
           {onQuoteRequest && (
-            <motion.div
+            <LazyMotionDiv
               className="flex-1"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -411,11 +411,11 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 <ShoppingCart className="w-4 h-4 mr-1" />
                 Quote
               </Button>
-            </motion.div>
+            </LazyMotionDiv>
           )}
         </div>
-      </motion.div>
-    </motion.div>
+      </LazyMotionDiv>
+          </LazyMotionDiv>
   );
 };
 

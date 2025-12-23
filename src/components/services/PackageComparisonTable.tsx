@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLanguage } from '@/context/LanguageContext';
-import { motion } from 'framer-motion';
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { Check, X } from 'lucide-react';
 import React from 'react';
 
@@ -58,7 +58,7 @@ export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
   };
 
   return (
-    <motion.div
+    <LazyMotionDiv
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={`space-y-8 ${className}`}
@@ -157,7 +157,7 @@ export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </LazyMotionDiv>
   );
 };
 

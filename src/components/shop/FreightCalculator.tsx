@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
@@ -256,7 +256,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <motion.div
+      <LazyMotionDiv
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-8"
@@ -298,7 +298,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
             </CardContent>
           </Card>
         </div>
-      </motion.div>
+      </LazyMotionDiv>
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -325,7 +325,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                   <label className="block text-sm font-medium mb-3">Shipping Method</label>
                   <div className="grid grid-cols-2 gap-3">
                     {shippingOptions.map((option) => (
-                      <motion.div
+                      <LazyMotionDiv
                         key={option.id}
                         whileHover={{ scale: 1.02 }}
                         className={`cursor-pointer ${getShippingMethodColor(option.id)} border-2 rounded-lg p-3 transition-all ${
@@ -338,7 +338,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                           <span className="font-medium text-sm">{option.name}</span>
                         </div>
                         <p className="text-xs opacity-80">{option.nameAr}</p>
-                      </motion.div>
+                      </LazyMotionDiv>
                     ))}
                   </div>
                 </div>
@@ -549,7 +549,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
         <TabsContent value="methods" className="space-y-6">
           <div className="grid gap-6">
             {shippingOptions.map((option) => (
-              <motion.div
+              <LazyMotionDiv
                 key={option.id}
                 whileHover={{ scale: 1.02 }}
                 className="cursor-pointer"
@@ -605,7 +605,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </LazyMotionDiv>
             ))}
           </div>
         </TabsContent>

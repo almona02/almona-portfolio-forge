@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { 
   ChevronRight, 
   Scissors, 
@@ -109,7 +109,7 @@ const IndustrialCategoryNavigation: React.FC<IndustrialCategoryNavigationProps> 
 
     return (
       <div key={category.id} className="select-none">
-        <motion.div
+        <LazyMotionDiv
           className={`
             flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200
             ${level === 0 ? 'font-medium' : 'font-normal'}
@@ -164,18 +164,18 @@ const IndustrialCategoryNavigation: React.FC<IndustrialCategoryNavigationProps> 
           </div>
 
           {hasChildren && (
-            <motion.div
+            <LazyMotionDiv
               animate={{ rotate: expanded ? 90 : 0 }}
               transition={{ duration: 0.2 }}
             >
               <ChevronRight className="h-4 w-4 text-gray-400" />
-            </motion.div>
+            </LazyMotionDiv>
           )}
-        </motion.div>
+        </LazyMotionDiv>
 
-        <AnimatePresence>
+        <LazyAnimatePresence>
           {hasChildren && expanded && (
-            <motion.div
+            <LazyMotionDiv
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -185,9 +185,9 @@ const IndustrialCategoryNavigation: React.FC<IndustrialCategoryNavigationProps> 
               <div className="mt-1 space-y-1">
                 {category.children?.map(child => renderCategoryItem(child, level + 1))}
               </div>
-            </motion.div>
+            </LazyMotionDiv>
           )}
-        </AnimatePresence>
+        </LazyAnimatePresence>
       </div>
     );
   }, [

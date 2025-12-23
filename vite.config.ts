@@ -108,7 +108,7 @@ export default defineConfig(({ mode }) => {
       // PWA Configuration - Stable, Production-Ready
       // Always include plugin to provide virtual module, but only enable SW in production
       VitePWA({
-        registerType: "autoUpdate",
+        registerType: "prompt", // Changed from "autoUpdate" to "prompt" - user must confirm before reload
         injectRegister: "auto",
         devOptions: {
           enabled: false, // Disable service worker in development for stability
@@ -125,10 +125,39 @@ export default defineConfig(({ mode }) => {
           ],
           globDirectory: 'dist',
           cleanupOutdatedCaches: true,
-          skipWaiting: true,
-          clientsClaim: true,
+          skipWaiting: false, // Changed to false - wait for user confirmation before activating
+          clientsClaim: false, // Changed to false - don't claim clients immediately (prevents auto-reload)
           maximumFileSizeToCacheInBytes: 12 * 1024 * 1024, // 12MB limit to handle large JS bundles
+          // PHASE 6: Optimized cache strategy for better performance
           runtimeCaching: [
+            // Cache fonts with long expiration (fonts rarely change)
+            {
+              urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                },
+                cacheableResponse: {
+                  statuses: [0, 200]
+                }
+              }
+            },
+            // Cache images with medium expiration
+            {
+              urlPattern: /\.(?:png|jpg|jpeg|webp|svg|gif)$/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'images-cache',
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+                }
+              }
+            },
+            // Network-first for API calls (always fresh data)
             {
               urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
               handler: 'NetworkFirst',
@@ -140,6 +169,18 @@ export default defineConfig(({ mode }) => {
                 },
                 networkTimeoutSeconds: 10,
               },
+            },
+            // Cache static assets (JS, CSS) with versioning
+            {
+              urlPattern: /\.(?:js|css|woff2?)$/,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'static-assets-cache',
+                expiration: {
+                  maxEntries: 200,
+                  maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+                }
+              }
             }
           ],
         },

@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { Button } from '@/shared/ui/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/shared/ui/ui/dialog';
 import { Badge } from '@/shared/ui/ui/badge';
-import { motion } from 'framer-motion';
+import { Button } from '@/shared/ui/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/ui/dialog';
+import { LazyMotionDiv } from '@/utils/lazyMotion';
+import { useState } from 'react';
 
 const trainingModules = [
   { id: 'safety', title: 'Safety Protocols', duration: '2 hours', level: 'Beginner' },
@@ -29,7 +29,7 @@ export const EnhancedOperatorTrainingDialog = ({ open, onOpenChange }) => {
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {trainingModules.map(module => (
-            <motion.div
+            <LazyMotionDiv
               key={module.id}
               onClick={() => toggleModule(module.id)}
               className={`p-4 border rounded-lg cursor-pointer ${selectedModules.includes(module.id) ? 'border-orange-500' : 'border-almona-light/20'}`}
@@ -40,7 +40,7 @@ export const EnhancedOperatorTrainingDialog = ({ open, onOpenChange }) => {
                 <Badge>{module.level}</Badge>
               </div>
               <p className="text-sm text-gray-400">Duration: {module.duration}</p>
-            </motion.div>
+            </LazyMotionDiv>
           ))}
         </div>
         <DialogFooter>

@@ -39,11 +39,13 @@ import {
   Sparkles,
   Trash2,
   Wrench,
-  Zap
+  Zap,
+  GaugeCircle
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { CalibrationWizard } from './CalibrationWizard';
 import { ProfileDefinitionWizard } from './ProfileDefinitionWizard';
 import { ProfileTuningStudio } from './ProfileTuningStudio';
 import { UnsavedChangesDialog } from './UnsavedChangesDialog';
@@ -93,6 +95,8 @@ export const SystemPackTuningStudio: React.FC = () => {
   const [deletingProfile, setDeletingProfile] = useState<SystemPackProfile | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [pendingWizardOpen, setPendingWizardOpen] = useState(false);
+  const [calibrationProfile, setCalibrationProfile] = useState<SystemPackProfile | null>(null);
+  const [showCalibrationDialog, setShowCalibrationDialog] = useState(false);
 
   // Get user ID from auth
   useEffect(() => {
@@ -776,6 +780,18 @@ export const SystemPackTuningStudio: React.FC = () => {
                           </Button>
                             <Button
                               onClick={() => {
+                                setCalibrationProfile(profile);
+                                setShowCalibrationDialog(true);
+                              }}
+                              variant="outline"
+                              size="sm"
+                              className="border-orange-500/50 text-orange-300 hover:bg-orange-500/10"
+                              title="Calibrate cutting parameters"
+                            >
+                              <GaugeCircle className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              onClick={() => {
                                 setEditingProfile(profile);
                                 setShowProfileWizard(true);
                               }}
@@ -1171,6 +1187,88 @@ export const SystemPackTuningStudio: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Calibration Wizard Dialog */}
+      {calibrationProfile && systemPack && (
+        <AlertDialog open={showCalibrationDialog} onOpenChange={setShowCalibrationDialog}>
+          <AlertDialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-900 border-slate-700">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-white">
+                Calibration: {calibrationProfile.name}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-slate-300">
+                Configure cutting parameters for this profile. Changes will apply immediately to all windows using this profile.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="mt-4">
+              <CalibrationWizard
+                profile={convertToProfile(calibrationProfile)}
+                systemPackId={systemPack.id}
+                userId={userId || undefined}
+                onCalibrationComplete={async (calibration) => {
+                  // Update profile immediately with calibration data
+                  try {
+                    // Update the profile in the system pack
+                    const updatedProfiles = systemPack.profiles.map(p => 
+                      p.id === calibrationProfile.id
+                        ? {
+                            ...p,
+                            specifications: {
+                              ...p.specifications,
+                              calibration: calibration,
+                              lastCalibrated: new Date().toISOString(),
+                            }
+                          }
+                        : p
+                    );
+                    
+                    const updatedPack = {
+                      ...systemPack,
+                      profiles: updatedProfiles,
+                    };
+                    
+                    setSystemPack(updatedPack);
+                    
+                    // Save to localStorage
+                    localStorage.setItem(`custom-profile-${systemPack.id}`, JSON.stringify(updatedPack));
+                    
+                    // Update Supabase if profile exists there
+                    if (userId) {
+                      const profileToUpdate = convertToProfile(calibrationProfile);
+                      const { error } = await supabase
+                        .from('profiles')
+                        .update({
+                          specifications: {
+                            ...(profileToUpdate.specifications || {}),
+                            calibration: calibration,
+                            lastCalibrated: new Date().toISOString(),
+                          }
+                        })
+                        .eq('id', calibrationProfile.id);
+                      
+                      if (error) {
+                        console.error('Error updating profile calibration:', error);
+                      }
+                    }
+                    
+                    toast.success('Calibration saved and applied immediately');
+                    setShowCalibrationDialog(false);
+                    setCalibrationProfile(null);
+                  } catch (error) {
+                    console.error('Error saving calibration:', error);
+                    toast.error('Failed to save calibration');
+                  }
+                }}
+              />
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700">
+                Close
+              </AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 };

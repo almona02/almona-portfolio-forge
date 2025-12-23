@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { Machine } from '@/types';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -93,9 +93,9 @@ export const ProductHoverPreview: React.FC<ProductHoverPreviewProps> = ({
     >
       {children}
       
-      <AnimatePresence>
+        <LazyAnimatePresence>
         {isVisible && (
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
@@ -162,9 +162,9 @@ export const ProductHoverPreview: React.FC<ProductHoverPreviewProps> = ({
                 </Button>
               </div>
             </div>
-          </motion.div>
+          </LazyMotionDiv>
         )}
-      </AnimatePresence>
+        </LazyAnimatePresence>
     </div>
   );
 };

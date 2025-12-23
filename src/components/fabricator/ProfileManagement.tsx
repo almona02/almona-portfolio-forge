@@ -43,6 +43,7 @@ import {
   Shield,
   AlertTriangle,
   Ruler,
+  GaugeCircle,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -70,6 +71,7 @@ import { ProfileDetailCard } from './ProfileDetailCard';
 import { AccessoryManagement } from './AccessoryManagement';
 import { ProfileDefinitionWizard } from './ProfileDefinitionWizard';
 import { ProfileTuningStudio } from './ProfileTuningStudio';
+import { CalibrationWizard } from './CalibrationWizard';
 
 // Material-specific color presets
 const MATERIAL_COLORS: Record<string, string[]> = {
@@ -158,6 +160,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [selectedProfileForDetail, setSelectedProfileForDetail] = useState<Profile | null>(null);
   const [selectedSystemPackId, setSelectedSystemPackId] = useState<string>('custom');
   const [tuningProfile, setTuningProfile] = useState<Profile | null>(null);
+  const [calibrationProfile, setCalibrationProfile] = useState<Profile | null>(null);
+  const [showCalibrationDialog, setShowCalibrationDialog] = useState(false);
   const [tuningFilter, setTuningFilter] = useState<'all' | 'tuned' | 'in_progress' | 'untuned'>('all');
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -2428,14 +2432,28 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                             <FileText className="h-4 w-4" />
                           </Button>
                           {userId && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="border-orange-500/60 text-orange-300 hover:bg-orange-500/10"
-                              onClick={() => setTuningProfile(profile)}
-                            >
-                              Tune
-                            </Button>
+                            <>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="border-orange-500/60 text-orange-300 hover:bg-orange-500/10"
+                                onClick={() => setTuningProfile(profile)}
+                              >
+                                Tune
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="border-orange-500/50 text-orange-300 hover:bg-orange-500/10"
+                                onClick={() => {
+                                  setCalibrationProfile(profile);
+                                  setShowCalibrationDialog(true);
+                                }}
+                                title="Calibrate cutting parameters"
+                              >
+                                <GaugeCircle className="h-4 w-4" />
+                              </Button>
+                            </>
                           )}
                           <Button
                             variant="ghost"
@@ -2604,6 +2622,78 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           onClose={() => setTuningProfile(null)}
           onProfileUpdated={loadProfiles}
         />
+      )}
+
+      {/* Calibration Wizard Dialog */}
+      {calibrationProfile && userId && (
+        <AlertDialog open={showCalibrationDialog} onOpenChange={setShowCalibrationDialog}>
+          <AlertDialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gray-900 border-gray-700">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-white">
+                Calibration: {calibrationProfile.name}
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-300">
+                Configure cutting parameters for this profile. Changes will apply immediately to all windows using this profile.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="mt-4">
+              <CalibrationWizard
+                profile={calibrationProfile}
+                systemPackId={calibrationProfile.systemPackIds?.[0] || 'generic'}
+                userId={userId}
+                onCalibrationComplete={async (calibration) => {
+                  // Update profile immediately with calibration data
+                  try {
+                    const updatedProfile = {
+                      ...calibrationProfile,
+                      specifications: {
+                        ...(calibrationProfile.specifications || {}),
+                        calibration: calibration,
+                        lastCalibrated: new Date().toISOString(),
+                      },
+                      calibrations: [
+                        ...(calibrationProfile.calibrations || []),
+                        calibration
+                      ]
+                    };
+                    
+                    // Update in state
+                    setProfiles(prev => prev.map(p => 
+                      p.id === calibrationProfile.id ? updatedProfile : p
+                    ));
+                    
+                    // Save to Supabase
+                    const { error } = await supabase
+                      .from('profiles')
+                      .update({
+                        specifications: updatedProfile.specifications,
+                        calibrations: updatedProfile.calibrations,
+                      })
+                      .eq('id', calibrationProfile.id);
+                    
+                    if (error) {
+                      console.error('Error updating profile calibration:', error);
+                      toast.error('Failed to save calibration');
+                    } else {
+                      toast.success('Calibration saved and applied immediately');
+                      setShowCalibrationDialog(false);
+                      setCalibrationProfile(null);
+                      loadProfiles(); // Refresh to show updated data
+                    }
+                  } catch (error) {
+                    console.error('Error saving calibration:', error);
+                    toast.error('Failed to save calibration');
+                  }
+                }}
+              />
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700">
+                Close
+              </AlertDialogCancel>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       )}
     </div>
   );

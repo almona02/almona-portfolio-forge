@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/ui/card";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
@@ -211,7 +211,7 @@ const EgyptianTechnicalSupportHub = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <motion.div
+      <LazyMotionDiv
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-8"
@@ -240,12 +240,12 @@ const EgyptianTechnicalSupportHub = () => {
             </Card>
           ))}
         </div>
-      </motion.div>
+      </LazyMotionDiv>
 
       {/* Quick Support Options */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {quickSupportOptions.map((option) => (
-          <motion.div
+          <LazyMotionDiv
             key={option.id}
             whileHover={{ scale: 1.05 }}
             className="cursor-pointer"
@@ -274,7 +274,7 @@ const EgyptianTechnicalSupportHub = () => {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </LazyMotionDiv>
         ))}
       </div>
 
@@ -290,7 +290,7 @@ const EgyptianTechnicalSupportHub = () => {
         <TabsContent value="centers" className="space-y-6">
           <div className="grid gap-4">
             {supportCenters.map((center) => (
-              <motion.div
+              <LazyMotionDiv
                 key={center.id}
                 whileHover={{ scale: 1.02 }}
                 className="cursor-pointer"
@@ -360,7 +360,7 @@ const EgyptianTechnicalSupportHub = () => {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </LazyMotionDiv>
             ))}
           </div>
         </TabsContent>
@@ -623,13 +623,13 @@ const EgyptianTechnicalSupportHub = () => {
 
       {/* Center Detail Modal */}
       {selectedCenter && (
-        <motion.div
+        <LazyMotionDiv
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
           onClick={() => setSelectedCenter(null)}
         >
-          <motion.div
+          <LazyMotionDiv
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
@@ -730,8 +730,8 @@ const EgyptianTechnicalSupportHub = () => {
                 </Button>
               </div>
             </div>
-          </motion.div>
-        </motion.div>
+          </LazyMotionDiv>
+        </LazyMotionDiv>
       )}
     </div>
   );

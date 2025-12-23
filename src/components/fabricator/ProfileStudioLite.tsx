@@ -17,7 +17,7 @@ import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Upload, Save, CheckCircle2, AlertTriangle, Zap, Settings, Sparkles, Factory, FileCode, Gauge, Plus } from 'lucide-react';
 import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 
 interface MachiningSlot {
   id: string;
@@ -427,7 +427,7 @@ export const ProfileStudioLite: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Prestige Header */}
-        <motion.div
+        <LazyMotionDiv
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -465,7 +465,7 @@ export const ProfileStudioLite: React.FC = () => {
             </CardHeader>
         <CardContent className="space-y-6 pt-6">
           {/* DXF Upload Section */}
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -498,12 +498,12 @@ export const ProfileStudioLite: React.FC = () => {
                 >
                   {isUploading ? (
                     <>
-                      <motion.div
+                      <LazyMotionDiv
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                       >
                         <Upload className="h-4 w-4" />
-                      </motion.div>
+                      </LazyMotionDiv>
                       Processing...
                     </>
                   ) : (
@@ -515,9 +515,9 @@ export const ProfileStudioLite: React.FC = () => {
                 </Button>
               </div>
               
-              <AnimatePresence>
+              <LazyAnimatePresence>
                 {dxfFileName && (
-                  <motion.div
+                  <LazyMotionDiv
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
@@ -533,9 +533,9 @@ export const ProfileStudioLite: React.FC = () => {
                         )}
                       </AlertDescription>
                     </Alert>
-                  </motion.div>
+                  </LazyMotionDiv>
                 )}
-              </AnimatePresence>
+              </LazyAnimatePresence>
 
               {!dxfFileName && !isUploading && (
                 <div className="text-sm text-slate-400 p-6 border-2 border-dashed border-slate-700 rounded-lg text-center bg-slate-900/30">
@@ -549,7 +549,7 @@ export const ProfileStudioLite: React.FC = () => {
             
             {/* Detected Profiles Verification */}
             {showVerification && detectedProfiles.length > 0 && (
-              <motion.div
+              <LazyMotionDiv
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 className="mt-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg"
@@ -585,14 +585,14 @@ export const ProfileStudioLite: React.FC = () => {
                     ✓ Complete window system detected (Frame + Sash). Both profiles will be saved.
                   </p>
                 )}
-              </motion.div>
+              </LazyMotionDiv>
             )}
-          </motion.div>
+          </LazyMotionDiv>
 
           {/* Physics Configuration Form */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left Column: Basic Info */}
-            <motion.div
+            <LazyMotionDiv
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
@@ -678,10 +678,10 @@ export const ProfileStudioLite: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
-            </motion.div>
+            </LazyMotionDiv>
 
             {/* Right Column: Turkish Production Settings */}
-            <motion.div
+            <LazyMotionDiv
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
@@ -780,11 +780,11 @@ export const ProfileStudioLite: React.FC = () => {
                   <p className="text-xs text-slate-400">For arched windows (kemerli pencere)</p>
                 </div>
               )}
-            </motion.div>
+            </LazyMotionDiv>
           </div>
 
           {/* Turkish Industry Presets */}
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
@@ -822,11 +822,11 @@ export const ProfileStudioLite: React.FC = () => {
                 <span className="text-xs text-slate-400 mt-1">7000mm bars, 4.8mm kerf</span>
               </Button>
             </div>
-          </motion.div>
+          </LazyMotionDiv>
 
           {/* Imported Profiles List */}
           {importedProfiles.length > 0 && (
-            <motion.div
+            <LazyMotionDiv
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
@@ -873,20 +873,20 @@ export const ProfileStudioLite: React.FC = () => {
                   </AlertDescription>
                 </Alert>
               )}
-            </motion.div>
+            </LazyMotionDiv>
           )}
 
           {/* Save Button */}
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
             className="flex items-center justify-between pt-6 border-t border-slate-700/50"
           >
             <div className="flex-1">
-              <AnimatePresence>
+              <LazyAnimatePresence>
                 {saveStatus === 'success' && (
-                  <motion.div
+                  <LazyMotionDiv
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -10 }}
@@ -899,10 +899,10 @@ export const ProfileStudioLite: React.FC = () => {
                           : 'Profile added! Import next profile to complete the system.'}
                       </AlertDescription>
                     </Alert>
-                  </motion.div>
+                  </LazyMotionDiv>
                 )}
                 {saveStatus === 'error' && (
-                  <motion.div
+                  <LazyMotionDiv
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -10 }}
@@ -913,9 +913,9 @@ export const ProfileStudioLite: React.FC = () => {
                         Please fill in all required fields (Name and Manufacturer).
                       </AlertDescription>
                     </Alert>
-                  </motion.div>
+                  </LazyMotionDiv>
                 )}
-              </AnimatePresence>
+              </LazyAnimatePresence>
             </div>
             <Button
               onClick={addImportedProfile}
@@ -925,12 +925,12 @@ export const ProfileStudioLite: React.FC = () => {
             >
               {isSaving ? (
                 <>
-                  <motion.div
+                  <LazyMotionDiv
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                   >
                     <Save className="h-5 w-5 mr-2" />
-                  </motion.div>
+                  </LazyMotionDiv>
                   Adding...
                 </>
               ) : (
@@ -940,10 +940,10 @@ export const ProfileStudioLite: React.FC = () => {
                 </>
               )}
             </Button>
-          </motion.div>
+          </LazyMotionDiv>
 
           {/* Turkish Tips */}
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
@@ -975,10 +975,10 @@ export const ProfileStudioLite: React.FC = () => {
                 <span>Hardware: Use <strong className="text-white">MACO (Austrian)</strong> or local Turkish brands</span>
               </li>
             </ul>
-          </motion.div>
+          </LazyMotionDiv>
         </CardContent>
       </Card>
-        </motion.div>
+        </LazyMotionDiv>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { useToast } from '@/hooks/useToast';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { AnimatePresence, motion } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import {
   Download,
   Eye,
@@ -228,7 +228,7 @@ export function ModelMeasurementTool({
   if (!isVisible) return null;
 
   return (
-    <motion.div
+    <LazyMotionDiv
       className="fixed top-4 right-4 w-80 max-h-[calc(100vh-2rem)] overflow-y-auto z-40"
       variants={toolVariants}
       initial="hidden"
@@ -400,9 +400,9 @@ export function ModelMeasurementTool({
           </div>
 
           {/* Settings Panel */}
-          <AnimatePresence>
+          <LazyAnimatePresence>
             {showSettings && (
-              <motion.div
+              <LazyMotionDiv
                 className="space-y-3 p-3 bg-gray-800 rounded-lg"
                 variants={itemVariants}
                 initial="hidden"
@@ -464,9 +464,9 @@ export function ModelMeasurementTool({
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </LazyMotionDiv>
             )}
-          </AnimatePresence>
+          </LazyAnimatePresence>
 
           {/* Measurements List */}
           {measurements.length > 0 && (
@@ -479,9 +479,9 @@ export function ModelMeasurementTool({
               </div>
               
               <div className="space-y-2 max-h-40 overflow-y-auto">
-                <AnimatePresence>
+                <LazyAnimatePresence>
                   {measurements.map((measurement) => (
-                    <motion.div
+                    <LazyMotionDiv
                       key={measurement.id}
                       variants={itemVariants}
                       initial="hidden"
@@ -518,9 +518,9 @@ export function ModelMeasurementTool({
                           <X className="w-3 h-3" />
                         </Button>
                       </div>
-                    </motion.div>
+                    </LazyMotionDiv>
                   ))}
-                </AnimatePresence>
+                </LazyAnimatePresence>
               </div>
             </div>
           )}
@@ -565,7 +565,7 @@ export function ModelMeasurementTool({
           </div>
         </CardContent>
       </Card>
-    </motion.div>
+    </LazyMotionDiv>
   );
 }
 

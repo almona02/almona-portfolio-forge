@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv, LazyMotionButton } from '@/utils/lazyMotion';
 import {
   Camera,
   Mic,
@@ -307,14 +307,14 @@ export const MobileTicketCreator: React.FC<{
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
+    <LazyAnimatePresence>
+      <LazyMotionDiv
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-4"
       >
-        <motion.div
+        <LazyMotionDiv
           initial={{ y: '100%', opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '100%', opacity: 0 }}
@@ -346,10 +346,10 @@ export const MobileTicketCreator: React.FC<{
 
           {/* Content */}
           <div className="p-4 overflow-y-auto max-h-[60vh]">
-            <AnimatePresence mode="wait">
+            <LazyAnimatePresence mode="wait">
               {/* Step 1: Category Selection */}
               {currentStep === 0 && (
-                <motion.div
+                <LazyMotionDiv
                   key="category"
                   initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -361,7 +361,7 @@ export const MobileTicketCreator: React.FC<{
                     const isSelected = ticketData.category === category.id;
                     
                     return (
-                      <motion.button
+                      <LazyMotionButton
                         key={category.id}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -380,15 +380,15 @@ export const MobileTicketCreator: React.FC<{
                           </div>
                           {isSelected && <Check className="h-5 w-5 text-almona-orange" />}
                         </div>
-                      </motion.button>
+                      </LazyMotionButton>
                     );
                   })}
-                </motion.div>
+                </LazyMotionDiv>
               )}
 
               {/* Step 2: Details */}
               {currentStep === 1 && (
-                <motion.div
+                <LazyMotionDiv
                   key="details"
                   initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -415,12 +415,12 @@ export const MobileTicketCreator: React.FC<{
                       className="bg-almona-dark/60 border-almona-light/30 resize-none"
                     />
                   </div>
-                </motion.div>
+                </LazyMotionDiv>
               )}
 
               {/* Step 3: Media */}
               {currentStep === 2 && (
-                <motion.div
+                <LazyMotionDiv
                   key="media"
                   initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -490,12 +490,12 @@ export const MobileTicketCreator: React.FC<{
                     onChange={handleImageSelect}
                     className="hidden"
                   />
-                </motion.div>
+                </LazyMotionDiv>
               )}
 
               {/* Step 4: Location & Priority */}
               {currentStep === 3 && (
-                <motion.div
+                <LazyMotionDiv
                   key="location"
                   initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -529,12 +529,12 @@ export const MobileTicketCreator: React.FC<{
                       ))}
                     </div>
                   </div>
-                </motion.div>
+                </LazyMotionDiv>
               )}
 
               {/* Step 5: Review */}
               {currentStep === 4 && (
-                <motion.div
+                <LazyMotionDiv
                   key="review"
                   initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -588,9 +588,9 @@ export const MobileTicketCreator: React.FC<{
                       </div>
                     </div>
                   )}
-                </motion.div>
+                </LazyMotionDiv>
               )}
-            </AnimatePresence>
+            </LazyAnimatePresence>
           </div>
 
           {/* Footer Navigation */}
@@ -630,9 +630,9 @@ export const MobileTicketCreator: React.FC<{
               </Button>
             </div>
           </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+        </LazyMotionDiv>
+      </LazyMotionDiv>
+    </LazyAnimatePresence>
   );
 };
 

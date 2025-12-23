@@ -14,7 +14,7 @@ import { Textarea } from "@/shared/ui/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/select";
 import { Badge } from "@/shared/ui/ui/badge";
 import { AlertTriangle, Clock, Wrench, Zap, Settings, Activity, CheckCircle2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { LazyAnimatePresence, LazyMotionDiv, LazyMotionButton } from '@/utils/lazyMotion';
 import { useForm } from "react-hook-form";
 import { sendSms } from "@/lib/smsService";
 
@@ -113,9 +113,9 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-almona-dark border-almona-light/20 text-white">
-        <AnimatePresence mode="wait">
+        <LazyAnimatePresence mode="wait">
           {!submitted ? (
-            <motion.div
+            <LazyMotionDiv
               key="form"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -124,12 +124,12 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
             >
               <DialogHeader>
                 <DialogTitle className="text-2xl font-bold flex items-center gap-2">
-                  <motion.div
+                  <LazyMotionDiv
                     animate={{ rotate: [0, 10, -10, 0] }}
                     transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
                   >
                     <AlertTriangle className="h-6 w-6 text-red-500" />
-                  </motion.div>
+                  </LazyMotionDiv>
                   Emergency Service Request
                 </DialogTitle>
                 <DialogDescription className="text-gray-400">
@@ -145,7 +145,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                     {emergencyTypes.map((type) => {
                       const Icon = type.icon;
                       return (
-                        <motion.button
+                        <LazyMotionButton
                           key={type.id}
                           type="button"
                           onClick={() => setSelectedEmergency(type.id)}
@@ -158,13 +158,13 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                           whileTap={{ scale: 0.98 }}
                         >
                           <div className="flex items-start gap-3">
-                            <motion.div
+                            <LazyMotionDiv
                               className={`p-2 rounded-lg bg-gradient-to-r ${type.color}`}
                               animate={selectedEmergency === type.id ? { scale: [1, 1.1, 1] } : {}}
                               transition={{ duration: 0.5, repeat: Infinity }}
                             >
                               <Icon className="h-5 w-5 text-white" />
-                            </motion.div>
+                            </LazyMotionDiv>
                             <div className="text-left">
                               <h3 className="font-semibold">{type.title}</h3>
                               <p className="text-sm text-gray-400">{type.description}</p>
@@ -175,23 +175,23 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                             </div>
                           </div>
                           {selectedEmergency === type.id && (
-                            <motion.div
+                            <LazyMotionDiv
                               className="absolute inset-0 rounded-lg border-2 border-orange-500"
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                               exit={{ opacity: 0 }}
                             />
                           )}
-                        </motion.button>
+                        </LazyMotionButton>
                       );
                     })}
                   </div>
                 </div>
 
                 {/* Form Fields */}
-                <AnimatePresence>
+                <LazyAnimatePresence>
                   {selectedEmergency && (
-                    <motion.div
+                    <LazyMotionDiv
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
@@ -303,9 +303,9 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                           </SelectContent>
                         </Select>
                       </div>
-                    </motion.div>
+                    </LazyMotionDiv>
                   )}
-                </AnimatePresence>
+                </LazyAnimatePresence>
 
                 <DialogFooter>
                   <Button
@@ -316,33 +316,33 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                   >
                     Cancel
                   </Button>
-                  <motion.button
+                  <LazyMotionButton
                     type="submit"
                     disabled={!selectedEmergency || isSubmitting}
                     className="relative overflow-hidden bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-2 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <motion.div
+                    <LazyMotionDiv
                       className="absolute inset-0 bg-white/20"
                       initial={{ x: "-100%" }}
                       animate={{ x: isSubmitting ? "100%" : "-100%" }}
                       transition={{ duration: 1, repeat: isSubmitting ? Infinity : 0 }}
                     />
                     {isSubmitting ? "Processing..." : "🚨 Request Emergency Service"}
-                  </motion.button>
+                  </LazyMotionButton>
                 </DialogFooter>
               </form>
-            </motion.div>
+            </LazyMotionDiv>
           ) : (
-            <motion.div
+            <LazyMotionDiv
               key="success"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               className="text-center py-12"
             >
-              <motion.div
+              <LazyMotionDiv
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
@@ -350,7 +350,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                 <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle2 className="h-10 w-10 text-white" />
                 </div>
-              </motion.div>
+              </LazyMotionDiv>
               <h3 className="text-2xl font-bold mb-2">Emergency Request Submitted!</h3>
               <p className="text-gray-400">
                 Our emergency response team has been notified and will contact you within 15 minutes.
@@ -358,9 +358,9 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
               <Badge className="mt-4 bg-green-500/20 text-green-300">
                 Reference: EMG-{Date.now().toString().slice(-6)}
               </Badge>
-            </motion.div>
+            </LazyMotionDiv>
           )}
-        </AnimatePresence>
+        </LazyAnimatePresence>
       </DialogContent>
     </Dialog>
   );

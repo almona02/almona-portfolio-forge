@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 // import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { 
   Search, 
   Filter, 
@@ -219,7 +219,7 @@ const SpareParts = () => {
         <div id="top" className="sr-only" aria-hidden="true" />
         <div className="container mx-auto px-4 py-8">
           {/* Hero Section */}
-          <motion.div 
+          <LazyMotionDiv 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -231,10 +231,10 @@ const SpareParts = () => {
             <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
               Original manufacturer parts with warranty for optimal machine performance and longevity
             </p>
-          </motion.div>
+          </LazyMotionDiv>
 
           {/* Search and Filter Bar */}
-          <motion.div 
+          <LazyMotionDiv 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -264,12 +264,12 @@ const SpareParts = () => {
                 )}
               </Button>
             </div>
-          </motion.div>
+          </LazyMotionDiv>
 
           {/* Results Section */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Categories Sidebar */}
-            <motion.div 
+            <LazyMotionDiv 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -295,7 +295,7 @@ const SpareParts = () => {
                   ))}
                 </div>
               </div>
-            </motion.div>
+            </LazyMotionDiv>
 
             {/* Parts Grid */}
             <div className="lg:col-span-3">
@@ -329,7 +329,7 @@ const SpareParts = () => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {filteredParts.map((part, index) => (
-                    <motion.div
+                    <LazyMotionDiv
                       key={part.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -405,7 +405,7 @@ const SpareParts = () => {
                           </div>
                         </CardContent>
                       </Card>
-                    </motion.div>
+                    </LazyMotionDiv>
                   ))}
                 </div>
               )}

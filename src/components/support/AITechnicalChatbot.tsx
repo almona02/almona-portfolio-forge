@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAuth } from '@/context/AuthContext';
 import { getTechnicalSupport, identifyPartFromImage } from '@/lib/ai/gemini';
 import { supabase } from '@/lib/supabase';
-import { AnimatePresence, motion } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import {
     Bot,
     Loader2,
@@ -326,7 +326,7 @@ export const AITechnicalChatbot: React.FC = () => {
   return (
     <>
       {/* Floating Chat Button */}
-      <motion.div
+      <LazyMotionDiv
         className="fixed bottom-6 right-6 z-50"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
@@ -339,12 +339,12 @@ export const AITechnicalChatbot: React.FC = () => {
         >
           <Bot className="h-6 w-6" />
         </Button>
-      </motion.div>
+      </LazyMotionDiv>
 
       {/* Chat Interface */}
-      <AnimatePresence>
+      <LazyAnimatePresence>
         {isOpen && (
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
@@ -398,7 +398,7 @@ export const AITechnicalChatbot: React.FC = () => {
                 <ScrollArea className="h-full p-4">
                   <div className="space-y-4">
                     {messages.map((message) => (
-                      <motion.div
+                      <LazyMotionDiv
                         key={message.id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -442,12 +442,12 @@ export const AITechnicalChatbot: React.FC = () => {
                             </div>
                           )}
                         </div>
-                      </motion.div>
+                      </LazyMotionDiv>
                     ))}
                     
                     {/* Loading indicator */}
                     {isLoading && (
-                      <motion.div
+                      <LazyMotionDiv
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="flex justify-start"
@@ -458,7 +458,7 @@ export const AITechnicalChatbot: React.FC = () => {
                             <span className="text-sm text-gray-400">AI يقوم بالتحليل...</span>
                           </div>
                         </div>
-                      </motion.div>
+                      </LazyMotionDiv>
                     )}
                     <div ref={messagesEndRef} />
                   </div>
@@ -502,9 +502,9 @@ export const AITechnicalChatbot: React.FC = () => {
                 />
               </div>
             </Card>
-          </motion.div>
+          </LazyMotionDiv>
         )}
-      </AnimatePresence>
+      </LazyAnimatePresence>
     </>
   );
 };

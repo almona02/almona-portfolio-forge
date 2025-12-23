@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv, LazyMotionButton } from '@/utils/lazyMotion';
 import { Play, Pause, Volume2, VolumeX, X, Maximize2, Minimize2 } from 'lucide-react';
 
 interface ProductVideoPlayerProps {
@@ -126,9 +126,9 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
   if (!videoId) return null;
 
   return (
-    <AnimatePresence>
+    <LazyAnimatePresence>
       {isOpen && (
-        <motion.div
+        <LazyMotionDiv
           ref={containerRef}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -161,7 +161,7 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
             </div>
             
             {/* Close Button */}
-            <motion.button
+            <LazyMotionButton
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
@@ -175,7 +175,7 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
               aria-label="Close video"
             >
               <X className="w-4 h-4" />
-            </motion.button>
+            </LazyMotionButton>
             
             {/* Product Name Overlay */}
             <div className="absolute bottom-2 left-2 right-12 z-30">
@@ -187,7 +187,7 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
             {/* Control Buttons - Bottom Right */}
             <div className="absolute bottom-2 right-2 z-30 flex items-center gap-1.5 pointer-events-auto">
               {/* Mute/Unmute Button */}
-              <motion.button
+              <LazyMotionButton
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 whileHover={{ scale: 1.1 }}
@@ -200,10 +200,10 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
                 aria-label={isMuted ? "Unmute" : "Mute"}
               >
                 {isMuted ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
-              </motion.button>
+              </LazyMotionButton>
 
               {/* Fullscreen Button */}
-              <motion.button
+              <LazyMotionButton
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 whileHover={{ scale: 1.1 }}
@@ -216,12 +216,12 @@ export const ProductVideoPlayer: React.FC<ProductVideoPlayerProps> = ({
                 aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
               >
                 {isFullscreen ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
-              </motion.button>
+              </LazyMotionButton>
             </div>
           </div>
-        </motion.div>
+        </LazyMotionDiv>
       )}
-    </AnimatePresence>
+    </LazyAnimatePresence>
   );
 };
 
@@ -233,7 +233,7 @@ interface VideoTriggerProps {
 
 export const VideoTrigger: React.FC<VideoTriggerProps> = ({ onClick, isPlaying = false }) => {
   return (
-    <motion.button
+    <LazyMotionButton
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={(e) => {
@@ -260,7 +260,7 @@ export const VideoTrigger: React.FC<VideoTriggerProps> = ({ onClick, isPlaying =
           <span>Video</span>
         </>
       )}
-    </motion.button>
+      </LazyMotionButton>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { LazyMotionDiv, LazyMotionButton } from '@/utils/lazyMotion';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Progress } from '@/shared/ui/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/ui/collapsible';
@@ -87,7 +87,7 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
   };
 
   return (
-    <motion.div
+    <LazyMotionDiv
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="mb-8"
@@ -200,7 +200,7 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
             const empireBadge = getEmpireBadge(step.empire);
 
             return (
-              <motion.button
+              <LazyMotionButton
                 key={step.id}
                 type="button"
                 whileHover={{ scale: 1.02, y: -2 }}
@@ -300,7 +300,7 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
                     {step.innovation}
                   </div>
                 )}
-              </motion.button>
+              </LazyMotionButton>
             );
           })}
         </div>
@@ -411,7 +411,7 @@ export const BosphorusWorkflowRibbon: React.FC<BosphorusWorkflowRibbonProps> = (
           </CollapsibleContent>
         </Collapsible>
       </div>
-    </motion.div>
+    </LazyMotionDiv>
   );
 };
 

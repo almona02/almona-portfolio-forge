@@ -1,6 +1,7 @@
 // pages/FabricatorWorkflow.tsx
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { EgyptianConstraintsCard } from '@/components/fabricator/EgyptianConstraintsCard';
+import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
 import { track } from '@/lib/analytics';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
@@ -8,7 +9,7 @@ import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent } from '@/shared/ui/ui/tabs';
-import { AnimatePresence, motion } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import {
   AlertCircle,
   BarChart3,
@@ -829,6 +830,28 @@ export const FabricatorWorkflow: React.FC = () => {
           flyScreenType: data.flyScreenType,
           // Preserve grid layout if set in measuring step
           grid: data.grid,
+          // Preserve preset pattern selection
+          presetId: data.presetId,
+          // Cache pattern data for quick access
+          presetData: data.presetId ? (() => {
+            const pattern = EGYPTIAN_PATTERNS.find(p => p.id === data.presetId);
+            if (!pattern) return undefined;
+            return {
+              id: pattern.id,
+              name: pattern.name,
+              type: pattern.type,
+              gridSpec: {
+                rows: pattern.gridSpec.rows,
+                cols: pattern.gridSpec.cols,
+                colWidths: pattern.gridSpec.colWidths,
+                rowHeights: pattern.gridSpec.rowHeights,
+              },
+              mullions: pattern.mullions,
+              transoms: pattern.transoms,
+              constraints: pattern.constraints,
+              openingMechanism: pattern.openingMechanism,
+            };
+          })() : undefined,
         };
 
         // Don't require components at measurement stage - they'll be added in design phase
@@ -1063,9 +1086,9 @@ export const FabricatorWorkflow: React.FC = () => {
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white pt-20">
         <div className="container mx-auto px-4 py-8">
           {/* Alert System */}
-          <AnimatePresence>
+          <LazyAnimatePresence>
             {inventoryError && (
-              <motion.div
+              <LazyMotionDiv
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -1077,11 +1100,11 @@ export const FabricatorWorkflow: React.FC = () => {
                     {inventoryError}. Some features may be limited. Please refresh the page to retry.
                   </AlertDescription>
                 </Alert>
-              </motion.div>
+              </LazyMotionDiv>
             )}
 
             {projectError && (
-              <motion.div
+              <LazyMotionDiv
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -1093,11 +1116,11 @@ export const FabricatorWorkflow: React.FC = () => {
                     {projectError}
                   </AlertDescription>
                 </Alert>
-              </motion.div>
+              </LazyMotionDiv>
             )}
 
             {isLoadingInventory && (
-              <motion.div
+              <LazyMotionDiv
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -1110,12 +1133,12 @@ export const FabricatorWorkflow: React.FC = () => {
                   </AlertDescription>
                 </Alert>
                 {/* Note: Could be replaced with ProgressLoader component for better UX */}
-              </motion.div>
+              </LazyMotionDiv>
             )}
-          </AnimatePresence>
+          </LazyAnimatePresence>
 
           {/* Header Section - FABRICATOR PRO / AI WORKFLOW v4.0 */}
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-10"
@@ -1252,10 +1275,10 @@ export const FabricatorWorkflow: React.FC = () => {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </LazyMotionDiv>
 
           {/* Project Header / Context Bar */}
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-6"
@@ -1326,7 +1349,7 @@ export const FabricatorWorkflow: React.FC = () => {
                 )}
               </div>
             </div>
-          </motion.div>
+          </LazyMotionDiv>
 
           {/* Anatolian Fabricator Cockpit – market intelligence + KPI badges */}
           <AnatolianCockpit
@@ -1402,10 +1425,13 @@ export const FabricatorWorkflow: React.FC = () => {
                   project={currentProject}
                   optimization={optimizationResults}
                 />
-                <CommercialOfferPanel
-                  project={currentProject}
-                  optimization={optimizationResults}
-                />
+                {/* Prestige Quote hidden in measuring/design stages - only show in later workflow stages */}
+                {activeTab !== 'measuring' && activeTab !== 'design' && (
+                  <CommercialOfferPanel
+                    project={currentProject}
+                    optimization={optimizationResults}
+                  />
+                )}
               </Suspense>
             </div>
           )}
@@ -1709,36 +1735,8 @@ export const FabricatorWorkflow: React.FC = () => {
                           onAddNewPose={handleAddNewPose}
                         />
                         
-                        {/* Calibration Wizard Integration */}
-                        {currentProject && currentProject.systemPackId && inventory.length > 0 && (
-                          <div className="mt-6 border-t border-gray-700 pt-6">
-                            <Suspense fallback={
-                              <FabricatorLoader 
-                                stage="Loading calibration wizard..." 
-                                progress={0}
-                              />
-                            }>
-                              <CalibrationWizard
-                                profile={inventory.find((p) => 
-                                  currentProject.components?.some((c) => c.profile.id === p.id)
-                                ) || inventory[0]}
-                                systemPackId={currentProject.systemPackId || ''}
-                                userId={userId}
-                                onCalibrationComplete={(_calibration) => {
-                                  // Update project with calibrated profiles
-                                  const updatedProject = {
-                                    ...currentProject,
-                                    // Calibration is stored in profile specifications
-                                  };
-                                  workspaceDispatch({
-                                    type: 'SET_CURRENT_PROJECT',
-                                    payload: updatedProject,
-                                  });
-                                }}
-                              />
-                            </Suspense>
-                          </div>
-                        )}
+                        {/* Calibration Wizard removed from Engineering Bay - reduces noise */}
+                        {/* Calibration is available in Profile Management / Inventory tabs where it's more appropriate */}
                       </>
                     </Suspense>
                   </ErrorBoundary>
@@ -2119,23 +2117,29 @@ export const FabricatorWorkflow: React.FC = () => {
                   project={currentProject}
                   optimization={optimizationResults}
                 />
-                <CommercialOfferPanel
-                  project={currentProject}
-                  optimization={optimizationResults}
-                />
-                <PricingPreview
-                  project={currentProject}
-                  profiles={inventory}
-                  accessories={[]}
-                  region={(projectMeta?.region ?? 'global') as any}
-                />
+                {/* Prestige Quote hidden in measuring/design stages - only show in later workflow stages */}
+                {activeTab !== 'measuring' && activeTab !== 'design' && (
+                  <CommercialOfferPanel
+                    project={currentProject}
+                    optimization={optimizationResults}
+                  />
+                )}
+                {/* Pricing Preview shown in optimization/production/quality stages */}
+                {(activeTab === 'optimization' || activeTab === 'production' || activeTab === 'quality') && (
+                  <PricingPreview
+                    project={currentProject}
+                    profiles={inventory}
+                    accessories={[]}
+                    region={(projectMeta?.region ?? 'global') as any}
+                  />
+                )}
               </Suspense>
             </div>
           </div>
 
           {/* Real-time Monitoring Section */}
           {(activeTab === 'production' || activeTab === 'quality') && (
-            <motion.div
+            <LazyMotionDiv
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
@@ -2148,11 +2152,11 @@ export const FabricatorWorkflow: React.FC = () => {
               >
                 <RealTimeMonitoring projects={projects} />
               </Suspense>
-            </motion.div>
+            </LazyMotionDiv>
           )}
 
           {/* Positions & Flats Overview */}
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -2163,7 +2167,7 @@ export const FabricatorWorkflow: React.FC = () => {
             >
               <PositionsGrid currentProject={currentProject} />
             </Suspense>
-          </motion.div>
+          </LazyMotionDiv>
 
           {/* Client Portal Modal */}
           {showClientPortal && currentProject && (

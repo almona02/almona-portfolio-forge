@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+// Temporarily using regular Framer Motion for PrestigeLoader to debug error
+// TODO: Revert to LazyMotion after fixing the issue
 import { cn } from '@/lib/utils';
 import { Logo } from '@/components/ui/Logo';
 import { 
@@ -266,7 +268,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
                 className="w-2 h-2 bg-amber-400 rounded-full"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 1, repeat: Infinity }}
-              ></motion.div>
+                ></motion.div>
               <div className="w-16 h-px bg-gradient-to-l from-transparent to-amber-400/50"></div>
             </div>
           </motion.div>

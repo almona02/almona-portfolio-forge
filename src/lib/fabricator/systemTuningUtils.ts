@@ -18,23 +18,24 @@ export function isSystemPackTuned(systemPack: SystemPack | UPVCSystemPack | null
   // For UPVC systems, check if profiles exist and have roles
   if ((systemPack as any).upvcSpec) {
     const upvcPack = systemPack as UPVCSystemPack;
-    if (upvcPack.profiles && upvcPack.profiles.length > 0) {
+    const upvcProfiles = (upvcPack as any).profiles || [];
+    if (upvcProfiles.length > 0) {
       // Check if frame and sash profiles exist with roles
-      const hasFrame = upvcPack.profiles.some(p => 
-        p.profileRole === 'frame' || (p as any).type === 'frame'
+      const hasFrame = upvcProfiles.some((p: any) => 
+        p.profileRole === 'frame' || p.type === 'frame'
       );
-      const hasSash = upvcPack.profiles.some(p => 
-        p.profileRole === 'sash' || (p as any).type === 'sash'
+      const hasSash = upvcProfiles.some((p: any) => 
+        p.profileRole === 'sash' || p.type === 'sash'
       );
       
       // System is considered tuned if it has both frame and sash profiles
       if (hasFrame && hasSash) {
         // Check if profiles have tuning parameters
-        const frameProfile = upvcPack.profiles.find(p => 
-          p.profileRole === 'frame' || (p as any).type === 'frame'
+        const frameProfile = upvcProfiles.find((p: any) => 
+          p.profileRole === 'frame' || p.type === 'frame'
         );
-        const sashProfile = upvcPack.profiles.find(p => 
-          p.profileRole === 'sash' || (p as any).type === 'sash'
+        const sashProfile = upvcProfiles.find((p: any) => 
+          p.profileRole === 'sash' || p.type === 'sash'
         );
         
         // Check if profiles have specifications with tuning data
@@ -79,7 +80,7 @@ export function isSystemPackTuned(systemPack: SystemPack | UPVCSystemPack | null
         return customPack.tuningStatus === 'tuned' || 
                (customPack.profiles?.every((p: any) => p.tuningStatus === 'tuned'));
       }
-    } catch (e) {
+    } catch {
       // Ignore errors
     }
   }
@@ -166,7 +167,7 @@ export function getReturnUrl(): { url: string; params: Record<string, string> } 
       sessionStorage.removeItem('tuning_return_url');
       return data;
     }
-  } catch (e) {
+  } catch {
     // Ignore errors
   }
   return null;

@@ -45,8 +45,8 @@ export const EgyptianConstraintsCard: React.FC<EgyptianConstraintsCardProps> = (
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div className="space-y-1">
-              <div className="flex items-center gap-1 text-gray-700 font-medium">
-                <Building className="h-4 w-4" />
+              <div className="flex items-center gap-1 text-orange-600 font-medium">
+                <Building className="h-4 w-4 text-orange-500" />
                 <span>Location</span>
               </div>
               <p className="text-gray-800">{constraints.governorate || '—'}</p>

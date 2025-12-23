@@ -22,7 +22,7 @@ import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import type { Profile } from '@/types/fabricator';
-import { motion } from 'framer-motion';
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 import {
   AlertCircle,
   AlertTriangle,
@@ -331,7 +331,7 @@ export const NoDXFTuningStudio: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 sm:p-6 lg:p-8">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
-        <motion.div
+        <LazyMotionDiv
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center justify-between"
@@ -359,7 +359,7 @@ export const NoDXFTuningStudio: React.FC = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Wizard
           </Button>
-        </motion.div>
+        </LazyMotionDiv>
 
         {saveSuccess && (
           <Alert className="bg-green-900/20 border-green-500/50">

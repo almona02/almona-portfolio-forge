@@ -3,7 +3,7 @@ import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/ui/card";
 import { EnhancedImage } from "@/components/ui/EnhancedImage";
-import { motion } from "framer-motion";
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 
 const EgyptCertificationBadge = ({ standard }: { standard: string }) => (
   <div className="flex items-center bg-[#ce1126] text-white px-1.5 py-0.5 rounded-full text-[10px]">
@@ -64,7 +64,7 @@ export const IndustrialProductCard = ({
   };
 
   return (
-    <motion.div
+    <LazyMotionDiv
       animate={isAnimating ? {
         scale: [1, 1.02, 1],
         boxShadow: [
@@ -184,6 +184,6 @@ export const IndustrialProductCard = ({
         </div>
       </CardFooter>
     </Card>
-    </motion.div>
+    </LazyMotionDiv>
   );
 };

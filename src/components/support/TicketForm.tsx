@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/useToast';
 import { TicketPriority, TicketType } from '@/types/tickets';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import clsx from 'clsx';
 
 /**
@@ -180,9 +180,9 @@ export const TicketForm: React.FC<TicketFormProps> = ({
         </div>
       )}
 
-      <AnimatePresence mode="wait">
+      <LazyAnimatePresence mode="wait">
         {(activeTab === 'details' || mode === 'dialog' || !showAttachments) && (
-          <motion.div key="details" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-6">
+          <LazyMotionDiv key="details" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label>Ticket Type</Label>
@@ -275,21 +275,21 @@ export const TicketForm: React.FC<TicketFormProps> = ({
                 <Button type="button" variant="outline" onClick={()=>setActiveTab('attachments')} className="border-almona-orange text-almona-orange hover:bg-almona-orange/10">Next: Attachments</Button>
               </div>
             )}
-          </motion.div>
+          </LazyMotionDiv>
         )}
 
         {mode === 'page' && showAttachments && activeTab==='attachments' && (
-          <motion.div key="attachments" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
+          <LazyMotionDiv key="attachments" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
             <p className="text-sm text-gray-400">Attachment handling to be implemented (placeholder).</p>
             <div className="flex justify-between">
               <Button type="button" variant="outline" onClick={()=>setActiveTab('details')}>Back</Button>
               <Button type="button" onClick={()=>setActiveTab('preview')}>Preview</Button>
             </div>
-          </motion.div>
+          </LazyMotionDiv>
         )}
 
         {mode === 'page' && showAttachments && activeTab==='preview' && (
-          <motion.div key="preview" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
+          <LazyMotionDiv key="preview" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
             <h3 className="text-lg font-semibold">Preview</h3>
             <div className="bg-almona-darker/40 p-4 rounded border border-almona-light/20 text-sm space-y-2">
               <div><strong>Title:</strong> {watch('title')}</div>
@@ -301,9 +301,9 @@ export const TicketForm: React.FC<TicketFormProps> = ({
               <Button type="button" variant="outline" onClick={()=>setActiveTab('attachments')}>Back</Button>
               <Button type="submit" disabled={isSubmitting}>{isSubmitting? 'Submitting...' : 'Submit Ticket'}</Button>
             </div>
-          </motion.div>
+          </LazyMotionDiv>
         )}
-      </AnimatePresence>
+      </LazyAnimatePresence>
 
       {(!showAttachments || mode==='dialog') && (
         <div className="flex justify-end pt-2">

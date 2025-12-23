@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { Info, Users, Zap, Target } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -194,7 +194,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
           ))}
         </div>
 
-        <motion.div
+        <LazyMotionDiv
           key={demoStep}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -212,7 +212,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
               {demoSteps[demoStep].content}
             </CardContent>
           </Card>
-        </motion.div>
+        </LazyMotionDiv>
       </div>
 
       {/* Live Demo */}

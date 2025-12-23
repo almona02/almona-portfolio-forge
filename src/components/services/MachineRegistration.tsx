@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { QrCodeIcon, CheckCircle2, AlertCircle, ChevronRight, Camera, Upload, Copy, Check } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { EnhancedOperatorTrainingDialog } from './EnhancedOperatorTrainingDialog';
@@ -189,9 +189,9 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
 
    return (
     <div className="max-w-4xl mx-auto">
-      <AnimatePresence mode="wait">
+      <LazyAnimatePresence mode="wait">
         {step === "scan" && (
-          <motion.div key="scan" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-6">
+          <LazyMotionDiv key="scan" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-6">
             <Card className="bg-almona-darker/50 border-almona-light/20">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold">Register New Machine</CardTitle>
@@ -199,12 +199,12 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <motion.div className="space-y-4" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
+                  <LazyMotionDiv className="space-y-4" whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
                     <div className="h-64 bg-gradient-to-br from-almona-dark to-almona-darker rounded-lg flex flex-col items-center justify-center border border-almona-light/20">
                       {qrScanning ? (
-                        <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
+                        <LazyMotionDiv animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
                           <QrCodeIcon className="w-16 h-16 text-orange-500" />
-                        </motion.div>
+                        </LazyMotionDiv>
                       ) : (
                         <Camera className="w-16 h-16 text-gray-400 mb-2" />
                       )}
@@ -213,7 +213,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                     <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500" onClick={handleScanQR} disabled={qrScanning}>
                       {qrScanning ? "Scanning..." : "Scan QR Code"}
                     </Button>
-                  </motion.div>
+                  </LazyMotionDiv>
 
                   <div className="space-y-4">
                     <div>
@@ -244,11 +244,11 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </LazyMotionDiv>
         )}
 
         {step === "details" && (
-          <motion.div key="details" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
+          <LazyMotionDiv key="details" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
             <Card className="bg-almona-darker/50 border-almona-light/20">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold">Machine Details</CardTitle>
@@ -283,11 +283,11 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                   </div>
                 </div>
 
-                <motion.div className="mt-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                <LazyMotionDiv className="mt-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
                   <h3 className="text-xl font-bold mb-4">Warranty Extension Options</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {warrantyExtensions.map((option, index) => (
-                      <motion.div key={option.months} className="border border-almona-light/20 rounded-lg p-4 hover:border-orange-500/50 transition-colors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} whileHover={{ scale: 1.02 }}>
+                      <LazyMotionDiv key={option.months} className="border border-almona-light/20 rounded-lg p-4 hover:border-orange-500/50 transition-colors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} whileHover={{ scale: 1.02 }}>
                         <h4 className="font-bold text-lg">{option.months} Months</h4>
                         <p className="text-2xl font-bold text-orange-500">{option.price} EGP</p>
                         {option.egyptOnly && <Badge className="mb-2 bg-blue-500/20 text-blue-300">Egypt Only</Badge>}
@@ -300,10 +300,10 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                           ))}
                         </ul>
                         <Button className="w-full mt-3 border border-gray-300" size="sm">Add to Contract</Button>
-                      </motion.div>
+                      </LazyMotionDiv>
                     ))}
                   </div>
-                </motion.div>
+                </LazyMotionDiv>
 
                 <div className="flex justify-between mt-6">
                   <Button onClick={() => setStep("scan")} className="border border-gray-300">Back</Button>
@@ -314,11 +314,11 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </LazyMotionDiv>
         )}
 
         {step === "confirm" && (
-          <motion.div key="confirm" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="space-y-6">
+          <LazyMotionDiv key="confirm" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="space-y-6">
             <Card className="bg-almona-darker/50 border-almona-light/20">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold">Registration Complete</CardTitle>
@@ -391,9 +391,9 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </LazyMotionDiv>
         )}
-      </AnimatePresence>
+      </LazyAnimatePresence>
       <EnhancedOperatorTrainingDialog open={showTrainingDialog} onOpenChange={setShowTrainingDialog} />
     </div>
   );

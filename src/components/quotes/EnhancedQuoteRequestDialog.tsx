@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/useToast';
 import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { motion } from 'framer-motion';
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 
 interface Product {
   id: string;
@@ -181,7 +181,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
             <DialogTitle className="text-2xl text-green-600">تم إنشاء عرض السعر بنجاح</DialogTitle>
           </DialogHeader>
           
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
@@ -230,7 +230,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </LazyMotionDiv>
         </DialogContent>
       </Dialog>
     );

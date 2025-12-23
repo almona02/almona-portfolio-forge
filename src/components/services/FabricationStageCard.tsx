@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { CardHeader, CardTitle, CardContent } from "@/shared/ui/ui/card";
 import { Badge } from "@/shared/ui/ui/badge";
 
@@ -17,7 +17,7 @@ export const FabricationStageCard = ({
   duration,
   keyPoints
 }: FabricationStageCardProps) => (
-  <motion.div 
+  <LazyMotionDiv 
     whileHover={{ y: -5 }}
     className="bg-almona-darker/70 border border-almona-light/20 rounded-lg overflow-hidden"
   >
@@ -43,5 +43,5 @@ export const FabricationStageCard = ({
         ))}
       </ul>
     </CardContent>
-  </motion.div>
+  </LazyMotionDiv>
 );
