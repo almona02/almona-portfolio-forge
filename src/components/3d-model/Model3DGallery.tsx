@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
@@ -220,7 +220,7 @@ export function Model3DGallery({
       )}
 
       {/* Models Grid/List */}
-      <motion.div
+      <LazyMotionDiv
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -230,9 +230,9 @@ export function Model3DGallery({
             : "space-y-4"
         }
       >
-        <AnimatePresence>
+        <LazyAnimatePresence>
           {filteredModels.map((model) => (
-            <motion.div
+            <LazyMotionDiv
               key={model.id}
               variants={itemVariants}
               initial="hidden"
@@ -428,14 +428,14 @@ export function Model3DGallery({
                   </CardContent>
                 </Card>
               )}
-            </motion.div>
+            </LazyMotionDiv>
           ))}
-        </AnimatePresence>
-      </motion.div>
+        </LazyAnimatePresence>
+      </LazyMotionDiv>
 
       {/* Empty State */}
       {filteredModels.length === 0 && (
-        <motion.div 
+        <LazyMotionDiv 
           className="text-center py-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -447,20 +447,20 @@ export function Model3DGallery({
           <p className="text-gray-400">
             Try adjusting your search terms or filters
           </p>
-        </motion.div>
+        </LazyMotionDiv>
       )}
 
       {/* Model Preview Modal */}
-      <AnimatePresence>
+      <LazyAnimatePresence>
         {selectedModel && (
-          <motion.div
+          <LazyMotionDiv
             className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClosePreview}
           >
-            <motion.div
+            <LazyMotionDiv
               className="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-orange-500/20"
               variants={previewVariants}
               initial="initial"
@@ -535,10 +535,10 @@ export function Model3DGallery({
                   </div>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </LazyMotionDiv>
+          </LazyMotionDiv>
         )}
-      </AnimatePresence>
+      </LazyAnimatePresence>
     </div>
   );
 }

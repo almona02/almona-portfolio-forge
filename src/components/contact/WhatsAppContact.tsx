@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -118,9 +118,9 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
 
   return (
     <div className={`fixed ${getPositionClasses()} z-50 ${className}`}>
-      <AnimatePresence>
+      <LazyAnimatePresence>
         {isOpen && (
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
@@ -180,9 +180,9 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
                     </Button>
                   </div>
                   
-                  <AnimatePresence>
+                  <LazyAnimatePresence>
                     {isExpanded && (
-                      <motion.div
+                      <LazyMotionDiv
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
@@ -202,9 +202,9 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
                             </div>
                           </Button>
                         ))}
-                      </motion.div>
+                      </LazyMotionDiv>
                     )}
-                  </AnimatePresence>
+                  </LazyAnimatePresence>
                 </div>
 
                 {/* Custom Message */}
@@ -247,12 +247,12 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          </LazyMotionDiv>
         )}
-      </AnimatePresence>
+      </LazyAnimatePresence>
 
       {/* Floating Button */}
-      <motion.div
+                      <LazyMotionDiv
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -262,7 +262,7 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
         >
           <MessageSquare className="h-6 w-6" />
         </Button>
-      </motion.div>
+                      </LazyMotionDiv>
 
       {/* Removed green pulse overlay */}
     </div>

@@ -45,11 +45,11 @@ import { toast } from 'sonner';
 import { CalibrationWizard } from './CalibrationWizard';
 import { MachiningZoneEditor, type MachiningZone } from './MachiningZoneEditor';
 import './ProfileTuningStudio.css';
+import { UnsavedChangesDialog } from './UnsavedChangesDialog';
 import { ProfileIconGenerator, type ProfileIconHandle } from './assets/ProfileIconGenerator';
 import { DXFProfileImporter, type ImportedProfile } from './smartscan/DXFProfileImporter';
 import { ProfileScannerUploader } from './smartscan/ProfileScannerUploader';
 import SmartScanUploader from './smartscan/SmartScanUploader';
-import { UnsavedChangesDialog } from './UnsavedChangesDialog';
 
 interface ProfileTuningStudioProps {
   profile: Profile;
@@ -85,8 +85,39 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
   const { t } = useTranslation('fabricator');
   const location = useLocation();
   const _navigate = useNavigate();
-  // Enable auto-configuration by default for DXF imports
-  const enableAutoConfig = true;
+  
+  // Helper function to map profile role to allowed DXF importer role
+  const mapProfileRoleToDXFRole = (role: string | undefined): 'frame' | 'sash' | 'mullion' | 'transom' | 'bead' | 'interlock' | 'accessory' => {
+    if (role === 'frame' || role === 'sash' || role === 'mullion' || role === 'transom' || role === 'bead' || role === 'interlock' || role === 'accessory') {
+      return role;
+    }
+    // Map extended roles to base roles
+    if (role?.startsWith('frame') || role === 'architrave' || role === 'threshold' || role === 'sill' || role === 'head' || role === 'jamb') {
+      return 'frame';
+    }
+    if (role?.startsWith('sash') || role === 'screen_sash') {
+      return 'sash';
+    }
+    if (role?.startsWith('glazing_bead')) {
+      return 'bead';
+    }
+    if (role === 'mullion_false' || role === 'transom' || role === 'reinforcement' || role === 'corner_cleat') {
+      return role === 'transom' ? 'transom' : 'mullion';
+    }
+    return 'frame'; // Default fallback
+  };
+  
+  // Helper function to map system type to allowed window type
+  const mapSystemTypeToWindowType = (systemType: string | undefined): 'sliding' | 'casement' | 'tilt_turn' | 'fixed' | 'sliding_door' => {
+    if (systemType === 'sliding' || systemType === 'casement' || systemType === 'tilt_turn' || systemType === 'fixed' || systemType === 'sliding_door') {
+      return systemType;
+    }
+    // Map other types to closest match
+    if (systemType === 'commercial' || systemType === 'facade') {
+      return 'fixed';
+    }
+    return 'sliding'; // Default fallback
+  };
   const [importedProfileData, setImportedProfileData] = useState<ImportedProfile | null>(null);
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
@@ -516,14 +547,15 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
       setIsDirty(false);
       return true;
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : typeof err === 'object' && err !== null && 'message' in err ? String(err.message) : 'Unknown error';
       console.error('💥 Error saving changes:', {
         error: err,
         profileId: profile.id,
         userId,
-        errorMessage: err?.message,
+        errorMessage,
         errorDetails: err
       });
-      toast.error(`Failed to save changes: ${err?.message || 'Unknown error'}`);
+      toast.error(`Failed to save changes: ${errorMessage}`);
       return false;
     } finally {
       setSavingStatus(false);
@@ -664,16 +696,17 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
       onProfileUpdated?.();
       setIsDirty(false);
     } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : typeof err === 'object' && err !== null && 'message' in err ? String(err.message) : 'Unknown error';
       console.error('❌ Error marking profile as tuned:', {
         error: err,
-        message: err?.message,
+        message: errorMessage,
         profileId: profile.id,
         userId,
         environment: import.meta.env.DEV ? 'Development' : 'Production',
         supabaseUrl: import.meta.env.VITE_SUPABASE_URL ? 'Set' : 'Not Set',
         supabaseKey: import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Set' : 'Not Set'
       });
-      toast.error(`Failed to mark profile as tuned: ${err?.message || 'Unknown error'}`);
+      toast.error(`Failed to mark profile as tuned: ${errorMessage}`);
     } finally {
       setSavingStatus(false);
     }
@@ -2305,11 +2338,8 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                                   )
                                 );
                                 
-                                // Auto-apply configuration to ALL tabs immediately
-                                if (firstProfile.widthMm && firstProfile.heightMm && enableAutoConfig) {
-                                  applyAutoConfigToAllTabs(firstProfile);
-                                  toast.success('All tabs auto-filled with extracted data');
-                                }
+                                // Auto-configuration is handled by DXFProfileImporter component
+                                // No additional action needed here
                               }
                             }}
                             selectedProfileId={selectedProfileId}
@@ -2317,8 +2347,8 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                               setSelectedProfileId(id);
                             }}
                             userId={userId}
-                            defaultRole={profile.profileRole || 'frame'}
-                            defaultWindowType={profile.systemType || 'sliding'}
+                            defaultRole={mapProfileRoleToDXFRole(profile.profileRole)}
+                            defaultWindowType={mapSystemTypeToWindowType(profile.systemType)}
                             defaultSystemPack={profile.systemBrand}
                             enableAutoConfig={true}
                             onProfileSaved={(_profileId) => {

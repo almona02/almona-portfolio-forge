@@ -10,6 +10,7 @@ import {
   BarChart3,
   Bell,
   Box,
+  Boxes,
   Brain,
   Calculator,
   ChevronDown,
@@ -235,65 +236,66 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     children?: NavItem[];
   };
 
+  // Gold Tier: Clean, contextual navigation inspired by Supabase design
+  // Organized by workflow stage and value - only show what's relevant
   const fabricatorNavItems: NavItem[] = useMemo(() => [
     {
       id: 'workflow',
-      label: 'AI Workflow',
-      icon: Factory,
-      description: 'End‑to‑end fabrication pipeline',
+      label: 'Workflow',
+      icon: Workflow,
+      description: 'Fabrication pipeline',
       children: [
-        { id: 'measuring', label: 'Smart Measuring', icon: Ruler, path: '/fabricator-workflow#measuring', badge: 'AI' },
-        { id: 'design', label: 'Technical Design', icon: Settings, path: '/fabricator-workflow#design', badge: 'PRO' },
+        { id: 'measuring', label: 'Measuring', icon: Ruler, path: '/fabricator-workflow#measuring', badge: 'AI' },
+        { id: 'design', label: 'Design', icon: Settings, path: '/fabricator-workflow#design', badge: 'PRO' },
         { id: 'preview3d', label: '3D Preview', icon: Box, path: '/fabricator-workflow#preview3d', badge: '3D' },
-        { id: 'optimization', label: 'Cutting Optimization', icon: Scissors, path: '/fabricator-workflow#optimization', badge: 'AI' },
-        { id: 'inventory', label: 'Inventory Check', icon: Package, path: '/fabricator-workflow#inventory' },
-        { id: 'production', label: 'Production Planning', icon: Factory, path: '/fabricator-workflow#production' },
-        { id: 'quality', label: 'Quality Control', icon: Zap, path: '/fabricator-workflow#quality' }
+        { id: 'optimization', label: 'Optimization', icon: Scissors, path: '/fabricator-workflow#optimization', badge: 'AI' },
+        { id: 'inventory', label: 'Inventory', icon: Package, path: '/fabricator-workflow#inventory' },
+        { id: 'production', label: 'Production', icon: Factory, path: '/fabricator-workflow#production' },
+        { id: 'quality', label: 'Quality', icon: Zap, path: '/fabricator-workflow#quality' }
       ]
     },
     {
       id: 'projects',
       label: 'Projects',
-      icon: Factory,
+      icon: FileText,
       path: '/fabricator/projects',
-      description: 'Manage all window units and positions'
+      description: 'Window units & positions'
     },
     {
       id: 'customers',
       label: 'Customers',
       icon: Users,
       path: '/fabricator/customers',
-      description: 'Client management and portals'
+      description: 'Client management'
     },
     {
       id: 'inventory',
       label: 'Inventory',
       icon: Package,
       path: '/fabricator/inventory',
-      description: 'Stock management and remnants',
+      description: 'Stock & remnants',
       badge: 'LIVE'
     },
     {
       id: 'commercial',
       label: 'Commercial',
       icon: Calculator,
-      description: 'Pricing and offers',
+      description: 'Pricing & offers',
       children: [
-        { id: 'offers', label: 'Commercial Offers', icon: FileText, path: '/offers' },
-        { id: 'pricing', label: 'Settings & Prices', icon: Calculator, path: '/pricing-settings' },
-        { id: 'cost-reports', label: 'Cost Reports', icon: BarChart3, path: '/cost-reports' }
+        { id: 'offers', label: 'Offers', icon: FileText, path: '/offers' },
+        { id: 'pricing', label: 'Pricing', icon: Calculator, path: '/pricing-settings' },
+        { id: 'reports', label: 'Reports', icon: BarChart3, path: '/cost-reports' }
       ]
     },
     {
       id: 'resources',
       label: 'Resources',
-      icon: Package,
-      description: 'Production assets & machines',
+      icon: Settings,
+      description: 'System configuration',
       children: [
-        { id: 'system-packs', label: 'System Pack Management', icon: Settings, path: '/fabricator-workflow#inventory', badge: 'TUNE' },
-        { id: 'profiles', label: 'Profiles & Accessories', icon: Scissors, path: '/fabricator-workflow#inventory' },
-        { id: 'machines', label: 'Machines', icon: Cpu, path: '/machines' },
-        { id: 'accounting', label: 'Accounting', icon: Coins, path: '/accounting' }
+        { id: 'system-packs', label: 'System Packs', icon: Boxes, path: '/fabricator-workflow#inventory', badge: 'TUNE' },
+        { id: 'profiles', label: 'Profiles', icon: Scissors, path: '/fabricator-workflow#inventory' },
+        { id: 'machines', label: 'Machines', icon: Cpu, path: '/machines' }
       ]
     }
   ], []);
@@ -663,62 +665,60 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
         </AnimatePresence>
       </div>
 
-      {/* Navigation Content - Scrollable Enterprise Navigation */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden mt-2 px-2.5 scrollbar-thin scrollbar-thumb-slate-700/50 scrollbar-track-transparent hover:scrollbar-thumb-slate-600/70 relative z-10 min-h-0">
-        {/* Workflow Section */}
+      {/* Navigation Content - Supabase-inspired Clean Design */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden mt-4 px-2 scrollbar-thin scrollbar-thumb-slate-700/30 scrollbar-track-transparent relative z-10 min-h-0">
+        {/* Workflow Section - Supabase Style */}
         <div className="mb-6">
-          <motion.button
-            whileHover={{ x: 2 }}
-            whileTap={{ scale: 0.98 }}
+          <button
             onClick={() => setActiveMenu(activeMenu === 'workflow' ? null : 'workflow')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all ${
+            className={`w-full flex items-center justify-between px-2 py-1.5 rounded text-sm transition-colors ${
               activeMenu === 'workflow'
-                ? 'bg-gradient-to-r from-[#003366]/15 to-[#004488]/15 border border-[#FFD700]/40 shadow-sm shadow-[#003366]/10'
-                : 'hover:bg-slate-800/40 border border-transparent hover:border-slate-700/30'
+                ? 'text-slate-200'
+                : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <div className="flex items-center gap-3">
-              <Ruler className={`w-4 h-4 ${activeMenu === 'workflow' ? 'text-[#FFD700]' : 'text-slate-400'}`} />
-              {!isCollapsed && (
-                <span className={`text-sm font-medium ${activeMenu === 'workflow' ? 'text-[#FFD700]' : 'text-slate-300'}`}>
-                  WorkFlow
-                </span>
-              )}
+            <div className="flex items-center gap-2">
+              <Workflow className="w-4 h-4" />
+              {!isCollapsed && <span>Workflow</span>}
             </div>
             {!isCollapsed && (
               <ChevronDown
-                className={`w-4 h-4 text-slate-400 transition-transform ${activeMenu === 'workflow' ? 'rotate-180' : ''}`}
+                className={`w-3 h-3 transition-transform ${activeMenu === 'workflow' ? 'rotate-180' : ''}`}
               />
             )}
-          </motion.button>
+          </button>
           <AnimatePresence>
             {activeMenu === 'workflow' && !isCollapsed && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="mt-2 space-y-1 overflow-hidden"
+                className="mt-1 ml-6 space-y-0.5 overflow-hidden"
               >
-                {workflowStages.map((stage) => {
-                  const isActive = currentWorkflow === stage.id;
+                {fabricatorNavItems.find(item => item.id === 'workflow')?.children?.map((stage) => {
+                  const isActive = currentWorkflow === stage.id || location.pathname.includes(stage.path || '');
                   return (
-                    <motion.button
+                    <button
                       key={stage.id}
-                      whileHover={{ x: 4 }}
-                      whileTap={{ scale: 0.98 }}
                       onClick={() => {
+                        if (stage.path) navigate(stage.path);
                         onWorkflowChange?.(stage.id);
                         setActiveMenu(null);
                       }}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-left transition-all ${
+                      className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-colors ${
                         isActive
-                          ? 'bg-[#003366]/15 text-[#FFD700] border border-[#FFD700]/40 shadow-sm'
-                          : 'text-slate-400 hover:bg-slate-800/40 hover:text-white'
+                          ? 'bg-slate-800 text-orange-400'
+                          : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
                       }`}
                     >
-                      <stage.icon className="w-4 h-4 flex-shrink-0" />
-                      <span className="text-xs">{stage.name}</span>
-                    </motion.button>
+                      <stage.icon className="w-3.5 h-3.5" />
+                      <span>{stage.label}</span>
+                      {stage.badge && (
+                        <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400">
+                          {stage.badge}
+                        </span>
+                      )}
+                    </button>
                   );
                 })}
               </motion.div>
@@ -726,90 +726,91 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           </AnimatePresence>
         </div>
 
-        {/* Operations Workspace dropdown */}
-        <div className="space-y-1 mb-4">
-          <motion.button
-            whileHover={{ x: 2 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setActiveMenu(activeMenu === 'operations' ? null : 'operations')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all ${
-              activeMenu === 'operations'
-                ? 'bg-gradient-to-r from-[#003366]/15 to-[#004488]/15 border border-[#FFD700]/40 shadow-sm shadow-[#003366]/10'
-                : 'hover:bg-slate-800/40 border border-transparent hover:border-slate-700/30'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <Workflow className={`w-4 h-4 ${activeMenu === 'operations' ? 'text-[#FFD700]' : 'text-slate-400'}`} />
-              {!isCollapsed && (
-                <span className={`text-sm font-medium ${activeMenu === 'operations' ? 'text-[#FFD700]' : 'text-slate-300'}`}>
-                  Workspace
-                </span>
-              )}
-            </div>
-            {!isCollapsed && (
-              <ChevronDown
-                className={`w-4 h-4 text-slate-400 transition-transform ${activeMenu === 'operations' ? 'rotate-180' : ''}`}
-              />
-            )}
-          </motion.button>
+        {/* Main Navigation - Supabase Style: Clean & Minimal */}
+        <div className="space-y-0.5">
+          {navItemsWithoutWorkflow.map((item) => {
+            const hasChildren = item.children && item.children.length > 0;
+            const isExpanded = activeMenu === item.id;
+            const isActive = location.pathname === item.path || (item.path && location.pathname.startsWith(item.path));
 
-          <AnimatePresence>
-            {activeMenu === 'operations' && !isCollapsed && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="mt-2 space-y-1 overflow-hidden"
-              >
-                {operationsItems.map((item) => (
-                  <motion.button
-                    key={item.id}
-                    whileHover={{ x: 2 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      if (item.path) {
-                        navigate(item.path);
-                        setActiveMenu(null);
-                        if (isMobile) setIsMobileNavOpen(false);
-                      }
-                    }}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all group ${
-                      item.id === 'commercial'
-                        ? 'bg-gradient-to-r from-[#003366]/15 to-[#004488]/15 border border-[#FFD700]/40 shadow-sm shadow-[#003366]/10'
-                        : 'hover:bg-slate-800/40 border border-transparent hover:border-slate-700/30'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <item.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${
-                        item.id === 'commercial' ? 'text-[#FFD700]' : 'text-slate-400 group-hover:text-white'
-                      }`} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className={`text-sm font-medium truncate ${
-                            item.id === 'commercial' ? 'text-slate-100' : 'text-slate-300'
-                          }`}>
-                            {item.label}
+            return (
+              <div key={item.id}>
+                <button
+                  onClick={() => {
+                    if (hasChildren) {
+                      setActiveMenu(isExpanded ? null : item.id);
+                    } else if (item.path) {
+                      navigate(item.path);
+                      if (isMobile) setIsMobileNavOpen(false);
+                    }
+                  }}
+                  className={`w-full flex items-center justify-between px-2 py-1.5 rounded text-sm transition-colors ${
+                    isActive
+                      ? 'bg-slate-800 text-orange-400'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <item.icon className="w-4 h-4 flex-shrink-0" />
+                    {!isCollapsed && (
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="truncate">{item.label}</span>
+                        {item.badge && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400">
+                            {item.badge}
                           </span>
-                          {item.badge && (
-                            <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#FFD700]/20 text-[#003366] border border-[#FFD700]/30">
-                              {item.badge}
-                            </span>
-                          )}
-                        </div>
-                        {item.description && (
-                          <p className={`text-[10px] truncate mt-0.5 ${
-                            item.id === 'commercial' ? 'text-slate-200/80' : 'text-slate-500'
-                          }`}>
-                            {item.description}
-                          </p>
                         )}
                       </div>
-                    </div>
-                  </motion.button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                    )}
+                  </div>
+                  {hasChildren && !isCollapsed && (
+                    <ChevronRight
+                      className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                    />
+                  )}
+                </button>
+                <AnimatePresence>
+                  {isExpanded && hasChildren && !isCollapsed && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="mt-0.5 ml-6 space-y-0.5 overflow-hidden"
+                    >
+                      {item.children?.map((child) => {
+                        const isChildActive = location.pathname === child.path;
+                        return (
+                          <button
+                            key={child.id}
+                            onClick={() => {
+                              if (child.path) {
+                                navigate(child.path);
+                                setActiveMenu(null);
+                                if (isMobile) setIsMobileNavOpen(false);
+                              }
+                            }}
+                            className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-colors ${
+                              isChildActive
+                                ? 'bg-slate-800 text-orange-400'
+                                : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
+                            }`}
+                          >
+                            <child.icon className="w-3.5 h-3.5" />
+                            <span>{child.label}</span>
+                            {child.badge && (
+                              <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400">
+                                {child.badge}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </div>
 
         {/* Main Navigation (rest) */}

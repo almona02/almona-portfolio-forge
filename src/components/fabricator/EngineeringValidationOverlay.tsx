@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
@@ -80,7 +80,7 @@ export const EngineeringValidationOverlay: React.FC<EngineeringValidationOverlay
     const canOverride = canOverrideFirman(firman, userGuildRank);
 
     return (
-      <motion.div
+      <LazyMotionDiv
         key={firman.code}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -166,7 +166,7 @@ export const EngineeringValidationOverlay: React.FC<EngineeringValidationOverlay
             </div>
           </div>
         </div>
-      </motion.div>
+      </LazyMotionDiv>
     );
   };
 
@@ -207,7 +207,7 @@ export const EngineeringValidationOverlay: React.FC<EngineeringValidationOverlay
 
       {/* Firmans List */}
       <div className="space-y-2 max-h-96 overflow-y-auto">
-        <AnimatePresence>
+        <LazyAnimatePresence>
           {/* Imperial Decrees (Cannot be overridden) */}
           {validationResult.firmans.imperialDecrees.map((firman, idx) => renderFirman(firman, idx))}
 
@@ -225,7 +225,7 @@ export const EngineeringValidationOverlay: React.FC<EngineeringValidationOverlay
           {validationResult.firmans.advice.map((firman, idx) => 
             renderFirman(firman, validationResult.firmans.imperialDecrees.length + validationResult.firmans.blocks.length + validationResult.firmans.warnings.length + idx)
           )}
-        </AnimatePresence>
+        </LazyAnimatePresence>
       </div>
 
       {/* Empty State */}

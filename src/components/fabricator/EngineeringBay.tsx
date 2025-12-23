@@ -326,9 +326,17 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
 
         const totalGlassArea = glassSpecs.reduce((sum, g) => sum + g.area, 0);
         const glazingType = liveProject.glazing?.type || 'double';
-        const glassThickness = liveProject.glazing?.thickness || 24;
+        // Default: 5mm for single glazing, 24mm (6+12+6) for double glazing
+        const defaultThickness = glazingType === 'single' ? 5 : 24; // 5mm for single glazing bead system
+        const glassThickness = liveProject.glazing?.thickness || defaultThickness;
         const paneCount = glazingType === 'single' ? 1 : glazingType === 'double' ? 2 : 3;
-        const totalGlassWeight = totalGlassArea * glassThickness * 2.5 * paneCount;
+        
+        // Weight calculation: For single glazing, use thickness directly (5mm)
+        // For double/triple, glassThickness is total IGU thickness, so calculate per pane
+        const effectiveThickness = glazingType === 'single' 
+          ? glassThickness  // Single: 5mm
+          : glassThickness / paneCount; // Double/Triple: divide total IGU thickness by pane count
+        const totalGlassWeight = totalGlassArea * effectiveThickness * 2.5 * paneCount;
 
         const glassDetails = { glassSpecs, totalGlassArea, glazingType, glassThickness, totalGlassWeight };
 

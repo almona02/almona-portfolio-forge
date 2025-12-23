@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { Button } from "@/shared/ui/ui/button";
 import { Badge } from "@/shared/ui/ui/badge";
 import { CheckCircle2 } from "lucide-react";
@@ -24,7 +24,7 @@ export const TrainingLevelCard = ({
   isPopular,
   onClick
 }: TrainingLevelCardProps) => (
-  <motion.div 
+  <LazyMotionDiv 
     whileHover={{ scale: 1.02 }}
     className={`relative border rounded-lg p-6 ${isPopular ? 'border-orange-500 bg-almona-darker/50' : 'border-almona-light/20'}`}
   >
@@ -61,5 +61,5 @@ export const TrainingLevelCard = ({
     >
       Enroll Now
     </Button>
-  </motion.div>
+  </LazyMotionDiv>
 );

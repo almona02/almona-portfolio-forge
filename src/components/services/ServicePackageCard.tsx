@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { useLanguage } from '@/context/LanguageContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -106,7 +106,7 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
   };
 
   return (
-    <motion.div
+    <LazyMotionDiv
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.02 }}
@@ -165,7 +165,7 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
           </Button>
         </CardFooter>
       </Card>
-    </motion.div>
+    </LazyMotionDiv>
   );
 };
 

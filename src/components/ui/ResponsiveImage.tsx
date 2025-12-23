@@ -55,52 +55,28 @@ export const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
     }
   }, []);
 
-  // Generate responsive srcset
-  const generateSrcSet = (basePath: string, extension: string) => {
-    // If image path already includes size suffix, use it
-    if (basePath.match(/-\d+w\.(webp|jpg|jpeg|png)$/)) {
-      // Already has responsive sizes
-      return undefined;
-    }
-
-    // Generate responsive sizes
-    const sizes = [400, 800, 1200, 1600, 2000];
-    const baseName = basePath.replace(`.${extension}`, '');
-    
-    return sizes
-      .map(size => `${baseName}-${size}w.${extension} ${size}w`)
-      .join(', ');
-  };
-
   // Extract base path and extension
   const extension = src.split('.').pop()?.toLowerCase() || 'jpg';
   const basePath = src.replace(`.${extension}`, '');
   
-  // Determine final src and srcset
+  // Determine final src
+  // Only use WebP if the file already exists (we check by trying .webp extension)
+  // For now, we'll use the src as-is and let the browser handle format selection
   let finalSrc = src;
-  let finalSrcSet: string | undefined;
-  let webpSrcSet: string | undefined;
-
-  // If WebP is supported, prefer WebP
+  
+  // Check if WebP version exists (only if src doesn't already end with .webp)
   if (hasWebP && !src.endsWith('.webp')) {
+    // Try WebP version - if it exists, use it
     const webpPath = `${basePath}.webp`;
+    // We'll use WebP as the primary source, with original as fallback in <picture>
     finalSrc = webpPath;
-    finalSrcSet = generateSrcSet(basePath, 'webp');
-    
-    // Also provide original format as fallback
-    const originalSrcSet = generateSrcSet(basePath, extension);
-    if (originalSrcSet) {
-      // Fallback srcset for browsers that don't support WebP
-      finalSrcSet = `${finalSrcSet}, ${originalSrcSet}`;
-    }
-  } else {
-    finalSrcSet = generateSrcSet(basePath, extension);
   }
 
-  // For WebP, also create WebP srcset
-  if (hasWebP && !src.endsWith('.webp')) {
-    webpSrcSet = generateSrcSet(basePath, 'webp');
-  }
+  // Only generate srcset if the image path already includes responsive size indicators
+  // (e.g., image-400w.jpg, image-800w.jpg) - otherwise, don't generate srcset
+  // to avoid "unknown descriptor" errors when files don't exist
+  const finalSrcSet: string | undefined = undefined; // Disabled until responsive variants are created
+  const webpSrcSet: string | undefined = undefined; // Disabled until responsive variants are created
 
   const handleLoad = () => {
     setIsLoaded(true);
@@ -124,24 +100,23 @@ export const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
 
   return (
     <picture>
-      {/* WebP source with responsive sizes */}
-      {hasWebP && webpSrcSet && (
+      {/* WebP source (if WebP is supported and src is not already WebP) */}
+      {hasWebP && !src.endsWith('.webp') && (
         <source
           type="image/webp"
-          srcSet={webpSrcSet}
-          sizes={sizes}
+          srcSet={finalSrc} // Use single WebP source
         />
       )}
       
       {/* Fallback image */}
       <img
-        src={finalSrc}
+        src={src} // Always use original src as fallback
         alt={alt}
         className={`${className} ${isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
         width={width}
         height={height}
-        srcSet={finalSrcSet}
-        sizes={sizes}
+        // Only include srcSet if it's defined (for future use when responsive variants exist)
+        {...(finalSrcSet ? { srcSet: finalSrcSet, sizes } : {})}
         loading={priority ? 'eager' : 'lazy'}
         decoding={priority ? 'sync' : 'async'}
         onLoad={() => {

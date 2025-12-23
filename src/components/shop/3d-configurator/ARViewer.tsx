@@ -41,7 +41,7 @@ import {
   AlertTriangle,
   X
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { WorkshopARView } from '../ar/WorkspaceChecker';
 import { MACHINE_PRESETS } from '../ar/machinePresets';
 import { getEquipmentRecommendation } from '@/lib/ai/gemini';
@@ -693,9 +693,9 @@ export const ARViewer = ({
         )}
 
         {/* Performance Metrics (when AR is active) */}
-        <AnimatePresence>
+        <LazyAnimatePresence>
           {isOpen && (
-            <motion.div
+            <LazyMotionDiv
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
@@ -747,9 +747,9 @@ export const ARViewer = ({
                   />
                 </div>
               </div>
-            </motion.div>
+            </LazyMotionDiv>
           )}
-        </AnimatePresence>
+        </LazyAnimatePresence>
 
         {/* AR Session Dialog */}
         <AlertDialog open={isOpen} onOpenChange={(open) => { if (!open) { stopAR(); } else { setIsOpen(true); } }}>

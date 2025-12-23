@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 import { useLanguage } from '@/context/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -191,7 +191,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
   return (
     <div className={`space-y-8 ${className}`}>
       {/* Calculator Header */}
-      <motion.div
+      <LazyMotionDiv
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="text-center"
@@ -206,11 +206,11 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
         <p className="text-xl text-gray-400 max-w-2xl mx-auto">
           {t('services.answer_questions_recommendation')}
         </p>
-      </motion.div>
+      </LazyMotionDiv>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Input Form */}
-        <motion.div
+        <LazyMotionDiv
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
@@ -405,10 +405,10 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </LazyMotionDiv>
 
         {/* Recommendation Results */}
-        <motion.div
+        <LazyMotionDiv
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
@@ -550,7 +550,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
               </CardContent>
             </Card>
           )}
-        </motion.div>
+        </LazyMotionDiv>
       </div>
     </div>
   );

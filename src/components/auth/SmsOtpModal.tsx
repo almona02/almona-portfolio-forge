@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { Phone, MessageSquare } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { LazyMotionDiv } from '@/utils/lazyMotion';
 
 interface SmsOtpModalProps {
   isOpen: boolean;
@@ -86,14 +86,14 @@ export const SmsOtpModal: React.FC<SmsOtpModalProps> = ({
         </DialogHeader>
         <div className="grid gap-4 py-4">
           {error && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+            <LazyMotionDiv initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
               <Alert variant="destructive" className="mb-4">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
-            </motion.div>
+            </LazyMotionDiv>
           )}
           {step === 'request' ? (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <LazyMotionDiv initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <div className="space-y-2">
                 <Label htmlFor="countryCode" className="text-gray-700 dark:text-gray-200">Country Code</Label>
                 <Input
@@ -120,9 +120,9 @@ export const SmsOtpModal: React.FC<SmsOtpModalProps> = ({
               <Button onClick={handleSendOtp} disabled={loading} className="w-full mt-6 bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600">
                 {loading ? 'Sending OTP...' : 'Send OTP'}
               </Button>
-            </motion.div>
+            </LazyMotionDiv>
           ) : (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <LazyMotionDiv initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <div className="space-y-2">
                 <Label htmlFor="otp" className="text-gray-700 dark:text-gray-200">OTP</Label>
                 <div className="relative">
@@ -143,7 +143,7 @@ export const SmsOtpModal: React.FC<SmsOtpModalProps> = ({
               <Button variant="link" onClick={() => setStep('request')} className="w-full mt-2 text-almona-light">
                 Resend OTP
               </Button>
-            </motion.div>
+            </LazyMotionDiv>
           )}
         </div>
       </DialogContent>

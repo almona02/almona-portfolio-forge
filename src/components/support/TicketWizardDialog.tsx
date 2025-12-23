@@ -16,7 +16,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/context/LanguageContext';
 import { useToast } from '@/hooks/useToast';
-import { AnimatePresence, motion } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { CheckCircle2, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 
 interface TicketWizardDialogProps {
@@ -476,9 +476,9 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
           {/* <input type="hidden" {...register('maintenance_type')} /> */} {/* Removed - field doesn't exist in API */}
           <input type="hidden" {...register('preferred_contact_method')} />
           <input type="hidden" {...register('machine_model')} />
-          <AnimatePresence mode="wait">
+            <LazyAnimatePresence mode="wait">
             {!isSuccess && activeStep.id === 'category' && (
-              <motion.div key="category" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-8">
+              <LazyMotionDiv key="category" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
                     <Label className="text-sm font-medium">Ticket Type</Label>
@@ -496,11 +496,11 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                   </div>
                 </div>
                 {/* Maintenance Type selection removed - field doesn't exist in API */}
-              </motion.div>
+              </LazyMotionDiv>
             )}
 
             {!isSuccess && activeStep.id === 'details' && (
-              <motion.div key="details" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-6">
+              <LazyMotionDiv key="details" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="title">{t('ticket.title')}</Label>
                   <Controller name="title" control={control} render={({ field }) => (
@@ -555,11 +555,11 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                     <strong>Emergency escalation:</strong> If production is halted, please call our 24/7 hotline +20-XX-XXX-XXXX after submitting.
                   </div>
                 )}
-              </motion.div>
+              </LazyMotionDiv>
             )}
 
             {!isSuccess && activeStep.id === 'attachments' && (
-              <motion.div key="attachments" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
+              <LazyMotionDiv key="attachments" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
                 <h3 className="text-lg font-semibold">{t('ticket.attachments_optional')}</h3>
                 <p className="text-xs text-gray-400">{t('ticket.add_reference_files')}</p>
                 <input
@@ -604,17 +604,17 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                 <div className="flex justify-end">
                   <Button type="button" variant="ghost" onClick={next}>{t('ticket.continue')}</Button>
                 </div>
-              </motion.div>
+              </LazyMotionDiv>
             )}
 
             {!isSuccess && activeStep.id === 'contact' && (
-              <motion.div key="contact" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-6">
+              <LazyMotionDiv key="contact" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-6">
                 <MachineAndContactSection control={control} setValue={setValue} userId={user?.id || null} selectedContactMethod={selectedContactMethod} />
-              </motion.div>
+              </LazyMotionDiv>
             )}
 
             {!isSuccess && activeStep.id === 'preview' && (
-              <motion.div key="preview" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
+              <LazyMotionDiv key="preview" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
                 <h3 className="text-lg font-semibold">{t('ticket.preview_title')}</h3>
                 <div className="bg-almona-darker/40 p-4 rounded border border-almona-light/20 text-sm space-y-2">
                   <div><strong>{t('ticket.preview_title_label')}</strong> {watch('title')}</div>
@@ -648,11 +648,11 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                     {isSubmitting ? 'Submitting...' : attachments.some(a=> a.status==='uploading' || a.status==='pending') ? 'Waiting for uploads...' : 'Submit Ticket'}
                   </Button>
                 </div>
-              </motion.div>
+              </LazyMotionDiv>
             )}
 
             {isSuccess && (
-              <motion.div key="success" initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} exit={{opacity:0}} className="text-center py-12 space-y-6">
+              <LazyMotionDiv key="success" initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} exit={{opacity:0}} className="text-center py-12 space-y-6">
                 <div className="mx-auto w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center border border-green-500/30">
                   <CheckCircle2 className="h-10 w-10 text-green-400" />
                 </div>
@@ -694,9 +694,9 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                   )}
                   <Button variant="secondary" onClick={() => { setActiveStepIndex(0); setCreatedTicketId(null); }}>{t('ticket.create_another')}</Button>
                 </div>
-              </motion.div>
+              </LazyMotionDiv>
             )}
-          </AnimatePresence>
+          </LazyAnimatePresence>
         </form>
 
         {!isSuccess && (

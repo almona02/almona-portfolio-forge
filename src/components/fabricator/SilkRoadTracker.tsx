@@ -12,7 +12,7 @@ import { Alert } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Progress } from '@/shared/ui/ui/progress';
-import { AnimatePresence, motion } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import {
   AlertCircle,
   Building2,
@@ -256,13 +256,13 @@ export const SilkRoadTracker: React.FC<SilkRoadTrackerProps> = ({
           <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200" />
 
           <div className="space-y-6 relative">
-            <AnimatePresence>
+            <LazyAnimatePresence>
               {journey.nodes.map((node, index) => {
                 const isActive = index <= journey.currentStage;
                 const isCurrent = index === journey.currentStage;
 
                 return (
-                  <motion.div
+                  <LazyMotionDiv
                     key={node.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -328,10 +328,10 @@ export const SilkRoadTracker: React.FC<SilkRoadTrackerProps> = ({
                         </div>
                       )}
                     </div>
-                  </motion.div>
+                  </LazyMotionDiv>
                 );
               })}
-            </AnimatePresence>
+            </LazyAnimatePresence>
           </div>
         </div>
 

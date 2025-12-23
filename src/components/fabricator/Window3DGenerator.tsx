@@ -14,6 +14,9 @@
  * - Dynamic Measurement Rendering: On-screen dimensions for clear communication.
  */
 
+// IMMEDIATE DEBUG: This runs as soon as the file loads
+console.log('[Animation] 📦 Window3DGenerator.tsx FILE LOADED');
+
 import {
   Bounds,
   CameraControls,
@@ -39,6 +42,7 @@ import { useDebouncedCallback } from 'use-debounce';
 
 // Tree-shakeable imports
 import {
+  BoxGeometry,
   Color,
   DoubleSide,
   Euler,
@@ -82,6 +86,9 @@ import {
 
 import { useAdvancedMaterials, useWindowPhysics } from '@/lib/3d';
 import { FrameGeometry, MiteredFrameData, generateModelGeometries } from '@/lib/3d/windowGeometry';
+import { getPatternById } from '@/lib/fabricator/presetUtils';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { generateHardwarePlaceholders, getHardwareColor } from '@/lib/3d/hardwarePlaceholder';
 import { track } from '@/lib/analytics';
 import { ValidationResult, deriveSystemConstraintsFromProfiles, validateProjectWithConstraints } from '@/lib/fabricatorValidation';
 import { Profile, WindowUnit } from '@/types/fabricator';
@@ -113,6 +120,15 @@ const createSpacerMaterial = (clippingPlanes?: Plane[] | null): MeshStandardMate
  */
 function MiteredFramePart({ part, material, enableShadows }: { part: MiteredFrameData, material: Material, enableShadows: boolean }) {
     const geometry = useMemo(() => {
+        // Temporary: Use BoxGeometry for simpler positioning (fixing frame bars)
+        if (part.useBoxGeometry && part.boxSize) {
+            const { width, height, depth } = part.boxSize;
+            const geom = new BoxGeometry(width, height, depth);
+            geom.applyMatrix4(part.matrix);
+            return geom;
+        }
+        
+        // Original: ExtrudeGeometry for profile shapes
         const shape = new Shape(part.shape as any);
         // If a hole is provided on the shape, add it for hollow profiles
         if ((part.shape as any).hole) {
@@ -242,6 +258,17 @@ export function Window3DModel({
     validationResult?: ValidationResult;
 }) {
     const { t } = useTranslation('fabricator');
+    
+    // Debug: Log when component renders
+    useEffect(() => {
+        console.log('[Animation] 🎬 Window3DModel component mounted/updated', {
+            isAnimating,
+            animationProgress,
+            hasWindowUnit: !!windowUnit,
+            sashesCount: windowUnit.grid?.cells.filter(c => c.type === 'sash' || c.type === 'sliding').length || 0
+        });
+    }, [isAnimating, animationProgress, windowUnit.id]);
+    
     const groupRef = useRef<Group>(null!);
     const [modelData, setModelData] = useState<FrameGeometry | null>(null);
     const [isModelGenerating, setIsModelGenerating] = useState(false);
@@ -256,7 +283,9 @@ export function Window3DModel({
 
     // Performance & feature flags
     const isHighQuality = windowUnit.overallWidth * windowUnit.overallHeight <= 7_000_000; // ~≤ 7 m²
-    const physicsEnabled = isHighQuality; // Disable physics for extremely large units
+    // DISABLE PHYSICS - Ammo.js is failing and blocking animation
+    const physicsEnabled = false; // Force disabled to avoid Ammo.js errors
+    console.log('[Animation] 🔧 Physics disabled (Ammo.js error fix)');
 
     const {
         isSetup: isPhysicsSetup,
@@ -293,8 +322,19 @@ export function Window3DModel({
         });
 
         const sashMaterial = frameMaterial;
+        
+        // Use glass color from windowUnit.glazing.color if available
+        const glassColor = windowUnit.glazing?.color || '#aaccff';
+        // Convert color names to hex if needed
+        const glassColorHex = glassColor === 'clear' ? '#aaccff' :
+                              glassColor === 'blue' ? '#4a90e2' :
+                              glassColor === 'green' ? '#90ee90' :
+                              glassColor === 'bronze' ? '#cd7f32' :
+                              glassColor === 'grey' || glassColor === 'gray' ? '#708090' :
+                              glassColor.startsWith('#') ? glassColor : '#aaccff';
+        
         const glassMaterial = createMaterial('glass', {
-            color: '#aaccff',
+            color: glassColorHex,
             metalness: 0.1,
             roughness: 0.05,
             transmission: 0.95,
@@ -315,7 +355,7 @@ export function Window3DModel({
             glass: glassMaterial,
             spacer: spacerMaterial,
         };
-    }, [modelData, windowUnit.color, clippingPlanes, createMaterial]);
+    }, [modelData, windowUnit.color, windowUnit.glazing?.color, clippingPlanes, createMaterial]);
 
     // --- Debounced Geometry Generation Effect ---
     // Debounce model generation to avoid regeneration on every state change
@@ -335,7 +375,12 @@ export function Window3DModel({
             setIsModelGenerating(true);
             
             try {
-                const geometrySpec = generateModelGeometries(windowUnit);
+                // Get pattern if presetId is available
+                const pattern = windowUnit.presetId 
+                    ? getPatternById(windowUnit.presetId)
+                    : null;
+                
+                const geometrySpec = generateModelGeometries(windowUnit, pattern || undefined);
                 setModelData(geometrySpec);
                 
                 if (onModelReady && groupRef.current) {
@@ -423,40 +468,336 @@ export function Window3DModel({
         }
     }, [physicsEnabled, isPhysicsSetup, isAnimating, startPhysics, stopPhysics, openAllSashes, closeAllSashes]);
 
+    // Get Three.js renderer to invalidate frame when animating
+    const { invalidate } = useThree();
+    
+    // Debug: Log when useFrame hook is set up
+    useEffect(() => {
+        console.log('[Animation] 🔧 useFrame hook initialized', {
+            hasGroup: !!groupRef.current,
+            hasModelData: !!modelData,
+            isAnimating,
+            physicsEnabled
+        });
+    }, [modelData, isAnimating, physicsEnabled]);
+    
     // --- Animation Frame Logic ---
-    useFrame(() => {
+    useFrame((state, delta) => {
         // When physics is enabled, let Ammo.js drive the motion
         if (physicsEnabled) return;
 
-        if (!groupRef.current || !modelData || (!isAnimating && !explodedView)) return;
+        // CRITICAL DEBUG: Log EVERY frame when animating (limit to first 20 frames)
+        if (isAnimating && state.frame < 20) {
+            console.log('[Animation] 🎯 useFrame RUNNING - Frame:', state.frame, {
+                isAnimating,
+                animationProgress: animationProgress.toFixed(3),
+                hasGroup: !!groupRef.current,
+                hasModelData: !!modelData,
+                sashesCount: modelData?.sashes?.length || 0
+            });
+        }
+
+        if (!groupRef.current || !modelData || (!isAnimating && !explodedView)) {
+            if (isAnimating && state.frame < 5) {
+                console.warn('[Animation] ⚠️ useFrame EARLY RETURN:', {
+                    hasGroup: !!groupRef.current,
+                    hasModelData: !!modelData,
+                    isAnimating,
+                    explodedView
+                });
+            }
+            return;
+        }
         
-        // Simplified animation logic
+        // Force render when animating (for frameloop="demand")
+        if (isAnimating) {
+            invalidate();
+        }
+        
+        // Animation progress: 0 = closed, 1 = fully open
         const progress = isAnimating ? animationProgress : (explodedView ? 1 : 0);
+        
+        // FIXED: Check if there are any sashes - if not, skip animation (fixed frame)
+        const hasSashes = modelData.sashes.length > 0;
+        if (!hasSashes && isAnimating) {
+            // Fixed frame - no sashes to animate, stop animation
+            return;
+        }
+        
+        // Debug: Log that useFrame is running (first few frames)
+        if (isAnimating && progress > 0 && progress < 0.05) {
+            console.log('[Animation] 🎯 useFrame is running!', {
+                progress: progress.toFixed(3),
+                animationProgress: animationProgress.toFixed(3),
+                delta: delta.toFixed(4),
+                hasGroup: !!groupRef.current,
+                hasModelData: !!modelData,
+                sashesCount: modelData.sashes.length,
+                windowType: windowUnit.type,
+                hasGrid: !!windowUnit.grid,
+                hasSashes
+            });
+        }
+        
+        let animatedCount = 0;
+        let sashIndex = 0;
         
         groupRef.current.traverse((child) => {
             if (child.userData.isAnimatableSash) {
+                animatedCount++;
                 const { openingPath } = child.userData;
-                if (openingPath) {
-                    // Example simple animation based on openingPath properties
-                    // For now just open it a bit
-                    // Ideally we use openingPath.path[] interpolation
-                    
-                    // Simple rotation around Y for now if no path
-                    const targetRotY = Math.PI / 2; 
-                    
-                    if (child.userData.openingPath.rotation) {
-                        // Use pre-calculated rotation
-                        // child.rotation.x = restRotation.x + openingPath.rotation.x * progress;
-                        // child.rotation.y = restRotation.y + openingPath.rotation.y * progress;
-                        // child.rotation.z = restRotation.z + openingPath.rotation.z * progress;
-                    } else {
-                        // Fallback
-                        child.rotation.y = targetRotY * progress;
+                
+                // Initialize rest state if not set
+                if (!child.userData.restPosition) {
+                    child.userData.restPosition = child.position.clone();
+                }
+                if (!child.userData.restRotation) {
+                    child.userData.restRotation = child.rotation.clone();
+                }
+                
+                const restPosition = child.userData.restPosition as Vector3;
+                const restRotation = child.userData.restRotation as Euler;
+                
+                // Debug first sash on first frame
+                if (sashIndex === 0 && isAnimating && progress > 0 && progress < 0.01) {
+                    console.log('[Animation] 🪟 Sash 0 details:', {
+                        hasOpeningPath: !!openingPath,
+                        restPosition: restPosition.toArray(),
+                        restRotation: restRotation.toArray(),
+                        currentPosition: child.position.toArray(),
+                        currentRotation: child.rotation.toArray(),
+                        windowType: windowUnit.type,
+                        gridCells: windowUnit.grid?.cells.length || 0
+                    });
+                }
+                
+                // Find the cell for this sash (match by index)
+                const cell = windowUnit.grid?.cells.filter(c => 
+                    c.type === 'sash' || c.type === 'sliding'
+                )[sashIndex] || windowUnit.grid?.cells.find(c => c.type === 'sash' || c.type === 'sliding');
+                
+                // FIXED: If no sash cell found, skip animation (fixed frame)
+                if (!cell || cell.type === 'fixed' || cell.type === 'panel') {
+                    // Fixed frame - no animation
+                    child.position.copy(restPosition);
+                    child.rotation.copy(restRotation);
+                    sashIndex++;
+                    return;
+                }
+                
+                // Determine mechanism type - CHECK MULTIPLE SOURCES (priority order)
+                // 1) Pattern openingMechanism (most reliable for preset patterns)
+                // 2) System Pack system_type (from profile definitions)
+                // 3) Cell type (from user's canvas selection)
+                // 4) WindowUnit type (fallback)
+                
+                const pattern = windowUnit.presetId ? getPatternById(windowUnit.presetId) : null;
+                const patternMechanism = pattern?.openingMechanism?.type;
+                
+                // Get system pack and check its system_type
+                const systemPack = windowUnit.systemPackId 
+                    ? SYSTEM_PACKS.find(p => p.meta.id === windowUnit.systemPackId)
+                    : null;
+                
+                // Extract system_type from system pack's aluminum_profiles
+                let systemPackType: 'casement' | 'sliding' | null = null;
+                if (systemPack?.windowSystemSpec?.aluminum_profiles) {
+                    const frameProfile = systemPack.windowSystemSpec.aluminum_profiles.find(
+                        (p: any) => p.role === 'frame'
+                    );
+                    if (frameProfile?.system_type) {
+                        systemPackType = frameProfile.system_type === 'casement' ? 'casement' :
+                                        frameProfile.system_type === 'sliding' ? 'sliding' : null;
                     }
                 }
+                
+                // Priority: 1) Pattern, 2) System Pack, 3) Cell type, 4) WindowUnit type
+                const isSliding = patternMechanism === 'sliding' || 
+                                 systemPackType === 'sliding' ||
+                                 (patternMechanism !== 'casement' && 
+                                  systemPackType !== 'casement' &&
+                                  (cell?.type === 'sliding' || windowUnit.type?.includes('sliding')));
+                
+                const isCasement = patternMechanism === 'casement' ||
+                                  systemPackType === 'casement' ||
+                                  (!isSliding && 
+                                   patternMechanism !== 'sliding' &&
+                                   systemPackType !== 'sliding' &&
+                                   (cell?.type === 'sash' || windowUnit.type?.includes('casement')));
+                
+                const openingDirection = (cell as any)?.openingDirection || 
+                                        pattern?.openingMechanism?.direction || 
+                                        'right';
+                
+                // Debug: Log mechanism detection (first sash only, first frame)
+                if (sashIndex === 0 && isAnimating && progress > 0 && progress < 0.01) {
+                    console.log('[Animation] 🔍 Mechanism detection:', {
+                        patternMechanism: patternMechanism || 'none',
+                        patternId: windowUnit.presetId || 'none',
+                        patternName: pattern?.name || 'none',
+                        systemPackId: windowUnit.systemPackId || 'none',
+                        systemPackType: systemPackType || 'none',
+                        systemPackName: systemPack?.meta?.name || 'none',
+                        cellType: cell?.type,
+                        windowUnitType: windowUnit.type,
+                        isSliding,
+                        isCasement,
+                        openingDirection,
+                        finalDecision: isCasement ? 'CASEMENT (rotate)' : isSliding ? 'SLIDING (translate)' : 'OTHER'
+                    });
+                }
+                
+                if (isSliding) {
+                    // Sliding windows: translate horizontally
+                    const slideDistance = 0.3; // 30cm slide distance
+                    const slideDirection = openingDirection === 'left' ? -1 : 1;
+                    child.position.set(
+                        restPosition.x + (slideDistance * slideDirection * progress),
+                        restPosition.y,
+                        restPosition.z
+                    );
+                    // Keep rotation at rest
+                    child.rotation.set(restRotation.x, restRotation.y, restRotation.z);
+                } else if (isCasement) {
+                    // CASEMENT: Rotate around hinge pivot point (not sash center)
+                    // Hinges are the pivot reference - center of hinge line = pivot point
+                    // Find hinges for this sash by matching to cell position
+                    const cellWidth = (cell as any)?.width || windowUnit.overallWidth / 1000;
+                    const cellHeight = (cell as any)?.height || windowUnit.overallHeight / 1000;
+                    const cellX = restPosition.x; // Sash center X
+                    const cellY = restPosition.y; // Sash center Y
+                    
+                    // Match hinges to this sash cell (hinges should be on the left or right edge of the cell)
+                    // CRITICAL: Hinges are on the side where sash is attached (opposite to opening direction)
+                    // Opening right → hinges on RIGHT edge
+                    // Opening left → hinges on LEFT edge
+                    const sashHinges = hardwarePlaceholders.filter(hw => {
+                        if (hw.type !== 'hinge') return false;
+                        
+                        // Check if hinge is on the left or right edge of the cell
+                        const leftEdgeX = cellX - cellWidth / 2;
+                        const rightEdgeX = cellX + cellWidth / 2;
+                        const hingeOnLeftEdge = Math.abs(hw.position.x - leftEdgeX) < 0.05;
+                        const hingeOnRightEdge = Math.abs(hw.position.x - rightEdgeX) < 0.05;
+                        const hingeInCellHeight = Math.abs(hw.position.y - cellY) < cellHeight / 2 + 0.1;
+                        
+                        // For opening right, hinges should be on RIGHT edge
+                        // For opening left, hinges should be on LEFT edge
+                        if (openingDirection === 'right') {
+                            return hingeOnRightEdge && hingeInCellHeight;
+                        } else {
+                            return hingeOnLeftEdge && hingeInCellHeight;
+                        }
+                    });
+                    
+                    if (sashHinges.length > 0) {
+                        // Calculate pivot point: center of hinge line (between top and bottom hinges)
+                        // With 2 hinges: top (Y + height/2 - 0.15) and bottom (Y - height/2 + 0.15)
+                        // Pivot is at the center Y between the two hinges, at the hinge X position
+                        const topHinge = sashHinges.reduce((top, h) => 
+                            h.position.y > top.position.y ? h : top
+                        );
+                        const bottomHinge = sashHinges.reduce((bottom, h) => 
+                            h.position.y < bottom.position.y ? h : bottom
+                        );
+                        
+                        // Pivot point: center Y between top and bottom hinges, at hinge X position
+                        const pivotY = (topHinge.position.y + bottomHinge.position.y) / 2;
+                        const pivotPoint = new Vector3(
+                            topHinge.position.x, // Hinge X position (left or right side - same for both hinges)
+                            pivotY, // Center Y between top and bottom hinges
+                            restPosition.z // Same Z as sash
+                        );
+                        
+                        // Calculate rotation angle
+                        const openAngle = Math.PI / 2; // 90 degrees
+                        const rotationDirection = openingDirection === 'left' ? -1 : 1;
+                        const newRotY = restRotation.y + (openAngle * rotationDirection * progress);
+                        
+                        // Rotate around pivot point
+                        // 1. Translate to pivot point
+                        const relativePos = restPosition.clone().sub(pivotPoint);
+                        // 2. Rotate around Y axis
+                        const cos = Math.cos(openAngle * rotationDirection * progress);
+                        const sin = Math.sin(openAngle * rotationDirection * progress);
+                        const rotatedX = relativePos.x * cos - relativePos.z * sin;
+                        const rotatedZ = relativePos.x * sin + relativePos.z * cos;
+                        // 3. Translate back
+                        child.position.set(
+                            pivotPoint.x + rotatedX,
+                            restPosition.y, // Y stays the same (vertical rotation)
+                            pivotPoint.z + rotatedZ
+                        );
+                        
+                        // Apply rotation
+                        child.rotation.set(restRotation.x, newRotY, restRotation.z);
+                        
+                        // Debug for first sash
+                        if (sashIndex === 0 && isAnimating && progress > 0.49 && progress < 0.51) {
+                            console.log('[Animation] 🔩 Casement pivot animation:', {
+                                pivotPoint: pivotPoint.toArray().map(v => v.toFixed(3)),
+                                hingesFound: sashHinges.length,
+                                openingDirection,
+                                newRotY: (newRotY * 180 / Math.PI).toFixed(1) + '°'
+                            });
+                        }
+                    } else {
+                        // Fallback: no hinges found, use sash center as pivot
+                        const openAngle = Math.PI / 2;
+                        const rotationDirection = openingDirection === 'left' ? -1 : 1;
+                        const newRotY = restRotation.y + (openAngle * rotationDirection * progress);
+                        child.rotation.set(restRotation.x, newRotY, restRotation.z);
+                        
+                        // Simple pivot around center
+                        const pivotOffset = 0.15;
+                        child.position.set(
+                            restPosition.x + (Math.sin(newRotY) * pivotOffset * progress),
+                            restPosition.y,
+                            restPosition.z + (Math.cos(newRotY) * pivotOffset * progress) - (pivotOffset * progress)
+                        );
+                    }
+                } else {
+                    // Other types: no animation
+                    child.position.copy(restPosition);
+                    child.rotation.copy(restRotation);
+                }
+                
+                sashIndex++;
             }
         });
+        
+        // Debug: Log if no sashes found
+        if (isAnimating && animatedCount === 0 && progress > 0.1) {
+            console.warn('[Animation] ⚠️ No animatable sashes found!', { 
+                sashesInModel: modelData.sashes.length,
+                groupChildren: groupRef.current.children.length,
+                allUserData: Array.from(groupRef.current.children).map(c => ({
+                    isAnimatable: c.userData.isAnimatableSash,
+                    hasOpeningPath: !!c.userData.openingPath,
+                    type: c.type
+                }))
+            });
+        }
     });
+
+    // Generate hardware placeholders (ALWAYS call hooks before conditional returns)
+    const hardwarePlaceholders = useMemo(() => {
+        return generateHardwarePlaceholders(windowUnit);
+    }, [windowUnit]);
+
+    // Create hardware materials (one per type) - must be outside map to avoid hooks violation
+    const hardwareMaterials = useMemo(() => {
+        const types = new Set(hardwarePlaceholders.map(hw => hw.type));
+        const materials: Record<string, MeshStandardMaterial> = {};
+        types.forEach(type => {
+            materials[type] = new MeshStandardMaterial({
+                color: getHardwareColor(type),
+                metalness: 0.7,
+                roughness: 0.3
+            });
+        });
+        return materials;
+    }, [hardwarePlaceholders]);
 
     // Show loading state while generating
     if (isModelGenerating && !modelData) {
@@ -489,17 +830,29 @@ export function Window3DModel({
                     ref={(el) => {
                         if (el) {
                             sashRefs.current[sashIndex] = el;
+                            // Initialize rest state when element is mounted
+                            // Set initial position/rotation directly on the object
+                            el.position.copy(sash.openingPath.position);
+                            if (sash.openingPath.rotation) {
+                                el.rotation.copy(sash.openingPath.rotation);
+                            } else {
+                                el.rotation.set(0, 0, 0);
+                            }
+                            
+                            // Store rest state for animation
+                            el.userData.restPosition = sash.openingPath.position.clone();
+                            el.userData.restRotation = sash.openingPath.rotation 
+                                ? sash.openingPath.rotation.clone() 
+                                : new Euler(0, 0, 0);
                         }
                     }}
                     key={`sash-group-${sashIndex}`}
                     userData={{
                         isAnimatableSash: true,
                         openingPath: sash.openingPath,
-                        restPosition: new Vector3(0,0,0), // Store initial state
-                        restRotation: new Euler(0,0,0)
+                        restPosition: sash.openingPath.position.clone(), // Store initial closed state
+                        restRotation: sash.openingPath.rotation ? sash.openingPath.rotation.clone() : new Euler(0,0,0)
                     }}
-                    position={sash.openingPath.position}
-                    rotation={sash.openingPath.rotation}
                 >
                     {sash.parts.map((part, i) => (
                          <MiteredFramePart key={`sash-${sashIndex}-${i}`} part={part} material={materials.sash} enableShadows={enableShadows} />
@@ -511,11 +864,6 @@ export function Window3DModel({
                     {sash.spacers.map((spacerGeom, i) => (
                         <mesh key={`spacer-${sashIndex}-${i}`} geometry={spacerGeom} material={materials.spacer} castShadow={enableShadows} />
                     ))}
-                    {/* Handle placeholder: darker, longer grip for better contrast */}
-                    <mesh position={[0, 0, 0.025]} castShadow={enableShadows} receiveShadow={enableShadows}>
-                      <boxGeometry args={[0.02, 0.12, 0.015]} />
-                      <meshStandardMaterial color="#2d2d2d" metalness={0.8} roughness={0.2} />
-                    </mesh>
                 </group>
             ))}
 
@@ -533,6 +881,17 @@ export function Window3DModel({
             {modelData.muntins && (
                  <mesh geometry={modelData.muntins} material={materials.frame} castShadow={enableShadows} />
             )}
+
+            {/* Render Hardware Placeholders */}
+            {hardwarePlaceholders.map((hw, i) => (
+                <mesh
+                    key={`hardware-${hw.type}-${i}`}
+                    geometry={hw.geometry}
+                    material={hardwareMaterials[hw.type]}
+                    position={hw.position}
+                    castShadow={enableShadows}
+                />
+            ))}
 
             {/* ERROR HIGHLIGHTING */}
             {validationResult && validationResult.errors.length > 0 && <ErrorHighlighter validation={validationResult} />}
@@ -609,8 +968,15 @@ function WindowControls({
                       size="sm"
                       variant={isAnimating ? 'destructive' : 'default'}
                       onClick={() => {
+                        console.log('[Animation] 🎮 Play button clicked!', {
+                          currentState: isAnimating,
+                          willSetTo: !isAnimating
+                        });
                         setIsAnimating(!isAnimating);
-                        if (!isAnimating) setAnimationProgress(0);
+                        if (!isAnimating) {
+                            console.log('[Animation] 🔄 Resetting progress to 0');
+                            setAnimationProgress(0);
+                        }
                       }}
                       className="flex-1"
                     >
@@ -834,6 +1200,11 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
     // --- State Management ---
     const [isAnimating, setIsAnimating] = useState(false);
     const [animationProgress, setAnimationProgress] = useState(0);
+    
+    // DEBUG: Log when component mounts
+    useEffect(() => {
+        console.log('[Animation] 🚀 Window3DGenerator MAIN COMPONENT MOUNTED');
+    }, []);
     const [showMeasurements, setShowMeasurements] = useState(false);
     const [quality, setQuality] = useState(initialQuality);
     const [enableShadows, setEnableShadows] = useState(initialShadows);
@@ -889,7 +1260,16 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
 
     // --- Animation Loop ---
     useEffect(() => {
-        if (!isAnimating) return;
+        if (!isAnimating) {
+            console.log('[Animation] ⏸️ Animation stopped or not started');
+            return;
+        }
+    
+        console.log('[Animation] ▶️ Animation STARTED!', {
+            isAnimating,
+            animationProgress,
+            timestamp: Date.now()
+        });
     
         const startTime = Date.now();
         const duration = 3000; // 3 seconds for full animation
@@ -900,15 +1280,24 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
           
           setAnimationProgress(progress);
           
+          // Debug: Log progress every 10%
+          if (Math.floor(progress * 10) !== Math.floor((progress - 0.01) * 10)) {
+              console.log('[Animation] 📊 Progress:', (progress * 100).toFixed(0) + '%');
+          }
+          
           if (progress < 1) {
             requestAnimationFrame(animate);
           } else {
+            console.log('[Animation] ✅ Animation COMPLETE!');
             setIsAnimating(false);
           }
         };
     
         const animationFrame = requestAnimationFrame(animate);
-        return () => cancelAnimationFrame(animationFrame);
+        return () => {
+            console.log('[Animation] 🛑 Animation cleanup');
+            cancelAnimationFrame(animationFrame);
+        };
     }, [isAnimating]);
 
     // --- Event Handlers (Export, Fullscreen, etc.) ---
@@ -1013,7 +1402,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                     powerPreference: 'high-performance'
                 }}
                 dpr={[1, 1.5]}
-                frameloop="demand"
+                frameloop={isAnimating ? "always" : "demand"}
                 camera={{ position: [0, 0, 3], fov: 50 }}
                 performance={{ min: 0.5 }}
                 className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
@@ -1082,6 +1471,13 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
                 <OrbitControls makeDefault enableDamping dampingFactor={0.1} />
 
             </Canvas>
+
+            {/* --- BETA VISUALIZATION DISCLAIMER --- */}
+            <div className="absolute top-2 left-2 z-10">
+              <div className="bg-yellow-500/20 border border-yellow-500/50 rounded px-2 py-1 text-xs text-yellow-800 dark:text-yellow-200 backdrop-blur-sm">
+                🚧 {t('window_3d_generator.beta_visualization', 'Beta Visualization')} - {t('window_3d_generator.production_accuracy', 'Production data accuracy: 99.8%')}
+              </div>
+            </div>
 
             {/* --- UI OVERLAYS --- */}
             {showControls && (

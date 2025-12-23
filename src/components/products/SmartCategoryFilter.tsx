@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv, LazyMotionButton } from '@/utils/lazyMotion';
 import { ChevronDown, Filter, Search } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -139,17 +139,17 @@ const SmartCategoryFilter: React.FC<SmartCategoryFilterProps> = ({
             </Badge>
           )}
         </div>
-        <motion.div
+        <LazyMotionDiv
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
           <ChevronDown className="h-4 w-4" />
-        </motion.div>
+        </LazyMotionDiv>
       </Button>
 
-      <AnimatePresence>
+      <LazyAnimatePresence>
         {isOpen && (
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, y: -10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -199,7 +199,7 @@ const SmartCategoryFilter: React.FC<SmartCategoryFilterProps> = ({
                   const count = categoryCounts[category.id] || 0;
                   
                   return (
-                    <motion.button
+                    <LazyMotionButton
                       key={category.id}
                       onClick={() => handleCategorySelect(category.id)}
                       className={`
@@ -224,7 +224,7 @@ const SmartCategoryFilter: React.FC<SmartCategoryFilterProps> = ({
                           {count}
                         </Badge>
                       </div>
-                    </motion.button>
+                    </LazyMotionButton>
                   );
                 })}
               </div>
@@ -241,9 +241,9 @@ const SmartCategoryFilter: React.FC<SmartCategoryFilterProps> = ({
                 </Button>
               </div>
             </div>
-          </motion.div>
+          </LazyMotionDiv>
         )}
-      </AnimatePresence>
+      </LazyAnimatePresence>
 
       {/* Overlay to close dropdown */}
       {isOpen && (

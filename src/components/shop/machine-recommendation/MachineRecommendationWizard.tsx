@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/shared/ui/ui/card';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/ui/dialog';
 import { Label } from '@/shared/ui/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/shared/ui/ui/radio-group';
-import { AnimatePresence, motion } from 'framer-motion';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import {
   ArrowLeft,
   ArrowRight,
@@ -529,7 +529,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
     switch (step) {
       case 'material':
         return (
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -599,11 +599,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                 </Card>
               </div>
             </RadioGroup>
-          </motion.div>
+          </LazyMotionDiv>
         );
       case 'application':
         return (
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -692,11 +692,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                 })}
               </div>
             </RadioGroup>
-          </motion.div>
+          </LazyMotionDiv>
         );
       case 'automation':
         return (
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -784,11 +784,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                 </Card>
               </div>
             </RadioGroup>
-          </motion.div>
+          </LazyMotionDiv>
         );
       case 'production':
         return (
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -876,11 +876,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                 We’ll prioritize a balanced production set for {answers.production.replace('-', ' ')}. Example bundle for high-volume could include dual cutters, routers, milling, cleaning, and welding stations sized to ~100 units/day.
               </div>
             )}
-          </motion.div>
+          </LazyMotionDiv>
         );
       case 'results':
         return (
-          <motion.div
+          <LazyMotionDiv
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -985,7 +985,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                 </Card>
               )}
             </div>
-          </motion.div>
+          </LazyMotionDiv>
         );
     }
   };
@@ -1050,9 +1050,9 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
         </DialogHeader>
         
         <div className="flex-1 overflow-y-auto py-4 sm:py-6 px-2 sm:px-0">
-          <AnimatePresence mode="wait">
+          <LazyAnimatePresence mode="wait">
         {renderStep()}
-          </AnimatePresence>
+          </LazyAnimatePresence>
         </div>
         
         <DialogFooter className="border-t border-gray-700 pt-4 flex-shrink-0">
