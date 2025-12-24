@@ -32,8 +32,8 @@ jobs:
     
     - name: Build production Docker image
       run: |
-        cd python_backend
-        docker build -t ydt-prestige-api:latest .
+        # Build from project root (Dockerfile expects this)
+        docker build -f python_backend/Dockerfile -t ydt-prestige-api:latest .
         docker tag ydt-prestige-api:latest ydt-prestige-api:${{ github.sha }}
     
     - name: Deploy to production
