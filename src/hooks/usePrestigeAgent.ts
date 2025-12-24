@@ -6,7 +6,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_YDT_API_URL || import.meta.env.VITE_API_URL || 'https://ydt-production.up.railway.app';
 
 interface ChatResponse {
   success: boolean;
