@@ -1,0 +1,26 @@
+# YILMAZ Digital Twin Agent - Python Dependencies
+# Week 2: Manual Parser Requirements
+
+# PDF Processing
+pdfplumber>=0.10.0
+camelot-py[cv]>=0.11.0
+pypdf2>=3.0.0
+
+# Image Processing (for diagrams)
+Pillow>=10.0.0
+opencv-python>=4.8.0
+pdf2image>=1.16.0
+poppler-utils  # System dependency - install separately on Windows
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# API Integration (for Gemini Vision)
+google-generativeai>=0.3.0
+requests>=2.31.0
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+

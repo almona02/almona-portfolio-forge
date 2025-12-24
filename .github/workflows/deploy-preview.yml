@@ -1,0 +1,39 @@
+name: Deploy to Preview
+
+on:
+  push:
+    branches: [ develop, preview ]
+    paths:
+      - 'python_backend/**'
+      - 'ai_agents/ydt_agent/**'
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    environment: preview
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Run tests
+      run: |
+        cd python_backend
+        pip install -r requirements_prestige.txt
+        pip install -r tests/requirements_test.txt
+        python tests/test_prestige_endpoints.py
+    
+    - name: Build Docker image
+      run: |
+        cd python_backend
+        docker build -t ydt-prestige-api:preview .
+    
+    - name: Deploy to preview
+      run: |
+        echo "Deploy to your preview environment here"
+        # Example: docker push, kubectl apply, etc.
+

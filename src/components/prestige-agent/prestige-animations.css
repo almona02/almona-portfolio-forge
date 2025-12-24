@@ -1,0 +1,278 @@
+/**
+ * Prestige Animations for YDT Agent
+ * Almona-style professional animations
+ */
+
+@keyframes gentle-pulse {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8; 
+    transform: scale(1.02);
+  }
+}
+
+@keyframes heartbeat {
+  0%, 100% { 
+    transform: scale(1); 
+  }
+  50% { 
+    transform: scale(1.05); 
+  }
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  50% { 
+    transform: translateY(-10px); 
+  }
+}
+
+@keyframes code-glow {
+  0%, 100% { 
+    box-shadow: 
+      0 0 5px rgba(59, 130, 246, 0.5),
+      0 0 10px rgba(59, 130, 246, 0.3);
+  }
+  50% { 
+    box-shadow: 
+      0 0 15px rgba(59, 130, 246, 0.7),
+      0 0 20px rgba(59, 130, 246, 0.5);
+  }
+}
+
+@keyframes circuit-flow {
+  0% { 
+    background-position: 0% 50%;
+    background-size: 200% 200%;
+  }
+  50% { 
+    background-position: 100% 50%;
+    background-size: 200% 200%;
+  }
+  100% { 
+    background-position: 0% 50%;
+    background-size: 200% 200%;
+  }
+}
+
+/* Almona Prestige Effects */
+.almona-sparkle {
+  position: relative;
+  overflow: hidden;
+}
+
+.almona-sparkle::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  transform: rotate(45deg);
+  animation: sparkle-drift 4s infinite linear;
+}
+
+@keyframes sparkle-drift {
+  0% { 
+    transform: rotate(45deg) translateX(-100%); 
+  }
+  100% { 
+    transform: rotate(45deg) translateX(100%); 
+  }
+}
+
+/* Prestige Typography */
+.prestige-heading {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.prestige-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  color: #6b7280;
+}
+
+/* Professional Cards */
+.prestige-card {
+  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(31, 38, 135, 0.07),
+    0 4px 16px rgba(31, 38, 135, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* University Grade Animations */
+.lecture-flow {
+  animation: lecture-flow 3s ease-in-out infinite;
+}
+
+@keyframes lecture-flow {
+  0%, 100% { 
+    transform: translateX(0) rotate(0); 
+  }
+  25% { 
+    transform: translateX(10px) rotate(1deg); 
+  }
+  75% { 
+    transform: translateX(-10px) rotate(-1deg); 
+  }
+}
+
+/* Confidence Indicator */
+.confidence-glow {
+  position: relative;
+}
+
+.confidence-glow::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, #10b981, #3b82f6, #8b5cf6);
+  z-index: -1;
+  animation: confidence-rotate 2s linear infinite;
+  opacity: 0.3;
+}
+
+@keyframes confidence-rotate {
+  0% { 
+    transform: rotate(0deg); 
+  }
+  100% { 
+    transform: rotate(360deg); 
+  }
+}
+
+/* Message Animations */
+.message-enter {
+  animation: message-enter 0.3s ease-out;
+}
+
+@keyframes message-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Persona Transition */
+.persona-transition {
+  animation: persona-transition 0.5s ease-in-out;
+}
+
+@keyframes persona-transition {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Typing Indicator */
+.typing-dot {
+  animation: typing-bounce 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+@keyframes typing-bounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  30% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
+
+/* Smooth Scroll */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.smooth-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.smooth-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.smooth-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+}
+
+.smooth-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.7);
+}
+
+/* RTL Support for Arabic */
+[dir="rtl"] .prestige-heading {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] .prestige-subtitle {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .prestige-heading {
+    font-size: 1.5rem;
+  }
+  
+  .prestige-subtitle {
+    font-size: 0.875rem;
+  }
+}
+
