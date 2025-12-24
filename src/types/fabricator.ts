@@ -89,6 +89,25 @@ export interface WindowUnit {
    * Fly screen type selection from measuring step
    */
   flyScreenType?: string;
+  /**
+   * Preset pattern ID for preset-aware 3D generation
+   * @since Phase 1: Preset Bridge
+   */
+  presetId?: string;
+  /**
+   * Cached preset pattern data for faster access
+   * @since Phase 1: Preset Bridge
+   */
+  presetData?: Partial<{
+    id: string;
+    name: string;
+    type: string;
+    gridSpec: any;
+    mullions: any[];
+    transoms: any[];
+    constraints: any;
+    openingMechanism: any;
+  }>;
 }
 
 /**
