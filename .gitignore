@@ -1,48 +1,82 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# Environment files
+.env
+.env.local
+.env.preview
+.env.production
+.env.*.local
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-*storybook.log
-storybook-static
-
-.vercel
-
-# Python caches and virtual environments
+# Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
-.python-version
+*$py.class
+*.so
+.Python
 venv/
-.venv/
-python_backend/venv/
-python_backend/venv-311/
-venv-311/
+env/
+ENV/
+.venv
+venv-*/
 
-# Generated reports
-duplicates-report.json
-duplicates-report.md
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.html
+*.json
+*.png
+test_report.html
+test_report.json
+load_test_results.png
 
-# Windows reserved device names (can cause git issues)
-nul
+# Logs
+*.log
+api.log
+logs/
+*.log.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker
+.dockerignore
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Node (if applicable)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Secrets
+secrets/
+*.pem
+*.key
+*.crt
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.backup
+*.old

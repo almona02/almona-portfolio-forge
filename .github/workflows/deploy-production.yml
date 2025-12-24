@@ -1,0 +1,48 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+    paths:
+      - 'python_backend/**'
+      - 'ai_agents/ydt_agent/**'
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Run comprehensive tests
+      run: |
+        cd python_backend
+        pip install -r requirements_prestige.txt
+        pip install -r tests/requirements_test.txt
+        python tests/test_prestige_endpoints.py
+        python tests/load_test.py
+    
+    - name: Build production Docker image
+      run: |
+        cd python_backend
+        docker build -t ydt-prestige-api:latest .
+        docker tag ydt-prestige-api:latest ydt-prestige-api:${{ github.sha }}
+    
+    - name: Deploy to production
+      run: |
+        echo "Deploy to your production environment here"
+        # Example: docker push to registry, kubectl apply, etc.
+    
+    - name: Verify deployment
+      run: |
+        echo "Verify production deployment health"
+        # Add your health check here
+
