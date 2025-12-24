@@ -112,17 +112,41 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
     const isSliding = cell.type === 'sliding' || (cell as any).type === 'sliding';
     const isCasement = cell.type === 'sash' && !isSliding;
     
-    // Calculate cell dimensions (simplified - assumes equal cell sizes for now)
+    // Calculate cell dimensions using proportional grid (colWidths/rowHeights)
     const cols = windowUnit.grid.cols || 1;
     const rows = windowUnit.grid.rows || 1;
-    const cellW = width / cols;
-    const cellH = height / rows;
+    const colWidths = windowUnit.grid.colWidths && windowUnit.grid.colWidths.length === cols
+      ? windowUnit.grid.colWidths
+      : Array(cols).fill(1);
+    const rowHeights = windowUnit.grid.rowHeights && windowUnit.grid.rowHeights.length === rows
+      ? windowUnit.grid.rowHeights
+      : Array(rows).fill(1);
     
-    // Calculate cell position
+    // Calculate proportional sizes
+    const colTotal = colWidths.reduce((a, b) => a + b, 0) || cols;
+    const rowTotal = rowHeights.reduce((a, b) => a + b, 0) || rows;
+    const colSizes = colWidths.map((v) => (v / colTotal) * width);
+    const rowSizes = rowHeights.map((v) => (v / rowTotal) * height);
+    
+    // Calculate column/row start positions
+    const colStarts: number[] = [];
+    const rowStarts: number[] = [];
+    colSizes.reduce((acc, w) => {
+      colStarts.push(acc);
+      return acc + w;
+    }, -width / 2);
+    rowSizes.reduce((acc, h) => {
+      rowStarts.push(acc);
+      return acc - h; // Subtract because we're going DOWN from top
+    }, height / 2);
+    
+    // Get cell dimensions and position
     const col = cell.col || 0;
     const row = cell.row || 0;
-    const cellX = -width / 2 + cellW * (col + 0.5);
-    const cellY = height / 2 - cellH * (row + 0.5);
+    const cellW = colSizes[col];
+    const cellH = rowSizes[row];
+    const cellX = colStarts[col] + cellW / 2;
+    const cellY = rowStarts[row] - cellH / 2;
     
     if (isSliding) {
       // Sliding windows: rollers at bottom, handle on right side

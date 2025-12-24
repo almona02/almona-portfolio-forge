@@ -1,7 +1,8 @@
 # CI-friendly requirements (CPU-only, no heavy GPU/ML wheels)
 # Base: production deps to stay aligned with runtime, then CI/test tooling.
+# NOTE: Using requirements-prod.txt as base (newer versions) instead of requirements-production.txt
 
--r requirements-production.txt
+-r requirements-prod.txt
 
 # CPU-only ML to avoid huge CUDA wheels in CI
 # CRITICAL SECURITY FIX: Upgraded from 2.3.1 to 2.6.0 to fix CVE-2025-32434 (RCE vulnerability)

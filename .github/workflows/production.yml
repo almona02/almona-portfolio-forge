@@ -67,7 +67,7 @@ jobs:
         working-directory: python_backend
         run: |
           python -m pip install --upgrade pip
-          pip install --no-cache-dir --prefer-binary -r requirements-runtime.txt
+          pip install --no-cache-dir --prefer-binary -r requirements-prod.txt
           pip install --no-cache-dir --prefer-binary pytest pytest-asyncio black flake8
 
       - name: Run backend linter (black)

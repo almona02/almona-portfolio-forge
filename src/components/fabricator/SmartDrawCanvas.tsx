@@ -1,4 +1,5 @@
 import { getPatternById, getPatternsForSystem, patternToWindowGrid, type EgyptianPattern } from '@/lib/fabricator/presetUtils';
+import { presetMatcher, type PatternMatch } from '@/lib/ml/PresetMatcher';
 import { cn } from '@/lib/utils';
 import { Label } from '@/shared/ui/ui/label';
 import {
@@ -22,9 +23,10 @@ import {
   Move,
   Square,
   Layers,
-  X
+  X,
+  Sparkles
 } from 'lucide-react';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 
 interface SmartDrawProps {
   width: number;
@@ -60,8 +62,27 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   const [selectedSashForMullion, setSelectedSashForMullion] = useState<string | null>(null);
   const [mullionPositionInput, setMullionPositionInput] = useState('');
   const [showMullionInput, setShowMullionInput] = useState(false);
+  const [suggestedPatterns, setSuggestedPatterns] = useState<PatternMatch[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(true);
 
   const patterns = availablePatterns || (systemPackId ? getPatternsForSystem(systemPackId) : []);
+  
+  // Calculate preset suggestions when grid changes (debounced)
+  useEffect(() => {
+    // Only suggest if no pattern is currently selected and grid has cells
+    if (!selectedPatternId && grid.cells.length > 0) {
+      const suggestions = presetMatcher.suggestPresets(
+        grid,
+        { width, height },
+        systemPackId || undefined
+      );
+      // Only show suggestions with confidence > 50%
+      const filteredSuggestions = suggestions.filter(s => s.confidence > 50);
+      setSuggestedPatterns(filteredSuggestions);
+    } else {
+      setSuggestedPatterns([]);
+    }
+  }, [grid, width, height, systemPackId, selectedPatternId]);
 
   // Initialize manual mullions array if not present
   useEffect(() => {
@@ -82,6 +103,19 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
       return;
     }
 
+    // Log user confirmation for ML training
+    if (suggestedPatterns.length > 0) {
+      const suggestedPattern = suggestedPatterns[0]?.pattern;
+      if (suggestedPattern) {
+        presetMatcher.logUserConfirmation(
+          grid,
+          suggestedPattern,
+          pattern,
+          { width, height }
+        );
+      }
+    }
+
     const newGrid = patternToWindowGrid(pattern);
     
     if (pattern.gridSpec.colWidths) {
@@ -93,6 +127,11 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
     
     onGridChange(newGrid);
     onPatternSelect?.(patternId);
+  };
+  
+  const handleSuggestionClick = (pattern: EgyptianPattern) => {
+    handlePatternSelect(pattern.id);
+    setShowSuggestions(false);
   };
   
   useEffect(() => {
@@ -326,6 +365,43 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
                 Pattern applied: Grid will update automatically
               </p>
+            )}
+            
+            {/* Preset Suggestions Badge */}
+            {!selectedPatternId && suggestedPatterns.length > 0 && showSuggestions && (
+              <div className="mt-2 bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-3.5 w-3.5 text-blue-400" />
+                    <span className="text-xs font-medium text-blue-300">Suggested Patterns:</span>
+                  </div>
+                  <button
+                    onClick={() => setShowSuggestions(false)}
+                    className="text-blue-400 hover:text-blue-300 transition-colors"
+                    aria-label="Hide suggestions"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {suggestedPatterns.slice(0, 3).map((match, index) => (
+                    <button
+                      key={match.pattern.id}
+                      onClick={() => handleSuggestionClick(match.pattern)}
+                      className="text-xs px-2.5 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/40 rounded-md text-blue-200 hover:text-blue-100 transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5"
+                      title={`${match.confidence}% match - ${match.matchingFeatures.join(', ')}`}
+                    >
+                      <span className="font-medium">{match.pattern.name}</span>
+                      <span className="text-[10px] opacity-75">({match.confidence}%)</span>
+                    </button>
+                  ))}
+                </div>
+                {suggestedPatterns[0] && suggestedPatterns[0].matchingFeatures.length > 0 && (
+                  <p className="text-[10px] text-blue-400/80 mt-2">
+                    Matches: {suggestedPatterns[0].matchingFeatures.slice(0, 2).join(', ')}
+                  </p>
+                )}
+              </div>
             )}
           </div>
         )}

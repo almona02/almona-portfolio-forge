@@ -16,6 +16,12 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: '/',
+    // Week 1 Task 1.4: Web Worker Configuration
+    // Required for Week 3 ProductionDXFParser with Web Worker pool
+    worker: {
+      format: 'es',
+      plugins: () => [],
+    },
     define: {
       __APP_ENV__: JSON.stringify(env.APP_ENV),
       __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
@@ -371,6 +377,8 @@ export default defineConfig(({ mode }) => {
           entryFileNames: `assets/[name]-[hash].js`,
           chunkFileNames: `assets/[name]-[hash].js`,
           assetFileNames: `assets/[name]-[hash].[ext]`,
+          // Week 1 Task 1.4: Web Worker file naming
+          workerFileNames: `assets/[name]-[hash].worker.js`,
           // TBT OPTIMIZATION: Safe chunk splitting strategy
           // 1. Split ONLY standalone engines (no React dependencies) - SAFE
           // 2. Let React.lazy() handle React-dependent code splitting via dynamic imports
