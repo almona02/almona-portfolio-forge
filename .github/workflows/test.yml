@@ -1,0 +1,49 @@
+name: Test YDT Prestige Agent
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'python_backend/**'
+      - 'ai_agents/ydt_agent/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'python_backend/**'
+      - 'ai_agents/ydt_agent/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        cd python_backend
+        pip install --upgrade pip
+        pip install -r requirements_prestige.txt
+        pip install -r tests/requirements_test.txt
+    
+    - name: Run tests
+      run: |
+        cd python_backend
+        python tests/test_prestige_endpoints.py
+    
+    - name: Run load tests
+      run: |
+        cd python_backend
+        python tests/load_test.py
+    
+    - name: Check code quality
+      run: |
+        cd python_backend
+        pip install flake8
+        flake8 api/prestige_endpoints.py --max-line-length=100 --ignore=E501,W503 || true
+

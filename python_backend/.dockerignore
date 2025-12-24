@@ -4,8 +4,8 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
 venv/
+env/
 ENV/
 .venv
 
@@ -13,58 +13,47 @@ ENV/
 .pytest_cache/
 .coverage
 htmlcov/
-.tox/
-*.cover
-.hypothesis/
+*.html
+*.png
+test_report.*
+
+# JSON files (but keep knowledge base JSONs)
+*.json
+!ai_agents/ydt_agent/knowledge/**/*.json
+
+# Logs
+*.log
+logs/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Project specific
-# Allow uploads directory (required by Dockerfile). Keep excluding large temp artifacts inside it if needed.
-#uploads/
-uploads/tmp*
-node_modules
-dist
-*.log
-__pycache__
-.pytest_cache
-.mypy_cache
-*.pyc
-*.log
+# Environment files
 .env
 .env.local
-.env.production
+.env.*.local
 
-# Exclude tests and docs from production build context
-tests/
-docs/
+# Git
+.git/
+.gitignore
+
+# Documentation
 *.md
 !README.md
-
-# Node / frontend artifacts not needed
-node_modules/
-dist/
-coverage/
 
 # Docker
 Dockerfile*
 docker-compose*.yml
 .dockerignore
 
-# Documentation
-docs/
-*.md
-!README.md
-
-# Git
-.git/
-.gitignore
+# Build artifacts
+dist/
+build/
+*.egg-info/
