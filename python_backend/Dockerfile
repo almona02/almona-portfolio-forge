@@ -26,13 +26,16 @@ COPY python_backend/tests/ ./tests/
 
 # Copy YDT agent code (required for chatbot engine)
 # This includes: ydt_chatbot_engine.py, gcode_ydt_integration.py, arabic_support.py, etc.
+# Create directory first
+RUN mkdir -p /app/ai_agents/ydt_agent
 COPY ai_agents/ydt_agent/*.py ./ai_agents/ydt_agent/
 
 # Copy knowledge base (processed data, JSON files)
-COPY ai_agents/ydt_agent/knowledge/ ./knowledge/
+# Path must match: /app/ai_agents/ydt_agent/knowledge/ (as expected by prestige_endpoints.py)
+COPY ai_agents/ydt_agent/knowledge/ ./ai_agents/ydt_agent/knowledge/
 
 # Create necessary directories
-RUN mkdir -p /app/knowledge/processed/aim-7510 && \
+RUN mkdir -p /app/ai_agents/ydt_agent/knowledge/processed/aim-7510 && \
     mkdir -p /app/logs && \
     chmod -R 755 /app
 
