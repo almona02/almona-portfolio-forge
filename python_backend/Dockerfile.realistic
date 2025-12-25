@@ -51,7 +51,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && find /usr/lib/python3.11 -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 
 # 2. Install ONLY production dependencies (no cache, but install deps for uvicorn)
-COPY requirements-prod.txt .
+# Build context is project root, so prefix with python_backend/
+COPY python_backend/requirements-prod.txt .
 RUN pip install --no-cache-dir -r requirements-prod.txt \
     # AGGRESSIVE CLEANUP - Remove pip cache immediately
     && pip cache purge \
@@ -68,21 +69,21 @@ RUN pip install --no-cache-dir -r requirements-prod.txt \
     && find /usr/local/lib/python3.11/site-packages -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
 # 3. Copy ONLY essential application code
-COPY apis/ apis/
-COPY core/ core/
-COPY services/ services/
-COPY models/ models/
-COPY ai_services/ ai_services/
-COPY tasks/ tasks/
-COPY middleware/ middleware/
-COPY celery_app.py celery_app.py
+# Build context is project root, so prefix with python_backend/
+COPY python_backend/apis/ apis/
+COPY python_backend/core/ core/
+COPY python_backend/services/ services/
+COPY python_backend/models/ models/
+COPY python_backend/ai_services/ ai_services/
+COPY python_backend/tasks/ tasks/
+COPY python_backend/middleware/ middleware/
+COPY python_backend/celery_app.py celery_app.py
 # Copy templates directory (ensure directory exists first)
-# Railway build context should include python_backend/ directory
 RUN mkdir -p templates/
 # Copy templates if they exist in build context
-COPY templates/ templates/
+COPY python_backend/templates/ templates/
 # Copy startup script
-COPY start.sh start.sh
+COPY python_backend/start.sh start.sh
 
 # 4. Remove cache, temporary files, and Python artifacts
 RUN find /app -name "*.pyc" -delete \
