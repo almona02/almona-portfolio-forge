@@ -30,10 +30,12 @@ try:
         ChatContext,
     )
     from gcode_ydt_integration import YDTGCodeEnhancer
+
     logger.info("✅ Successfully imported YDT modules")
 except ImportError as e:
     logger.error(f"❌ YDT modules import failed: {e}", exc_info=True)
     import traceback
+
     logger.error(f"Import traceback: {traceback.format_exc()}")
 
     # Create mock classes for development
@@ -122,19 +124,34 @@ async def startup_event():
     global ydt_engine, gcode_enhancer
 
     try:
-        knowledge_base_path = (
-            Path(__file__).parent.parent.parent
-            / "ai_agents"
-            / "ydt_agent"
-            / "knowledge"
-        )
+        # Calculate path: /app/api/prestige_endpoints.py -> /app/ai_agents/ydt_agent/knowledge
+        # __file__ is at /app/api/prestige_endpoints.py
+        # parent.parent = /app
+        base_path = Path(__file__).parent.parent
+        knowledge_base_path = base_path / "ai_agents" / "ydt_agent" / "knowledge"
+        
+        # Try alternative paths if primary doesn't exist
+        if not knowledge_base_path.exists():
+            alt_paths = [
+                Path("/app/ai_agents/ydt_agent/knowledge"),
+                base_path.parent / "ai_agents" / "ydt_agent" / "knowledge",
+                Path("/app") / "ai_agents" / "ydt_agent" / "knowledge",
+            ]
+            for alt_path in alt_paths:
+                if alt_path.exists():
+                    logger.info(f"Found knowledge base at alternative path: {alt_path}")
+                    knowledge_base_path = alt_path
+                    break
+        
         logger.info(f"Looking for knowledge base at: {knowledge_base_path}")
         logger.info(f"Knowledge base exists: {knowledge_base_path.exists()}")
         logger.info(f"Absolute path: {knowledge_base_path.resolve()}")
-        
+
         # Check if path exists and list contents
         if knowledge_base_path.exists():
-            logger.info(f"Knowledge base directory contents: {list(knowledge_base_path.iterdir())}")
+            logger.info(
+                f"Knowledge base directory contents: {list(knowledge_base_path.iterdir())}"
+            )
             processed_path = knowledge_base_path / "processed" / "aim-7510"
             logger.info(f"Processed path: {processed_path}")
             logger.info(f"Processed path exists: {processed_path.exists()}")
@@ -143,9 +160,13 @@ async def startup_event():
                 logger.info(f"Structure file: {structure_file}")
                 logger.info(f"Structure file exists: {structure_file.exists()}")
                 if structure_file.exists():
-                    logger.info(f"Structure file size: {structure_file.stat().st_size} bytes")
+                    logger.info(
+                        f"Structure file size: {structure_file.stat().st_size} bytes"
+                    )
         else:
-            logger.error(f"❌ Knowledge base path does not exist: {knowledge_base_path}")
+            logger.error(
+                f"❌ Knowledge base path does not exist: {knowledge_base_path}"
+            )
             logger.error(f"Current working directory: {Path.cwd()}")
             logger.error(f"__file__ location: {Path(__file__).resolve()}")
             logger.error(f"Python path: {sys.path}")
@@ -737,12 +758,9 @@ async def favicon():
 @app.get("/api/health")
 async def health_check():
     knowledge_base_path = (
-        Path(__file__).parent.parent.parent
-        / "ai_agents"
-        / "ydt_agent"
-        / "knowledge"
+        Path(__file__).parent.parent.parent / "ai_agents" / "ydt_agent" / "knowledge"
     )
-    
+
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
