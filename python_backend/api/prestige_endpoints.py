@@ -26,8 +26,11 @@ try:
         ChatContext,
     )
     from gcode_ydt_integration import YDTGCodeEnhancer
+    logger.info("✅ Successfully imported YDT modules")
 except ImportError as e:
-    logging.warning(f"YDT modules not available: {e}")
+    logger.error(f"❌ YDT modules import failed: {e}", exc_info=True)
+    import traceback
+    logger.error(f"Import traceback: {traceback.format_exc()}")
 
     # Create mock classes for development
     class Language:
@@ -126,18 +129,34 @@ async def startup_event():
         )
         logger.info(f"Looking for knowledge base at: {knowledge_base_path}")
         logger.info(f"Knowledge base exists: {knowledge_base_path.exists()}")
-
+        logger.info(f"Absolute path: {knowledge_base_path.resolve()}")
+        
+        # Check if path exists and list contents
         if knowledge_base_path.exists():
+            logger.info(f"Knowledge base directory contents: {list(knowledge_base_path.iterdir())}")
             processed_path = knowledge_base_path / "processed" / "aim-7510"
+            logger.info(f"Processed path: {processed_path}")
             logger.info(f"Processed path exists: {processed_path.exists()}")
             if processed_path.exists():
                 structure_file = processed_path / "structure.json"
+                logger.info(f"Structure file: {structure_file}")
                 logger.info(f"Structure file exists: {structure_file.exists()}")
+                if structure_file.exists():
+                    logger.info(f"Structure file size: {structure_file.stat().st_size} bytes")
+        else:
+            logger.error(f"❌ Knowledge base path does not exist: {knowledge_base_path}")
+            logger.error(f"Current working directory: {Path.cwd()}")
+            logger.error(f"__file__ location: {Path(__file__).resolve()}")
+            logger.error(f"Python path: {sys.path}")
 
         if YDTChatbotEngine and knowledge_base_path.exists():
             logger.info("Initializing YDT Chatbot Engine...")
-            ydt_engine = YDTChatbotEngine(knowledge_base_path)
-            logger.info("✅ YDT Chatbot Engine initialized successfully")
+            try:
+                ydt_engine = YDTChatbotEngine(knowledge_base_path)
+                logger.info("✅ YDT Chatbot Engine initialized successfully")
+            except Exception as e:
+                logger.error(f"❌ Failed to initialize YDT engine: {e}", exc_info=True)
+                ydt_engine = None
         else:
             logger.warning(
                 f"YDT Chatbot Engine not available. "
@@ -716,6 +735,13 @@ async def favicon():
 
 @app.get("/api/health")
 async def health_check():
+    knowledge_base_path = (
+        Path(__file__).parent.parent.parent
+        / "ai_agents"
+        / "ydt_agent"
+        / "knowledge"
+    )
+    
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
@@ -726,6 +752,13 @@ async def health_check():
             "gcode": "active" if gcode_enhancer else "unavailable",
             "curriculum": "active",
             "diagnosis": "active" if ydt_engine else "unavailable",
+        },
+        "diagnostics": {
+            "ydt_engine_class": "available" if YDTChatbotEngine else "not_imported",
+            "knowledge_base_path": str(knowledge_base_path),
+            "knowledge_base_exists": knowledge_base_path.exists(),
+            "ydt_engine_initialized": ydt_engine is not None,
+            "gcode_enhancer_initialized": gcode_enhancer is not None,
         },
     }
 
