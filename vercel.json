@@ -4,6 +4,8 @@
   "outputDirectory": "dist",
   "installCommand": "npm ci",
   "framework": "vite",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     { "source": "/dealer-verification", "destination": "/dealer-verification.html" },
     { "source": "/dealer-verification-en", "destination": "/dealer-verification-en.html" },
@@ -16,6 +18,8 @@
     { "source": "/products/machines", "destination": "/index.html" },
     { "source": "/products/machines/", "destination": "/index.html" },
     { "source": "/products/(.*)", "destination": "/index.html" },
+    { "source": "/prestige-agent", "destination": "/index.html" },
+    { "source": "/ydt", "destination": "/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
