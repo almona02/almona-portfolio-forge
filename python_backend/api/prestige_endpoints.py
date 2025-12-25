@@ -19,7 +19,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Add parent directory to path for imports
-sys.path.append(str(Path(__file__).parent.parent.parent / "ai_agents" / "ydt_agent"))
+sys.path.append(
+    str(Path(__file__).parent.parent.parent / "ai_agents" / "ydt_agent")
+)
 
 # Import YDT engine modules
 try:
@@ -124,12 +126,14 @@ async def startup_event():
     global ydt_engine, gcode_enhancer
 
     try:
-        # Calculate path: /app/api/prestige_endpoints.py -> /app/ai_agents/ydt_agent/knowledge
+        # Calculate path: /app/api/prestige_endpoints.py -> /app/ai_agents/...
         # __file__ is at /app/api/prestige_endpoints.py
         # parent.parent = /app
         base_path = Path(__file__).parent.parent
-        knowledge_base_path = base_path / "ai_agents" / "ydt_agent" / "knowledge"
-        
+        knowledge_base_path = (
+            base_path / "ai_agents" / "ydt_agent" / "knowledge"
+        )
+
         # Try alternative paths if primary doesn't exist
         if not knowledge_base_path.exists():
             alt_paths = [
@@ -139,33 +143,44 @@ async def startup_event():
             ]
             for alt_path in alt_paths:
                 if alt_path.exists():
-                    logger.info(f"Found knowledge base at alternative path: {alt_path}")
+                    logger.info(
+                        f"Found knowledge base at alternative path: {alt_path}"
+                    )
                     knowledge_base_path = alt_path
                     break
-        
+
         logger.info(f"Looking for knowledge base at: {knowledge_base_path}")
-        logger.info(f"Knowledge base exists: {knowledge_base_path.exists()}")
+        logger.info(
+            f"Knowledge base exists: {knowledge_base_path.exists()}"
+        )
         logger.info(f"Absolute path: {knowledge_base_path.resolve()}")
 
         # Check if path exists and list contents
         if knowledge_base_path.exists():
             logger.info(
-                f"Knowledge base directory contents: {list(knowledge_base_path.iterdir())}"
+                f"Knowledge base directory contents: "
+                f"{list(knowledge_base_path.iterdir())}"
             )
             processed_path = knowledge_base_path / "processed" / "aim-7510"
             logger.info(f"Processed path: {processed_path}")
-            logger.info(f"Processed path exists: {processed_path.exists()}")
+            logger.info(
+                f"Processed path exists: {processed_path.exists()}"
+            )
             if processed_path.exists():
                 structure_file = processed_path / "structure.json"
                 logger.info(f"Structure file: {structure_file}")
-                logger.info(f"Structure file exists: {structure_file.exists()}")
+                logger.info(
+                    f"Structure file exists: {structure_file.exists()}"
+                )
                 if structure_file.exists():
                     logger.info(
-                        f"Structure file size: {structure_file.stat().st_size} bytes"
+                        f"Structure file size: "
+                        f"{structure_file.stat().st_size} bytes"
                     )
         else:
             logger.error(
-                f"❌ Knowledge base path does not exist: {knowledge_base_path}"
+                f"❌ Knowledge base path does not exist: "
+                f"{knowledge_base_path}"
             )
             logger.error(f"Current working directory: {Path.cwd()}")
             logger.error(f"__file__ location: {Path(__file__).resolve()}")
@@ -175,9 +190,14 @@ async def startup_event():
             logger.info("Initializing YDT Chatbot Engine...")
             try:
                 ydt_engine = YDTChatbotEngine(knowledge_base_path)
-                logger.info("✅ YDT Chatbot Engine initialized successfully")
+                logger.info(
+                    "✅ YDT Chatbot Engine initialized successfully"
+                )
             except Exception as e:
-                logger.error(f"❌ Failed to initialize YDT engine: {e}", exc_info=True)
+                logger.error(
+                    f"❌ Failed to initialize YDT engine: {e}",
+                    exc_info=True,
+                )
                 ydt_engine = None
         else:
             logger.warning(
@@ -203,7 +223,9 @@ active_sessions: Dict[str, Dict[str, Any]] = {}
 
 
 @app.post("/api/v1/chat")
-async def chat_endpoint(request: ChatRequest, background_tasks: BackgroundTasks):
+async def chat_endpoint(
+    request: ChatRequest, background_tasks: BackgroundTasks
+):
     """
     Main chat endpoint - processes user queries through YDT engine
     """
@@ -219,8 +241,12 @@ async def chat_endpoint(request: ChatRequest, background_tasks: BackgroundTasks)
             "tour_guide": Persona.TOUR_GUIDE if Persona else "tour_guide",
             "code-master": Persona.CODE_MASTER if Persona else "code_master",
             "code_master": Persona.CODE_MASTER if Persona else "code_master",
-            "nervous-system": (Persona.NERVOUS_SYSTEM if Persona else "nervous_system"),
-            "nervous_system": (Persona.NERVOUS_SYSTEM if Persona else "nervous_system"),
+            "nervous-system": (
+                Persona.NERVOUS_SYSTEM if Persona else "nervous_system"
+            ),
+            "nervous_system": (
+                Persona.NERVOUS_SYSTEM if Persona else "nervous_system"
+            ),
         }
 
         persona_key = request.persona.replace("-", "_")
@@ -258,7 +284,9 @@ async def chat_endpoint(request: ChatRequest, background_tasks: BackgroundTasks)
                 )
 
                 # Process query
-                chat_response = ydt_engine.process_query(request.message, context)
+                chat_response = ydt_engine.process_query(
+                    request.message, context
+                )
 
                 # Convert ChatResponse to dict
                 response = {
@@ -283,7 +311,8 @@ async def chat_endpoint(request: ChatRequest, background_tasks: BackgroundTasks)
                     )
 
                 logger.info(
-                    f"YDT engine processed query: " f"{request.message[:50]}..."
+                    f"YDT engine processed query: "
+                    f"{request.message[:50]}..."
                 )
             except Exception as e:
                 logger.error(
@@ -305,7 +334,9 @@ async def chat_endpoint(request: ChatRequest, background_tasks: BackgroundTasks)
                 }
         else:
             # Fallback response if engine not available
-            logger.warning("YDT engine not initialized - using fallback response")
+            logger.warning(
+                "YDT engine not initialized - using fallback response"
+            )
             fallback_msg = (
                 f"⚠️ YDT Engine is not initialized. "
                 f"Please check server logs. "
@@ -324,7 +355,9 @@ async def chat_endpoint(request: ChatRequest, background_tasks: BackgroundTasks)
         response_time = (datetime.now() - start_time).total_seconds()
 
         # Log interaction (async)
-        background_tasks.add_task(log_interaction, request, response, response_time)
+        background_tasks.add_task(
+            log_interaction, request, response, response_time
+        )
 
         # Prepare response with prestige formatting
         return {
@@ -339,8 +372,12 @@ async def chat_endpoint(request: ChatRequest, background_tasks: BackgroundTasks)
                 "suggested_actions": response.get("suggested_actions", []),
                 "visual_elements": response.get("visual_aids", {}),
                 "extras": {
-                    "has_examples": response.get("extras", {}).get("hasExamples", True),
-                    "has_diagrams": response.get("extras", {}).get("hasDiagrams", True),
+                    "has_examples": response.get("extras", {}).get(
+                        "hasExamples", True
+                    ),
+                    "has_diagrams": response.get("extras", {}).get(
+                        "hasDiagrams", True
+                    ),
                     "has_exercises": response.get("extras", {}).get(
                         "hasExercise", False
                     ),
@@ -422,7 +459,9 @@ async def validate_gcode(request: GCodeRequest):
                 "validation": validation_result,
                 "optimal_parameters": optimal_params,
                 "explanations": explanations,
-                "suggested_improvements": validation_result.get("suggestions", []),
+                    "suggested_improvements": validation_result.get(
+                        "suggestions", []
+                    ),
             },
         }
 
@@ -478,7 +517,9 @@ async def get_learning_modules(language: str = "en"):
                         "title": module_data.get("title", ""),
                         "description": module_data.get("description", ""),
                         "lessons": module_data.get("lessons_count", 0),
-                        "estimated_hours": (module_data.get("lessons_count", 0) * 1.5),
+                        "estimated_hours": (
+                            module_data.get("lessons_count", 0) * 1.5
+                        ),
                     }
                 )
 
@@ -538,7 +579,9 @@ async def diagnose_machine(request: DiagnosisRequest):
                     "required_parts": [],
                     "estimated_time": "30 minutes",
                     "urgency": "medium",
-                    "safety_warnings": ["Ensure power is off before inspection"],
+                    "safety_warnings": [
+                        "Ensure power is off before inspection"
+                    ],
                 },
             }
 
@@ -695,7 +738,9 @@ async def get_machine_capabilities():
     }
 
 
-async def log_interaction(request: ChatRequest, response: Dict, response_time: float):
+async def log_interaction(
+    request: ChatRequest, response: Dict, response_time: float
+):
     """
     Async logging of interactions
     """
@@ -706,8 +751,13 @@ async def log_interaction(request: ChatRequest, response: Dict, response_time: f
         "language": request.language,
         "query": request.message,
         "response_preview": (
-            (response.get("content", response.get("response", ""))[:100] + "...")
-            if len(response.get("content", response.get("response", ""))) > 100
+            (
+                response.get("content", response.get("response", ""))[:100]
+                + "..."
+            )
+            if len(
+                response.get("content", response.get("response", ""))
+            ) > 100
             else response.get("content", response.get("response", ""))
         ),
         "confidence": response.get("confidence", 95),
@@ -757,8 +807,10 @@ async def favicon():
 
 @app.get("/api/health")
 async def health_check():
+    # Use same path calculation as startup
+    base_path = Path(__file__).parent.parent
     knowledge_base_path = (
-        Path(__file__).parent.parent.parent / "ai_agents" / "ydt_agent" / "knowledge"
+        base_path / "ai_agents" / "ydt_agent" / "knowledge"
     )
 
     return {
@@ -777,7 +829,9 @@ async def health_check():
             "knowledge_base_path": str(knowledge_base_path),
             "knowledge_base_exists": knowledge_base_path.exists(),
             "ydt_engine_initialized": ydt_engine is not None,
-            "gcode_enhancer_initialized": gcode_enhancer is not None,
+            "gcode_enhancer_initialized": (
+                gcode_enhancer is not None
+            ),
         },
     }
 
