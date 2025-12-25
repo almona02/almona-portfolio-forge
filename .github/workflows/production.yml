@@ -153,7 +153,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./python_backend
+          context: .
           file: ./python_backend/Dockerfile.realistic
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
@@ -171,7 +171,7 @@ jobs:
 
           # Build images for size check
           echo "Building images for size validation..."
-          docker build -t almona-backend:ci -f python_backend/Dockerfile.realistic python_backend/ 2>&1 | tail -10
+          docker build -t almona-backend:ci -f python_backend/Dockerfile.realistic . 2>&1 | tail -10
           docker build -t almona-frontend:ci -f Dockerfile.frontend.ultraslim . 2>&1 | tail -10
 
           # Get sizes (convert to MB for calculation)
