@@ -14,6 +14,10 @@ from datetime import datetime
 from pathlib import Path
 import sys
 
+# Initialize logging first
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent.parent / "ai_agents" / "ydt_agent"))
 
@@ -48,9 +52,6 @@ except ImportError as e:
 
     YDTChatbotEngine = None
     YDTGCodeEnhancer = None
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="YDT Prestige Agent API",
