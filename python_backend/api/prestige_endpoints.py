@@ -104,15 +104,29 @@ async def startup_event():
     
     try:
         knowledge_base_path = Path(__file__).parent.parent.parent / "ai_agents" / "ydt_agent" / "knowledge"
-        if YDTChatbotEngine and knowledge_base_path.exists():
-            ydt_engine = YDTChatbotEngine(knowledge_base_path)
-            logger.info("YDT Chatbot Engine initialized")
+        logger.info(f"Looking for knowledge base at: {knowledge_base_path}")
+        logger.info(f"Knowledge base exists: {knowledge_base_path.exists()}")
         
-        if YDTGCodeEnhancer:
+        if knowledge_base_path.exists():
+            processed_path = knowledge_base_path / "processed" / "aim-7510"
+            logger.info(f"Processed path exists: {processed_path.exists()}")
+            if processed_path.exists():
+                logger.info(f"Structure file exists: {(processed_path / 'structure.json').exists()}")
+        
+        if YDTChatbotEngine and knowledge_base_path.exists():
+            logger.info("Initializing YDT Chatbot Engine...")
+            ydt_engine = YDTChatbotEngine(knowledge_base_path)
+            logger.info("✅ YDT Chatbot Engine initialized successfully")
+        else:
+            logger.warning(f"YDT Chatbot Engine not available. YDTChatbotEngine={YDTChatbotEngine}, path_exists={knowledge_base_path.exists()}")
+        
+        if YDTGCodeEnhancer and knowledge_base_path.exists():
             gcode_enhancer = YDTGCodeEnhancer(knowledge_base_path)
-            logger.info("G-Code Enhancer initialized")
+            logger.info("✅ G-Code Enhancer initialized")
+        else:
+            logger.warning("G-Code Enhancer not available")
     except Exception as e:
-        logger.error(f"Failed to initialize engines: {e}")
+        logger.error(f"❌ Failed to initialize engines: {e}", exc_info=True)
 
 # Session management
 active_sessions: Dict[str, Dict[str, Any]] = {}
@@ -159,43 +173,57 @@ async def chat_endpoint(request: ChatRequest, background_tasks: BackgroundTasks)
         
         # Process with YDT engine
         if ydt_engine:
-            # Create chat context
-            context = ChatContext(
-                user_id=request.session_id or "anonymous",
-                machine_id="aim-7510",
-                language=language_enum,
-                persona=persona_map[persona_key],
-                conversation_history=active_sessions.get(request.session_id or "", {}).get("history", [])
-            )
-            
-            # Process query
-            chat_response = ydt_engine.process_query(request.message, context)
-            
-            # Convert ChatResponse to dict
-            response = {
-                "content": chat_response.content,
-                "confidence": chat_response.confidence * 100,  # Convert to percentage
-                "sources": chat_response.sources,
-                "suggested_actions": chat_response.suggested_actions,
-                "visual_aids": chat_response.visual_aids or {}
-            }
-            
-            # Update session history
-            if request.session_id:
-                if request.session_id not in active_sessions:
-                    active_sessions[request.session_id] = {"history": []}
-                active_sessions[request.session_id]["history"].append({
-                    "user": request.message,
-                    "assistant": chat_response.content,
-                    "timestamp": datetime.now().isoformat()
-                })
+            try:
+                # Create chat context
+                context = ChatContext(
+                    user_id=request.session_id or "anonymous",
+                    machine_id="aim-7510",
+                    language=language_enum,
+                    persona=persona_map[persona_key],
+                    conversation_history=active_sessions.get(request.session_id or "", {}).get("history", [])
+                )
+                
+                # Process query
+                chat_response = ydt_engine.process_query(request.message, context)
+                
+                # Convert ChatResponse to dict
+                response = {
+                    "content": chat_response.content,
+                    "confidence": chat_response.confidence * 100,  # Convert to percentage
+                    "sources": chat_response.sources,
+                    "suggested_actions": chat_response.suggested_actions,
+                    "visual_aids": chat_response.visual_aids or {}
+                }
+                
+                # Update session history
+                if request.session_id:
+                    if request.session_id not in active_sessions:
+                        active_sessions[request.session_id] = {"history": []}
+                    active_sessions[request.session_id]["history"].append({
+                        "user": request.message,
+                        "assistant": chat_response.content,
+                        "timestamp": datetime.now().isoformat()
+                    })
+                
+                logger.info(f"YDT engine processed query successfully: {request.message[:50]}...")
+            except Exception as e:
+                logger.error(f"Error processing query with YDT engine: {e}", exc_info=True)
+                # Fallback response if engine error
+                response = {
+                    "content": f"I encountered an error processing your query. Please try rephrasing your question. Error: {str(e)}",
+                    "confidence": 50.0,
+                    "sources": [],
+                    "suggested_actions": ["Try again", "Rephrase question"],
+                    "visual_aids": {}
+                }
         else:
             # Fallback response if engine not available
+            logger.warning("YDT engine not initialized - using fallback response")
             response = {
-                "content": f"Based on the YDT knowledge base, here's a comprehensive answer to your question: '{request.message}'. This response is generated with 95% confidence using our Gold Tier verified knowledge base.",
-                "confidence": 95.0,
-                "sources": ["AIM 7510 Manual", "Wiring Diagram", "Component Database"],
-                "suggested_actions": ["Learn more", "View diagram", "Ask another question"],
+                "content": f"⚠️ YDT Engine is not initialized. Please check server logs. Your question was: '{request.message}'. This is a fallback response.",
+                "confidence": 50.0,
+                "sources": ["System"],
+                "suggested_actions": ["Check server status", "Retry"],
                 "visual_aids": {}
             }
         
@@ -543,6 +571,32 @@ async def log_interaction(request: ChatRequest, response: Dict, response_time: f
     logger.info(f"Interaction logged: {json.dumps(log_entry)}")
 
 # Health check
+@app.get("/")
+async def root():
+    """
+    Root endpoint - API information
+    """
+    return {
+        "service": "YDT Prestige Agent API",
+        "version": "2.0.0",
+        "status": "online",
+        "endpoints": {
+            "health": "/api/health",
+            "chat": "/api/v1/chat",
+            "docs": "/api/docs",
+            "redoc": "/api/redoc"
+        },
+        "message": "YDT Prestige Agent API is running. Visit /api/docs for API documentation."
+    }
+
+@app.get("/favicon.ico")
+async def favicon():
+    """
+    Favicon endpoint - return 204 No Content
+    """
+    from fastapi.responses import Response
+    return Response(status_code=204)
+
 @app.get("/api/health")
 async def health_check():
     return {

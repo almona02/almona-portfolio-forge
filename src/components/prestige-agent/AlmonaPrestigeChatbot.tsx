@@ -5,6 +5,7 @@
 
 import { usePrestigeAgent } from '@/hooks/usePrestigeAgent';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import {
   BookOpen,
   BrainCircuit,
@@ -96,6 +97,7 @@ const quickActions = [
 ];
 
 export const AlmonaPrestigeChatbot: React.FC = () => {
+  const location = useLocation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [agentPersona, setAgentPersona] = useState<PersonaType>('professor');
@@ -113,6 +115,11 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
     isLoading: backendLoading
   } = usePrestigeAgent();
 
+  // Scroll to top on route change or component mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [location.pathname]);
+
   useEffect(() => {
     // Welcome message
     const welcomeMessage: Message = {
@@ -120,7 +127,8 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
       type: 'assistant',
       text: getWelcomeMessage(language),
       timestamp: new Date(),
-      persona: agentPersona,
+      // Don't show persona label on welcome message
+      persona: undefined,
       extras: {
         confidence: 95,
         references: ['YDT Knowledge Base'],
@@ -129,15 +137,16 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
     };
     setMessages([welcomeMessage]);
     
-    // Load initial data
+    // Load initial data (silently fail if backend unavailable)
     const loadInitialData = async () => {
       try {
-        await Promise.all([
+        await Promise.allSettled([
           fetchKnowledgeStats(),
           fetchMachineCapabilities()
         ]);
+        // Silently handle failures - backend may not be available in dev
       } catch (error) {
-        console.error('Failed to load initial data:', error);
+        // Silently fail - expected in development when backend is not running
       }
     };
 
@@ -145,22 +154,34 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Only auto-scroll to bottom when user sends a message, not on initial load
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, typing]);
+    // Only scroll to bottom if user has interacted (sent a message)
+    // Don't scroll on initial load or welcome message
+    if (hasUserInteracted && messages.length > 1) {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [messages, typing, hasUserInteracted]);
 
   const getWelcomeMessage = (lang: LanguageType): string => {
     const welcomes = {
-      en: "Welcome! I'm your YDT Prestige Agent. I can help you learn, diagnose, explore, and program AIM 7510 with 95% accuracy. How can I assist you today?",
-      tr: "Hoş geldiniz! YDT Prestige Agent'ınızım. AIM 7510'u %95 doğrulukla öğrenmenize, teşhis etmenize, keşfetmenize ve programlamanıza yardımcı olabilirim. Bugün size nasıl yardımcı olabilirim?",
-      ru: "Добро пожаловать! Я ваш YDT Prestige Agent. Я могу помочь вам изучать, диагностировать, исследовать и программировать AIM 7510 с точностью 95%. Чем я могу помочь вам сегодня?",
-      ar: "أهلاً وسهلاً! أنا مساعد YDT المميز. يمكنني مساعدتك في تعلم وتشخيص واستكشاف وبرمجة AIM 7510 بدقة 95%. كيف يمكنني مساعدتك اليوم؟"
+      en: "Welcome! I'm your YDT Agent. I can help you learn, diagnose, explore, and program AIM 7510. How can I assist you today?",
+      tr: "Hoş geldiniz! YDT Agent'ınızım. AIM 7510'u öğrenmenize, teşhis etmenize, keşfetmenize ve programlamanıza yardımcı olabilirim. Bugün size nasıl yardımcı olabilirim?",
+      ru: "Добро пожаловать! Я ваш YDT Agent. Я могу помочь вам изучать, диагностировать, исследовать и программировать AIM 7510. Чем я могу помочь вам сегодня?",
+      ar: "أهلاً وسهلاً! أنا YDT المساعد. يمكنني مساعدتك في تعلم وتشخيص واستكشاف وبرمجة AIM 7510. كيف يمكنني مساعدتك اليوم؟"
     };
     return welcomes[lang];
   };
 
   const handleSend = async () => {
     if (!input.trim() || typing || backendLoading) return;
+
+    // Mark that user has interacted (sent a message)
+    setHasUserInteracted(true);
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -182,8 +203,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
       const response = await sendMessageToBackend(userInput, agentPersona, language);
       
       if (response.success && response.data) {
-        // Show confidence toast
-        microInteractions.current.showConfidenceToast(response.data.confidence);
+        // Response received successfully
         
         // Add assistant message
         const assistantMessage: Message = {
@@ -229,14 +249,17 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
       toast.error('Connection error. Please try again.');
     } finally {
       setTyping(false);
-      // Scroll to bottom
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      // Scroll to bottom only after user interaction
+      if (hasUserInteracted) {
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
     }
   };
 
   const handleQuickAction = async (action: typeof quickActions[0]) => {
+    setHasUserInteracted(true); // Mark interaction for quick actions too
     setAgentPersona(action.persona);
     setInput(action.text);
     microInteractions.current.showPersonaTransition(personas[action.persona]);
@@ -252,8 +275,33 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
   };
 
   const handleLanguageChange = (lang: LanguageType) => {
+    // Smooth language transition
     setLanguage(lang);
-    toast.success(`Language changed to ${lang.toUpperCase()}`);
+    
+    // Update welcome message in current language
+    const welcomeMessage: Message = {
+      id: 'welcome',
+      type: 'assistant',
+      text: getWelcomeMessage(lang),
+      timestamp: new Date(),
+      persona: agentPersona,
+      extras: {
+        confidence: 95,
+        references: ['YDT Knowledge Base'],
+        teachingPoints: []
+      }
+    };
+    
+    // Update first message if it's the welcome message
+    setMessages(prev => {
+      if (prev.length > 0 && prev[0].id === 'welcome') {
+        return [welcomeMessage, ...prev.slice(1)];
+      }
+      return prev;
+    });
+    
+    // Subtle notification
+    toast.success(`Language: ${lang.toUpperCase()}`, { duration: 1500 });
   };
 
   const currentPersona = personas[agentPersona];
@@ -261,7 +309,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto" style={{ marginTop: '2.5cm' }}>
         {/* Prestige Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
@@ -278,11 +326,11 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
             
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                YDT <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Prestige Agent</span>
+                YDT <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Agent</span>
               </h1>
               <p className="text-gray-600 flex items-center gap-2">
                 <Shield className="w-4 h-4 text-green-500" />
-                <span className="font-semibold text-green-600">{confidence}% Accuracy</span>
+                <span className="font-semibold text-green-600">Online</span>
                 • Nervous System + Professor + Doctor + Tour Guide
               </p>
             </div>
@@ -292,17 +340,19 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
           <div className="flex items-center space-x-2">
             <Languages className="w-5 h-5 text-gray-500" />
             {(['TR', 'EN', 'RU', 'AR'] as const).map((lang) => (
-              <button
+              <motion.button
                 key={lang}
                 onClick={() => handleLanguageChange(lang.toLowerCase() as LanguageType)}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 ${
                   language === lang.toLowerCase()
                     ? 'bg-blue-600 text-white shadow-md'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
                 {lang}
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
@@ -386,23 +436,14 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                         <span className="text-sm font-medium">{personas[message.persona].title}</span>
                       </div>
                     )}
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                    <p 
+                      className="text-sm leading-relaxed whitespace-pre-wrap"
+                      dir={language === 'ar' ? 'rtl' : 'ltr'}
+                      style={language === 'ar' ? { textAlign: 'right' } : {}}
+                    >
+                      {message.text}
+                    </p>
                     
-                    {message.type === 'assistant' && message.extras && (
-                      <div className="mt-3 space-y-2">
-                        {message.extras.confidence && (
-                          <div className="flex items-center text-xs">
-                            <Shield className="w-3 h-3 mr-1" />
-                            <span>Confidence: {message.extras.confidence}%</span>
-                          </div>
-                        )}
-                        {message.extras.references && message.extras.references.length > 0 && (
-                          <div className="text-xs text-gray-600 italic">
-                            Reference: {message.extras.references.join(', ')}
-                          </div>
-                        )}
-                      </div>
-                    )}
                   </div>
                 </motion.div>
               ))}
@@ -438,7 +479,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={`Ask ${currentPersona.title} about AIM 7510...`}
-                    className="w-full px-6 py-4 bg-gray-50 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-6 py-4 bg-white rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-400 text-gray-900 placeholder:text-gray-400 text-base font-medium"
                     onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                   />
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
@@ -515,8 +556,8 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
               </div>
             </div>
             <div className="mt-2">
-              <div className="text-2xl font-bold">95%</div>
-              <div className="text-sm text-gray-500">Gold Tier Verified</div>
+              <div className="text-2xl font-bold">Active</div>
+              <div className="text-sm text-gray-500">Knowledge Base</div>
             </div>
           </div>
           

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Phone, CheckCircle, Award } from "lucide-react";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
 import { useTranslation } from "react-i18next";
+import { AIAgentStatus } from "./AIAgentStatus";
 
 // Lazy load the heavy background component to improve LCP
 const EgyptianIndustrialHero = lazy(() => import("./EgyptianIndustrialHero").then(module => ({ default: module.EgyptianIndustrialHero })));
@@ -194,8 +195,8 @@ const Hero = () => {
         }}
       />
 
-      {/* Content - Optimized for mobile with proper spacing - Must be above background */}
-      <div className="relative z-[100] flex flex-col h-full mt-[1cm] lg:mt-[2cm]">
+      {/* Content - Optimized for mobile with proper spacing - Must be above background - Moved down 2cm for nav bar clearance */}
+      <div className="relative z-[100] flex flex-col h-full mt-[3cm] lg:mt-[4cm]">
         {/* Main Content Area - Enhanced positioning for large screens */}
         <div className="flex-1 flex flex-col justify-center px-3 sm:px-4 md:px-6 lg:px-12 xl:px-20 2xl:px-32 container mx-auto py-12 sm:py-16 md:py-20 lg:py-24">
           {slides.map((slide, index) => (
@@ -301,6 +302,11 @@ const Hero = () => {
                         {t('hero.slides.fabricator_pro.cta_secondary')}
                       </Link>
                     </NeonButton>
+                  </div>
+
+                  {/* YDT Agent - Gold Tier Industrial Model */}
+                  <div className="mt-6 sm:mt-8 md:mt-10 max-w-md">
+                    <AIAgentStatus />
                   </div>
                 </div>
               )}
