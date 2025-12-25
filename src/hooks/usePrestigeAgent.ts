@@ -6,7 +6,23 @@
 import { useState, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 
-const API_BASE_URL = import.meta.env.VITE_YDT_API_URL || import.meta.env.VITE_API_URL || 'https://ydt-production.up.railway.app';
+// YDT Agent API URL - prioritize YDT-specific env var, then check for local dev
+// Allow localhost for local development
+const getApiBaseUrl = () => {
+  const ydtUrl = import.meta.env.VITE_YDT_API_URL;
+  if (ydtUrl) {
+    return ydtUrl;
+  }
+  // Check if we're in development mode
+  if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
+    // Try localhost first for local development
+    return 'http://localhost:8000';
+  }
+  // Production URL
+  return 'https://ydt-production.up.railway.app';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 interface ChatResponse {
   success: boolean;
@@ -218,22 +234,40 @@ export const usePrestigeAgent = () => {
 
   const getKnowledgeStats = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/knowledge/stats`);
+      const response = await fetch(`${API_BASE_URL}/api/v1/knowledge/stats`, {
+        signal: AbortSignal.timeout(5000) // 5 second timeout
+      });
+      if (!response.ok) {
+        return { success: false, error: `HTTP ${response.status}` };
+      }
       const data = await response.json();
       return data;
     } catch (error: any) {
-      console.error('Knowledge stats error:', error);
+      // Silently fail - backend may not be available in development
+      if (error.name !== 'AbortError') {
+        // Only log if it's not a timeout/abort
+        console.debug('Knowledge stats unavailable:', error.message);
+      }
       return { success: false, error: (error as Error).message };
     }
   }, []);
 
   const getMachineCapabilities = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/machine/capabilities`);
+      const response = await fetch(`${API_BASE_URL}/api/v1/machine/capabilities`, {
+        signal: AbortSignal.timeout(5000) // 5 second timeout
+      });
+      if (!response.ok) {
+        return { success: false, error: `HTTP ${response.status}` };
+      }
       const data = await response.json();
       return data;
     } catch (error: any) {
-      console.error('Capabilities error:', error);
+      // Silently fail - backend may not be available in development
+      if (error.name !== 'AbortError') {
+        // Only log if it's not a timeout/abort
+        console.debug('Capabilities unavailable:', error.message);
+      }
       return { success: false, error: (error as Error).message };
     }
   }, []);

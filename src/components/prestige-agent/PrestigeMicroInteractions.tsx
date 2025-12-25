@@ -55,15 +55,10 @@ export class PrestigeMicroInteractions {
             </div>
             <div className="ml-3 flex-1">
               <p className="text-sm font-medium text-gray-900">
-                Response Confidence
+                Response Ready
               </p>
               <p className="mt-1 text-sm text-gray-500">
-                <span className={`font-bold ${color}`}>
-                  {confidence}% accuracy
-                </span>
-                <span className="ml-2 text-gray-400">
-                  • Gold Tier Verified
-                </span>
+                Response received
               </p>
             </div>
           </div>
@@ -96,7 +91,7 @@ export class PrestigeMicroInteractions {
         </div>
         <div>
           <p className="font-medium text-sm">Accessing Knowledge Base</p>
-          <p className="text-xs text-gray-500">1,193 components • 95% accuracy</p>
+          <p className="text-xs text-gray-500">Accessing knowledge base</p>
         </div>
       </motion.div>
     ), {
