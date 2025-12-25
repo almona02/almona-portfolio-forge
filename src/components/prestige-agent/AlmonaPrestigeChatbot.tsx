@@ -154,18 +154,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Only auto-scroll to bottom when user sends a message, not on initial load
-  const [hasUserInteracted, setHasUserInteracted] = useState(false);
-  
-  useEffect(() => {
-    // Only scroll to bottom if user has interacted (sent a message)
-    // Don't scroll on initial load or welcome message
-    if (hasUserInteracted && messages.length > 1) {
-      setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    }
-  }, [messages, typing, hasUserInteracted]);
+  // Removed auto-scroll - user controls scrolling manually
 
   const getWelcomeMessage = (lang: LanguageType): string => {
     const welcomes = {
@@ -179,9 +168,6 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
 
   const handleSend = async () => {
     if (!input.trim() || typing || backendLoading) return;
-
-    // Mark that user has interacted (sent a message)
-    setHasUserInteracted(true);
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -249,17 +235,11 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
       toast.error('Connection error. Please try again.');
     } finally {
       setTyping(false);
-      // Scroll to bottom only after user interaction
-      if (hasUserInteracted) {
-        setTimeout(() => {
-          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-      }
+      // No auto-scroll - user controls scrolling manually
     }
   };
 
   const handleQuickAction = async (action: typeof quickActions[0]) => {
-    setHasUserInteracted(true); // Mark interaction for quick actions too
     setAgentPersona(action.persona);
     setInput(action.text);
     microInteractions.current.showPersonaTransition(personas[action.persona]);

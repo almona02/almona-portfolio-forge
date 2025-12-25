@@ -3,9 +3,9 @@
  * Professional feedback and animations
  */
 
-import { toast } from 'sonner';
-import { CheckCircle, AlertTriangle, Info, ThumbsUp, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { AlertTriangle, BookOpen, CheckCircle, Info, ThumbsUp } from 'lucide-react';
+import { toast } from 'sonner';
 
 export interface PersonaConfig {
   icon: React.ComponentType<{ className?: string }>;
@@ -39,14 +39,13 @@ export class PrestigeMicroInteractions {
     const Icon = getIcon(confidence);
     const color = getColor(confidence);
 
-    toast.custom((t) => (
+    toast.custom((t: any) => (
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className={`max-w-md w-full bg-white shadow-lg rounded-2xl pointer-events-auto flex ring-1 ring-black ring-opacity-5 ${
-          t.visible ? 'animate-enter' : 'animate-leave'
-        }`}
+        className="max-w-md w-full bg-white/95 backdrop-blur-md shadow-xl rounded-2xl pointer-events-auto flex ring-1 ring-black/10 border border-gray-200/50"
+        style={{ zIndex: 9999 }}
       >
         <div className="flex-1 w-0 p-4">
           <div className="flex items-start">
@@ -65,7 +64,7 @@ export class PrestigeMicroInteractions {
         </div>
         <div className="flex border-l border-gray-200">
           <button
-            onClick={() => toast.dismiss(t.id)}
+            onClick={() => toast.dismiss(t)}
             className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             Dismiss
@@ -74,17 +73,23 @@ export class PrestigeMicroInteractions {
       </motion.div>
     ), {
       duration: 3000,
-      position: 'top-right'
+      position: 'top-right',
+      style: {
+        background: 'transparent',
+        boxShadow: 'none',
+      },
+      className: 'toast-custom',
     });
   }
 
   showKnowledgeRecall() {
-    return toast.custom((t) => (
+    return toast.custom((_t: any) => (
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="flex items-center space-x-3 bg-white p-4 rounded-xl shadow-lg"
+        className="flex items-center space-x-3 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-gray-200/50"
+        style={{ zIndex: 9999 }}
       >
         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
           <BookOpen className="w-4 h-4 text-blue-600" />
@@ -96,19 +101,24 @@ export class PrestigeMicroInteractions {
       </motion.div>
     ), {
       duration: 2000,
-      position: 'top-right'
+      position: 'top-right',
+      style: {
+        background: 'transparent',
+        boxShadow: 'none',
+      },
     });
   }
 
   showPersonaTransition(persona: PersonaConfig) {
     const PersonaIcon = persona.icon;
     
-    return toast.custom((t) => (
+    return toast.custom((_t: any) => (
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.8 }}
-        className="flex items-center space-x-3 bg-white p-4 rounded-xl shadow-lg"
+        className="flex items-center space-x-3 bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-gray-200/50"
+        style={{ zIndex: 9999 }}
       >
         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
           <PersonaIcon className="w-5 h-5 text-white" />
@@ -120,17 +130,22 @@ export class PrestigeMicroInteractions {
       </motion.div>
     ), {
       duration: 1500,
-      position: 'top-center'
+      position: 'top-center',
+      style: {
+        background: 'transparent',
+        boxShadow: 'none',
+      },
     });
   }
 
   showLearningProgress(module: string, progress: number) {
-    return toast.custom((t) => (
+    return toast.custom((_t: any) => (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
-        className="bg-white p-4 rounded-xl shadow-lg w-64"
+        className="bg-white/95 backdrop-blur-md p-4 rounded-xl shadow-xl border border-gray-200/50 w-64"
+        style={{ zIndex: 9999 }}
       >
         <div className="flex items-center justify-between mb-2">
           <span className="font-bold text-sm">Learning Progress</span>
@@ -150,7 +165,11 @@ export class PrestigeMicroInteractions {
       </motion.div>
     ), {
       duration: 3000,
-      position: 'bottom-right'
+      position: 'bottom-right',
+      style: {
+        background: 'transparent',
+        boxShadow: 'none',
+      },
     });
   }
 

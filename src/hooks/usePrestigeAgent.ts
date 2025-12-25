@@ -143,7 +143,15 @@ export const usePrestigeAgent = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          errorMessage = errorText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -155,16 +163,19 @@ export const usePrestigeAgent = () => {
           metadata: data.metadata
         };
       } else {
-        throw new Error(data.message || 'Unknown error');
+        throw new Error(data.message || data.error || 'Unknown error');
       }
     } catch (error: any) {
       if (error.name === 'AbortError') {
         return { success: false, aborted: true };
       }
       
-      console.error('Chat error:', error);
-      toast.error(`Error: ${error.message}`);
-      return { success: false, error: error.message };
+      // Don't show toast for network errors - let component handle it
+      console.debug('Chat error:', error);
+      return { 
+        success: false, 
+        error: error.message || 'Failed to connect to server. Please try again.' 
+      };
     } finally {
       setIsLoading(false);
       abortControllerRef.current = null;
