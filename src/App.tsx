@@ -118,6 +118,9 @@ const AIRecommendationDemo = lazyRetry(() => import("./pages/AIRecommendationDem
 // National Service Dashboard - Egypt Vision 2030
 const NationalDashboard = lazy(() => import("./pages/NationalDashboard.tsx"));
 
+// YDT Agent - lazy loaded
+const AlmonaPrestigeChatbot = lazy(() => import("./components/prestige-agent/AlmonaPrestigeChatbot.tsx").then(m => ({ default: m.AlmonaPrestigeChatbot })));
+
 const queryClient = new QueryClient();
 const isProd = import.meta.env.PROD;
 // Only enable Vercel Analytics/Speed Insights when actually deployed on Vercel
@@ -470,6 +473,10 @@ const App = memo(() => {
                   
                   {/* AI Recommendation Demo */}
                   <Route path="/demo/ai-recommendations" element={<Suspense fallback={getLoadingComponent('/demo')}><AIRecommendationDemo /></Suspense>} />
+                  
+                  {/* YDT Agent */}
+                  <Route path="/prestige-agent" element={<Suspense fallback={getLoadingComponent('/prestige-agent')}><AlmonaPrestigeChatbot /></Suspense>} />
+                  <Route path="/ydt" element={<Suspense fallback={getLoadingComponent('/ydt')}><AlmonaPrestigeChatbot /></Suspense>} />
                   
                   {/* National Service Dashboard - Egypt Vision 2030 (Public for Demo) */}
                   <Route path="/national-dashboard" element={<Suspense fallback={getLoadingComponent('/national-dashboard')}><NationalDashboard /></Suspense>} />

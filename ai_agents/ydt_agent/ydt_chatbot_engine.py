@@ -345,10 +345,37 @@ class YDTChatbotEngine:
             )
 
     def _generate_tutorial(self, query: str, context: ChatContext) -> str:
-        """Generate step-by-step tutorial"""
-        # This would use RAG to find relevant manual chapters
-        # For now, return structured tutorial format
+        """Generate step-by-step tutorial using knowledge base"""
+        # Search knowledge base for relevant content
+        query_lower = query.lower()
+        
+        # Try to find relevant chapters from manual
+        relevant_content = []
+        if hasattr(self, 'manual_data') and self.manual_data:
+            chapters = self.manual_data.get('chapters', [])
+            for chapter in chapters:
+                title = chapter.get('title', '').lower()
+                content = chapter.get('content', '').lower()
+                if any(word in title or word in content for word in query_lower.split()):
+                    relevant_content.append(chapter)
+        
+        # If we found relevant content, use it
+        if relevant_content:
+            first_chapter = relevant_content[0]
+            chapter_title = first_chapter.get('title', 'Operation Guide')
+            chapter_content = first_chapter.get('content', '')
+            
+            if context.language == Language.ENGLISH:
+                return f"""📚 AIM 7510 OPERATION TUTORIAL
 
+{chapter_title}
+{'=' * len(chapter_title)}
+
+{chapter_content[:1000]}{'...' if len(chapter_content) > 1000 else ''}
+
+For complete details, refer to the AIM 7510 user manual."""
+        
+        # Fallback to structured tutorial if no specific content found
         if context.language == Language.ENGLISH:
             return """📚 AIM 7510 OPERATION TUTORIAL
 
@@ -475,9 +502,34 @@ Detaylı prosedürler için AIM 7510 kullanım kılavuzuna bakın.
 
     def _lookup_information(self, query: str, context: ChatContext) -> str:
         """Lookup information from knowledge base"""
+        query_lower = query.lower()
+        
+        # Check specifications first
+        if hasattr(self, 'specs_data') and self.specs_data:
+            specs = self.specs_data
+            # Look for power, speed, capacity, etc.
+            if 'power' in query_lower:
+                power = specs.get('power_rating_kw', specs.get('power', 'N/A'))
+                return f"The AIM 7510 power rating is {power} kW. This is a 5-axis CNC machine with high precision capabilities."
+            elif 'speed' in query_lower or 'rpm' in query_lower:
+                speed = specs.get('spindle_speed_rpm', specs.get('max_speed', 'N/A'))
+                return f"The AIM 7510 spindle speed is up to {speed} RPM."
+            elif 'axis' in query_lower or 'axes' in query_lower:
+                return "The AIM 7510 is a 5-axis CNC machine, providing full 3D machining capabilities with X, Y, Z, A, and C axes."
+            elif 'capacity' in query_lower or 'size' in query_lower:
+                return f"Machine capacity: {specs.get('work_area', 'Check manual for dimensions')}"
+        
+        # Check manual data
+        if hasattr(self, 'manual_data') and self.manual_data:
+            chapters = self.manual_data.get('chapters', [])
+            for chapter in chapters:
+                if any(word in chapter.get('title', '').lower() for word in query_lower.split()):
+                    return f"According to the AIM 7510 manual: {chapter.get('content', '')[:500]}..."
+        
+        # Default response
         return (
-            "Information lookup would query the YDT knowledge graph "
-            "for relevant specifications and procedures."
+            "I can help you find information about AIM 7510 specifications, "
+            "operations, and procedures. Could you be more specific about what you need?"
         )
 
     def _lookup_spare_part(self, query: str, context: ChatContext) -> str:
@@ -489,8 +541,24 @@ Detaylı prosedürler için AIM 7510 kullanım kılavuzuna bakın.
 
     def _generate_default_response(self, query: str, context: ChatContext) -> str:
         """Generate default response when intent is unclear"""
-        return (
-            "I'm here to help with AIM 7510 operations, diagnostics, "
-            "and learning. Could you please rephrase your question or "
-            "specify what you need?"
-        )
+        # Try to provide a helpful response based on available knowledge
+        query_lower = query.lower()
+        
+        # Check if query matches any known topics
+        if 'operation' in query_lower or 'operate' in query_lower or 'teach' in query_lower:
+            return self._generate_tutorial(query, context)
+        elif 'fault' in query_lower or 'error' in query_lower or 'problem' in query_lower:
+            return self._generate_diagnosis(query, context)
+        elif 'part' in query_lower or 'spare' in query_lower:
+            return self._lookup_spare_part(query, context)
+        else:
+            return (
+                f"I understand you're asking about '{query}'. "
+                "I can help you with AIM 7510 operations, diagnostics, maintenance, "
+                "and G-code programming. Could you please rephrase your question "
+                "or specify what you need? For example:\n"
+                "- 'Teach me how to operate the machine'\n"
+                "- 'What is the power rating?'\n"
+                "- 'Help me diagnose a fault'\n"
+                "- 'Show me spare parts'"
+            )
