@@ -77,6 +77,7 @@
     "gen:structure": "node docs/generate-structure.js",
     "docs:generate": "npm run gen:structure",
     "gen:structure:readmes": "node docs/generate-structure-with-readmes.js",
+    "parse:documentation": "tsx scripts/parse-documentation-for-ydt.ts",
     "type-check": "tsc --noEmit",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",

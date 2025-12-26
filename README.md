@@ -1261,6 +1261,76 @@ We are a team of engineers, designers, and business professionals who believe th
 
 ## 📝 Recent Updates (December 2024 - February 2025)
 
+### 🧠 YDT Future Intelligence Layer - Complete (February 2025) ✅
+
+**Status:** ✅ **IMPLEMENTED** - Industry Watchtower Operational
+
+**Vision:** Transform YDT from Knowledge Keeper (Past/Present) → Visionary Strategist (Future)
+
+#### ✅ Core Features Implemented
+
+**Industry Watchdog Service:**
+- ✅ Background agent that scans industry sources daily (RSS feeds, web scraping)
+- ✅ Monitors: Glass Magazine, USGlass, Fenestration Review, ArchDaily, LME prices
+- ✅ Automatic relevance filtering for Egyptian workshops
+- ✅ Celery scheduled tasks (daily scan at 6 AM Cairo time)
+- ✅ Morning Brief generation with alerts, price updates, tech news
+
+**Maalem Analyst:**
+- ✅ LLM-powered analysis with Egyptian workshop perspective
+- ✅ Translates global news to "Workshop Egyptian" dialect
+- ✅ Extracts actionable advice (Buy/Wait/Avoid/Learn)
+- ✅ Relevance scoring (High/Medium/Low/Irrelevant)
+- ✅ Rule-based fallback when LLM unavailable
+
+**Social Listener (Facebook Groups):**
+- ✅ Monitors 5+ Egyptian fabrication Facebook groups
+- ✅ Uses Facebook Graph API (compliant, no scraping)
+- ✅ Filters posts by relevance and credibility
+- ✅ Extracts street prices, supplier reviews, material shortages
+- ✅ Converts social insights to IndustryArticle format
+
+**Scout Intelligence (Human-Augmented):**
+- ✅ Browser extension/Telegram bot support for manual reports
+- ✅ Crowdsourced price reports (Waze model)
+- ✅ Consensus engine for price verification (requires 3+ reports)
+- ✅ OCR image processing for supplier price lists (Tesseract/Google Vision)
+- ✅ Street price index with verified data
+
+**API Endpoints:**
+- ✅ `GET /api/v2/ydt/future-intelligence/morning-brief` - Daily brief
+- ✅ `GET /api/v2/ydt/future-intelligence/trends` - Latest trends
+- ✅ `GET /api/v2/ydt/future-intelligence/alerts` - Active alerts
+- ✅ `GET /api/v2/ydt/future-intelligence/search` - Article search
+- ✅ `POST /api/v2/ydt/future-intelligence/feedback` - User feedback
+- ✅ `POST /api/v2/ydt/scout-intelligence/report` - Scout reports
+- ✅ `POST /api/v2/ydt/scout-intelligence/report-price` - Price reports
+- ✅ `POST /api/v2/ydt/scout-intelligence/upload-image` - OCR processing
+
+**Frontend Integration:**
+- ✅ `MorningBriefWidget` component in FabricatorDashboard
+- ✅ Displays critical alerts, price updates, tech news
+- ✅ Feedback buttons (👍 "Sah" / 👎 "Faks") for continuous improvement
+- ✅ Real-time updates via API
+
+**Key Achievements:**
+- ✅ Integration tests passing (6 judgment logic scenarios)
+- ✅ All components verified and operational
+- ✅ Ready for production deployment
+- ✅ Proprietary dataset that competitors cannot replicate
+
+**Documentation:**
+- `docs/YDT_FUTURE_INTELLIGENCE_IMPLEMENTATION.md` - Complete implementation guide
+- `docs/YDT_SOCIAL_LISTENER_IMPLEMENTATION.md` - Social media integration
+- `docs/YDT_SCOUT_INTELLIGENCE_IMPLEMENTATION.md` - Human-augmented collection
+- `docs/YDT_LME_API_INTEGRATION_GUIDE.md` - LME price integration
+- `docs/YDT_INTEGRATION_COMPLETE.md` - Integration summary
+
+**Code Locations:**
+- Backend: `python_backend/services/industry_watchdog.py`, `python_backend/agents/`
+- Frontend: `src/components/fabricator/MorningBriefWidget.tsx`, `src/lib/learning/`
+- API: `python_backend/apis/v2/future_intelligence.py`, `python_backend/apis/v2/scout_intelligence.py`
+
 ### 🚀 Strategic Transformation Package - Complete (January-February 2025) ✅
 
 **Status:** 100% Complete - Production Ready for Machine Validation
