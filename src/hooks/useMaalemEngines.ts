@@ -2,6 +2,8 @@ import { getPilotSystem } from '@/data/pilot-systems';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { EgyptianInterferenceEngine, type WindowAssembly } from '@/lib/fabricator/InterferenceEngine';
 import { unitProfileGatherer } from '@/lib/fabricator/UnitProfileGatherer';
+import { ShapeInferenceEngine, type InferredShape, type UserInput as ShapeUserInput } from '@/lib/intelligence/ShapeInferenceEngine';
+import { SegmentationOptimizer } from '@/lib/intelligence/SegmentationOptimizer';
 import type { Profile, WindowUnit } from '@/types/fabricator';
 import type { MaalemDashboardState } from '@/types/pilot';
 import { getBaseMaterialPrice } from '@/utils/marketData';
@@ -45,6 +47,8 @@ export const useMaalemEngines = (inputs: MaalemDashboardState) => {
 
   const [costs, setCosts] = useState({ material: 0, labor: 0, total: 0 });
   const [optimization, setOptimization] = useState<any>(null);
+  const [inferredShape, setInferredShape] = useState<InferredShape | null>(null);
+  const [shapeIntelligence, setShapeIntelligence] = useState<any>(null);
 
   const dims = useMemo(() => {
     if (inputs.measurementMode === 'hole') {
@@ -52,6 +56,43 @@ export const useMaalemEngines = (inputs: MaalemDashboardState) => {
     }
     return { width: inputs.width, height: inputs.height };
   }, [inputs.width, inputs.height, inputs.measurementMode, inputs.wallDeduction]);
+
+  // Shape Intelligence: Detect non-symmetric shapes
+  useEffect(() => {
+    const shapeEngine = new ShapeInferenceEngine();
+    
+    const shapeInput: ShapeUserInput = {
+      description: inputs.description || inputs.pattern,
+      dimensions: {
+        width: dims.width,
+        height: dims.height
+      },
+      roomType: inputs.roomType as any,
+      location: inputs.location as any
+    };
+    
+    shapeEngine.inferNonSymmetricShape(shapeInput).then((inferred) => {
+      setInferredShape(inferred);
+      
+      // If non-rectangular shape detected, optimize segmentation
+      if (inferred.shapeType !== 'rectangular' && inferred.pattern) {
+        const optimizer = new SegmentationOptimizer();
+        const optimized = optimizer.optimize(inferred.segmentation, inferred.pattern);
+        setShapeIntelligence({
+          shapeType: inferred.shapeType,
+          pattern: inferred.pattern,
+          segmentation: optimized,
+          materialStrategy: inferred.materialStrategy,
+          maalemAdvice: inferred.maalemAdvice
+        });
+      }
+    }).catch((error) => {
+      console.error('Shape inference error:', error);
+      // Fallback to rectangular
+      setInferredShape(null);
+      setShapeIntelligence(null);
+    });
+  }, [dims.width, dims.height, inputs.description, inputs.pattern, inputs.roomType, inputs.location]);
 
   useEffect(() => {
     const systemConfig = getPilotSystem(inputs.system);
@@ -261,6 +302,13 @@ export const useMaalemEngines = (inputs: MaalemDashboardState) => {
 
   }, [dims, inputs.system, inputs.count, inputs.pattern, inputs.wallDeduction, inputs.color, inputs.glazing]);
 
-  return { validation, costs, optimization, manufacturingDims: dims };
+  return { 
+    validation, 
+    costs, 
+    optimization, 
+    manufacturingDims: dims,
+    inferredShape,
+    shapeIntelligence
+  };
 };
 

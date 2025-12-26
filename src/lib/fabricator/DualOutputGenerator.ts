@@ -185,7 +185,43 @@ export class DualOutputGenerator {
         : 'warnings';
     }
     
-    // STEP 7: ENRICH WITH PRODUCTION INTELLIGENCE
+    // STEP 7: ENRICH WITH FLY SCREEN (if applicable)
+    if (windowUnit.flyScreenType && windowUnit.flyScreenType !== 'none') {
+      try {
+        const { FlyScreenPresetEngine } = await import('../presets/FlyScreenPresetEngine');
+        const flyScreenEngine = new FlyScreenPresetEngine();
+        const flyScreenBOM = await flyScreenEngine.generateFlyScreenBOM(
+          windowUnit,
+          windowUnit.flyScreenType as any
+        );
+        
+        // Merge fly screen BOM into fabrication data
+        fabrication.profiles = [...fabrication.profiles, ...flyScreenBOM.profiles];
+        fabrication.hardware = [...fabrication.hardware, ...flyScreenBOM.hardware];
+        
+        // Add fly screen warning if needed
+        fabrication.warnings.push({
+          severity: 'info',
+          code: 'FLY-SCREEN-001',
+          message: `Fly screen (${windowUnit.flyScreenType}) BOM included`,
+          affectedComponents: ['fly_screen'],
+          suggestedAction: 'Verify fly screen assembly sequence',
+          validationRule: 'fly_screen_integration'
+        });
+      } catch (error) {
+        console.warn('Failed to generate fly screen BOM:', error);
+        fabrication.warnings.push({
+          severity: 'warning',
+          code: 'FLY-SCREEN-ERROR',
+          message: 'Failed to generate fly screen BOM',
+          affectedComponents: ['fly_screen'],
+          suggestedAction: 'Manually add fly screen components',
+          validationRule: 'fly_screen_error'
+        });
+      }
+    }
+    
+    // STEP 8: ENRICH WITH PRODUCTION INTELLIGENCE
     fabrication.productionSequence = this.generateWorkflowSequence(
       fabrication,
       windowUnit
