@@ -17,7 +17,8 @@ celery_app = Celery(
         "tasks.quote_tasks",
         "tasks.notification_tasks",
         "tasks.report_tasks",
-        "tasks.monitoring_tasks"
+        "tasks.monitoring_tasks",
+        "tasks.industry_watchdog_tasks"
     ]
 )
 
@@ -81,6 +82,16 @@ celery_app.conf.update(
     broker_connection_retry_on_startup=True,
     broker_connection_retry=True,
     broker_connection_max_retries=10,
+    
+    # Beat schedule for periodic tasks
+    beat_schedule={
+        'daily-industry-scan': {
+            'task': 'tasks.industry_watchdog.daily_scan',
+            'schedule': 60.0 * 60.0 * 24.0,  # Every 24 hours (in seconds)
+            # For 6 AM Cairo time (UTC+2), use: crontab(hour=4, minute=0) when using crontab
+            # For now, using interval schedule - can be changed to crontab later
+        },
+    },
 )
 
 # Enhanced task routing for heavy processing
