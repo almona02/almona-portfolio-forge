@@ -14,8 +14,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { 
-  TrendingUp, 
-  TrendingDown, 
   AlertTriangle, 
   Lightbulb, 
   DollarSign,
@@ -26,7 +24,7 @@ import {
   ThumbsDown
 } from 'lucide-react';
 import { futureKnowledgeGraph } from '@/lib/learning/FutureKnowledgeGraph';
-import type { FutureIntelligence, MarketAlert, IndustryArticle } from '@/lib/learning/types';
+import type { FutureIntelligence } from '@/lib/learning/types';
 import { cn } from '@/lib/utils';
 
 interface MorningBriefWidgetProps {

@@ -135,7 +135,7 @@ export class ComplexShapeGenerator {
     workshopContext?: { machineCapabilities?: string[]; preferredMaterials?: string[] }
   ): MaterialStrategy {
     // Use material strategy from shape inference, but allow workshop override
-    let strategy = shape.materialStrategy;
+    const strategy = shape.materialStrategy;
     
     // Workshop preference override
     if (workshopContext?.preferredMaterials && workshopContext.preferredMaterials.length > 0) {

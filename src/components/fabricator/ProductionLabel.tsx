@@ -1,6 +1,7 @@
 import React from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { Card, CardContent } from '@/shared/ui/ui/card';
+import { Button } from '@/shared/ui/ui/button';
 import { Printer, QrCode, CheckCircle2 } from 'lucide-react';
 import { WindowUnit } from '@/types/fabricator';
 
