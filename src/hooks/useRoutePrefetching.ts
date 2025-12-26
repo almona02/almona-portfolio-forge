@@ -10,7 +10,7 @@ import { useLocation } from 'react-router-dom';
 // Egypt-specific prefetching patterns based on workshop workflow
 const EGYPT_WORKFLOW_PATTERNS: Record<string, string[]> = {
   // Home page users likely go to fabricator workflow
-  '/': ['/fabricator-workflow', '/egyptian-project-wizard'],
+  '/': ['/fabricator-workflow'],
   
   // Fabricator workflow users need tuning and optimization
   '/fabricator-workflow': [

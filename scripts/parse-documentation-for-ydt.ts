@@ -437,16 +437,12 @@ export class DocumentationParser {
   }
 
   /**
-   * Extract workflow steps from documentation (ENHANCED)
+   * Extract workflow steps from documentation
    */
   extractWorkflowSteps(workflowName: string, documents: ParsedDocument[]): WorkflowDocumentation | null {
     const sourceFiles: string[] = [];
     const allSteps: WorkflowStep[] = [];
     let foundWorkflow = false;
-    let timeEstimate = '30 seconds - 3 minutes';
-    let accuracy = '99.8%';
-    const commonMistakes: string[] = [];
-    const shortcuts: string[] = [];
 
     for (const doc of documents) {
       for (const section of doc.sections) {
@@ -459,91 +455,17 @@ export class DocumentationParser {
             sourceFiles.push(doc.filePath);
           }
           
-          const content = section.content;
-          
-          // Extract time estimate (e.g., "takes 5 minutes", "30 seconds", "2-3 hours")
-          const timeMatch = content.match(/(?:takes?|duration|time|estimate)[:\s]+([\d\s\-]+(?:second|minute|hour|day)s?)/i);
-          if (timeMatch) {
-            timeEstimate = timeMatch[1].trim();
-          }
-          
-          // Extract accuracy (e.g., "99.8%", "95% accurate")
-          const accuracyMatch = content.match(/(\d+\.?\d*)%?\s*(?:accuracy|accurate|precision)/i);
-          if (accuracyMatch) {
-            accuracy = `${accuracyMatch[1]}%`;
-          }
-          
-          // Extract common mistakes
-          const mistakesSection = content.match(/(?:common\s+)?(?:mistakes?|errors?|issues?)[:\s]*\n((?:[-*•]\s*.+\n?)+)/i);
-          if (mistakesSection) {
-            const mistakes = mistakesSection[1].match(/[-*•]\s*(.+)/g);
-            if (mistakes) {
-              mistakes.forEach(m => {
-                const mistake = m.replace(/[-*•]\s*/, '').trim();
-                if (mistake && !commonMistakes.includes(mistake)) {
-                  commonMistakes.push(mistake);
-                }
-              });
-            }
-          }
-          
-          // Extract shortcuts/tips
-          const shortcutsSection = content.match(/(?:shortcuts?|tips?|tricks?)[:\s]*\n((?:[-*•]\s*.+\n?)+)/i);
-          if (shortcutsSection) {
-            const tips = shortcutsSection[1].match(/[-*•]\s*(.+)/g);
-            if (tips) {
-              tips.forEach(t => {
-                const tip = t.replace(/[-*•]\s*/, '').trim();
-                if (tip && !shortcuts.includes(tip)) {
-                  shortcuts.push(tip);
-                }
-              });
-            }
-          }
-          
-          // Extract steps - multiple patterns
-          // Pattern 1: Numbered list (1. 2. 3.)
-          const stepMatches1 = content.match(/\n\s*(\d+)\.\s+(.+?)(?=\n\s*\d+\.|$)/gs);
-          if (stepMatches1) {
-            stepMatches1.forEach((match) => {
-              const stepContent = match.replace(/^\s*\d+\.\s+/, '').trim();
-              const firstLine = stepContent.split('\n')[0];
+          // Extract steps from content
+          const stepMatches = section.content.match(/\d+\.\s+(.+?)(?=\d+\.|$)/gs);
+          if (stepMatches) {
+            stepMatches.forEach((match, index) => {
+              const stepContent = match.replace(/^\d+\.\s+/, '').trim();
               allSteps.push({
                 number: allSteps.length + 1,
-                action: firstLine,
+                action: stepContent.split('\n')[0],
                 explanation: stepContent,
               });
             });
-          }
-          
-          // Pattern 2: Markdown list with dashes/asterisks
-          if (allSteps.length === 0) {
-            const stepMatches2 = content.match(/\n\s*[-*]\s+(.+?)(?=\n\s*[-*]|$)/gs);
-            if (stepMatches2) {
-              stepMatches2.forEach((match) => {
-                const stepContent = match.replace(/^\s*[-*]\s+/, '').trim();
-                allSteps.push({
-                  number: allSteps.length + 1,
-                  action: stepContent.split('\n')[0],
-                  explanation: stepContent,
-                });
-              });
-            }
-          }
-          
-          // Pattern 3: "Step X:" format
-          if (allSteps.length === 0) {
-            const stepMatches3 = content.match(/(?:step|stage)\s*(\d+)[:\s]+(.+?)(?=(?:step|stage)\s*\d+|$)/gi);
-            if (stepMatches3) {
-              stepMatches3.forEach((match) => {
-                const stepContent = match.replace(/^(?:step|stage)\s*\d+[:\s]+/i, '').trim();
-                allSteps.push({
-                  number: allSteps.length + 1,
-                  action: stepContent.split('\n')[0],
-                  explanation: stepContent,
-                });
-              });
-            }
           }
         }
       }
@@ -560,71 +482,21 @@ export class DocumentationParser {
         action: 'Start workflow',
         explanation: 'Workflow documentation found',
       }],
-      timeEstimate,
-      accuracy,
-      commonMistakes,
-      shortcuts: shortcuts.length > 0 ? shortcuts : undefined,
+      timeEstimate: '30 seconds - 3 minutes',
+      accuracy: '99.8%',
+      commonMistakes: [],
       sourceFiles,
     };
   }
-  
-  /**
-   * Auto-discover workflows from all documents
-   */
-  autoDiscoverWorkflows(documents: ParsedDocument[]): string[] {
-    const workflowNames = new Set<string>();
-    const workflowPatterns = [
-      /workflow[:\s]+(.+?)(?:\n|$)/i,
-      /(?:smart\s+)?wizard/i,
-      /quick\s+order/i,
-      /fabricator\s+pro/i,
-      /engineering\s+bay/i,
-      /pattern\s+library/i,
-    ];
-
-    for (const doc of documents) {
-      for (const section of doc.sections) {
-        const title = section.title.toLowerCase();
-        const content = section.content.toLowerCase();
-        
-        // Check title for workflow names
-        if (title.includes('workflow') || title.includes('wizard') || title.includes('process')) {
-          const nameMatch = section.title.match(/(?:workflow|wizard|process)[:\s]+(.+)/i);
-          if (nameMatch) {
-            workflowNames.add(nameMatch[1].trim());
-          }
-        }
-        
-        // Check content for workflow mentions
-        for (const pattern of workflowPatterns) {
-          const matches = content.match(pattern);
-          if (matches) {
-            if (matches[1]) {
-              workflowNames.add(matches[1].trim());
-            } else {
-              workflowNames.add(matches[0].trim());
-            }
-          }
-        }
-      }
-    }
-
-    return Array.from(workflowNames);
-  }
 
   /**
-   * Extract algorithm details from documentation (ENHANCED)
+   * Extract algorithm details from documentation
    */
   extractAlgorithmDetails(algorithmName: string, documents: ParsedDocument[]): AlgorithmDocumentation | null {
     const sourceFiles: string[] = [];
     let foundAlgorithm = false;
     let purpose = '';
     let strategy = '';
-    let accuracy = '99.8%';
-    let performance = '';
-    const inputs: string[] = [];
-    const outputs: string[] = [];
-    const keyMethods: string[] = [];
 
     for (const doc of documents) {
       for (const section of doc.sections) {
@@ -637,94 +509,11 @@ export class DocumentationParser {
             sourceFiles.push(doc.filePath);
           }
           
-          const content = section.content;
-          
-          // Extract purpose (usually first paragraph or "Purpose:" section)
-          if (!purpose) {
-            const purposeMatch = content.match(/(?:purpose|goal|objective)[:\s]+\n?(.+?)(?:\n\n|\n##|$)/i);
-            if (purposeMatch) {
-              purpose = purposeMatch[1].trim();
-            } else {
-              // Use first paragraph
-              const firstPara = content.split('\n\n')[0];
-              if (firstPara.length > 50 && firstPara.length < 500) {
-                purpose = firstPara.trim();
-              }
-            }
+          if (!purpose && section.content.length > 0) {
+            purpose = section.content.substring(0, 500);
           }
-          
-          // Extract strategy
-          if (!strategy) {
-            const strategyMatch = content.match(/(?:strategy|approach|method)[:\s]+\n?(.+?)(?:\n\n|\n##|$)/i);
-            if (strategyMatch) {
-              strategy = strategyMatch[1].trim();
-            }
-          }
-          
-          // Extract accuracy
-          const accuracyMatch = content.match(/(\d+\.?\d*)%?\s*(?:accuracy|accurate|precision)/i);
-          if (accuracyMatch) {
-            accuracy = `${accuracyMatch[1]}%`;
-          }
-          
-          // Extract performance metrics
-          const perfMatch = content.match(/(?:performance|speed|time)[:\s]+(.+?)(?:\n|$)/i);
-          if (perfMatch) {
-            performance = perfMatch[1].trim();
-          }
-          
-          // Extract inputs/outputs
-          const inputsMatch = content.match(/(?:input|parameter)[s]?[:\s]+\n?((?:[-*•]\s*.+\n?)+)/i);
-          if (inputsMatch) {
-            const inputList = inputsMatch[1].match(/[-*•]\s*(.+)/g);
-            if (inputList) {
-              inputList.forEach(i => {
-                const input = i.replace(/[-*•]\s*/, '').trim();
-                if (input && !inputs.includes(input)) {
-                  inputs.push(input);
-                }
-              });
-            }
-          }
-          
-          const outputsMatch = content.match(/(?:output|result)[s]?[:\s]+\n?((?:[-*•]\s*.+\n?)+)/i);
-          if (outputsMatch) {
-            const outputList = outputsMatch[1].match(/[-*•]\s*(.+)/g);
-            if (outputList) {
-              outputList.forEach(o => {
-                const output = o.replace(/[-*•]\s*/, '').trim();
-                if (output && !outputs.includes(output)) {
-                  outputs.push(output);
-                }
-              });
-            }
-          }
-          
-          // Extract key methods from code blocks
-          const codeBlocks = content.match(/```(?:typescript|javascript|python)?\n([\s\S]+?)```/g);
-          if (codeBlocks) {
-            codeBlocks.forEach(block => {
-              const code = block.replace(/```[\w]*\n/, '').replace(/```$/, '');
-              // Find function/class definitions
-              const funcMatches = code.match(/(?:export\s+)?(?:async\s+)?(?:function|const)\s+(\w+)/g);
-              if (funcMatches) {
-                funcMatches.forEach(f => {
-                  const methodName = f.match(/(\w+)\s*[=:]/)?.[1] || f.match(/(\w+)$/)?.[1];
-                  if (methodName && !keyMethods.includes(methodName)) {
-                    keyMethods.push(methodName);
-                  }
-                });
-              }
-              const classMatches = code.match(/(?:export\s+)?class\s+(\w+)/g);
-              if (classMatches) {
-                classMatches.forEach(c => {
-                  const className = c.match(/class\s+(\w+)/)?.[1];
-                  if (className && !keyMethods.includes(className)) {
-                    keyMethods.push(className);
-                  }
-                });
-              }
-            });
+          if (!strategy && section.content.includes('strategy')) {
+            strategy = section.content;
           }
         }
       }
@@ -738,158 +527,47 @@ export class DocumentationParser {
       name: algorithmName,
       purpose: purpose || 'Algorithm for system optimization',
       strategy: strategy || 'Optimized for accuracy and performance',
-      accuracy,
-      performance: performance || '5-10 seconds for 200 cuts',
-      inputs: inputs.length > 0 ? inputs : [],
-      outputs: outputs.length > 0 ? outputs : [],
-      keyMethods: keyMethods.length > 0 ? keyMethods : [],
+      accuracy: '99.8%',
+      performance: '5-10 seconds for 200 cuts',
+      inputs: [],
+      outputs: [],
+      keyMethods: [],
       sourceFiles,
     };
   }
-  
-  /**
-   * Auto-discover algorithms from all documents
-   */
-  autoDiscoverAlgorithms(documents: ParsedDocument[]): string[] {
-    const algorithmNames = new Set<string>();
-    
-    // Known algorithm patterns (all must be global for matchAll)
-    const algorithmPatterns = [
-      /(?:algorithm|optimizer|generator|validator|calculator|solver|engine)[:\s]+(.+?)(?:\n|$)/gi,
-      /class\s+(\w*(?:Optimizer|Generator|Validator|Calculator|Solver|Engine)\w*)/g,
-      /(?:export\s+)?(?:class|function)\s+(\w*(?:Optimizer|Generator|Validator|Calculator|Solver|Engine)\w*)/g,
-    ];
-
-    for (const doc of documents) {
-      for (const section of doc.sections) {
-        const title = section.title.toLowerCase();
-        const content = section.content;
-        
-        // Check title
-        if (title.includes('algorithm') || title.includes('optimizer') || title.includes('generator')) {
-          const nameMatch = section.title.match(/(?:algorithm|optimizer|generator)[:\s]+(.+)/i);
-          if (nameMatch) {
-            algorithmNames.add(nameMatch[1].trim());
-          }
-        }
-        
-        // Check content for algorithm mentions
-        for (const pattern of algorithmPatterns) {
-          // matchAll requires global regex
-          if (pattern.global) {
-            const matches = content.matchAll(pattern);
-            for (const match of matches) {
-              if (match[1]) {
-                algorithmNames.add(match[1].trim());
-              }
-            }
-          } else {
-            // Fallback to match for non-global patterns
-            const match = content.match(pattern);
-            if (match && match[1]) {
-              algorithmNames.add(match[1].trim());
-            }
-          }
-        }
-        
-        // Check code blocks for class/function names
-        const codeBlocks = content.match(/```[\w]*\n([\s\S]+?)```/g);
-        if (codeBlocks) {
-          codeBlocks.forEach(block => {
-            const code = block.replace(/```[\w]*\n/, '').replace(/```$/, '');
-            const classMatches = code.match(/(?:export\s+)?class\s+(\w*(?:Optimizer|Generator|Validator|Calculator|Solver|Engine)\w*)/g);
-            if (classMatches) {
-              classMatches.forEach(c => {
-                const className = c.match(/class\s+(\w+)/)?.[1];
-                if (className) {
-                  algorithmNames.add(className);
-                }
-              });
-            }
-          });
-        }
-      }
-    }
-
-    return Array.from(algorithmNames);
-  }
 
   /**
-   * Extract component relationships from all documents (ENHANCED)
+   * Extract component relationships from all documents
    */
   extractComponentRelationships(documents: ParsedDocument[]): ComponentDocumentation[] {
     const components: Map<string, ComponentDocumentation> = new Map();
     
-    // Known components from codebase (expanded list)
+    // Known components from codebase
     const knownComponents = [
       'DualOutputGenerator', 'ProductionOptimizer', 'CuttingListGenerator',
       'windowGeometry', 'constraintValidator', 'ProfileTuningStudio',
       'SmartDrawCanvas', 'Window3DGenerator', 'EngineeringBay',
-      'YDTCoreService', 'DocumentationKnowledgeGraph', 'FabricatorExpert',
-      'QuickStartYDT', 'EgyptianFabricationIntelligence', 'PricingEngine',
-      'RealTimeQuoteCalculator', 'YDTPricingOracle', 'SmartWizard',
-      'PatternLibraryWizard', 'ProfileManagement', 'ProfileImportTool',
-      'MorningBriefWidget', 'FutureKnowledgeGraph', 'IndustryWatchdog',
     ];
-    
-    // Also discover components from file paths
-    const discoveredComponents = this.autoDiscoverComponents(documents);
-    const allComponents = [...new Set([...knownComponents, ...discoveredComponents])];
 
-    for (const componentName of allComponents) {
+    for (const componentName of knownComponents) {
       const sourceFiles: string[] = [];
       let purpose = '';
-      let category = 'general';
       const relationships: string[] = [];
-      let usage = '';
 
       for (const doc of documents) {
-        // Check file path for component name
-        if (doc.filePath.toLowerCase().includes(componentName.toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase())) {
-          if (!sourceFiles.includes(doc.filePath)) {
-            sourceFiles.push(doc.filePath);
-          }
-        }
-        
         for (const section of doc.sections) {
-          const titleMatch = section.title.toLowerCase().includes(componentName.toLowerCase());
-          const contentMatch = section.content.toLowerCase().includes(componentName.toLowerCase());
-          
-          if (titleMatch || contentMatch) {
+          if (section.title.toLowerCase().includes(componentName.toLowerCase()) ||
+              section.content.toLowerCase().includes(componentName.toLowerCase())) {
             if (!sourceFiles.includes(doc.filePath)) {
               sourceFiles.push(doc.filePath);
             }
             
-            // Extract purpose
-            if (!purpose) {
-              const purposeMatch = section.content.match(/(?:purpose|description|overview)[:\s]+\n?(.+?)(?:\n\n|\n##|$)/i);
-              if (purposeMatch) {
-                purpose = purposeMatch[1].trim();
-              } else if (section.content.length > 0) {
-                purpose = section.content.substring(0, 300).trim();
-              }
-            }
-            
-            // Determine category from file path or content
-            const filePath = doc.filePath.toLowerCase();
-            if (filePath.includes('component') || filePath.includes('ui')) {
-              category = 'ui';
-            } else if (filePath.includes('service') || filePath.includes('api')) {
-              category = 'service';
-            } else if (filePath.includes('lib') || filePath.includes('util')) {
-              category = 'library';
-            } else if (filePath.includes('page') || filePath.includes('view')) {
-              category = 'page';
-            }
-            
-            // Extract usage
-            const usageMatch = section.content.match(/(?:usage|how\s+to\s+use)[:\s]+\n?(.+?)(?:\n\n|\n##|$)/i);
-            if (usageMatch) {
-              usage = usageMatch[1].trim();
+            if (!purpose && section.content.length > 0) {
+              purpose = section.content.substring(0, 300);
             }
             
             // Find relationships (mentions of other components)
-            for (const otherComponent of allComponents) {
+            for (const otherComponent of knownComponents) {
               if (otherComponent !== componentName && 
                   section.content.includes(otherComponent) &&
                   !relationships.includes(otherComponent)) {
@@ -903,813 +581,16 @@ export class DocumentationParser {
       if (sourceFiles.length > 0 || purpose) {
         components.set(componentName, {
           name: componentName,
-          category,
+          category: 'core',
           purpose: purpose || `${componentName} component`,
           relationships,
-          usage: usage || 'Core system component',
+          usage: 'Core system component',
           sourceFiles,
         });
       }
     }
 
     return Array.from(components.values());
-  }
-  
-  /**
-   * Auto-discover components from file paths and documentation
-   */
-  autoDiscoverComponents(documents: ParsedDocument[]): string[] {
-    const componentNames = new Set<string>();
-    
-    // Extract from file paths (PascalCase component names)
-    for (const doc of documents) {
-      const fileName = path.basename(doc.filePath, path.extname(doc.filePath));
-      // Check if it's PascalCase (likely a component)
-      if (/^[A-Z][a-zA-Z0-9]*$/.test(fileName) && fileName.length > 3) {
-        componentNames.add(fileName);
-      }
-      
-      // Extract from import statements in code blocks
-      const codeBlocks = doc.sections.flatMap(s => s.content.match(/```[\w]*\n([\s\S]+?)```/g) || []);
-      codeBlocks.forEach(block => {
-        const code = block.replace(/```[\w]*\n/, '').replace(/```$/, '');
-        // Find import statements
-        const importMatches = code.match(/(?:import|from)\s+['"].*?['"]|import\s+\{([^}]+)\}/g);
-        if (importMatches) {
-          importMatches.forEach(imp => {
-            const names = imp.match(/\{([^}]+)\}/)?.[1];
-            if (names) {
-              names.split(',').forEach(name => {
-                const cleanName = name.trim().split(/\s+as\s+/)[0];
-                if (/^[A-Z]/.test(cleanName)) {
-                  componentNames.add(cleanName);
-                }
-              });
-            }
-          });
-        }
-      });
-    }
-
-    return Array.from(componentNames);
-  }
-
-  /**
-   * Extract fabrication knowledge (ENHANCED - Domain-Specific)
-   */
-  extractFabricationKnowledge(documents: ParsedDocument[]): any {
-    const knowledge: any = {
-      fabrication: {
-        processes: [],
-        materials: [],
-        tools: [],
-        techniques: [],
-      },
-      assembly: {
-        sequences: [],
-        steps: [],
-        hardware: [],
-        connections: [],
-      },
-      geometry: {
-        windowTypes: [],
-        profiles: [],
-        dimensions: [],
-        calculations: [],
-      },
-      systemPacks: {
-        systems: [],
-        variants: [],
-        specifications: [],
-      },
-      profileRoles: {
-        roles: [],
-        categories: [],
-        usage: [],
-      },
-      cutting: {
-        optimization: [],
-        angles: [],
-        rules: [],
-        tolerances: [],
-        techniques: [],
-        tools: [],
-      },
-      connections: {
-        types: [],
-        methods: [],
-        angles: [],
-      },
-    };
-
-    const domainKeywords = {
-      fabrication: ['fabrication', 'manufacturing', 'production', 'machining', 'cnc', 'cutting', 'drilling', 'milling'],
-      assembly: ['assembly', 'assemble', 'install', 'mount', 'hardware', 'hinge', 'lock', 'handle'],
-      geometry: ['geometry', 'dimension', 'width', 'height', 'depth', 'profile', 'cross-section', 'archetype'],
-      systemPacks: ['system pack', 'systempack', 'system_pack', 'foxy', 'caluminium', 'jumbo', 'rock'],
-      profileRoles: ['profile role', 'role', 'frame', 'sash', 'mullion', 'transom', 'bead', 'reinforcement'],
-      cutting: ['cutting', 'optimization', 'optimize', 'remnant', 'waste', 'kerf', 'allowance'],
-      connections: ['connection', 'joint', 'miter', 'angle', 'corner', 'cleat', 'bracket'],
-    };
-
-    // Scan ALL documents and sections (aggressive extraction)
-    let sectionsScanned = 0;
-    let matchesFound = 0;
-
-    for (const doc of documents) {
-      // Build full document content from all sections
-      const fullContent = doc.sections.length > 0 
-        ? doc.sections.map(s => s.content + (s.subsections ? s.subsections.map(sub => sub.content).join('\n') : '')).join('\n')
-        : '';
-      
-      // If document has no sections, try to read the file directly
-      let rawContent = fullContent;
-      if (doc.sections.length === 0) {
-        try {
-          const fullPath = path.join(this.projectRoot || '.', doc.filePath);
-          rawContent = fs.readFileSync(fullPath, 'utf-8');
-        } catch (e) {
-          // Skip if can't read
-        }
-      }
-      
-      // Scan sections if they exist
-      if (doc.sections.length > 0) {
-        for (const section of doc.sections) {
-          sectionsScanned++;
-          const content = section.content + (section.subsections ? section.subsections.map(sub => sub.content).join('\n') : '');
-          const contentLower = content.toLowerCase();
-          const title = section.title.toLowerCase();
-          
-          // Use section content, fallback to full document if section is short
-          const contentToScan = content.length > 50 ? content : rawContent;
-
-          // Profile Roles knowledge (GOLD TIER - Scan ALL sections, not just fabrication)
-          // Extract profile roles from any section that contains role definitions
-          // Check if this section or file is about profile roles
-          const isProfileRoleSection = title.includes('role') || title.includes('profile') || 
-                                       contentLower.includes('profile role') || 
-                                       contentLower.includes('frame') || contentLower.includes('sash') || 
-                                       contentLower.includes('mullion') || contentLower.includes('architrave') ||
-                                       doc.filePath.toLowerCase().includes('profile_role');
-          
-          if (isProfileRoleSection) {
-            // Pattern 1: Extract from markdown code blocks like `frame`, `sash`, etc.
-            const rolePattern1 = /[-*•]\s*`([a-z_]+)`\s*[-–—]\s*(.+?)(?:\r?\n|$)/gi;
-            const rolePattern1Alt = /[-*•]\s*`([a-z_]+)`\s*-\s*(.+?)(?:\r?\n|$)/gi;
-            try {
-              let matches1 = Array.from(contentToScan.matchAll(rolePattern1));
-              if (matches1.length === 0) {
-                matches1 = Array.from(contentToScan.matchAll(rolePattern1Alt));
-              }
-              if (matches1.length > 0) {
-                matchesFound++;
-                // Debug: Log first few matches
-                if (knowledge.profileRoles.roles.length === 0 && matches1.length > 0) {
-                  console.log(`    [DEBUG] Found ${matches1.length} role pattern matches in section`);
-                }
-              }
-              for (const match of matches1) {
-                const role = match[1].trim();
-                const description = match[2].trim();
-                const validRoleKeywords = ['frame', 'sash', 'mullion', 'transom', 'bead', 'reinforcement', 
-                                         'architrave', 'threshold', 'sill', 'head', 'jamb', 'interlock', 
-                                         'accessory', 'panel', 'gasket', 'glazing', 'screen', 'weather', 'cleat'];
-                const invalidPatterns = ['string', 'json', 'definition', 'type', 'id', 'application'];
-                const looksLikeRole = validRoleKeywords.some(kw => 
-                  role.toLowerCase() === kw || 
-                  role.toLowerCase().startsWith(kw + '_') || 
-                  role.toLowerCase().includes('_' + kw)
-                );
-                const isInvalid = invalidPatterns.some(inv => role.toLowerCase() === inv);
-                
-                if (role && role.length > 2 && role.length < 30 && looksLikeRole && !isInvalid) {
-                  if (!knowledge.profileRoles.roles.includes(role)) {
-                    knowledge.profileRoles.roles.push(role);
-                    // Debug: Log when we add a role
-                    if (knowledge.profileRoles.roles.length <= 5) {
-                      console.log(`    [DEBUG] Added role: ${role}`);
-                    }
-                  }
-                  if (description && description.length > 3 && description.length < 200 &&
-                      !knowledge.profileRoles.usage.includes(description)) {
-                    knowledge.profileRoles.usage.push(description);
-                  }
-                } else if (role && knowledge.profileRoles.roles.length === 0) {
-                  // Debug: Log why role was rejected (only first few)
-                  if (matches1.indexOf(match) < 3) {
-                    console.log(`    [DEBUG] Rejected role "${role}": looksLikeRole=${looksLikeRole}, isInvalid=${isInvalid}`);
-                  }
-                }
-              }
-            } catch (e) {
-              // Fallback if matchAll fails
-            }
-          }
-
-          // Fabrication knowledge (scan all sections, extract when found)
-        if (domainKeywords.fabrication.some(kw => title.includes(kw) || contentLower.includes(kw)) || 
-            contentLower.includes('cnc') || contentLower.includes('machining') || contentLower.includes('cutting')) {
-          // Extract fabrication processes
-          const processMatches = content.match(/(?:process|step|procedure)[:\s]+\n?((?:[-*•\d]\s*.+\n?)+)/gi);
-          if (processMatches) {
-            processMatches.forEach(match => {
-              const processes = match.match(/[-*•\d]\s*(.+)/g);
-              if (processes) {
-                processes.forEach(p => {
-                  const process = p.replace(/[-*•\d]\s*/, '').trim();
-                  if (process && !knowledge.fabrication.processes.includes(process)) {
-                    knowledge.fabrication.processes.push(process);
-                  }
-                });
-              }
-            });
-          }
-
-          // Extract material specifications
-          const materialMatches = content.match(/(?:material|aluminum|upvc|profile)[:\s]+(.+?)(?:\n|$)/gi);
-          if (materialMatches) {
-            materialMatches.forEach(m => {
-              const material = m.replace(/(?:material|aluminum|upvc|profile)[:\s]+/i, '').trim();
-              if (material && !knowledge.fabrication.materials.includes(material)) {
-                knowledge.fabrication.materials.push(material);
-              }
-            });
-          }
-        }
-
-        // Assembly knowledge (scan all sections)
-        if (domainKeywords.assembly.some(kw => title.includes(kw) || contentLower.includes(kw)) ||
-            contentLower.includes('hinge') || contentLower.includes('lock') || contentLower.includes('handle')) {
-          // Extract assembly sequences
-          const sequenceMatches = content.match(/(?:sequence|order|steps?)[:\s]+\n?((?:\d+\.\s*.+\n?)+)/gi);
-          if (sequenceMatches) {
-            sequenceMatches.forEach(match => {
-              const steps = match.match(/\d+\.\s*(.+)/g);
-              if (steps) {
-                steps.forEach(s => {
-                  const step = s.replace(/\d+\.\s*/, '').trim();
-                  if (step && !knowledge.assembly.sequences.includes(step)) {
-                    knowledge.assembly.sequences.push(step);
-                  }
-                });
-              }
-            });
-          }
-
-          // Extract hardware mentions
-          const hardwareMatches = content.match(/(?:hinge|lock|handle|roller|hardware)[:\s]+(.+?)(?:\n|$)/gi);
-          if (hardwareMatches) {
-            hardwareMatches.forEach(h => {
-              const hardware = h.replace(/(?:hinge|lock|handle|roller|hardware)[:\s]+/i, '').trim();
-              if (hardware && !knowledge.assembly.hardware.includes(hardware)) {
-                knowledge.assembly.hardware.push(hardware);
-              }
-            });
-          }
-        }
-
-        // Geometry knowledge (scan all sections)
-        if (domainKeywords.geometry.some(kw => title.includes(kw) || contentLower.includes(kw)) ||
-            contentLower.includes('window') || contentLower.includes('dimension')) {
-          // Extract window types
-          const windowTypeMatches = content.match(/(?:window|door)\s+type[:\s]+(.+?)(?:\n|$)/gi);
-          if (windowTypeMatches) {
-            windowTypeMatches.forEach(w => {
-              const type = w.replace(/(?:window|door)\s+type[:\s]+/i, '').trim();
-              if (type && !knowledge.geometry.windowTypes.includes(type)) {
-                knowledge.geometry.windowTypes.push(type);
-              }
-            });
-          }
-
-          // Extract dimension calculations
-          const dimensionMatches = content.match(/(?:dimension|size|width|height|depth)[:\s]+(\d+(?:\.\d+)?)\s*(?:mm|cm|m)/gi);
-          if (dimensionMatches) {
-            dimensionMatches.forEach(d => {
-              const dim = d.trim();
-              if (dim && !knowledge.geometry.dimensions.includes(dim)) {
-                knowledge.geometry.dimensions.push(dim);
-              }
-            });
-          }
-        }
-
-        // System Packs knowledge (GOLD TIER - Enhanced extraction with validation)
-        // Always check for system pack patterns (they appear in many docs)
-        {
-          // Extract system pack names - multiple patterns with validation
-          // Pattern 1: "Caluminium PS", "FOXY-60", "Jumbo 100", "Rock 60"
-          const systemPattern1 = /\b(Caluminium|FOXY|Jumbo|Rock|ASAŞ|Alumil|Technal|Schüco|YILMAZ)(?:\s+([A-Z0-9\-]+))?\b/gi;
-          const matches1 = contentToScan.match(systemPattern1);
-          if (matches1) matchesFound++;
-          if (matches1) {
-            matches1.forEach(m => {
-              const system = m.trim();
-              // Gold tier validation: filter out common false positives
-              const invalidPatterns = ['machine', 'machinery', 'authorized', 'digital', 'system', 'pack'];
-              const isValid = system.length > 3 && 
-                             !invalidPatterns.some(invalid => system.toLowerCase().includes(invalid)) &&
-                             !system.match(/^\d+$/); // Not just numbers
-              if (isValid && !knowledge.systemPacks.systems.includes(system)) {
-                knowledge.systemPacks.systems.push(system);
-              }
-            });
-          }
-
-          // Pattern 2: "PS 6600", "PS 9600", "PS 4800", "CW 100"
-          const systemPattern2 = /\b(PS|CW|System)\s+(\d+[A-Z0-9\-]*)\b/gi;
-          const matches2 = contentToScan.match(systemPattern2);
-          if (matches2) matchesFound++;
-          if (matches2) {
-            matches2.forEach(m => {
-              const system = m.trim();
-              if (system && system.length > 3 && !knowledge.systemPacks.systems.includes(system)) {
-                knowledge.systemPacks.systems.push(system);
-              }
-            });
-          }
-
-          // Pattern 3: "System Pack" followed by name (GOLD TIER - More specific)
-          const systemPattern3 = /(?:system\s+pack|systempack)[:\s]+([A-Z][A-Z0-9\-\s]{2,30})/gi;
-          const matches3 = contentToScan.match(systemPattern3);
-          if (matches3) matchesFound++;
-          if (matches3) {
-            matches3.forEach(m => {
-              const system = m.replace(/(?:system\s+pack|systempack)[:\s]+/i, '').trim();
-              if (system && system.length > 2 && system.length < 50 && !knowledge.systemPacks.systems.includes(system)) {
-                knowledge.systemPacks.systems.push(system);
-              }
-            });
-          }
-
-          // Pattern 4: Extract system variants (GOLD TIER - New)
-          // Matches "PS 6600 Sliding", "PS 9600 Sliding", "PS 4800 Hinged"
-          const variantPattern = /\b(PS|CW|FOXY|Jumbo|Rock)\s+(\d+[A-Z0-9\-]*)\s+(Sliding|Hinged|Curtain\s+Wall|Tilt-Turn|Casement)\b/gi;
-          const variantMatches = contentToScan.match(variantPattern);
-          if (variantMatches) {
-            matchesFound++;
-            variantMatches.forEach(v => {
-              const variant = v.trim();
-              if (variant && !knowledge.systemPacks.variants.includes(variant)) {
-                knowledge.systemPacks.variants.push(variant);
-              }
-            });
-          }
-
-          // Extract specifications from markdown lists (GOLD TIER - Enhanced)
-          const specMatches = contentToScan.match(/(?:specification|spec|enhancement|data|technical\s+data)[:\s]*\n?((?:[-*•]\s*.+\n?)+)/gi);
-          if (specMatches) {
-            specMatches.forEach(sp => {
-              const specs = sp.match(/[-*•]\s*(.+)/g);
-              if (specs) {
-                specs.forEach(spec => {
-                  const specText = spec.replace(/[-*•]\s*/, '').trim();
-                  // Gold tier validation: meaningful specs only
-                  if (specText && specText.length > 10 && specText.length < 200 && 
-                      !specText.match(/^(and|or|the|a|an)\s/i) && // Not starting with common words
-                      !knowledge.systemPacks.specifications.includes(specText)) {
-                    knowledge.systemPacks.specifications.push(specText);
-                  }
-                });
-              }
-            });
-          }
-        }
-
-        // Profile Roles knowledge (GOLD TIER - Enhanced extraction)
-        // Always check for profile role patterns
-        {
-          // Pattern 1: Extract from markdown code blocks like `frame`, `sash`, etc.
-          // Match: "- `frame` - Main frame profile" or "- `frame_architrave` - Frame with architrave"
-          // GOLD TIER: More flexible whitespace, dash, and line ending handling
-          const rolePattern1 = /[-*•]\s*`([a-z_]+)`\s*[-–—]\s*(.+?)(?:\r?\n|$)/gi;
-          const rolePattern1Alt = /[-*•]\s*`([a-z_]+)`\s*-\s*(.+?)(?:\r?\n|$)/gi; // Fallback for regular dash
-          try {
-            // Try both patterns (em dash and regular dash)
-            let matches1 = Array.from(contentToScan.matchAll(rolePattern1));
-            if (matches1.length === 0) {
-              matches1 = Array.from(contentToScan.matchAll(rolePattern1Alt));
-            }
-            if (matches1.length > 0) matchesFound++;
-            for (const match of matches1) {
-              const role = match[1].trim();
-              const description = match[2].trim();
-              // Expanded role list for gold tier with validation
-              const validRoles = [
-                'frame', 'sash', 'mullion', 'transom', 'bead', 'reinforcement', 
-                'architrave', 'threshold', 'sill', 'head', 'jamb', 'interlock', 
-                'accessory', 'panel', 'gasket', 'weather_strip', 'screen_adapter',
-                'frame_architrave', 'sash_sliding', 'sash_door', 'sash_flyscreen',
-                'sash_casement', 'screen_sash', 'mullion_false', 'glazing_bead',
-                'glazing_bead_inner', 'glazing_bead_outer', 'corner_cleat'
-              ];
-              // Gold tier validation: filter false positives
-              const invalidPatterns = ['string', 'json', 'definition', 'type', 'id', 'application', 
-                                      'relatedtoid', 'number', 'boolean', 'object', 'array', 'null',
-                                      'interface', 'class', 'function', 'method', 'property'];
-              const isValidRole = role && 
-                                 role.length > 2 && role.length < 30 &&
-                                 !invalidPatterns.some(invalid => role.toLowerCase().includes(invalid)) &&
-                                 validRoles.some(r => role === r || role.includes(r) || r.includes(role));
-              
-              if (isValidRole) {
-                if (!knowledge.profileRoles.roles.includes(role)) {
-                  knowledge.profileRoles.roles.push(role);
-                }
-                if (description && description.length > 3 && description.length < 200 &&
-                    !description.match(/^(and|or|the|a|an|is|are|was|were)\s/i) &&
-                    !knowledge.profileRoles.usage.includes(description)) {
-                  knowledge.profileRoles.usage.push(description);
-                }
-              }
-            }
-          } catch (e) {
-            // Fallback if matchAll fails
-          }
-
-          // Pattern 2: Extract from "Role Types" sections and category headers (GOLD TIER - Validated)
-          const rolePattern2 = /(?:profile\s+)?(?:role|type|category)[:\s]+(frame|sash|mullion|transom|bead|reinforcement|architrave|threshold|sill|head|jamb|interlock|accessory|panel|gasket|glazing|structural)/gi;
-          const matches2 = contentToScan.match(rolePattern2);
-          if (matches2) matchesFound++;
-          if (matches2) {
-            matches2.forEach(r => {
-              const role = r.replace(/(?:profile\s+)?(?:role|type|category)[:\s]+/i, '').trim();
-              // Gold tier validation: only valid profile roles
-              const validRoles = ['frame', 'sash', 'mullion', 'transom', 'bead', 'reinforcement', 
-                                 'architrave', 'threshold', 'sill', 'head', 'jamb', 'interlock', 
-                                 'accessory', 'panel', 'gasket', 'glazing', 'structural'];
-              if (role && validRoles.includes(role.toLowerCase()) && !knowledge.profileRoles.roles.includes(role.toLowerCase())) {
-                knowledge.profileRoles.roles.push(role.toLowerCase());
-              }
-            });
-          }
-
-          // Pattern 3: Extract from category headers like "Frame Roles (7 types)", "Sash Roles (6 types)"
-          const categoryPattern = /(Frame|Sash|Structural|Glazing|Accessory)\s+roles?\s*\(/gi;
-          const categoryMatches = contentToScan.match(categoryPattern);
-          if (categoryMatches) matchesFound++;
-          if (categoryMatches) {
-            categoryMatches.forEach(c => {
-              const category = c.replace(/\s+roles?\s*\(/i, '').trim();
-              if (category && !knowledge.profileRoles.categories.includes(category)) {
-                knowledge.profileRoles.categories.push(category);
-              }
-            });
-          }
-
-          // Pattern 4: Extract from role lists in documentation (GOLD TIER - Validated)
-          // Matches patterns like "frame, sash, mullion" or "frame/sash/mullion"
-          const roleListPattern = /(?:profile\s+)?(?:roles?|types?)[:\s]+([a-z_]+(?:\s*[,\/]\s*[a-z_]+)+)/gi;
-          const roleListMatches = contentToScan.match(roleListPattern);
-          if (roleListMatches) {
-            matchesFound++;
-            const validRoles = ['frame', 'sash', 'mullion', 'transom', 'bead', 'reinforcement', 
-                               'architrave', 'threshold', 'sill', 'head', 'jamb', 'interlock', 
-                               'accessory', 'panel', 'gasket', 'glazing', 'structural'];
-            roleListMatches.forEach(list => {
-              const roles = list.replace(/(?:profile\s+)?(?:roles?|types?)[:\s]+/i, '').split(/[,\/]/).map(r => r.trim());
-              roles.forEach(role => {
-                // Gold tier validation: filter false positives
-                const invalidPatterns = ['string', 'json', 'definition', 'type', 'id', 'application', 
-                                        'relatedtoid', 'number', 'boolean', 'object', 'array', 'null'];
-                if (role && role.length > 2 && role.length < 30 &&
-                    !invalidPatterns.some(invalid => role.toLowerCase().includes(invalid)) &&
-                    validRoles.some(vr => role.toLowerCase().includes(vr) || vr.includes(role.toLowerCase())) &&
-                    !knowledge.profileRoles.roles.includes(role.toLowerCase())) {
-                  knowledge.profileRoles.roles.push(role.toLowerCase());
-                }
-              });
-            });
-          }
-          
-          // Pattern 5: Extract from code blocks with role definitions (GOLD TIER - New)
-          // Matches: `frame_architrave`, `sash_sliding`, etc. in context
-          const codeBlockRolePattern = /`([a-z_]+)`(?:\s*-\s*[^`\n]+)?/gi;
-          const codeBlockMatches = Array.from(contentToScan.matchAll(codeBlockRolePattern));
-          if (codeBlockMatches.length > 0) {
-            const validRolePrefixes = ['frame', 'sash', 'mullion', 'transom', 'bead', 'reinforcement', 
-                                      'architrave', 'threshold', 'sill', 'head', 'jamb', 'interlock', 
-                                      'accessory', 'panel', 'gasket', 'glazing', 'screen', 'weather'];
-            codeBlockMatches.forEach(match => {
-              const role = match[1].trim();
-              if (role && validRolePrefixes.some(prefix => role.startsWith(prefix) || role === prefix) &&
-                  role.length < 30 && !knowledge.profileRoles.roles.includes(role)) {
-                knowledge.profileRoles.roles.push(role);
-                matchesFound++;
-              }
-            });
-          }
-        }
-
-        // Cutting optimization knowledge (GOLD TIER - Enhanced extraction)
-        // Always check for cutting patterns
-        {
-          // Extract optimization strategies (GOLD TIER - More comprehensive)
-          const optMatches = contentToScan.match(/(?:optimization|optimize|strategy|remnant|waste|minimize|reduce)[:\s]+\n?(.+?)(?:\n\n|\n##|$)/i);
-          if (optMatches) {
-            const strategy = optMatches[1].trim();
-            if (strategy && strategy.length > 10 && strategy.length < 500 && 
-                !knowledge.cutting.optimization.includes(strategy)) {
-              knowledge.cutting.optimization.push(strategy);
-            }
-          }
-
-          // Extract cutting rules - multiple patterns (GOLD TIER - Enhanced)
-          // Pattern 1: "kerf: 4.2mm", "allowance: 0.5mm", "tolerance: ±0.1mm"
-          const rulePattern1 = /(?:kerf|allowance|tolerance|bar\s+end\s+trim|cutting\s+allowance)[:\s]+([±]?\d+(?:\.\d+)?)\s*(?:mm|cm|m)/gi;
-          const ruleMatches1 = contentToScan.match(rulePattern1);
-          if (ruleMatches1) {
-            matchesFound++;
-            ruleMatches1.forEach(ru => {
-              const rule = ru.trim();
-              if (rule && !knowledge.cutting.rules.includes(rule)) {
-                knowledge.cutting.rules.push(rule);
-              }
-            });
-          }
-
-          // Pattern 2: From lists like "- Saw blade kerf: 4.2mm"
-          const rulePattern2 = /[-*•]\s*(?:saw|cutting|kerf|allowance|blade|tool)[:\s]+([±]?\d+(?:\.\d+)?)\s*(?:mm|cm|m)/gi;
-          const ruleMatches2 = contentToScan.match(rulePattern2);
-          if (ruleMatches2) {
-            matchesFound++;
-            ruleMatches2.forEach(ru => {
-              const rule = ru.trim();
-              if (rule && !knowledge.cutting.rules.includes(rule)) {
-                knowledge.cutting.rules.push(rule);
-              }
-            });
-          }
-
-          // Pattern 3: Extract cutting angles (GOLD TIER - New)
-          const cuttingAnglePattern = /(?:cutting|miter|angle)[:\s]+(\d+(?:\.\d+)?)\s*°/gi;
-          const cuttingAngleMatches = contentToScan.match(cuttingAnglePattern);
-          if (cuttingAngleMatches) {
-            matchesFound++;
-            cuttingAngleMatches.forEach(a => {
-              const angle = a.replace(/(?:cutting|miter|angle)[:\s]+/i, '').trim();
-              if (angle && !knowledge.cutting.angles.includes(angle)) {
-                knowledge.cutting.angles.push(angle);
-              }
-            });
-          }
-
-          // Pattern 4: Extract tolerances (GOLD TIER - New)
-          const tolerancePattern = /(?:tolerance|±)[:\s]*([±]?\d+(?:\.\d+)?)\s*(?:mm|cm)/gi;
-          const toleranceMatches = contentToScan.match(tolerancePattern);
-          if (toleranceMatches) {
-            matchesFound++;
-            toleranceMatches.forEach(t => {
-              const tolerance = t.replace(/(?:tolerance|±)[:\s]*/i, '').trim();
-              if (tolerance && !knowledge.cutting.tolerances.includes(tolerance)) {
-                knowledge.cutting.tolerances.push(tolerance);
-              }
-            });
-          }
-        }
-
-        // Connection/angle knowledge (IMPROVED - Scan ALL sections)
-        // Always check for connection/angle patterns
-        {
-          // Extract angles - multiple patterns
-          // Pattern 1: "45°", "90°", "45 degrees"
-          const anglePattern1 = /(\d+(?:\.\d+)?)\s*°(?:C|F)?/g;
-          const angleMatches1 = contentToScan.match(anglePattern1);
-          if (angleMatches1) matchesFound++;
-          if (angleMatches1) {
-            angleMatches1.forEach(a => {
-              const angle = a.trim();
-              if (angle && !knowledge.connections.angles.includes(angle)) {
-                knowledge.connections.angles.push(angle);
-              }
-            });
-          }
-
-          // Pattern 2: "45° miter", "miter angle: 45°"
-          const anglePattern2 = /(?:angle|miter)[:\s]+(\d+(?:\.\d+)?)\s*°?/gi;
-          const angleMatches2 = contentToScan.match(anglePattern2);
-          if (angleMatches2) matchesFound++;
-          if (angleMatches2) {
-            angleMatches2.forEach(a => {
-              const angle = a.replace(/(?:angle|miter)[:\s]+/i, '').trim();
-              if (angle && !knowledge.connections.angles.includes(angle)) {
-                knowledge.connections.angles.push(angle);
-              }
-            });
-          }
-
-          // Pattern 3: "45° miter joints" from text
-          const anglePattern3 = /(\d+(?:\.\d+)?)\s*°\s*(?:miter|joint|angle)/gi;
-          const angleMatches3 = contentToScan.match(anglePattern3);
-          if (angleMatches3) matchesFound++;
-          if (angleMatches3) {
-            angleMatches3.forEach(a => {
-              const angle = a.match(/(\d+(?:\.\d+)?)\s*°/)?.[1];
-              if (angle && !knowledge.connections.angles.includes(angle + '°')) {
-                knowledge.connections.angles.push(angle + '°');
-              }
-            });
-          }
-
-          // Extract connection types - multiple patterns
-          // Pattern 1: "miter joint", "T-joint", "corner cleat"
-          const connPattern1 = /(?:connection|joint|type)[:\s]+(miter|t-joint|corner|cleat|bracket)/gi;
-          const connMatches1 = contentToScan.match(connPattern1);
-          if (connMatches1) matchesFound++;
-          if (connMatches1) {
-            connMatches1.forEach(c => {
-              const conn = c.replace(/(?:connection|joint|type)[:\s]+/i, '').trim();
-              if (conn && !knowledge.connections.types.includes(conn)) {
-                knowledge.connections.types.push(conn);
-              }
-            });
-          }
-
-          // Pattern 2: From text like "45° miter joints"
-          const connPattern2 = /(miter|t-joint|corner|cleat|bracket)\s*(?:joint|connection|type)/gi;
-          const connMatches2 = contentToScan.match(connPattern2);
-          if (connMatches2) matchesFound++;
-          if (connMatches2) {
-            connMatches2.forEach(c => {
-              const conn = c.replace(/\s*(?:joint|connection|type)/i, '').trim();
-              if (conn && !knowledge.connections.types.includes(conn)) {
-                knowledge.connections.types.push(conn);
-              }
-            });
-          }
-        }
-        }
-      } else {
-        // No sections - scan raw file content directly
-        sectionsScanned++;
-        const contentToScan = rawContent;
-        const contentLower = rawContent.toLowerCase();
-        
-        // Run all extraction patterns on raw content
-        // System Packs
-        {
-          const systemPattern1 = /(?:Caluminium|FOXY|Jumbo|Rock|ASAŞ|Alumil|Technal|Schüco|YILMAZ)(?:\s+([A-Z0-9\-]+))?/gi;
-          const matches1 = contentToScan.match(systemPattern1);
-          if (matches1) {
-            matchesFound++;
-            matches1.forEach(m => {
-              const system = m.trim();
-              if (system && system.length > 3 && !knowledge.systemPacks.systems.includes(system)) {
-                knowledge.systemPacks.systems.push(system);
-              }
-            });
-          }
-          
-          const systemPattern2 = /(?:PS|CW|System)\s+(\d+[A-Z0-9\-]*)/gi;
-          const matches2 = contentToScan.match(systemPattern2);
-          if (matches2) {
-            matchesFound++;
-            matches2.forEach(m => {
-              const system = m.trim();
-              if (system && !knowledge.systemPacks.systems.includes(system)) {
-                knowledge.systemPacks.systems.push(system);
-              }
-            });
-          }
-        }
-        
-        // Profile Roles
-        {
-          const rolePattern1 = /[-*•]\s*`([a-z_]+)`\s*-\s*(.+?)(?:\n|$)/gi;
-          try {
-            const matches1 = Array.from(contentToScan.matchAll(rolePattern1));
-            if (matches1.length > 0) {
-              matchesFound++;
-              for (const match of matches1) {
-                const role = match[1].trim();
-                const description = match[2].trim();
-                if (role && ['frame', 'sash', 'mullion', 'transom', 'bead', 'reinforcement', 'architrave', 'threshold', 'sill', 'head', 'jamb', 'interlock', 'accessory', 'panel', 'gasket', 'weather_strip', 'screen_adapter'].some(r => role.includes(r) || role === r)) {
-                  if (!knowledge.profileRoles.roles.includes(role)) {
-                    knowledge.profileRoles.roles.push(role);
-                  }
-                  if (description && description.length > 3 && !knowledge.profileRoles.usage.includes(description)) {
-                    knowledge.profileRoles.usage.push(description);
-                  }
-                }
-              }
-            }
-          } catch (e) {
-            // Fallback
-          }
-        }
-        
-        // Connection Angles
-        {
-          const anglePattern1 = /(\d+(?:\.\d+)?)\s*°(?:C|F)?/g;
-          const angleMatches1 = contentToScan.match(anglePattern1);
-          if (angleMatches1) {
-            matchesFound++;
-            angleMatches1.forEach(a => {
-              const angle = a.trim();
-              if (angle && !knowledge.connections.angles.includes(angle)) {
-                knowledge.connections.angles.push(angle);
-              }
-            });
-          }
-        }
-        
-        // Cutting Rules
-        {
-          const rulePattern1 = /(?:kerf|allowance|tolerance|bar\s+end\s+trim)[:\s]+(\d+(?:\.\d+)?)\s*(?:mm|cm)/gi;
-          const ruleMatches1 = contentToScan.match(rulePattern1);
-          if (ruleMatches1) {
-            matchesFound++;
-            ruleMatches1.forEach(ru => {
-              const rule = ru.trim();
-              if (rule && !knowledge.cutting.rules.includes(rule)) {
-                knowledge.cutting.rules.push(rule);
-              }
-            });
-          }
-        }
-      }
-    }
-
-    // Gold tier: Clean and deduplicate extracted data
-    // Remove duplicates and filter invalid entries
-    knowledge.systemPacks.systems = [...new Set(knowledge.systemPacks.systems.filter(s => 
-      s && s.length > 2 && s.length < 50 && !s.match(/^\d+$/)
-    ))];
-    
-    // Profile roles: Filter false positives but keep valid roles (GOLD TIER - Smart filtering)
-    const validRoleKeywords = ['frame', 'sash', 'mullion', 'transom', 'bead', 'reinforcement', 
-                               'architrave', 'threshold', 'sill', 'head', 'jamb', 'interlock', 
-                               'accessory', 'panel', 'gasket', 'glazing', 'screen', 'weather', 'cleat'];
-    const invalidRoleKeywords = ['string', 'json', 'definition', 'type', 'id', 'application', 
-                                'relatedtoid', 'number', 'boolean', 'object', 'array', 'null',
-                                'interface', 'class', 'function', 'method', 'property', 'value', 'label'];
-    
-    // Debug: Log roles before validation
-    const rolesBeforeValidation = knowledge.profileRoles.roles.length;
-    const sampleRolesBefore = knowledge.profileRoles.roles.slice(0, 10);
-    
-    // Gold tier: Keep all roles that match valid patterns, filter only obvious false positives
-    knowledge.profileRoles.roles = [...new Set(knowledge.profileRoles.roles.filter(r => {
-      if (!r || typeof r !== 'string' || r.length < 2 || r.length > 30) return false;
-      const rLower = r.toLowerCase().trim();
-      
-      // Must contain at least one valid keyword (exact match, prefix, suffix, or contains)
-      const hasValidKeyword = validRoleKeywords.some(vk => {
-        if (rLower === vk) return true; // Exact match
-        if (rLower.startsWith(vk + '_')) return true; // frame_architrave
-        if (rLower.endsWith('_' + vk)) return true; // glazing_bead
-        if (rLower.includes('_' + vk + '_')) return true; // inner_glazing_bead
-        if (rLower.includes(vk) && rLower.length < 25) return true; // Contains keyword
-        return false;
-      });
-      
-      // Must not be an obvious false positive
-      const isInvalid = invalidRoleKeywords.some(iv => {
-        // Exact match is invalid
-        if (rLower === iv) return true;
-        // Short roles that are just invalid keywords
-        if (rLower.length < 8 && rLower.includes(iv)) return true;
-        return false;
-      });
-      
-      return hasValidKeyword && !isInvalid;
-    }))];
-    
-    // Debug: Log validation results
-    if (rolesBeforeValidation > 0 && knowledge.profileRoles.roles.length === 0) {
-      console.log(`    [DEBUG] Profile roles: ${rolesBeforeValidation} found before validation, 0 after`);
-      console.log(`    [DEBUG] Sample before validation: ${sampleRolesBefore.slice(0, 5).join(', ')}`);
-    }
-    
-    knowledge.connections.angles = [...new Set(knowledge.connections.angles.filter(a => 
-      a && a.length > 0 && a.length < 10
-    ))];
-    knowledge.cutting.rules = [...new Set(knowledge.cutting.rules.filter(r => 
-      r && r.length > 3 && r.length < 50
-    ))];
-
-    // Debug output
-    if (sectionsScanned > 0) {
-      console.log(`    [DEBUG] Scanned ${sectionsScanned} sections, found ${matchesFound} pattern matches`);
-      console.log(`    [DEBUG] System packs found: ${knowledge.systemPacks.systems.length} (after deduplication)`);
-      console.log(`    [DEBUG] Profile roles found: ${knowledge.profileRoles.roles.length} (after validation)`);
-      console.log(`    [DEBUG] Connection angles found: ${knowledge.connections.angles.length} (after deduplication)`);
-      console.log(`    [DEBUG] Cutting rules found: ${knowledge.cutting.rules.length} (after deduplication)`);
-      
-      // Show sample of what was found
-      if (knowledge.systemPacks.systems.length > 0) {
-        console.log(`    [DEBUG] Sample system packs: ${knowledge.systemPacks.systems.slice(0, 5).join(', ')}`);
-      }
-      if (knowledge.profileRoles.roles.length > 0) {
-        console.log(`    [DEBUG] Sample profile roles: ${knowledge.profileRoles.roles.slice(0, 10).join(', ')}`);
-      }
-      if (knowledge.connections.angles.length > 0) {
-        console.log(`    [DEBUG] Sample connection angles: ${knowledge.connections.angles.slice(0, 5).join(', ')}`);
-      }
-    }
-
-    return knowledge;
   }
 
   /**
@@ -1799,28 +680,20 @@ export class DocumentationParser {
     );
     const architecture = architectureSection?.content || 'Dual-DNA: 85% visual + 99.8% production';
 
-    // Extract workflows (with auto-discovery)
+    // Extract workflows
     console.log('  Extracting workflows...');
-    const knownWorkflows = ['Smart Wizard', 'Quick Order', 'Fabricator Pro', 'Engineering Bay', 'Pattern Library'];
-    const discoveredWorkflows = this.autoDiscoverWorkflows(this.parsedDocuments);
-    const allWorkflows = [...new Set([...knownWorkflows, ...discoveredWorkflows])];
-    
-    console.log(`    Found ${allWorkflows.length} workflows (${discoveredWorkflows.length} auto-discovered)`);
-    for (const workflowName of allWorkflows) {
+    const workflowNames = ['Smart Wizard', 'Quick Order', 'Fabricator Pro'];
+    for (const workflowName of workflowNames) {
       const workflow = this.extractWorkflowSteps(workflowName, this.parsedDocuments);
       if (workflow) {
         this.knowledgeBase.workflows![workflowName] = workflow;
       }
     }
 
-    // Extract algorithms (with auto-discovery)
+    // Extract algorithms
     console.log('  Extracting algorithms...');
-    const knownAlgorithms = ['DualOutputGenerator', 'ProductionOptimizer', 'constraintValidator', 'CuttingListGenerator'];
-    const discoveredAlgorithms = this.autoDiscoverAlgorithms(this.parsedDocuments);
-    const allAlgorithms = [...new Set([...knownAlgorithms, ...discoveredAlgorithms])];
-    
-    console.log(`    Found ${allAlgorithms.length} algorithms (${discoveredAlgorithms.length} auto-discovered)`);
-    for (const algoName of allAlgorithms) {
+    const algorithmNames = ['DualOutputGenerator', 'ProductionOptimizer', 'constraintValidator'];
+    for (const algoName of algorithmNames) {
       const algo = this.extractAlgorithmDetails(algoName, this.parsedDocuments);
       if (algo) {
         this.knowledgeBase.algorithms![algoName] = algo;
@@ -1832,36 +705,10 @@ export class DocumentationParser {
     const components = this.extractComponentRelationships(this.parsedDocuments);
     this.knowledgeBase.components = components;
 
-    // Extract fabrication domain knowledge
-    console.log('  Extracting fabrication domain knowledge...');
-    const fabricationKnowledge = this.extractFabricationKnowledge(this.parsedDocuments);
-    console.log(`    Found ${fabricationKnowledge.fabrication.processes.length} fabrication processes`);
-    console.log(`    Found ${fabricationKnowledge.assembly.sequences.length} assembly sequences`);
-    console.log(`    Found ${fabricationKnowledge.systemPacks.systems.length} system packs`);
-    console.log(`    Found ${fabricationKnowledge.profileRoles.roles.length} profile roles`);
-    console.log(`    Found ${fabricationKnowledge.cutting.rules.length} cutting rules`);
-    console.log(`    Found ${fabricationKnowledge.connections.angles.length} connection angles`);
-    
-    // Debug: Show sample extracted data
-    if (fabricationKnowledge.systemPacks.systems.length > 0) {
-      console.log(`    Sample system packs: ${fabricationKnowledge.systemPacks.systems.slice(0, 5).join(', ')}`);
-    }
-    if (fabricationKnowledge.profileRoles.roles.length > 0) {
-      console.log(`    Sample profile roles: ${fabricationKnowledge.profileRoles.roles.slice(0, 5).join(', ')}`);
-    }
-    if (fabricationKnowledge.connections.angles.length > 0) {
-      console.log(`    Sample angles: ${fabricationKnowledge.connections.angles.slice(0, 5).join(', ')}`);
-    }
-
     // Extract Egyptian market data
     console.log('  Extracting Egyptian market data...');
     const egyptianData = this.extractEgyptianMarketData(this.parsedDocuments);
-    
-    // Combine fabrication knowledge with Egyptian data
-    this.knowledgeBase.egyptian = {
-      ...egyptianData,
-      fabricationKnowledge,
-    };
+    this.knowledgeBase.egyptian = egyptianData;
 
     // Calculate document statistics
     const totalLines = this.parsedDocuments.reduce((sum, doc) => sum + doc.metadata.lineCount, 0);

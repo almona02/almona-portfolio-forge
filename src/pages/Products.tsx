@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 // PHASE 4: Use lazyRetry for better reliability and chunk loading
 import { lazyRetry } from '@/utils/lazyImport';
 // Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)
@@ -78,20 +78,57 @@ const Products = function ProductsPage() {
   // SINGLE SOURCE OF TRUTH for filters
   const [filters, setFilters] = useState({
     searchTerm: searchParams.get('search') || "",
-    category: "all",
-    sortOption: "featured"
+    category: searchParams.get('category') || "all",
+    sortOption: searchParams.get('sort') || "featured"
   });
 
-  // Update search term when URL param changes
+  // Refs for scrolling to results
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const hasScrolledToResults = useRef(false);
+
+  // Update filters when URL params change
   useEffect(() => {
     const urlSearch = searchParams.get('search') || '';
+    const urlCategory = searchParams.get('category') || 'all';
+    const urlSort = searchParams.get('sort') || 'featured';
+    const shouldScroll = searchParams.get('scroll') === 'results';
+    
     setFilters(prev => {
-      if (prev.searchTerm !== urlSearch) {
-        return { ...prev, searchTerm: urlSearch };
+      const updated = {
+        searchTerm: urlSearch,
+        category: urlCategory,
+        sortOption: urlSort
+      };
+      
+      // Only update if something changed
+      if (prev.searchTerm !== urlSearch || prev.category !== urlCategory || prev.sortOption !== urlSort) {
+        return updated;
       }
       return prev;
     });
-  }, [searchParams]);
+    
+    // Scroll to results if scroll param is present and we haven't scrolled yet
+    if (shouldScroll && !hasScrolledToResults.current && resultsRef.current) {
+      // Wait for results to render, then scroll
+      const scrollTimer = setTimeout(() => {
+        if (resultsRef.current) {
+          resultsRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center',
+            inline: 'nearest'
+          });
+          hasScrolledToResults.current = true;
+          
+          // Remove scroll param from URL after scrolling
+          const newParams = new URLSearchParams(searchParams);
+          newParams.delete('scroll');
+          setSearchParams(newParams, { replace: true });
+        }
+      }, 500); // Wait for results to load
+      
+      return () => clearTimeout(scrollTimer);
+    }
+  }, [searchParams, setSearchParams]);
 
   const [selectedMachines, setSelectedMachines] = useState<Machine[]>([]);
   const [showCompareDialog, setShowCompareDialog] = useState(false);
@@ -130,8 +167,24 @@ const Products = function ProductsPage() {
       debouncedSetFilters(key, value);
     } else {
       setFilters(prev => ({ ...prev, [key]: value }));
+      // Update URL params for category and sort
+      const newParams = new URLSearchParams(searchParams);
+      if (key === 'category') {
+        if (value && value !== 'all') {
+          newParams.set('category', value);
+        } else {
+          newParams.delete('category');
+        }
+      } else if (key === 'sortOption') {
+        if (value && value !== 'featured') {
+          newParams.set('sort', value);
+        } else {
+          newParams.delete('sort');
+        }
+      }
+      setSearchParams(newParams, { replace: true });
     }
-  }, [debouncedSetFilters]);
+  }, [debouncedSetFilters, searchParams, setSearchParams]);
 
   // Map smart category to legacy category for filtering
   const getLegacyCategoryFilter = useCallback((smartCategory: string) => {
@@ -164,6 +217,8 @@ const Products = function ProductsPage() {
 
   // Clear all filters
   const handleClearFilters = useCallback(() => {
+    // Reset scroll flag when clearing filters
+    hasScrolledToResults.current = false;
     setFilters({
       searchTerm: "",
       category: "all",
@@ -547,6 +602,7 @@ const Products = function ProductsPage() {
                 showRecommendations={true}
                 showPopular={true}
                 desktopMode="dropdown"
+                sortOption={filters.sortOption}
               />
             </div>
 
@@ -616,7 +672,7 @@ const Products = function ProductsPage() {
                   </Button>
                 </div>
               ) : (
-                <>
+                <div ref={resultsRef} id="filtered-results" className="scroll-mt-24">
                   {/* Mobile-optimized grid */}
                   <div className="lg:hidden">
                     <MobileOptimizedGrid
@@ -646,7 +702,7 @@ const Products = function ProductsPage() {
                       isLoading={isLoadingMore}
                     />
                   </div>
-                </>
+                </div>
               )}
             </div>
           </TabsContent>
