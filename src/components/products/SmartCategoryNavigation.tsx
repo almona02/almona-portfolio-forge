@@ -28,6 +28,7 @@ interface SmartCategoryNavigationProps {
   showPopular?: boolean;
   compact?: boolean;
   desktopMode?: 'full' | 'compact' | 'dropdown';
+  sortOption?: string;
 }
 
 const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
@@ -41,7 +42,8 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
   showRecommendations = true,
   showPopular = true,
   compact = false,
-  desktopMode = 'full'
+  desktopMode = 'full',
+  sortOption
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Machine[]>([]);
@@ -328,6 +330,8 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                           <ShareFilteredResults
                             searchQuery={searchQuery}
                             resultCount={searchResults.length}
+                            category={selectedCategory}
+                            sortOption={sortOption}
                             className="text-xs"
                           />
                         </div>
@@ -462,6 +466,8 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                 <ShareFilteredResults
                   searchQuery={searchQuery}
                   resultCount={searchResults.length}
+                  category={selectedCategory}
+                  sortOption={sortOption}
                   className="text-xs"
                 />
               </div>
