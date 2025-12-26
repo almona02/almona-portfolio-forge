@@ -94,7 +94,9 @@
     "deploy:staging": "bash scripts/deploy-production.sh --staging-only",
     "railway:env": "node scripts/generate-railway-env.js",
     "railway:deploy": "railway up",
-    "railway:logs": "railway logs"
+    "railway:logs": "railway logs",
+    "verify:ydt": "node scripts/verify_ydt_production.js",
+    "verify:ydt:api": "bash scripts/test_ydt_api.sh"
   },
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
