@@ -103,7 +103,7 @@ export const TallWindowDesigner: React.FC<TallWindowDesignerProps> = ({
               Tall Segmented Window Designer
             </h1>
             <p className="text-gray-400 mt-2">
-              Automatic segmentation for windows > 2.4m with 99.7% accuracy
+              Automatic segmentation for windows {'>'} 2.4m with 99.7% accuracy
             </p>
           </div>
           {onCancel && (

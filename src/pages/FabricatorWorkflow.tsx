@@ -26,7 +26,7 @@ import {
   Share2,
   Zap,
 } from 'lucide-react';
-import React, { Suspense, useCallback, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // NOTE: Heavy Fabricator Pro modules are lazy‑loaded per tab to keep
@@ -185,11 +185,9 @@ import { AnatolianCockpit } from '@/components/fabricator/AnatolianCockpit';
 import { BosphorusWorkflowRibbon } from '@/components/fabricator/BosphorusWorkflowRibbon';
 import { ContextualTooltips } from '@/components/fabricator/ContextualTooltips';
 import { EgyptianProjectWizard } from '@/components/fabricator/EgyptianProjectWizard';
-import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { ROCK60_WINDOW_SYSTEM_TEMPLATE } from '@/data/systemPacks';
 import { deriveSystemConstraintsFromProfiles, validateProject, validateProjectWithConstraints } from '@/lib/fabricatorValidation';
-import { YDTBusinessLayer } from '@/lib/ydt/YDTBusinessLayer';
 import { parseLegacyOrderData } from '@/lib/legacyDataParser';
 import { trainingDataCollector } from '@/lib/ml/TrainingDataCollector';
 import {
@@ -198,6 +196,7 @@ import {
   trackInventoryLoad,
   trackOptimization
 } from '@/lib/performance';
+import { YDTBusinessLayer } from '@/lib/ydt/YDTBusinessLayer';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { useJobsStore } from '@/store/jobsStore';
 import {
@@ -1861,7 +1860,7 @@ export const FabricatorWorkflow: React.FC = () => {
                       }
                     >
                       {currentProject ? (
-                        <div className="w-full min-h-[600px] rounded-lg overflow-hidden border border-gray-700 shadow-2xl">
+                        <div className="w-full h-[calc(100vh-300px)] min-h-[600px] rounded-lg border border-gray-700 shadow-2xl overflow-hidden">
                           <PrecisionDesignInterface
                             project={currentProject}
                             profiles={inventory}

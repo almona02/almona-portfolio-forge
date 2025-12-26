@@ -82,14 +82,58 @@ export async function initPhysics(): Promise<boolean> {
   initPromise = new Promise(async (resolve) => {
     try {
       // Dynamic import of ammo.js
-      const AmmoModule = await import('ammo.js');
-      ammoInstance = await AmmoModule.default();
-      window.Ammo = ammoInstance;
-      isAmmoInitialized = true;
-      console.log('[PhysicsEngine] Ammo.js initialized successfully');
-      resolve(true);
-    } catch (error) {
-      console.error('[PhysicsEngine] Failed to initialize Ammo.js:', error);
+      // ammo.js v0.0.10 exports differently - try multiple import patterns
+      let AmmoModule: any;
+      try {
+        AmmoModule = await import('ammo.js');
+        
+        // ammo.js v0.0.10 typically exports as: { default: function() }
+        // But the function might be at different levels
+        if (AmmoModule && typeof AmmoModule === 'object') {
+          // Try default export first
+          if (AmmoModule.default) {
+            if (typeof AmmoModule.default === 'function') {
+              ammoInstance = await AmmoModule.default();
+            } else if (typeof AmmoModule.default === 'object' && AmmoModule.default.ready) {
+              // Some versions export a promise-like object
+              ammoInstance = await AmmoModule.default;
+            } else {
+              ammoInstance = AmmoModule.default;
+            }
+          } 
+          // Try direct function export
+          else if (typeof AmmoModule === 'function') {
+            ammoInstance = await AmmoModule();
+          }
+          // Try named exports
+          else if (AmmoModule.Ammo && typeof AmmoModule.Ammo === 'function') {
+            ammoInstance = await AmmoModule.Ammo();
+          }
+          else {
+            // Last resort: check if it's already initialized
+            ammoInstance = AmmoModule;
+          }
+        } else {
+          throw new Error('Ammo.js module structure not recognized');
+        }
+      } catch (importError: any) {
+        // Fallback: try loading from CDN or skip physics
+        console.warn('[PhysicsEngine] Direct import failed, physics will be disabled:', importError?.message || importError);
+        resolve(false);
+        return;
+      }
+      
+      if (ammoInstance && typeof ammoInstance === 'object') {
+        window.Ammo = ammoInstance;
+        isAmmoInitialized = true;
+        console.log('[PhysicsEngine] Ammo.js initialized successfully');
+        resolve(true);
+      } else {
+        console.warn('[PhysicsEngine] Ammo.js instance is invalid, disabling physics');
+        resolve(false);
+      }
+    } catch (error: any) {
+      console.error('[PhysicsEngine] Failed to initialize Ammo.js:', error?.message || error);
       resolve(false);
     }
   });

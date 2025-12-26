@@ -74,3 +74,10 @@ try:
     router.include_router(scout_router)
 except ImportError:
     pass  # Scout router is optional
+
+# Include YDT parser router (multi-source parsing for knowledge base)
+try:
+    from apis.v2.ydt_parser import router as ydt_parser_router
+    router.include_router(ydt_parser_router)
+except ImportError:
+    pass  # YDT parser router is optional
