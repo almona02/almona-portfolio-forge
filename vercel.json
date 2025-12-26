@@ -13,6 +13,8 @@
     { "source": "/yilmaz-machines-egypt-en", "destination": "/yilmaz-machines-egypt-en.html" },
     { "source": "/fabricator-pro-software", "destination": "/fabricator-pro-software.html" },
     { "source": "/fabricator-pro-software-en", "destination": "/fabricator-pro-software-en.html" },
+    { "source": "/prestige-agent", "destination": "/index.html" },
+    { "source": "/ydt", "destination": "/index.html" },
     { "source": "/test-scanner", "destination": "/index.html" },
     { "source": "/test-scanner/(.*)", "destination": "/index.html" },
     { "source": "/products/machines/:machineId", "destination": "/index.html" },
@@ -34,8 +36,6 @@
     { "source": "/fabricator/projects", "destination": "/index.html" },
     { "source": "/fabricator/(.*)", "destination": "/index.html" },
     { "source": "/egyptian-project-wizard", "destination": "/index.html" },
-    { "source": "/prestige-agent", "destination": "/index.html" },
-    { "source": "/ydt", "destination": "/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
