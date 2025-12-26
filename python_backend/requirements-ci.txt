@@ -49,3 +49,8 @@ PyJWT==2.9.0
 # CAD / image processing (lightweight; inherits ezdxf pin from production)
 albumentations==1.4.18
 
+# Industry Watchdog / Research Agent dependencies
+feedparser>=6.0.10
+httpx>=0.25.0
+python-dateutil>=2.8.2
+
