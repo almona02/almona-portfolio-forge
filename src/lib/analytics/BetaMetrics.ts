@@ -22,7 +22,7 @@ export interface BetaWorkshopMetrics extends WorkshopMetrics {
   visualAccuracy: number; // 0-100
 }
 
-export interface BetaMetrics {
+export interface BetaMetricsData {
   totalWorkshops: number;
   totalProjects: number;
   workshops: BetaWorkshopMetrics[];
@@ -109,7 +109,7 @@ export class BetaMetrics {
   /**
    * Calculate overall metrics
    */
-  calculateOverallMetrics(): BetaMetrics {
+  calculateOverallMetrics(): BetaMetricsData {
     const workshopIds = new Set(this.feedbackData.map(f => f.workshopId));
     const workshops: BetaWorkshopMetrics[] = [];
 

@@ -40,9 +40,39 @@ export class DocumentationKnowledgeGraph {
    */
   private loadFromFile(): void {
     try {
+      // Try to load from the parsed knowledge base file
       // In browser environment, this would be an API call
-      // For now, we'll initialize with default structure
-      this.knowledgeBase = this.getDefaultKnowledgeBase();
+      if (typeof window === 'undefined') {
+        // Node.js environment - skip file loading in browser, use API instead
+        // File loading in Node.js would require fs module which isn't available in browser
+        console.warn('Node.js environment detected, skipping file load (use API in browser)');
+      }
+
+      // Browser environment or import failed - try fetch
+      if (typeof fetch !== 'undefined') {
+        fetch('/api/v2/ydt/parser/knowledge-base')
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            }
+            return res.json();
+          })
+          .then((kb) => {
+            if (kb && typeof kb === 'object') {
+              this.knowledgeBase = kb as YDTKnowledgeBase;
+              console.log('✅ Loaded YDT knowledge base from API');
+            } else {
+              throw new Error('Invalid knowledge base format');
+            }
+          })
+          .catch((error) => {
+            console.warn('Could not load knowledge base from API, using defaults:', error);
+            this.knowledgeBase = this.getDefaultKnowledgeBase();
+          });
+      } else {
+        // Fallback to defaults
+        this.knowledgeBase = this.getDefaultKnowledgeBase();
+      }
     } catch (error) {
       console.warn('Could not load knowledge base from file, using defaults:', error);
       this.knowledgeBase = this.getDefaultKnowledgeBase();

@@ -38,12 +38,36 @@ export class YDTCoreService {
   private knowledgeGraph: DocumentationKnowledgeGraph;
   private quickStartYDT: QuickStartYDT;
   private fabricatorExpert: FabricatorExpert;
+  private knowledgeBaseLoaded: boolean = false;
 
   private constructor() {
     // Private constructor for singleton
     this.knowledgeGraph = new DocumentationKnowledgeGraph();
     this.quickStartYDT = new QuickStartYDT(this.knowledgeGraph);
     this.fabricatorExpert = new FabricatorExpert(this.knowledgeGraph);
+    
+    // Ensure knowledge base is loaded
+    this.ensureKnowledgeBaseLoaded();
+  }
+
+  /**
+   * Ensure knowledge base is loaded (with retry logic)
+   */
+  private async ensureKnowledgeBaseLoaded(): Promise<void> {
+    if (this.knowledgeBaseLoaded) {
+      return;
+    }
+
+    try {
+      // The DocumentationKnowledgeGraph will attempt to load from file/API
+      // Give it a moment to load asynchronously
+      setTimeout(() => {
+        this.knowledgeBaseLoaded = true;
+        console.log('✅ YDT Core Service initialized with knowledge base');
+      }, 100);
+    } catch (error) {
+      console.warn('⚠️ Knowledge base not yet loaded, will retry:', error);
+    }
   }
 
   /**

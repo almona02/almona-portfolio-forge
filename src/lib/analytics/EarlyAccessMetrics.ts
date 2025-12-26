@@ -34,7 +34,7 @@ export interface WorkshopMetrics {
   wouldRecommend: number; // percentage
 }
 
-export interface EarlyAccessMetrics {
+export interface EarlyAccessMetricsData {
   totalWorkshops: number;
   totalProjects: number;
   workshops: WorkshopMetrics[];
@@ -114,7 +114,7 @@ export class EarlyAccessMetrics {
   /**
    * Calculate overall metrics
    */
-  calculateOverallMetrics(): EarlyAccessMetrics {
+  calculateOverallMetrics(): EarlyAccessMetricsData {
     const workshopIds = new Set(this.feedbackData.map(f => f.workshopId));
     const workshops: WorkshopMetrics[] = [];
 

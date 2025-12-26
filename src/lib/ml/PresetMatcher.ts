@@ -133,7 +133,7 @@ export class PresetMatcher {
     
     // Score each pattern
     const matches: PatternMatch[] = candidatePatterns.map(pattern => {
-      const score = this.scorePattern(pattern, features);
+      const score = this.scorePattern(pattern, features, grid);
       return {
         pattern,
         confidence: score.confidence,
@@ -163,7 +163,8 @@ export class PresetMatcher {
    */
   private scorePattern(
     pattern: EgyptianPattern,
-    features: GridFeatures
+    features: GridFeatures,
+    grid?: WindowGrid
   ): {
     confidence: number;
     matchingFeatures: string[];
@@ -250,25 +251,30 @@ export class PresetMatcher {
     // 5. Cell type positions (10 points) - approximate match
     maxScore += 10;
     let positionScore = 0;
-    patternGrid.cells.forEach((patternCell, index) => {
-      const userCell = features.cols > 0 && features.rows > 0
-        ? features.cols * patternCell.row + patternCell.col
-        : index;
-      const gridCell = grid.cells[userCell];
+    if (grid && grid.cells) {
+      patternGrid.cells.forEach((patternCell, index) => {
+        const userCellIndex = features.cols > 0 && features.rows > 0
+          ? features.cols * patternCell.row + patternCell.col
+          : index;
+        const gridCell = grid.cells[userCellIndex];
+        
+        if (gridCell && gridCell.type === patternCell.type) {
+          positionScore += 1;
+        }
+      });
       
-      if (gridCell && gridCell.type === patternCell.type) {
-        positionScore += 1;
-      }
-    });
-    
-    if (positionScore > 0) {
-      const positionMatchRatio = positionScore / patternGrid.cells.length;
-      score += Math.floor(positionMatchRatio * 10);
-      if (positionMatchRatio > 0.8) {
-        matchingFeatures.push('Cell positions match well');
+      if (positionScore > 0) {
+        const positionMatchRatio = positionScore / patternGrid.cells.length;
+        score += Math.floor(positionMatchRatio * 10);
+        if (positionMatchRatio > 0.8) {
+          matchingFeatures.push('Cell positions match well');
+        }
+      } else {
+        missingFeatures.push('Cell positions don\'t match');
       }
     } else {
-      missingFeatures.push('Cell positions don\'t match');
+      // Grid not available, skip position matching
+      missingFeatures.push('Cell positions: grid not available for comparison');
     }
     
     // Calculate final confidence (0-100)

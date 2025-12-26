@@ -25,7 +25,7 @@ export interface WorkshopMetrics {
   satisfactionScore: number; // 1-10
 }
 
-export interface PilotMetrics {
+export interface PilotMetricsData {
   totalWorkshops: number;
   totalProjects: number;
   workshops: WorkshopMetrics[];
@@ -74,7 +74,7 @@ export class PilotMetrics {
   /**
    * Calculate overall metrics
    */
-  calculateOverallMetrics(): PilotMetrics {
+  calculateOverallMetrics(): PilotMetricsData {
     const workshops = Array.from(this.workshopData.values());
     
     // Extract feature usage from surveys

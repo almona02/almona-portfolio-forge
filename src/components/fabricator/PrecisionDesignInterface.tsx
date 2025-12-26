@@ -1,14 +1,13 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { WindowUnit, WindowGrid, GridCell, Profile } from '@/types/fabricator';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { generateComponentsFromGrid } from '@/algorithms/smartDraw';
+import { EGYPTIAN_PATTERNS, getPatternsForSystem } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { SimplifiedOptimizationEngine } from '@/lib/fabricator/OptimizationEngine';
 import { PricingEngine } from '@/lib/pricing/PricingEngine';
 import { cn } from '@/lib/utils';
-import { EGYPTIAN_PATTERNS, getPatternsForSystem } from '@/data/egyptian-window-patterns';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Label } from '@/shared/ui/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
+import { GridCell, Profile, WindowGrid, WindowUnit } from '@/types/fabricator';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 interface PrecisionDesignInterfaceProps {
   project: WindowUnit | null;
@@ -43,6 +42,11 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
   const [hudState, setHudState] = useState<HUDState>({ cellId: null, x: 0, y: 0 });
   const [hoveredCell, setHoveredCell] = useState<string | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
 
   // Load Turkish custom profiles
   const [availableSystemPacks, setAvailableSystemPacks] = useState(SYSTEM_PACKS);
@@ -87,8 +91,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     loadTurkishProfiles();
     
     // Listen for new Turkish profiles
-    window.addEventListener('customProfileAdded', loadTurkishProfiles);
-    window.addEventListener('loadTurkishProfile', (e: any) => {
+    const handleLoadTurkishProfile = (e: any) => {
       // Load specific profile into project
       const profile = e.detail;
       if (project && onGridChange) {
@@ -96,12 +99,16 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
         // This would need to be handled by parent component
         console.log('Load Turkish profile:', profile);
       }
-    });
+    };
+    
+    window.addEventListener('customProfileAdded', loadTurkishProfiles);
+    window.addEventListener('loadTurkishProfile', handleLoadTurkishProfile);
     
     return () => {
       window.removeEventListener('customProfileAdded', loadTurkishProfiles);
+      window.removeEventListener('loadTurkishProfile', handleLoadTurkishProfile);
     };
-  }, [project]);
+  }, [project, onGridChange]);
 
   // Get system pack info (including Turkish custom profiles)
   const systemPack = useMemo(() => {
@@ -285,9 +292,14 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     }
   }, [components, project?.systemPackId]);
 
-  // Calculate cell dimensions
-  const svgWidth = 1000;
-  const svgHeight = project ? (project.overallHeight / project.overallWidth) * 1000 : 1000;
+  // Calculate cell dimensions with proper aspect ratio
+  // Use fixed dimensions to avoid floating point precision issues
+  const baseSvgWidth = 1200;
+  const baseSvgHeight = project && project.overallWidth > 0 
+    ? Math.round((project.overallHeight / project.overallWidth) * 1200) 
+    : 1200;
+  const svgWidth = baseSvgWidth;
+  const svgHeight = baseSvgHeight;
 
   const colWeights = grid.colWidths && grid.colWidths.length === grid.cols 
     ? grid.colWidths 
@@ -529,9 +541,67 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
   // Handle cell click for HUD
   const handleCellClick = useCallback((e: React.MouseEvent, cellId: string) => {
     e.stopPropagation();
-    if (!svgRef.current) return;
-    const rect = svgRef.current.getBoundingClientRect();
-    setHudState({ cellId, x: e.clientX - rect.left, y: e.clientY - rect.top });
+    if (!svgRef.current || !containerRef.current) return;
+    const containerRect = containerRef.current.getBoundingClientRect();
+    setHudState({ cellId, x: e.clientX - containerRect.left, y: e.clientY - containerRect.top });
+  }, []);
+
+  // Zoom controls
+  const handleZoomIn = useCallback(() => {
+    setZoom(prev => Math.min(prev + 0.25, 3));
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    setZoom(prev => Math.max(prev - 0.25, 0.5));
+  }, []);
+
+  const handleZoomReset = useCallback(() => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  }, []);
+
+  const handleFitToScreen = useCallback(() => {
+    if (!containerRef.current || !project) return;
+    const container = containerRef.current;
+    const containerWidth = container.clientWidth - 40; // padding
+    const containerHeight = container.clientHeight - 40;
+    
+    const scaleX = containerWidth / svgWidth;
+    const scaleY = containerHeight / svgHeight;
+    const newZoom = Math.min(scaleX, scaleY, 1);
+    
+    setZoom(newZoom);
+    setPan({ x: 0, y: 0 });
+  }, [project, svgWidth, svgHeight]);
+
+  // Pan handlers
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      setZoom(prev => Math.max(0.5, Math.min(3, prev + delta)));
+    }
+  }, []);
+
+  const handlePanStart = useCallback((e: React.MouseEvent) => {
+    if (e.button === 1 || (e.button === 0 && e.shiftKey)) {
+      e.preventDefault();
+      setIsPanning(true);
+      setPanStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+    }
+  }, [pan]);
+
+  const handlePanMove = useCallback((e: React.MouseEvent) => {
+    if (isPanning) {
+      setPan({
+        x: e.clientX - panStart.x,
+        y: e.clientY - panStart.y
+      });
+    }
+  }, [isPanning, panStart]);
+
+  const handlePanEnd = useCallback(() => {
+    setIsPanning(false);
   }, []);
 
   // Change cell type
@@ -571,44 +641,142 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
           </div>
         </div>
         
-        {/* Pattern Selector */}
-        {availablePatterns.length > 0 && (
-          <div className="flex items-center gap-3">
-            <Label className="text-sm text-gray-600 font-semibold">Pattern:</Label>
-            <Select
-              value={selectedPatternId}
-              onValueChange={handlePatternSelect}
+        <div className="flex items-center gap-4">
+          {/* Pattern Selector */}
+          {availablePatterns.length > 0 && (
+            <div className="flex items-center gap-3">
+              <Label className="text-sm text-gray-600 font-semibold">Pattern:</Label>
+              <Select
+                value={selectedPatternId}
+                onValueChange={handlePatternSelect}
+              >
+                <SelectTrigger className="w-[200px] bg-white border-gray-300 text-sm">
+                  <SelectValue placeholder="Select Pattern..." />
+                </SelectTrigger>
+                <SelectContent className="bg-white">
+                  {availablePatterns.map((pattern) => (
+                    <SelectItem key={pattern.id} value={pattern.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{pattern.name}</span>
+                        <span className="text-xs text-gray-500">{pattern.layout}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          
+          {/* Quick Zoom Controls in Top Bar */}
+          <div className="flex items-center gap-2 border-l border-gray-300 pl-4">
+            <span className="text-xs text-gray-500 mr-1">Zoom:</span>
+            <button
+              onClick={handleZoomOut}
+              className="px-2 py-1 bg-white hover:bg-gray-100 border border-gray-300 rounded text-sm font-semibold transition-colors"
+              title="Zoom Out (Ctrl + Scroll)"
             >
-              <SelectTrigger className="w-[200px] bg-white border-gray-300 text-sm">
-                <SelectValue placeholder="Select Pattern..." />
-              </SelectTrigger>
-              <SelectContent className="bg-white">
-                {availablePatterns.map((pattern) => (
-                  <SelectItem key={pattern.id} value={pattern.id}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{pattern.name}</span>
-                      <span className="text-xs text-gray-500">{pattern.layout}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              −
+            </button>
+            <span className="px-2 text-xs font-medium text-gray-700 min-w-[50px] text-center">
+              {Math.round(zoom * 100)}%
+            </span>
+            <button
+              onClick={handleZoomIn}
+              className="px-2 py-1 bg-white hover:bg-gray-100 border border-gray-300 rounded text-sm font-semibold transition-colors"
+              title="Zoom In (Ctrl + Scroll)"
+            >
+              +
+            </button>
+            <button
+              onClick={handleFitToScreen}
+              className="px-2 py-1 bg-blue-50 hover:bg-blue-100 border border-blue-300 rounded text-xs font-medium text-blue-700 transition-colors ml-1"
+              title="Fit to Screen"
+            >
+              Fit
+            </button>
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Center: Blueprint Canvas */}
-      <div className="flex-1 relative overflow-hidden bg-gray-50" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
-        <svg
-          ref={svgRef}
-          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          className="w-full h-full"
-          preserveAspectRatio="xMidYMid meet"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+      {/* Center: Blueprint Canvas with Zoom/Pan */}
+      <div 
+        ref={containerRef}
+        className="flex-1 relative overflow-auto bg-gray-50" 
+        style={{ 
+          backgroundImage: 'linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px)', 
+          backgroundSize: '20px 20px',
+          cursor: isPanning ? 'grabbing' : 'default'
+        }}
+        onWheel={handleWheel}
+        onMouseDown={handlePanStart}
+        onMouseMove={handlePanMove}
+        onMouseUp={handlePanEnd}
+        onMouseLeave={handlePanEnd}
+      >
+        {/* Zoom Controls Toolbar */}
+        <div className="absolute top-4 right-4 z-20 bg-white border-2 border-gray-800 shadow-lg rounded-lg p-2 flex flex-col gap-2">
+          <button
+            onClick={handleZoomIn}
+            className="px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded font-semibold text-sm transition-colors"
+            title="Zoom In (Ctrl + Scroll)"
+          >
+            +
+          </button>
+          <button
+            onClick={handleZoomOut}
+            className="px-3 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded font-semibold text-sm transition-colors"
+            title="Zoom Out (Ctrl + Scroll)"
+          >
+            −
+          </button>
+          <div className="px-3 py-1 text-xs text-center text-gray-600 border-t border-gray-300 mt-1">
+            {Math.round(zoom * 100)}%
+          </div>
+          <button
+            onClick={handleZoomReset}
+            className="px-3 py-2 bg-blue-100 hover:bg-blue-200 border border-blue-300 rounded font-semibold text-xs transition-colors"
+            title="Reset Zoom"
+          >
+            Reset
+          </button>
+          <button
+            onClick={handleFitToScreen}
+            className="px-3 py-2 bg-green-100 hover:bg-green-200 border border-green-300 rounded font-semibold text-xs transition-colors"
+            title="Fit to Screen"
+          >
+            Fit
+          </button>
+        </div>
+
+        {/* SVG Container with Transform */}
+        <div
+          className="absolute inset-0 flex items-center justify-center p-5"
+          style={{
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+            transformOrigin: 'center center',
+            transition: isPanning ? 'none' : 'transform 0.1s ease-out'
+          }}
         >
+          <svg
+            ref={svgRef}
+            viewBox={`0 0 ${Math.round(svgWidth)} ${Math.round(svgHeight)}`}
+            width={Math.round(svgWidth)}
+            height={Math.round(svgHeight)}
+            className="bg-white border-2 border-gray-800 shadow-2xl"
+            style={{ 
+              minWidth: Math.round(svgWidth),
+              minHeight: Math.round(svgHeight),
+              cursor: dragState.type ? 'grabbing' : 'default'
+            }}
+            onMouseDown={(e) => {
+              if (!isPanning && !e.shiftKey) {
+                handleMouseDown(e);
+              }
+            }}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
           {/* Grid lines (light gray) */}
           {colStarts.slice(1).map((xPos, i) => (
             <line
@@ -770,15 +938,17 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
             strokeWidth="4"
           />
         </svg>
+        </div>
 
-        {/* HUD Panel (floating) */}
+        {/* HUD Panel (floating) - positioned relative to container */}
         {hudState.cellId && (
           <div
-            className="absolute bg-white border-2 border-gray-800 shadow-2xl p-4 z-10"
+            className="absolute bg-white border-2 border-gray-800 shadow-2xl p-4 z-30 rounded-lg"
             style={{
               left: `${hudState.x + 20}px`,
               top: `${hudState.y}px`,
-              minWidth: '200px'
+              minWidth: '220px',
+              maxWidth: '280px'
             }}
           >
             <div className="flex items-center justify-between mb-3">
@@ -818,7 +988,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
       </div>
 
       {/* Bottom: Waste Meter & Live Stats */}
-      <div className="px-6 py-4 bg-gray-50 border-t-2 border-gray-300">
+      <div className="px-6 py-4 bg-gray-50 border-t-2 border-gray-300 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-8">
             <div>
