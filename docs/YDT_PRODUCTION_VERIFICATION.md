@@ -2,6 +2,30 @@
 
 This guide helps you verify that YDT (YDT Future Intelligence) is running correctly in production with all parsed knowledge base data.
 
+## ⚠️ CRITICAL: Before Deployment
+
+**The `knowledge-base.json` file MUST be committed to git and included in your deployment!**
+
+1. **Ensure the file is tracked:**
+   ```bash
+   git add src/lib/ydt/knowledge-base.json
+   git commit -m "Add YDT knowledge base for production"
+   ```
+
+2. **Verify it's not ignored:**
+   - The `.gitignore` file has been updated to allow `knowledge-base.json`
+   - Check: `git ls-files src/lib/ydt/knowledge-base.json` should show the file
+
+3. **If the file doesn't exist, generate it:**
+   ```bash
+   npm run parse:documentation
+   ```
+
+4. **Verify the file has data:**
+   ```bash
+   node -e "const kb = require('./src/lib/ydt/knowledge-base.json'); console.log('Files parsed:', kb.documents?.totalFiles || 0);"
+   ```
+
 ## Quick Verification
 
 ### 1. Run Local Verification Script

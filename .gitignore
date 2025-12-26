@@ -23,6 +23,8 @@ venv-*/
 htmlcov/
 *.html
 *.json
+# Exception: YDT knowledge base must be tracked for production
+!src/lib/ydt/knowledge-base.json
 *.png
 test_report.html
 test_report.json
