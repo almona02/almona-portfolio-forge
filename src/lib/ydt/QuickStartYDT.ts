@@ -6,22 +6,32 @@
 
 import { DocumentationKnowledgeGraph, type KnowledgeQuery } from './DocumentationKnowledgeGraph';
 import type { YDTAnswer, UIExplanation, WorkflowGuide } from './types';
+import { EgyptianDialectDetector, type UserType } from '@/lib/nlp/EgyptianDialectDetector';
+import { EgyptianResponseTranslator, type UserContext } from '@/lib/personality/EgyptianResponseTranslator';
 
 export class QuickStartYDT {
   private knowledgeGraph: DocumentationKnowledgeGraph;
+  private dialectDetector: EgyptianDialectDetector;
+  private responseTranslator: EgyptianResponseTranslator;
 
   constructor(knowledgeGraph?: DocumentationKnowledgeGraph) {
     this.knowledgeGraph = knowledgeGraph || new DocumentationKnowledgeGraph();
+    this.dialectDetector = new EgyptianDialectDetector();
+    this.responseTranslator = new EgyptianResponseTranslator();
   }
 
   /**
    * Answer ANY question about Fabricator Pro
+   * Now with Egyptian dialect detection and translation
    */
-  async answerQuestion(question: string): Promise<YDTAnswer> {
-    // 1. Categorize question
+  async answerQuestion(question: string, userContext?: UserContext): Promise<YDTAnswer> {
+    // 1. DETECT USER TYPE FROM QUESTION STYLE
+    const userType = await this.dialectDetector.detectUserType(question);
+    
+    // 2. Categorize question
     const category = this.categorizeQuestion(question);
 
-    // 2. Find answer in knowledge base
+    // 3. Find answer in knowledge base
     const query: KnowledgeQuery = {
       type: category,
       keyword: this.extractKeywords(question),
@@ -30,40 +40,58 @@ export class QuickStartYDT {
 
     const result = this.knowledgeGraph.query(query);
 
-    // 3. Build answer from matches
-    let answer = '';
+    // 4. Build technical answer from matches
+    let technicalAnswer = '';
     let confidence = 0;
     let source = '';
 
     if (result.matches.length > 0) {
       const bestMatch = result.matches[0];
-      answer = bestMatch.content;
+      technicalAnswer = bestMatch.content;
       confidence = bestMatch.confidence;
       source = bestMatch.source;
     } else {
       // Fallback: generic answer
-      answer = this.generateGenericAnswer(question);
+      technicalAnswer = this.generateGenericAnswer(question);
       confidence = 0.5;
       source = 'General Knowledge';
     }
 
-    // 4. Find related topics
-    const related = result.related;
-
-    // 5. Suggest next steps
-    const nextSteps = await this.suggestNextSteps(question, category);
-
-    // 6. Get expert tip
-    const expertTip = await this.getExpertTip(question, category);
-
-    return {
-      answer,
+    // 5. TRANSLATE TO USER'S DIALECT
+    const baseAnswer: YDTAnswer = {
+      answer: technicalAnswer,
       confidence,
       source,
-      related,
-      nextSteps,
-      expertTip,
+      related: result.related,
+      nextSteps: await this.suggestNextSteps(question, category),
+      expertTip: await this.getExpertTip(question, category),
     };
+
+    const translated = await this.responseTranslator.translateAnswer(
+      baseAnswer,
+      userType,
+      userContext?.location || 'cairo'
+    );
+
+    // 6. Return appropriate version based on user type
+    if (userType === 'technical_office') {
+      return baseAnswer; // Technical answer for engineers
+    } else if (userType === 'workshop_owner' || userType === 'maalem') {
+      return {
+        ...baseAnswer,
+        answer: translated.maalem,
+      };
+    } else if (userType === 'beginner') {
+      return {
+        ...baseAnswer,
+        answer: translated.simple,
+      };
+    } else {
+      return {
+        ...baseAnswer,
+        answer: translated.withMannerisms,
+      };
+    }
   }
 
   /**

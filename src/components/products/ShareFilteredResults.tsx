@@ -12,18 +12,22 @@ import {
 interface ShareFilteredResultsProps {
   searchQuery: string;
   resultCount: number;
+  category?: string;
+  sortOption?: string;
   className?: string;
 }
 
 export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
   searchQuery,
   resultCount,
+  category,
+  sortOption,
   className = ''
 }) => {
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
 
-  // Generate shareable URL with search query
+  // Generate shareable URL with all filter parameters
   const generateShareUrl = (): string => {
     const baseUrl = window.location.origin;
     const path = '/products';
@@ -32,6 +36,17 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
     if (searchQuery.trim()) {
       params.set('search', searchQuery.trim());
     }
+    
+    if (category && category !== 'all') {
+      params.set('category', category);
+    }
+    
+    if (sortOption && sortOption !== 'featured') {
+      params.set('sort', sortOption);
+    }
+    
+    // Add scroll anchor to center on results
+    params.set('scroll', 'results');
     
     const queryString = params.toString();
     return `${baseUrl}${path}${queryString ? `?${queryString}` : ''}`;
@@ -102,8 +117,14 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
     }
   };
 
-  // Don't show if no search query or results
-  if (!searchQuery.trim() || resultCount === 0) {
+  // Show if there are results (even without search query, if category is filtered)
+  if (resultCount === 0) {
+    return null;
+  }
+  
+  // Show if there's a filter applied (search, category, or sort)
+  const hasFilter = searchQuery.trim() || (category && category !== 'all') || (sortOption && sortOption !== 'featured');
+  if (!hasFilter) {
     return null;
   }
 
