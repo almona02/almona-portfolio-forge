@@ -11,6 +11,12 @@ from apis.v2.profile_import import router as profile_import_router
 from apis.fabricator_profiles import router as fabricator_router
 from apis.v2.heavy_optimization import router as heavy_optimization_router
 
+# Import future intelligence router
+try:
+    from apis.v2.future_intelligence import router as future_intelligence_router
+except ImportError:
+    future_intelligence_router = None
+
 # Import v2 error handlers
 from apis.v2.core.errors import (
     v2_error_handler,
@@ -49,4 +55,22 @@ router.include_router(
 router.include_router(fabricator_router)  # fabricator uses /fabricator prefix
 router.include_router(
     heavy_optimization_router
-)  # heavy optimization under /heavy/*
+)
+
+# Include future intelligence router (Industry Watchdog)
+if future_intelligence_router:
+    router.include_router(future_intelligence_router)
+
+# Include feedback router (for future intelligence feedback)
+try:
+    from apis.v2.feedback import router as feedback_router
+    router.include_router(feedback_router)
+except ImportError:
+    pass  # Feedback router is optional
+
+# Include scout intelligence router (human-augmented data collection)
+try:
+    from apis.v2.scout_intelligence import router as scout_router
+    router.include_router(scout_router)
+except ImportError:
+    pass  # Scout router is optional

@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { WorkshopPerformanceWidget } from '@/components/fabricator/WorkshopPerformanceWidget';
 import { RemnantMarketplacePreview } from '@/components/fabricator/RemnantMarketplacePreview';
+import { MorningBriefWidget } from '@/components/fabricator/MorningBriefWidget';
 import { useAuth } from '@/context/AuthContext';
 import { TrendingUp, Recycle, Settings, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -73,6 +74,14 @@ const FabricatorDashboard: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Morning Brief - Industry Intelligence */}
+        <div className="mb-8">
+          <MorningBriefWidget 
+            workshopId={user?.id || 'anonymous'}
+            className="w-full"
+          />
         </div>
 
         {/* Remnant Marketplace Section */}

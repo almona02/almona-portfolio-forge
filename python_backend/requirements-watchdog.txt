@@ -1,0 +1,15 @@
+# Additional requirements for Industry Watchdog service
+# Install with: pip install -r requirements-watchdog.txt
+
+# RSS feed parsing
+feedparser>=6.0.10
+
+# HTTP client for web scraping
+httpx>=0.25.0
+
+# Date parsing
+python-dateutil>=2.8.2
+
+# Optional: For LLM-based analysis (if using Gemini)
+google-generativeai>=0.3.0
+
