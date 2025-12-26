@@ -11,6 +11,7 @@ import pytest
 import asyncio
 from datetime import datetime
 from typing import Dict, Any
+from unittest.mock import patch, MagicMock
 
 # Import components
 from agents.research_agent import IndustryResearchAgent
@@ -49,7 +50,36 @@ class TestIndustryWatchdogIntegration:
             "keywords": ["aluminum", "glass", "fenestration"]
         }
         
-        articles = await research_agent.fetch_rss(test_source)
+        # Mock feedparser.parse to return a test feed structure
+        # feedparser returns objects that support both attribute and dict access
+        # We'll use dict-like objects that support .get() method
+        class MockFeedEntry:
+            def __init__(self, **kwargs):
+                self._data = kwargs
+            
+            def get(self, key, default=None):
+                return self._data.get(key, default)
+        
+        mock_feed = MagicMock()
+        mock_feed.entries = [
+            MockFeedEntry(
+                title="New Aluminum Profile Technology Launches",
+                link="https://example.com/article1",
+                published="2024-01-15T10:00:00Z",
+                summary="Revolutionary thermal break aluminum system",
+                content=[{"value": "Full article content here"}]
+            ),
+            MockFeedEntry(
+                title="Glass Industry Market Update",
+                link="https://example.com/article2",
+                published="2024-01-14T10:00:00Z",
+                summary="Latest market trends in fenestration",
+                content=[]
+            )
+        ]
+        
+        with patch('agents.research_agent.feedparser.parse', return_value=mock_feed):
+            articles = await research_agent.fetch_rss(test_source)
         
         assert len(articles) > 0, "Should fetch at least one article"
         assert "title" in articles[0], "Article should have title"
