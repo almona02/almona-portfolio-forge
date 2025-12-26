@@ -146,11 +146,57 @@ class YDTChatbotEngine:
         else:
             self.graph_data = {}
 
+        # Load NEW parsed documentation knowledge base
+        # Try multiple paths to find knowledge-base.json
+        possible_paths = [
+            # From ai_agents/ydt_agent/knowledge -> project root -> src/lib/ydt
+            self.knowledge_base.parent.parent.parent
+            / "src"
+            / "lib"
+            / "ydt"
+            / "knowledge-base.json",
+            # From current working directory
+            Path.cwd() / "src" / "lib" / "ydt" / "knowledge-base.json",
+            # Relative to this file
+            Path(__file__).parent.parent.parent.parent
+            / "src"
+            / "lib"
+            / "ydt"
+            / "knowledge-base.json",
+        ]
+
+        self.parsed_knowledge = {}
+        for kb_path in possible_paths:
+            if kb_path.exists():
+                try:
+                    with open(kb_path, "r", encoding="utf-8") as f:
+                        self.parsed_knowledge = json.load(f)
+                    logger.info(
+                        f"[YDT CHATBOT] Loaded parsed knowledge base from: {kb_path}"
+                    )
+                    logger.info(
+                        f"[YDT CHATBOT] Parsed knowledge: "
+                        f"{self.parsed_knowledge.get('documents', {}).get('totalFiles', 0)} files, "
+                        f"{len(self.parsed_knowledge.get('workflows', {}))} workflows, "
+                        f"{len(self.parsed_knowledge.get('egyptian', {}).get('fabricationKnowledge', {}).get('systemPacks', {}).get('systems', [])) if self.parsed_knowledge.get('egyptian', {}).get('fabricationKnowledge', {}).get('systemPacks', {}) else 0} systems"
+                    )
+                    break
+                except Exception as e:
+                    logger.warning(
+                        f"Failed to load parsed knowledge base from {kb_path}: {e}"
+                    )
+        else:
+            logger.warning(
+                "[YDT CHATBOT] Parsed knowledge base not found. "
+                "Egyptian fabrication knowledge will not be available."
+            )
+
         logger.info(
             f"[YDT CHATBOT] Knowledge loaded: "
             f"{len(self.manual_data.get('chapters', []))} chapters, "
             f"{len(self.wiring_data.get('components', []))} components, "
-            f"{len(self.parts_data.get('parts', []))} parts"
+            f"{len(self.parts_data.get('parts', []))} parts, "
+            f"{'✅' if self.parsed_knowledge else '❌'} parsed documentation"
         )
 
     def process_query(self, query: str, context: ChatContext) -> ChatResponse:
@@ -229,6 +275,23 @@ class YDTChatbotEngine:
             word in query_lower for word in ["gcode", "g-code", "program", "generate"]
         ):
             return "gcode"
+        elif any(
+            word in query_lower
+            for word in [
+                "egyptian",
+                "egypt",
+                "system",
+                "fabrication",
+                "profile",
+                "aluminum",
+                "upvc",
+                "system pack",
+                "connection",
+                "cutting",
+                "role",
+            ]
+        ):
+            return "egyptian_system"
         else:
             return "general"
 
@@ -306,10 +369,106 @@ class YDTChatbotEngine:
             suggested_actions=["View details", "Check history", "Set alert"],
         )
 
+    def _query_parsed_knowledge(self, query: str) -> Optional[str]:
+        """Query the parsed documentation knowledge base for Egyptian/fabrication info"""
+        if not self.parsed_knowledge:
+            return None
+
+        query_lower = query.lower()
+        response_parts = []
+
+        # Check for Egyptian fabrication knowledge
+        egyptian_kb = self.parsed_knowledge.get("egyptian", {}).get(
+            "fabricationKnowledge", {}
+        )
+
+        # System Packs
+        if any(word in query_lower for word in ["system", "pack", "system pack"]):
+            system_packs = egyptian_kb.get("systemPacks", {}).get("systems", [])
+            if system_packs:
+                response_parts.append("## System Packs\n")
+                for system in system_packs[:5]:  # Show first 5
+                    name = system.get("name", "Unknown")
+                    description = system.get("description", "")
+                    response_parts.append(f"**{name}**: {description}\n")
+
+        # Profile Roles
+        if any(word in query_lower for word in ["profile", "role", "profiles"]):
+            profile_roles = egyptian_kb.get("profileRoles", {}).get("roles", [])
+            if profile_roles:
+                response_parts.append("## Profile Roles\n")
+                for role in profile_roles[:10]:  # Show first 10
+                    name = role.get("name", "Unknown")
+                    function = role.get("function", "")
+                    response_parts.append(f"**{name}**: {function}\n")
+
+        # Connections
+        if any(word in query_lower for word in ["connection", "connect", "joint"]):
+            connections = egyptian_kb.get("connections", {}).get("types", [])
+            if connections:
+                response_parts.append("## Connection Types\n")
+                for conn in connections[:5]:
+                    name = conn.get("name", "Unknown")
+                    description = conn.get("description", "")
+                    response_parts.append(f"**{name}**: {description}\n")
+
+        # Cutting Rules
+        if any(word in query_lower for word in ["cutting", "cut", "rule"]):
+            cutting = egyptian_kb.get("cutting", {}).get("rules", [])
+            if cutting:
+                response_parts.append("## Cutting Rules\n")
+                for rule in cutting[:5]:
+                    name = rule.get("name", "Unknown")
+                    description = rule.get("description", "")
+                    response_parts.append(f"**{name}**: {description}\n")
+
+        # General Egyptian system info
+        if not response_parts and any(
+            word in query_lower for word in ["egyptian", "egypt"]
+        ):
+            # Provide overview
+            total_systems = len(egyptian_kb.get("systemPacks", {}).get("systems", []))
+            total_roles = len(egyptian_kb.get("profileRoles", {}).get("roles", []))
+            total_connections = len(egyptian_kb.get("connections", {}).get("types", []))
+
+            response_parts.append("## Egyptian Fabrication Knowledge\n\n")
+            response_parts.append(
+                f"The knowledge base contains:\n"
+                f"- **{total_systems}** system packs\n"
+                f"- **{total_roles}** profile roles\n"
+                f"- **{total_connections}** connection types\n\n"
+                f"Ask about specific topics like:\n"
+                f"- 'What system packs are available?'\n"
+                f"- 'Tell me about profile roles'\n"
+                f"- 'Show me connection types'\n"
+                f"- 'What are the cutting rules?'\n"
+            )
+
+        if response_parts:
+            return "\n".join(response_parts)
+        return None
+
     def _general_response(
         self, query: str, intent: str, context: ChatContext
     ) -> ChatResponse:
         """General response handler"""
+        # Check parsed knowledge first for Egyptian/fabrication queries
+        if intent == "egyptian_system" or any(
+            word in query.lower()
+            for word in ["egyptian", "egypt", "system", "fabrication", "profile"]
+        ):
+            parsed_response = self._query_parsed_knowledge(query)
+            if parsed_response:
+                return ChatResponse(
+                    content=parsed_response,
+                    confidence=0.9,
+                    sources=["parsed_documentation", "fabrication_knowledge"],
+                    suggested_actions=[
+                        "Ask about specific system packs",
+                        "Learn about profile roles",
+                        "Explore connection types",
+                    ],
+                )
         # Information lookup
         if intent == "information":
             response = self._lookup_information(query, context)
@@ -348,23 +507,25 @@ class YDTChatbotEngine:
         """Generate step-by-step tutorial using knowledge base"""
         # Search knowledge base for relevant content
         query_lower = query.lower()
-        
+
         # Try to find relevant chapters from manual
         relevant_content = []
-        if hasattr(self, 'manual_data') and self.manual_data:
-            chapters = self.manual_data.get('chapters', [])
+        if hasattr(self, "manual_data") and self.manual_data:
+            chapters = self.manual_data.get("chapters", [])
             for chapter in chapters:
-                title = chapter.get('title', '').lower()
-                content = chapter.get('content', '').lower()
-                if any(word in title or word in content for word in query_lower.split()):
+                title = chapter.get("title", "").lower()
+                content = chapter.get("content", "").lower()
+                if any(
+                    word in title or word in content for word in query_lower.split()
+                ):
                     relevant_content.append(chapter)
-        
+
         # If we found relevant content, use it
         if relevant_content:
             first_chapter = relevant_content[0]
-            chapter_title = first_chapter.get('title', 'Operation Guide')
-            chapter_content = first_chapter.get('content', '')
-            
+            chapter_title = first_chapter.get("title", "Operation Guide")
+            chapter_content = first_chapter.get("content", "")
+
             if context.language == Language.ENGLISH:
                 return f"""📚 AIM 7510 OPERATION TUTORIAL
 
@@ -374,7 +535,7 @@ class YDTChatbotEngine:
 {chapter_content[:1000]}{'...' if len(chapter_content) > 1000 else ''}
 
 For complete details, refer to the AIM 7510 user manual."""
-        
+
         # Fallback to structured tutorial if no specific content found
         if context.language == Language.ENGLISH:
             return """📚 AIM 7510 OPERATION TUTORIAL
@@ -503,29 +664,32 @@ Detaylı prosedürler için AIM 7510 kullanım kılavuzuna bakın.
     def _lookup_information(self, query: str, context: ChatContext) -> str:
         """Lookup information from knowledge base"""
         query_lower = query.lower()
-        
+
         # Check specifications first
-        if hasattr(self, 'specs_data') and self.specs_data:
+        if hasattr(self, "specs_data") and self.specs_data:
             specs = self.specs_data
             # Look for power, speed, capacity, etc.
-            if 'power' in query_lower:
-                power = specs.get('power_rating_kw', specs.get('power', 'N/A'))
+            if "power" in query_lower:
+                power = specs.get("power_rating_kw", specs.get("power", "N/A"))
                 return f"The AIM 7510 power rating is {power} kW. This is a 5-axis CNC machine with high precision capabilities."
-            elif 'speed' in query_lower or 'rpm' in query_lower:
-                speed = specs.get('spindle_speed_rpm', specs.get('max_speed', 'N/A'))
+            elif "speed" in query_lower or "rpm" in query_lower:
+                speed = specs.get("spindle_speed_rpm", specs.get("max_speed", "N/A"))
                 return f"The AIM 7510 spindle speed is up to {speed} RPM."
-            elif 'axis' in query_lower or 'axes' in query_lower:
+            elif "axis" in query_lower or "axes" in query_lower:
                 return "The AIM 7510 is a 5-axis CNC machine, providing full 3D machining capabilities with X, Y, Z, A, and C axes."
-            elif 'capacity' in query_lower or 'size' in query_lower:
+            elif "capacity" in query_lower or "size" in query_lower:
                 return f"Machine capacity: {specs.get('work_area', 'Check manual for dimensions')}"
-        
+
         # Check manual data
-        if hasattr(self, 'manual_data') and self.manual_data:
-            chapters = self.manual_data.get('chapters', [])
+        if hasattr(self, "manual_data") and self.manual_data:
+            chapters = self.manual_data.get("chapters", [])
             for chapter in chapters:
-                if any(word in chapter.get('title', '').lower() for word in query_lower.split()):
+                if any(
+                    word in chapter.get("title", "").lower()
+                    for word in query_lower.split()
+                ):
                     return f"According to the AIM 7510 manual: {chapter.get('content', '')[:500]}..."
-        
+
         # Default response
         return (
             "I can help you find information about AIM 7510 specifications, "
@@ -543,13 +707,19 @@ Detaylı prosedürler için AIM 7510 kullanım kılavuzuna bakın.
         """Generate default response when intent is unclear"""
         # Try to provide a helpful response based on available knowledge
         query_lower = query.lower()
-        
+
         # Check if query matches any known topics
-        if 'operation' in query_lower or 'operate' in query_lower or 'teach' in query_lower:
+        if (
+            "operation" in query_lower
+            or "operate" in query_lower
+            or "teach" in query_lower
+        ):
             return self._generate_tutorial(query, context)
-        elif 'fault' in query_lower or 'error' in query_lower or 'problem' in query_lower:
+        elif (
+            "fault" in query_lower or "error" in query_lower or "problem" in query_lower
+        ):
             return self._generate_diagnosis(query, context)
-        elif 'part' in query_lower or 'spare' in query_lower:
+        elif "part" in query_lower or "spare" in query_lower:
             return self._lookup_spare_part(query, context)
         else:
             return (
