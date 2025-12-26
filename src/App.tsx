@@ -92,6 +92,22 @@ const CommercialPage = lazy(() => import("./pages/CommercialPage.tsx").catch(() 
 const SystemPacksPage = lazy(() => import("./pages/SystemPacksPage.tsx").then(m => ({ default: m.SystemPacksPage })));
 const TrainingServicesPage = lazy(() => import("./routes/TrainingServicesPage.tsx"));
 
+// Strategic Transformation Features - lazy loaded
+const SmartWizardPage = lazy(() => import("./pages/SmartWizardPage.tsx"));
+const PatternLibraryPage = lazy(() => import("./pages/PatternLibraryPage.tsx"));
+const MachineTestingPage = lazy(() => import("./pages/MachineTestingPage.tsx"));
+const ValidationDashboardPage = lazy(() => import("./pages/ValidationDashboardPage.tsx"));
+const BentProfileDesignerPage = lazy(() => import("./pages/BentProfileDesignerPage.tsx"));
+
+// Phase 5: Pre-Pilot Hardening - lazy loaded
+const OnboardingPage = lazy(() => import("./pages/OnboardingPage.tsx"));
+const PilotSurveyPage = lazy(() => import("./pages/PilotSurveyPage.tsx"));
+const FeedbackDashboardPage = lazy(() => import("./pages/FeedbackDashboardPage.tsx"));
+const PilotMonitoringPage = lazy(() => import("./pages/PilotMonitoringPage.tsx"));
+const EarlyAccessFeedbackPage = lazy(() => import("./components/feedback/EarlyAccessFeedback.tsx").then(m => ({ default: m.EarlyAccessFeedback })));
+const BetaFeedbackPortalPage = lazy(() => import("./components/feedback/BetaFeedbackPortal.tsx").then(m => ({ default: m.BetaFeedbackPortal })));
+const BetaDashboardPage = lazy(() => import("./components/admin/BetaDashboard.tsx").then(m => ({ default: m.BetaDashboard })));
+
 // Quote system - lazy loaded
 const QuotePage = lazy(() => import("./pages/QuotePage.tsx"));
 const QuoteConfirmationPage = lazy(() => import("./pages/QuoteConfirmationPage.tsx"));
@@ -414,7 +430,119 @@ const App = memo(() => {
                         </Suspense>
                       }
                     />
+                    <Route
+                      path="smart-wizard"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/smart-wizard')}>
+                          <SmartWizardPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="pattern-library"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/pattern-library')}>
+                          <PatternLibraryPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="machine-testing"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/machine-testing')}>
+                          <MachineTestingPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="validation"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/validation')}>
+                          <ValidationDashboardPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="bent-profile-designer"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/bent-profile-designer')}>
+                          <BentProfileDesignerPage />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="onboarding"
+                      element={
+                        <Suspense fallback={getLoadingComponent('/fabricator/onboarding')}>
+                          <OnboardingPage />
+                        </Suspense>
+                      }
+                    />
                   </Route>
+                  
+                  {/* Phase 5: Pre-Pilot Hardening Routes */}
+                  <Route
+                    path="/onboarding"
+                    element={
+                      <Suspense fallback={getLoadingComponent('/onboarding')}>
+                        <OnboardingPage />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/pilot/survey"
+                    element={
+                      <Suspense fallback={getLoadingComponent('/pilot/survey')}>
+                        <PilotSurveyPage />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/admin/feedback"
+                    element={
+                      <Suspense fallback={getLoadingComponent('/admin/feedback')}>
+                        <ProtectedRoute>
+                          <FeedbackDashboardPage />
+                        </ProtectedRoute>
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/admin/pilot-monitoring"
+                    element={
+                      <Suspense fallback={getLoadingComponent('/admin/pilot-monitoring')}>
+                        <ProtectedRoute>
+                          <PilotMonitoringPage />
+                        </ProtectedRoute>
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/early-access/feedback"
+                    element={
+                      <Suspense fallback={getLoadingComponent('/early-access/feedback')}>
+                        <EarlyAccessFeedbackPage />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/beta/feedback"
+                    element={
+                      <Suspense fallback={getLoadingComponent('/beta/feedback')}>
+                        <BetaFeedbackPortalPage />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/admin/beta-dashboard"
+                    element={
+                      <Suspense fallback={getLoadingComponent('/admin/beta-dashboard')}>
+                        <ProtectedRoute>
+                          <BetaDashboardPage />
+                        </ProtectedRoute>
+                      </Suspense>
+                    }
+                  />
                   
                   {/* Shop & E-commerce */}
                   <Route path="/shop" element={<Suspense fallback={getLoadingComponent('/shop')}><Shop /></Suspense>} />

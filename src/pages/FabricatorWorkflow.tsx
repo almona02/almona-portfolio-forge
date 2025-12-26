@@ -143,6 +143,11 @@ const CommercialOfferPanel = React.lazy(() =>
     default: m.CommercialOfferPanel,
   })),
 );
+const RealTimeQuote = React.lazy(() =>
+  import('@/components/fabricator/RealTimeQuote').then((m) => ({
+    default: m.RealTimeQuote,
+  })),
+);
 const WorkflowProgress = React.lazy(() =>
   import('@/components/fabricator/WorkflowProgress').then((m) => ({
     default: m.WorkflowProgress,
@@ -184,6 +189,7 @@ import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { ROCK60_WINDOW_SYSTEM_TEMPLATE } from '@/data/systemPacks';
 import { deriveSystemConstraintsFromProfiles, validateProject, validateProjectWithConstraints } from '@/lib/fabricatorValidation';
+import { YDTBusinessLayer } from '@/lib/ydt/YDTBusinessLayer';
 import { parseLegacyOrderData } from '@/lib/legacyDataParser';
 import { trainingDataCollector } from '@/lib/ml/TrainingDataCollector';
 import {
@@ -256,6 +262,9 @@ export const FabricatorWorkflow: React.FC = () => {
   const [showClientPortal, setShowClientPortal] = useState(false);
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const [showMobilePanel, setShowMobilePanel] = useState(false);
+  
+  // YDT Business Layer for intelligence-driven decisions
+  const ydtBusinessLayer = useMemo(() => new YDTBusinessLayer(), []);
   const [showProjectWizard, setShowProjectWizard] = useState(false);
   const [projectMeta, setProjectMeta] = useState<(ProjectHeaderMeta & Record<string, any>) | null>(null);
   const [useEgyptWizard, setUseEgyptWizard] = useState(true);
@@ -855,7 +864,32 @@ export const FabricatorWorkflow: React.FC = () => {
         };
 
         // Don't require components at measurement stage - they'll be added in design phase
+        // Technical validation
         const validation = validateProject(newProject, false);
+        
+        // YDT Business validation (if workshop context available)
+        if (workspaceState.currentWorkshop?.id && workspaceState.currentWorkshop?.location) {
+          try {
+            const ydtValidation = await ydtBusinessLayer.validateProject({
+              type: newProject.pattern || 'residential',
+              location: workspaceState.currentWorkshop.location,
+              material: newProject.systemPackId || 'aluminum',
+              estimatedCost: undefined,
+            });
+            
+            // Add YDT recommendations to validation warnings if any
+            if (ydtValidation.recommendations.length > 0) {
+              console.log('YDT Recommendations:', ydtValidation.recommendations);
+            }
+            
+            // Log YDT verdict
+            if (ydtValidation.ydtVerdict === 'REJECTED') {
+              console.warn('YDT Business Validation: Project rejected', ydtValidation.ydtReason);
+            }
+          } catch (error) {
+            console.warn('YDT validation failed, continuing with technical validation:', error);
+          }
+        }
         if (!validation.isValid) {
           throw new Error(validation.errors.map(e => e.message).join(', '));
         }
@@ -1584,18 +1618,45 @@ export const FabricatorWorkflow: React.FC = () => {
                     </div>
                   ) : (
                     <ErrorBoundary level="component">
-                      <Suspense
-                        fallback={
-                          <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
-                        }
-                      >
-                        <SmartMeasuringInterface
-                          key={measurementSessionId}
-                          onMeasurementComplete={handleMeasurementComplete}
-                          systemPackId={projectMeta?.systemPackId}
-                          region={projectMeta?.region}
-                        />
-                      </Suspense>
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <div className="lg:col-span-2">
+                          <Suspense
+                            fallback={
+                              <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                            }
+                          >
+                            <SmartMeasuringInterface
+                              key={measurementSessionId}
+                              onMeasurementComplete={handleMeasurementComplete}
+                              systemPackId={projectMeta?.systemPackId}
+                              region={projectMeta?.region}
+                            />
+                          </Suspense>
+                        </div>
+                        <div className="lg:col-span-1">
+                          {currentProject && (
+                            <Suspense fallback={<div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />}>
+                              <RealTimeQuote
+                                dimensions={{
+                                  width: currentProject.overallWidth,
+                                  height: currentProject.overallHeight
+                                }}
+                                materials={{
+                                  type: 'aluminum',
+                                  systemPackId: projectMeta?.systemPackId || 'panda-50'
+                                }}
+                                egyptianFactors={{
+                                  location: projectMeta?.region as any,
+                                  installationComplexity: 'simple'
+                                }}
+                                workshopContext={{
+                                  location: projectMeta?.region
+                                }}
+                              />
+                            </Suspense>
+                          )}
+                        </div>
+                      </div>
                     </ErrorBoundary>
                   )}
                 </CardContent>
@@ -1715,25 +1776,57 @@ export const FabricatorWorkflow: React.FC = () => {
                             </AlertDescription>
                           </Alert>
                         )}
-                        <DesignInterface
-                          project={currentProject}
-                          profiles={inventory}
-                          relatedPositions={relatedPositions}
-                          onSelectPosition={(id) => {
-                            const target = relatedPositions.find((u) => u.id === id);
-                            if (!target) return;
-                            workspaceDispatch({
-                              type: 'SET_CURRENT_PROJECT',
-                              payload: target,
-                            });
-                            setSelectedJob(target.id);
-                          }}
-                          onDesignComplete={handleDesignComplete}
-                          onSmartDrawApply={handleSmartDrawApply}
-                          onHardwareUpdate={handleHardwareUpdate}
-                          onBackToMeasuring={() => setActiveTab('measuring')}
-                          onAddNewPose={handleAddNewPose}
-                        />
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                          <div className="lg:col-span-2">
+                            <DesignInterface
+                              project={currentProject}
+                              profiles={inventory}
+                              relatedPositions={relatedPositions}
+                              onSelectPosition={(id) => {
+                                const target = relatedPositions.find((u) => u.id === id);
+                                if (!target) return;
+                                workspaceDispatch({
+                                  type: 'SET_CURRENT_PROJECT',
+                                  payload: target,
+                                });
+                                setSelectedJob(target.id);
+                              }}
+                              onDesignComplete={handleDesignComplete}
+                              onSmartDrawApply={handleSmartDrawApply}
+                              onHardwareUpdate={handleHardwareUpdate}
+                              onBackToMeasuring={() => setActiveTab('measuring')}
+                              onAddNewPose={handleAddNewPose}
+                            />
+                          </div>
+                          <div className="lg:col-span-1">
+                            {currentProject && (
+                              <Suspense fallback={<div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />}>
+                                <RealTimeQuote
+                                  dimensions={{
+                                    width: currentProject.overallWidth,
+                                    height: currentProject.overallHeight
+                                  }}
+                                  materials={{
+                                    type: 'aluminum',
+                                    systemPackId: currentProject.systemPackId || projectMeta?.systemPackId || 'panda-50'
+                                  }}
+                                  glazing={currentProject.glazing ? {
+                                    type: currentProject.glazing.type as any,
+                                    thickness: currentProject.glazing.thickness || 24,
+                                    segments: []
+                                  } : undefined}
+                                  egyptianFactors={{
+                                    location: projectMeta?.region as any,
+                                    installationComplexity: 'simple'
+                                  }}
+                                  workshopContext={{
+                                    location: projectMeta?.region
+                                  }}
+                                />
+                              </Suspense>
+                            )}
+                          </div>
+                        </div>
                         
                         {/* Calibration Wizard removed from Engineering Bay - reduces noise */}
                         {/* Calibration is available in Profile Management / Inventory tabs where it's more appropriate */}
