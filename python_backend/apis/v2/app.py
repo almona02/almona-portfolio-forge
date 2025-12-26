@@ -218,6 +218,28 @@ def create_v2_app() -> FastAPI:
             "Security router not loaded: %s",
             exc,
         )
+    
+    # YDT Intelligence endpoints (YDT Core Intelligence Transformation)
+    try:
+        from apis.v2 import ydt_intelligence
+        app.include_router(ydt_intelligence.router, prefix="/api/v2")
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).warning(
+            "YDT Intelligence router not loaded: %s",
+            exc,
+        )
+    
+    # YDT Learning System endpoints (Self-Learning & Collective Wisdom)
+    try:
+        from apis.v2 import learning_api
+        app.include_router(learning_api.router, prefix="/api/v2")
+    except Exception as exc:
+        import logging
+        logging.getLogger(__name__).warning(
+            "YDT Learning API router not loaded: %s",
+            exc,
+        )
 
     # Add v2-specific endpoints
     @app.get("/health")

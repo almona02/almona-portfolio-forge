@@ -56,11 +56,13 @@ export class ProductionOptimizer {
 
   /**
    * Optimize cutting plan with production-grade algorithm
+   * 
+   * @param ydtStrategy - Optional YDT strategy to guide optimization
    */
   optimize(
     cuts: Cut[],
     stockLength: number = 6000,
-    options: ProductionOptimizationOptions = {}
+    options: ProductionOptimizationOptions & { ydtStrategy?: { strategy: string; constraints?: Record<string, any>; priorities?: string[] } } = {}
   ): ProductionOptimizationResult {
     const {
       strategy = 'balanced',
