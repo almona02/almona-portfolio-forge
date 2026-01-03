@@ -68,34 +68,20 @@ export const useRoutePrefetching = () => {
   const prefetchedComponents = useRef<Set<string>>(new Set());
 
   // Prefetch a route and its associated components
+  // NOTE: Removed document prefetching - it causes 404s for SPA routes
+  // Vite automatically handles module preloading for code-split chunks
   const prefetchRoute = useCallback((route: string) => {
     if (prefetchedRoutes.current.has(route)) return;
     
-    // Prefetch the route document
-    const link = document.createElement('link');
-    link.rel = 'prefetch';
-    link.href = route;
-    link.as = 'document';
-    link.crossOrigin = 'anonymous';
-    document.head.appendChild(link);
-    
+    // Mark route as prefetched (actual prefetching handled by Vite's module preload)
     prefetchedRoutes.current.add(route);
     
-    // Also prefetch associated component chunks
-    // Note: In production, these will be auto-prefetched by Vite's module preload
-    // This is a fallback for explicit component prefetching
-    if (COMPONENT_CHUNKS[route]) {
-      COMPONENT_CHUNKS[route].forEach(component => {
-        if (prefetchedComponents.current.has(component)) return;
-        
-        // Vite will handle chunk prefetching automatically via module preload
-        // This is just for logging/documentation
-        prefetchedComponents.current.add(component);
-      });
-    }
+    // Note: Vite automatically prefetches code-split chunks via module preload
+    // No need to manually prefetch routes as "document" (causes 404s in SPAs)
+    // React Router's lazy loading + Vite's automatic preloading handles this
     
     if (import.meta.env.DEV) {
-      console.log(`[Almona Egypt] Prefetched route: ${route}`);
+      console.log(`[Almona Egypt] Route marked for prefetch: ${route} (handled by Vite)`);
     }
   }, []);
 

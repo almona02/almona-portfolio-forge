@@ -337,11 +337,9 @@
     <!-- Hero image is now loaded lazily after 2.5s to prevent blocking LCP -->
     <!-- The hero content text is now the LCP element (much faster) -->
     
-    <!-- 2. Prefetch critical Egypt workflow pages -->
-    <link rel="prefetch" href="/fabricator-workflow" as="document">
-    <link rel="prefetch" href="/fabricator/tuning-studio-no-dxf" as="document">
-    <link rel="prefetch" href="/fabricator/projects" as="document">
-    <link rel="prefetch" href="/products" as="document">
+    <!-- 2. Prefetch removed - Vite handles code splitting and module preloading automatically -->
+    <!-- Note: Prefetching routes as "document" doesn't work for SPAs (they're client-side routes) -->
+    <!-- Route prefetching is handled by useRoutePrefetching hook in App.tsx -->
     
     <!-- 3. Preconnect to critical origins (max 4 to avoid warning) -->
     <link rel="preconnect" href="https://shfsebdncjnncqqnewfj.supabase.co" crossorigin>
