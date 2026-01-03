@@ -1,13 +1,13 @@
 
-import { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { useAuth } from './AuthContext';
-import { supabase } from '@/lib/supabase';
-import { calculateTieredPrice } from '@/lib/pricing';
 import { createQuote as createQuoteDomain, updateQuoteStatus } from '@/lib/data/quotesClient';
-import { Database, ProductCategory } from '@/types/database';
-import type { ShopProductInput, ShopMachine } from '@/types/shopProduct';
-import { useTranslation } from 'react-i18next';
 import { validateStock } from '@/lib/inventory';
+import { calculateTieredPrice } from '@/lib/pricing';
+import { supabase } from '@/lib/supabase';
+import { Database, ProductCategory } from '@/types/database';
+import type { ShopMachine, ShopProductInput } from '@/types/shopProduct';
+import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from './AuthContext';
 
 // Enhanced QuoteItem interface
 interface QuoteItem {
@@ -152,6 +152,31 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
 
   // toDbProduct mapping will be defined inline in addToQuote to avoid hook-deps issues
 
+  // Helper function to save individual quote item
+  const saveQuoteItemToDatabase = useCallback(async (item: QuoteItem) => {
+    if (!currentQuote) return;
+
+    const insertData = {
+      quote_id: currentQuote.id,
+      product_id: item.product_id,
+      product_name_ar: item.product_name_ar,
+      product_name_en: item.product_name_en,
+      product_sku: item.product_sku,
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+      total_price: item.total_price,
+      configurations: item.configurations,
+      specifications: item.specifications,
+      notes: item.notes ?? null,
+    };
+
+    const { error } = await (supabase
+      .from('quote_items') as any)
+      .insert(insertData);
+
+    if (error) throw error;
+  }, [currentQuote]);
+
   const addToQuote = useCallback(async (
     productInput: Database['public']['Tables']['products']['Row'] | ShopProductInput, 
     quantity: number = 1,
@@ -279,7 +304,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
       console.error('Error adding to quote:', error);
       throw error;
     }
-  }, [user, currentQuote]);
+  }, [user, currentQuote, saveQuoteItemToDatabase]);
 
   const removeFromQuote = useCallback((itemId: string) => {
     setQuoteItems(prevItems => prevItems.filter(item => item.id !== itemId));
@@ -307,7 +332,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
         return item;
       })
     );
-  }, []);
+  }, [removeFromQuote]);
 
   const updateItemConfigurations = useCallback((itemId: string, configurations: Record<string, unknown>) => {
     setQuoteItems(prevItems =>
@@ -395,17 +420,19 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
 
     setSaving(true);
     try {
-      const { data, error } = await supabase
-        .from<Database['public']['Tables']['quotes']['Row']>('quotes')
-        .update({
-          ...quoteData,
-          subtotal,
-          tax_amount: taxAmount,
-          shipping_cost: shippingCost,
-          discount_amount: discountAmount,
-          total_amount: totalAmount,
-          updated_at: new Date().toISOString(),
-        })
+      const updateData = {
+        ...quoteData,
+        subtotal,
+        tax_amount: taxAmount,
+        shipping_cost: shippingCost,
+        discount_amount: discountAmount,
+        total_amount: totalAmount,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { data, error } = await (supabase
+        .from('quotes') as any)
+        .update(updateData)
         .eq('id', currentQuote.id)
         .select()
         .single();
@@ -450,9 +477,8 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
   const loadQuote = useCallback(async (quoteId: string) => {
     setLoading(true);
     try {
-      type QuoteWithItems = Database['public']['Tables']['quotes']['Row'] & { quote_items: Array<Database['public']['Tables']['quote_items']['Row'] & { products: Database['public']['Tables']['products']['Row'] }> };
       const { data: quote, error: quoteError } = await supabase
-        .from<QuoteWithItems>('quotes')
+        .from('quotes')
         .select(`
           *,
           quote_items (
@@ -461,15 +487,14 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
           )
         `)
         .eq('id', quoteId)
-        .single();
+        .single() as { data: (Database['public']['Tables']['quotes']['Row'] & { quote_items: Array<Database['public']['Tables']['quote_items']['Row'] & { products: Database['public']['Tables']['products']['Row'] }> }) | null; error: any };
 
-      if (quoteError) throw quoteError;
+      if (quoteError || !quote) throw quoteError || new Error('Quote not found');
 
-      setCurrentQuote(quote);
+      setCurrentQuote(quote as Database['public']['Tables']['quotes']['Row']);
 
       // Convert database quote items to local format
-  if (!quote) throw new Error('Quote not found');
-  const items: QuoteItem[] = (quote.quote_items || []).map((item) => ({
+      const items: QuoteItem[] = ((quote as any).quote_items || []).map((item: any) => ({
         id: item.id,
     product_id: item.product_id!,
         product_name_ar: item.product_name_ar,
@@ -500,7 +525,7 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
 
     // First, delete existing items
     await supabase
-      .from<Database['public']['Tables']['quote_items']['Row']>('quote_items')
+      .from('quote_items')
       .delete()
       .eq('quote_id', quoteId);
 
@@ -520,34 +545,12 @@ export const QuoteProvider: React.FC<QuoteProviderProps> = ({ children }) => {
     }));
 
     const { error } = await supabase
-      .from<Database['public']['Tables']['quote_items']['Insert']>('quote_items')
-      .insert(itemsToInsert as Database['public']['Tables']['quote_items']['Insert'][]);
+      .from('quote_items')
+      .insert(itemsToInsert as any);
 
     if (error) throw error;
   };
 
-  // Helper function to save individual quote item
-  const saveQuoteItemToDatabase = async (item: QuoteItem) => {
-    if (!currentQuote) return;
-
-    const { error } = await supabase
-      .from<Database['public']['Tables']['quote_items']['Insert']>('quote_items')
-      .insert({
-        quote_id: currentQuote.id,
-        product_id: item.product_id,
-        product_name_ar: item.product_name_ar,
-        product_name_en: item.product_name_en,
-        product_sku: item.product_sku,
-        quantity: item.quantity,
-        unit_price: item.unit_price,
-        total_price: item.total_price,
-        configurations: item.configurations,
-        specifications: item.specifications,
-        notes: item.notes ?? null,
-      });
-
-    if (error) throw error;
-  };
 
   const value: QuoteContextType = {
     // Quote items management

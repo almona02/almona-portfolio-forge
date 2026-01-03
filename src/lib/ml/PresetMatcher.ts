@@ -298,7 +298,7 @@ export class PresetMatcher {
     systemPackId?: string | null
   ): PatternMatch[] {
     const result = this.matchPatterns(grid, dimensions, systemPackId);
-    return result.suggestions.map((pattern, index) => {
+    return result.suggestions.map((pattern, _index) => {
       const match = result.matches.find(m => m.pattern.id === pattern.id);
       return match || {
         pattern,

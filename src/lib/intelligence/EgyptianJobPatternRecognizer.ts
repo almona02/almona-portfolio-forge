@@ -157,7 +157,7 @@ export class EgyptianJobPatternRecognizer {
   /**
    * Get workshop history (placeholder - will be replaced with database query)
    */
-  private async getWorkshopHistory(workshopId: string): Promise<WindowUnit[]> {
+  private async getWorkshopHistory(_workshopId: string): Promise<WindowUnit[]> {
     // TODO: Query database for workshop projects
     // SELECT * FROM window_units WHERE workshop_id = ? ORDER BY created_at DESC LIMIT 100
     return [];
@@ -340,7 +340,7 @@ export class EgyptianJobPatternRecognizer {
   /**
    * Identify successful patterns
    */
-  private identifySuccessfulPatterns(history: WindowUnit[]): JobPatterns['successPatterns'] {
+  private identifySuccessfulPatterns(_history: WindowUnit[]): JobPatterns['successPatterns'] {
     // TODO: Analyze projects with optimization results to determine success
     // For now, return empty array
     return [];
@@ -349,7 +349,7 @@ export class EgyptianJobPatternRecognizer {
   /**
    * Identify regional patterns
    */
-  private identifyRegionalPatterns(history: WindowUnit[]): JobPatterns['regionalAdaptations'] {
+  private identifyRegionalPatterns(_history: WindowUnit[]): JobPatterns['regionalAdaptations'] {
     // TODO: Group by location and identify regional patterns
     // For now, return default
     return {
@@ -423,8 +423,8 @@ export class EgyptianJobPatternRecognizer {
    * Suggest segmentation based on patterns
    */
   private suggestSegmentation(
-    newProject: ProjectInput,
-    patterns: JobPatterns
+    _newProject: ProjectInput,
+    _patterns: JobPatterns
   ): OptimizationSuggestions['segmentationSuggestions'] {
     // TODO: Analyze successful segmentations from history
     return [];
@@ -434,8 +434,8 @@ export class EgyptianJobPatternRecognizer {
    * Suggest procurement based on patterns
    */
   private suggestProcurement(
-    newProject: ProjectInput,
-    patterns: JobPatterns
+    _newProject: ProjectInput,
+    _patterns: JobPatterns
   ): OptimizationSuggestions['procurementAdvice'] {
     // TODO: Analyze material needs and suggest procurement
     return [];
@@ -445,8 +445,8 @@ export class EgyptianJobPatternRecognizer {
    * Suggest scheduling based on patterns
    */
   private suggestSchedule(
-    newProject: ProjectInput,
-    patterns: JobPatterns
+    _newProject: ProjectInput,
+    _patterns: JobPatterns
   ): OptimizationSuggestions['schedulingAdvice'] {
     // Egyptian work week: Sunday-Thursday, Friday off
     // Recommend Thursday for installation to allow Friday adjustments

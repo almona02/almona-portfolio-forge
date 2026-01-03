@@ -6,11 +6,11 @@
  * Generates AutoCAD-compatible DXF files with QR codes and barcodes for CNC machine integration
  */
 
-import { DXFExportOptions, QRCodeData } from './types';
-import { WindowUnit, OptimizationResult, CuttingPlan } from '@/types/fabricator';
+import { OptimizationResult, WindowUnit } from '@/types/fabricator';
 import { cuttingListGenerator } from '../reports/CuttingListGenerator';
 import { qrBarcodeGenerator } from './QRBarcodeGenerator';
 import { getMachineProfile } from './machineProfiles';
+import { DXFExportOptions, QRCodeData } from './types';
 
 // Lazy import dxf-writer
 let DxfWriter: any;
@@ -35,7 +35,8 @@ export class DXFExportGenerator {
     // Lazy load dxf-writer
     if (!DxfWriter) {
       const dxfModule = await import('dxf-writer');
-      DxfWriter = dxfModule.default || dxfModule.DxfWriter;
+      // dxf-writer exports the class as default or as a named export
+      DxfWriter = (dxfModule as any).default || (dxfModule as any).DxfWriter || dxfModule;
     }
 
     const units = options.units || 'mm';
@@ -172,7 +173,7 @@ export class DXFExportGenerator {
   /**
    * Add header information to DXF
    */
-  private addHeader(dxf: any, project: WindowUnit, options: DXFExportOptions): void {
+  private addHeader(dxf: any, project: WindowUnit, _options: DXFExportOptions): void {
     // Add text layer for project information
     const headerLayer = 'HEADER';
     
@@ -265,7 +266,7 @@ export class DXFExportGenerator {
 
     // Draw cuts
     let currentPosition = 0;
-    plan.cuts.forEach((cut: any, index: number) => {
+    plan.cuts.forEach((cut: any) => {
       const cutX = currentPosition * scale;
       const cutWidth = cut.length * scale;
 
@@ -317,7 +318,7 @@ export class DXFExportGenerator {
     // Draw waste segments (different color/layer)
     // This is a simplified version - full implementation would track waste precisely
     if (plan.waste > 0) {
-      const wasteLayer = `${layerName}_WASTE`;
+      const _wasteLayer = `${layerName}_WASTE`;
       // Waste visualization would go here
     }
   }
@@ -325,7 +326,7 @@ export class DXFExportGenerator {
   /**
    * Add annotations to DXF
    */
-  private addAnnotations(dxf: any, reportData: any, options: DXFExportOptions): void {
+  private addAnnotations(dxf: any, reportData: any, _options: DXFExportOptions): void {
     const annotationLayer = 'ANNOTATIONS';
 
     // Add summary information

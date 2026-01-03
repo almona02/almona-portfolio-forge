@@ -3,9 +3,8 @@
  * Real-time multi-user workspace with live synchronization
  */
 
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { WindowUnit, Profile } from '@/types/fabricator';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 export interface Collaborator {
   id: string;

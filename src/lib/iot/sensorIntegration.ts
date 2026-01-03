@@ -1,8 +1,8 @@
 // IoT Sensor Integration Framework for Industry 4.0
 // Handles real-time sensor data collection, processing, and analytics
 
-import React from 'react';
 import { supabase } from '@/lib/supabase';
+import React from 'react';
 import { toast } from 'sonner';
 
 // IoT Sensor Types and Interfaces
@@ -209,7 +209,7 @@ class IoTSensorService {
   // Store sensor reading in database
   private async storeSensorReading(reading: SensorReading) {
     try {
-      await supabase.from('sensor_readings').insert({
+      await (supabase.from('sensor_readings') as any).insert({
         sensor_id: reading.sensor_id,
         machine_id: reading.machine_id,
         timestamp: reading.timestamp.toISOString(),
@@ -258,7 +258,7 @@ class IoTSensorService {
 
     try {
       // Store alert in database
-      await supabase.from('iot_alerts').insert({
+      await (supabase.from('iot_alerts') as any).insert({
         id: alert.id,
         type: alert.type,
         severity: alert.severity,
@@ -284,7 +284,7 @@ class IoTSensorService {
   // Update machine status based on digital twin data
   private async updateMachineStatus(digitalTwin: DigitalTwinData) {
     try {
-      await supabase.from('machines').update({
+      await (supabase.from('machines') as any).update({
         status: digitalTwin.operational_state,
         health_score: digitalTwin.health_indicators.overall_health,
         efficiency: digitalTwin.performance_metrics.efficiency,
@@ -305,7 +305,7 @@ class IoTSensorService {
 
       if (error) throw error;
 
-      data?.forEach(config => {
+      (data || []).forEach((config: any) => {
         this.sensorConfigs.set(config.id, config);
       });
 
@@ -374,7 +374,7 @@ class IoTSensorService {
 
       if (error) throw error;
 
-      return data?.map(row => ({
+      return (data || []).map((row: any) => ({
         sensor_id: row.sensor_id,
         machine_id: row.machine_id,
         timestamp: new Date(row.timestamp),
@@ -382,7 +382,7 @@ class IoTSensorService {
         unit: row.unit,
         quality: row.quality,
         metadata: row.metadata
-      })) || [];
+      }));
 
     } catch (error) {
       console.error('Failed to fetch historical data:', error);
@@ -391,7 +391,7 @@ class IoTSensorService {
   }
 
   // Calculate machine OEE (Overall Equipment Effectiveness)
-  public calculateOEE(machineId: string, period: { start: Date; end: Date }): Promise<{
+  public calculateOEE(_machineId: string, _period: { start: Date; end: Date }): Promise<{
     availability: number;
     performance: number;
     quality: number;
@@ -412,7 +412,7 @@ class IoTSensorService {
   }
 
   // Predict maintenance needs using ML
-  public async predictMaintenance(machineId: string): Promise<PredictedFailure[]> {
+  public async predictMaintenance(_machineId: string): Promise<PredictedFailure[]> {
     // In production, this would call ML models running on your IoT platform
     return new Promise(resolve => {
       setTimeout(() => {

@@ -14,6 +14,12 @@ import type { WindowUnit } from '@/types/fabricator';
 import { micronEngine } from './MicronEngine';
 import type { Cut } from './OptimizationEngine';
 import { unitProfileGatherer } from './UnitProfileGatherer';
+import {
+    DEFAULT_CUTTING_RULE_OFFSETS,
+    DEFAULT_GLAZING_SPECS,
+    DEFAULT_GRID_CONFIG,
+    SYSTEM_CUTTING_RULES,
+} from './cuttingListConstants';
 
 /**
  * Generate cutting list from dimensions and system pack
@@ -81,7 +87,13 @@ function generateCuttingListComprehensive(
     overallWidth: width,
     overallHeight: height,
     color: 'Silver',
-    glazing: options?.includeBeads !== false ? { type: 'double', totalThickness: 24, weightPerSqm: 20 } : { type: 'none' },
+    glazing: options?.includeBeads !== false 
+      ? { 
+          type: 'double', 
+          totalThickness: DEFAULT_GLAZING_SPECS.DEFAULT_TOTAL_THICKNESS_MM, 
+          weightPerSqm: DEFAULT_GLAZING_SPECS.DEFAULT_WEIGHT_PER_SQM_KG 
+        } 
+      : { type: 'none' },
     hardware: [],
     status: 'design',
     optimization: null,
@@ -89,8 +101,8 @@ function generateCuttingListComprehensive(
     updatedAt: new Date(),
     systemPackId: systemPack.meta.id,
     grid: options?.includeTransom ? {
-      rows: 2,
-      cols: 1,
+      rows: DEFAULT_GRID_CONFIG.DEFAULT_TRANSOM_ROWS,
+      cols: DEFAULT_GRID_CONFIG.DEFAULT_TRANSOM_COLS,
       cells: [
         { id: '1', row: 0, col: 0, type: 'fixed' },
         { id: '2', row: 1, col: 0, type: 'fixed' },
@@ -104,13 +116,16 @@ function generateCuttingListComprehensive(
     if (!windowUnit.grid && windowUnit.type?.includes('sliding')) {
       // Create default 2-sash sliding grid for sliding windows
       windowUnit.grid = {
-        rows: 1,
-        cols: 2,
+        rows: DEFAULT_GRID_CONFIG.DEFAULT_SLIDING_ROWS,
+        cols: DEFAULT_GRID_CONFIG.DEFAULT_SLIDING_COLS,
         cells: [
           { id: '0-0', row: 0, col: 0, type: 'sliding' },
           { id: '0-1', row: 0, col: 1, type: 'sliding' },
         ],
-        colWidths: [1, 1], // Equal width sashes
+        colWidths: [
+          DEFAULT_GRID_CONFIG.EQUAL_WIDTH_RATIO, 
+          DEFAULT_GRID_CONFIG.EQUAL_WIDTH_RATIO
+        ], // Equal width sashes
       };
     }
     
@@ -205,22 +220,22 @@ function generateCuttingListLegacy(
   const cuttingRules = spec.cutting_rules || {};
   
   // Default rules if not specified (fallback to common values)
-  let frameRule = cuttingRules.frame_length || 'L + 50';
-  let sashRule = cuttingRules.sash_length || 'L - 40';
-  let beadRule = cuttingRules.bead_length || 'L - 167';
+  let frameRule = cuttingRules.frame_length || `L + ${DEFAULT_CUTTING_RULE_OFFSETS.DEFAULT_FRAME_ALLOWANCE_MM}`;
+  let sashRule = cuttingRules.sash_length || `L - ${DEFAULT_CUTTING_RULE_OFFSETS.DEFAULT_SASH_DEDUCTION_MM}`;
+  let beadRule = cuttingRules.bead_length || `L - ${DEFAULT_CUTTING_RULE_OFFSETS.DEFAULT_BEAD_DEDUCTION_MM}`;
   
   // System-specific defaults (from ROCK60_WINDOW_SYSTEM_TEMPLATE and Panda specs)
   const systemPackId = systemPack.meta.id;
   if (systemPackId === 'rock60') {
     // ROCK 60: Frame L+60, Sash L-44, Bead L-167 (from ROCK60_WINDOW_SYSTEM_TEMPLATE)
-    frameRule = 'L + 60';
-    sashRule = 'L - 44';
-    beadRule = 'L - 167';
+    frameRule = `L + ${SYSTEM_CUTTING_RULES.ROCK60.FRAME_ALLOWANCE_MM}`;
+    sashRule = `L - ${SYSTEM_CUTTING_RULES.ROCK60.SASH_DEDUCTION_MM}`;
+    beadRule = `L - ${SYSTEM_CUTTING_RULES.ROCK60.BEAD_DEDUCTION_MM}`;
   } else if (systemPackId === 'panda-50' || systemPackId === 'panda-100') {
     // Panda: Frame L+50, Sash L-40, Bead L-167 (from Panda cutting_rules)
-    frameRule = 'L + 50';
-    sashRule = 'L - 40';
-    beadRule = 'L - 167';
+    frameRule = `L + ${SYSTEM_CUTTING_RULES.PANDA.FRAME_ALLOWANCE_MM}`;
+    sashRule = `L - ${SYSTEM_CUTTING_RULES.PANDA.SASH_DEDUCTION_MM}`;
+    beadRule = `L - ${SYSTEM_CUTTING_RULES.PANDA.BEAD_DEDUCTION_MM}`;
   }
   
   const frameAllowance = parseCuttingRule(frameRule, width, height);

@@ -11,10 +11,10 @@
  * @see preset-aware_3d_generation_with_accuracy_estimates_1a16569a.plan.md
  */
 
-import { BufferGeometry, BoxGeometry, Matrix4 } from 'three';
-import type { FrameGeometry } from '../windowGeometry';
-import type { WindowUnit } from '@/types/fabricator';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
+import type { WindowUnit } from '@/types/fabricator';
+import { BoxGeometry, BufferGeometry, Matrix4 } from 'three';
+import type { FrameGeometry } from '../windowGeometry';
 import { generatePresetAwareGeometries } from '../windowGeometry';
 
 /**
@@ -108,7 +108,7 @@ function applySlopeToGeometry(
  */
 function createSafetyIndicators(
   windowUnit: WindowUnit,
-  pattern: EgyptianPattern
+  _pattern: EgyptianPattern
 ): BufferGeometry[] {
   const indicators: BufferGeometry[] = [];
   
@@ -145,8 +145,8 @@ function createSafetyIndicators(
  */
 function createSlopeElements(
   windowUnit: WindowUnit,
-  pattern: EgyptianPattern,
-  slopeAngle: number
+  _pattern: EgyptianPattern,
+  _slopeAngle: number
 ): BufferGeometry[] {
   const elements: BufferGeometry[] = [];
   

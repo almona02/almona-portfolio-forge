@@ -10,31 +10,33 @@
  * @since Phase 1: Special Presets (Weeks 3-4)
  */
 
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { FabricatorTemplates, type FabricatorTemplate } from '@/lib/quick/FabricatorTemplates';
+import { getGlobalShortcuts } from '@/lib/quick/KeyboardShortcuts';
+import { QuickOrderEngine, type QuickOrderParams } from '@/lib/quick/QuickOrderEngine';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { 
-  Zap, 
-  Save, 
-  FolderOpen, 
-  Copy,
-  Trash2,
-  Keyboard,
-  CheckCircle2,
-  Loader2,
-  Plus,
-  X
-} from 'lucide-react';
 import type { WindowUnit } from '@/types/fabricator';
-import { QuickOrderEngine, type QuickOrderParams } from '@/lib/quick/QuickOrderEngine';
-import { FabricatorTemplates, type FabricatorTemplate } from '@/lib/quick/FabricatorTemplates';
-import { KeyboardShortcuts, getGlobalShortcuts } from '@/lib/quick/KeyboardShortcuts';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+import {
+  CheckCircle2,
+  Copy,
+  FolderOpen,
+  Keyboard,
+  Loader2,
+  Save,
+  Zap
+} from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  DEFAULT_GLAZING,
+  DEFAULT_ORDER_PARAMS,
+  UI_LIMITS,
+} from './quickOrderConstants';
 
 interface QuickOrderModeProps {
   onOrderCreated?: (windowUnit: WindowUnit) => void;
@@ -46,12 +48,12 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
   onCancel
 }) => {
   const [params, setParams] = useState<QuickOrderParams>({
-    dimensions: { width: 1800, height: 1500 },
+    dimensions: { width: DEFAULT_ORDER_PARAMS.DEFAULT_WIDTH_MM, height: DEFAULT_ORDER_PARAMS.DEFAULT_HEIGHT_MM },
     systemPackId: 'rock60',
     windowType: 'sliding_window',
     color: 'Silver',
-    glazingType: 'double',
-    quantity: 1
+    glazingType: DEFAULT_GLAZING.DEFAULT_TYPE,
+    quantity: DEFAULT_ORDER_PARAMS.DEFAULT_QUANTITY
   });
 
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
@@ -64,30 +66,6 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
   const engine = useMemo(() => new QuickOrderEngine(), []);
   const templateManager = useMemo(() => new FabricatorTemplates(), []);
   const shortcuts = useMemo(() => getGlobalShortcuts(), []);
-
-  // Load templates on mount
-  useEffect(() => {
-    loadTemplates();
-  }, []);
-
-  // Setup keyboard shortcuts
-  useEffect(() => {
-    shortcuts.on('new_project', handleCreateOrder);
-    shortcuts.on('load_template', () => {
-      // Focus template selector
-      const templateSelect = document.getElementById('template-select');
-      templateSelect?.focus();
-    });
-    shortcuts.on('save_template', handleSaveAsTemplate);
-    shortcuts.on('quick_save', handleCreateOrder);
-
-    return () => {
-      shortcuts.off('new_project');
-      shortcuts.off('load_template');
-      shortcuts.off('save_template');
-      shortcuts.off('quick_save');
-    };
-  }, [params, selectedTemplate]);
 
   const loadTemplates = useCallback(async () => {
     const loaded = await templateManager.loadAllTemplates();
@@ -148,7 +126,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
       overallWidth: params.dimensions.width,
       overallHeight: params.dimensions.height,
       color: params.color || 'Silver',
-      glazing: { type: params.glazingType || 'double', thickness: 24 },
+      glazing: { type: params.glazingType || DEFAULT_GLAZING.DEFAULT_TYPE, thickness: DEFAULT_GLAZING.DEFAULT_THICKNESS_MM },
       hardware: [],
       status: 'design',
       optimization: null,
@@ -173,6 +151,30 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
       setError(err instanceof Error ? err.message : 'Failed to save template');
     }
   }, [params, templateManager, loadTemplates]);
+
+  // Load templates on mount
+  useEffect(() => {
+    loadTemplates();
+  }, [loadTemplates]);
+
+  // Setup keyboard shortcuts
+  useEffect(() => {
+    shortcuts.on('new_project', handleCreateOrder);
+    shortcuts.on('load_template', () => {
+      // Focus template selector
+      const templateSelect = document.getElementById('template-select');
+      templateSelect?.focus();
+    });
+    shortcuts.on('save_template', handleSaveAsTemplate);
+    shortcuts.on('quick_save', handleCreateOrder);
+
+    return () => {
+      shortcuts.off('new_project');
+      shortcuts.off('load_template');
+      shortcuts.off('save_template');
+      shortcuts.off('quick_save');
+    };
+  }, [handleCreateOrder, handleSaveAsTemplate, shortcuts]);
 
   const quickDefaults = useMemo(() => {
     return engine.getQuickDefaults(params.systemPackId);
@@ -425,7 +427,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                   </p>
                 ) : (
                   <div className="space-y-2">
-                    {templates.slice(0, 5).map(template => (
+                    {templates.slice(0, UI_LIMITS.MAX_RECENT_TEMPLATES).map(template => (
                       <div
                         key={template.id}
                         className="flex items-center justify-between p-2 bg-gray-800/50 rounded hover:bg-gray-800 cursor-pointer"

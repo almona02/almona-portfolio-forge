@@ -19,7 +19,7 @@ function sendToAnalytics(metric: any) {
       });
     } catch (error) {
       // Silently fail - analytics might be blocked by privacy extensions
-      console.debug('Analytics blocked or unavailable:', error.message);
+      console.debug('Analytics blocked or unavailable:', error instanceof Error ? error.message : String(error));
     }
   }
 }
@@ -388,7 +388,7 @@ class PerformanceMonitor {
         });
       } catch (error) {
         // Silently fail - analytics might be blocked by privacy extensions
-        console.debug('Analytics blocked or unavailable:', error.message);
+        console.debug('Analytics blocked or unavailable:', error instanceof Error ? error.message : String(error));
       }
     }
 
@@ -420,7 +420,7 @@ class PerformanceMonitor {
           this.track('fcp', entry.startTime);
         }
       });
-    } catch (e) {
+    } catch {
       // FCP not available
     }
 
@@ -433,11 +433,11 @@ class PerformanceMonitor {
       });
       try {
         observer.observe({ type: 'largest-contentful-paint', buffered: true });
-      } catch (e) {
+      } catch {
         // Fallback for browsers that don't support new format
         observer.observe({ entryTypes: ['largest-contentful-paint'] });
       }
-    } catch (e) {
+    } catch {
       // LCP not supported
     }
 
@@ -454,11 +454,11 @@ class PerformanceMonitor {
       });
       try {
         observer.observe({ type: 'layout-shift', buffered: true });
-      } catch (e) {
+      } catch {
         // Fallback for browsers that don't support new format
         observer.observe({ entryTypes: ['layout-shift'] });
       }
-    } catch (e) {
+    } catch {
       // CLS not supported
     }
   }
@@ -522,7 +522,7 @@ export const analyticsUtils = {
     if (typeof window !== 'undefined' && (window as any).gtag && this.isEnabled()) {
       try {
         (window as any).gtag(...args);
-      } catch (error) {
+      } catch {
         // Silently fail - analytics might be blocked
         console.debug('Analytics blocked or unavailable');
       }

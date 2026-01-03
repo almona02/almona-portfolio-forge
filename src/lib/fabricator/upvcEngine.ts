@@ -13,8 +13,6 @@
  */
 
 import type {
-  UPVCWeldingParams,
-  SteelReinforcementSpec,
   UPVCSystemSettings,
   UPVCCutResult,
   UPVCComponent,
@@ -173,7 +171,7 @@ export function validateReinforcement(
   // Simplified structural check (full formula would use Young's Modulus, deflection limits)
   // Egyptian code typically requires L/200 deflection limit for UPVC windows
   
-  const maxDeflection = sashHeightMm / 200; // L/200 limit
+  const _maxDeflection = sashHeightMm / 200; // L/200 limit
   const area = (sashHeightMm / 1000) * (sashWidthMm / 1000); // m²
   const load = windLoadPa * area; // N
   

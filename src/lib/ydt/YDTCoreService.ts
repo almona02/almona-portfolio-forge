@@ -25,12 +25,23 @@ import type {
     YDTViability
 } from './types';
 
+export interface YDTReasoning {
+  primaryFactor: string;
+  secondaryFactors?: string[];
+  changeTriggers: string[];
+  assumptions: string[];
+  confidence: number;
+}
+
 export interface YDTIntelligenceResponse<T> {
   data: T;
   confidence: number;
   source: string;
   watermark?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, any> & {
+    reasoning?: YDTReasoning; // Structured reasoning for Tier 1 decisions
+  };
+  reasoning?: string; // Required for Tier 1 decisions (human-readable)
 }
 
 export class YDTCoreService {
@@ -115,6 +126,17 @@ export class YDTCoreService {
     // 6. Get market intelligence
     const marketIntelligence = await this.getMarketIntelligence(project.location);
 
+    // Generate reasoning for pricing decision
+    const reasoning = `Pricing set at EGP ${finalPrice.toLocaleString()} because ` +
+      `material costs in ${project.location} are ${marketIntelligence.trend === 'rising' ? 'rising' : 'stable'} ` +
+      `(${marketIntelligence.sampleSize || 0} projects analyzed). ` +
+      `Optimal margin of ${(optimalMargin * 100).toFixed(0)}% recommended based on ` +
+      `${project.type} market conditions. ` +
+      `${marketIntelligence.shortages && marketIntelligence.shortages.length > 0 
+        ? `Material shortages detected: ${marketIntelligence.shortages.join(', ')}. ` 
+        : ''}` +
+      `This price would change if: material costs shift >10%, competitor pricing changes, or market demand changes.`;
+
     return {
       data: {
         materialCost,
@@ -134,6 +156,31 @@ export class YDTCoreService {
       confidence: materialStrategy.confidence,
       source: materialStrategy.source,
       watermark: this.createWatermark(workshopId, project.id || 'unknown'),
+      reasoning, // Required for Tier 1 decisions
+      metadata: {
+        reasoning: {
+          primaryFactor: marketIntelligence.trend === 'rising' 
+            ? 'Material cost inflation' 
+            : 'Market stability',
+          secondaryFactors: [
+            `Location: ${project.location}`,
+            `Project type: ${project.type}`,
+            `Sample size: ${marketIntelligence.sampleSize || 0} projects`
+          ],
+          changeTriggers: [
+            'Material costs shift >10%',
+            'Competitor pricing changes',
+            'Market demand changes',
+            'Shortage alerts change'
+          ],
+          assumptions: [
+            'Market prices stable',
+            'No competitor price wars',
+            'Standard material availability'
+          ],
+          confidence: materialStrategy.confidence
+        }
+      }
     };
   }
 
@@ -143,11 +190,7 @@ export class YDTCoreService {
   async getOptimizationStrategy(
     context: OptimizationContext
   ): Promise<YDTIntelligenceResponse<YDTOptimization>> {
-    // 1. Query knowledge base for algorithm info
-    const algorithm = this.knowledgeGraph.getAlgorithm('ProductionOptimizer');
-    
-    // 2. Get Egyptian market context
-    const egyptianData = this.knowledgeGraph.getEgyptianData();
+    // 1. Get Egyptian market context
     const season = this.getCurrentSeason();
 
     // 3. Determine strategy based on context
@@ -169,6 +212,15 @@ export class YDTCoreService {
       why = 'Ramadan season - prioritize speed due to reduced productivity';
     }
 
+    // Generate reasoning for optimization strategy
+    const reasoning = `Optimization strategy set to "${strategy}" because ` +
+      `${why}. Market context: ${context.location} (${season} season). ` +
+      `Material: ${context.material || 'not specified'}. ` +
+      `This strategy prioritizes ${strategy === 'remnant-first' ? 'material waste reduction' : 'production speed'} ` +
+      `based on current market conditions. ` +
+      `This strategy would change if: material prices shift >15%, season changes, ` +
+      `or market demand in ${context.location} changes significantly.`;
+
     return {
       data: {
         strategy,
@@ -183,6 +235,32 @@ export class YDTCoreService {
       },
       confidence: 0.92,
       source: 'YDT Optimization Intelligence',
+      reasoning, // Required for Tier 1 decisions
+          metadata: {
+            reasoning: {
+              primaryFactor: strategy === 'remnant-first' 
+                ? 'Material cost optimization (prices rising)' 
+                : 'Production speed optimization (material available)',
+              secondaryFactors: [
+                `Location: ${context.location}`,
+                `Season: ${season}`,
+                `Material: ${context.material || 'not specified'}`,
+                `Project type: ${context.projectType || 'not specified'}`
+              ],
+              changeTriggers: [
+                'Material prices shift >15%',
+                'Season changes',
+                'Market demand changes',
+                'Material availability changes'
+              ],
+              assumptions: [
+                'Market conditions remain stable',
+                'Material prices follow current trends',
+                'Seasonal patterns hold'
+              ],
+              confidence: 0.92
+            }
+          }
     };
   }
 
@@ -278,6 +356,15 @@ export class YDTCoreService {
       competitiveAdvice = `Competitors in ${project.location} are using ${competitors[0].counterStrategy} strategy`;
     }
 
+    // Generate reasoning for viability decision
+    const reasoning = `Project viability assessment: ${profitable ? 'APPROVED' : 'REJECTED'} because ` +
+      `profit margin is ${(profitMargin * 100).toFixed(1)}% (minimum required: 15%). ` +
+      `Market position: ${profitable ? 'competitive' : 'below_market'} for ${project.type} projects in ${project.location}. ` +
+      `${recommendations.length > 0 ? `Recommendations: ${recommendations.join('; ')}. ` : ''}` +
+      `${risks.length > 0 ? `Risks detected: ${risks.join('; ')}. ` : ''}` +
+      `This assessment would change if: material costs shift >10%, competitor pricing changes, ` +
+      `or market demand in ${project.location} changes significantly.`;
+
     return {
       data: {
         profitable,
@@ -290,6 +377,32 @@ export class YDTCoreService {
       },
       confidence: 0.88,
       source: 'YDT Business Intelligence',
+      reasoning, // Required for Tier 1 decisions
+          metadata: {
+            reasoning: {
+              primaryFactor: profitable 
+                ? `Profit margin ${(profitMargin * 100).toFixed(1)}% meets minimum threshold`
+                : `Profit margin ${(profitMargin * 100).toFixed(1)}% below minimum 15% threshold`,
+              secondaryFactors: [
+                `Project type: ${project.type}`,
+                `Location: ${project.location}`,
+                `Estimated cost: EGP ${estimatedCost.toLocaleString()}`,
+                `Estimated price: EGP ${estimatedPrice.toLocaleString()}`
+              ],
+              changeTriggers: [
+                'Material costs shift >10%',
+                'Competitor pricing changes',
+                'Market demand changes',
+                'Shortage alerts change'
+              ],
+              assumptions: [
+                'Estimated costs are accurate',
+                'Market conditions remain stable',
+                'No major competitor disruptions'
+              ],
+              confidence: 0.88
+            }
+          }
     };
   }
 
@@ -310,7 +423,7 @@ export class YDTCoreService {
   /**
    * Get trending styles for location
    */
-  async getTrendingStyles(location: string): Promise<Array<{
+  async getTrendingStyles(_location: string): Promise<Array<{
     name: string;
     popularityScore: number;
     projectCount: number;
@@ -336,7 +449,7 @@ export class YDTCoreService {
   /**
    * Get common errors for location
    */
-  async getCommonErrors(location: string): Promise<Array<{
+  async getCommonErrors(_location: string): Promise<Array<{
     error: string;
     frequency: number;
     solution: string;
@@ -361,7 +474,7 @@ export class YDTCoreService {
    */
   async analyzeCompetition(
     location: string,
-    projectType: string
+    _projectType: string
   ): Promise<{
     competitors: Array<{
       name: string;

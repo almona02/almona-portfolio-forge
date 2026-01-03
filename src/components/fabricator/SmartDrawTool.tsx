@@ -1,22 +1,3 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Label } from '@/shared/ui/ui/label';
-import { Slider } from '@/shared/ui/ui/slider';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Checkbox } from '@/shared/ui/ui/checkbox';
-import { Input } from '@/shared/ui/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/ui/ui/select';
-import { AlertCircle, LayoutGrid, Ruler } from 'lucide-react';
-import type { WindowUnit, Profile, WindowComponent } from '@/types/fabricator';
-import type { ValidationError } from '@/lib/fabricatorValidation';
 import {
   calculateEqualSpacing,
   deriveConstraintsFromProfiles,
@@ -24,9 +5,37 @@ import {
   validateProjectLayoutWithConstraints,
   type SmartDrawLayout,
 } from '@/algorithms/smartDraw';
-import type { SystemConstraints } from '@/lib/fabricatorValidation';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
+import type { SystemConstraints, ValidationError } from '@/lib/fabricatorValidation';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Checkbox } from '@/shared/ui/ui/checkbox';
+import { Input } from '@/shared/ui/ui/input';
+import { Label } from '@/shared/ui/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/ui/ui/select';
+import { Slider } from '@/shared/ui/ui/slider';
+import type { Profile, WindowComponent, WindowUnit } from '@/types/fabricator';
+import { AlertCircle, LayoutGrid, Ruler } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  renderBackground,
+  renderDimensionLabel,
+  renderFrame,
+  renderHorizontalTransom,
+  renderPanelLabels,
+  renderPanelShading,
+  renderPlaceholder,
+  renderVerticalMullions,
+} from './utils/canvasRenderingUtils';
 
 interface SmartDrawExportPayload {
   layout: SmartDrawLayout;
@@ -159,7 +168,7 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
       const clamped = Math.min(Math.max(prev, minEdge + minGap), maxEdge);
       return clamped;
     });
-  }, [overallWidth, constraints?.minWidthMm]);
+  }, [overallWidth, effectiveConstraints?.minWidthMm, constraints?.minWidthMm]);
 
   // Initialise / clamp horizontal mullion position when project changes
   useEffect(() => {
@@ -362,21 +371,17 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
     canvas.height = displayHeight * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
+    // ✅ ENHANCED: Extract canvas rendering to separate functions
     // Background
-    ctx.clearRect(0, 0, displayWidth, displayHeight);
-    ctx.fillStyle = '#020617';
-    ctx.fillRect(0, 0, displayWidth, displayHeight);
+    renderBackground(ctx, displayWidth, displayHeight);
 
     // No project → show placeholder
     if (!overallWidth || !project) {
-      ctx.fillStyle = '#64748b';
-      ctx.font = '12px system-ui';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(
-        t('smart_draw_tool.no_project', 'No project loaded. Complete Smart Measuring first.'),
-        displayWidth / 2,
-        displayHeight / 2,
+      renderPlaceholder(
+        ctx,
+        displayWidth,
+        displayHeight,
+        t('smart_draw_tool.no_project', 'No project loaded. Complete Smart Measuring first.')
       );
       return;
     }
@@ -386,96 +391,59 @@ export const SmartDrawTool: React.FC<SmartDrawToolProps> = ({
     const frameHeight = displayHeight - padding * 2;
     const scaleX = frameWidth / overallWidth;
 
-    // Outer frame
-    ctx.strokeStyle = '#e5e7eb';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(padding, padding, frameWidth, frameHeight);
+    // Render pipeline
+    renderFrame(ctx, padding, frameWidth, frameHeight);
 
     // Panel shading between mullions and edges
     const allPositions = [0, ...mullionsMm, overallWidth];
-    const panelWidthsMm: number[] = [];
-    ctx.save();
-    for (let i = 0; i < allPositions.length - 1; i += 1) {
-      const leftMm = allPositions[i];
-      const rightMm = allPositions[i + 1];
-      const panelWidthMm = rightMm - leftMm;
-      panelWidthsMm.push(panelWidthMm);
+    const panelWidthsMm = renderPanelShading(
+      ctx,
+      allPositions,
+      padding,
+      scaleX,
+      frameHeight
+    );
 
-      const x = padding + leftMm * scaleX;
-      const w = panelWidthMm * scaleX;
-
-      ctx.fillStyle = i % 2 === 0 ? '#0f172a' : '#020617';
-      ctx.fillRect(x, padding, w, frameHeight);
-    }
-    ctx.restore();
-
-    // Panel width labels for professional feedback (kept subtle for readability)
-    if (panelWidthsMm.length <= 8) {
-      ctx.fillStyle = '#9ca3af';
-      ctx.font = '10px system-ui';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
-      for (let i = 0; i < panelWidthsMm.length; i += 1) {
-        const leftMm = allPositions[i];
-        const rightMm = allPositions[i + 1];
-        const centerX = padding + ((leftMm + rightMm) / 2) * scaleX;
-        ctx.fillText(
-          `${panelWidthsMm[i].toFixed(0)} mm`,
-          centerX,
-          padding + frameHeight / 2,
-        );
-      }
-    }
+    // Panel width labels
+    renderPanelLabels(
+      ctx,
+      allPositions,
+      panelWidthsMm,
+      padding,
+      scaleX,
+      frameHeight
+    );
 
     // Draw vertical mullions
-    mullionsMm.forEach((posMm, index) => {
-      const x = padding + posMm * scaleX;
-      const isFirst = index === 0;
-      const isLast = index === mullionsMm.length - 1;
-
-      ctx.beginPath();
-      ctx.moveTo(x, padding);
-      ctx.lineTo(x, padding + frameHeight);
-      ctx.lineWidth = isFirst || isLast ? 3 : 2;
-      ctx.strokeStyle = isFirst || isLast ? '#f97316' : '#4b5563';
-      ctx.stroke();
-
-      // Draggable handle indicator
-      if (isFirst || isLast) {
-        ctx.beginPath();
-        ctx.arc(x, padding + frameHeight / 2, 6, 0, Math.PI * 2);
-        ctx.fillStyle = '#f97316';
-        ctx.fill();
-      }
-    });
+    renderVerticalMullions(
+      ctx,
+      mullionsMm,
+      padding,
+      scaleX,
+      frameHeight
+    );
 
     // Optional horizontal mullion (transom)
     if (enableHorizontal && horizontalPositionMm != null && overallHeight > 0) {
-      const clampedPos = Math.max(0, Math.min(horizontalPositionMm, overallHeight));
-      // 0mm = sill (bottom), overallHeight = head (top)
-      const yRatio = clampedPos / overallHeight;
-      const y = padding + frameHeight * (1 - yRatio);
-
-      ctx.beginPath();
-      ctx.moveTo(padding, y);
-      ctx.lineTo(padding + frameWidth, y);
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = '#22c55e'; // green transom
-      ctx.stroke();
+      renderHorizontalTransom(
+        ctx,
+        horizontalPositionMm,
+        overallHeight,
+        padding,
+        frameWidth,
+        frameHeight
+      );
     }
 
     // Dimension label
-    ctx.fillStyle = '#9ca3af';
-    ctx.font = '11px system-ui';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillText(
-      `${overallWidth.toFixed(0)} mm`,
-      padding + frameWidth / 2,
-      padding + frameHeight + 6,
+    renderDimensionLabel(
+      ctx,
+      overallWidth,
+      padding,
+      frameWidth,
+      frameHeight
     );
-  }, [project, overallWidth, overallHeight, mullionsMm, enableHorizontal, horizontalPositionMm]);
+  }, [project, overallWidth, overallHeight, mullionsMm, enableHorizontal, horizontalPositionMm, t]);
 
   // -------------------------------------------------------------------------
   // Pointer Interaction

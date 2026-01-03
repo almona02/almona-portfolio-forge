@@ -55,7 +55,7 @@ class QuickViewAnalytics {
         const user = JSON.parse(userData);
         return user.id;
       }
-    } catch (error) {
+    } catch {
       console.warn('Could not parse user data for analytics');
     }
     return undefined;
@@ -280,4 +280,5 @@ class QuickViewAnalytics {
 export const quickViewAnalytics = new QuickViewAnalytics();
 
 // Export types for use in components
-export type { QuickViewEvent, HoverPreviewEvent, QuickViewConversionEvent };
+export type { HoverPreviewEvent, QuickViewConversionEvent, QuickViewEvent };
+

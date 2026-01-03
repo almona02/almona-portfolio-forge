@@ -22,14 +22,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Checkbox } from '@/shared/ui/ui/checkbox';
 import { FabricatorAccessory, WindowUnit } from '@/types/fabricator';
 import {
-  AlertCircle,
-  CheckCircle,
-  CheckSquare,
-  FileSpreadsheet,
-  FileText,
-  Loader2,
-  Printer,
-  ShoppingCart
+    AlertCircle,
+    CheckCircle,
+    CheckSquare,
+    FileSpreadsheet,
+    FileText,
+    Loader2,
+    Printer,
+    ShoppingCart
 } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -96,7 +96,7 @@ export const AccessoriesReport: React.FC<AccessoriesReportProps> = ({
   const [procurementStatus, setProcurementStatus] = useState<Record<string, 'pending' | 'ordered' | 'received'>>({});
 
   const exportService = new ExportService();
-  const pricing = pricingEngine || new PricingEngine();
+  const pricing = useMemo(() => pricingEngine || new PricingEngine(), [pricingEngine]);
   const [calculatedPrices, setCalculatedPrices] = useState<Map<string, CalculatedPrice>>(new Map());
 
   // Process accessories data (synchronous part)

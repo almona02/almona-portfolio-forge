@@ -6,7 +6,7 @@
  * @since Phase 4: 3D Visual Upgrade (Week 20)
  */
 
-import { Texture, TextureLoader, RepeatWrapping } from 'three';
+import { RepeatWrapping, Texture, TextureLoader } from 'three';
 
 export type TextureType = 'aluminum' | 'upvc' | 'wood' | 'glass' | 'hardware';
 
@@ -56,7 +56,7 @@ export class TextureLibrary {
   /**
    * Get texture for material type
    */
-  async getTextureForMaterial(config: TextureConfig): Promise<Texture | null> {
+  async getTextureForMaterial(_config: TextureConfig): Promise<Texture | null> {
     // For now, return null (procedural textures will be used)
     // In production, this would load actual texture files
     return null;

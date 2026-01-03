@@ -3,7 +3,6 @@
  * Optimizes production scheduling for lean manufacturing
  */
 
-import { WindowUnit, OptimizationResult } from '@/types/fabricator';
 
 export interface ProductionOrder {
   id: string;

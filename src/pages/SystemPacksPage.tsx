@@ -5,40 +5,35 @@
  * Features premium gradients, glassmorphism, and smooth animations.
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Settings, 
-  CheckCircle2, 
-  AlertTriangle, 
-  ArrowRight,
-  Package,
-  Wrench,
-  Layers,
-  Search,
-  Filter,
-  Sparkles,
-  Zap,
-  Shield,
-  TrendingUp,
-  Award,
-  Globe
-} from 'lucide-react';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
-import { loadCustomSystems, addCustomSystemAsync } from '@/lib/fabricator/customSystemStorage';
-import { getSystemPackTuningStatus, saveReturnUrl } from '@/lib/fabricator/systemTuningUtils';
-import { Input } from '@/shared/ui/ui/input';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { useTranslation } from 'react-i18next';
 import { SystemTuningStudio } from '@/components/fabricator/SystemTuningStudio';
-import { Plus } from 'lucide-react';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { addCustomSystemAsync, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import { getSystemPackTuningStatus, saveReturnUrl } from '@/lib/fabricator/systemTuningUtils';
 import { supabase } from '@/lib/supabase';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Input } from '@/shared/ui/ui/input';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  AlertTriangle,
+  ArrowRight,
+  CheckCircle2,
+  Globe,
+  Layers,
+  Package,
+  Plus,
+  Search,
+  Settings,
+  Shield,
+  Sparkles,
+  Wrench,
+  Zap
+} from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const SystemPacksPage: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation('fabricator');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'tuned' | 'untuned' | 'upvc' | 'aluminum'>('all');
   const [customSystems, setCustomSystems] = useState<any[]>([]);

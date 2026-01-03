@@ -6,12 +6,11 @@
 
 'use client';
 
-import React from 'react';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import type { OnboardingData } from '../OnboardingWizard';
 import { Download } from 'lucide-react';
+import React from 'react';
+import type { OnboardingData } from '../OnboardingWizard';
 
 const SAMPLE_PROJECTS = [
   { id: 'simple_window', name: 'Simple Window', description: 'Basic single-sash window - perfect for beginners' },

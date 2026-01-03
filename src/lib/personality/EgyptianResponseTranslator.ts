@@ -111,7 +111,7 @@ export class EgyptianResponseTranslator {
   /**
    * Create maalem translation
    */
-  private createMaalemTranslation(answer: string, userType: UserType): string {
+  private createMaalemTranslation(answer: string, _userType: UserType): string {
     // Simple word replacement for common technical terms
     const replacements: Record<string, string> = {
       'algorithm': 'البرنامج',

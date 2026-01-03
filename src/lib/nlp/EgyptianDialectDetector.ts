@@ -145,7 +145,7 @@ export class EgyptianDialectDetector {
     const lowerQuestion = question.toLowerCase();
 
     // Check all patterns
-    for (const [type, regexes] of Object.entries(this.patterns)) {
+    for (const [_type, regexes] of Object.entries(this.patterns)) {
       for (const regex of regexes) {
         const match = lowerQuestion.match(regex);
         if (match) {
@@ -163,7 +163,7 @@ export class EgyptianDialectDetector {
   private calculateConfidence(question: string, userType: UserType): number {
     const lowerQuestion = question.toLowerCase();
     const matchingPatterns = this.patterns[userType].filter(regex => regex.test(lowerQuestion)).length;
-    const totalPatterns = this.patterns[userType].length;
+    const _totalPatterns = this.patterns[userType].length;
 
     if (matchingPatterns === 0) return 0.3; // Low confidence
     if (matchingPatterns === 1) return 0.6; // Medium confidence

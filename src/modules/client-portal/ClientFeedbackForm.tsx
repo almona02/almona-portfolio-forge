@@ -2,14 +2,14 @@
  * ClientFeedbackForm - Allows clients to add comments/approvals
  */
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Textarea } from '@/shared/ui/ui/textarea';
-import { Label } from '@/shared/ui/ui/label';
-import { Badge } from '@/shared/ui/ui/badge';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { MessageSquare, CheckCircle, XCircle, Send, AlertCircle } from 'lucide-react';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Label } from '@/shared/ui/ui/label';
+import { Textarea } from '@/shared/ui/ui/textarea';
+import { AlertCircle, CheckCircle, MessageSquare, Send, XCircle } from 'lucide-react';
+import React, { useState } from 'react';
 
 export interface ClientComment {
   id: string;
@@ -33,7 +33,7 @@ interface ClientFeedbackFormProps {
 }
 
 export const ClientFeedbackForm: React.FC<ClientFeedbackFormProps> = ({
-  projectId,
+  projectId: _projectId,
   components = [],
   onCommentSubmit,
   existingComments = [],

@@ -3,9 +3,9 @@
  * Integrates with existing i18n structure and provides region-aware functionality
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 import { RegionCode, getRegionalConfig } from '@/config/regionalConfig';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface RegionDetectionState {
   region: RegionCode;
@@ -192,7 +192,7 @@ export function useRegionDetection(options: RegionDetectionOptions = {}): {
   setRegion: (region: RegionCode) => void;
   refreshRegion: () => Promise<void>;
 } {
-  const opts = { ...DEFAULT_OPTIONS, ...options };
+  const opts = useMemo(() => ({ ...DEFAULT_OPTIONS, ...options }), [options]);
   const { i18n } = useTranslation();
   
   const [regionState, setRegionState] = useState<RegionDetectionState>({

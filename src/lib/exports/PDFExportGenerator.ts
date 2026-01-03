@@ -6,11 +6,10 @@
  * Generates branded PDF reports with QR codes, barcodes, diagrams, and multi-language support
  */
 
-import { PDFExportOptions, QRCodeData } from './types';
-import { WindowUnit, OptimizationResult } from '@/types/fabricator';
-import { CompanyBranding } from '@/modules/reporting/PDFExportService';
-import { PDFExportService } from '@/modules/reporting/PDFExportService';
+import { CompanyBranding, PDFExportService } from '@/modules/reporting/PDFExportService';
+import { OptimizationResult, WindowUnit } from '@/types/fabricator';
 import { qrBarcodeGenerator } from './QRBarcodeGenerator';
+import { PDFExportOptions, QRCodeData } from './types';
 
 /**
  * PDF export generator
@@ -63,11 +62,11 @@ export class PDFExportGenerator {
   private async addQRCodeToPDF(
     pdfBlob: Blob,
     project: WindowUnit,
-    options: PDFExportOptions
+    _options: PDFExportOptions
   ): Promise<Blob> {
     try {
       // Lazy load pdf-lib
-      const { PDFDocument } = await import('pdf-lib');
+      const { PDFDocument, rgb } = await import('pdf-lib');
 
       // Load existing PDF
       const pdfBytes = await pdfBlob.arrayBuffer();
@@ -111,7 +110,7 @@ export class PDFExportGenerator {
         x: pageWidth - qrSize - margin,
         y: pageHeight - qrSize - margin - 15,
         size: 8,
-        color: { r: 0.5, g: 0.5, b: 0.5 },
+        color: rgb(0.5, 0.5, 0.5),
       });
 
       // Save modified PDF

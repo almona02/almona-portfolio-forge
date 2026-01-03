@@ -1,21 +1,21 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Progress } from '@/shared/ui/ui/progress';
-import {
-  Zap,
-  Scan,
-  CheckCircle,
-  XCircle,
-  Loader2,
-  Sparkles,
-  Smartphone,
-  Monitor
-} from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Progress } from '@/shared/ui/ui/progress';
 import { detectSwiftXR, launchARWithFallback } from '@/utils/swiftXRIntegration';
+import {
+    CheckCircle,
+    Loader2,
+    Monitor,
+    Scan,
+    Smartphone,
+    Sparkles,
+    XCircle,
+    Zap
+} from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './SwiftXR.css';
 
 interface SwiftXRManagerProps {
@@ -67,7 +67,6 @@ export function SwiftXRManager({
   const [swiftXRInstalled, setSwiftXRInstalled] = useState<boolean | null>(null);
   const [currentARMethod, setCurrentARMethod] = useState<string>('');
   const { toast } = useToast();
-  const detectionTimeoutRef = useRef<NodeJS.Timeout>();
 
   // Device and capability detection
   useEffect(() => {
@@ -180,12 +179,6 @@ export function SwiftXRManager({
     };
 
     detectCapabilities();
-
-    return () => {
-      if (detectionTimeoutRef.current) {
-        clearTimeout(detectionTimeoutRef.current);
-      }
-    };
   }, [enableWebXR, enableSceneViewer, enableQuickLook, onError]);
 
   const launchSwiftXR = useCallback(async () => {

@@ -5,33 +5,33 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shar
 import { getLiveAluminumPrice } from '@/utils/marketData';
 import { AnimatePresence, motion, useSpring } from 'framer-motion';
 import {
-  Activity,
-  ArrowRight,
-  BarChart3,
-  Bell,
-  Box,
-  Boxes,
-  Brain,
-  Calculator,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Coins,
-  Cpu,
-  Factory,
-  FileText,
-  Menu,
-  Package,
-  Ruler,
-  Scissors,
-  Search,
-  Settings,
-  Sparkles,
-  TrendingUp,
-  User,
-  Users,
-  Workflow,
-  Zap
+    Activity,
+    ArrowRight,
+    BarChart3,
+    Bell,
+    Box,
+    Boxes,
+    Brain,
+    Calculator,
+    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
+    Coins,
+    Cpu,
+    Factory,
+    FileText,
+    Menu,
+    Package,
+    Ruler,
+    Scissors,
+    Search,
+    Settings,
+    Sparkles,
+    TrendingUp,
+    User,
+    Users,
+    Workflow,
+    Zap
 } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -147,7 +147,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   }, []);
 
   // Workflow stages
-  const workflowStages = [
+  const _workflowStages = [
     { id: 'measuring', name: t('fabricator:workflow.steps.measuring.name', 'Smart Measuring'), icon: Ruler, status: 'active' },
     { id: 'design', name: t('fabricator:workflow.steps.design.name', 'Technical Design'), icon: Settings, status: 'pending' },
     { id: 'optimization', name: t('fabricator:workflow.steps.optimization.name', 'AI Optimization'), icon: Sparkles, status: 'pending' },
@@ -306,7 +306,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
   );
 
   const operationsIds = useMemo(() => ['projects', 'inventory', 'commercial'], []);
-  const operationsItems = useMemo(
+  const _operationsItems = useMemo(
     () => navItemsWithoutWorkflow.filter((item) => operationsIds.includes(item.id)),
     [navItemsWithoutWorkflow, operationsIds]
   );

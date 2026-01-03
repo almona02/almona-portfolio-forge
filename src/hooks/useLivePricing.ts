@@ -3,9 +3,9 @@
  * Reactive pricing hook that updates in real-time as components change
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { PricingEngine, type CalculatedPrice } from '@/lib/pricing/PricingEngine';
-import type { WindowComponent, Profile } from '@/types/fabricator';
+import { PricingEngine } from '@/lib/pricing/PricingEngine';
+import type { Profile, WindowComponent } from '@/types/fabricator';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface LivePricingData {
   totalCost: number;
@@ -24,7 +24,7 @@ export interface UseLivePricingOptions {
   components: WindowComponent[];
   profiles: Profile[];
   currency?: string;
-  region?: 'egypt' | 'turkey' | 'mena' | 'gulf' | 'global';
+  region?: 'egypt' | 'turkey' | 'global';
   enabled?: boolean;
 }
 
@@ -67,7 +67,7 @@ export function useLivePricing({
     setPricingData((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
-      const pricingEngine = new PricingEngine({
+      const _pricingEngine = new PricingEngine({
         region,
         currency: currency as any,
       });
@@ -78,10 +78,13 @@ export function useLivePricing({
 
       // Calculate material costs
       for (const component of components) {
-        const profile = profiles.find((p) => p.id === component.profileId);
+        const profile = component.profile || profiles.find((p) => p.id === component.profile?.id);
         if (profile) {
-          const lengthM = (component.cuttingLength || component.length) / 1000;
-          const costPerMeter = profile.cost_per_meter || 0;
+          // Use first cutting length or calculate from component dimensions
+          const componentLength = component.cuttingLengths?.[0] || 
+            Math.max(component.width, component.height) || 0;
+          const lengthM = componentLength / 1000;
+          const costPerMeter = profile.costPerMeter || 0;
           const cost = costPerMeter * lengthM * (component.quantity || 1);
           totalAluminum += cost;
         }
@@ -90,7 +93,11 @@ export function useLivePricing({
       // Estimate glass cost (simplified - would use actual glass pricing engine)
       // This is a placeholder - in production, would calculate based on actual glass dimensions
       const totalLength = components.reduce(
-        (sum, c) => sum + (c.cuttingLength || c.length) * (c.quantity || 1),
+        (sum, c) => {
+          const componentLength = c.cuttingLengths?.[0] || 
+            Math.max(c.width, c.height) || 0;
+          return sum + componentLength * (c.quantity || 1);
+        },
         0
       );
       const estimatedAreaM2 = (totalLength / 1000) * 0.5; // Rough estimate

@@ -7,12 +7,12 @@
  * Week 6 Task 6.1: Production Dashboard
  */
 
-import { WorkflowProfiler, WorkflowMetrics } from '@/lib/performance/WorkflowProfiler';
-import { BaselineTracker, PerformanceBaseline } from '@/lib/performance/BaselineTracker';
-import { AccuracyTracker } from '@/lib/fabricator/AccuracyTracker';
 import { MemoryMonitor, MemoryStats } from '@/lib/3d/MemoryMonitor';
-import { SecurityGateway } from '@/lib/security/SecurityGateway';
+import { AccuracyTracker } from '@/lib/fabricator/AccuracyTracker';
 import { feedbackCollector } from '@/lib/fabricator/FeedbackCollector';
+import { BaselineTracker, PerformanceBaseline } from '@/lib/performance/BaselineTracker';
+import { WorkflowProfiler } from '@/lib/performance/WorkflowProfiler';
+import { SecurityGateway } from '@/lib/security/SecurityGateway';
 
 export interface ProductionMetrics {
   workflow: {
@@ -254,7 +254,8 @@ export class ProductionMonitor {
    * Get performance trends
    */
   getPerformanceTrends(metric: string, dataPoints: number = 30): PerformanceTrend | null {
-    const baselines = this.baselineTracker.getBaselines(metric, dataPoints);
+    const allBaselines = this.baselineTracker.getBaselines(metric);
+    const baselines = allBaselines.slice(-dataPoints);
     if (baselines.length < 2) {
       return null;
     }

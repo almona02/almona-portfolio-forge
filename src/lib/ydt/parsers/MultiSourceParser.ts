@@ -156,7 +156,7 @@ export class MultiSourceParser {
   /**
    * Extract code sections (classes, functions, exports)
    */
-  private extractCodeSections(content: string, language: string): ParsedSource['sections'] {
+  private extractCodeSections(content: string, _language: string): ParsedSource['sections'] {
     const sections: ParsedSource['sections'] = [];
     const lines = content.split('\n');
 

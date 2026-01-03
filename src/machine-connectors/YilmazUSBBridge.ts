@@ -220,7 +220,7 @@ export class YilmazUSBBridge {
   /**
    * List files on USB device
    */
-  async listFiles(deviceId: string, path: string = '/'): Promise<USBFileInfo[]> {
+  async listFiles(deviceId: string, _path: string = '/'): Promise<USBFileInfo[]> {
     // This would require file system access
     // In browser, limited by security restrictions
     // In Node.js, would use fs.readdir
@@ -232,7 +232,7 @@ export class YilmazUSBBridge {
   /**
    * Delete file from USB device
    */
-  async deleteFile(deviceId: string, filename: string): Promise<boolean> {
+  async deleteFile(_deviceId: string, _filename: string): Promise<boolean> {
     // This would require file system access
     console.warn('File deletion not fully supported in browser environment');
     return false;

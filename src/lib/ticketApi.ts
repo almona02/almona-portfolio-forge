@@ -1,17 +1,17 @@
  
-import {
-  CreateTicketData,
-  CreateMessageData,
-  TicketFilters,
-  TicketStatus,
-  ServiceTicket,
-  TicketMessage,
-  TicketWithDetails,
-  MessageWithAuthor
-} from '@/types/tickets'
+import { ticketsV2Api } from '@/lib/api/ticketsV2'
 import { supabase } from '@/lib/supabase'
 import { Database } from '@/types/database'
-import { ticketsV2Api } from '@/lib/api/ticketsV2'
+import {
+  CreateMessageData,
+  CreateTicketData,
+  MessageWithAuthor,
+  ServiceTicket,
+  TicketFilters,
+  TicketMessage,
+  TicketStatus,
+  TicketWithDetails
+} from '@/types/tickets'
 
 type DBServiceTicketRow = Database['public']['Tables']['service_tickets']['Row'] & { source?: string | null }
 type DBTicketMessageRow = Database['public']['Tables']['ticket_messages']['Row']
@@ -129,7 +129,7 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
         closed_at: null,
       }
     }
-  } catch (err) {
+  } catch {
     // Silent fallback to legacy without noisy logs when disabled/missing backend
   }
   // Get user ID once to avoid multiple async calls
@@ -153,7 +153,7 @@ export const createTicket = async (ticketData: CreateTicketData, userId: string)
     const hour = String(now.getHours()).padStart(2, '0');
     const minute = String(now.getMinutes()).padStart(2, '0');
     const second = String(now.getSeconds()).padStart(2, '0');
-    const user = currentUserId || 'anonymous';
+    const _user = currentUserId || 'anonymous';
     const randomSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
     const timestamp = now.getTime().toString().slice(-6);
     return `ST-${year}${month}${day}-${hour}${minute}${second}-${randomSuffix}${timestamp}`;

@@ -19,7 +19,7 @@ import { useToast } from '@/hooks/useToast';
 import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { CheckCircle2, ChevronLeft, ChevronRight, Copy } from 'lucide-react';
 
-interface TicketWizardDialogProps {
+export interface TicketWizardDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onTicketCreated?: (ticketId: string) => void;

@@ -121,15 +121,6 @@ export class NaturalLanguageProcessor {
    */
   private static extractPriceRange(query: string): {min?: number, max?: number} {
     const priceRange: {min?: number, max?: number} = {};
-    
-    // Pattern for price with k/K (thousands) multiplier
-    const pricePatterns = [
-      /(?:under|below|less than|max|maximum)\s*(\d+(?:k|000)?)/gi,
-      /(?:over|above|more than|min|minimum)\s*(\d+(?:k|000)?)/gi,
-      /(?:between)\s*(\d+(?:k|000)?)\s*(?:and|to|-)\s*(\d+(?:k|000)?)/gi,
-      /(?:around|about|approximately)\s*(\d+(?:k|000)?)/gi,
-      /(\d+(?:k|000)?)\s*(?:egp|egypt|pound|جنيه)/gi
-    ];
 
     // Extract "under/below" prices
     const underMatches = query.match(/(?:under|below|less than|max|maximum)\s*(\d+(?:k|000)?)/gi);

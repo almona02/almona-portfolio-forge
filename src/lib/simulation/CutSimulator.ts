@@ -3,8 +3,8 @@
  * Generates simulation data for visualizing cuts with K-factors applied
  */
 
-import type { WindowComponent, Profile, OptimizationResult } from '@/types/fabricator';
 import { kFactorEngine } from '@/lib/calibration/KFactorEngine';
+import type { OptimizationResult, Profile, WindowComponent } from '@/types/fabricator';
 
 export interface CutSimulation {
   componentId: string;
@@ -40,35 +40,32 @@ export class CutSimulator {
    */
   generateFrameSimulation(
     components: WindowComponent[],
-    profiles: Profile[],
-    optimizationResult?: OptimizationResult
+    _profiles: Profile[],
+    _optimizationResult?: OptimizationResult
   ): FrameSimulation {
     const cuts: CutSimulation[] = [];
     const corners: { x: number; y: number; cuts: CutSimulation[] }[] = [];
 
     // Group components by profile and calculate cuts
     for (const component of components) {
-      const profile = profiles.find((p) => p.id === component.profileId);
+      const profile = component.profile;
       if (!profile) continue;
 
       // Get K-factor from calibration or use default
-      const kFactor45 = profile.default_k_factor_45 || this.estimateKFactor(profile, 45);
-      const kFactor90 = profile.default_k_factor_90 || 0;
+      const kFactor45 = this.estimateKFactor(profile, 45);
+      const kFactor90 = this.estimateKFactor(profile, 90);
 
-      // Process each cut in the component
-      if (component.cuts) {
-        for (const cut of component.cuts) {
-          const angle = cut.angle || 90;
+      // Process each cut in the component using cuttingLengths and angles
+      if (component.cuttingLengths && component.angles) {
+        for (let i = 0; i < component.cuttingLengths.length; i++) {
+          const originalDimension = component.cuttingLengths[i];
+          const angle = component.angles[i] || 90;
           const kFactor = angle === 45 ? kFactor45 : angle === 90 ? kFactor90 : kFactor45;
-
-          // Calculate original dimension (reverse of cut length calculation)
-          // If we have optimization result, use that; otherwise estimate
-          const originalDimension = component.length || 1000;
           const cutLength = kFactorEngine.calculateCutLength(originalDimension, kFactor);
 
           const simulation: CutSimulation = {
             componentId: component.id,
-            componentName: component.name || component.type,
+            componentName: component.type,
             profileId: profile.id,
             profileName: profile.name,
             originalDimension,

@@ -5,7 +5,7 @@
  * Validates export outputs for compliance, encoding, and compatibility
  */
 
-import { ExportResult, ExportFormat } from './types';
+import { ExportFormat, ExportResult } from './types';
 
 export interface ValidationResult {
   valid: boolean;
@@ -208,6 +208,7 @@ export function checkFileSizeLimit(fileSize: number, format: ExportFormat): {
     pdf: 50 * 1024 * 1024, // 50 MB
     csv: 10 * 1024 * 1024, // 10 MB
     dxf: 20 * 1024 * 1024, // 20 MB
+    mdb: 10 * 1024 * 1024, // 10 MB
   };
 
   const limit = limits[format];
@@ -258,7 +259,7 @@ export async function validateEncoding(blob: Blob, expectedEncoding: 'UTF-8' | '
       valid: true,
       detected: hasBOM ? 'UTF-8 with BOM' : 'UTF-8',
     };
-  } catch (error) {
+  } catch {
     return {
       valid: false,
       detected: 'Unknown',

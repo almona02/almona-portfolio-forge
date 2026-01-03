@@ -10,15 +10,21 @@
  * @since Egyptian Fabrication Intelligence Enhancement
  */
 
-import React, { useEffect, useState } from 'react';
-import { RealTimeQuoteCalculator, type RealTimeQuote } from '@/lib/pricing/RealTimeQuoteCalculator';
-import { YDTPricingOracle } from '@/lib/pricing/YDTPricingOracle';
-import type { InferredShape } from '@/lib/intelligence/ShapeInferenceEngine';
 import type { ComplexShapeDesign } from '@/lib/intelligence/ComplexShapeGenerator';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
+import type { InferredShape } from '@/lib/intelligence/ShapeInferenceEngine';
+import { RealTimeQuoteCalculator, type RealTimeQuote as RealTimeQuoteType } from '@/lib/pricing/RealTimeQuoteCalculator';
+import { YDTPricingOracle } from '@/lib/pricing/YDTPricingOracle';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { InfoIcon, TrendingUpIcon, BrainIcon } from 'lucide-react';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { BrainIcon, InfoIcon, TrendingUpIcon } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+    LABOR_BREAKDOWN_PERCENTAGES,
+    MATERIAL_BREAKDOWN_PERCENTAGES,
+    PAYMENT_TERM_MULTIPLIERS,
+    QUOTE_CALCULATION_CONSTANTS,
+} from './quoteConstants';
 
 export interface RealTimeQuoteProps {
   shape?: InferredShape;
@@ -72,12 +78,12 @@ export const RealTimeQuote: React.FC<RealTimeQuoteProps> = ({
   workshopContext,
   useYDT = true
 }) => {
-  const [quote, setQuote] = useState<RealTimeQuote | null>(null);
+  const [quote, setQuote] = useState<RealTimeQuoteType | null>(null);
   const [ydtIntelligence, setYdtIntelligence] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   
-  const calculator = new RealTimeQuoteCalculator();
-  const ydtOracle = new YDTPricingOracle();
+  const calculator = useMemo(() => new RealTimeQuoteCalculator(), []);
+  const ydtOracle = useMemo(() => new YDTPricingOracle(), []);
   
   useEffect(() => {
     if (!dimensions || !dimensions.width || !dimensions.height) {
@@ -95,7 +101,7 @@ export const RealTimeQuote: React.FC<RealTimeQuoteProps> = ({
         location: workshopContext.location,
         material: materials?.type || 'aluminum',
         estimatedCost: undefined,
-        quantity: 1,
+        quantity: QUOTE_CALCULATION_CONSTANTS.DEFAULT_QUANTITY,
       };
       
       const workshop = {
@@ -107,30 +113,30 @@ export const RealTimeQuote: React.FC<RealTimeQuoteProps> = ({
       ydtOracle.calculatePriceWithYDT(project, workshop)
         .then((ydtResult) => {
           // Convert YDT result to RealTimeQuote format
-          const convertedQuote: RealTimeQuote = {
+          const convertedQuote: RealTimeQuoteType = {
             materialCost: ydtResult.breakdown.material,
             materialBreakdown: {
-              profiles: ydtResult.breakdown.material * 0.4,
-              glass: ydtResult.breakdown.material * 0.3,
-              hardware: ydtResult.breakdown.material * 0.2,
-              accessories: ydtResult.breakdown.material * 0.1,
-              other: 0,
+              profiles: ydtResult.breakdown.material * MATERIAL_BREAKDOWN_PERCENTAGES.PROFILES,
+              glass: ydtResult.breakdown.material * MATERIAL_BREAKDOWN_PERCENTAGES.GLASS,
+              hardware: ydtResult.breakdown.material * MATERIAL_BREAKDOWN_PERCENTAGES.HARDWARE,
+              accessories: ydtResult.breakdown.material * MATERIAL_BREAKDOWN_PERCENTAGES.ACCESSORIES,
+              other: QUOTE_CALCULATION_CONSTANTS.DEFAULT_INSTALLATION_COST,
             },
             laborCost: ydtResult.breakdown.labor,
             laborBreakdown: {
-              cutting: ydtResult.breakdown.labor * 0.3,
-              assembly: ydtResult.breakdown.labor * 0.4,
-              installation: ydtResult.breakdown.labor * 0.2,
-              other: ydtResult.breakdown.labor * 0.1,
+              cutting: ydtResult.breakdown.labor * LABOR_BREAKDOWN_PERCENTAGES.CUTTING,
+              assembly: ydtResult.breakdown.labor * LABOR_BREAKDOWN_PERCENTAGES.ASSEMBLY,
+              installation: ydtResult.breakdown.labor * LABOR_BREAKDOWN_PERCENTAGES.INSTALLATION,
+              other: ydtResult.breakdown.labor * LABOR_BREAKDOWN_PERCENTAGES.OTHER,
             },
-            transportCost: egyptianFactors?.transportCost || 0,
-            installationCost: 0,
+            transportCost: egyptianFactors?.transportCost || QUOTE_CALCULATION_CONSTANTS.DEFAULT_INSTALLATION_COST,
+            installationCost: QUOTE_CALCULATION_CONSTANTS.DEFAULT_INSTALLATION_COST,
             subtotal: ydtResult.breakdown.material + ydtResult.breakdown.labor + ydtResult.breakdown.overhead,
-            profitMargin: ydtResult.breakdown.margin * 100,
+            profitMargin: ydtResult.breakdown.margin * QUOTE_CALCULATION_CONSTANTS.PROFIT_MARGIN_MULTIPLIER,
             total: ydtResult.breakdown.finalPrice,
-            cashPrice: ydtResult.quoteCard?.paymentTerms.cash || ydtResult.breakdown.finalPrice * 0.95,
-            credit30Days: ydtResult.quoteCard?.paymentTerms.credit30 || ydtResult.breakdown.finalPrice * 1.1,
-            credit90Days: ydtResult.quoteCard?.paymentTerms.credit90 || ydtResult.breakdown.finalPrice * 1.2,
+            cashPrice: ydtResult.quoteCard?.paymentTerms.cash || ydtResult.breakdown.finalPrice * PAYMENT_TERM_MULTIPLIERS.CASH,
+            credit30Days: ydtResult.quoteCard?.paymentTerms.credit30 || ydtResult.breakdown.finalPrice * PAYMENT_TERM_MULTIPLIERS.CREDIT_30_DAYS,
+            credit90Days: ydtResult.quoteCard?.paymentTerms.credit90 || ydtResult.breakdown.finalPrice * PAYMENT_TERM_MULTIPLIERS.CREDIT_90_DAYS,
             recommendedPaymentTerms: ydtResult.quoteCard?.paymentTerms.recommendation as any || 'cash',
             recommendationReason: ydtResult.quoteCard?.paymentTerms.recommendation || 'Best price with cash payment',
             recommendationReasonArabic: ydtResult.quoteCard?.paymentTerms.recommendation === 'cash' 
@@ -160,7 +166,7 @@ export const RealTimeQuote: React.FC<RealTimeQuoteProps> = ({
         dimensions: {
           width: dimensions.width,
           height: dimensions.height,
-          area: (dimensions.width * dimensions.height) / 1000000 // m²
+          area: (dimensions.width * dimensions.height) / QUOTE_CALCULATION_CONSTANTS.MM2_TO_M2 // m²
         },
         materials,
         hardware,
@@ -178,7 +184,7 @@ export const RealTimeQuote: React.FC<RealTimeQuoteProps> = ({
         setLoading(false);
       });
     }
-  }, [shape, dimensions, materials, hardware, glazing, laborRates, profitMargin, egyptianFactors, cashFlowOptions, workshopContext, useYDT]);
+  }, [shape, dimensions, materials, hardware, glazing, laborRates, profitMargin, egyptianFactors, cashFlowOptions, workshopContext, useYDT, calculator, ydtOracle]);
   
   if (loading) {
     return (

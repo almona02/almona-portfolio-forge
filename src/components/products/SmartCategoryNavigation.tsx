@@ -1,20 +1,20 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { LazyAnimatePresence, LazyMotionDiv, LazyMotionButton } from '@/utils/lazyMotion';
-import { Search, TrendingUp, Lightbulb, Filter, ChevronDown, Sparkles, Brain } from 'lucide-react';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Input } from '@/shared/ui/ui/input';
-import { ShareFilteredResults } from './ShareFilteredResults';
-import { 
-  smartCategories,
-  getCategoryMachineCounts,
-  getSmartRecommendations,
-  trackCategoryUsage,
-  getPopularCategories,
-  intelligentSearch,
-  detectMaterialType,
-  type Machine
+import {
+    detectMaterialType,
+    getCategoryMachineCounts,
+    getPopularCategories,
+    getSmartRecommendations,
+    intelligentSearch,
+    smartCategories,
+    trackCategoryUsage,
+    type Machine
 } from '@/constants/smartCategories';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Input } from '@/shared/ui/ui/input';
+import { LazyAnimatePresence, LazyMotionButton, LazyMotionDiv } from '@/utils/lazyMotion';
+import { Brain, ChevronDown, Filter, Lightbulb, Search, Sparkles, TrendingUp } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ShareFilteredResults } from './ShareFilteredResults';
 
 interface SmartCategoryNavigationProps {
   machines: Machine[];
@@ -52,7 +52,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
   const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
-  const [isAiThinking, setIsAiThinking] = useState(false);
+  const [_isAiThinking, setIsAiThinking] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const categoryCounts = getCategoryMachineCounts(machines);

@@ -9,19 +9,19 @@
  * - Market intelligence insights
  */
 
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { YDTImpactAnalyzer, type YDTMetrics } from '@/lib/ydt/YDTImpactAnalyzer';
 import { YDTCoreService } from '@/lib/ydt/YDTCoreService';
-import { TrendingUp, TrendingDown, CheckCircle, Users, DollarSign, Clock } from 'lucide-react';
+import { YDTImpactAnalyzer, type YDTMetrics } from '@/lib/ydt/YDTImpactAnalyzer';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { CheckCircle, Clock, DollarSign, TrendingUp, Users } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 export const YDTImpactDashboard: React.FC = () => {
   const [metrics, setMetrics] = useState<YDTMetrics | null>(null);
   const [insights, setInsights] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const analyzer = new YDTImpactAnalyzer();
-  const ydt = YDTCoreService.getInstance();
+  const analyzer = useMemo(() => new YDTImpactAnalyzer(), []);
+  const ydt = useMemo(() => YDTCoreService.getInstance(), []);
 
   useEffect(() => {
     // Load metrics
@@ -45,7 +45,7 @@ export const YDTImpactDashboard: React.FC = () => {
     };
 
     loadMetrics();
-  }, []);
+  }, [analyzer, ydt]);
 
   if (loading) {
     return (

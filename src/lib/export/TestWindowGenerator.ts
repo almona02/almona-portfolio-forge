@@ -7,7 +7,6 @@
  */
 
 import type { WindowUnit } from '@/types/fabricator';
-import { FlyScreenPresetEngine } from '@/lib/presets/FlyScreenPresetEngine';
 
 export interface TestWindowConfig {
   type: 'casement_with_fly_screen' | 'sliding_standard' | 'tall_segmented' | 'dome_heritage';
@@ -81,7 +80,7 @@ export class TestWindowGenerator {
    */
   private generateTestChecklist(
     config: TestWindowConfig,
-    windowUnit: WindowUnit
+    _windowUnit: WindowUnit
   ): TestWindowResult['testChecklist'] {
     return {
       hingePositions: {

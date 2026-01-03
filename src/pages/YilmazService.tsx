@@ -1,7 +1,6 @@
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import { Wrench, Clock, ShieldCheck, Phone } from 'lucide-react';
 import { Button } from '@/shared/ui/ui/button';
+import { Clock, ShieldCheck, Wrench } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 
 const YilmazService = () => {

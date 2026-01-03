@@ -17,7 +17,6 @@ import type { Database } from '@/types/database';
 import type {
   Profile,
   FabricatorAccessory,
-  ProfileAccessoryCompatibility,
 } from '@/types/fabricator';
 
 // ============================================================================

@@ -8,7 +8,6 @@
  */
 
 import type { GuildRank } from '@/types/firman';
-import { canOverrideFirman, meetsOverrideLevel } from '@/types/firman';
 
 /**
  * User guild profile

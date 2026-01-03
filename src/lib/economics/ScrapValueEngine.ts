@@ -72,7 +72,7 @@ export class ScrapValueEngine {
   private generateMaalemAdvice(
     scrapWeight: number,
     value: number,
-    materialType: string
+    _materialType: string
   ): { english: string; arabic: string } {
     if (scrapWeight < 5) {
       return {

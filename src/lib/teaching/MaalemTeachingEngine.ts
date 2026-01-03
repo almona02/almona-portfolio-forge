@@ -9,7 +9,6 @@
  */
 
 import { DocumentationKnowledgeGraph } from '@/lib/ydt/DocumentationKnowledgeGraph';
-import type { UserType } from '@/lib/nlp/EgyptianWorkshopNLP';
 
 export type StudentLevel = 'beginner' | 'intermediate' | 'advanced' | 'maalem';
 
@@ -111,7 +110,7 @@ export class MaalemTeachingEngine {
     const total = Object.keys(answers).length;
 
     // Simple assessment logic
-    for (const [questionId, answer] of Object.entries(answers)) {
+    for (const [_questionId, _answer] of Object.entries(answers)) {
       // Would check against correct answers
       // For now, assume 70% correct = intermediate, 90% = advanced
       score += 1; // Placeholder
@@ -246,7 +245,7 @@ export class MaalemTeachingEngine {
   private async generateExercises(
     topic: string,
     level: StudentLevel,
-    preferences?: StudentProfile['preferences']
+    _preferences?: StudentProfile['preferences']
   ): Promise<Exercise[]> {
     const exercises: Exercise[] = [];
 
@@ -299,7 +298,7 @@ export class MaalemTeachingEngine {
   /**
    * Get common mistakes
    */
-  private async getCommonMistakes(topic: string, level: StudentLevel): Promise<string[]> {
+  private async getCommonMistakes(topic: string, _level: StudentLevel): Promise<string[]> {
     const mistakes: Record<string, string[]> = {
       optimization: [
         'Not checking remnants before buying new material',
@@ -324,7 +323,7 @@ export class MaalemTeachingEngine {
   /**
    * Get maalem tips
    */
-  private async getMaalemTips(topic: string, level: StudentLevel): Promise<string[]> {
+  private async getMaalemTips(topic: string, _level: StudentLevel): Promise<string[]> {
     const tips: Record<string, string[]> = {
       optimization: [
         'Always check remnants first',

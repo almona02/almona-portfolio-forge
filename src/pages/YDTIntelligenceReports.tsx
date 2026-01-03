@@ -7,12 +7,11 @@
  * - Competitive Dashboard
  */
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
-import { YDTCoreService } from '@/lib/ydt/YDTCoreService';
-import { Check, TrendingUp, MapPin, BarChart3 } from 'lucide-react';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { BarChart3, Check, MapPin, TrendingUp } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface Report {
   id: string;
@@ -24,8 +23,7 @@ interface Report {
 }
 
 export const YDTIntelligenceReports: React.FC = () => {
-  const [selectedReport, setSelectedReport] = useState<string | null>(null);
-  const ydt = YDTCoreService.getInstance();
+  const [selectedReport] = useState<string | null>(null);
 
   const reports: Report[] = [
     {

@@ -35,7 +35,7 @@ export interface DXFParseResponse {
  * This worker handles lightweight validation and preprocessing.
  */
 self.onmessage = async (event: MessageEvent<DXFParseRequest>) => {
-  const { fileContent, filename, language = 'en' } = event.data;
+  const { fileContent, filename: _filename, language: _language = 'en' } = event.data;
 
   try {
     // Basic validation

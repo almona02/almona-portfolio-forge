@@ -3,6 +3,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
+// Persona integrity check - must run before React render
+import { assertPersonaIntegrity } from "@/lib/persona/assertPersonaIntegrity";
 // Ensure React is fully loaded before importing anything else
 if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
   throw new Error('React or ReactDOM failed to load');
@@ -439,6 +441,15 @@ const renderApp = () => {
     return;
   }
 
+  // Persona integrity check - must run before React render
+  try {
+    assertPersonaIntegrity();
+  } catch (error) {
+    console.error('[PersonaIntegrity] Failed integrity check:', error);
+    // Fail fast - don't render app if persona configs are invalid
+    throw error;
+  }
+
   // Create React root (with HMR support)
   let root = (rootElement as HTMLElement & { _reactRootContainer?: ReactDOM.Root })._reactRootContainer;
   if (!root) {
@@ -451,7 +462,6 @@ const renderApp = () => {
     root.render(
       <React.StrictMode>
         <CriticalErrorBoundary>
-          {/* @ts-expect-error - HelmetProvider types may be incorrect, but it works at runtime */}
           <HelmetProvider>
             <App />
           </HelmetProvider>
@@ -513,11 +523,11 @@ window.addEventListener('load', () => {
     
     try {
       lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
-    } catch (_e) {
+    } catch {
       // Fallback if buffered option not supported
       try {
         (lcpObserver as any).observe({ entryTypes: ['largest-contentful-paint'] });
-      } catch (_e2) {
+      } catch {
         console.warn('[LCP Fix] PerformanceObserver not supported');
       }
     }
@@ -571,7 +581,7 @@ const isProdEnv = (import.meta as any).env?.PROD || process.env.NODE_ENV === 'pr
 if ('serviceWorker' in navigator && isProdEnv) {
   // Dynamic import with error handling - virtual module only exists in production
   import('virtual:pwa-register').then(({ registerSW }) => {
-    const updateSW = registerSW({
+    registerSW({
       immediate: true, // Register immediately
       onNeedRefresh() {
         // This runs when a new version is deployed

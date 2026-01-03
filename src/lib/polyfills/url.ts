@@ -13,7 +13,7 @@ const urlModule = {
         host: parsed.host,
         href: parsed.href
       };
-    } catch (e) {
+    } catch {
       return null;
     }
   },
@@ -32,7 +32,7 @@ const urlModule = {
   resolve: (from: string, to: string) => {
     try {
       return new URL(to, from).href;
-    } catch (e) {
+    } catch {
       return to;
     }
   }

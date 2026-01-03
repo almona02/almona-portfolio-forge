@@ -12,6 +12,11 @@
 
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { SystemPack, WindowUnit } from '@/types/fabricator';
+import {
+    ACCESSORY_PRICES_EGP,
+    FASTENER_CONSTANTS,
+    UNIT_CONVERSION,
+} from './accessoriesBOMConstants';
 
 export interface AccessoryItem {
   id: string;
@@ -33,7 +38,7 @@ export class AccessoriesBOMCalculator {
   async calculateAccessoriesBOM(
     windowUnit: WindowUnit,
     pattern: EgyptianPattern,
-    systemPack: SystemPack
+    _systemPack: SystemPack
   ): Promise<AccessoryItem[]> {
     const accessories: AccessoryItem[] = [];
     const width = windowUnit.overallWidth;
@@ -47,8 +52,8 @@ export class AccessoriesBOMCalculator {
       name: 'Glazing Bead (Standard)',
       category: 'glazing_bead',
       quantity: 1,
-      unitPrice: (glazingBeadLength / 1000) * 8, // 8 EGP/meter
-      totalCost: (glazingBeadLength / 1000) * 8,
+      unitPrice: (glazingBeadLength / UNIT_CONVERSION.MM_PER_METER) * ACCESSORY_PRICES_EGP.GLAZING_BEAD_PER_METER,
+      totalCost: (glazingBeadLength / UNIT_CONVERSION.MM_PER_METER) * ACCESSORY_PRICES_EGP.GLAZING_BEAD_PER_METER,
       supplier: this.getSupplier('beads', windowUnit.positionMeta?.buildingBlock)
     });
 
@@ -60,21 +65,21 @@ export class AccessoriesBOMCalculator {
         name: 'Primary Seal (EPDM)',
         category: 'seal',
         quantity: 1,
-        unitPrice: (perimeter / 1000) * 12, // 12 EGP/meter
-        totalCost: (perimeter / 1000) * 12,
+        unitPrice: (perimeter / UNIT_CONVERSION.MM_PER_METER) * ACCESSORY_PRICES_EGP.PRIMARY_SEAL_PER_METER,
+        totalCost: (perimeter / UNIT_CONVERSION.MM_PER_METER) * ACCESSORY_PRICES_EGP.PRIMARY_SEAL_PER_METER,
         supplier: this.getSupplier('seals', windowUnit.positionMeta?.buildingBlock)
       });
     }
 
     // Screws and fasteners (estimated)
-    const estimatedScrews = Math.ceil(perimeter / 300); // One screw every 300mm
+    const estimatedScrews = Math.ceil(perimeter / FASTENER_CONSTANTS.SCREW_SPACING_MM);
     accessories.push({
       id: 'screws-standard',
       name: 'Screws M6 (Standard)',
       category: 'fastener',
       quantity: estimatedScrews,
-      unitPrice: 0.5, // 0.5 EGP per screw
-      totalCost: estimatedScrews * 0.5,
+      unitPrice: ACCESSORY_PRICES_EGP.SCREW_STANDARD,
+      totalCost: estimatedScrews * ACCESSORY_PRICES_EGP.SCREW_STANDARD,
       supplier: this.getSupplier('fasteners', windowUnit.positionMeta?.buildingBlock)
     });
 

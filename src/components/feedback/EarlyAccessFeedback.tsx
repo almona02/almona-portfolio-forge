@@ -12,16 +12,15 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/shared/ui/ui/radio-group';
-import { CheckCircle2, AlertCircle, Star } from 'lucide-react';
+import { CheckCircle2, Star } from 'lucide-react';
+import React, { useState } from 'react';
 
 export interface EarlyAccessFeedbackData {
   workshopId: string;
@@ -121,7 +120,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
             <div className="space-y-2">
               <Label>Which feature are you testing?</Label>
               <Select value={feature} onValueChange={(v) => setFeature(v as any)}>
-                <SelectTrigger className="bg-gray-800 border-gray-700">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -249,7 +248,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
                         setIssues(newIssues);
                       }}
                     >
-                      <SelectTrigger className="bg-gray-700 border-gray-600">
+                      <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>

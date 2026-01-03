@@ -4,8 +4,8 @@
  * Optimizes cutting plans for Turkish market profiles and patterns
  */
 
-import { CuttingPlan, Cut, Profile } from '@/types/fabricator';
 import type { TurkishProfile } from '@/localization/turkish/TurkishProfileDatabase';
+import { Cut, CuttingPlan } from '@/types/fabricator';
 
 export interface TurkishOptimizationOptions {
   prioritizeLocalSuppliers: boolean;
@@ -62,7 +62,7 @@ export class TurkishProfileOptimizer {
     let totalWaste = 0;
     const recommendations: string[] = [];
 
-    supplierGroups.forEach((plans, supplierId) => {
+    supplierGroups.forEach((plans, _supplierId) => {
       const optimized = this.optimizeGroup(plans, options);
       optimizedPlans.push(...optimized.plans);
       totalCost += optimized.cost;
@@ -147,7 +147,7 @@ export class TurkishProfileOptimizer {
   private optimizePlan(
     plan: CuttingPlan,
     stockLength: number,
-    options: TurkishOptimizationOptions
+    _options: TurkishOptimizationOptions
   ): CuttingPlan {
     // Sort cuts by length (descending) for better nesting
     const sortedCuts = [...plan.cuts].sort((a, b) => b.length - a.length);
@@ -190,12 +190,12 @@ export class TurkishProfileOptimizer {
    */
   private selectOptimalStockLength(
     plans: CuttingPlan[],
-    turkishProfile: TurkishProfile
+    _turkishProfile: TurkishProfile
   ): number {
     // Get all cut lengths
     const allCutLengths = plans.flatMap(plan => plan.cuts.map(cut => cut.length));
     const maxCut = Math.max(...allCutLengths);
-    const totalLength = allCutLengths.reduce((sum, len) => sum + len, 0);
+    const _totalLength = allCutLengths.reduce((sum, len) => sum + len, 0);
 
     // Find best standard length
     let bestLength = this.standardLengths[0];
@@ -320,7 +320,7 @@ export class TurkishProfileOptimizer {
    */
   private getTotalQuantity(plans: CuttingPlan[]): number {
     return plans.reduce((sum, plan) => {
-      return sum + plan.cuts.reduce((cutSum, cut) => cutSum + 1, 0);
+      return sum + plan.cuts.reduce((cutSum, _cut) => cutSum + 1, 0);
     }, 0);
   }
 

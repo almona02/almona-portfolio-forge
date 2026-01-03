@@ -8,10 +8,10 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { PilotSurveyData, SurveyType } from '@/components/feedback/PilotSurvey';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import React, { useState } from 'react';
 
 interface FeedbackDashboardProps {
   surveyData?: PilotSurveyData[];

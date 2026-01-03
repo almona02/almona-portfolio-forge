@@ -3,12 +3,12 @@
  * Define regional profile brands and their specifications
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Globe, Download, Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { AlertCircle, CheckCircle, Download, Globe } from 'lucide-react';
+import React, { useState } from 'react';
 import { CustomProfile } from './ProfileConfigurator';
 
 export interface RegionalProfileBrand {

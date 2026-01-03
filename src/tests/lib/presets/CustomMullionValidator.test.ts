@@ -6,9 +6,9 @@
  * @since Phase 1: Special Presets (Weeks 3-4)
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
-import { CustomMullionValidator, type MullionType } from '@/lib/presets/CustomMullionValidator';
+import { CustomMullionValidator } from '@/lib/presets/CustomMullionValidator';
 import type { WindowUnit } from '@/types/fabricator';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('CustomMullionValidator', () => {
   let validator: CustomMullionValidator;

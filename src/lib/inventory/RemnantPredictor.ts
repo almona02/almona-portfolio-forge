@@ -4,9 +4,8 @@
  * (Designed to allow future ML model integration)
  */
 
-import { Remnant } from './RemnantManager';
-import { Profile } from '@/types/fabricator';
 import { supabase } from '../supabase';
+import { Remnant } from './RemnantManager';
 
 export interface RemnantPrediction {
   remnant: Remnant;
@@ -193,7 +192,7 @@ export class RemnantPredictor {
       }
 
       // Calculate average usage of similar remnants
-      const avgUsage = data.reduce((sum, r) => sum + (r.usage_count || 0), 0) / data.length;
+      const avgUsage = data.reduce((sum, r: any) => sum + (r.usage_count || 0), 0) / data.length;
       const similarUsageScore = Math.min(avgUsage * 10, 60); // Max 60 points
 
       return Math.min(usageScore + similarUsageScore, 100);

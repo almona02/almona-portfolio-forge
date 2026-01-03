@@ -1,24 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
 import { ProtectedComponent } from '@/components/auth/ProtectedComponent';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { 
-  Search, 
-  FileText, 
-  ShoppingCart, 
-  Wrench, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle,
-  Copy,
-  Eye
-} from 'lucide-react';
-import { motion } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/useToast';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Input } from '@/shared/ui/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { motion } from 'framer-motion';
+import {
+    Copy,
+    FileText,
+    Search,
+    ShoppingCart,
+    Wrench
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface Quote {
   id: string;
@@ -126,7 +122,7 @@ const Portal = () => {
   }, []);
 
   const getStatusBadge = (status: string, type: 'quote' | 'order' | 'ticket') => {
-    const statusMap = {
+    const statusMap: Record<string, Record<string, { label: string; color: string }>> = {
       quote: {
         pending: { label: 'قيد المراجعة', color: 'yellow' },
         sent: { label: 'تم الإرسال', color: 'blue' },
@@ -150,7 +146,7 @@ const Portal = () => {
       }
     };
 
-    const statusInfo = statusMap[type][status as keyof typeof statusMap[typeof type]] || 
+    const statusInfo = statusMap[type]?.[status] || 
                       { label: status, color: 'gray' };
 
     return (

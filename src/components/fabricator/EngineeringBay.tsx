@@ -26,7 +26,7 @@ import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/ui/collapsible';
 import { Profile, WindowComponent, WindowGrid, WindowUnit } from '@/types/fabricator';
-import { AlertCircle, Box, ChevronDown, Cpu, FileText, Settings, Sparkles, Wand2 } from 'lucide-react';
+import { AlertCircle, Box, ChevronDown, Cpu, FileText, Ruler, Settings, Sparkles, Wand2 } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -42,6 +42,12 @@ import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Layers } from 'lucide-react';
 import { SmartDrawCanvas } from './SmartDrawCanvas';
+import { DraftingWorkbench } from './drafting/DraftingWorkbench';
+import { ArchitecturalPresetSelector, SIMPLE_PRESETS } from './drafting/prestige';
+import { applyPresetIntelligence, getPresetById } from './drafting/prestige/presetApplication';
+import type { DraftingOutput } from './drafting/types/drafting';
+import { convertDraftingToWindowGrid } from './drafting/utils/draftingToWindowGrid';
+import { mergeHardwareArrays } from './utils/hardwareMergingUtils';
 
 interface EngineeringBayProps {
     project: WindowUnit | null;
@@ -69,6 +75,9 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
     const [activeSystemPackId, setActiveSystemPackId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isPro3D, setIsPro3D] = useState<boolean>(true);
+    const [designMode, setDesignMode] = useState<'smartdraw' | 'drafting'>('smartdraw');
+    const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+    const [showPresetSelector, setShowPresetSelector] = useState(false);
     
     // --- Derived State & Memos ---
     // Get system pack for Gold Tier integration
@@ -102,9 +111,11 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         const mappedProfiles: Profile[] = [];
 
         // Map frame profile
+        // Note: systemProfileSelections uses "Code" but Profile uses "id" or "name"
         if (selections.frameProfileCode) {
             const frameProfile = effectiveProfiles.find(p => 
-                p.code === selections.frameProfileCode || p.id === selections.frameProfileCode
+                p.id === selections.frameProfileCode || 
+                p.name === selections.frameProfileCode
             );
             if (frameProfile) {
                 mappedProfiles.push({ ...frameProfile, profileRole: 'frame' });
@@ -114,7 +125,8 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         // Map sash profile
         if (selections.sashProfileCode) {
             const sashProfile = effectiveProfiles.find(p => 
-                p.code === selections.sashProfileCode || p.id === selections.sashProfileCode
+                p.id === selections.sashProfileCode || 
+                p.name === selections.sashProfileCode
             );
             if (sashProfile) {
                 mappedProfiles.push({ ...sashProfile, profileRole: 'sash' });
@@ -124,7 +136,8 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         // Map bead profile
         if (selections.beadProfileCode) {
             const beadProfile = effectiveProfiles.find(p => 
-                p.code === selections.beadProfileCode || p.id === selections.beadProfileCode
+                p.id === selections.beadProfileCode || 
+                p.name === selections.beadProfileCode
             );
             if (beadProfile) {
                 mappedProfiles.push({ ...beadProfile, profileRole: 'glazing_bead' });
@@ -139,10 +152,10 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                 if (roleProfile) {
                     const matched = effectiveProfiles.find(p => 
                         p.id === roleProfile.id || 
-                        (p.code === roleProfile.code && p.profileRole === role)
+                        (p.name === roleProfile.name && p.profileRole === role)
                     );
                     if (matched) {
-                        mappedProfiles.push({ ...matched, profileRole: role });
+                        mappedProfiles.push({ ...matched, profileRole: role as any });
                     }
                 }
             }
@@ -171,27 +184,8 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
             systemPack
         );
 
-        // Merge generated hardware with connected hardware (avoid duplicates)
-        const hardwareMap = new Map<string, any>();
-        
-        // Add generated hardware first
-        generatedHardware.forEach(hw => {
-            hardwareMap.set(hw.id || `${hw.type}-${hw.name}`, hw);
-        });
-        
-        // Add connected hardware (override if same type/name)
-        connectedHardware.forEach(hw => {
-            const key = hw.id || `${hw.type}-${hw.name}`;
-            const existing = hardwareMap.get(key);
-            if (existing) {
-                // Merge quantities if same type
-                hardwareMap.set(key, { ...existing, quantity: existing.quantity + hw.quantity });
-            } else {
-                hardwareMap.set(key, hw);
-            }
-        });
-        
-        const allHardware = Array.from(hardwareMap.values());
+        // ✅ ENHANCED: Extract hardware merging logic to utility function
+        const allHardware = mergeHardwareArrays(generatedHardware, connectedHardware);
 
         return {
             ...project,
@@ -471,6 +465,72 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         };
     });
 
+    // --- Drafting Mode Integration ---
+    const handleDraftingValidated = useCallback((draftingOutput: DraftingOutput) => {
+        // Convert drafting output to WindowGrid
+        const windowGrid = convertDraftingToWindowGrid(
+            draftingOutput.geometry,
+            draftingOutput.template
+        );
+        
+        // Update grid and system pack
+        setCurrentGrid(windowGrid);
+        if (draftingOutput.suggestedSystemPack) {
+            setActiveSystemPackId(draftingOutput.suggestedSystemPack);
+        }
+        
+        // Switch back to smartdraw mode
+        setDesignMode('smartdraw');
+        
+        // Log constitutional checkpoint
+        console.log('[Constitutional] Drafting → Execution transition', {
+            timestamp: new Date().toISOString(),
+            validationId: draftingOutput.metadata.validationId,
+            tierTransition: 'Tier0 → Tier3'
+        });
+    }, []);
+
+    // --- Preset Selection Handler ---
+    const handlePresetSelect = useCallback((presetId: string) => {
+        setError(null);
+        setSelectedPreset(presetId);
+        
+        const preset = getPresetById(presetId, SIMPLE_PRESETS);
+        if (!preset) return;
+        
+        // Apply preset intelligence
+        const result = applyPresetIntelligence(
+            preset,
+            project?.overallWidth,
+            project?.overallHeight
+        );
+        
+        // Update grid
+        setCurrentGrid(result.windowGrid);
+        
+        // Update system pack if recommended
+        if (result.recommendedSystem) {
+            // Try to find matching system pack
+            const matchingPack = SYSTEM_PACKS.find(p => 
+                p.meta.id.toLowerCase().includes(result.recommendedSystem.toLowerCase()) ||
+                p.meta.name.toLowerCase().includes(result.recommendedSystem.toLowerCase())
+            );
+            if (matchingPack) {
+                setActiveSystemPackId(matchingPack.meta.id);
+            }
+        }
+        
+        // Close preset selector
+        setShowPresetSelector(false);
+        
+        console.log('[Preset Applied]', {
+            presetId,
+            presetTitle: preset.title,
+            grid: result.windowGrid,
+            recommendedSystem: result.recommendedSystem
+        });
+    }, [project]);
+
     // --- Event Handlers ---
     const handleSystemPackSelect = useCallback((systemPack: any) => {
         setError(null);
@@ -569,6 +629,32 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
         );
     }
 
+    // Render Drafting Workbench if in drafting mode
+    if (designMode === 'drafting') {
+        return (
+            <div className="h-screen">
+                <div className="p-4 border-b bg-white flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Button
+                            variant="outline"
+                            onClick={() => setDesignMode('smartdraw')}
+                            className="flex items-center gap-2"
+                        >
+                            ← Back to SmartDraw
+                        </Button>
+                        <span className="text-sm text-gray-600">
+                            ALMONA Drafting Mode - Tier 0 Visual Drafting
+                        </span>
+                    </div>
+                </div>
+                <DraftingWorkbench
+                    onDesignValidated={handleDraftingValidated}
+                    initialTemplate={activeSystemPackId || undefined}
+                />
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-6">
             {/* --- MASTER CONTROL CARD --- */}
@@ -581,6 +667,15 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                         </CardTitle>
                         {liveProject && (
                           <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              onClick={() => setDesignMode('drafting')}
+                              className="border-blue-400 text-blue-200 hover:bg-blue-900/30"
+                              title="Switch to ALMONA Drafting Workbench (Moxisys-style visual drafting)"
+                            >
+                              <Ruler className="h-4 w-4 mr-1" />
+                              Drafting Mode
+                            </Button>
                             <Button
                               variant="outline"
                               onClick={() => {
@@ -667,6 +762,41 @@ export const EngineeringBay: React.FC<EngineeringBayProps> = ({
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
+                                    {/* Preset Selector Toggle */}
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <Label className="text-xs text-gray-300">Window Pattern</Label>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setShowPresetSelector(!showPresetSelector)}
+                                                className="h-7 text-xs"
+                                            >
+                                                <Sparkles className="w-3 h-3 mr-1" />
+                                                {showPresetSelector ? 'Hide Patterns' : 'Choose Pattern'}
+                                            </Button>
+                                        </div>
+                                        {selectedPreset && (
+                                            <div className="text-[11px] text-gray-400">
+                                                {getPresetById(selectedPreset, SIMPLE_PRESETS)?.title || selectedPreset}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Preset Selector Panel */}
+                                    {showPresetSelector && (
+                                        <div className="border border-gray-700 rounded-lg p-4 bg-gray-950/50 max-h-[600px] overflow-y-auto">
+                                            <ArchitecturalPresetSelector
+                                                presets={SIMPLE_PRESETS}
+                                                selectedPreset={selectedPreset || undefined}
+                                                onSelect={handlePresetSelect}
+                                                currentSystem={activeSystemPackId || undefined}
+                                                currentMaterial={project?.color || undefined}
+                                                defaultShowDetails={false}
+                                            />
+                                        </div>
+                                    )}
+
                                     <div className="space-y-2">
                                         <Label className="text-xs text-gray-300">{t('engineering_bay.active_system', 'Active System')}</Label>
                                         {activeSystemPackId && (

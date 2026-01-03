@@ -11,8 +11,8 @@
  * @since Phase 3: Cognitive Intelligence (Week 15)
  */
 
-import type { WindowUnit } from '@/types/fabricator';
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
+import type { WindowUnit } from '@/types/fabricator';
 
 export interface PlatformAnalysis {
   material?: { value: string; confidence: number; reason: string };
@@ -30,7 +30,7 @@ export class PlatformIntelligence {
    */
   async analyzeMarketContext(
     windowUnit: Partial<WindowUnit>,
-    pattern?: EgyptianPattern | null
+    _pattern?: EgyptianPattern | null
   ): Promise<PlatformAnalysis> {
     const warnings: PlatformAnalysis['warnings'] = [];
 
@@ -54,7 +54,7 @@ export class PlatformIntelligence {
   /**
    * Recommend material based on market preference
    */
-  private recommendMaterial(windowUnit: Partial<WindowUnit>): PlatformAnalysis['material'] {
+  private recommendMaterial(_windowUnit: Partial<WindowUnit>): PlatformAnalysis['material'] {
     // Aluminum is preferred in Egyptian market (80% of projects)
     return {
       value: 'aluminum',
@@ -66,7 +66,7 @@ export class PlatformIntelligence {
   /**
    * Recommend color based on market trends
    */
-  private recommendColor(windowUnit: Partial<WindowUnit>): PlatformAnalysis['color'] {
+  private recommendColor(_windowUnit: Partial<WindowUnit>): PlatformAnalysis['color'] {
     // Silver is most popular in Egypt (60% of projects)
     return {
       value: 'Silver',
@@ -78,7 +78,7 @@ export class PlatformIntelligence {
   /**
    * Recommend opening type based on market demand
    */
-  private recommendOpeningType(windowUnit: Partial<WindowUnit>): PlatformAnalysis['openingType'] {
+  private recommendOpeningType(_windowUnit: Partial<WindowUnit>): PlatformAnalysis['openingType'] {
     // Sliding windows are most in demand (70% of projects)
     return {
       value: 'sliding_window',

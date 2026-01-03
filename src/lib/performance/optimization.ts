@@ -205,7 +205,7 @@ class PerformanceOptimizer {
         });
         try {
           fcpObserver.observe({ type: 'paint', buffered: true });
-        } catch (e) {
+        } catch {
           // Fallback for browsers that don't support new format
           fcpObserver.observe({ entryTypes: ['paint'] });
         }
@@ -234,8 +234,9 @@ class PerformanceOptimizer {
         const fidObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries();
           entries.forEach(entry => {
-            if (entry.processingStart && entry.startTime) {
-              const fid = entry.processingStart - entry.startTime;
+            const fidEntry = entry as PerformanceEventTiming;
+            if (fidEntry.processingStart && fidEntry.startTime) {
+              const fid = fidEntry.processingStart - fidEntry.startTime;
               this.updateCoreWebVital('fid', fid);
             }
           });
@@ -252,8 +253,9 @@ class PerformanceOptimizer {
           let clsValue = 0;
           const entries = list.getEntries();
           entries.forEach(entry => {
-            if (!entry.hadRecentInput) {
-              clsValue += entry.value;
+            const clsEntry = entry as LayoutShift;
+            if (!clsEntry.hadRecentInput) {
+              clsValue += clsEntry.value;
             }
           });
           this.updateCoreWebVital('cls', clsValue);
@@ -277,7 +279,7 @@ class PerformanceOptimizer {
         });
         try {
           resourceObserver.observe({ type: 'resource', buffered: true });
-        } catch (e) {
+        } catch {
           // Fallback for browsers that don't support new format
           resourceObserver.observe({ entryTypes: ['resource'] });
         }
@@ -296,12 +298,13 @@ class PerformanceOptimizer {
           entries.forEach(entry => {
             const navEntry = entry as PerformanceNavigationTiming;
             this.updateCoreWebVital('ttfb', navEntry.responseStart - navEntry.requestStart);
-            this.updateCoreWebVital('tti', navEntry.domContentLoadedEventEnd - navEntry.navigationStart);
+            const startTime = navEntry.fetchStart || (typeof performance !== 'undefined' && 'timeOrigin' in performance ? performance.timeOrigin : 0);
+            this.updateCoreWebVital('tti', navEntry.domContentLoadedEventEnd - startTime);
           });
         });
         try {
           navObserver.observe({ type: 'navigation', buffered: true });
-        } catch (e) {
+        } catch {
           // Fallback for browsers that don't support new format
           navObserver.observe({ entryTypes: ['navigation'] });
         }
@@ -324,7 +327,7 @@ class PerformanceOptimizer {
         });
         try {
           longTaskObserver.observe({ type: 'longtask', buffered: true });
-        } catch (e) {
+        } catch {
           // Fallback for browsers that don't support new format
           longTaskObserver.observe({ entryTypes: ['longtask'] });
         }

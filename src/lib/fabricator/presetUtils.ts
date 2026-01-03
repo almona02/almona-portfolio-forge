@@ -9,6 +9,7 @@
 
 import { EGYPTIAN_PATTERNS, type EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { WindowGrid } from '@/types/fabricator';
+import { PATTERN_MATCHING_THRESHOLDS } from './presetMatchingConstants';
 
 // Re-export for convenience
 export type { EgyptianPattern };
@@ -104,9 +105,11 @@ export function gridMatchesPattern(
     }
   }
 
-  const confidence = totalChecks > 0 ? (matchScore / totalChecks) * 100 : 0;
+  const confidence = totalChecks > 0 
+    ? (matchScore / totalChecks) * PATTERN_MATCHING_THRESHOLDS.PERCENTAGE_MULTIPLIER 
+    : 0;
   return {
-    matches: confidence >= 85,
+    matches: confidence >= PATTERN_MATCHING_THRESHOLDS.MIN_MATCH_CONFIDENCE,
     confidence,
     differences
   };
@@ -132,7 +135,7 @@ export function findBestMatchingPattern(
     };
   }).sort((a, b) => b.confidence - a.confidence);
 
-  return matches.length > 0 && matches[0].confidence >= 70
+  return matches.length > 0 && matches[0].confidence >= PATTERN_MATCHING_THRESHOLDS.MIN_BEST_MATCH_CONFIDENCE
     ? matches[0]
     : null;
 }

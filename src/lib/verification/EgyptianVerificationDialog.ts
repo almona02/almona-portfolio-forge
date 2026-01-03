@@ -8,12 +8,12 @@
  */
 
 import type { CandidateFact } from '@/lib/learning/CandidateMemory';
-import type { UserProfile, TrustScore } from '@/lib/trust/EgyptianTrustScoring';
+import type { UserProfile } from '@/lib/trust/EgyptianTrustScoring';
 
 export interface VerificationQuestion {
   question: string;
   questionArabic: string;
-  flow: ConversationFlow;
+  flow: ConversationFlow[];
   expectedResponses: {
     confirmation: string[];
     denial: string[];
@@ -45,7 +45,7 @@ export class EgyptianVerificationDialog {
     },
     technical_engineer: {
       pattern: 'من الناحية الهندسية، هل ${claim} منطقي؟',
-      details: (claim: string) => 'حسب الكود المصري والفيزيا، هل الكلام ده ممكن؟',
+      details: (_claim: string) => 'حسب الكود المصري والفيزيا، هل الكلام ده ممكن؟',
     },
     workshop_owner: {
       pattern: 'يا ريس، لو حصل معاك كده، هتتعامل معاه ازاي؟',
@@ -153,8 +153,8 @@ export class EgyptianVerificationDialog {
    * Prepare follow-up questions
    */
   private prepareFollowUpQuestions(
-    fact: CandidateFact,
-    verifier: UserProfile
+    _fact: CandidateFact,
+    _verifier: UserProfile
   ): FollowUpQuestion[] {
     return [
       {

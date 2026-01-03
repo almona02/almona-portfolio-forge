@@ -144,7 +144,7 @@ export class EgyptianWorkshopNLP {
     dialect: EgyptianDialect,
     userType: UserType
   ): Promise<WorkshopResponse> {
-    const template = this.dialectPatterns[dialect];
+    const _template = this.dialectPatterns[dialect];
 
     return {
       // TECHNICAL answer (accurate)
@@ -221,7 +221,7 @@ export class EgyptianWorkshopNLP {
 
   private async normalizeWorkshopSlang(
     query: string,
-    dialect: EgyptianDialect
+    _dialect: EgyptianDialect
   ): Promise<string> {
     let normalized = query;
 
@@ -238,7 +238,7 @@ export class EgyptianWorkshopNLP {
 
   private async detectWorkshopIntent(
     normalized: string,
-    userType: UserType
+    _userType: UserType
   ): Promise<ParsedQuery['intent']> {
     const lower = normalized.toLowerCase();
 
@@ -263,7 +263,7 @@ export class EgyptianWorkshopNLP {
 
   private async extractWorkshopEntities(
     normalized: string,
-    userType: UserType
+    _userType: UserType
   ): Promise<ParsedQuery['entities']> {
     const entities: ParsedQuery['entities'] = {};
 
@@ -324,7 +324,7 @@ export class EgyptianWorkshopNLP {
 
   private async detectUrgency(
     query: string,
-    userType: UserType
+    _userType: UserType
   ): Promise<'low' | 'medium' | 'high'> {
     const lower = query.toLowerCase();
 
@@ -344,7 +344,7 @@ export class EgyptianWorkshopNLP {
     dialect: EgyptianDialect
   ): Promise<string> {
     const template = this.dialectPatterns[dialect];
-    const phrases = template.phrases;
+    const _phrases = template.phrases;
 
     // Add dialect-specific phrases
     if (dialect === 'cairo_shobra') {
@@ -360,9 +360,9 @@ export class EgyptianWorkshopNLP {
 
   private async simplifyForUser(
     answer: string,
-    userType: UserType
+    _userType: UserType
   ): Promise<string> {
-    if (userType === 'beginner') {
+    if (_userType === 'beginner') {
       return `ببساطة: ${answer}`;
     }
 
@@ -372,7 +372,7 @@ export class EgyptianWorkshopNLP {
   private async addEgyptianMannerisms(
     answer: string,
     dialect: EgyptianDialect,
-    userType: UserType
+    _userType: UserType
   ): Promise<string> {
     const mannerisms: Record<EgyptianDialect, string[]> = {
       cairo_shobra: ['حبيبي', 'يا باشا', 'تعال هنا شوف'],
@@ -390,7 +390,7 @@ export class EgyptianWorkshopNLP {
 
   private async suggestNextStepsInWorkshop(
     answer: string,
-    dialect: EgyptianDialect
+    _dialect: EgyptianDialect
   ): Promise<string[]> {
     const steps: string[] = [];
 

@@ -11,7 +11,8 @@
  */
 
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
-import type { WindowUnit, FabricationData } from '@/types/fabricator';
+import type { FabricationData, WindowUnit } from '@/types/fabricator';
+import { ASSEMBLY_TIME_ESTIMATES } from './assemblySequenceConstants';
 
 /**
  * AssemblySequenceGenerator - Assembly sequence generation engine
@@ -39,7 +40,7 @@ export class AssemblySequenceGenerator {
         step: stepNumber++,
         operation: 'Cut frame and sash profiles',
         station: 'cutting',
-        estimatedTime: Math.ceil(totalProfiles * 2), // 2 minutes per profile
+        estimatedTime: Math.ceil(totalProfiles * ASSEMBLY_TIME_ESTIMATES.PER_PROFILE_MINUTES),
         toolsRequired: ['saw', 'measuring_tape', 'miter_box'],
         skillsRequired: 'basic',
         qualityGates: [
@@ -57,7 +58,7 @@ export class AssemblySequenceGenerator {
         step: stepNumber++,
         operation: 'Assemble frame with corner keys',
         station: 'assembly',
-        estimatedTime: 15, // 15 minutes
+        estimatedTime: ASSEMBLY_TIME_ESTIMATES.FRAME_ASSEMBLY_MINUTES,
         toolsRequired: ['rubber_mallet', 'corner_keys', 'square'],
         skillsRequired: 'intermediate',
         qualityGates: [
@@ -75,7 +76,7 @@ export class AssemblySequenceGenerator {
         step: stepNumber++,
         operation: 'Install mullions and transoms',
         station: 'assembly',
-        estimatedTime: 10, // 10 minutes
+        estimatedTime: ASSEMBLY_TIME_ESTIMATES.MULLION_TRANSOM_INSTALLATION_MINUTES,
         toolsRequired: ['drill', 'screws', 'level'],
         skillsRequired: 'intermediate',
         qualityGates: [
@@ -93,7 +94,7 @@ export class AssemblySequenceGenerator {
         step: stepNumber++,
         operation: 'Assemble sashes',
         station: 'assembly',
-        estimatedTime: 20, // 20 minutes
+        estimatedTime: ASSEMBLY_TIME_ESTIMATES.SASH_ASSEMBLY_MINUTES,
         toolsRequired: ['corner_keys', 'rubber_mallet', 'square'],
         skillsRequired: 'intermediate',
         qualityGates: [
@@ -111,7 +112,7 @@ export class AssemblySequenceGenerator {
         step: stepNumber++,
         operation: 'Install hardware (hinges, locks, handles)',
         station: 'assembly',
-        estimatedTime: Math.ceil(totalHardware * 5), // 5 minutes per hardware item
+        estimatedTime: Math.ceil(totalHardware * ASSEMBLY_TIME_ESTIMATES.PER_HARDWARE_ITEM_MINUTES),
         toolsRequired: ['drill', 'screwdriver', 'torque_wrench'],
         skillsRequired: 'intermediate',
         qualityGates: [
@@ -130,7 +131,7 @@ export class AssemblySequenceGenerator {
         step: stepNumber++,
         operation: 'Install glazing (glass panes)',
         station: 'glazing',
-        estimatedTime: Math.ceil(totalPanes * 10), // 10 minutes per pane
+        estimatedTime: Math.ceil(totalPanes * ASSEMBLY_TIME_ESTIMATES.PER_GLAZING_PANE_MINUTES),
         toolsRequired: ['glazing_beads', 'rubber_mallet', 'safety_equipment'],
         skillsRequired: 'expert',
         qualityGates: [
@@ -148,7 +149,7 @@ export class AssemblySequenceGenerator {
       step: stepNumber++,
       operation: 'Final quality control and inspection',
       station: 'qc',
-      estimatedTime: 15, // 15 minutes
+      estimatedTime: ASSEMBLY_TIME_ESTIMATES.QUALITY_CONTROL_MINUTES,
       toolsRequired: ['measuring_tape', 'level', 'square', 'checklist'],
       skillsRequired: 'expert',
       qualityGates: [

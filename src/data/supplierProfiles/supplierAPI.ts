@@ -132,7 +132,7 @@ export class SupplierAPI {
     }
     
     // Fallback to database pricing
-    return profileIds.map((profileId, index) => {
+    return profileIds.map((profileId) => {
       const profile = supplier.profiles.find(p => p.id === profileId);
       if (!profile) {
         throw new Error(`Profile ${profileId} not found`);
@@ -282,7 +282,7 @@ export class SupplierAPI {
     path: string,
     apiKey: string,
     data?: any,
-    method: string = 'GET'
+    _method: string = 'GET'
   ): Promise<any> {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));

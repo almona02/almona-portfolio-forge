@@ -72,7 +72,7 @@ export class CashFlowOptimizer {
   /**
    * Payment terms for homeowners
    */
-  private getHomeownerTerms(context: CashFlowContext): PaymentTerms {
+  private getHomeownerTerms(_context: CashFlowContext): PaymentTerms {
     return {
       terms: '40% Advance, 40% Profile Arrival, 20% Finish',
       breakdown: {
@@ -108,7 +108,7 @@ export class CashFlowOptimizer {
   /**
    * Payment terms for government projects
    */
-  private getGovernmentTerms(context: CashFlowContext): PaymentTerms {
+  private getGovernmentTerms(_context: CashFlowContext): PaymentTerms {
     return {
       terms: '30% Advance, 70% On Completion (90-day credit)',
       breakdown: {

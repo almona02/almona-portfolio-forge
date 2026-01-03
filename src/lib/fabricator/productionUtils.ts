@@ -8,7 +8,13 @@
  */
 
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
-import type { WindowUnit, FabricationData } from '@/types/fabricator';
+import type { FabricationData, WindowUnit } from '@/types/fabricator';
+import {
+    DEFAULT_HOLE_SPECS,
+    DEFAULT_PROFILE_DIMENSIONS,
+    HARDWARE_QUANTITY_PER_COMPONENT,
+    UNIT_CONVERSION,
+} from './productionConstants';
 
 /**
  * Profile specification for calculations
@@ -65,7 +71,7 @@ export class ProductionUtils {
     } else {
       // Miter cut: kerf compensation is angle-dependent
       // Formula: kerf / sin(angle)
-      const angleRad = (angle * Math.PI) / 180;
+      const angleRad = angle * UNIT_CONVERSION.DEGREES_TO_RADIANS;
       const miterCompensation = kerf / Math.sin(angleRad);
       return length + miterCompensation;
     }
@@ -109,7 +115,7 @@ export class ProductionUtils {
    * @returns Weight in kg
    */
   static calculateProfileWeight(length: number, profile: ProfileSpec): number {
-    const lengthInMeters = length / 1000;
+    const lengthInMeters = length / UNIT_CONVERSION.MM_PER_METER;
     return lengthInMeters * profile.weightPerMeter;
   }
   
@@ -121,7 +127,7 @@ export class ProductionUtils {
    * @returns Cost in currency units
    */
   static calculateMaterialCost(length: number, profile: ProfileSpec): number {
-    const lengthInMeters = length / 1000;
+    const lengthInMeters = length / UNIT_CONVERSION.MM_PER_METER;
     return lengthInMeters * profile.costPerMeter;
   }
   
@@ -140,8 +146,10 @@ export class ProductionUtils {
     height: number, 
     thickness: number
   ): number {
-    const area = (width * height) / 1000000; // Convert to m²
-    const weightPerSquareMeter = thickness * 2.5; // kg/m² per mm thickness
+    const area = (width * height) / UNIT_CONVERSION.MM2_PER_M2; // Convert to m²
+    // Import glass density constant (avoiding circular dependency by using inline value)
+    const GLASS_DENSITY_KG_PER_M2_PER_MM = 2.5; // kg/m² per mm thickness
+    const weightPerSquareMeter = thickness * GLASS_DENSITY_KG_PER_M2_PER_MM;
     return area * weightPerSquareMeter;
   }
   
@@ -165,7 +173,7 @@ export class ProductionUtils {
     
     // Corner miter cuts (4 corners)
     // Frame perimeter: top, right, bottom, left
-    const frameProfileWidth = (pattern as any).frameProfile?.width || 60;
+    const frameProfileWidth = (pattern as any).frameProfile?.width || DEFAULT_PROFILE_DIMENSIONS.DEFAULT_FRAME_WIDTH_MM;
     
     zones.push(
       {
@@ -207,8 +215,8 @@ export class ProductionUtils {
             type: 'drill',
             position,
             dimensions: { 
-              width: accessory.holeDiameter || 5, 
-              depth: accessory.holeDepth || 10 
+              width: accessory.holeDiameter || DEFAULT_HOLE_SPECS.DEFAULT_HOLE_DIAMETER_MM, 
+              depth: accessory.holeDepth || DEFAULT_HOLE_SPECS.DEFAULT_HOLE_DEPTH_MM 
             },
             toolReference: accessory.toolReference || 'DRILL-5MM'
           });
@@ -240,13 +248,21 @@ export class ProductionUtils {
       {
         type: 'mill',
         position: 0,
-        dimensions: { width: 60, depth: 60, length: 60 },
+        dimensions: {
+          width: DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+          depth: DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+          length: DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+        },
         toolReference: 'MITER-45'
       },
       {
         type: 'mill',
-        position: windowUnit.overallHeight - 60,
-        dimensions: { width: 60, depth: 60, length: 60 },
+        position: windowUnit.overallHeight - DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+        dimensions: {
+          width: DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+          depth: DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+          length: DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+        },
         toolReference: 'MITER-45'
       }
     );
@@ -274,13 +290,21 @@ export class ProductionUtils {
       {
         type: 'mill',
         position: 0,
-        dimensions: { width: 60, depth: 60, length: 60 },
+        dimensions: {
+          width: DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+          depth: DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+          length: DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+        },
         toolReference: 'MITER-45'
       },
       {
         type: 'mill',
-        position: windowUnit.overallWidth - 60,
-        dimensions: { width: 60, depth: 60, length: 60 },
+        position: windowUnit.overallWidth - DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+        dimensions: {
+          width: DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+          depth: DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+          length: DEFAULT_PROFILE_DIMENSIONS.DEFAULT_MACHINING_ZONE_DIMENSION_MM,
+        },
         toolReference: 'MITER-45'
       }
     );
@@ -369,29 +393,29 @@ export class ProductionUtils {
     // For hinges: typically 2 per sash
     if (accessory.category === 'hinge') {
       const sashCount = grid.cells.filter(c => c.type === 'sash' || c.type === 'sliding').length;
-      return sashCount * 2; // 2 hinges per sash
+      return sashCount * HARDWARE_QUANTITY_PER_COMPONENT.HINGES_PER_SASH;
     }
-    
+
     // For handles: 1 per sash
     if (accessory.category === 'handle') {
       const sashCount = grid.cells.filter(c => c.type === 'sash' || c.type === 'sliding').length;
-      return sashCount;
+      return sashCount * HARDWARE_QUANTITY_PER_COMPONENT.HANDLES_PER_SASH;
     }
-    
+
     // For locks: 1 per sash
     if (accessory.category === 'lock') {
       const sashCount = grid.cells.filter(c => c.type === 'sash' || c.type === 'sliding').length;
-      return sashCount;
+      return sashCount * HARDWARE_QUANTITY_PER_COMPONENT.LOCKS_PER_SASH;
     }
-    
+
     // For rollers: 2 per sliding sash
     if (accessory.category === 'roller') {
       const slidingCount = grid.cells.filter(c => c.type === 'sliding').length;
-      return slidingCount * 2; // 2 rollers per sliding sash
+      return slidingCount * HARDWARE_QUANTITY_PER_COMPONENT.ROLLERS_PER_SLIDING_SASH;
     }
-    
+
     // Default: 1
-    return 1;
+    return HARDWARE_QUANTITY_PER_COMPONENT.DEFAULT_QUANTITY;
   }
 }
 

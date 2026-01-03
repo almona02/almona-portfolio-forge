@@ -13,7 +13,6 @@
  */
 
 import type { WindowUnit } from '@/types/fabricator';
-import { FabricatorTemplate } from './FabricatorTemplates';
 
 export interface QuickOrderParams {
   templateId?: string;

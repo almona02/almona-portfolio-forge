@@ -1,6 +1,6 @@
 // Inventory management utilities
-import { supabase } from './supabase';
 import type { Database } from '@/types/database';
+import { supabase } from './supabase';
 
 export interface StockValidationResult {
   isValid: boolean;
@@ -31,7 +31,7 @@ export async function validateStock(
       .eq('id', productId)
       .single();
 
-    if (error) {
+    if (error || !product) {
       return {
         isValid: false,
         availableQuantity: 0,
@@ -40,7 +40,9 @@ export async function validateStock(
       };
     }
 
-    if (!product.is_active) {
+    const productData = product as any;
+
+    if (!productData.is_active) {
       return {
         isValid: false,
         availableQuantity: 0,
@@ -49,18 +51,18 @@ export async function validateStock(
       };
     }
 
-    if (product.stock_quantity < requestedQuantity) {
+    if (productData.stock_quantity < requestedQuantity) {
       return {
         isValid: false,
-        availableQuantity: product.stock_quantity,
+        availableQuantity: productData.stock_quantity,
         requestedQuantity,
-        message: `الكمية المطلوبة (${requestedQuantity}) غير متوفرة. الكمية المتاحة: ${product.stock_quantity}`
+        message: `الكمية المطلوبة (${requestedQuantity}) غير متوفرة. الكمية المتاحة: ${productData.stock_quantity}`
       };
     }
 
     return {
       isValid: true,
-      availableQuantity: product.stock_quantity,
+      availableQuantity: productData.stock_quantity,
       requestedQuantity,
       message: 'الكمية متوفرة'
     };
@@ -91,8 +93,8 @@ export async function reserveStock(
     }
 
     // Update stock quantity
-    const { error } = await supabase
-      .from('products')
+    const { error } = await (supabase
+      .from('products') as any)
       .update({ 
         stock_quantity: validation.availableQuantity - quantity,
         updated_at: new Date().toISOString()
@@ -104,7 +106,7 @@ export async function reserveStock(
     }
 
     // Log the reservation (optional - for tracking)
-    await supabase
+    await (supabase
       .from('inventory_reservations')
       .insert({
         product_id: productId,
@@ -112,7 +114,7 @@ export async function reserveStock(
         reservation_type: reservationType,
         status: 'reserved',
         created_at: new Date().toISOString()
-      });
+      } as any) as any);
 
     return { success: true, message: 'تم حجز المخزون بنجاح' };
   } catch (error) {
@@ -127,7 +129,7 @@ export async function reserveStock(
 export async function releaseStock(
   productId: string,
   quantity: number,
-  reservationType: 'quote' | 'order' = 'quote'
+  _reservationType: 'quote' | 'order' = 'quote'
 ): Promise<{ success: boolean; message: string }> {
   try {
     // Update stock quantity
@@ -141,10 +143,16 @@ export async function releaseStock(
       return { success: false, message: 'خطأ في جلب بيانات المنتج' };
     }
 
-    const { error } = await supabase
-      .from('products')
+    if (!product) {
+      return { success: false, message: 'خطأ في جلب بيانات المنتج' };
+    }
+
+    const productData = product as any;
+
+    const { error } = await (supabase
+      .from('products') as any)
       .update({ 
-        stock_quantity: product.stock_quantity + quantity,
+        stock_quantity: productData.stock_quantity + quantity,
         updated_at: new Date().toISOString()
       })
       .eq('id', productId);
@@ -170,14 +178,14 @@ export async function getInventoryAlerts(): Promise<InventoryAlert[]> {
       .select('id, name_ar, name_en, stock_quantity, min_stock_level')
       .eq('is_active', true);
 
-    if (error) {
+    if (error || !products) {
       console.error('Error fetching inventory alerts:', error);
       return [];
     }
 
     const alerts: InventoryAlert[] = [];
 
-    products.forEach(product => {
+    products.forEach((product: any) => {
       if (product.stock_quantity === 0) {
         alerts.push({
           productId: product.id,
@@ -213,8 +221,8 @@ export async function updateStock(
   reason?: string
 ): Promise<{ success: boolean; message: string }> {
   try {
-    const { error } = await supabase
-      .from('products')
+    const { error } = await (supabase
+      .from('products') as any)
       .update({ 
         stock_quantity: newQuantity,
         updated_at: new Date().toISOString()
@@ -226,7 +234,7 @@ export async function updateStock(
     }
 
     // Log the stock update
-    await supabase
+    await (supabase
       .from('inventory_logs')
       .insert({
         product_id: productId,
@@ -234,7 +242,7 @@ export async function updateStock(
         new_quantity: newQuantity,
         reason: reason || 'Manual update',
         created_at: new Date().toISOString()
-      });
+      } as any) as any);
 
     return { success: true, message: 'تم تحديث المخزون بنجاح' };
   } catch (error) {

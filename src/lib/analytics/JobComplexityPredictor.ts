@@ -3,7 +3,7 @@
  * Pre-emptively selects optimal solver algorithm before optimization
  */
 
-import type { WindowComponent, Profile } from '@/types/fabricator';
+import type { Profile, WindowComponent } from '@/types/fabricator';
 import { AdaptiveSolverConfig } from '@/types/fabricator';
 
 export interface ComplexityPrediction {
@@ -21,7 +21,7 @@ export class JobComplexityPredictor {
    */
   predictComplexity(
     components: WindowComponent[],
-    profiles: Profile[]
+    _profiles: Profile[]
   ): ComplexityPrediction {
     // Count total cuts
     const totalCuts = components.reduce(

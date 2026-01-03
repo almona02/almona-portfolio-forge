@@ -13,17 +13,14 @@
 
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
-import { SmartDefaults } from '@/lib/intelligence/SmartDefaults';
-import { UnifiedCognitionEngine } from '@/lib/cognition/UnifiedCognitionEngine';
-import type { WindowUnit } from '@/types/fabricator';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { UnifiedCognitionEngine } from '@/lib/cognition/UnifiedCognitionEngine';
+import { SmartDefaults } from '@/lib/intelligence/SmartDefaults';
+import type { WindowUnit } from '@/types/fabricator';
 import { CheckCircle2, Info, Loader2 } from 'lucide-react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Step1ProjectType, type ProjectType } from './Step1ProjectType';
 import { Step2Location, type LocationRegion } from './Step2Location';
 import { Step3Size } from './Step3Size';
@@ -51,7 +48,6 @@ export const SmartWizard: React.FC<SmartWizardProps> = ({
   const [region, setRegion] = useState<LocationRegion | undefined>();
   const [width, setWidth] = useState<number>(1800);
   const [height, setHeight] = useState<number>(1500);
-  const [openingType, setOpeningType] = useState<string>('sliding_window');
   const [loading, setLoading] = useState(false);
   const [showWhyExplanation, setShowWhyExplanation] = useState<string | null>(null);
 
@@ -59,7 +55,7 @@ export const SmartWizard: React.FC<SmartWizardProps> = ({
   const cognitionEngine = useMemo(() => new UnifiedCognitionEngine(), []);
 
   const [defaults, setDefaults] = useState<any>(null);
-  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [, setRecommendations] = useState<any[]>([]);
 
   // Load smart defaults on mount
   React.useEffect(() => {
@@ -86,8 +82,7 @@ export const SmartWizard: React.FC<SmartWizardProps> = ({
       try {
         const windowUnit: Partial<WindowUnit> = {
           overallWidth: width,
-          overallHeight: height,
-          openingType: openingType as any
+          overallHeight: height
         };
 
         const analysis = await cognitionEngine.analyzeContext(windowUnit);
@@ -111,7 +106,7 @@ export const SmartWizard: React.FC<SmartWizardProps> = ({
     } else {
       setStep((s) => (s + 1) as WizardStep);
     }
-  }, [step, width, height, openingType, cognitionEngine, smartDefaults, onComplete]);
+  }, [step, width, height, cognitionEngine, smartDefaults, onComplete]);
 
   const handleBack = useCallback(() => {
     if (step > 1) {

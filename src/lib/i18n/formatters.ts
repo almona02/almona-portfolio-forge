@@ -180,7 +180,7 @@ export function formatMeasurement(
 export function formatQuantity(
   quantity: number,
   unit: string,
-  locale: string = 'en',
+  _locale: string = 'en',
   t: (key: string, fallback?: string) => string
 ): string {
   const unitLabel = t(`engineering_bay.units.${unit}`, unit);
