@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import type { Database, OrderStatus } from '@/types/database';
+import { z } from 'zod';
 import { table } from './clientCore';
 
 const orderItemSchema = z.object({
@@ -43,7 +43,7 @@ type OrderRow = Database['public']['Tables']['orders']['Row'];
 
 export async function createOrder(input: OrderCreateInput): Promise<OrderRow> {
   const parsed = orderCreateSchema.parse(input);
-  const { items, ...core } = parsed;
+  const { items: _items, ...core } = parsed;
   const { data, error } = await (table('orders') as any)
     .insert(core as any)
     .select('*')

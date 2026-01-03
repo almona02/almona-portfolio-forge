@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { useRegionDetection } from '@/hooks/useRegionDetection';
-import { EquipmentRecommender } from '@/components/recommendation/EquipmentRecommender';
 import { InteractiveGLBViewer } from '@/components/3d-model/InteractiveGLBViewer';
+import { EquipmentRecommender } from '@/components/recommendation/EquipmentRecommender';
 import { ComplianceDocumentGenerator } from '@/components/regional/turkish/ComplianceDocumentGenerator';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useRegionDetection } from '@/hooks/useRegionDetection';
+import React, { useState } from 'react';
 
 // Mock data for demonstration
 const mockMachines = [
@@ -149,7 +149,7 @@ export const AIRecommendationDemo: React.FC = () => {
     }
   };
 
-  const handlePartSelect = (part: { id: string; name: string; price: number }) => {
+  const handlePartSelect = (_part: { id: string; name: string; price: number }) => {
     // Part selection handled
   };
 

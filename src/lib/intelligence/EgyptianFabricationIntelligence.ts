@@ -117,7 +117,7 @@ export class EgyptianFabricationIntelligence {
   static getMaterialStrategy(
     projectType: 'residential' | 'commercial' | 'luxury' | 'heritage',
     location: string,
-    budget: 'budget' | 'standard' | 'premium' = 'standard'
+    _budget: 'budget' | 'standard' | 'premium' = 'standard'
   ): MaterialStrategy {
     const patterns = this.CAIRO_2025_INTELLIGENCE;
     const material = patterns.materialPreferences[projectType] || 'Aluminum 65mm System';
@@ -180,7 +180,7 @@ export class EgyptianFabricationIntelligence {
   /**
    * Get competitor analysis for location
    */
-  static getCompetitorAnalysis(location: string): CompetitorAnalysis[] {
+  static getCompetitorAnalysis(_location: string): CompetitorAnalysis[] {
     // Return relevant competitor analysis
     return Object.values(this.COMPETITOR_ANALYSIS);
   }

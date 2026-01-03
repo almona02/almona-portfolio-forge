@@ -1,36 +1,36 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 // import { Link } from "react-router-dom";
 import { LazyMotionDiv } from '@/utils/lazyMotion';
-import { 
-  Search, 
-  Filter, 
-  Cpu, 
-  Settings, 
-  Zap, 
-  Wrench, 
-  ChevronRight,
-  ShoppingCart
+import {
+    ChevronRight,
+    Cpu,
+    Filter,
+    Search,
+    Settings,
+    ShoppingCart,
+    Wrench,
+    Zap
 } from "lucide-react";
 
 
 import { EnhancedImage } from "@/components/ui/EnhancedImage";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
-import { Input } from "@/shared/ui/ui/input";
 import { Card, CardContent } from "@/shared/ui/ui/card";
+import { Input } from "@/shared/ui/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/shared/ui/ui/select";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
-import { useToast } from "@/hooks/useToast";
-import { useAuth } from "@/context/AuthContext";
 import { ProtectedComponent } from "@/components/auth/ProtectedComponent";
 import { yilmazMachines } from "@/constants/productsData";
+import { useAuth } from "@/context/AuthContext";
 import { withErrorBoundary } from '@/hocs/withErrorBoundary';
+import { useToast } from "@/hooks/useToast";
 
 // Types
 interface SparePart {
@@ -154,7 +154,7 @@ const partCategories: PartCategory[] = [
  */
 const SpareParts = () => {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [_selectedSubcategory, _setSelectedSubcategory] = useState<string>("all");

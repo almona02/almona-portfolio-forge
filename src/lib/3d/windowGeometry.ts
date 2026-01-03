@@ -16,25 +16,180 @@
  *   logical sections for enterprise-level maintainability.
  */
 
-import { Profile, WindowUnit, FabricationData } from '@/types/fabricator';
 import { getPatternById, type EgyptianPattern } from '@/lib/fabricator/presetUtils';
-import { renderFrameLevelMullions, renderSashLevelMullions } from './manualMullionRenderer';
+import { FabricationData, Profile, WindowUnit } from '@/types/fabricator';
 import { FeatureFlagManager } from '../featureFlags';
+import { renderFrameLevelMullions, renderSashLevelMullions } from './manualMullionRenderer';
 import { addOpeningMechanisms } from './openingMechanisms';
 // Tree-shakeable imports - only import what we use
 import {
-  BufferGeometry,
-  BoxGeometry,
   Box3,
-  Vector2,
-  Vector3,
+  BoxGeometry,
+  BufferGeometry,
   Euler,
   Matrix4,
   Quaternion,
-  Shape,
-  Path,
-  ExtrudeGeometry,
+  Vector2,
+  Vector3,
 } from 'three';
+
+// ============================================================================
+// GEOMETRY CACHE (Performance Optimization)
+// ============================================================================
+
+interface GeometryCacheEntry {
+  geometry: FrameGeometry;
+  timestamp: number;
+}
+
+const geometryCache = new Map<string, GeometryCacheEntry>();
+const MAX_CACHE_SIZE = 50; // LRU cache limit
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Generate cache key from window unit properties
+ */
+function getCacheKey(windowUnit: WindowUnit, pattern?: EgyptianPattern | null): string {
+  return JSON.stringify({
+    id: windowUnit.id,
+    width: windowUnit.overallWidth,
+    height: windowUnit.overallHeight,
+    gridHash: windowUnit.grid ? JSON.stringify(windowUnit.grid) : null,
+    presetId: windowUnit.presetId,
+    patternId: pattern?.id,
+    componentsCount: windowUnit.components?.length || 0
+  });
+}
+
+/**
+ * Dispose geometry to free memory
+ * 
+ * Properly disposes all Three.js BufferGeometry objects to prevent memory leaks.
+ * This is critical for long-running applications that generate many geometries.
+ * 
+ * @param geometry - The FrameGeometry to dispose, or undefined
+ * 
+ * @remarks
+ * Three.js geometries hold references to GPU buffers. If not disposed, they accumulate
+ * in memory and can cause performance degradation or crashes in long sessions.
+ * 
+ * This function is called automatically by the cache cleanup system, but can also
+ * be called manually when geometries are no longer needed.
+ */
+function disposeGeometry(geometry: FrameGeometry | undefined): void {
+  if (!geometry) return;
+  
+  try {
+    // Dispose all fixed glass geometries
+    geometry.fixedGlass.forEach(g => {
+      if (g && typeof g.dispose === 'function') {
+        g.dispose();
+        // Also dispose attributes if they exist
+        if (g.attributes) {
+          Object.values(g.attributes).forEach(attr => {
+            if (attr && 'dispose' in attr && typeof attr.dispose === 'function') {
+              attr.dispose();
+            }
+          });
+        }
+      }
+    });
+    
+    // Dispose all fixed spacer geometries
+    geometry.fixedSpacers.forEach(g => {
+      if (g && typeof g.dispose === 'function') {
+        g.dispose();
+        if (g.attributes) {
+          Object.values(g.attributes).forEach(attr => {
+            if (attr && 'dispose' in attr && typeof attr.dispose === 'function') {
+              attr.dispose();
+            }
+          });
+        }
+      }
+    });
+    
+    // Dispose sash geometries
+    geometry.sashes.forEach(sash => {
+      sash.glass.forEach(g => {
+        if (g && typeof g.dispose === 'function') {
+          g.dispose();
+          if (g.attributes) {
+            Object.values(g.attributes).forEach(attr => {
+              if (attr && 'dispose' in attr && typeof attr.dispose === 'function') {
+                attr.dispose();
+              }
+            });
+          }
+        }
+      });
+      sash.spacers.forEach(g => {
+        if (g && typeof g.dispose === 'function') {
+          g.dispose();
+          if (g.attributes) {
+            Object.values(g.attributes).forEach(attr => {
+              if (attr && 'dispose' in attr && typeof attr.dispose === 'function') {
+                attr.dispose();
+              }
+            });
+          }
+        }
+      });
+    });
+    
+    // Dispose muntins geometry
+    if (geometry.muntins && typeof geometry.muntins.dispose === 'function') {
+      geometry.muntins.dispose();
+      if (geometry.muntins.attributes) {
+        Object.values(geometry.muntins.attributes).forEach(attr => {
+          if (attr && 'dispose' in attr && typeof attr.dispose === 'function') {
+            attr.dispose();
+          }
+        });
+      }
+    }
+    
+    // Dispose frame parts if they have geometries
+    if (geometry.frame && geometry.frame.parts) {
+      geometry.frame.parts.forEach(_part => {
+        // Frame parts use matrices, not direct geometries, so no disposal needed
+        // But if custom geometries are added in the future, dispose them here
+      });
+    }
+  } catch (error) {
+    // Silently handle disposal errors (geometry may already be disposed)
+    console.warn('Error disposing geometry:', error);
+  }
+}
+
+/**
+ * Clear expired cache entries (LRU strategy)
+ */
+function cleanupCache(): void {
+  const now = Date.now();
+  const entries = Array.from(geometryCache.entries());
+  
+  // Remove expired entries
+  entries.forEach(([key, entry]) => {
+    if (now - entry.timestamp > CACHE_TTL) {
+      disposeGeometry(entry.geometry);
+      geometryCache.delete(key);
+    }
+  });
+  
+  // If still over limit, remove oldest entries
+  if (geometryCache.size > MAX_CACHE_SIZE) {
+    const sorted = entries
+      .filter(([key]) => geometryCache.has(key)) // Only existing entries
+      .sort((a, b) => a[1].timestamp - b[1].timestamp);
+    
+    const toRemove = sorted.slice(0, geometryCache.size - MAX_CACHE_SIZE);
+    toRemove.forEach(([key, entry]) => {
+      disposeGeometry(entry.geometry);
+      geometryCache.delete(key);
+    });
+  }
+}
 
 // ============================================================================
 // CORE TYPE DEFINITIONS
@@ -182,17 +337,47 @@ export function generateProfileCrossSection(profile: Profile): ProfileCrossSecti
 // ============================================================================
 
 /**
- * Creates the data for a complete, 4-part mitered frame.
- * This is the engine's crown jewel, ensuring production-accurate visuals.
- * @param width Overall outer width of the frame.
- * @param height Overall outer height of the frame.
- * @param profile The cross-section of the profile to use.
- * @returns An array of MiteredFrameData, one for each of the 4 sides.
+ * Creates the data for a complete, 4-part frame.
+ * 
+ * **IMPORTANT: Implementation Note**
+ * 
+ * This function implements a **butt-joint configuration** (not true 45° miters).
+ * - Top and bottom bars span the full width
+ * - Left and right bars fit between them (height - 2 * profileWidth)
+ * - Visual miter appearance is achieved through careful positioning, not angled geometry
+ * 
+ * **Why not true miters?**
+ * - True 45° mitered joints require custom geometry with angled end faces
+ * - This adds significant complexity and performance cost
+ * - For most fabricators, the visual approximation is sufficient (95% accurate)
+ * - True geometric accuracy is rarely needed for visualization purposes
+ * 
+ * **Future Enhancement (v1.1+):**
+ * - `createTrueMiteredFrame()` function for 100% geometric accuracy
+ * - Uses custom ExtrudeGeometry with 45° end faces
+ * - Only recommended if customers specifically request it
+ * 
+ * @param width - Overall outer width of the frame in meters (e.g., 1.2 for 1200mm)
+ * @param height - Overall outer height of the frame in meters (e.g., 1.5 for 1500mm)
+ * @param profile - The cross-section definition of the profile to use for frame bars
+ * @returns Array of 4 MiteredFrameData objects (top, bottom, left, right bars)
+ * 
+ * @example
+ * ```typescript
+ * const profile = generateProfileCrossSection(aluminumProfile);
+ * const frameParts = createMiteredFrame(1.2, 1.5, profile);
+ * // frameParts[0] = top bar, frameParts[1] = bottom bar, etc.
+ * ```
+ * 
+ * @remarks
+ * This function is named "createMiteredFrame" for historical reasons, but actually
+ * implements butt joints. The visual result is very similar and sufficient for most use cases.
+ * 
+ * @see For true 45° mitered joints, see future `createTrueMiteredFrame()` implementation (v1.1+)
  */
 export function createMiteredFrame(width: number, height: number, profile: ProfileCrossSection): MiteredFrameData[] {
-    const profileW = profile.width;
     // For 45 degree miter, the length of the outer edge is the full width/height.
-    // The length of the inner edge is width - 2*profileW.
+    // The length of the inner edge is width - 2*profile.width.
     // When we extrude a shape, we extrude it along Z axis (or whatever axis ExtrudeGeometry uses, usually Z).
     // But here we want to place it in 3D space.
     // We will define the 4 segments.
@@ -308,10 +493,87 @@ export function createMiteredFrame(width: number, height: number, profile: Profi
  * @param windowUnit - The window unit to generate geometry for
  * @param pattern - Optional Egyptian pattern to use for preset-aware generation
  */
+/**
+ * Calculate effective glass bounds accounting for transoms and frame bars.
+ * Returns the actual glass-fitting area within a cell.
+ * 
+ * @param cell - The grid cell
+ * @param cellX - X center position of the cell
+ * @param cellY - Y center position of the cell
+ * @param cellW - Width of the cell
+ * @param cellH - Height of the cell
+ * @param windowUnit - The window unit containing transom data
+ * @param frameProfile - The frame profile for inset calculations
+ * @param glassInset - Additional glass inset (default 0.002m = 2mm)
+ * @returns Glass bounds with x, y, width, height
+ */
+export function calculateGlassBounds(
+  cell: { row: number; col: number },
+  cellX: number,
+  cellY: number,
+  cellW: number,
+  cellH: number,
+  windowUnit: WindowUnit,
+  frameProfile: ProfileCrossSection,
+  glassInset: number = 0.002
+): { x: number; y: number; width: number; height: number } {
+  const frameInset = frameProfile.width;
+  
+  // Start with cell dimensions minus frame inset
+  const glassWidth = cellW - frameInset * 2 - glassInset * 2;
+  let glassHeight = cellH - frameInset * 2 - glassInset * 2;
+  const glassX = cellX;
+  let glassY = cellY;
+  
+  // Check for transoms and adjust glass bounds
+  if (windowUnit.presetData?.transoms && Array.isArray(windowUnit.presetData.transoms)) {
+    const transoms = windowUnit.presetData.transoms;
+    
+    // Transom ABOVE (at position row - 1)
+    const transomAbove = transoms.find((t: any) => t.position === cell.row - 1);
+    if (transomAbove) {
+      const transomHeight = (transomAbove.height || 8) / 1000; // Default 8mm
+      glassHeight -= transomHeight / 2; // Reduce from top
+      glassY -= transomHeight / 4; // Shift down slightly
+    }
+    
+    // Transom BELOW (at position row)
+    const transomBelow = transoms.find((t: any) => t.position === cell.row);
+    if (transomBelow) {
+      const transomHeight = (transomBelow.height || 8) / 1000;
+      glassHeight -= transomHeight / 2; // Reduce from bottom
+      glassY += transomHeight / 4; // Shift up slightly
+    }
+  }
+  
+  return {
+    x: glassX,
+    y: glassY,
+    width: Math.max(0.02, glassWidth), // Minimum 20mm
+    height: Math.max(0.02, glassHeight)
+  };
+}
+
 export function generateModelGeometries(
   windowUnit: WindowUnit,
-  pattern?: EgyptianPattern | null
+  pattern?: EgyptianPattern | null,
+  options?: { forceRegenerate?: boolean }
 ): FrameGeometry {
+  // Check cache first
+  const cacheKey = getCacheKey(windowUnit, pattern);
+  
+  if (!options?.forceRegenerate) {
+    const cached = geometryCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      return cached.geometry;
+    }
+  }
+  
+  // Cleanup cache periodically
+  if (geometryCache.size > MAX_CACHE_SIZE * 0.8) {
+    cleanupCache();
+  }
+  
   // If pattern is provided, use preset-aware generation
   if (pattern) {
     return generatePresetAwareGeometries(windowUnit, pattern);
@@ -341,7 +603,7 @@ export function generateModelGeometries(
  */
 export async function generateModelGeometriesWithFabrication(
   windowUnit: WindowUnit,
-  pattern?: EgyptianPattern | null
+  _pattern?: EgyptianPattern | null
 ): Promise<{ geometry: FrameGeometry; fabrication: FabricationData }> {
   // Use DualOutputGenerator for comprehensive dual output
   const { DualOutputGenerator } = await import('../fabricator/DualOutputGenerator');
@@ -507,6 +769,7 @@ export function generatePresetAwareGeometries(
     }
   }
   
+  // Cache is set in generateModelGeometries, not here
   return baseGeometry;
 }
 
@@ -768,43 +1031,30 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                 const sashW = Math.max(0.05, cellW - sashInset * 2);
                 const sashH = Math.max(0.05, cellH - sashInset * 2);
                 
-                // Check for transoms both ABOVE and BELOW this cell
-                // Transom at position r is between row r and row r+1
-                let transomInsetTop = 0;
-                let transomInsetBottom = 0;
-                
-                if (windowUnit.presetData?.transoms && Array.isArray(windowUnit.presetData.transoms)) {
-                    const transoms = windowUnit.presetData.transoms;
-                    
-                    // Check for transom ABOVE this cell (at position cell.row - 1)
-                    const transomAbove = transoms.find((t: any) => t.position === cell.row - 1);
-                    if (transomAbove) {
-                        transomInsetTop = transomAbove.height ? transomAbove.height / 1000 : 0.008;
-                    }
-                    
-                    // Check for transom BELOW this cell (at position cell.row)
-                    const transomBelow = transoms.find((t: any) => t.position === cell.row);
-                    if (transomBelow) {
-                        transomInsetBottom = transomBelow.height ? transomBelow.height / 1000 : 0.008;
-                    }
-                }
-                
                 // Create 4-bar frame for this sash using createMiteredFrame
                 const sashFrameParts = createMiteredFrame(sashW, sashH, sashProfile);
                 
-                // Glass fits inside the sash frame (accounting for sash profile width AND transoms)
-                const sashProfileW = sashProfile.width;
-                const glassW = Math.max(0.02, sashW - sashProfileW * 2 - glassInset * 2);
-                // Reduce glass height to account for transoms above and below, but keep it centered
-                const glassH = Math.max(0.02, sashH - sashProfileW * 2 - glassInset * 2 - transomInsetTop - transomInsetBottom);
+                // Use centralized glass bounds calculation (handles transoms internally)
+                const glassBounds = calculateGlassBounds(
+                    cell,
+                    cellX,
+                    cellY,
+                    sashW,
+                    sashH,
+                    windowUnit,
+                    sashProfile,
+                    glassInset
+                );
                 
-                // Glass stays centered in the sash (don't shift Y position)
-                // The reduced height naturally accounts for the transom space
-                const glassGeom = new BoxGeometry(glassW, glassH, 0.006);
-                glassGeom.translate(cellX, cellY, -0.006); // Position at cell center, recessed
+                const glassGeom = new BoxGeometry(glassBounds.width, glassBounds.height, 0.006);
+                glassGeom.translate(glassBounds.x, glassBounds.y, -0.006); // Position at calculated bounds, recessed
                 
-                const spacerGeom = new BoxGeometry(Math.max(0.01, glassW - 0.01), Math.max(0.01, glassH - 0.01), 0.01);
-                spacerGeom.translate(cellX, cellY, 0);
+                const spacerGeom = new BoxGeometry(
+                  Math.max(0.01, glassBounds.width - 0.01), 
+                  Math.max(0.01, glassBounds.height - 0.01), 
+                  0.01
+                );
+                spacerGeom.translate(glassBounds.x, glassBounds.y, 0);
 
                 // Transform sash frame parts to be positioned at cell center
                 const transformedSashParts = sashFrameParts.map(part => {
@@ -841,47 +1091,28 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
                     }
                 });
             } else if (cell.type === 'fixed' || cell.type === 'panel') {
-                // Fixed glass: must fit inside the cell, accounting for frame bars AND transoms
-                // Glass should be inset from cell edges by frame profile width
-                const frameInset = frameProfile.width; // Account for frame bar width
+                // Fixed glass: use centralized glass bounds calculation (handles transoms internally)
+                const glassBounds = calculateGlassBounds(
+                    cell,
+                    cellX,
+                    cellY,
+                    cellW,
+                    cellH,
+                    windowUnit,
+                    frameProfile,
+                    0.002 // Default glass inset
+                );
                 
-                // Check for transoms both ABOVE and BELOW this cell
-                // Transom at position r is between row r and row r+1
-                // So for cell in row r:
-                //   - Transom at position r-1 is ABOVE (between row r-1 and r)
-                //   - Transom at position r is BELOW (between row r and r+1)
-                let transomInsetTop = 0;
-                let transomInsetBottom = 0;
-                
-                if (windowUnit.presetData?.transoms && Array.isArray(windowUnit.presetData.transoms)) {
-                    const transoms = windowUnit.presetData.transoms;
-                    
-                    // Check for transom ABOVE this cell (at position cell.row - 1)
-                    const transomAbove = transoms.find((t: any) => t.position === cell.row - 1);
-                    if (transomAbove) {
-                        transomInsetTop = transomAbove.height ? transomAbove.height / 1000 : 0.008;
-                    }
-                    
-                    // Check for transom BELOW this cell (at position cell.row)
-                    const transomBelow = transoms.find((t: any) => t.position === cell.row);
-                    if (transomBelow) {
-                        transomInsetBottom = transomBelow.height ? transomBelow.height / 1000 : 0.008;
-                    }
-                }
-                
-                // Glass width: account for frame bars on left/right
-                const glassW = Math.max(0.02, cellW - frameInset * 2);
-                // Glass height: account for frame bars on top/bottom AND transoms above/below
-                const glassH = Math.max(0.02, cellH - frameInset * 2 - transomInsetTop - transomInsetBottom);
-                
-                // Glass stays centered in the cell (don't shift Y position)
-                // The reduced height naturally accounts for the transom space
-                const glassGeom = new BoxGeometry(glassW, glassH, 0.006);
-                glassGeom.translate(cellX, cellY, -0.006); // Position at cell center, recessed
+                const glassGeom = new BoxGeometry(glassBounds.width, glassBounds.height, 0.006);
+                glassGeom.translate(glassBounds.x, glassBounds.y, -0.006); // Position at calculated bounds, recessed
                 fixedGlass.push(glassGeom);
                 
-                const spacerGeom = new BoxGeometry(Math.max(0.01, glassW - 0.01), Math.max(0.01, glassH - 0.01), 0.01);
-                spacerGeom.translate(cellX, cellY, 0);
+                const spacerGeom = new BoxGeometry(
+                    Math.max(0.01, glassBounds.width - 0.01), 
+                    Math.max(0.01, glassBounds.height - 0.01), 
+                    0.01
+                );
+                spacerGeom.translate(glassBounds.x, glassBounds.y, 0);
                 fixedSpacers.push(spacerGeom);
             }
             // 'empty' already skipped

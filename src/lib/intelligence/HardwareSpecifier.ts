@@ -40,7 +40,7 @@ export class HardwareSpecifier {
   specifyHardwareForComplexShape(
     shapeType: ShapeType,
     segmentation: SegmentationPlan,
-    pattern: ShapePattern | null
+    _pattern: ShapePattern | null
   ): HardwareSpecification {
     const hardware: HardwareSpecification['hardware'] = [];
     const reinforcements: HardwareSpecification['reinforcements'] = [];

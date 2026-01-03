@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface ResponsiveImageProps {
   src: string;
@@ -10,6 +10,7 @@ interface ResponsiveImageProps {
   sizes?: string;
   quality?: number;
   fallback?: string;
+  onImageLoad?: () => void;
 }
 
 /**
@@ -38,7 +39,7 @@ export const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
   height,
   priority = false,
   sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
-  quality = 80,
+  quality: _quality = 80,
   fallback,
   onImageLoad
 }) => {
@@ -76,7 +77,6 @@ export const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
   // (e.g., image-400w.jpg, image-800w.jpg) - otherwise, don't generate srcset
   // to avoid "unknown descriptor" errors when files don't exist
   const finalSrcSet: string | undefined = undefined; // Disabled until responsive variants are created
-  const webpSrcSet: string | undefined = undefined; // Disabled until responsive variants are created
 
   const handleLoad = () => {
     setIsLoaded(true);

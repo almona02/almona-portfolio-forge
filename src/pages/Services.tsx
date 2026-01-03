@@ -1,12 +1,11 @@
-import { useEffect, useState, useRef } from "react";
-import { useLocation } from "react-router-dom";
 import SEO from "@/components/SEO";
-import { ServiceCard } from "@/components/services/ServiceCard";
 import { EmergencyServiceDialog } from "@/components/services/EmergencyServiceDialog";
-import { FormSkeleton } from "@/components/ui/FormSkeleton";
+import { ServiceCard } from "@/components/services/ServiceCard";
 import { ServiceViewToggle } from "@/components/services/ServiceViewToggle";
 import { SimpleServicesView } from "@/components/services/SimpleServicesView";
-import { lazy, Suspense } from "react";
+import { FormSkeleton } from "@/components/ui/FormSkeleton";
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 // Lazy loaded components
 const MachineRegistrationEnhanced = lazy(() =>
@@ -28,46 +27,46 @@ const ServiceROIAnalytics = lazy(() =>
   }))
 );
 
+import BusinessKPIDashboard from '@/components/analytics/BusinessKPIDashboard';
 import { OperatorTrainingIncentiveDialog } from "@/components/services/OperatorTrainingIncentiveDialog";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/shared/ui/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
-import { withErrorBoundary } from '@/hocs/withErrorBoundary';
+import TicketWizardDialog from '@/components/support/TicketWizardDialog';
+import { LanguageToggle } from '@/components/ui/LanguageToggle';
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { buildNavigationState } from '@/lib/ticketing/unifiedTicketing';
-import TicketWizardDialog from '@/components/support/TicketWizardDialog';
-import { UnifiedTicketFormData } from '@/lib/validation/ticket';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
+import { withErrorBoundary } from '@/hocs/withErrorBoundary';
 import { useToast } from '@/hooks/useToast';
 import { canCreateServiceTicket, trackServiceTicketBlocked } from '@/lib/permissions/tickets';
-import { useLanguage } from '@/context/LanguageContext';
-import { LanguageToggle } from '@/components/ui/LanguageToggle';
-import BusinessKPIDashboard from '@/components/analytics/BusinessKPIDashboard';
+import { buildNavigationState } from '@/lib/ticketing/unifiedTicketing';
+import { UnifiedTicketFormData } from '@/lib/validation/ticket';
 import {
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  Database,
-  Factory,
-  Gauge,
-  Shield,
-  TrendingUp,
-  Brain,
-  CircuitBoard,
-  BarChart3,
-  Activity,
-  Camera,
-  Vibrate,
-  Thermometer,
-  Calculator,
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/shared/ui/ui/tabs";
+import {
+    Activity,
+    AlertTriangle,
+    BarChart3,
+    Brain,
+    Calculator,
+    Camera,
+    CheckCircle2,
+    CircuitBoard,
+    Clock,
+    Database,
+    Factory,
+    Gauge,
+    Shield,
+    Thermometer,
+    TrendingUp,
+    Vibrate,
 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 // AI-Powered Maintenance Data Types
 interface PredictiveAlert {
@@ -125,24 +124,7 @@ const Services = () => {
   // Simulated real-time data stream
   const dataStreamRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    document.title = "AI Industrial Services - ALMONA";
-    loadPredictiveData();
-    
-    // Start simulated real-time data
-    if (realTimeData) {
-      dataStreamRef.current = setInterval(updateRealTimeData, 5000);
-    }
-
-    return () => {
-      if (dataStreamRef.current) {
-        clearInterval(dataStreamRef.current);
-        dataStreamRef.current = null;
-      }
-    };
-  }, [realTimeData]);
-
-  const loadPredictiveData = () => {
+  const loadPredictiveData = useCallback(() => {
     // Simulated AI-powered predictive data
     const mockAlerts: PredictiveAlert[] = [
       {
@@ -214,7 +196,24 @@ const Services = () => {
 
     setPredictiveAlerts(mockAlerts);
     setMachineHealth(mockHealth);
-  };
+  }, [t]);
+
+  useEffect(() => {
+    document.title = "AI Industrial Services - ALMONA";
+    loadPredictiveData();
+    
+    // Start simulated real-time data
+    if (realTimeData) {
+      dataStreamRef.current = setInterval(updateRealTimeData, 5000);
+    }
+
+    return () => {
+      if (dataStreamRef.current) {
+        clearInterval(dataStreamRef.current);
+        dataStreamRef.current = null;
+      }
+    };
+  }, [realTimeData, loadPredictiveData]);
 
   const updateRealTimeData = () => {
     // Simulate real-time sensor data updates
@@ -304,16 +303,6 @@ const Services = () => {
       case 'maintenance_required': return 'text-orange-400';
       case 'critical': return 'text-red-400';
       default: return 'text-gray-400';
-    }
-  };
-
-  const getStatusText = (status: MachineHealth['status']) => {
-    switch (status) {
-      case 'optimal': return t('services.optimal');
-      case 'degraded': return t('services.degraded');
-      case 'maintenance_required': return t('services.maintenance_required');
-      case 'critical': return t('services.critical_status');
-      default: return status;
     }
   };
 
@@ -592,7 +581,7 @@ const Services = () => {
                   highlight={true}
                 />
                 <ServiceCard
-                  icon="factory"
+                  icon="wrench"
                   title={t('services.fabricator_workflow_pro')}
                   description={t('services.ai_powered_fabrication')}
                   features={[

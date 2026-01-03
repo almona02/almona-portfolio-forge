@@ -19,10 +19,16 @@
  * @since 2024
  */
 
-import type { Profile, WindowUnit, WindowComponent } from '@/types/fabricator';
 import type { SystemPack } from '@/data/systemPacks';
+import type { Profile, WindowUnit } from '@/types/fabricator';
+import { GEOMETRIC_CONSTANTS } from './bom/profileBOMConstants';
+import {
+    DEFAULT_DIMENSIONS,
+    DEFAULT_GATHERING_CONFIG,
+    DEFAULT_PRECISION_MM,
+    QUANTITY_CONSTANTS,
+} from './profileGatheringConstants';
 import { getRoleCuttingFormula, parseCuttingFormula } from './roleDetection';
-import { getRoleCategory } from './profileRoleUtils';
 
 /**
  * Profile role categories for systematic organization
@@ -139,11 +145,11 @@ export class UnitProfileGatherer {
 
   constructor(config: ProfileGatheringConfig = {}) {
     this.config = {
-      includeGlazingBeads: config.includeGlazingBeads ?? true,
-      includeStructural: config.includeStructural ?? true,
-      includeAccessories: config.includeAccessories ?? true,
-      systemType: config.systemType ?? 'sliding',
-      precision: config.precision ?? 0.01,
+      includeGlazingBeads: config.includeGlazingBeads ?? DEFAULT_GATHERING_CONFIG.includeGlazingBeads,
+      includeStructural: config.includeStructural ?? DEFAULT_GATHERING_CONFIG.includeStructural,
+      includeAccessories: config.includeAccessories ?? DEFAULT_GATHERING_CONFIG.includeAccessories,
+      systemType: config.systemType ?? DEFAULT_GATHERING_CONFIG.defaultSystemType,
+      precision: config.precision ?? DEFAULT_PRECISION_MM,
     };
     this.precision = this.config.precision;
   }
@@ -261,7 +267,7 @@ export class UnitProfileGatherer {
     unit: WindowUnit,
     systemPack: SystemPack,
     warnings: string[],
-    errors: string[]
+    _errors: string[]
   ): ProfileWithCuts[] {
     const sashRoles: NonNullable<Profile['profileRole']>[] = [
       'sash',
@@ -307,8 +313,8 @@ export class UnitProfileGatherer {
   private gatherGlazingBeadProfiles(
     unit: WindowUnit,
     systemPack: SystemPack,
-    warnings: string[],
-    errors: string[]
+    _warnings: string[],
+    _errors: string[]
   ): ProfileWithCuts[] {
     const beadRoles: NonNullable<Profile['profileRole']>[] = [
       'glazing_bead',
@@ -348,8 +354,8 @@ export class UnitProfileGatherer {
   private gatherStructuralProfiles(
     unit: WindowUnit,
     systemPack: SystemPack,
-    warnings: string[],
-    errors: string[]
+    _warnings: string[],
+    _errors: string[]
   ): ProfileWithCuts[] {
     const profiles: ProfileWithCuts[] = [];
 
@@ -419,8 +425,8 @@ export class UnitProfileGatherer {
   private gatherAccessoryProfiles(
     unit: WindowUnit,
     systemPack: SystemPack,
-    warnings: string[],
-    errors: string[]
+    _warnings: string[],
+    _errors: string[]
   ): ProfileWithCuts[] {
     const accessoryRoles: NonNullable<Profile['profileRole']>[] = [
       'interlock',
@@ -557,7 +563,7 @@ export class UnitProfileGatherer {
         ).length;
       } else {
         // Default to 2 sashes for sliding windows without grid
-        sashCount = 2;
+        sashCount = DEFAULT_DIMENSIONS.DEFAULT_SLIDING_SASH_COUNT;
       }
     }
     
@@ -567,12 +573,12 @@ export class UnitProfileGatherer {
     const frameProfile = unit.components?.find(c => 
       c.profile.profileRole === 'frame' || c.profile.profileRole === 'frame_architrave'
     )?.profile;
-    const frameWidth = frameProfile?.width || 50; // Default 50mm frame
+    const frameWidth = frameProfile?.width || DEFAULT_DIMENSIONS.DEFAULT_FRAME_WIDTH_MM;
     
     const sashWidth = isSlidingSystem 
-      ? (unit.overallWidth - (2 * frameWidth)) / sashCount
-      : unit.overallWidth - (2 * frameWidth);
-    const sashHeight = unit.overallHeight - (2 * frameWidth);
+      ? (unit.overallWidth - (GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER * frameWidth)) / sashCount
+      : unit.overallWidth - (GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER * frameWidth);
+    const sashHeight = unit.overallHeight - (GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER * frameWidth);
 
     const widthLength = this.roundToPrecision(parseCuttingFormula(formula, sashWidth));
     const heightLength = this.roundToPrecision(parseCuttingFormula(formula, sashHeight));
@@ -802,7 +808,7 @@ export class UnitProfileGatherer {
         cuttingFormula: formula,
         role: 'reinforcement',
         profileId: profile.id,
-        quantity: 2, // Top and bottom
+        quantity: QUANTITY_CONSTANTS.REINFORCEMENT_HORIZONTAL_QUANTITY, // Top and bottom
         orientation: 'horizontal',
         requiresMiter: false,
         requiresWelding: false,
@@ -815,7 +821,7 @@ export class UnitProfileGatherer {
         cuttingFormula: formula,
         role: 'reinforcement',
         profileId: profile.id,
-        quantity: 2, // Left and right
+        quantity: QUANTITY_CONSTANTS.REINFORCEMENT_VERTICAL_QUANTITY, // Left and right
         orientation: 'vertical',
         requiresMiter: false,
         requiresWelding: false,
@@ -832,7 +838,7 @@ export class UnitProfileGatherer {
     role: NonNullable<Profile['profileRole']>
   ): RequiredCut[] {
     // Accessories vary by type - implement specific logic for each
-    const formula = getRoleCuttingFormula(role, this.config.systemType);
+    const _formula = getRoleCuttingFormula(role, this.config.systemType);
 
     // For now, return empty array - accessories may need custom logic
     // This can be extended based on specific accessory requirements

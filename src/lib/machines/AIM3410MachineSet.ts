@@ -403,7 +403,7 @@ export function generateAIM3410Program(
     parameters: Record<string, any>;
   }>,
   toolTable: AIM3410ToolTableEntry[],
-  settings: Partial<AIM3410CNCSettings> = {}
+  _settings: Partial<AIM3410CNCSettings> = {}
 ): string {
   const lines: string[] = [];
   
@@ -471,7 +471,7 @@ export function parseAIM3410GCode(gCode: string): {
     // Parse G/M codes
     const match = line.match(/([GM]\d+)(.*)/);
     if (match) {
-      const [, command, params] = match;
+      const [, command] = match;
       const parameters: Record<string, number | string> = {};
       
       // Parse parameters (X, Y, Z, A, F, S, T, etc.)

@@ -211,7 +211,7 @@ export class RegionalLocalizationEngine {
   /**
    * Check ESI compliance
    */
-  private checkESICompliance(profile: Profile, issues: string[]): boolean {
+  private checkESICompliance(_profile: Profile, _issues: string[]): boolean {
     // TODO: Implement actual ESI standard checks
     return true;
   }

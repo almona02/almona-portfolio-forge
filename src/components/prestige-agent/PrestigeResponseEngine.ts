@@ -84,7 +84,7 @@ export class PrestigeResponseEngine {
     return format(responseData);
   }
 
-  private getProfessorFormat(polite: PolitePhrases, config: LanguageConfig) {
+  private getProfessorFormat(polite: PolitePhrases, _config: LanguageConfig) {
     return (data: any) => {
       const { confidence, references, explanation } = data;
       
@@ -130,7 +130,7 @@ export class PrestigeResponseEngine {
     };
   }
 
-  private getTourGuideFormat(polite: PolitePhrases, config: LanguageConfig) {
+  private getTourGuideFormat(polite: PolitePhrases, _config: LanguageConfig) {
     return (data: any) => {
       return {
         greeting: this.getRandom(polite.greeting),
@@ -143,7 +143,7 @@ export class PrestigeResponseEngine {
     };
   }
 
-  private getCodeMasterFormat(polite: PolitePhrases, config: LanguageConfig) {
+  private getCodeMasterFormat(polite: PolitePhrases, _config: LanguageConfig) {
     return (data: any) => {
       return {
         greeting: this.getRandom(polite.greeting),
@@ -156,7 +156,7 @@ export class PrestigeResponseEngine {
     };
   }
 
-  private getNervousSystemFormat(polite: PolitePhrases, config: LanguageConfig) {
+  private getNervousSystemFormat(polite: PolitePhrases, _config: LanguageConfig) {
     return (data: any) => {
       return {
         greeting: this.getRandom(polite.greeting),

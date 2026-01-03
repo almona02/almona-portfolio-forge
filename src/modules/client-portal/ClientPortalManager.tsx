@@ -3,28 +3,24 @@
  * Provides interface for sharing projects with clients
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/shared/ui/ui/dialog';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/shared/ui/ui/dialog';
-import { Share2, Copy, Mail, ExternalLink, CheckCircle, AlertCircle, X } from 'lucide-react';
 import { WindowUnit } from '@/types/fabricator';
+import { AlertCircle, CheckCircle, Copy, ExternalLink, Mail, Share2, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { ProjectSharingService, SharedProject } from './ProjectSharingService';
-import { ClientFeedbackForm, ClientComment } from './ClientFeedbackForm';
-// Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)
-const Window3DGenerator = React.lazy(() => import('@/components/fabricator/Window3DGenerator'));
 
 interface ClientPortalManagerProps {
   project: WindowUnit;
@@ -43,12 +39,12 @@ export const ClientPortalManager: React.FC<ClientPortalManagerProps> = ({
   const [clientName, setClientName] = useState('');
   const [expiresInDays, setExpiresInDays] = useState(30);
   const [copied, setCopied] = useState(false);
-  const [comments, setComments] = useState<ClientComment[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     loadSharedProjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [project.id]);
 
   const loadSharedProjects = () => {
@@ -100,9 +96,6 @@ export const ClientPortalManager: React.FC<ClientPortalManagerProps> = ({
     }
   };
 
-  const handleCommentSubmit = (comment: ClientComment) => {
-    setComments([...comments, comment]);
-  };
 
   const handleRevoke = (shareToken: string) => {
     if (confirm('Are you sure you want to revoke this share link?')) {

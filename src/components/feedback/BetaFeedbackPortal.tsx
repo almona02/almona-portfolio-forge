@@ -12,12 +12,11 @@
 
 'use client';
 
-import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { EarlyAccessFeedback } from './EarlyAccessFeedback';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import React, { useState } from 'react';
 import type { EarlyAccessFeedbackData } from './EarlyAccessFeedback';
+import { EarlyAccessFeedback } from './EarlyAccessFeedback';
 
 export interface BetaFeedbackData extends EarlyAccessFeedbackData {
   tier: 'wizard' | 'pattern_library' | 'expert_canvas';

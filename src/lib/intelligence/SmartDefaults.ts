@@ -46,7 +46,7 @@ export class SmartDefaults {
   ): Promise<SmartDefaultsResult> {
     // Analyze context
     const analysis = await this.cognitionEngine.analyzeContext(windowUnit, pattern);
-    const context = this.contextAnalyzer.analyzeContext(windowUnit);
+    const _context = this.contextAnalyzer.analyzeContext(windowUnit);
 
     // Extract recommendations
     const systemPackRec = analysis.recommendations.find(r => r.category === 'profile');

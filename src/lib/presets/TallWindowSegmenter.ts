@@ -189,7 +189,7 @@ export class TallWindowSegmenter {
   /**
    * Determine hinge quantity based on segment height
    */
-  private determineHingeQuantity(segmentHeight: number, openingType: string): number {
+  private determineHingeQuantity(segmentHeight: number, _openingType: string): number {
     if (segmentHeight <= 1200) return 2;
     if (segmentHeight <= 1800) return 3;
     if (segmentHeight <= 2400) return 4;

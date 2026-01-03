@@ -27,7 +27,7 @@ export class HandleGenerator {
   /**
    * Generate complete handle model
    */
-  generateHandle(config: HandleConfig): HandleModel {
+  generateHandle(_config: HandleConfig): HandleModel {
     // Handle dimensions (typical Egyptian standard)
     const leverLength = 0.12; // 120mm lever length
     const leverWidth = 0.02; // 20mm lever width
@@ -59,7 +59,7 @@ export class HandleGenerator {
       [baseWidth / 2 - 0.005, 0]
     ];
 
-    for (const [x, y] of screwPositions) {
+    for (const [_x, _y] of screwPositions) {
       const screw = new CylinderGeometry(
         screwDiameter / 2,
         screwDiameter / 2,

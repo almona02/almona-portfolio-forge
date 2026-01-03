@@ -1,27 +1,27 @@
-import React, { Suspense, useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { supabase } from '@/lib/supabase';
-import type { Profile, WindowUnit } from '@/types/fabricator';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
 import { Badge } from '@/shared/ui/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Input } from '@/shared/ui/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import type { Profile, WindowUnit } from '@/types/fabricator';
+import { useQuery } from '@tanstack/react-query';
 import {
-  Search,
-  Package,
-  TrendingUp,
-  AlertTriangle,
-  Download,
-  Plus,
-  Filter,
-  Save,
+    AlertTriangle,
+    Download,
+    Filter,
+    Package,
+    Plus,
+    Save,
+    Search,
+    TrendingUp,
 } from 'lucide-react';
-import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import React, { Suspense, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const InventoryDashboard = React.lazy(() =>
   import('@/components/fabricator/InventoryDashboard').then((m) => ({

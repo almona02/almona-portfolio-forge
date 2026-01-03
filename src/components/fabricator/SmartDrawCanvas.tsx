@@ -1,32 +1,33 @@
 import { getPatternById, getPatternsForSystem, patternToWindowGrid, type EgyptianPattern } from '@/lib/fabricator/presetUtils';
 import { presetMatcher, type PatternMatch } from '@/lib/ml/PresetMatcher';
 import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/ui/button';
 import { Label } from '@/shared/ui/ui/label';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/shared/ui/ui/select';
-import { Button } from '@/shared/ui/ui/button';
 import { Toggle } from '@/shared/ui/ui/toggle';
-import { GridCell, WindowGrid, ManualMullion } from '@/types/fabricator';
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  Columns, 
-  List, 
-  Rows, 
-  Minus, 
-  Plus,
-  Move,
-  Square,
-  Layers,
-  X,
-  Sparkles
+import { GridCell, ManualMullion, WindowGrid } from '@/types/fabricator';
+import {
+    ChevronDown,
+    ChevronUp,
+    Columns,
+    Layers,
+    List,
+    Minus,
+    Move,
+    Plus,
+    Rows,
+    Sparkles,
+    Square,
+    X
 } from 'lucide-react';
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { MullionDeleteButton } from './SmartDrawCanvas/MullionDeleteButton';
 
 interface SmartDrawProps {
   width: number;
@@ -56,8 +57,8 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
   const [hoveredCell, setHoveredCell] = useState<string | null>(null);
   const [colWidthsInput, setColWidthsInput] = useState('');
   const [rowHeightsInput, setRowHeightsInput] = useState('');
-  const [offsetX, setOffsetX] = useState(0);
-  const [offsetY, setOffsetY] = useState(0);
+  const [offsetX] = useState(0);
+  const [offsetY] = useState(0);
   const [mullionMode, setMullionMode] = useState<MullionMode>('none');
   const [selectedSashForMullion, setSelectedSashForMullion] = useState<string | null>(null);
   const [mullionPositionInput, setMullionPositionInput] = useState('');
@@ -151,7 +152,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
         }
       }
     }
-  }, [selectedPatternId]);
+  }, [selectedPatternId, grid.cells, grid.cols, grid.rows, onGridChange]);
 
   useEffect(() => {
     if (grid.colWidths && grid.colWidths.length === grid.cols) {
@@ -384,7 +385,7 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {suggestedPatterns.slice(0, 3).map((match, index) => (
+                  {suggestedPatterns.slice(0, 3).map((match, _index) => (
                     <button
                       key={match.pattern.id}
                       onClick={() => handleSuggestionClick(match.pattern)}
@@ -753,78 +754,19 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                         opacity="0.9"
                         className="pointer-events-none"
                       />
-                      {/* Larger, more visible delete button */}
-                      <g
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          handleRemoveMullion(mullion.id);
-                        }}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                        }}
-                        className="cursor-pointer"
-                      >
-                        <circle
-                          cx={svgWidth - 30}
-                          cy={y}
-                          r="12"
-                          fill="#ef4444"
-                          stroke="#ffffff"
-                          strokeWidth="2"
-                          opacity="0.95"
-                          className="hover:fill-red-600 hover:scale-110 transition-transform"
-                        />
-                        <text
-                          x={svgWidth - 30}
-                          y={y}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill="white"
-                          fontSize="14"
-                          fontWeight="bold"
-                          pointerEvents="none"
-                        >
-                          ×
-                        </text>
-                      </g>
-                      {/* Also add delete button on the left side */}
-                      <g
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          handleRemoveMullion(mullion.id);
-                        }}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                        }}
-                        className="cursor-pointer"
-                      >
-                        <circle
-                          cx={30}
-                          cy={y}
-                          r="12"
-                          fill="#ef4444"
-                          stroke="#ffffff"
-                          strokeWidth="2"
-                          opacity="0.95"
-                          className="hover:fill-red-600 hover:scale-110 transition-transform"
-                        />
-                        <text
-                          x={30}
-                          y={y}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill="white"
-                          fontSize="14"
-                          fontWeight="bold"
-                          pointerEvents="none"
-                        >
-                          ×
-                        </text>
-                      </g>
+                      {/* ✅ ENHANCED: Extract delete button to reusable component */}
+                      <MullionDeleteButton
+                        mullionId={mullion.id}
+                        x={svgWidth - 30}
+                        y={y}
+                        onDelete={handleRemoveMullion}
+                      />
+                      <MullionDeleteButton
+                        mullionId={mullion.id}
+                        x={30}
+                        y={y}
+                        onDelete={handleRemoveMullion}
+                      />
                     </g>
                   );
                 } else {
@@ -852,78 +794,19 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
                         opacity="0.9"
                         className="pointer-events-none"
                       />
-                      {/* Larger, more visible delete button at top */}
-                      <g
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          handleRemoveMullion(mullion.id);
-                        }}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                        }}
-                        className="cursor-pointer"
-                      >
-                        <circle
-                          cx={x}
-                          cy={30}
-                          r="12"
-                          fill="#ef4444"
-                          stroke="#ffffff"
-                          strokeWidth="2"
-                          opacity="0.95"
-                          className="hover:fill-red-600 hover:scale-110 transition-transform"
-                        />
-                        <text
-                          x={x}
-                          y={30}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill="white"
-                          fontSize="14"
-                          fontWeight="bold"
-                          pointerEvents="none"
-                        >
-                          ×
-                        </text>
-                      </g>
-                      {/* Also add delete button at bottom */}
-                      <g
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          handleRemoveMullion(mullion.id);
-                        }}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                        }}
-                        className="cursor-pointer"
-                      >
-                        <circle
-                          cx={x}
-                          cy={svgHeight - 30}
-                          r="12"
-                          fill="#ef4444"
-                          stroke="#ffffff"
-                          strokeWidth="2"
-                          opacity="0.95"
-                          className="hover:fill-red-600 hover:scale-110 transition-transform"
-                        />
-                        <text
-                          x={x}
-                          y={svgHeight - 30}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill="white"
-                          fontSize="14"
-                          fontWeight="bold"
-                          pointerEvents="none"
-                        >
-                          ×
-                        </text>
-                      </g>
+                      {/* ✅ ENHANCED: Extract delete button to reusable component */}
+                      <MullionDeleteButton
+                        mullionId={mullion.id}
+                        x={x}
+                        y={30}
+                        onDelete={handleRemoveMullion}
+                      />
+                      <MullionDeleteButton
+                        mullionId={mullion.id}
+                        x={x}
+                        y={svgHeight - 30}
+                        onDelete={handleRemoveMullion}
+                      />
                     </g>
                   );
                 }
@@ -938,12 +821,11 @@ export const SmartDrawCanvas: React.FC<SmartDrawProps> = ({
               const w = colWidthsPx[cell.col];
               const h = rowHeightsPx[cell.row];
               const isSelectedForMullion = selectedSashForMullion === cell.id;
-              const isSash = cell.type === 'sash' || cell.type === 'sliding';
 
               return (
                 <g 
                   key={cell.id}
-                  onClick={(e) => {
+                  onClick={(_e) => {
                     // Only handle cell click if not in mullion mode or if clicking on mullion delete button
                     if (mullionMode === 'none') {
                       handleCellClick(cell.id);

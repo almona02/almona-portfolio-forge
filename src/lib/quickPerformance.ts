@@ -100,7 +100,7 @@ export const quickPerformanceWins = {
       '/assets/three-vendor',
     ];
     
-    knownChunks.forEach((chunkBase) => {
+    knownChunks.forEach((_chunkBase) => {
       // Try to find the actual chunk file (this is a best-effort approach)
       // In a real implementation, you'd use a build manifest
       const link = document.createElement('link');

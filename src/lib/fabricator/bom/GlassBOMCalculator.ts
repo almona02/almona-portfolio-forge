@@ -11,8 +11,12 @@
  */
 
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
-import type { WindowUnit, FabricationData } from '@/types/fabricator';
+import type { FabricationData, WindowUnit } from '@/types/fabricator';
 import { ProductionUtils } from '../productionUtils';
+import {
+    GLASS_EDGE_CLEARANCE,
+    GLASS_THICKNESS,
+} from './glassBOMConstants';
 
 /**
  * GlassBOMCalculator - Glass quantity calculation engine
@@ -30,7 +34,7 @@ export class GlassBOMCalculator {
 
     const width = windowUnit.overallWidth;
     const height = windowUnit.overallHeight;
-    const edgeClearance = patternAny.glazingSpec?.edgeClearance || 5; // mm standard
+    const edgeClearance = patternAny.glazingSpec?.edgeClearance || GLASS_EDGE_CLEARANCE.STANDARD_MM;
     const grid = pattern.gridSpec;
 
     // Calculate glass for each cell in grid
@@ -46,7 +50,9 @@ export class GlassBOMCalculator {
 
         // Get glass thickness from user selection or default
         const glazingType = (windowUnit.glazing as any)?.type || 'double';
-        const defaultThickness = glazingType === 'single' ? 5 : 4; // mm per pane
+        const defaultThickness = glazingType === 'single'
+          ? GLASS_THICKNESS.SINGLE_GLAZING_MM
+          : GLASS_THICKNESS.MULTI_GLAZING_PANE_MM;
         const glassThickness = (windowUnit.glazing as any)?.thickness || defaultThickness;
 
         // Calculate weight

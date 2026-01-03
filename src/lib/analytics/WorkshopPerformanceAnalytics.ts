@@ -7,7 +7,7 @@
  * - Predictive capacity planning
  */
 
-import { OptimizationResult, CuttingPlan } from '@/types/fabricator';
+import { OptimizationResult } from '@/types/fabricator';
 
 export interface OEEMetrics {
   availability: number; // Percentage of scheduled time machine is available

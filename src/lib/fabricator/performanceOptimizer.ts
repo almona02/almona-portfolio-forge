@@ -11,8 +11,10 @@
  * @since Phase 2B: Dual-Output Engine (Week 1-2 Battle Map - Day 5-6)
  */
 
+import { CACHE_CONFIG, PROGRESSIVE_LOADING } from './performanceConstants';
+
 export class PerformanceOptimizer {
-  private static readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+  private static readonly CACHE_DURATION = CACHE_CONFIG.DURATION_MS;
   private static cache = new Map<string, { data: any; timestamp: number }>();
   
   /**
@@ -125,7 +127,7 @@ export class PerformanceOptimizer {
           };
           
           worker.postMessage(data);
-        } catch (error) {
+        } catch {
           // Fallback if Web Workers not supported
           reject(new Error('Web Workers not supported'));
         }
@@ -168,7 +170,7 @@ export class PerformanceOptimizer {
         console.warn('Enhancement loading failed:', error);
         // Continue without enhancements - not critical
       }
-    }, 100); // Small delay to ensure UI responsiveness
+    }, PROGRESSIVE_LOADING.ENHANCEMENT_DELAY_MS);
   }
   
   /**
@@ -191,12 +193,11 @@ export class PerformanceOptimizer {
     expiredKeys.forEach(key => this.cache.delete(key));
     
     // Limit cache size
-    const maxCacheSize = 50;
-    if (this.cache.size > maxCacheSize) {
+    if (this.cache.size > CACHE_CONFIG.MAX_SIZE) {
       const entries = Array.from(this.cache.entries());
       entries.sort((a, b) => a[1].timestamp - b[1].timestamp); // Oldest first
       
-      const toRemove = entries.slice(0, entries.length - maxCacheSize);
+      const toRemove = entries.slice(0, entries.length - CACHE_CONFIG.MAX_SIZE);
       toRemove.forEach(([key]) => this.cache.delete(key));
     }
   }
@@ -211,7 +212,7 @@ export class PerformanceOptimizer {
   } {
     return {
       size: this.cache.size,
-      maxSize: 50
+      maxSize: CACHE_CONFIG.MAX_SIZE
     };
   }
 }

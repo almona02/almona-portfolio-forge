@@ -1,0 +1,42 @@
+# Database configuration for RealityOS
+# 
+# Usage:
+#   import yaml
+#   with open('config/database.yaml') as f:
+#       config = yaml.safe_load(f)
+#   db_url = config['databases']['test']['url']
+
+databases:
+  test:
+    url: postgresql://localhost/realityos_test
+    pool_size: 5
+    max_overflow: 10
+    echo: false  # SQLAlchemy echo (for debugging)
+    
+  development:
+    url: postgresql://localhost/realityos_dev
+    pool_size: 10
+    max_overflow: 20
+    echo: false
+    
+  staging:
+    url: ${DATABASE_URL}  # From environment variable
+    pool_size: 15
+    max_overflow: 25
+    echo: false
+    
+  production:
+    url: ${DATABASE_URL}  # From environment variable
+    pool_size: 20
+    max_overflow: 30
+    sslmode: require
+    echo: false
+    pool_pre_ping: true  # Verify connections before using
+
+# Connection pool settings
+pool_settings:
+  pool_recycle: 3600  # Recycle connections after 1 hour
+  pool_timeout: 30    # Timeout for getting connection from pool
+  max_overflow: 30    # Maximum overflow connections
+
+

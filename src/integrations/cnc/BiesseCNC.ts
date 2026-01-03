@@ -3,8 +3,8 @@
  * For woodworking and panel processing machines
  */
 
-import { CNCController, MachineStatus, GCodeCommand, ToolPath, MachineCapabilities, OptimizationOptions } from './CNCController';
-import { CuttingPlan, Cut, Profile } from '@/types/fabricator';
+import { Cut, CuttingPlan, Profile } from '@/types/fabricator';
+import { CNCController, GCodeCommand, MachineCapabilities, MachineStatus, OptimizationOptions, ToolPath } from './CNCController';
 
 export class BiesseCNC extends CNCController {
   private statusUpdateInterval?: NodeJS.Timeout;
@@ -70,7 +70,7 @@ export class BiesseCNC extends CNCController {
 
   async generateGCode(
     cuttingPlan: CuttingPlan[],
-    options?: OptimizationOptions
+    _options?: OptimizationOptions
   ): Promise<GCodeCommand[]> {
     const commands: GCodeCommand[] = [];
     let lineNumber = 1;
@@ -298,7 +298,7 @@ export class BiesseCNC extends CNCController {
     };
   }
 
-  async estimateProductionTime(cuttingPlan: CuttingPlan[]): Promise<number> {
+  estimateProductionTime(cuttingPlan: CuttingPlan[]): number {
     let totalTime = 0; // in minutes
 
     for (const plan of cuttingPlan) {
@@ -313,8 +313,8 @@ export class BiesseCNC extends CNCController {
     return totalTime;
   }
 
-  async estimateEnergyConsumption(cuttingPlan: CuttingPlan[]): Promise<number> {
-    const productionTime = await this.estimateProductionTime(cuttingPlan);
+  estimateEnergyConsumption(cuttingPlan: CuttingPlan[]): number {
+    const productionTime = this.estimateProductionTime(cuttingPlan);
     const powerConsumption = 15; // 15 kW average power consumption
     return (productionTime / 60) * powerConsumption; // kWh
   }

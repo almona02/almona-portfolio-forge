@@ -10,9 +10,10 @@
  * @since Phase 2: Preset-Aware BOM System (Week 13)
  */
 
-import type { WindowUnit, FabricationData } from '@/types/fabricator';
-import { EgyptianPricingEngine } from './EgyptianPricingEngine';
+import type { FabricationData, WindowUnit } from '@/types/fabricator';
 import type { AccessoryItem } from './AccessoriesBOMCalculator';
+import { EgyptianPricingEngine } from './EgyptianPricingEngine';
+import { ASSEMBLY_TIME_CONFIG } from './assemblyTimeConstants';
 
 /**
  * CostCalculator - Cost calculation engine
@@ -80,23 +81,24 @@ export class CostCalculator {
 
   /**
    * Estimate total assembly time
+   * Uses configurable constants for maintainability
    */
   private estimateTotalAssemblyTime(
     profiles: FabricationData['profiles'],
     hardware: FabricationData['hardware'],
     glazing: FabricationData['glazing']
   ): number {
-    // Base time: 30 minutes
-    let time = 30;
+    // Base time
+    let time = ASSEMBLY_TIME_CONFIG.BASE_TIME_MINUTES;
 
-    // Add time for profiles (2 minutes per profile)
-    time += profiles.reduce((sum, p) => sum + p.quantity, 0) * 2;
+    // Add time for profiles
+    time += profiles.reduce((sum, p) => sum + p.quantity, 0) * ASSEMBLY_TIME_CONFIG.TIME_PER_PROFILE_MINUTES;
 
-    // Add time for hardware (5 minutes per hardware item)
-    time += hardware.reduce((sum, h) => sum + h.quantity, 0) * 5;
+    // Add time for hardware
+    time += hardware.reduce((sum, h) => sum + h.quantity, 0) * ASSEMBLY_TIME_CONFIG.TIME_PER_HARDWARE_MINUTES;
 
-    // Add time for glazing (10 minutes per pane)
-    time += glazing.length * 10;
+    // Add time for glazing
+    time += glazing.length * ASSEMBLY_TIME_CONFIG.TIME_PER_GLAZING_PANE_MINUTES;
 
     return time; // minutes
   }

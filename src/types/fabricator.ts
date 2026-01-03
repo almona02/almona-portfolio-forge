@@ -113,12 +113,24 @@ export interface WindowUnit {
 /**
  * Grid Layout Definitions for Phase 4
  */
+/**
+ * Manual Mullion - User-drawn mullion (frame-level or sash-level)
+ */
+export interface ManualMullion {
+  id: string;
+  type: 'horizontal' | 'vertical';
+  level: 'frame' | 'sash';
+  position: number; // Position in mm from left (vertical) or top (horizontal)
+  sashId?: string; // Optional: For sash-level mullions, the ID of the sash cell
+}
+
 export interface WindowGrid {
   rows: number;
   cols: number;
   cells: GridCell[];
   colWidths?: number[]; // relative proportions, length = cols
   rowHeights?: number[]; // relative proportions, length = rows
+  manualMullions?: ManualMullion[]; // User-drawn mullions (frame-level and sash-level)
 }
 
 export interface GridCell {
@@ -566,6 +578,8 @@ export interface MeasurementData {
   roughOpeningHeight?: number;
   /** Grid layout if set in measuring step */
   grid?: WindowGrid;
+  /** Preset pattern ID for preset-aware 3D generation */
+  presetId?: string;
 }
 
 // Lightweight commercial draft types used by workspace context

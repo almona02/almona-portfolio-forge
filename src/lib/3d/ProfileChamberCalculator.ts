@@ -76,8 +76,8 @@ export class ProfileChamberCalculator {
     // Simplified thermal calculation
     // Real calculation would consider material properties, air gaps, etc.
     const thermalChambers = layout.chambers.filter(c => c.type === 'thermal');
-    const thermalVolume = thermalChambers.reduce((sum, c) => sum + c.width * c.depth, 0);
-    const totalVolume = layout.totalWidth * layout.totalDepth;
+    const _thermalVolume = thermalChambers.reduce((sum, c) => sum + c.width * c.depth, 0);
+    const _totalVolume = layout.totalWidth * layout.totalDepth;
 
     // More chambers = better insulation (simplified)
     const uValue = 2.5 - (thermalChambers.length * 0.2); // W/(m²·K)
@@ -95,7 +95,7 @@ export class ProfileChamberCalculator {
   } {
     // Simplified structural calculation
     const structuralChambers = layout.chambers.filter(c => c.type === 'structural');
-    const structuralArea = structuralChambers.reduce((sum, c) => sum + c.width * c.depth, 0);
+    const _structuralArea = structuralChambers.reduce((sum, c) => sum + c.width * c.depth, 0);
 
     // Moment of inertia (simplified)
     const momentOfInertia = (layout.totalWidth * Math.pow(layout.totalDepth, 3)) / 12;

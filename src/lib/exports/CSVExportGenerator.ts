@@ -6,12 +6,12 @@
  * Generates Excel-compatible CSV files with QR codes, barcodes, and proper formatting
  */
 
-import { CSVExportOptions, QRCodeData } from './types';
-import { WindowUnit, OptimizationResult, CuttingPlan } from '@/types/fabricator';
+import { OptimizationResult, WindowUnit } from '@/types/fabricator';
+import { Locale, formatNumber, getLocaleConfig } from '../localization/formatUtils';
 import { cuttingListGenerator } from '../reports/CuttingListGenerator';
 import { qrBarcodeGenerator } from './QRBarcodeGenerator';
-import { formatNumber, formatUnit, formatDate, getLocaleConfig, Locale } from '../localization/formatUtils';
 import { getMachineProfile } from './machineProfiles';
+import { CSVExportOptions, QRCodeData } from './types';
 
 /**
  * CSV export generator
@@ -40,7 +40,7 @@ export class CSVExportGenerator {
     const reportData = cuttingListGenerator.generateReportData(project, optimization);
 
     // Build CSV content
-    const rows: string[] = [];
+    const rows: string[][] = [];
 
     // If a machine profile is selected and it targets saw CSV, generate
     // a flat machine-friendly cutting list instead of the richer human
@@ -58,7 +58,7 @@ export class CSVExportGenerator {
           'ANGLE_DEG',
           'WASTE_MM',
         ];
-      rows.push(headers);
+      rows.push(headers.map(String));
 
       reportData.cuttingPlans.forEach((plan, planIndex) => {
         const barIndex = planIndex + 1;
@@ -67,7 +67,7 @@ export class CSVExportGenerator {
             String(barIndex),
             String(cutIndex + 1),
             plan.profile.name,
-            cut.componentId,
+            cut.componentId || '',
             cut.componentType || '',
             this.formatNumberValue(cut.length, decimalSeparator, locale),
             this.formatNumberValue(cut.angle, decimalSeparator, locale),
@@ -84,11 +84,11 @@ export class CSVExportGenerator {
 
       // Project information
       rows.push(this.buildProjectInfoRow(project, delimiter));
-      rows.push([]); // Empty row
+      rows.push(['']); // Empty row
 
       // Summary row
       rows.push(this.buildSummaryRow(reportData.summary, delimiter, decimalSeparator, locale));
-      rows.push([]); // Empty row
+      rows.push(['']); // Empty row
 
       // Cutting plans
       reportData.cuttingPlans.forEach((plan, planIndex) => {
@@ -102,18 +102,18 @@ export class CSVExportGenerator {
 
         // Plan summary
         rows.push(this.buildPlanSummaryRow(plan, delimiter, decimalSeparator, locale));
-        rows.push([]); // Empty row between plans
+        rows.push(['']); // Empty row between plans
       });
 
       // Add QR code and barcode data if requested
       if (options.includeQRCode) {
-        rows.push([]); // Empty row
+        rows.push(['']); // Empty row
         rows.push(this.buildQRCodeRow(project, delimiter));
       }
 
       // Add barcode data for components
       if (options.includeQRCode) {
-        rows.push([]); // Empty row
+        rows.push(['']); // Empty row
         rows.push(['BARCODES']);
         rows.push(['Component ID', 'SKU', 'Barcode']);
         reportData.cuttingPlans.forEach((plan) => {
@@ -148,7 +148,7 @@ export class CSVExportGenerator {
   /**
    * Build QR code row with project information
    */
-  private buildQRCodeRow(project: WindowUnit, delimiter: string): string[] {
+  private buildQRCodeRow(project: WindowUnit, _delimiter: string): string[] {
     const qrData: QRCodeData = {
       projectId: project.id,
       orderNumber: project.orderNumber,
@@ -188,7 +188,7 @@ export class CSVExportGenerator {
   /**
    * Build project information row
    */
-  private buildProjectInfoRow(project: WindowUnit, delimiter: string): string[] {
+  private buildProjectInfoRow(project: WindowUnit, _delimiter: string): string[] {
     return [
       `Project: ${project.orderNumber}`,
       `Type: ${project.type}`,
@@ -203,7 +203,8 @@ export class CSVExportGenerator {
   private buildSummaryRow(
     summary: any,
     delimiter: string,
-    decimalSeparator: string
+    decimalSeparator: string,
+    locale: Locale = 'en'
   ): string[] {
     return [
       'SUMMARY',
@@ -218,7 +219,7 @@ export class CSVExportGenerator {
   /**
    * Build plan header row
    */
-  private buildPlanHeaderRow(plan: any, planNumber: number, delimiter: string): string[] {
+  private buildPlanHeaderRow(plan: any, planNumber: number, _delimiter: string): string[] {
     return [
       `PLAN ${planNumber}`,
       `Profile: ${plan.profile.name}`,
@@ -256,7 +257,8 @@ export class CSVExportGenerator {
   private buildPlanSummaryRow(
     plan: any,
     delimiter: string,
-    decimalSeparator: string
+    decimalSeparator: string,
+    locale: Locale = 'en'
   ): string[] {
     return [
       'PLAN SUMMARY',
@@ -275,6 +277,8 @@ export class CSVExportGenerator {
    * Escape CSV row
    */
   private escapeRow(row: string[], delimiter: string): string {
+    // Handle empty rows
+    if (row.length === 0) return '';
     return row
       .map((cell) => {
         // Escape quotes and wrap in quotes if contains delimiter, newline, or quote

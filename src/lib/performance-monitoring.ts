@@ -1,9 +1,8 @@
 // Advanced Performance Monitoring and Analytics System
 // Tracks feature usage, performance metrics, and user satisfaction
 
-import React from 'react';
-import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import React from 'react';
 
 // Performance Metrics Interface
 export interface PerformanceMetric {
@@ -17,6 +16,12 @@ export interface PerformanceMetric {
   user_id?: string;
   session_id: string;
   device_info: DeviceInfo;
+}
+
+export interface MemoryInfo {
+  usedJSHeapSize: number;
+  totalJSHeapSize: number;
+  jsHeapSizeLimit: number;
 }
 
 export interface DeviceInfo {
@@ -197,7 +202,7 @@ class PerformanceMonitoringService {
         const duration = performance.now() - startTime;
         this.recordMetric('api_request', duration, 'ms', 'api', {
           url: args[0],
-          error: error.message,
+          error: error instanceof Error ? error.message : String(error),
           success: false
         });
         throw error;
@@ -216,7 +221,7 @@ class PerformanceMonitoringService {
         // Use new API format for supported entry types
         try {
           observer.observe({ type: entryType, buffered: true });
-        } catch (e) {
+        } catch {
           // Fallback to old format for entry types that don't support new API
           try {
             observer.observe({ entryTypes: [entryType] });
@@ -236,7 +241,7 @@ class PerformanceMonitoringService {
     value: number, 
     unit: string, 
     category: PerformanceMetric['category'],
-    additionalContext?: Record<string, any>
+    _additionalContext?: Record<string, any>
   ) {
     const metric: PerformanceMetric = {
       id: `${name}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -403,7 +408,7 @@ class PerformanceMonitoringService {
     };
   }
 
-  private isCriticalMetric(name: string, value: number, unit: string): boolean {
+  private isCriticalMetric(name: string, value: number, _unit: string): boolean {
     const criticalThresholds = {
       'FCP': 1800, // 1.8s
       'LCP': 2500, // 2.5s  
@@ -460,13 +465,13 @@ class PerformanceMonitoringService {
       }
     } catch (error) {
       // Silently fail - analytics might be blocked by privacy extensions
-      console.debug('Analytics blocked or unavailable:', error.message);
+      console.debug('Analytics blocked or unavailable:', error instanceof Error ? error.message : String(error));
     }
   }
 
   private async sendFeatureUsageToDatabase(usage: FeatureUsageMetric) {
     try {
-      await supabase.from('feature_usage_metrics').insert({
+      await (supabase.from('feature_usage_metrics') as any).insert({
         feature_name: usage.feature_name,
         action: usage.action,
         user_id: usage.user_id,
@@ -484,7 +489,7 @@ class PerformanceMonitoringService {
 
   private async sendSatisfactionToDatabase(satisfaction: UserSatisfactionMetric) {
     try {
-      await supabase.from('user_satisfaction_metrics').insert({
+      await (supabase.from('user_satisfaction_metrics') as any).insert({
         page: satisfaction.page,
         rating: satisfaction.rating,
         feedback: satisfaction.feedback,

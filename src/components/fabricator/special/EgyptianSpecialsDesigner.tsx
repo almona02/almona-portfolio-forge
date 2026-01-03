@@ -18,7 +18,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { 
   Shield, 
   Thermometer, 
-  CheckCircle2, 
   Loader2,
   AlertTriangle,
   Droplets,

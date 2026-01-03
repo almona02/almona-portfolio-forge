@@ -96,7 +96,7 @@ export class InvoiceParser {
   /**
    * Parse PDF invoice (simplified - would use pdf-parse library in production)
    */
-  async parsePDF(pdfFile: File): Promise<ParsedInvoice> {
+  async parsePDF(_pdfFile: File): Promise<ParsedInvoice> {
     // This is a placeholder - in production would use pdf-parse or similar
     // For now, return error suggesting CSV upload
     throw new Error(

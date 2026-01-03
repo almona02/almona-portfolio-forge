@@ -3,26 +3,24 @@
  * Test all SwiftXR features in browser
  */
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Progress } from '@/shared/ui/ui/progress';
-import { 
-  CheckCircle, 
-  XCircle, 
-  Loader2, 
-  TestTube,
-  Smartphone,
-  Monitor,
-  Zap
-} from 'lucide-react';
-import { SwiftXRManager } from '@/components/3d-model/SwiftXRManager';
 import { EnhancedGLBViewer } from '@/components/3d-model/EnhancedGLBViewer';
+import { SwiftXRManager } from '@/components/3d-model/SwiftXRManager';
 import { UnifiedARManager } from '@/components/3d-model/UnifiedARManager';
 import { SwiftXRIframe } from '@/components/swiftxr/SwiftXRIframe';
-import { detectSwiftXR, launchSwiftXR, launchARWithFallback } from '@/utils/swiftXRIntegration';
-import { useToast } from '@/hooks/useToast';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { detectSwiftXR, launchSwiftXR } from '@/utils/swiftXRIntegration';
+import {
+    CheckCircle,
+    Loader2,
+    Monitor,
+    Smartphone,
+    TestTube,
+    XCircle,
+    Zap
+} from 'lucide-react';
+import { useState } from 'react';
 
 interface TestResult {
   name: string;
@@ -34,7 +32,6 @@ export default function SwiftXRTestPage() {
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [detectionResult, setDetectionResult] = useState<any>(null);
-  const { toast } = useToast();
 
   const testModelPath = '/models/demo-machine.glb';
   const testModelName = 'Test Model';
@@ -118,7 +115,7 @@ export default function SwiftXRTestPage() {
   const testLaunch = async () => {
     try {
       updateTestResult('SwiftXR Launch', 'running');
-      const result = await launchSwiftXR({
+      await launchSwiftXR({
         modelName: testModelName,
         modelPath: testModelPath,
         fallbackToWebXR: true,

@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import type { Database, QuoteStatus } from '@/types/database';
+import { z } from 'zod';
 import { table } from './clientCore';
 
 const quoteItemSchema = z.object({
@@ -41,7 +41,7 @@ type QuoteRow = Database['public']['Tables']['quotes']['Row'];
 
 export async function createQuote(input: QuoteCreateInput): Promise<QuoteRow> {
   const parsed = quoteCreateSchema.parse(input);
-  const { items, ...quoteCore } = parsed;
+  const { items: _items, ...quoteCore } = parsed;
   const { data, error } = await (table('quotes') as any)
     .insert(quoteCore as any)
     .select('*')

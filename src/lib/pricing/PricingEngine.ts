@@ -5,7 +5,7 @@
  */
 
 import { convertCurrency, formatCurrency, getExchangeRate, type ExchangeRate } from '@/lib/currencyExchange';
-import { TURKISH_CONFIG, EGYPTIAN_CONFIG, type RegionCode } from '@/config/regionalConfig';
+import { TURKISH_CONFIG, EGYPTIAN_CONFIG } from '@/config/regionalConfig';
 import { QuotingEngine, type PricingConfig, type Quote } from '@/modules/commercial/QuotingEngine';
 import { Profile, FabricatorAccessory } from '@/types/fabricator';
 
@@ -414,7 +414,7 @@ export class PricingEngine {
   /**
    * Convert quote to different currency
    */
-  private convertQuote(quote: Quote, exchangeRate: ExchangeRate, targetCurrency: Currency): Quote {
+  private convertQuote(quote: Quote, exchangeRate: ExchangeRate, _targetCurrency: Currency): Quote {
     const rate = exchangeRate.rate;
 
     return {

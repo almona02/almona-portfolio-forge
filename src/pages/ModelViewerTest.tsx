@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 // PHASE 4: Use LazyModelWrapper for interaction-first loading
-import { LazyModelWrapper } from '../components/3d-model/LazyModelWrapper';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import { Button } from '@/components/ui/button';
+import { LazyModelWrapper } from '../components/3d-model/LazyModelWrapper';
 
 /**
  * Simple test page for the 3D model viewer
@@ -19,7 +19,7 @@ export function ModelViewerTest() {
     setError(null)
   }
 
-  const handleError = (error: Error) => {
+  const _handleError = (error: Error) => {
     setError(error.message)
     setIsLoading(false)
   }

@@ -9,9 +9,8 @@
  * @since Phase 4: 3D Visual Upgrade (Week 21)
  */
 
-import { Vector3 } from 'three';
-import { HardwareModelLibrary, type HardwarePlacement } from './HardwareModelLibrary';
 import type { WindowUnit } from '@/types/fabricator';
+import { HardwareModelLibrary, type HardwarePlacement } from './HardwareModelLibrary';
 
 export interface PlacementValidation {
   egyptianCode2020: boolean;

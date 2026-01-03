@@ -10,9 +10,9 @@
  * @since Phase 4: 3D Visual Upgrade (Week 19)
  */
 
+import type { Profile } from '@/types/fabricator';
 import { Vector2 } from 'three';
 import type { ProfileCrossSection } from './windowGeometry';
-import type { Profile } from '@/types/fabricator';
 
 export interface ChamberConfig {
   count: 3 | 5 | 7 | 9;
@@ -215,7 +215,7 @@ export class AdvancedProfileGenerator {
     const hw = width / 2;
     const hd = depth / 2;
     const t = wallThickness;
-    const channelDepth = 0.005; // 5mm
+    const _channelDepth = 0.005; // 5mm
     const channelWidth = 0.008; // 8mm
 
     // Vertical reinforcement channels (left and right)

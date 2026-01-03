@@ -404,7 +404,7 @@ export class SecurityGateway {
    */
   getLocalizedError(
     errorCode: string,
-    lang: 'en' | 'ar' = 'en',
+    _lang: 'en' | 'ar' = 'en',
     details?: Record<string, any>
   ): SecurityError {
     const errorMessages: Record<string, { en: string; ar: string }> = {

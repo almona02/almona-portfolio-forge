@@ -12,10 +12,9 @@
  * @since Phase 4: 3D Visual Upgrade (Week 22)
  */
 
-import { Vector3, Euler, Quaternion } from 'three';
+import { Euler, Quaternion, Vector3 } from 'three';
 import { CollisionDetector } from './CollisionDetector';
 import { PhysicsSimulator } from './PhysicsSimulator';
-import type { WindowUnit } from '@/types/fabricator';
 
 export type OpeningType = 'casement' | 'sliding' | 'tilt_turn' | 'awning' | 'fixed';
 

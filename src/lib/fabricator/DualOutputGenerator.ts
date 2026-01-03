@@ -19,6 +19,17 @@ import type { FrameGeometry } from '@/lib/3d/windowGeometry';
 import { generateModelGeometries } from '@/lib/3d/windowGeometry';
 import { FabricationData, WindowUnit } from '@/types/fabricator';
 import { generateCuttingListFromSystemPack } from './CuttingListGenerator';
+import { GEOMETRIC_CONSTANTS } from './bom/profileBOMConstants';
+import {
+    CROSS_VALIDATION_TOLERANCES,
+    CUTTING_ANGLES,
+    DEFAULT_PROFILE_SPECS,
+    DISPLAY_FORMAT,
+    DUAL_OUTPUT_ACCURACY,
+    GLAZING_CONSTANTS,
+    PRODUCTION_TIME_ESTIMATES,
+    STOCK_CONSTANTS,
+} from './dualOutputConstants';
 import { getPatternById } from './presetUtils';
 
 /**
@@ -173,9 +184,9 @@ export class DualOutputGenerator {
         ...discrepancies.map(d => ({
           severity: d.severity as 'info' | 'warning' | 'error' | 'critical',
           code: `CROSS-CHECK-${d.severity.toUpperCase()}`,
-          message: `Pattern calculation differs from standard: ${d.details || `${d.difference.toFixed(2)}mm difference`}`,
+          message: `Pattern calculation differs from standard: ${d.details || `${d.difference.toFixed(DISPLAY_FORMAT.DIFFERENCE_DECIMAL_PLACES)}mm difference`}`,
           affectedComponents: [d.component],
-          suggestedAction: d.difference > 10 ? 'Review with production manager' : 'Minor difference, within tolerance',
+          suggestedAction: d.difference > CROSS_VALIDATION_TOLERANCES.ERROR_THRESHOLD_MM ? 'Review with production manager' : 'Minor difference, within tolerance',
           validationRule: 'Cross-validation mismatch'
         }))
       ];
@@ -299,7 +310,7 @@ export class DualOutputGenerator {
       metadata: {
         generationTimestamp: new Date().toISOString(),
         patternUsed: pattern.id,
-        accuracyScore: 0.998, // 99.8% target
+        accuracyScore: DUAL_OUTPUT_ACCURACY.FABRICATION_ACCURACY,
         crossCheckStatus: 'passed',
         checksum,
         version: 'dual-output-v1.0',
@@ -365,9 +376,9 @@ export class DualOutputGenerator {
         length: totalLength,
         quantity: totalQuantity,
         cuttingLengths,
-        angles: Array(totalQuantity).fill(90), // Default 90° for most cuts
-        rawStockLength: 6000, // Standard 6m stock
-        wasteLength: this.calculateWasteFromCuts(cuttingLengths, 6000),
+        angles: Array(totalQuantity).fill(CUTTING_ANGLES.STRAIGHT_CUT_DEG),
+        rawStockLength: STOCK_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
+        wasteLength: this.calculateWasteFromCuts(cuttingLengths, STOCK_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
         machiningZones: [],
         weight: 0, // Would need profile data to calculate
         cost: 0 // Would need profile data to calculate
@@ -447,14 +458,18 @@ export class DualOutputGenerator {
           fabricationProfile.length - (existingProfile.length || 0)
         );
         
-        if (lengthDiff > 1) { // 1mm tolerance
+        if (lengthDiff > CROSS_VALIDATION_TOLERANCES.MIN_DIFFERENCE_MM) {
           discrepancies.push({
             type: 'profile_length',
             component: fabricationProfile.profileCode,
             dualOutputValue: fabricationProfile.length,
             existingValue: existingProfile.length || 0,
             difference: lengthDiff,
-            severity: lengthDiff > 10 ? 'error' : lengthDiff > 5 ? 'warning' : 'info',
+            severity: lengthDiff > CROSS_VALIDATION_TOLERANCES.ERROR_THRESHOLD_MM 
+              ? 'error' 
+              : lengthDiff > CROSS_VALIDATION_TOLERANCES.WARNING_THRESHOLD_MM 
+                ? 'warning' 
+                : 'info',
             details: `${lengthDiff.toFixed(2)}mm difference in ${fabricationProfile.profileCode}`
           });
         }
@@ -474,7 +489,7 @@ export class DualOutputGenerator {
    */
   private generateWorkflowSequence(
     fabrication: FabricationData,
-    windowUnit: WindowUnit
+    _windowUnit: WindowUnit
   ): FabricationData['productionSequence'] {
     const sequence: FabricationData['productionSequence'] = [];
     let stepNumber = 1;
@@ -486,7 +501,7 @@ export class DualOutputGenerator {
         step: stepNumber++,
         operation: 'Cut frame and sash profiles',
         station: 'cutting',
-        estimatedTime: Math.ceil(totalProfiles * 2), // 2 minutes per profile cut
+        estimatedTime: Math.ceil(totalProfiles * PRODUCTION_TIME_ESTIMATES.MINUTES_PER_PROFILE_CUT),
         toolsRequired: ['saw', 'measuring_tape', 'miter_box'],
         skillsRequired: 'basic',
         qualityGates: [
@@ -507,7 +522,7 @@ export class DualOutputGenerator {
         step: stepNumber++,
         operation: 'Drill and mill machining zones',
         station: 'machining',
-        estimatedTime: Math.ceil(totalMachiningOps * 3), // 3 minutes per operation
+        estimatedTime: Math.ceil(totalMachiningOps * PRODUCTION_TIME_ESTIMATES.MINUTES_PER_MACHINING_OP),
         toolsRequired: ['drill', 'router', 'pantograph'],
         skillsRequired: 'intermediate',
         qualityGates: [
@@ -525,7 +540,7 @@ export class DualOutputGenerator {
         step: stepNumber++,
         operation: 'Assemble frame with corner keys',
         station: 'assembly',
-        estimatedTime: 15, // 15 minutes for frame assembly
+        estimatedTime: PRODUCTION_TIME_ESTIMATES.FRAME_ASSEMBLY_MINUTES,
         toolsRequired: ['rubber_mallet', 'corner_keys', 'square'],
         skillsRequired: 'intermediate',
         qualityGates: [
@@ -543,7 +558,7 @@ export class DualOutputGenerator {
         step: stepNumber++,
         operation: 'Install mullions and transoms',
         station: 'assembly',
-        estimatedTime: 10, // 10 minutes for mullion/transom installation
+        estimatedTime: PRODUCTION_TIME_ESTIMATES.MULLION_TRANSOM_INSTALL_MINUTES,
         toolsRequired: ['drill', 'screws', 'level'],
         skillsRequired: 'intermediate',
         qualityGates: [
@@ -561,7 +576,7 @@ export class DualOutputGenerator {
         step: stepNumber++,
         operation: 'Assemble sashes',
         station: 'assembly',
-        estimatedTime: 20, // 20 minutes for sash assembly
+        estimatedTime: PRODUCTION_TIME_ESTIMATES.SASH_ASSEMBLY_MINUTES,
         toolsRequired: ['corner_keys', 'rubber_mallet', 'square'],
         skillsRequired: 'intermediate',
         qualityGates: [
@@ -579,7 +594,7 @@ export class DualOutputGenerator {
         step: stepNumber++,
         operation: 'Install hardware (hinges, locks, handles)',
         station: 'assembly',
-        estimatedTime: Math.ceil(totalHardware * 5), // 5 minutes per hardware item
+        estimatedTime: Math.ceil(totalHardware * PRODUCTION_TIME_ESTIMATES.MINUTES_PER_HARDWARE_ITEM),
         toolsRequired: ['drill', 'screwdriver', 'torque_wrench'],
         skillsRequired: 'intermediate',
         qualityGates: [
@@ -593,12 +608,12 @@ export class DualOutputGenerator {
     
     // STEP 7: Glazing
     if (fabrication.glazing.length > 0) {
-      const totalPanes = fabrication.glazing.reduce((sum, g) => sum + g.dimensions ? 1 : 0, 0);
+      const totalPanes = fabrication.glazing.reduce((sum, g) => sum + (g.dimensions ? 1 : 0), 0);
       sequence.push({
         step: stepNumber++,
         operation: 'Install glazing (glass panes)',
         station: 'glazing',
-        estimatedTime: Math.ceil(totalPanes * 10), // 10 minutes per pane
+        estimatedTime: Math.ceil(totalPanes * PRODUCTION_TIME_ESTIMATES.MINUTES_PER_GLASS_PANE),
         toolsRequired: ['glazing_beads', 'rubber_mallet', 'safety_equipment'],
         skillsRequired: 'expert',
         qualityGates: [
@@ -616,7 +631,7 @@ export class DualOutputGenerator {
       step: stepNumber++,
       operation: 'Final quality control and inspection',
       station: 'qc',
-      estimatedTime: 15, // 15 minutes for QC
+        estimatedTime: PRODUCTION_TIME_ESTIMATES.QC_INSPECTION_MINUTES,
       toolsRequired: ['measuring_tape', 'level', 'square', 'checklist'],
       skillsRequired: 'expert',
       qualityGates: [
@@ -659,16 +674,16 @@ export class DualOutputGenerator {
     const frameProfile = patternAny.frameProfile || { 
       id: 'default-frame', 
       code: 'FRAME-60', 
-      width: 60, 
-      depth: 50,
+      width: DEFAULT_PROFILE_SPECS.DEFAULT_FRAME_WIDTH_MM, 
+      depth: DEFAULT_PROFILE_SPECS.DEFAULT_FRAME_DEPTH_MM,
       material: 'aluminum' as const,
-      weightPerMeter: 1.2,
-      costPerMeter: 25
+      weightPerMeter: DEFAULT_PROFILE_SPECS.DEFAULT_WEIGHT_PER_METER_KG,
+      costPerMeter: DEFAULT_PROFILE_SPECS.DEFAULT_COST_PER_METER
     };
     const cuttingRules = patternAny.cuttingRules || {
-      kerf: 2, // Default 2mm kerf
-      barTrim: 0.5,
-      miterAllowance: 0.3
+      kerf: DEFAULT_PROFILE_SPECS.DEFAULT_KERF_MM,
+      barTrim: DEFAULT_PROFILE_SPECS.DEFAULT_BAR_TRIM_MM,
+      miterAllowance: DEFAULT_PROFILE_SPECS.DEFAULT_MITER_ALLOWANCE_MM
     };
     
     // Calculate frame perimeter
@@ -676,7 +691,7 @@ export class DualOutputGenerator {
     const frameLength = ProductionUtils.applyKerfCompensation(
       framePerimeter,
       cuttingRules.kerf,
-      90 // Straight cuts for frame perimeter
+      CUTTING_ANGLES.STRAIGHT_CUT_DEG // Straight cuts for frame perimeter
     );
     
     // Frame profile
@@ -688,14 +703,14 @@ export class DualOutputGenerator {
       length: frameLength,
       quantity: 1,
       cuttingLengths: [
-        ProductionUtils.applyKerfCompensation(windowUnit.overallWidth - frameProfile.width * 2, cuttingRules.kerf, 45),
-        ProductionUtils.applyKerfCompensation(windowUnit.overallHeight - frameProfile.width * 2, cuttingRules.kerf, 45),
-        ProductionUtils.applyKerfCompensation(windowUnit.overallWidth - frameProfile.width * 2, cuttingRules.kerf, 45),
-        ProductionUtils.applyKerfCompensation(windowUnit.overallHeight - frameProfile.width * 2, cuttingRules.kerf, 45)
+        ProductionUtils.applyKerfCompensation(windowUnit.overallWidth - frameProfile.width * 2, cuttingRules.kerf, CUTTING_ANGLES.MITER_CUT_DEG),
+        ProductionUtils.applyKerfCompensation(windowUnit.overallHeight - frameProfile.width * 2, cuttingRules.kerf, CUTTING_ANGLES.MITER_CUT_DEG),
+        ProductionUtils.applyKerfCompensation(windowUnit.overallWidth - frameProfile.width * 2, cuttingRules.kerf, CUTTING_ANGLES.MITER_CUT_DEG),
+        ProductionUtils.applyKerfCompensation(windowUnit.overallHeight - frameProfile.width * 2, cuttingRules.kerf, CUTTING_ANGLES.MITER_CUT_DEG)
       ].filter(len => len > 0), // Filter out invalid lengths
-      angles: [45, 45, 45, 45], // Miter angles for corners
-      rawStockLength: 6000, // Standard 6m stock
-      wasteLength: ProductionUtils.calculateWaste(frameLength, 6000),
+      angles: [CUTTING_ANGLES.MITER_CUT_DEG, CUTTING_ANGLES.MITER_CUT_DEG, CUTTING_ANGLES.MITER_CUT_DEG, CUTTING_ANGLES.MITER_CUT_DEG], // Miter angles for corners
+      rawStockLength: STOCK_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
+      wasteLength: ProductionUtils.calculateWaste(frameLength, STOCK_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
       machiningZones: ProductionUtils.generateFrameMachiningZones(pattern, windowUnit),
       weight: ProductionUtils.calculateProfileWeight(frameLength, frameProfile),
       cost: ProductionUtils.calculateMaterialCost(frameLength, frameProfile)
@@ -712,12 +727,12 @@ export class DualOutputGenerator {
           systemPack,
           profileCode: mullionProfile.code || 'MULLION-60',
           role: 'mullion',
-          length: ProductionUtils.applyKerfCompensation(mullionLength, cuttingRules.kerf, 90),
+          length: ProductionUtils.applyKerfCompensation(mullionLength, cuttingRules.kerf, CUTTING_ANGLES.STRAIGHT_CUT_DEG),
           quantity: 1,
           cuttingLengths: [mullionLength],
-          angles: [90], // Mullions typically cut at 90°
-          rawStockLength: 6000,
-          wasteLength: ProductionUtils.calculateWaste(mullionLength, 6000),
+          angles: [CUTTING_ANGLES.STRAIGHT_CUT_DEG], // Mullions typically cut at 90°
+          rawStockLength: STOCK_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
+          wasteLength: ProductionUtils.calculateWaste(mullionLength, STOCK_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
           machiningZones: ProductionUtils.generateMullionMachiningZones(mullion, windowUnit),
           weight: ProductionUtils.calculateProfileWeight(mullionLength, mullionProfile),
           cost: ProductionUtils.calculateMaterialCost(mullionLength, mullionProfile)
@@ -736,12 +751,12 @@ export class DualOutputGenerator {
           systemPack,
           profileCode: transomProfile.code || 'TRANSOM-60',
           role: 'transom',
-          length: ProductionUtils.applyKerfCompensation(transomLength, cuttingRules.kerf, 90),
+          length: ProductionUtils.applyKerfCompensation(transomLength, cuttingRules.kerf, CUTTING_ANGLES.STRAIGHT_CUT_DEG),
           quantity: 1,
           cuttingLengths: [transomLength],
-          angles: [90],
-          rawStockLength: 6000,
-          wasteLength: ProductionUtils.calculateWaste(transomLength, 6000),
+          angles: [CUTTING_ANGLES.STRAIGHT_CUT_DEG],
+          rawStockLength: STOCK_CONSTANTS.STANDARD_STOCK_LENGTH_MM,
+          wasteLength: ProductionUtils.calculateWaste(transomLength, STOCK_CONSTANTS.STANDARD_STOCK_LENGTH_MM),
           machiningZones: ProductionUtils.generateTransomMachiningZones(transom, windowUnit),
           weight: ProductionUtils.calculateProfileWeight(transomLength, transomProfile),
           cost: ProductionUtils.calculateMaterialCost(transomLength, transomProfile)
@@ -790,18 +805,18 @@ export class DualOutputGenerator {
     }
     
     // Add corner keys for frames (standard: 4 corners)
-    const cornerKeyCount = 4;
+    const { HARDWARE_QUANTITY, INSTALLATION_TIME } = await import('./bom/hardwareBOMConstants');
     hardware.push({
       id: 'corner-key-default',
       supplierCode: 'CORNER-KEY-15',
       name: 'Corner Key 15mm',
       category: 'corner_key',
-      quantity: cornerKeyCount,
+      quantity: HARDWARE_QUANTITY.CORNER_KEYS_PER_FRAME,
       positionSpec: 'One in each frame corner',
       installationNotes: ['Tap in with rubber mallet', 'Ensure flush fit'],
       torqueSpec: undefined,
       alternatives: ['CORNER-KEY-20', 'SCREW-CORNER'],
-      estimatedTime: 2,
+      estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
       supplierLink: undefined
     });
     
@@ -819,16 +834,18 @@ export class DualOutputGenerator {
     const { ProductionUtils } = await import('./productionUtils');
     const patternAny = pattern as any;
     
-    const edgeClearance = patternAny.glazingSpec?.edgeClearance || 5; // mm standard
+    const edgeClearance = patternAny.glazingSpec?.edgeClearance || GLAZING_CONSTANTS.DEFAULT_EDGE_CLEARANCE_MM;
     const grid = pattern.gridSpec;
     
     grid.cells.forEach((cell, index) => {
       if (cell.type === 'fixed' || cell.type === 'sash' || cell.type === 'sliding') {
-        const cellWidth = (windowUnit.overallWidth / grid.cols) - edgeClearance * 2;
-        const cellHeight = (windowUnit.overallHeight / grid.rows) - edgeClearance * 2;
-        // Default thickness: 5mm for single glazing, 4mm per pane for double/triple
+        const cellWidth = (windowUnit.overallWidth / grid.cols) - edgeClearance * GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER;
+        const cellHeight = (windowUnit.overallHeight / grid.rows) - edgeClearance * GEOMETRIC_CONSTANTS.FRAME_WIDTH_DEDUCTION_MULTIPLIER;
+        // Default thickness: based on glazing type
         const glazingType = (windowUnit.glazing as any)?.type || 'double';
-        const defaultThickness = glazingType === 'single' ? 5 : 4; // 5mm for single glazing bead system
+        const defaultThickness = glazingType === 'single' 
+          ? GLAZING_CONSTANTS.DEFAULT_SINGLE_GLAZING_THICKNESS_MM 
+          : GLAZING_CONSTANTS.DEFAULT_MULTI_GLAZING_THICKNESS_MM;
         const glassThickness = (windowUnit.glazing as any)?.thickness || defaultThickness;
         
         glazing.push({

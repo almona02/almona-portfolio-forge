@@ -4,9 +4,9 @@
  * Supports both DC series (mitre saws) and CNC series (AIM/ALM/PIM)
  */
 
-import { CuttingPlan, Cut, Profile } from '@/types/fabricator';
-import { DCCutListGenerator } from './DCCutListGenerator';
+import { CuttingPlan } from '@/types/fabricator';
 import { CNCCutListGenerator } from './CNCCutListGenerator';
+import { DCCutListGenerator } from './DCCutListGenerator';
 
 export interface YilmazExportOptions {
   format: 'csv' | 'mdb';

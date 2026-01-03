@@ -1,16 +1,16 @@
 
-import React, { useEffect, useRef, useState } from 'react';
-import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
-import { X, Star, Truck, Shield, Zap, Scale, Heart, Eye, Settings, Monitor, Smartphone, Globe, FileText } from 'lucide-react';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { Separator } from '@/shared/ui/ui/separator';
-import { useTranslation } from 'react-i18next';
-import { Machine } from '@/types';
 import { useQuote } from '@/context/QuoteContext';
-import { toast } from 'sonner';
 import { quickViewAnalytics } from '@/lib/analytics/quickViewAnalytics';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Separator } from '@/shared/ui/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { Machine } from '@/types';
+import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
+import { Eye, FileText, Globe, Heart, Monitor, Scale, Settings, Shield, Smartphone, Star, Truck, X, Zap } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 interface ProductQuickViewProps {
   product: Machine;
@@ -73,12 +73,15 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
         }
       };
 
-      panelRef.current.addEventListener('keydown', handleTabKey);
-      firstElement?.focus();
+      const panel = panelRef.current;
+      if (panel) {
+        panel.addEventListener('keydown', handleTabKey);
+        firstElement?.focus();
 
-      return () => {
-        panelRef.current?.removeEventListener('keydown', handleTabKey);
-      };
+        return () => {
+          panel.removeEventListener('keydown', handleTabKey);
+        };
+      }
     }
   }, [isOpen]);
 

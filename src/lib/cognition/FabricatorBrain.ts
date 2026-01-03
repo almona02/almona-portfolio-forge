@@ -11,8 +11,8 @@
  * @since Phase 3: Cognitive Intelligence (Week 15)
  */
 
-import type { WindowUnit } from '@/types/fabricator';
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
+import type { WindowUnit } from '@/types/fabricator';
 
 export interface FabricatorAnalysis {
   material?: { value: string; confidence: number; reason: string };
@@ -55,8 +55,8 @@ export class FabricatorBrain {
    * Recommend material based on workshop standards
    */
   private recommendMaterial(
-    windowUnit: Partial<WindowUnit>,
-    pattern?: EgyptianPattern | null
+    _windowUnit: Partial<WindowUnit>,
+    _pattern?: EgyptianPattern | null
   ): FabricatorAnalysis['material'] {
     // Most Egyptian workshops use aluminum as standard
     return {
@@ -70,8 +70,8 @@ export class FabricatorBrain {
    * Recommend profile/system pack based on workshop capability
    */
   private recommendProfile(
-    windowUnit: Partial<WindowUnit>,
-    pattern?: EgyptianPattern | null
+    _windowUnit: Partial<WindowUnit>,
+    _pattern?: EgyptianPattern | null
   ): FabricatorAnalysis['profile'] {
     // Default to ROCK 60 (most common in Egypt)
     return {
@@ -85,8 +85,8 @@ export class FabricatorBrain {
    * Recommend opening type based on workshop expertise
    */
   private recommendOpeningType(
-    windowUnit: Partial<WindowUnit>,
-    pattern?: EgyptianPattern | null
+    _windowUnit: Partial<WindowUnit>,
+    _pattern?: EgyptianPattern | null
   ): FabricatorAnalysis['openingType'] {
     // Sliding windows are most common in Egypt
     return {

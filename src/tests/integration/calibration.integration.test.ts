@@ -3,16 +3,15 @@
  * Verifies calibration modifiers are correctly applied to cut lengths
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AdaptiveSolver } from '@/algorithms/adaptiveSolver';
 import { calibrationManager } from '@/lib/calibration/CalibrationManager';
 import type {
-  WindowComponent,
-  Profile,
-  CuttingCalibration,
-  AdaptiveSolverConfig,
-  OptimizationResult,
+    AdaptiveSolverConfig,
+    CuttingCalibration,
+    Profile,
+    WindowComponent,
 } from '@/types/fabricator';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Calibration System Integration Tests', () => {
   let mockProfile: Profile;

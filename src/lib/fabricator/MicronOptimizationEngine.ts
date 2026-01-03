@@ -9,19 +9,18 @@
  * @source Manufacturer specifications (Yilmaz, Elumatec, Caluminium)
  */
 
-import type { Profile } from '@/types/fabricator';
-import { 
-  calculateRawMaterialNeeded,
-  calculateTransomCutLength,
-  calculateScreenSashOD,
-  calculateConsumables
-} from '@/lib/codex/FormulaRegistry';
 import {
-  calculateUPVCCut,
-  calculateTotalUPVCMaterial,
-  getDefaultUPVCSettings,
-  getClimateUPVCSettings,
-  type UPVCSystemSettings,
+    calculateConsumables,
+    calculateRawMaterialNeeded,
+    calculateScreenSashOD,
+    calculateTransomCutLength
+} from '@/lib/codex/FormulaRegistry';
+import type { Profile } from '@/types/fabricator';
+import type { UPVCSystemSettings } from '@/types/upvc';
+import {
+    calculateTotalUPVCMaterial,
+    calculateUPVCCut,
+    getDefaultUPVCSettings,
 } from './upvcEngine';
 
 /**

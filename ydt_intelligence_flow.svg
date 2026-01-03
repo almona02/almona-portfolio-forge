@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+    <style>
+        .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: bold; font-size: 20px; fill: #1e293b; }
+        .subtitle { font-family: sans-serif; font-size: 12px; fill: #64748b; }
+        .box-text { font-family: sans-serif; font-size: 12px; font-weight: 600; fill: #1e293b; text-anchor: middle; }
+        .box-sub { font-family: sans-serif; font-size: 10px; fill: #475569; text-anchor: middle; }
+        .path { fill: none; stroke: #94a3b8; stroke-width: 2; }
+    </style>
+    <rect width="100%" height="100%" fill="#f8fafc" rx="10" />
+    
+    <defs>
+        <marker id="arrow-ydt" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="#64748b" />
+        </marker>
+    </defs>
+
+    <text x="400" y="40" class="title" text-anchor="middle">YDT Future Intelligence Layer</text>
+
+    <!-- Step 1: Ingest -->
+    <g transform="translate(50, 100)">
+        <rect width="160" height="240" fill="#f1f5f9" stroke="#64748b" rx="8" />
+        <text x="80" y="30" class="box-text">DATA INGESTION</text>
+        
+        <rect x="20" y="50" width="120" height="30" fill="white" stroke="#cbd5e1" rx="4" />
+        <text x="80" y="70" class="box-sub">RSS / News Scraper</text>
+        
+        <rect x="20" y="90" width="120" height="30" fill="white" stroke="#cbd5e1" rx="4" />
+        <text x="80" y="110" class="box-sub">Facebook Listener</text>
+        
+        <rect x="20" y="130" width="120" height="30" fill="white" stroke="#cbd5e1" rx="4" />
+        <text x="80" y="150" class="box-sub">LME Prices</text>
+
+        <rect x="20" y="170" width="120" height="30" fill="white" stroke="#cbd5e1" rx="4" />
+        <text x="80" y="190" class="box-sub">Scout OCR</text>
+    </g>
+
+    <!-- Arrow -->
+    <line x1="210" y1="220" x2="280" y2="220" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow-ydt)" />
+
+    <!-- Step 2: Maalem Analyst -->
+    <g transform="translate(280, 80)">
+        <circle cx="120" cy="140" r="110" fill="#fffbeb" stroke="#d97706" stroke-width="2" />
+        <text x="120" y="70" class="box-text" fill="#b45309" font-size="16px">MAALEM ANALYST</text>
+        <text x="120" y="90" class="subtitle" text-anchor="middle">(AI Agent)</text>
+
+        <g transform="translate(40, 110)">
+            <rect width="160" height="25" fill="white" stroke="#fcd34d" rx="4" />
+            <text x="80" y="17" class="box-sub">Dialect Translation</text>
+        </g>
+        <g transform="translate(40, 145)">
+            <rect width="160" height="25" fill="white" stroke="#fcd34d" rx="4" />
+            <text x="80" y="17" class="box-sub">Relevance Scoring</text>
+        </g>
+        <g transform="translate(40, 180)">
+            <rect width="160" height="25" fill="white" stroke="#fcd34d" rx="4" />
+            <text x="80" y="17" class="box-sub">Actionable Advice</text>
+        </g>
+    </g>
+
+    <!-- Arrow -->
+    <line x1="500" y1="220" x2="570" y2="220" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow-ydt)" />
+
+    <!-- Step 3: User Brief -->
+    <g transform="translate(570, 100)">
+        <rect width="180" height="240" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="2" rx="8" />
+        <text x="90" y="30" class="box-text" fill="#0284c7">MORNING BRIEF</text>
+        <line x1="20" y1="45" x2="160" y2="45" stroke="#bae6fd" stroke-width="2" />
+        
+        <text x="30" y="80" font-family="sans-serif" font-size="11" fill="#334155">Alert: Aluminum +2%</text>
+        <text x="30" y="110" font-family="sans-serif" font-size="11" fill="#334155">Tip: Buy now before...</text>
+        <text x="30" y="140" font-family="sans-serif" font-size="11" fill="#334155">News: Customs Law</text>
+        
+        <rect x="40" y="180" width="100" height="30" fill="#0ea5e9" rx="15" />
+        <text x="90" y="200" font-family="sans-serif" font-size="10" fill="white" text-anchor="middle">Read Brief</text>
+    </g>
+
+    </svg>

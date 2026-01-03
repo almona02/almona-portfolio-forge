@@ -4,8 +4,8 @@
  * Provides safety checks and automatic operation adjustments
  */
 
-import { CuttingPlan, Cut, Profile } from '@/types/fabricator';
-import { YilmazMachineModel, YilmazMachineSpecs, MACHINE_SPECS } from './YilmazGCodeGenerator';
+import { Cut, CuttingPlan, Profile } from '@/types/fabricator';
+import { MACHINE_SPECS, YilmazMachineModel, YilmazMachineSpecs } from './YilmazGCodeGenerator';
 
 export interface ValidationError {
   code: string;
@@ -84,7 +84,7 @@ export class MachineValidator {
     const errors: ValidationError[] = [];
     const width = profile.width || 0;
     const height = profile.height || 50;
-    const thickness = profile.thickness || 10;
+    const _thickness = profile.thickness || 10;
 
     // Check width
     if (width > this.specs.maxWidth) {
@@ -112,7 +112,7 @@ export class MachineValidator {
     const materialLower = profile.material.toLowerCase();
     const supportedMaterials = ['aluminum', 'alüminyum', 'upvc', 'pvc', 'wood', 'ahşap'];
     if (!supportedMaterials.some(mat => materialLower.includes(mat))) {
-      warnings.push({
+      errors.push({
         code: 'MATERIAL_NOT_VERIFIED',
         message: `Material "${profile.material}" not in standard supported list`,
         severity: 'warning',
@@ -254,7 +254,7 @@ export class MachineValidator {
 
     // Simple collision detection: check if cuts overlap in space
     // This is a simplified version - real collision detection would be more complex
-    cuttingPlans.forEach((plan, planIndex) => {
+    cuttingPlans.forEach((plan, _planIndex) => {
       for (let i = 0; i < plan.cuts.length; i++) {
         for (let j = i + 1; j < plan.cuts.length; j++) {
           const cut1 = plan.cuts[i];
@@ -308,7 +308,7 @@ export class MachineValidator {
   /**
    * Calculate precision required for cut
    */
-  private calculatePrecisionRequired(cut: Cut, profile: Profile): number {
+  private calculatePrecisionRequired(cut: Cut, _profile: Profile): number {
     // Simplified precision calculation
     // Real calculation would consider angle, material, tool, etc.
     const basePrecision = 0.1;

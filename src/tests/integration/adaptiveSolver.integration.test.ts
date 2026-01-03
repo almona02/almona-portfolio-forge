@@ -3,18 +3,13 @@
  * Tests the complete workflow from project creation to cutting plan generation
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AdaptiveSolver } from '@/algorithms/adaptiveSolver';
-import { GreedyHeuristic } from '@/algorithms/greedyHeuristic';
-import { LinearProgrammingOptimizer } from '@/algorithms/linearProgramming';
-import { GeneticOptimizer } from '@/algorithms/geneticOptimization';
 import type {
-  WindowComponent,
-  Profile,
-  AdaptiveSolverConfig,
-  OptimizationResult,
-  CuttingPlan,
+    AdaptiveSolverConfig,
+    Profile,
+    WindowComponent,
 } from '@/types/fabricator';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Adaptive Solver Integration Tests', () => {
   let mockProfile: Profile;

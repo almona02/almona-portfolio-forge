@@ -5,7 +5,6 @@
  */
 
 import { supabase } from '@/lib/supabase';
-import type { Profile } from '@/types/fabricator';
 
 export interface CalibrationTestResult {
   profileId: string;
@@ -101,7 +100,7 @@ export class CalibrationAnalytics {
         .eq('joint_type', result.jointType)
         .single();
 
-      const existingResults = existing?.test_results || [];
+      const existingResults = (existing as { test_results?: any[] } | null)?.test_results || [];
       const newResult = {
         expected: result.expectedLength,
         actual: result.actualLength,
@@ -129,7 +128,7 @@ export class CalibrationAnalytics {
           material_thickness_mm: result.materialThickness,
           test_results: updatedResults,
           is_active: true,
-        }, {
+        } as any, {
           onConflict: 'profile_id,user_id,joint_type',
         });
 
@@ -287,7 +286,7 @@ export class CalibrationAnalytics {
         event_type: eventType,
         event_data: data,
         created_at: new Date().toISOString(),
-      });
+      } as any);
 
       if (error) {
         // Table might not exist yet - that's okay, we'll create it
@@ -342,7 +341,18 @@ export class CalibrationAnalytics {
         };
       }
 
-      const testResults = (data.test_results || []) as Array<{
+      const typedData = data as {
+        test_results?: Array<{
+          expected: number;
+          actual: number;
+          difference: number;
+          date: string;
+        }>;
+        confidence_score?: number;
+        updated_at?: string;
+      };
+
+      const testResults = (typedData.test_results || []) as Array<{
         expected: number;
         actual: number;
         difference: number;
@@ -358,8 +368,8 @@ export class CalibrationAnalytics {
       return {
         totalTests,
         averageAccuracy: Math.round(averageAccuracy * 100) / 100,
-        confidenceScore: data.confidence_score || 0,
-        lastTestDate: data.updated_at ? new Date(data.updated_at) : null,
+        confidenceScore: typedData.confidence_score || 0,
+        lastTestDate: typedData.updated_at ? new Date(typedData.updated_at) : null,
       };
     } catch (error) {
       console.error('Error getting calibration stats:', error);
@@ -376,7 +386,7 @@ export class CalibrationAnalytics {
    * Get pattern data for ML training
    * Returns aggregated data for similar profiles/joints
    */
-  async getPatternData(filters: {
+  async getPatternData(_filters: {
     profileType?: string;
     systemPackId?: string;
     jointType?: string;

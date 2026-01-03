@@ -16,7 +16,7 @@ const loadTensorFlow = async () => {
 
 // Module-level cache
 let modelCache: any = null; // tf.LayersModel | null, but using any to avoid type issues
-let modelVersion = 'v1';
+const _modelVersion = 'v1';
 
 // Pre-trained model for machine fault detection
 export const loadFaultDetectionModel = async () => {
@@ -37,7 +37,10 @@ export const loadFaultDetectionModel = async () => {
 
 export function invalidateModelCache(version?: string) {
   modelCache = null;
-  if (version) modelVersion = version;
+  if (version) {
+    // Version tracking (currently unused but kept for future use)
+    void version;
+  }
 }
 
 // Feature extraction from audio data
@@ -92,14 +95,14 @@ export const detectFaults = async (
     try {
       const model = await loadFaultDetectionModel();
       const features = await extractAudioFeatures(audioBuffer);
-      const prediction = model.predict(features) as tf.Tensor;
+      const prediction = model.predict(features) as any;
       const predictionValue = (await prediction.data())[0];
       
       audioDiagnosis = predictionValue > AUDIO_FAULT_THRESHOLD 
         ? 'Blade needs replacement!' 
         : 'Normal sound pattern';
       hasFault = hasFault || predictionValue > AUDIO_FAULT_THRESHOLD;
-    } catch (error) {
+    } catch {
       audioDiagnosis = 'Audio analysis failed';
     }
   }

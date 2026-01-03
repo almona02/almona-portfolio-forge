@@ -17,44 +17,60 @@
 // IMMEDIATE DEBUG: This runs as soon as the file loads
 console.log('[Animation] 📦 Window3DGenerator.tsx FILE LOADED');
 
+// ✅ ENHANCED: Extract debounce config to constants with documentation
+const DEBOUNCE_CONFIG = {
+  // 300ms: Balances responsiveness vs regeneration cost
+  // - Too low (<200ms): Excessive regeneration during rapid changes
+  // - Too high (>500ms): Feels unresponsive
+  GEOMETRY_GENERATION_MS: 300,
+  
+  // 2000ms: Ensures regeneration even during continuous changes
+  // - Prevents indefinite delay if user is continuously adjusting
+  MAX_WAIT_MS: 2000,
+} as const;
+
 import {
-  Bounds,
-  CameraControls,
-  Environment, Html,
-  Line,
-  OrbitControls,
-  Text
+    Bounds,
+    CameraControls,
+    Environment, Html,
+    Line,
+    OrbitControls,
+    Text
 } from '@react-three/drei';
 import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
 import { Bloom, EffectComposer, SSAO, Vignette } from '@react-three/postprocessing';
 import { useDrag } from '@use-gesture/react';
 import {
-  Suspense,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState
+    Suspense,
+    forwardRef,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+    useState
 } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
+import { easeInOutCubic } from './utils/animationUtils';
+import { findSashHinges } from './utils/hingeUtils';
+import { detectOpeningMechanism } from './utils/mechanismDetection';
+import { usePhysicsStatus } from './utils/physicsUtils';
 
 // Tree-shakeable imports
 import {
-  BoxGeometry,
-  Color,
-  DoubleSide,
-  Euler,
-  ExtrudeGeometry,
-  Group,
-  Material,
-  Mesh,
-  MeshStandardMaterial,
-  Path,
-  Plane,
-  Shape,
-  Vector3,
+    BoxGeometry,
+    Color,
+    DoubleSide,
+    Euler,
+    ExtrudeGeometry,
+    Group,
+    Material,
+    Mesh,
+    MeshStandardMaterial,
+    Path,
+    Plane,
+    Shape,
+    Vector3,
 } from 'three';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { OBJExporter } from 'three/examples/jsm/exporters/OBJExporter.js';
@@ -68,26 +84,26 @@ import { Toggle } from '@/shared/ui/ui/toggle';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/ui/tooltip';
 
 import {
-  AlertTriangle,
-  Download,
-  Home,
-  Layers,
-  Maximize2,
-  Moon,
-  Pause,
-  Play,
-  RotateCcw,
-  Ruler,
-  Scissors,
-  Sparkles,
-  Sun,
-  ZoomIn, ZoomOut
+    AlertTriangle,
+    Download,
+    Home,
+    Layers,
+    Maximize2,
+    Moon,
+    Pause,
+    Play,
+    RotateCcw,
+    Ruler,
+    Scissors,
+    Sparkles,
+    Sun,
+    ZoomIn, ZoomOut
 } from 'lucide-react';
 
 import { useAdvancedMaterials, useWindowPhysics } from '@/lib/3d';
 import { FrameGeometry, MiteredFrameData, generateModelGeometries } from '@/lib/3d/windowGeometry';
 import { getPatternById } from '@/lib/fabricator/presetUtils';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+// SYSTEM_PACKS imported in mechanismDetection utility
 import { generateHardwarePlaceholders, getHardwareColor } from '@/lib/3d/hardwarePlaceholder';
 import { track } from '@/lib/analytics';
 import { ValidationResult, deriveSystemConstraintsFromProfiles, validateProjectWithConstraints } from '@/lib/fabricatorValidation';
@@ -267,7 +283,7 @@ export function Window3DModel({
             hasWindowUnit: !!windowUnit,
             sashesCount: windowUnit.grid?.cells.filter(c => c.type === 'sash' || c.type === 'sliding').length || 0
         });
-    }, [isAnimating, animationProgress, windowUnit.id]);
+    }, [isAnimating, animationProgress, windowUnit]);
     
     const groupRef = useRef<Group>(null!);
     const [modelData, setModelData] = useState<FrameGeometry | null>(null);
@@ -282,10 +298,15 @@ export function Window3DModel({
     });
 
     // Performance & feature flags
-    const isHighQuality = windowUnit.overallWidth * windowUnit.overallHeight <= 7_000_000; // ~≤ 7 m²
-    // DISABLE PHYSICS - Ammo.js is failing and blocking animation
-    const physicsEnabled = false; // Force disabled to avoid Ammo.js errors
-    console.log('[Animation] 🔧 Physics disabled (Ammo.js error fix)');
+    const _isHighQuality = windowUnit.overallWidth * windowUnit.overallHeight <= 7_000_000; // ~≤ 7 m²
+    
+    // ✅ ENHANCED: Graceful physics degradation with error handling
+    const physicsStatus = usePhysicsStatus();
+    const physicsEnabled = physicsStatus.enabled;
+    
+    if (physicsStatus.error) {
+      console.log('[Animation] 🔧 Physics status:', physicsStatus.error);
+    }
 
     const {
         isSetup: isPhysicsSetup,
@@ -393,8 +414,8 @@ export function Window3DModel({
                 setIsModelGenerating(false);
             }
         },
-        300, // ✅ 300ms debounce (optimal for 3D)
-        { maxWait: 2000 } // ✅ Max 2 seconds wait
+        DEBOUNCE_CONFIG.GEOMETRY_GENERATION_MS,
+        { maxWait: DEBOUNCE_CONFIG.MAX_WAIT_MS }
     );
 
     useEffect(() => {
@@ -487,25 +508,9 @@ export function Window3DModel({
         if (physicsEnabled) return;
 
         // CRITICAL DEBUG: Log EVERY frame when animating (limit to first 20 frames)
-        if (isAnimating && state.frame < 20) {
-            console.log('[Animation] 🎯 useFrame RUNNING - Frame:', state.frame, {
-                isAnimating,
-                animationProgress: animationProgress.toFixed(3),
-                hasGroup: !!groupRef.current,
-                hasModelData: !!modelData,
-                sashesCount: modelData?.sashes?.length || 0
-            });
-        }
+        // Debug logging removed - use browser dev tools for frame inspection
 
         if (!groupRef.current || !modelData || (!isAnimating && !explodedView)) {
-            if (isAnimating && state.frame < 5) {
-                console.warn('[Animation] ⚠️ useFrame EARLY RETURN:', {
-                    hasGroup: !!groupRef.current,
-                    hasModelData: !!modelData,
-                    isAnimating,
-                    explodedView
-                });
-            }
             return;
         }
         
@@ -515,7 +520,9 @@ export function Window3DModel({
         }
         
         // Animation progress: 0 = closed, 1 = fully open
-        const progress = isAnimating ? animationProgress : (explodedView ? 1 : 0);
+        const rawProgress = isAnimating ? animationProgress : (explodedView ? 1 : 0);
+        // ✅ ENHANCED: Apply easing for smooth animations
+        const progress = easeInOutCubic(rawProgress);
         
         // FIXED: Check if there are any sashes - if not, skip animation (fixed frame)
         const hasSashes = modelData.sashes.length > 0;
@@ -585,45 +592,17 @@ export function Window3DModel({
                     return;
                 }
                 
-                // Determine mechanism type - CHECK MULTIPLE SOURCES (priority order)
-                // 1) Pattern openingMechanism (most reliable for preset patterns)
-                // 2) System Pack system_type (from profile definitions)
-                // 3) Cell type (from user's canvas selection)
-                // 4) WindowUnit type (fallback)
-                
+                // ✅ ENHANCED: Single function for mechanism detection with clear priority
                 const pattern = windowUnit.presetId ? getPatternById(windowUnit.presetId) : null;
-                const patternMechanism = pattern?.openingMechanism?.type;
+                const mechanism = detectOpeningMechanism(
+                  windowUnit,
+                  cell,
+                  pattern || undefined,
+                  windowUnit.systemPackId || undefined
+                );
                 
-                // Get system pack and check its system_type
-                const systemPack = windowUnit.systemPackId 
-                    ? SYSTEM_PACKS.find(p => p.meta.id === windowUnit.systemPackId)
-                    : null;
-                
-                // Extract system_type from system pack's aluminum_profiles
-                let systemPackType: 'casement' | 'sliding' | null = null;
-                if (systemPack?.windowSystemSpec?.aluminum_profiles) {
-                    const frameProfile = systemPack.windowSystemSpec.aluminum_profiles.find(
-                        (p: any) => p.role === 'frame'
-                    );
-                    if (frameProfile?.system_type) {
-                        systemPackType = frameProfile.system_type === 'casement' ? 'casement' :
-                                        frameProfile.system_type === 'sliding' ? 'sliding' : null;
-                    }
-                }
-                
-                // Priority: 1) Pattern, 2) System Pack, 3) Cell type, 4) WindowUnit type
-                const isSliding = patternMechanism === 'sliding' || 
-                                 systemPackType === 'sliding' ||
-                                 (patternMechanism !== 'casement' && 
-                                  systemPackType !== 'casement' &&
-                                  (cell?.type === 'sliding' || windowUnit.type?.includes('sliding')));
-                
-                const isCasement = patternMechanism === 'casement' ||
-                                  systemPackType === 'casement' ||
-                                  (!isSliding && 
-                                   patternMechanism !== 'sliding' &&
-                                   systemPackType !== 'sliding' &&
-                                   (cell?.type === 'sash' || windowUnit.type?.includes('casement')));
+                const isSliding = mechanism === 'sliding';
+                const isCasement = mechanism === 'casement';
                 
                 const openingDirection = (cell as any)?.openingDirection || 
                                         pattern?.openingMechanism?.direction || 
@@ -632,12 +611,10 @@ export function Window3DModel({
                 // Debug: Log mechanism detection (first sash only, first frame)
                 if (sashIndex === 0 && isAnimating && progress > 0 && progress < 0.01) {
                     console.log('[Animation] 🔍 Mechanism detection:', {
-                        patternMechanism: patternMechanism || 'none',
+                        mechanism,
                         patternId: windowUnit.presetId || 'none',
                         patternName: pattern?.name || 'none',
                         systemPackId: windowUnit.systemPackId || 'none',
-                        systemPackType: systemPackType || 'none',
-                        systemPackName: systemPack?.meta?.name || 'none',
                         cellType: cell?.type,
                         windowUnitType: windowUnit.type,
                         isSliding,
@@ -667,28 +644,13 @@ export function Window3DModel({
                     const cellX = restPosition.x; // Sash center X
                     const cellY = restPosition.y; // Sash center Y
                     
-                    // Match hinges to this sash cell (hinges should be on the left or right edge of the cell)
-                    // CRITICAL: Hinges are on the side where sash is attached (opposite to opening direction)
-                    // Opening right → hinges on RIGHT edge
-                    // Opening left → hinges on LEFT edge
-                    const sashHinges = hardwarePlaceholders.filter(hw => {
-                        if (hw.type !== 'hinge') return false;
-                        
-                        // Check if hinge is on the left or right edge of the cell
-                        const leftEdgeX = cellX - cellWidth / 2;
-                        const rightEdgeX = cellX + cellWidth / 2;
-                        const hingeOnLeftEdge = Math.abs(hw.position.x - leftEdgeX) < 0.05;
-                        const hingeOnRightEdge = Math.abs(hw.position.x - rightEdgeX) < 0.05;
-                        const hingeInCellHeight = Math.abs(hw.position.y - cellY) < cellHeight / 2 + 0.1;
-                        
-                        // For opening right, hinges should be on RIGHT edge
-                        // For opening left, hinges should be on LEFT edge
-                        if (openingDirection === 'right') {
-                            return hingeOnRightEdge && hingeInCellHeight;
-                        } else {
-                            return hingeOnLeftEdge && hingeInCellHeight;
-                        }
-                    });
+                    // ✅ ENHANCED: Extract hinge matching to utility function
+                    const sashHinges = findSashHinges(
+                        hardwarePlaceholders,
+                        { x: cellX, y: cellY, width: cellWidth, height: cellHeight },
+                        openingDirection,
+                        50 // 5cm tolerance
+                    );
                     
                     if (sashHinges.length > 0) {
                         // Calculate pivot point: center of hinge line (between top and bottom hinges)
@@ -1298,7 +1260,7 @@ export const Window3DGenerator = forwardRef<Window3DGeneratorRef, Window3DGenera
             console.log('[Animation] 🛑 Animation cleanup');
             cancelAnimationFrame(animationFrame);
         };
-    }, [isAnimating]);
+    }, [isAnimating, animationProgress]);
 
     // --- Event Handlers (Export, Fullscreen, etc.) ---
     const exportModel = useCallback(async (format: 'GLB' | 'STL' | 'OBJ') => {

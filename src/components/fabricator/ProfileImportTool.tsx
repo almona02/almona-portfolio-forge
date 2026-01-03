@@ -1,39 +1,39 @@
 'use client';
 
-import React, { useState, useCallback, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
+import { AluminumPricingCalculator } from '@/lib/pricing/AluminumPricingCalculator';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
-import { Badge } from '@/shared/ui/ui/badge';
 import { Progress } from '@/shared/ui/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Separator } from '@/shared/ui/ui/separator';
-import {
-  Upload,
-  Package,
-  DollarSign,
-  Scale,
-  FileText,
-  FileCode,
-  Loader2,
-  Image,
-  Brain,
-  Lightbulb,
-  Sparkles,
-  TrendingUp,
-  Target,
-  Zap,
-  Settings,
-  History,
-  CheckCircle2,
-  X,
-} from 'lucide-react';
-import { AluminumPricingCalculator } from '@/lib/pricing/AluminumPricingCalculator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import type { Profile } from '@/types/fabricator';
+import {
+  Brain,
+  CheckCircle2,
+  DollarSign,
+  FileCode,
+  FileText,
+  History,
+  Image,
+  Lightbulb,
+  Loader2,
+  Package,
+  Scale,
+  Settings,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Upload,
+  X,
+  Zap,
+} from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { ProfileDefinitionWizard } from './ProfileDefinitionWizard';
-import { useTranslation } from 'react-i18next';
 
 // ============================================================================
 // Types & Interfaces
@@ -200,6 +200,9 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
   // File Upload Handlers
   // ============================================================================
 
+  // Use ref to store processFiles so handleFileSelect can reference it
+  const processFilesRef = useRef<((files: File[]) => Promise<void>) | null>(null);
+
   const handleFileSelect = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(event.target.files || []);
@@ -223,87 +226,16 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
       setUploadedFiles((prev) => [...prev, ...validFiles]);
 
       // Auto-process files
-      await processFiles(validFiles);
+      if (processFilesRef.current) {
+        await processFilesRef.current(validFiles);
+      }
 
       // Reset input
       if (event.target) event.target.value = '';
     },
-    []
+    [t]
   );
 
-  const processFiles = async (files: File[]) => {
-    setIsProcessing(true);
-    setProgress(0);
-
-    const newProfiles: ExtractedProfileData[] = [];
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      setCurrentProcessingFile(file.name);
-      setProgress(((i + 0.5) / files.length) * 100);
-
-      try {
-        const fileType = getFileTypeFromExtension(file.name);
-        if (!fileType) continue;
-
-        let extractedData: ExtractedProfileData | null = null;
-
-        switch (fileType) {
-          case 'dxf':
-          case 'dwg':
-            extractedData = await extractFromCADFile(file, fileType);
-            break;
-          case 'svg':
-            extractedData = await extractFromSVG(file);
-            break;
-          case 'pdf':
-            extractedData = await extractFromPDF(file);
-            break;
-          case 'png':
-          case 'jpg':
-            extractedData = await extractFromImage(file, fileType);
-            break;
-        }
-
-        if (extractedData) {
-          // Apply K-factor learning if enabled
-          if (kFactorLearningEnabled) {
-            extractedData.kFactorSuggestion = await generateKFactorSuggestion(
-              extractedData,
-              existingProfiles
-            );
-          }
-          newProfiles.push(extractedData);
-        }
-      } catch (error) {
-        console.error(`Error processing ${file.name}:`, error);
-        toast.error(t('profile_import_tool.upload.processing_error', {
-          file: file.name,
-          defaultValue: `Failed to process ${file.name}`
-        }));
-      }
-
-      setProgress(((i + 1) / files.length) * 100);
-    }
-
-    setExtractedProfiles((prev) => [...prev, ...newProfiles]);
-    setCurrentProcessingFile(null);
-    setIsProcessing(false);
-    setProgress(100);
-
-    if (newProfiles.length > 0) {
-      toast.success(t('profile_import_tool.upload.extracted_success', {
-        count: newProfiles.length,
-        filesCount: files.length,
-        defaultValue: `Extracted ${newProfiles.length} profiles from ${files.length} files`
-      }));
-      
-      // Auto-select all if auto-optimize is on
-      if (autoOptimizeAll) {
-        setSelectedProfiles(new Set(newProfiles.map((p) => p.id)));
-      }
-    }
-  };
 
   // ============================================================================
   // File Type Extractors
@@ -815,6 +747,100 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
       ? parts.join('. ') + '.'
       : `Default K-factor (${suggestedKFactor.toFixed(3)}) for standard aluminum profile.`;
   };
+
+  // Define processFiles after all extractor functions are available
+  const processFiles = useCallback(async (files: File[]) => {
+    setIsProcessing(true);
+    setProgress(0);
+
+    const newProfiles: ExtractedProfileData[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setCurrentProcessingFile(file.name);
+      setProgress(((i + 0.5) / files.length) * 100);
+
+      try {
+        const fileType = getFileTypeFromExtension(file.name);
+        if (!fileType) continue;
+
+        let extractedData: ExtractedProfileData | null = null;
+
+        switch (fileType) {
+          case 'dxf':
+          case 'dwg':
+            extractedData = await extractFromCADFile(file, fileType);
+            break;
+          case 'svg':
+            extractedData = await extractFromSVG(file);
+            break;
+          case 'pdf':
+            extractedData = await extractFromPDF(file);
+            break;
+          case 'png':
+          case 'jpg':
+            extractedData = await extractFromImage(file, fileType);
+            break;
+        }
+
+        if (extractedData) {
+          // Apply K-factor learning if enabled
+          if (kFactorLearningEnabled) {
+            extractedData.kFactorSuggestion = await generateKFactorSuggestion(
+              extractedData,
+              existingProfiles
+            );
+          }
+          newProfiles.push(extractedData);
+        }
+      } catch (error) {
+        console.error(`Error processing ${file.name}:`, error);
+        toast.error(t('profile_import_tool.upload.processing_error', {
+          file: file.name,
+          defaultValue: `Failed to process ${file.name}`
+        }));
+      }
+
+      setProgress(((i + 1) / files.length) * 100);
+    }
+
+    setExtractedProfiles((prev) => [...prev, ...newProfiles]);
+    setCurrentProcessingFile(null);
+    setIsProcessing(false);
+    setProgress(100);
+
+    if (newProfiles.length > 0) {
+      toast.success(t('profile_import_tool.upload.extracted_success', {
+        count: newProfiles.length,
+        filesCount: files.length,
+        defaultValue: `Extracted ${newProfiles.length} profiles from ${files.length} files`
+      }));
+      
+      // Auto-select all if auto-optimize is on
+      if (autoOptimizeAll) {
+        setSelectedProfiles(new Set(newProfiles.map((p) => p.id)));
+      }
+    }
+    // Note: extractor functions (extractFromCADFile, extractFromSVG, etc.) are intentionally
+    // omitted from dependencies as they're recreated on each render. They're called directly
+    // within the callback and don't need to be in the dependency array.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    kFactorLearningEnabled,
+    existingProfiles,
+    autoOptimizeAll,
+    t,
+    setIsProcessing,
+    setProgress,
+    setCurrentProcessingFile,
+    setExtractedProfiles,
+    setSelectedProfiles
+  ]);
+
+  // Update ref when processFiles changes
+  useEffect(() => {
+    processFilesRef.current = processFiles;
+  }, [processFiles]);
 
   const _learnFromMeasurement = async (
     profileId: string,

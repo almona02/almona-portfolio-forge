@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState, Suspense } from 'react';
-import { aluminiumStages, upvcStages, trainingLevels, generateUpcomingCohorts, IconName } from '@/data/trainingPrograms';
-import { GraduationCap, Layers, Scissors, Thermometer, Settings, Zap, ShieldCheck, Gauge, Calendar, Star, Crown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { motion } from 'framer-motion';
-import { useSearchParams } from 'react-router-dom';
 import EnrollmentModal from '@/components/training/EnrollmentModal';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { IconName, aluminiumStages, generateUpcomingCohorts, trainingLevels, upvcStages } from '@/data/trainingPrograms';
+import { motion } from 'framer-motion';
+import { Calendar, Crown, Gauge, GraduationCap, Layers, Scissors, Settings, ShieldCheck, Star, Thermometer, Zap } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 // Lazy icon wrapper (placeholder for potential code-splitting if icons become heavier)
 const IconRenderer: React.FC<{ name: IconName }> = ({ name }) => {
@@ -173,7 +173,8 @@ const TrainingServicesPage: React.FC = () => {
         open={enrollOpen}
         onOpenChange={setEnrollOpen}
         cohorts={cohorts}
-        defaultValues={{ material, program: selectedProgram || '' }}
+        material={material}
+        selectedProgram={selectedProgram || null}
       />
     </div>
   );

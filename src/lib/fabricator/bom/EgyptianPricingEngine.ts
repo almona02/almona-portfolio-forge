@@ -10,35 +10,44 @@
  */
 
 import type { FabricationData } from '@/types/fabricator';
+import {
+    GLAZING_PRICES_EGP_PER_M2,
+    GLAZING_TYPE_THRESHOLDS,
+    HARDWARE_PRICES_EGP,
+    LABOR_RATES_EGP_PER_HOUR,
+    LOCATION_MULTIPLIERS,
+    TIME_CONVERSION,
+} from './egyptianPricingConstants';
 
 /**
  * EgyptianPricingEngine - Egyptian market pricing engine
  */
 export class EgyptianPricingEngine {
+  // ✅ ENHANCED: Extract pricing constants to dedicated file
   // Hardware pricing (EGP per unit)
   private readonly HARDWARE_PRICES: Record<string, number> = {
-    'hinge': 25, // EGP per hinge
-    'handle': 45, // EGP per handle
-    'lock': 60, // EGP per lock
-    'roller': 8, // EGP per roller
-    'corner_key': 3, // EGP per corner key
-    'gasket': 2, // EGP per meter
-    'other': 20 // EGP default
+    'hinge': HARDWARE_PRICES_EGP.HINGE,
+    'handle': HARDWARE_PRICES_EGP.HANDLE,
+    'lock': HARDWARE_PRICES_EGP.LOCK,
+    'roller': HARDWARE_PRICES_EGP.ROLLER,
+    'corner_key': HARDWARE_PRICES_EGP.CORNER_KEY,
+    'gasket': HARDWARE_PRICES_EGP.GASKET_PER_METER,
+    'other': HARDWARE_PRICES_EGP.OTHER,
   };
 
   // Glazing pricing (EGP per m²)
   private readonly GLAZING_PRICES: Record<string, number> = {
-    'single': 150, // EGP/m²
-    'double': 250, // EGP/m²
-    'triple': 350 // EGP/m²
+    'single': GLAZING_PRICES_EGP_PER_M2.SINGLE,
+    'double': GLAZING_PRICES_EGP_PER_M2.DOUBLE,
+    'triple': GLAZING_PRICES_EGP_PER_M2.TRIPLE,
   };
 
   // Labor rates (EGP per hour)
   private readonly LABOR_RATES: Record<string, number> = {
-    'Cairo': 50, // EGP/hour
-    'Alexandria': 55, // EGP/hour (coastal, slightly higher)
-    'Upper_Egypt': 45, // EGP/hour
-    'default': 50 // EGP/hour
+    'Cairo': LABOR_RATES_EGP_PER_HOUR.CAIRO,
+    'Alexandria': LABOR_RATES_EGP_PER_HOUR.ALEXANDRIA,
+    'Upper_Egypt': LABOR_RATES_EGP_PER_HOUR.UPPER_EGYPT,
+    'default': LABOR_RATES_EGP_PER_HOUR.DEFAULT,
   };
 
   /**
@@ -69,8 +78,11 @@ export class EgyptianPricingEngine {
     let totalCost = 0;
 
     glazing.forEach(pane => {
-      const glazingType = pane.dimensions.thickness <= 5 ? 'single' : 
-                          pane.dimensions.thickness <= 12 ? 'double' : 'triple';
+      const glazingType = pane.dimensions.thickness <= GLAZING_TYPE_THRESHOLDS.SINGLE_MAX_THICKNESS_MM
+        ? 'single'
+        : pane.dimensions.thickness <= GLAZING_TYPE_THRESHOLDS.DOUBLE_MAX_THICKNESS_MM
+        ? 'double'
+        : 'triple';
       const pricePerM2 = this.GLAZING_PRICES[glazingType] || this.GLAZING_PRICES['double'];
       const area = (pane.dimensions.width * pane.dimensions.height) / 1_000_000; // m²
       const locationMultiplier = this.getLocationMultiplier(location);
@@ -89,7 +101,7 @@ export class EgyptianPricingEngine {
   ): Promise<number> {
     const locationKey = this.getLocationKey(location);
     const hourlyRate = this.LABOR_RATES[locationKey] || this.LABOR_RATES['default'];
-    const hours = timeMinutes / 60;
+    const hours = timeMinutes / TIME_CONVERSION.MINUTES_PER_HOUR;
     return hours * hourlyRate;
   }
 
@@ -113,11 +125,10 @@ export class EgyptianPricingEngine {
    * Get location multiplier for pricing adjustments
    */
   private getLocationMultiplier(location?: string): number {
-    // Small adjustments based on location (typically 0.95-1.05)
     const locationKey = this.getLocationKey(location);
-    if (locationKey === 'Upper_Egypt') return 0.95; // Slightly cheaper
-    if (locationKey === 'Alexandria') return 1.05; // Slightly more expensive (coastal)
-    return 1.0; // Cairo (baseline)
+    if (locationKey === 'Upper_Egypt') return LOCATION_MULTIPLIERS.UPPER_EGYPT;
+    if (locationKey === 'Alexandria') return LOCATION_MULTIPLIERS.ALEXANDRIA;
+    return LOCATION_MULTIPLIERS.CAIRO;
   }
 }
 

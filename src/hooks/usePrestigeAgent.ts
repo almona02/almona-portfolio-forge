@@ -3,8 +3,7 @@
  * React hook for interacting with YDT Prestige Agent API
  */
 
-import { useState, useCallback, useRef } from 'react';
-import { toast } from 'sonner';
+import { useCallback, useRef, useState } from 'react';
 
 // YDT Agent API URL - prioritize YDT-specific env var, then check for local dev
 // Allow localhost for local development

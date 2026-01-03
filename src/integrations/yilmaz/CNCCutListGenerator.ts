@@ -4,7 +4,7 @@
  * Generates CSV/MDB files with advanced machining operations
  */
 
-import { CuttingPlan, Cut, Profile } from '@/types/fabricator';
+import { Cut, CuttingPlan, Profile } from '@/types/fabricator';
 import { YilmazCutListData, YilmazExportOptions } from './YilmazCutListAdapter';
 
 export interface CNCOperation {
@@ -52,7 +52,7 @@ export class CNCCutListGenerator {
     data: YilmazCutListData,
     options: YilmazExportOptions
   ): string {
-    const rows: CNCCutListRow[] = this.prepareRows(data);
+    const rows: CNCCutListRow[] = this.prepareRows(data, options);
     const lines: string[] = [];
 
     // CSV Header for CNC operations
@@ -122,7 +122,7 @@ export class CNCCutListGenerator {
     data: YilmazCutListData,
     options: YilmazExportOptions
   ): Promise<Buffer> {
-    const rows: CNCCutListRow[] = this.prepareRows(data);
+    const rows: CNCCutListRow[] = this.prepareRows(data, options);
     
     // MDB structure for CNC series
     const mdbStructure = {
@@ -184,18 +184,18 @@ export class CNCCutListGenerator {
   /**
    * Prepare rows from cutting plan data with CNC operations
    */
-  private prepareRows(data: YilmazCutListData): CNCCutListRow[] {
+  private prepareRows(data: YilmazCutListData, options?: YilmazExportOptions): CNCCutListRow[] {
     const rows: CNCCutListRow[] = [];
     let rowNumber = 1;
     let globalSequence = 1;
 
-    data.cuttingPlans.forEach((plan, planIndex) => {
+    data.cuttingPlans.forEach((plan, _planIndex) => {
       const profile = plan.profile;
       
       // Group cuts by similar operations
       const operationGroups = this.groupOperations(plan.cuts);
 
-      operationGroups.forEach((group, groupIndex) => {
+      operationGroups.forEach((group, _groupIndex) => {
         const cut = group.cuts[0];
         const quantity = group.cuts.length;
 
@@ -225,7 +225,7 @@ export class CNCCutListGenerator {
             quantity: quantity,
             orderNumber: data.orderNumber,
             sequence: globalSequence++,
-            barcode: options.includeBarcodes 
+            barcode: options?.includeBarcodes 
               ? this.generateBarcode(data.orderNumber, rowNumber - 1, opIndex)
               : undefined
           });
@@ -270,7 +270,7 @@ export class CNCCutListGenerator {
   private generateCNCOperations(
     cut: Cut,
     profile: Profile,
-    stockLength: number
+    _stockLength: number
   ): CNCOperation[] {
     const operations: CNCOperation[] = [];
 
@@ -280,7 +280,6 @@ export class CNCCutListGenerator {
       x: 0,
       y: 0,
       z: 0,
-      length: cut.length,
       feedRate: this.calculateFeedRate(profile.material),
       spindleSpeed: this.calculateSpindleSpeed(profile.material),
       toolNumber: 1

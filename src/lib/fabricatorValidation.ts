@@ -1,6 +1,7 @@
 import { MeasurementData, WindowComponent, Profile, WindowUnit } from '@/types/fabricator';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { validateEgyptianStandards } from './validation/egyptianValidator';
+import { enhanceValidationWithConsequences, type ValidationErrorWithConsequences } from '@/lib/authority/consequenceMapper';
 
 export interface ValidationError {
   field: string;
@@ -10,6 +11,7 @@ export interface ValidationError {
 export interface ValidationResult {
   isValid: boolean;
   errors: ValidationError[];
+  errorsWithConsequences?: ValidationErrorWithConsequences[];
 }
 
 /**
@@ -159,9 +161,11 @@ export function validateMeasurements(
     errors.push({ field: 'glazingType', message: 'Invalid glazing type selected' });
   }
 
+  const errorsWithConsequences = enhanceValidationWithConsequences(errors);
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
+    errorsWithConsequences
   };
 }
 
@@ -206,9 +210,11 @@ export function validateWindowComponent(component: WindowComponent, profiles: Pr
     errors.push({ field: 'angles', message: 'Number of angles must match number of cutting lengths' });
   }
 
+  const errorsWithConsequences = enhanceValidationWithConsequences(errors);
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
+    errorsWithConsequences
   };
 }
 
@@ -227,7 +233,8 @@ export function validateProject(
 
   if (!project) {
     errors.push({ field: 'project', message: 'Project data is missing' });
-    return { isValid: false, errors };
+    const errorsWithConsequences = enhanceValidationWithConsequences(errors);
+    return { isValid: false, errors, errorsWithConsequences };
   }
 
   if (!project.id) {
@@ -263,9 +270,11 @@ export function validateProject(
     });
   }
 
+  const errorsWithConsequences = enhanceValidationWithConsequences(errors);
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
+    errorsWithConsequences
   };
 }
 
@@ -400,9 +409,11 @@ export function validateProfile(profile: Profile): ValidationResult {
     errors.push({ field: 'cuttingAllowance', message: 'Cutting allowance cannot be negative' });
   }
 
+  const errorsWithConsequences = enhanceValidationWithConsequences(errors);
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
+    errorsWithConsequences
   };
 }
 

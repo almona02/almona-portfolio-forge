@@ -5,7 +5,6 @@
 
 import { usePrestigeAgent } from '@/hooks/usePrestigeAgent';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
 import {
   BookOpen,
   BrainCircuit,
@@ -20,6 +19,7 @@ import {
   Zap
 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { PrestigeMicroInteractions } from './PrestigeMicroInteractions';
 import './prestige-animations.css';
@@ -103,7 +103,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
   const [agentPersona, setAgentPersona] = useState<PersonaType>('professor');
   const [language, setLanguage] = useState<LanguageType>('en');
   const [typing, setTyping] = useState(false);
-  const [confidence, setConfidence] = useState(95);
+  const [_confidence, setConfidence] = useState(95);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const microInteractions = useRef(new PrestigeMicroInteractions());
 
@@ -145,7 +145,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
           fetchMachineCapabilities()
         ]);
         // Silently handle failures - backend may not be available in dev
-      } catch (error) {
+      } catch {
         // Silently fail - expected in development when backend is not running
       }
     };

@@ -6,11 +6,10 @@
  * @since Phase 1: Special Presets (Weeks 3-4)
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { QuickOrderEngine, type QuickOrderParams } from '@/lib/quick/QuickOrderEngine';
 import { FabricatorTemplates } from '@/lib/quick/FabricatorTemplates';
 import { KeyboardShortcuts } from '@/lib/quick/KeyboardShortcuts';
-import type { WindowUnit } from '@/types/fabricator';
+import { QuickOrderEngine, type QuickOrderParams } from '@/lib/quick/QuickOrderEngine';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 describe('QuickOrderEngine', () => {
   let engine: QuickOrderEngine;
@@ -167,7 +166,7 @@ describe('FabricatorTemplates', () => {
 
   describe('getMostUsedTemplates', () => {
     it('should return templates sorted by usage', async () => {
-      const t1 = await templateManager.saveTemplate({
+      const _t1 = await templateManager.saveTemplate({
         name: 'Template 1',
         category: 'custom',
         windowUnit: {}

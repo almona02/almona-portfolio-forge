@@ -3,11 +3,11 @@
  * Provides region-specific layout and component loading based on detected region
  */
 
-import React, { Suspense, lazy } from 'react';
-import { useRegionDetection, useRegionalConfig } from '@/hooks/useRegionDetection';
-import { RegionCode, RegionalMarketConfig } from '@/config/regionalConfig';
-import { PageLoadingWrapper } from '@/components/ui/PageLoadingWrapper';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { PageLoadingWrapper } from '@/components/ui/PageLoadingWrapper';
+import { RegionCode, RegionalMarketConfig } from '@/config/regionalConfig';
+import { useRegionDetection, useRegionalConfig } from '@/hooks/useRegionDetection';
+import React, { Suspense, lazy } from 'react';
 
 // Lazy load region-specific components
 const TurkishLayout = lazy(() => import('./regional/TurkishLayout'));
@@ -152,13 +152,11 @@ const RegionalFeaturesOverlay: React.FC<RegionalFeaturesOverlayProps> = ({ regio
         setIsVisible(false);
       }, 5000); // Hide after 5 seconds
       setAutoHideTimer(timer);
+      
+      return () => {
+        clearTimeout(timer);
+      };
     }
-
-    return () => {
-      if (autoHideTimer) {
-        clearTimeout(autoHideTimer);
-      }
-    };
   }, [isVisible, showFeatures]);
 
   // Show icon on mouse movement
@@ -182,8 +180,9 @@ const RegionalFeaturesOverlay: React.FC<RegionalFeaturesOverlayProps> = ({ regio
     document.addEventListener('mousemove', handleMouseMove);
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
-      if (autoHideTimer) {
-        clearTimeout(autoHideTimer);
+      const timer = autoHideTimer;
+      if (timer) {
+        clearTimeout(timer);
       }
     };
   }, [isVisible, showFeatures, autoHideTimer]);

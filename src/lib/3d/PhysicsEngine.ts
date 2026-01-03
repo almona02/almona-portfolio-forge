@@ -547,7 +547,7 @@ export function createWindowPhysics(
   world.createBody(frameId, frameMesh, 0, 'box'); // mass 0 = static
   
   // Create dynamic sash bodies with appropriate constraints
-  sashes.forEach((sash, index) => {
+  sashes.forEach((sash) => {
     if (sash.type === 'fixed') return;
     
     // Create dynamic body for sash (mass based on typical aluminium window sash ~15kg)

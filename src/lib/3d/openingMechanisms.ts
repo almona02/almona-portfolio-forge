@@ -8,9 +8,9 @@
  * @see GOLD_TIER_EXECUTION_PLAN.md
  */
 
-import { BufferGeometry, BoxGeometry, CylinderGeometry, Vector3 } from 'three';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { WindowUnit } from '@/types/fabricator';
+import { BoxGeometry, BufferGeometry, CylinderGeometry } from 'three';
 
 /**
  * Standard dimensions for opening mechanism components (in meters)
@@ -177,7 +177,7 @@ function createCasementHinges(
     // 'both' - create hinges on both sides (for double casement)
     // Left side hinges
     hingeX = -width / 2 + casementHinge.depth / 2 + 0.01;
-    hingePositions.forEach((y, index) => {
+    hingePositions.forEach((y) => {
       const hinge = new BoxGeometry(
         casementHinge.width,
         casementHinge.height,
@@ -189,7 +189,7 @@ function createCasementHinges(
     
     // Right side hinges
     hingeX = width / 2 - casementHinge.depth / 2 - 0.01;
-    hingePositions.forEach((y, index) => {
+    hingePositions.forEach((y) => {
       const hinge = new BoxGeometry(
         casementHinge.width,
         casementHinge.height,

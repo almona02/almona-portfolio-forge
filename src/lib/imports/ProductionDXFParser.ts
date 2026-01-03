@@ -12,7 +12,7 @@
  * - Accuracy tracking integration
  */
 
-import { getAccuracyTracker, trackAccuracyCheckpoint } from '@/lib/fabricator/AccuracyTracker';
+import { trackAccuracyCheckpoint } from '@/lib/fabricator/AccuracyTracker';
 import { securityGateway } from '@/lib/security/SecurityGateway';
 
 export interface DXFParseOptions {
@@ -113,10 +113,9 @@ export class ProductionDXFParser {
       const fileContent = await file.text();
 
       // Use Web Worker for preprocessing if enabled
-      let preprocessResult: any = null;
       if (useWebWorker) {
         try {
-          preprocessResult = await this.parseInWorker(fileContent, file.name, language);
+          await this.parseInWorker(fileContent, file.name, language);
         } catch (workerError) {
           console.warn('Web Worker parsing failed, falling back to API:', workerError);
           // Fall through to API parsing
@@ -285,7 +284,7 @@ export class ProductionDXFParser {
   /**
    * Release worker back to pool
    */
-  private releaseWorker(worker: Worker): void {
+  private releaseWorker(_worker: Worker): void {
     // Workers are kept in pool for reuse
     // Could implement more sophisticated pooling if needed
   }

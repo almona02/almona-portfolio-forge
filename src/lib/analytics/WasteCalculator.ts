@@ -3,7 +3,7 @@
  * Simulates "manual" cutting plan to compare against optimized results
  */
 
-import type { CuttingPlan, Cut, Profile } from '@/types/fabricator';
+import type { Cut, CuttingPlan, Profile } from '@/types/fabricator';
 
 export interface ManualCuttingPlan {
   barsUsed: number;
@@ -21,14 +21,16 @@ export function calculateManualCuttingPlan(
   profiles: Profile[],
   defaultStockLength: number = 6000
 ): ManualCuttingPlan {
-  // Group cuts by profile
+  // Group cuts by profile (using componentId as proxy since Cut doesn't have profileId)
+  // In practice, cuts should be grouped by the profile they belong to from the cutting plan
   const cutsByProfile = new Map<string, Cut[]>();
   for (const cut of requiredCuts) {
-    const profileId = cut.profileId || '';
-    if (!cutsByProfile.has(profileId)) {
-      cutsByProfile.set(profileId, []);
+    // Use componentId prefix or a default key - in real usage, this would come from CuttingPlan
+    const profileKey = cut.componentId?.split('-')[0] || 'default';
+    if (!cutsByProfile.has(profileKey)) {
+      cutsByProfile.set(profileKey, []);
     }
-    cutsByProfile.get(profileId)!.push(cut);
+    cutsByProfile.get(profileKey)!.push(cut);
   }
 
   let totalBarsUsed = 0;
@@ -36,7 +38,7 @@ export function calculateManualCuttingPlan(
   const allCuts: Cut[] = [];
 
   // Process each profile separately
-  for (const [profileId, cuts] of cutsByProfile.entries()) {
+  for (const [_profileId, cuts] of cutsByProfile.entries()) {
     // Sort cuts by length (descending) - simple greedy approach
     const sortedCuts = [...cuts].sort((a, b) => b.length - a.length);
 
@@ -44,43 +46,34 @@ export function calculateManualCuttingPlan(
     let currentBarCuts: Cut[] = [];
 
     for (const cut of sortedCuts) {
-      const quantity = cut.quantity || 1;
-      let remainingQuantity = quantity;
-
-      while (remainingQuantity > 0) {
-        // If current bar can't fit this cut, start a new bar
-        if (currentBarRemaining < cut.length) {
-          // Save waste from current bar
-          if (currentBarRemaining > 200) {
-            // Only count as waste if > 200mm (minimum usable remnant)
-            totalWaste += currentBarRemaining;
-          }
-
-          // Start new bar
-          totalBarsUsed++;
-          currentBarRemaining = defaultStockLength;
-          currentBarCuts = [];
+      // Cuts don't have quantity - process each cut once
+      // If current bar can't fit this cut, start a new bar
+      if (currentBarRemaining < cut.length) {
+        // Save waste from current bar
+        if (currentBarRemaining > 200) {
+          // Only count as waste if > 200mm (minimum usable remnant)
+          totalWaste += currentBarRemaining;
         }
 
-        // Add cut to current bar
-        const cutToAdd: Cut = {
-          ...cut,
-          quantity: 1,
-        };
-        currentBarCuts.push(cutToAdd);
-        allCuts.push(cutToAdd);
-        currentBarRemaining -= cut.length;
-        remainingQuantity--;
+        // Start new bar
+        totalBarsUsed++;
+        currentBarRemaining = defaultStockLength;
+        currentBarCuts = [];
+      }
 
-        // If bar is getting full, start a new one (heuristic: if < 500mm remaining)
-        if (currentBarRemaining < 500 && remainingQuantity > 0) {
-          if (currentBarRemaining > 200) {
-            totalWaste += currentBarRemaining;
-          }
-          totalBarsUsed++;
-          currentBarRemaining = defaultStockLength;
-          currentBarCuts = [];
+      // Add cut to current bar
+      currentBarCuts.push(cut);
+      allCuts.push(cut);
+      currentBarRemaining -= cut.length;
+
+      // If bar is getting full and next cut might not fit, start a new one (heuristic: if < 500mm remaining)
+      if (currentBarRemaining < 500) {
+        if (currentBarRemaining > 200) {
+          totalWaste += currentBarRemaining;
         }
+        totalBarsUsed++;
+        currentBarRemaining = defaultStockLength;
+        currentBarCuts = [];
       }
     }
 

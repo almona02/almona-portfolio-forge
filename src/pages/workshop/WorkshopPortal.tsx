@@ -8,22 +8,22 @@
  * but will discard a beautiful UI that wastes aluminum.
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
+import { CalibrationView } from '@/components/fabricator/CalibrationView';
+import type { SystemPack } from '@/data/systemPacks';
+import { TEST_PROJECTS, getTestProject } from '@/data/test-projects';
+import { generateCuttingListFromSystemPack, getAvailableSystemPacks, getSystemPackById } from '@/lib/fabricator/CuttingListGenerator';
+import type { Cut, OptimizedResult } from '@/lib/fabricator/OptimizationEngine';
+import { simplifiedOptimizationEngine } from '@/lib/fabricator/OptimizationEngine';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Checkbox } from '@/shared/ui/ui/checkbox';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Checkbox } from '@/shared/ui/ui/checkbox';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Badge } from '@/shared/ui/ui/badge';
-import { simplifiedOptimizationEngine } from '@/lib/fabricator/OptimizationEngine';
-import type { Cut, OptimizedResult, Bar } from '@/lib/fabricator/OptimizationEngine';
-import { CalibrationView } from '@/components/fabricator/CalibrationView';
-import { generateCuttingListFromSystemPack, getAvailableSystemPacks, getSystemPackById } from '@/lib/fabricator/CuttingListGenerator';
-import type { SystemPack } from '@/data/systemPacks';
-import { TEST_PROJECTS, getTestProject } from '@/data/test-projects';
-import { Download, Printer, QrCode } from 'lucide-react';
+import { Download, Printer } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 export const WorkshopPortal: React.FC = () => {
   const [availableSystems, setAvailableSystems] = useState<SystemPack[]>([]);
@@ -326,7 +326,7 @@ export const WorkshopPortal: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {cuttingList.map((cut, index) => (
+                  {cuttingList.map((cut) => (
                     <tr key={cut.id} style={{ borderBottom: '1px solid #eee' }}>
                       <td style={{ padding: '8px' }}>{cut.label}</td>
                       <td style={{ textAlign: 'right', padding: '8px', fontFamily: 'monospace', fontWeight: 'bold' }}>
@@ -475,7 +475,12 @@ export const WorkshopPortal: React.FC = () => {
             </p>
             <CalibrationView
               projectId="workshop-test"
-              cutList={cuttingList}
+              cutList={cuttingList.map(cut => ({
+                id: cut.id,
+                label: cut.label,
+                plannedLength: cut.plannedLength,
+                role: cut.role as 'frame' | 'sash' | 'mullion' | 'transom' | 'bead' | 'screen_sash'
+              }))}
               onCorrectionApplied={(corrections) => {
                 console.log('Corrections applied:', corrections);
                 alert(`Corrections applied:\n- Kerf: ${corrections.suggestedKerf}mm\n- Trim: ${corrections.suggestedTrim}mm`);

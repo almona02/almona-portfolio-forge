@@ -5,10 +5,10 @@
  * 100 random window sizes to validate 99.8% accuracy before publishing.
  */
 
-import React, { useState, useCallback } from 'react';
 import { EgyptianInterferenceEngine, type WindowAssembly } from '@/lib/fabricator/InterferenceEngine';
-import type { MutableSystemPack, ValidationReport, ValidationTestResult } from '@/types/tuning';
 import type { Profile } from '@/types/fabricator';
+import type { MutableSystemPack, ValidationReport, ValidationTestResult } from '@/types/tuning';
+import React, { useCallback, useState } from 'react';
 
 interface ValidationSandboxProps {
   /** System pack being validated */
@@ -48,11 +48,11 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
   ): WindowAssembly => {
     // Find frame and sash profiles from system pack
     const frameProfile = systemPack.profiles.find(p => 
-      p.role === 'frame' || p.specifications?.role === 'frame'
+      p.profileRole === 'frame' || p.specifications?.role === 'frame'
     ) || systemPack.profiles[0];
     
     const _sashProfile = systemPack.profiles.find(p => 
-      p.role === 'sash' || p.specifications?.role === 'sash'
+      p.profileRole === 'sash' || p.specifications?.role === 'sash'
     ) || systemPack.profiles[1] || frameProfile;
 
     // Determine system category
@@ -154,7 +154,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
     setCurrentReport(report);
     onValidationComplete(report);
     setIsRunning(false);
-  }, [systemPack, generateRandomDimensions, buildWindowAssembly, onValidationComplete]);
+  }, [generateRandomDimensions, buildWindowAssembly, onValidationComplete]);
 
   /**
    * Generate recommendations based on failures

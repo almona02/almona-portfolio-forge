@@ -4,10 +4,10 @@
  * This is the immediate YDT that can answer questions TODAY using your existing documentation.
  */
 
-import { DocumentationKnowledgeGraph, type KnowledgeQuery } from './DocumentationKnowledgeGraph';
-import type { YDTAnswer, UIExplanation, WorkflowGuide } from './types';
-import { EgyptianDialectDetector, type UserType } from '@/lib/nlp/EgyptianDialectDetector';
+import { EgyptianDialectDetector } from '@/lib/nlp/EgyptianDialectDetector';
 import { EgyptianResponseTranslator, type UserContext } from '@/lib/personality/EgyptianResponseTranslator';
+import { DocumentationKnowledgeGraph, type KnowledgeQuery } from './DocumentationKnowledgeGraph';
+import type { UIExplanation, WorkflowGuide, YDTAnswer } from './types';
 
 export class QuickStartYDT {
   private knowledgeGraph: DocumentationKnowledgeGraph;
@@ -104,7 +104,7 @@ export class QuickStartYDT {
       keyword: elementId,
     };
 
-    const result = this.knowledgeGraph.query(query);
+    const _result = this.knowledgeGraph.query(query);
     const component = this.knowledgeGraph.getComponent(elementId);
 
     // Build explanation
@@ -371,7 +371,7 @@ export class QuickStartYDT {
     return 'Used in Fabricator Pro workflows';
   }
 
-  private findCommonMistakes(elementId: string): string[] {
+  private findCommonMistakes(_elementId: string): string[] {
     // Search workflows for common mistakes related to this element
     const workflows = this.knowledgeGraph.getAllWorkflows();
     const mistakes: string[] = [];
@@ -417,11 +417,11 @@ export class QuickStartYDT {
     return step.expectedTime || '1-2 minutes';
   }
 
-  private findStepWarnings(step: WorkflowGuide['steps'][0], workflowName: string): string[] {
+  private findStepWarnings(step: WorkflowGuide['steps'][0], _workflowName: string): string[] {
     return step.warnings || [];
   }
 
-  private findStepShortcuts(step: WorkflowGuide['steps'][0], workflowName: string): string[] {
+  private findStepShortcuts(step: WorkflowGuide['steps'][0], _workflowName: string): string[] {
     return step.shortcuts || [];
   }
 }

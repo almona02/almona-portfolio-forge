@@ -1,17 +1,17 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Button } from '@/shared/ui/ui/button';
-import { Input } from '@/shared/ui/ui/input';
-import { Label } from '@/shared/ui/ui/label';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { AlertCircle, DollarSign, Save, Plus, Trash2 } from 'lucide-react';
-import type { Profile } from '@/types/fabricator';
-import { supabase } from '@/lib/supabase';
-import { toast } from 'sonner';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { useRegionalConfig } from '@/hooks/useRegionDetection';
+import { supabase } from '@/lib/supabase';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Input } from '@/shared/ui/ui/input';
+import { Label } from '@/shared/ui/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
+import type { Profile } from '@/types/fabricator';
+import { AlertCircle, DollarSign, Plus, Save, Trash2 } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 // Helper function to guess role from JUMBO 100 profile number
 function guessRoleFromProfileNumber(profileNumber: string): Profile['profileRole'] {
@@ -358,17 +358,17 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   }, [selectedProfile, systemName]);
 
   // Default glazing types
-  const defaultGlazingTypes: GlazingType[] = [
+  const defaultGlazingTypes: GlazingType[] = useMemo(() => [
     { id: 'single', name: 'Single Glass', description: 'Single pane glass (typically 4-6mm)', pricePerSquareMeter: 0 },
     { id: 'double', name: 'Double Glass', description: 'Double pane glass 24mm – dimensions per job: (L - 167) × (H - 167)', pricePerSquareMeter: 0 },
     { id: 'triple', name: 'Triple Glass', description: 'Triple pane glass (typically 44mm)', pricePerSquareMeter: 0 },
     { id: 'georgian', name: 'Georgian Glass', description: 'Georgian divided lite glass', pricePerSquareMeter: 0 },
     { id: 'low-e', name: 'Low-E Glass', description: 'Low-emissivity coated glass', pricePerSquareMeter: 0 },
     { id: 'laminated', name: 'Laminated Glass', description: 'Safety laminated glass', pricePerSquareMeter: 0 },
-  ];
+  ], []);
 
   // Initialize state from existing pricing
-  const getInitialState = (pricing: (Rock60PricingState & { initialized?: boolean }) | undefined): Rock60PricingState => {
+  const getInitialState = useCallback((pricing: (Rock60PricingState & { initialized?: boolean }) | undefined): Rock60PricingState => {
     // Migrate legacy glassPricePerSquareMeter to glazingTypes if needed
     let glazingTypes: GlazingType[] = pricing?.glazingTypes || [];
     
@@ -409,7 +409,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
       },
       profilePrices: pricing?.profilePrices || {},
     };
-  };
+  }, [currency, defaultGlazingTypes]);
 
   const [saving, setSaving] = useState(false);
   const [state, setState] = useState<Rock60PricingState>(() => getInitialState(existingPricing));
@@ -437,7 +437,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
         setSelectedGasketCode(GASKET_LIST[0].code);
       }
     }
-  }, [selectedProfile]);
+  }, [selectedProfile, getInitialState, selectedGlazingTypeId, selectedHardwareCode, selectedGasketCode]);
 
   // Auto-select first glazing type when types are added
   useEffect(() => {
@@ -446,7 +446,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
     } else if (state.glazingTypes.length === 0) {
       setSelectedGlazingTypeId('');
     }
-  }, [state.glazingTypes.length]);
+  }, [state.glazingTypes, selectedGlazingTypeId]);
 
   const isConfigured = !!existingPricing?.initialized;
 

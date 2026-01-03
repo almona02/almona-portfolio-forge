@@ -11,8 +11,8 @@
  * @since Phase 3: Cognitive Intelligence (Week 15)
  */
 
-import type { WindowUnit } from '@/types/fabricator';
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
+import type { WindowUnit } from '@/types/fabricator';
 
 export interface EngineeringAnalysis {
   material?: { value: string; confidence: number; reason: string };
@@ -30,7 +30,7 @@ export class EngineeringMind {
    */
   async analyzeStructuralContext(
     windowUnit: Partial<WindowUnit>,
-    pattern?: EgyptianPattern | null
+    _pattern?: EgyptianPattern | null
   ): Promise<EngineeringAnalysis> {
     const warnings: EngineeringAnalysis['warnings'] = [];
 

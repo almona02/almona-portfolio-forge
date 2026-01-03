@@ -336,9 +336,9 @@ export class Phase1MetricsTracker {
    * Get validation metrics (Egyptian standards)
    */
   private async getValidationMetrics(
-    startDate: Date,
-    endDate: Date,
-    userId?: string
+    _startDate: Date,
+    _endDate: Date,
+    _userId?: string
   ): Promise<ValidationMetrics> {
     // Note: Validation metrics would need to be tracked separately
     // For now, return placeholder

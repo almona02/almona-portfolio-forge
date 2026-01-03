@@ -8,14 +8,14 @@
 
 'use client';
 
-import React, { useState } from 'react';
-import { ROICalculator } from '@/lib/validation/ROICalculator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { ROICalculator } from '@/lib/validation/ROICalculator';
+import { AlertCircle } from 'lucide-react';
+import React, { useState } from 'react';
 
 export const ValidationDashboard: React.FC = () => {
   const [materialWasteWith, setMaterialWasteWith] = useState<number>(12);
@@ -24,7 +24,7 @@ export const ValidationDashboard: React.FC = () => {
   const [timeWithout, setTimeWithout] = useState<number>(180);
   const [projectsPerMonth, setProjectsPerMonth] = useState<number>(20);
   const [averageProjectValue, setAverageProjectValue] = useState<number>(5000);
-  const [materialCostPerProject, setMaterialCostPerProject] = useState<number>(2000);
+  const [materialCostPerProject] = useState<number>(2000);
 
   const calculator = new ROICalculator();
   const [metrics, setMetrics] = useState<any>(null);

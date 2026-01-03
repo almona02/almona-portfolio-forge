@@ -288,7 +288,7 @@ export class SupplyChainIntelligence {
   /**
    * Estimate consumption rate for a profile
    */
-  private estimateConsumptionRate(profile: Profile): number {
+  private estimateConsumptionRate(_profile: Profile): number {
     // Simple heuristic: estimate based on stock level and typical usage
     // In production, this would use historical consumption data
     return 0.5; // units per day (placeholder)
@@ -297,7 +297,7 @@ export class SupplyChainIntelligence {
   /**
    * Calculate timing confidence
    */
-  private calculateTimingConfidence(profile: Profile, consumptionRate: number): number {
+  private calculateTimingConfidence(_profile: Profile, _consumptionRate: number): number {
     // Confidence increases with more historical data
     // For now, return moderate confidence
     return 0.7;

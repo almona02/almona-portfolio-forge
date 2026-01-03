@@ -3,9 +3,9 @@
  * Automatically generates remnants after job completion
  */
 
-import { RemnantManager, type Remnant } from './RemnantManager';
-import type { CuttingPlan, Cut } from '@/types/fabricator';
+import type { CuttingPlan } from '@/types/fabricator';
 import { supabase } from '../supabase';
+import { RemnantManager, type Remnant } from './RemnantManager';
 
 export interface RemnantGenerationResult {
   remnantsCreated: number;
@@ -42,7 +42,7 @@ export class AutoRemnantGenerator {
 
       // Calculate total cut length for this plan
       const totalCutLength = plan.cuts.reduce((sum, cut) => {
-        return sum + cut.length * (cut.quantity || 1);
+        return sum + cut.length;
       }, 0);
 
       // Calculate remnant for each stock bar used
@@ -70,7 +70,7 @@ export class AutoRemnantGenerator {
             lastCheckedAt: new Date(),
             status: 'available',
             quality: 'good',
-            estimatedValue: (remnantLength / 1000) * (profile.cost_per_meter || 0) * 0.8, // 80% of cost
+            estimatedValue: (remnantLength / 1000) * (profile.costPerMeter || 0) * 0.8, // 80% of cost
             usageCount: 0,
           };
 
@@ -117,7 +117,7 @@ export class AutoRemnantGenerator {
           estimated_value: r.estimatedValue,
           barcode: r.barcode,
           qr_code_url: r.qrCodeUrl,
-        }))
+        })) as any
       );
 
       if (error) throw error;

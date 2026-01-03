@@ -175,7 +175,7 @@ export class EgyptianInstallationCalculator {
   private estimateInstallationTime(
     areaM2: number,
     variables: InstallationVariables,
-    openingCount: number
+    _openingCount: number
   ): number {
     // Base installation rate: ~15 m² per day for standard installation
     const baseRateM2PerDay = 15;

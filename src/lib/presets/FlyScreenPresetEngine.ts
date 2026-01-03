@@ -16,7 +16,7 @@
  * @since Phase 1: Special Presets (Weeks 1-2)
  */
 
-import { WindowUnit, FabricationData } from '@/types/fabricator';
+import { FabricationData, WindowUnit } from '@/types/fabricator';
 import { ScreenHardwareCalculator } from './ScreenHardwareCalculator';
 
 export type FlyScreenType = 'magnetic' | 'fixed' | 'sliding' | 'plisee' | 'none';
@@ -170,7 +170,7 @@ export class FlyScreenPresetEngine {
       id: 'screen-frame',
       systemPack: windowUnit.systemPackId || 'unknown',
       profileCode: 'SCREEN-FRAME-25',
-      role: 'accessory',
+      role: 'bead', // Using 'bead' as closest valid role for screen frame
       length: assembly.frame.totalLength,
       quantity: 1,
       cuttingLengths: assembly.frame.pieces.map(p => p.length),
@@ -187,7 +187,9 @@ export class FlyScreenPresetEngine {
       supplierCode: h.id,
       name: h.name,
       category: h.category === 'clip' ? 'gasket' : 
-                h.category === 'corner_bracket' ? 'corner_key' : 'other',
+                h.category === 'corner_bracket' ? 'corner_key' :
+                h.category === 'roller' ? 'roller' :
+                h.category === 'handle' ? 'handle' : 'gasket', // Default to 'gasket' for unknown types
       quantity: h.quantity,
       positionSpec: this.getHardwarePositionSpec(h.category),
       installationNotes: this.getInstallationNotes(h.category),
@@ -231,7 +233,7 @@ export class FlyScreenPresetEngine {
    */
   private generateScreenFrame(
     windowUnit: WindowUnit,
-    screenType: FlyScreenType
+    _screenType: FlyScreenType
   ): FlyScreenAssembly['frame'] {
     const width = windowUnit.overallWidth;
     const height = windowUnit.overallHeight;
@@ -349,8 +351,8 @@ export class FlyScreenPresetEngine {
    */
   private generateAssemblySequence(
     screenType: FlyScreenType,
-    width: number,
-    height: number
+    _width: number,
+    _height: number
   ): FlyScreenAssembly['assemblySequence'] {
     const sequence: FlyScreenAssembly['assemblySequence'] = [];
 

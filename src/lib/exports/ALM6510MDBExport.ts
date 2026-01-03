@@ -6,8 +6,7 @@
  * The MDB file structure matches exactly the machine's software requirements.
  */
 
-import { WindowUnit, OptimizationResult, CuttingPlan, Cut } from '@/types/fabricator';
-import { ALM6510_CONFIG, convertToALM6510MDB, ALM6510MDBRecord } from '@/lib/machines/ALM6510MachineSet';
+import { CuttingPlan, OptimizationResult, WindowUnit } from '@/types/fabricator';
 
 export interface ALM6510ExportOptions {
   orderNumber: string;
@@ -52,9 +51,9 @@ export class ALM6510MDBExportService {
 
     // Prepare profiles data
     const profilesData = project.components.map(comp => ({
-      id: comp.profileId || comp.profile?.id || '',
+      id: comp.profile?.id || '',
       name: comp.profile?.name || '',
-      code: comp.profile?.code || '',
+      code: comp.profile?.id || '', // Use id as code if code doesn't exist
       material: comp.profile?.material || 'aluminum',
     }));
 
@@ -164,26 +163,27 @@ export class ALM6510MDBExportService {
     const cuts: any[] = [];
     
     cuttingPlans.forEach((plan, planIndex) => {
+      const profile = plan.profile;
       plan.cuts.forEach((cut, cutIndex) => {
         cuts.push({
           length: cut.length,
           angle: cut.angle || 90,
-          width: cut.width || 0,
-          height: cut.height || 0,
+          width: profile.width || 0,
+          height: profile.height || 0,
           barIndex: planIndex + 1,
           cutIndex: cutIndex + 1,
           componentId: cut.componentId || '',
           componentType: cut.componentType || '',
           profile: {
-            id: cut.profileId || '',
-            name: cut.profileName || '',
-            code: cut.profileCode || '',
-            material: cut.material || 'aluminum',
+            id: profile.id || '',
+            name: profile.name || '',
+            code: profile.id || '', // Use id as code if code doesn't exist
+            material: profile.material || 'aluminum',
           },
-          operationCode: cut.operationCode || null,
-          robotY: cut.robotY || 0,
-          robotZ: cut.robotZ || 0,
-          robotVertical: cut.robotVertical || 0,
+          operationCode: null, // Not available in Cut interface
+          robotY: 0, // Not available in Cut interface
+          robotZ: 0, // Not available in Cut interface
+          robotVertical: 0, // Not available in Cut interface
         });
       });
     });

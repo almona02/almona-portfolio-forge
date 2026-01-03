@@ -4,7 +4,7 @@
  * Optimizes production across multiple Yilmaz machines
  */
 
-import { CuttingPlan, Cut, Profile } from '@/types/fabricator';
+import { CuttingPlan, Profile } from '@/types/fabricator';
 
 export type MachineType = 'dc_saw' | 'cnc_center';
 export type MachineStatus = 'idle' | 'running' | 'maintenance' | 'error';
@@ -358,7 +358,7 @@ export class MultiMachineScheduler {
       groups.get(profileId)!.push(job);
     });
 
-    return Array.from(groups.entries()).map(([profileId, jobs]) => ({
+    return Array.from(groups.entries()).map(([_profileId, jobs]) => ({
       profile: jobs[0].cuttingPlan.profile,
       jobs
     }));
@@ -369,7 +369,7 @@ export class MultiMachineScheduler {
    */
   private generateRecommendations(
     schedule: ScheduleResult['schedule'],
-    totalDuration: number
+    _totalDuration: number
   ): string[] {
     const recommendations: string[] = [];
 

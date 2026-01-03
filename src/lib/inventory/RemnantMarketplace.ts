@@ -3,8 +3,8 @@
  * Enables buying/selling remnants between workshops in the fabricator network
  */
 
-import { Remnant } from './RemnantManager';
 import { supabase } from '../supabase';
+import { remnantManager } from './RemnantManager';
 
 export interface MarketplaceListing {
   id: string;
@@ -100,7 +100,7 @@ export class RemnantMarketplace {
           images: options.images || [],
           status: 'available',
           expires_at: expiresAt?.toISOString(),
-        })
+        } as any)
         .select()
         .single();
 
@@ -214,30 +214,32 @@ export class RemnantMarketplace {
         throw new Error('Listing not found or not available');
       }
 
+      const listingData = listing as any;
+
       // Check if expired
-      if (listing.expires_at && new Date(listing.expires_at) < new Date()) {
+      if (listingData.expires_at && new Date(listingData.expires_at) < new Date()) {
         throw new Error('Listing has expired');
       }
 
       // Create transaction
-      const { data: transaction, error: transactionError } = await supabase
+      const { data: transaction, error: transactionError } = await (supabase
         .from('remnant_marketplace_transactions')
         .insert({
           listing_id: listingId,
           buyer_id: buyerId,
-          seller_id: listing.seller_id,
-          price: listing.price,
-          currency: listing.currency,
+          seller_id: listingData.seller_id,
+          price: listingData.price,
+          currency: listingData.currency,
           status: 'pending',
-        })
+        } as any) as any)
         .select()
         .single();
 
       if (transactionError) throw transactionError;
 
       // Update listing status
-      await supabase
-        .from('remnant_marketplace_listings')
+      await (supabase
+        .from('remnant_marketplace_listings') as any)
         .update({ status: 'reserved' })
         .eq('id', listingId);
 
@@ -256,8 +258,8 @@ export class RemnantMarketplace {
    */
   async completeTransaction(transactionId: string): Promise<void> {
     try {
-      const { data, error } = await supabase
-        .from('remnant_marketplace_transactions')
+      const { data, error } = await (supabase
+        .from('remnant_marketplace_transactions') as any)
         .update({
           status: 'completed',
           completed_at: new Date().toISOString(),
@@ -270,10 +272,11 @@ export class RemnantMarketplace {
 
       // Update listing status
       if (data) {
-        await supabase
-          .from('remnant_marketplace_listings')
+        const transactionData = data as any;
+        await (supabase
+          .from('remnant_marketplace_listings') as any)
           .update({ status: 'sold' })
-          .eq('id', data.listing_id);
+          .eq('id', transactionData.listing_id);
       }
     } catch (error) {
       console.error('Error completing transaction:', error);
@@ -324,11 +327,13 @@ export class RemnantMarketplace {
         throw new Error('Listing not found');
       }
 
-      if (listing.seller_id !== sellerId) {
+      const listingData = listing as any;
+
+      if (listingData.seller_id !== sellerId) {
         throw new Error('Not authorized to cancel this listing');
       }
 
-      if (listing.status !== 'available') {
+      if (listingData.status !== 'available') {
         throw new Error('Listing cannot be cancelled in current state');
       }
 

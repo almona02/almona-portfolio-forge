@@ -8,8 +8,8 @@
  * - Practical workshop wisdom
  */
 
-import { DocumentationKnowledgeGraph } from '@/lib/ydt/DocumentationKnowledgeGraph';
 import { EgyptianWorkshopNLP, type UserType } from '@/lib/nlp/EgyptianWorkshopNLP';
+import { DocumentationKnowledgeGraph } from '@/lib/ydt/DocumentationKnowledgeGraph';
 
 export interface MaalemReasoning {
   technical: string;
@@ -102,6 +102,7 @@ export class MaalemReasoningEngine {
   private async getTechnicalAnswer(question: string): Promise<string> {
     // Query knowledge graph
     const result = this.knowledgeGraph.query({
+      type: 'egyptian',
       keyword: this.extractKeywords(question),
       context: question,
     });
@@ -121,7 +122,7 @@ export class MaalemReasoningEngine {
     question: string,
     userType: UserType,
     location: string,
-    workshopContext?: ReasoningContext['workshopContext']
+    _workshopContext?: ReasoningContext['workshopContext']
   ): Promise<string> {
     // Transform technical to maalem language
     let maalemAnswer = technicalAnswer;
@@ -146,7 +147,7 @@ export class MaalemReasoningEngine {
       maalemAnswer = `يا ريس، ${maalemAnswer}`;
     } else if (userType === 'operator') {
       maalemAnswer = `يا اسطى، ${maalemAnswer}`;
-    } else if (userType === 'maalem') {
+    } else if (userType === 'technical_office') {
       maalemAnswer = `يا معلم، ${maalemAnswer}. ده من الخبرة`;
     }
 
@@ -199,7 +200,7 @@ export class MaalemReasoningEngine {
   private async revealHiddenCosts(
     question: string,
     location: string,
-    workshopContext?: ReasoningContext['workshopContext']
+    _workshopContext?: ReasoningContext['workshopContext']
   ): Promise<string[]> {
     const hiddenCosts: string[] = [];
 
@@ -230,8 +231,8 @@ export class MaalemReasoningEngine {
   private async generatePracticalAdvice(
     question: string,
     userType: UserType,
-    location: string,
-    workshopContext?: ReasoningContext['workshopContext']
+    _location: string,
+    _workshopContext?: ReasoningContext['workshopContext']
   ): Promise<string> {
     const advice: string[] = [];
 

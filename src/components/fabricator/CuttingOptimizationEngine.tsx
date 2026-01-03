@@ -1,34 +1,40 @@
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Progress } from '@/shared/ui/ui/progress';
-import { Button } from '@/shared/ui/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
-import { 
-  Scissors, 
-  TrendingUp, 
-  Package, 
-  Clock, 
-  DollarSign, 
-  Download, 
-  Send, 
-  Code, 
-  AlertCircle,
-  CheckCircle,
-  Loader2,
-  FileText
-} from 'lucide-react';
-import { WindowUnit, Profile, OptimizationResult, CuttingPlan } from '@/types/fabricator';
-import { YilmazGCodeGenerator, YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
+import { ConsequenceAlert } from '@/components/authority/ConsequenceAlert';
 import { MachineValidator } from '@/integrations/yilmaz/MachineValidator';
+import { YilmazGCodeGenerator, YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Progress } from '@/shared/ui/ui/progress';
+import { CuttingPlan, OptimizationResult, Profile, WindowUnit } from '@/types/fabricator';
+import {
+    AlertCircle,
+    CheckCircle,
+    Clock,
+    Code,
+    DollarSign,
+    Download,
+    FileText,
+    Loader2,
+    Package,
+    Scissors,
+    Send,
+    TrendingUp
+} from 'lucide-react';
+import React, { useState } from 'react';
 // PHASE 4: PDFExportService is now lazy-loaded - see handleExportReport
-import { lazyExportPDF } from '@/lib/exports/lazyExportHandlers';
-import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { WasteComparisonReport } from '@/components/analytics/WasteComparisonReport';
 import { calculateManualCuttingPlan, compareWaste } from '@/lib/analytics/WasteCalculator';
+import { ALM6510ExportOptions, alm6510MDBExport } from '@/lib/exports/ALM6510MDBExport';
+import { lazyExportPDF } from '@/lib/exports/lazyExportHandlers';
+import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { ProductionPreviewDialog } from './ProductionPreviewDialog';
-import { alm6510MDBExport, ALM6510ExportOptions } from '@/lib/exports/ALM6510MDBExport';
+import {
+    CUTTING_OPTIMIZATION_CONSTANTS,
+    DEFAULT_MACHINE_MODEL,
+    MACHINE_CONSTANTS,
+} from './cuttingOptimizationConstants';
 
 interface CuttingOptimizationEngineProps {
   project: WindowUnit | null;
@@ -43,15 +49,15 @@ function optimizeCuttingPlan(cuttingPlan: CuttingPlan[]): CuttingPlan[] {
   // For each plan, calculate total cuts length, utilization, waste
 
   return cuttingPlan.map(plan => {
-    const stockLength = plan.stockLength || 6000;
+    const stockLength = plan.stockLength || CUTTING_OPTIMIZATION_CONSTANTS.STANDARD_STOCK_LENGTH_MM;
     const totalCutLength = plan.cuts.reduce((sum, cut) => sum + cut.length, 0);
-    const utilization = (totalCutLength / stockLength) * 100;
+    const utilization = (totalCutLength / stockLength) * CUTTING_OPTIMIZATION_CONSTANTS.PERCENTAGE_MULTIPLIER;
     const totalWaste = stockLength - totalCutLength;
 
     return {
       ...plan,
-      utilization: Number(utilization.toFixed(2)),
-      totalWaste: Number(totalWaste.toFixed(2)),
+      utilization: Number(utilization.toFixed(CUTTING_OPTIMIZATION_CONSTANTS.DECIMAL_PLACES)),
+      totalWaste: Number(totalWaste.toFixed(CUTTING_OPTIMIZATION_CONSTANTS.DECIMAL_PLACES)),
     };
   });
 }
@@ -62,7 +68,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
   isGenerating,
   profiles = [],
 }) => {
-  const [selectedMachine, setSelectedMachine] = useState<YilmazMachineModel>('AIM-3410');
+  const [selectedMachine, setSelectedMachine] = useState<YilmazMachineModel>(DEFAULT_MACHINE_MODEL);
   const [isGeneratingGCode, setIsGeneratingGCode] = useState(false);
   const [isSendingToMachine, setIsSendingToMachine] = useState(false);
   const [gCodePreview, setGCodePreview] = useState<string | null>(null);
@@ -97,10 +103,18 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
         });
 
         // Calculate manual plan
-        const manualPlan = calculateManualCuttingPlan(requiredCuts, [], 6000);
+        const manualPlan = calculateManualCuttingPlan(
+          requiredCuts, 
+          [], 
+          CUTTING_OPTIMIZATION_CONSTANTS.STANDARD_STOCK_LENGTH_MM
+        );
 
         // Calculate comparison
-        const comparison = compareWaste(manualPlan, optimization.cuttingPlan, 500); // 500 EGP per bar estimate
+        const comparison = compareWaste(
+          manualPlan, 
+          optimization.cuttingPlan, 
+          CUTTING_OPTIMIZATION_CONSTANTS.DEFAULT_COST_PER_BAR_EGP
+        );
         setWasteComparison(comparison);
       } catch (error) {
         console.error('Failed to calculate waste comparison:', error);
@@ -241,7 +255,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
       // await cnc.sendGCode(commands);
 
       // Simulate success
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, MACHINE_CONSTANTS.SIMULATION_DELAY_MS));
       setExportSuccess(true);
       alert(`G-code sent successfully to ${selectedMachine}`);
     } catch (error) {
@@ -265,7 +279,7 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
         customerCode: project.customer || '',
         customerName: project.customer || '',
         project: {
-          positionNumber: parseInt(project.posNumber || '1'),
+          positionNumber: parseInt(project.posNumber || String(MACHINE_CONSTANTS.DEFAULT_POSITION_NUMBER)),
         },
       };
 
@@ -496,7 +510,20 @@ export const CuttingOptimizationEngine: React.FC<CuttingOptimizationEngineProps>
           {/* Validation Results */}
           {validationResult && (
             <div className="space-y-2">
-              {validationResult.errors.length > 0 && (
+              {validationResult.errorsWithConsequences && validationResult.errorsWithConsequences.length > 0 && (
+                <div className="space-y-3">
+                  {validationResult.errorsWithConsequences.map((errorWithConsequences: any, idx: number) => (
+                    errorWithConsequences.consequences && errorWithConsequences.consequences.length > 0 && (
+                      <ConsequenceAlert
+                        key={idx}
+                        consequences={errorWithConsequences.consequences}
+                        compact={validationResult.errorsWithConsequences.length > 1}
+                      />
+                    )
+                  ))}
+                </div>
+              )}
+              {validationResult.errors.length > 0 && !validationResult.errorsWithConsequences && (
                 <Alert variant="destructive" className="bg-red-900/20 border-red-500">
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>Validation Errors</AlertTitle>

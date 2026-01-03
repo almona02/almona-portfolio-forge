@@ -50,6 +50,13 @@ import { ProfileIconGenerator, type ProfileIconHandle } from './assets/ProfileIc
 import { DXFProfileImporter, type ImportedProfile } from './smartscan/DXFProfileImporter';
 import { ProfileScannerUploader } from './smartscan/ProfileScannerUploader';
 import SmartScanUploader from './smartscan/SmartScanUploader';
+import {
+  DEFAULT_GEOMETRY_CONFIG,
+  STORAGE_CONSTANTS,
+  TIMEOUT_CONSTANTS,
+  VALIDATION_PATTERNS,
+  UI_DIMENSIONS,
+} from './profileTuningStudioConstants';
 
 interface ProfileTuningStudioProps {
   profile: Profile;
@@ -140,13 +147,13 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
   const [geometryConfig, setGeometryConfig] = useState<GeometryConfig>(() => {
     const geo = (profile.specifications as any)?.geometryConfig || {};
     return {
-      archetype: geo.archetype || 'hollow_box',
-      wallThicknessMm: geo.wallThicknessMm ?? 1.5,
-      glazingPocketDepthMm: geo.glazingPocketDepthMm ?? 0,
-      glazingPocketWidthMm: geo.glazingPocketWidthMm ?? 0,
-      thermalBreakWidthMm: geo.thermalBreakWidthMm ?? 0,
-      flangeWidthMm: geo.flangeWidthMm ?? 0,
-      webOffsetMm: geo.webOffsetMm ?? 0,
+      archetype: geo.archetype || DEFAULT_GEOMETRY_CONFIG.DEFAULT_ARCHETYPE,
+      wallThicknessMm: geo.wallThicknessMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_WALL_THICKNESS_MM,
+      glazingPocketDepthMm: geo.glazingPocketDepthMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_GLAZING_POCKET_DEPTH_MM,
+      glazingPocketWidthMm: geo.glazingPocketWidthMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_GLAZING_POCKET_WIDTH_MM,
+      thermalBreakWidthMm: geo.thermalBreakWidthMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_THERMAL_BREAK_WIDTH_MM,
+      flangeWidthMm: geo.flangeWidthMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_FLANGE_WIDTH_MM,
+      webOffsetMm: geo.webOffsetMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_WEB_OFFSET_MM,
       source: geo.source,
       svgPath: geo.svgPath,
       scannedWidth: geo.scannedWidth,
@@ -265,7 +272,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
       const { error } = await (supabase as any)
         .storage
         .from('profile-thumbnails')
-        .upload(fileName, blob, { cacheControl: '3600', upsert: true });
+        .upload(fileName, blob, { cacheControl: String(STORAGE_CONSTANTS.CACHE_CONTROL_DURATION_SECONDS), upsert: true });
       if (error) throw error;
       const { data } = (supabase as any).storage.from('profile-thumbnails').getPublicUrl(fileName);
       return data.publicUrl;
@@ -291,21 +298,21 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
       case 'tuned':
         return (
           <Badge className="bg-emerald-500/15 text-emerald-300 border-emerald-500/50 flex items-center gap-1">
-            <CheckCircle2 className="h-3 w-3" />
+            <CheckCircle2 className={UI_DIMENSIONS.BADGE_ICON} />
             {t('profile_tuning_studio.status.tuned', 'Tuned for Production')}
           </Badge>
         );
       case 'in_progress':
         return (
           <Badge className="bg-blue-500/15 text-blue-300 border-blue-500/50 flex items-center gap-1">
-            <Sparkles className="h-3 w-3" />
+            <Sparkles className={UI_DIMENSIONS.BADGE_ICON} />
             {t('profile_tuning_studio.status.in_progress', 'Tuning in Progress')}
           </Badge>
         );
       default:
         return (
           <Badge className="bg-yellow-500/15 text-yellow-300 border-yellow-500/50 flex items-center gap-1">
-            <AlertTriangle className="h-3 w-3" />
+            <AlertTriangle className={UI_DIMENSIONS.BADGE_ICON} />
             {t('profile_tuning_studio.status.untuned', 'Not Tuned Yet')}
           </Badge>
         );
@@ -316,7 +323,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
     if (location.state && (location.state as any).highlightGeometry) {
       setActiveTab('geometry');
       setShowImportBanner(true);
-      const timer = setTimeout(() => setShowImportBanner(false), 10000);
+      const timer = setTimeout(() => setShowImportBanner(false), TIMEOUT_CONSTANTS.IMPORT_BANNER_TIMEOUT_MS);
       // Clear the state so it doesn't persist across refresh/navigation
       window.history.replaceState({}, document.title);
       return () => clearTimeout(timer);
@@ -475,7 +482,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
       };
 
       // Check if this is a static profile that needs to be inserted first
-      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id);
+      const isUUID = VALIDATION_PATTERNS.UUID_PATTERN.test(profile.id);
 
       if (!isUUID) {
         console.log('🔄 Profile has non-UUID ID, checking if it exists in database...');
@@ -528,7 +535,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
       }
 
 
-      console.log('📊 Updating profile:', { profileId: profile.id, isUUID: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id), userId, specsKeys: Object.keys(nextSpecs) });
+      console.log('📊 Updating profile:', { profileId: profile.id, isUUID: VALIDATION_PATTERNS.UUID_PATTERN.test(profile.id), userId, specsKeys: Object.keys(nextSpecs) });
 
       const { error } = await db
         .from('fabricator_profiles')
@@ -601,7 +608,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
       console.log('  - Environment:', import.meta.env.DEV ? 'Development' : 'Production');
       console.log('  - User ID:', userId);
       console.log('  - Profile ID:', profile.id);
-      console.log('  - Is UUID:', /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id));
+      console.log('  - Is UUID:', VALIDATION_PATTERNS.UUID_PATTERN.test(profile.id));
       console.log('  - Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
       console.log('  - Supabase Key:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'Present' : 'Missing');
 
@@ -613,7 +620,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
       }
 
       // Check if this is a static profile that needs to be inserted first
-      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id);
+      const isUUID = VALIDATION_PATTERNS.UUID_PATTERN.test(profile.id);
 
       let profileIdToUse = profile.id;
 
@@ -1011,7 +1018,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
       }}
     >
       <div 
-        className="w-full max-w-6xl max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)] overflow-y-auto rounded-2xl border border-orange-500/40 bg-gradient-to-br from-gray-950 via-gray-900 to-black shadow-[0_0_60px_rgba(248,113,113,0.35)] relative z-10"
+        className={`w-full ${UI_DIMENSIONS.STUDIO_MAX_WIDTH} ${UI_DIMENSIONS.STUDIO_MAX_HEIGHT} overflow-y-auto rounded-2xl border border-orange-500/40 bg-gradient-to-br from-gray-950 via-gray-900 to-black shadow-[0_0_60px_rgba(248,113,113,0.35)] relative z-10`}
         onClick={(e) => e.stopPropagation()}
       >
         <Card className="bg-transparent border-none h-full flex flex-col">
@@ -1027,7 +1034,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                   data-testid="profile-tuning-back-button"
                   type="button"
                 >
-                  <ArrowLeft className="h-4 w-4 mr-1" />
+                  <ArrowLeft className={`${UI_DIMENSIONS.ICON_MEDIUM} mr-1`} />
                   {t('profile_tuning_studio.actions.back', 'Back')}
                 </Button>
               </div>
@@ -1035,7 +1042,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
               {/* Center: Title and description */}
               <div className="flex items-start gap-3 flex-1 justify-center">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500/20 border border-orange-400/60">
-                  <Sparkles className="h-5 w-5 text-orange-300" />
+                  <Sparkles className={`${UI_DIMENSIONS.ICON_LARGE} text-orange-300`} />
                 </div>
                 <div className="text-center">
                   <CardTitle className="text-lg md:text-xl flex items-center gap-2 justify-center">
@@ -1058,7 +1065,7 @@ export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = ({
                   disabled={savingStatus || tuningStatus === 'tuned'}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
-                  <CheckCircle2 className="h-4 w-4 mr-1" />
+                  <CheckCircle2 className={`${UI_DIMENSIONS.ICON_MEDIUM} mr-1`} />
                   {tuningStatus === 'tuned'
                     ? t('profile_tuning_studio.actions.already_tuned', 'Already Tuned')
                     : t('profile_tuning_studio.actions.mark_as_tuned', 'Mark as Tuned')}

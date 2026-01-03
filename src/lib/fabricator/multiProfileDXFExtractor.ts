@@ -8,7 +8,6 @@
  */
 
 import type { ImportedProfile } from '@/components/fabricator/smartscan/DXFProfileImporter';
-import { autoConfigureFromDXF, type DXFImportData, type AutoConfigOptions } from './autoConfigFromDXF';
 import { buildCustomSystemPack } from './systemPackBuilder';
 
 export interface MultiProfileDXFResult {

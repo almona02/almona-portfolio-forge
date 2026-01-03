@@ -8,14 +8,15 @@
  * with correct positioning rather than detailed 3D models.
  */
 
-import { BoxGeometry, BufferGeometry, Vector3 } from 'three';
 import { WindowUnit } from '@/types/fabricator';
+import { BoxGeometry, BufferGeometry, Vector3 } from 'three';
 
 export interface HardwarePlaceholder {
   geometry: BufferGeometry;
   position: Vector3;
   type: 'handle' | 'hinge' | 'lock' | 'roller';
   label: string;
+  userData?: Record<string, any>;
 }
 
 export interface HardwarePosition {
@@ -66,7 +67,7 @@ export const HARDWARE_COLORS = {
  * @param expr Expression like 'sash_right_edge-0.03' or 'sash_height/2'
  * @param context Context object with values like sashWidth, sashHeight, etc.
  */
-function evaluatePosition(expr: string | number, context: Record<string, number>): number {
+function _evaluatePosition(expr: string | number, context: Record<string, number>): number {
   if (typeof expr === 'number') return expr;
   
   // Replace context variables
@@ -105,10 +106,10 @@ export function generateHardwarePlaceholders(windowUnit: WindowUnit): HardwarePl
   const height = windowUnit.overallHeight / 1000;
   
   // Process each cell
-  windowUnit.grid.cells.forEach((cell, index) => {
+  windowUnit.grid.cells.forEach((cell, _index) => {
     if (cell.type === 'empty') return;
     
-    const isSash = cell.type === 'sash' || (cell as any).type === 'sliding';
+    const _isSash = cell.type === 'sash' || (cell as any).type === 'sliding';
     const isSliding = cell.type === 'sliding' || (cell as any).type === 'sliding';
     const isCasement = cell.type === 'sash' && !isSliding;
     

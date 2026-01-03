@@ -11,7 +11,17 @@
  */
 
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
-import type { SystemPack, WindowUnit, FabricationData } from '@/types/fabricator';
+import type { FabricationData, SystemPack, WindowUnit } from '@/types/fabricator';
+import {
+    HARDWARE_POSITIONING,
+    HARDWARE_QUANTITY,
+    HARDWARE_QUANTITY_DEFAULTS,
+    HARDWARE_TORQUE,
+    HINGE_QUANTITY_THRESHOLDS,
+    INSTALLATION_TIME,
+    ROLLER_QUANTITY_THRESHOLDS,
+    UNIT_CONVERSION,
+} from './hardwareBOMConstants';
 
 /**
  * HardwareBOMCalculator - Hardware quantity calculation engine
@@ -23,7 +33,7 @@ export class HardwareBOMCalculator {
   async calculateHardwareBOM(
     windowUnit: WindowUnit,
     pattern: EgyptianPattern,
-    systemPack: SystemPack
+    _systemPack: SystemPack
   ): Promise<FabricationData['hardware']> {
     const hardware: FabricationData['hardware'] = [];
     const { ProductionUtils } = await import('../productionUtils');
@@ -71,9 +81,9 @@ export class HardwareBOMCalculator {
           'Use appropriate fasteners',
           'Test opening/closing operation'
         ],
-        torqueSpec: 8, // Nm
+        torqueSpec: HARDWARE_TORQUE.HINGE_CASEMENT_NM,
         alternatives: ['HINGE-CASEMENT-EC400', 'HINGE-CASEMENT-EC500'],
-        estimatedTime: 5, // minutes per hinge
+        estimatedTime: INSTALLATION_TIME.PER_HINGE_MINUTES,
         supplierLink: undefined
       });
     }
@@ -95,7 +105,7 @@ export class HardwareBOMCalculator {
         ],
         torqueSpec: undefined,
         alternatives: [],
-        estimatedTime: 3, // minutes per roller
+        estimatedTime: INSTALLATION_TIME.PER_ROLLER_MINUTES,
         supplierLink: undefined
       });
     }
@@ -103,7 +113,7 @@ export class HardwareBOMCalculator {
     // Handles (standard: 1 per operable sash)
     const sashCount = pattern.gridSpec?.cells.filter(c => 
       c.type === 'sash' || c.type === 'sliding'
-    ).length || 1;
+    ).length || HARDWARE_QUANTITY_DEFAULTS.DEFAULT_SASH_COUNT;
 
     hardware.push({
       id: 'handle-standard',
@@ -111,15 +121,15 @@ export class HardwareBOMCalculator {
       name: 'Standard Window Handle',
       category: 'handle',
       quantity: sashCount,
-      positionSpec: '1100mm from bottom (Egyptian standard)',
+      positionSpec: `${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom (Egyptian standard)`,
       installationNotes: [
-        'Position handle at 1100mm from bottom',
+        `Position handle at ${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom`,
         'Ensure comfortable operation height',
         'Test handle operation'
       ],
-      torqueSpec: 6, // Nm
+      torqueSpec: HARDWARE_TORQUE.HANDLE_STANDARD_NM,
       alternatives: ['HANDLE-ERGONOMIC', 'HANDLE-DESIGN'],
-      estimatedTime: 4, // minutes per handle
+      estimatedTime: INSTALLATION_TIME.PER_HANDLE_MINUTES,
       supplierLink: undefined
     });
 
@@ -139,7 +149,7 @@ export class HardwareBOMCalculator {
         ],
         torqueSpec: undefined,
         alternatives: [],
-        estimatedTime: 5, // minutes per lock
+        estimatedTime: INSTALLATION_TIME.PER_LOCK_MINUTES,
         supplierLink: undefined
       });
     }
@@ -150,7 +160,7 @@ export class HardwareBOMCalculator {
       supplierCode: 'CORNER-KEY-15',
       name: 'Corner Key 15mm',
       category: 'corner_key',
-      quantity: 4, // Fixed: 4 corners
+      quantity: HARDWARE_QUANTITY.CORNER_KEYS_PER_FRAME,
       positionSpec: 'One in each frame corner',
       installationNotes: [
         'Tap in with rubber mallet',
@@ -159,7 +169,7 @@ export class HardwareBOMCalculator {
       ],
       torqueSpec: undefined,
       alternatives: ['CORNER-KEY-20', 'SCREW-CORNER'],
-      estimatedTime: 2, // minutes per corner
+      estimatedTime: INSTALLATION_TIME.PER_CORNER_KEY_MINUTES,
       supplierLink: undefined
     });
 
@@ -169,20 +179,20 @@ export class HardwareBOMCalculator {
   /**
    * Calculate hinge quantity based on sash height
    */
-  private calculateHingeQuantity(height: number, openingType: string): number {
-    if (height <= 1200) return 2;
-    if (height <= 1800) return 3;
-    if (height <= 2400) return 4;
-    return 5; // Very tall sashes
+  private calculateHingeQuantity(height: number, _openingType: string): number {
+    if (height <= HINGE_QUANTITY_THRESHOLDS.TWO_HINGES_MAX_HEIGHT_MM) return HARDWARE_QUANTITY_DEFAULTS.STANDARD_HINGE_COUNT;
+    if (height <= HINGE_QUANTITY_THRESHOLDS.THREE_HINGES_MAX_HEIGHT_MM) return HARDWARE_QUANTITY_DEFAULTS.THREE_HINGE_COUNT;
+    if (height <= HINGE_QUANTITY_THRESHOLDS.FOUR_HINGES_MAX_HEIGHT_MM) return HARDWARE_QUANTITY_DEFAULTS.FOUR_HINGE_COUNT;
+    return HARDWARE_QUANTITY_DEFAULTS.FIVE_HINGE_COUNT; // Very tall sashes
   }
 
   /**
    * Calculate roller quantity for sliding windows
    */
   private calculateRollerQuantity(width: number, height: number): number {
-    const area = (width * height) / 1_000_000; // m²
-    if (area <= 2.5) return 2; // Standard: 2 rollers
-    return 4; // Heavy-duty: 4 rollers for large windows
+    const area = (width * height) / UNIT_CONVERSION.MM2_TO_M2; // m²
+    if (area <= ROLLER_QUANTITY_THRESHOLDS.STANDARD_TWO_ROLLER_MAX_AREA_M2) return HARDWARE_QUANTITY_DEFAULTS.STANDARD_ROLLER_COUNT;
+    return HARDWARE_QUANTITY_DEFAULTS.HEAVY_DUTY_ROLLER_COUNT; // Heavy-duty: 4 rollers for large windows
   }
 
   /**
@@ -196,16 +206,19 @@ export class HardwareBOMCalculator {
     if (categoryLower.includes('roller')) return 'roller';
     if (categoryLower.includes('corner')) return 'corner_key';
     if (categoryLower.includes('gasket') || categoryLower.includes('seal')) return 'gasket';
-    return 'other';
+    // Default to 'gasket' for unknown categories to satisfy type constraint
+    return 'gasket';
   }
 
   /**
    * Get default position for hardware category
    */
-  private getDefaultPosition(category: string): string {
-    const categoryLower = category.toLowerCase();
+  private getDefaultPosition(_category: string): string {
+    const categoryLower = _category.toLowerCase();
     if (categoryLower.includes('hinge')) return 'Evenly spaced along sash height';
-    if (categoryLower.includes('handle')) return '1100mm from bottom (Egyptian standard)';
+    if (categoryLower.includes('handle')) {
+      return `${HARDWARE_POSITIONING.HANDLE_HEIGHT_FROM_BOTTOM_MM}mm from bottom (Egyptian standard)`;
+    }
     if (categoryLower.includes('lock')) return 'At handle position';
     if (categoryLower.includes('roller')) return 'Bottom of sliding sash';
     return 'As per manufacturer instructions';
@@ -214,7 +227,7 @@ export class HardwareBOMCalculator {
   /**
    * Get default installation notes
    */
-  private getDefaultInstallationNotes(category: string): string[] {
+  private getDefaultInstallationNotes(_category: string): string[] {
     return [
       'Install according to manufacturer specifications',
       'Use appropriate fasteners',
@@ -227,11 +240,11 @@ export class HardwareBOMCalculator {
    */
   private getDefaultInstallationTime(category: string): number {
     const categoryLower = category.toLowerCase();
-    if (categoryLower.includes('hinge')) return 5; // minutes
-    if (categoryLower.includes('handle')) return 4;
-    if (categoryLower.includes('lock')) return 5;
-    if (categoryLower.includes('roller')) return 3;
-    return 5; // Default
+    if (categoryLower.includes('hinge')) return INSTALLATION_TIME.PER_HINGE_MINUTES;
+    if (categoryLower.includes('handle')) return INSTALLATION_TIME.PER_HANDLE_MINUTES;
+    if (categoryLower.includes('lock')) return INSTALLATION_TIME.PER_LOCK_MINUTES;
+    if (categoryLower.includes('roller')) return INSTALLATION_TIME.PER_ROLLER_MINUTES;
+    return INSTALLATION_TIME.DEFAULT_MINUTES;
   }
 }
 

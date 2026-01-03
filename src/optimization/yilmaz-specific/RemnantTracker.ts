@@ -4,7 +4,7 @@
  * Tracks and optimizes remnant usage for Yilmaz DC series machines
  */
 
-import { CuttingPlan, Cut, Profile } from '@/types/fabricator';
+import { Cut, CuttingPlan, Profile } from '@/types/fabricator';
 
 export interface Remnant {
   id: string;
@@ -201,7 +201,7 @@ export class RemnantTracker {
     }
 
     // Calculate overall metrics
-    const totalOriginalWaste = cuttingPlans.reduce((sum, plan) => sum + plan.totalWaste, 0);
+    const _totalOriginalWaste = cuttingPlans.reduce((sum, plan) => sum + plan.totalWaste, 0);
     const remnantUtilization = usedRemnants.length > 0
       ? usedRemnants.reduce((sum, match) => sum + match.utilization, 0) / usedRemnants.length
       : 0;
@@ -295,7 +295,7 @@ export class RemnantTracker {
   /**
    * Scrap remnant
    */
-  scrapRemnant(remnantId: string, reason?: string): boolean {
+  scrapRemnant(remnantId: string, _reason?: string): boolean {
     const remnant = this.remnants.get(remnantId);
     if (!remnant) {
       return false;
@@ -343,9 +343,11 @@ export class RemnantTracker {
    * Assess remnant quality
    */
   private assessQuality(length: number, profile: Profile): Remnant['quality'] {
-    const minLength = profile.stockLength * 0.1; // 10% of stock length
-    const goodLength = profile.stockLength * 0.3; // 30% of stock length
-    const excellentLength = profile.stockLength * 0.5; // 50% of stock length
+    // Use barLength if available, otherwise default to 6000mm (standard stock length)
+    const stockLength = profile.barLength || 6000;
+    const minLength = stockLength * 0.1; // 10% of stock length
+    const goodLength = stockLength * 0.3; // 30% of stock length
+    const excellentLength = stockLength * 0.5; // 50% of stock length
 
     if (length >= excellentLength) {
       return 'excellent';

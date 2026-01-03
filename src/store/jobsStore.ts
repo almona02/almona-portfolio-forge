@@ -1,7 +1,7 @@
-import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import type { WindowUnit } from '@/types/fabricator';
 import type { Database } from '@/types/database';
+import type { WindowUnit } from '@/types/fabricator';
+import { create } from 'zustand';
 
 interface JobsState {
   jobs: WindowUnit[];
@@ -232,7 +232,6 @@ export const useJobsStore = create<JobsState>((set, get) => ({
       }
 
       type FabricatorProjectRow = Database['public']['Tables']['fabricator_projects']['Row'];
-      type FabricatorPositionRow = Database['public']['Tables']['fabricator_positions']['Row'];
 
       const [{ data: projects, error: projError }, { data: positions, error: posError }] =
         await Promise.all([

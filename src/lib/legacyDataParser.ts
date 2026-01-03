@@ -1,4 +1,4 @@
-import { WindowUnit, Profile, OptimizationResult, WindowComponent } from '@/types/fabricator';
+import { Profile, WindowComponent } from '@/types/fabricator';
 
 // Mock parsing of legacy data - simplified for demonstration
 export function parseLegacyOrderData(): {

@@ -27,7 +27,7 @@ export const parse = (str: string, options?: any) => {
   return result;
 };
 
-export const stringify = (obj: Record<string, any>, options?: any) => {
+export const stringify = (obj: Record<string, any>, _options?: any) => {
   const params = new URLSearchParams();
 
   Object.entries(obj).forEach(([key, value]) => {

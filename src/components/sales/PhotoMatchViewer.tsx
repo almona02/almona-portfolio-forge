@@ -9,31 +9,31 @@
  * - Save and share matched presentations with Almona branding
  */
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
-import { WindowUnit } from '@/types/fabricator';
 import { Window3DModel } from '@/components/fabricator/Window3DGenerator';
-import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Upload, 
-  Download, 
-  Share2, 
-  RotateCcw,
-  Maximize2,
-  Image as ImageIcon,
-  Lightbulb,
-  Layers,
-  Camera,
-  Smartphone
-} from 'lucide-react';
-import { track } from '@/lib/analytics';
 import { useToast } from '@/hooks/use-toast';
+import { track } from '@/lib/analytics';
+import { WindowUnit } from '@/types/fabricator';
+import { Environment, OrbitControls } from '@react-three/drei';
+import { Canvas, useThree } from '@react-three/fiber';
+import {
+    Camera,
+    Download,
+    Image as ImageIcon,
+    Layers,
+    Lightbulb,
+    Maximize2,
+    RotateCcw,
+    Share2,
+    Smartphone,
+    Upload
+} from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import * as THREE from 'three';
 
 // Overlay modes
 type OverlayMode = 'transparent' | 'outline' | 'full';
@@ -167,7 +167,7 @@ function _calculatePerspectiveMatrix(correction: PerspectiveCorrection, width: n
 function PhotoMatchScene({
   windowUnit,
   backgroundImage,
-  _overlayMode,
+  overlayMode: _overlayMode,
   lighting,
   perspectiveCorrection,
   windowPosition,
@@ -186,8 +186,8 @@ function PhotoMatchScene({
   const { scene, camera } = useThree();
   const modelRef = useRef<THREE.Group>(null);
   const backgroundRef = useRef<THREE.Mesh>(null);
-  const [_isAnimating, _setIsAnimating] = useState(false);
-  const [_animationProgress, _setAnimationProgress] = useState(0);
+  const [isAnimating] = useState(false);
+  const [animationProgress] = useState(0);
 
   // Load background image as texture
   useEffect(() => {
@@ -321,7 +321,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
   const [perspectiveCorrection, setPerspectiveCorrection] = useState<PerspectiveCorrection | undefined>();
   const [windowPosition, setWindowPosition] = useState({ x: 0, y: 0, z: 0 });
   const [windowScale, setWindowScale] = useState(1);
-  const [_isFullscreen, _setIsFullscreen] = useState(false);
+  const [_isFullscreen, setIsFullscreen] = useState(false);
   const [detectedWindows, setDetectedWindows] = useState<{ x: number; y: number; width: number; height: number }[]>([]);
   const [isMobile, setIsMobile] = useState(false);
   
@@ -552,7 +552,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
             }
             
             track('photo_match_shared', { method: 'clipboard', windowId: windowUnit?.id });
-          } catch (_clipboardError) {
+          } catch {
             // If clipboard fails, fall back to download
             exportPresentation();
           }

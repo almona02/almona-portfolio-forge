@@ -155,7 +155,7 @@ export class SmartRemnantSystem {
    */
   async getMultiLocationRemnantView(
     userId: string,
-    options: {
+    _options: {
       profileId?: string;
       material?: string;
       minLength?: number;

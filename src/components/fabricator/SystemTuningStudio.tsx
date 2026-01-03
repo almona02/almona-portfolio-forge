@@ -12,6 +12,12 @@ import { HardwareLinker } from './smartscan/HardwareLinker';
 import { MachiningZoneEditor, type MachiningZone } from './smartscan/MachiningZoneEditor';
 import { buildCustomSystemPack } from '@/lib/fabricator/systemPackBuilder';
 import { supabase } from '@/lib/supabase';
+import {
+  ASYNC_DELAYS,
+  DIALOG_DIMENSIONS,
+  GRID_LAYOUT,
+  UI_DIMENSIONS,
+} from './systemTuningStudioConstants';
 
 interface SystemTuningStudioProps {
   open: boolean;
@@ -63,12 +69,12 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
     setTimeout(() => {
       setIsSaving(false);
       if (onSave) onSave(pack);
-    }, 300); // lightweight async feel
+    }, ASYNC_DELAYS.SAVE_DELAY_MS);
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl bg-gray-950 border-gray-800 text-white">
+      <DialogContent className={`${DIALOG_DIMENSIONS.MAX_WIDTH} bg-gray-950 border-gray-800 text-white`}>
         <DialogHeader className="flex flex-row items-center justify-between">
           <div>
             <DialogTitle className="flex items-center gap-2">
@@ -79,7 +85,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
             </DialogTitle>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose} className="text-gray-400 hover:text-white">
-            <X className="h-4 w-4" />
+            <X className={UI_DIMENSIONS.ICON_MEDIUM} />
           </Button>
         </DialogHeader>
     <div className="space-y-4">
@@ -91,26 +97,26 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </div>
         <Button disabled={!readyToSave || isSaving} onClick={handleSave} className="bg-green-600 hover:bg-green-500">
           {isSaving ? 'Saving…' : 'Save System Pack'}
-          <Save className="h-4 w-4 ml-2" />
+          <Save className={`${UI_DIMENSIONS.ICON_MEDIUM} ml-2`} />
         </Button>
       </div>
 
       <Tabs defaultValue="import" className="w-full">
-        <TabsList className="grid grid-cols-5 bg-gray-900">
+        <TabsList className={`grid ${GRID_LAYOUT.TABS_COLS} bg-gray-900`}>
           <TabsTrigger value="import" className="text-xs">
-            <Scan className="h-3 w-3 mr-1" /> Import
+            <Scan className={`${UI_DIMENSIONS.ICON_SMALL} mr-1`} /> Import
           </TabsTrigger>
           <TabsTrigger value="roles" className="text-xs">
-            <Layers className="h-3 w-3 mr-1" /> Tag Roles
+            <Layers className={`${UI_DIMENSIONS.ICON_SMALL} mr-1`} /> Tag Roles
           </TabsTrigger>
           <TabsTrigger value="hardware" className="text-xs">
-            <Package className="h-3 w-3 mr-1" /> Hardware
+            <Package className={`${UI_DIMENSIONS.ICON_SMALL} mr-1`} /> Hardware
           </TabsTrigger>
           <TabsTrigger value="machining" className="text-xs">
-            <Wrench className="h-3 w-3 mr-1" /> Machining
+            <Wrench className={`${UI_DIMENSIONS.ICON_SMALL} mr-1`} /> Machining
           </TabsTrigger>
           <TabsTrigger value="review" className="text-xs">
-            <CheckCircle2 className="h-3 w-3 mr-1" /> Review
+            <CheckCircle2 className={`${UI_DIMENSIONS.ICON_SMALL} mr-1`} /> Review
           </TabsTrigger>
         </TabsList>
 

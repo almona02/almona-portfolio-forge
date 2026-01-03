@@ -3,23 +3,23 @@
  * Orchestrates PDF generation with branding
  */
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Quote } from '@/modules/commercial/QuotingEngine';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Button } from '@/shared/ui/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Checkbox } from '@/shared/ui/ui/checkbox';
 import { Label } from '@/shared/ui/ui/label';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { FileText, Download, Loader2, CheckCircle, AlertCircle, ShoppingCart, Square, FileSpreadsheet, FileCode } from 'lucide-react';
-import { WindowUnit, OptimizationResult, FabricatorAccessory } from '@/types/fabricator';
-import { Quote } from '@/modules/commercial/QuotingEngine';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
+import { FabricatorAccessory, OptimizationResult, WindowUnit } from '@/types/fabricator';
+import { AlertCircle, CheckCircle, Download, FileCode, FileSpreadsheet, FileText, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
 // PHASE 4: PDFExportService is now lazy-loaded - see handleGenerateReport
-import type { CompanyBranding, PDFOptions } from './PDFExportService';
-import { ExportService, ExportFormat, PDFExportOptions as ExportPDFOptions, ExportProgress } from '@/lib/exports';
-import { AccessoriesReport } from './AccessoriesReport';
-import { GlassReport } from './GlassReport';
-import { CuttingListReport } from './CuttingListReport';
+import { ExportFormat, PDFExportOptions as ExportPDFOptions, ExportProgress, ExportService } from '@/lib/exports';
 import { PricingEngine } from '@/lib/pricing/PricingEngine';
+import { AccessoriesReport } from './AccessoriesReport';
+import { CuttingListReport } from './CuttingListReport';
+import { GlassReport } from './GlassReport';
+import type { CompanyBranding, PDFOptions } from './PDFExportService';
 
 interface ReportEngineProps {
   project: WindowUnit;

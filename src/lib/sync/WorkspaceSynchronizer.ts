@@ -174,7 +174,7 @@ export class WorkspaceSynchronizer {
    * Unsubscribe from all channels
    */
   unsubscribeAll(): void {
-    for (const [name, channel] of this.channels.entries()) {
+    for (const [_name, channel] of this.channels.entries()) {
       channel.unsubscribe();
     }
     this.channels.clear();

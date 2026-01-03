@@ -95,11 +95,11 @@ export const validatePhase1Optimizations = (): ValidationResults => {
         lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
         // The callback will fire asynchronously, but for validation purposes
         // we'll proceed with lcp=0 if not available yet
-      } catch (e) {
+      } catch {
         // Fallback for older browsers
         try {
           (lcpObserver as any).observe({ entryTypes: ['largest-contentful-paint'] });
-        } catch (e2) {
+        } catch {
           // PerformanceObserver not supported, lcp remains 0
         }
       }
@@ -117,7 +117,7 @@ export const validatePhase1Optimizations = (): ValidationResults => {
       if (!observerDisconnected) {
         lcpObserver.disconnect();
       }
-    } catch (e) {
+    } catch {
       // PerformanceObserver not available, lcp remains 0
     }
   }

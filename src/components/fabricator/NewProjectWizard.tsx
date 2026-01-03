@@ -1,27 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { addCustomSystem, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
+import { supabase } from '@/lib/supabase';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/shared/ui/ui/dialog';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
-import { Badge } from '@/shared/ui/ui/badge';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/shared/ui/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Factory, MapPin, Users } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
-import { ProjectCockpit, type ProjectType, getProjectTypeConfig } from './ProjectCockpit';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { Factory, MapPin, Users } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SystemTuningStudio } from './SystemTuningStudio';
-import { useMemo } from 'react';
-import { loadCustomSystems, addCustomSystem } from '@/lib/fabricator/customSystemStorage';
 import { CustomSystemManager } from './CustomSystemManager';
+import { ProjectCockpit, getProjectTypeConfig, type ProjectType } from './ProjectCockpit';
+import { SystemTuningStudio } from './SystemTuningStudio';
+import {
+    DIALOG_DIMENSIONS,
+    SCROLL_LIMITS,
+    UI_DIMENSIONS,
+} from './newProjectWizardConstants';
 
 type FabricatorCustomerRow = Database['public']['Tables']['fabricator_customers']['Row'];
 
@@ -193,10 +197,10 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
   return (
     <>
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className={`bg-gray-900 border-gray-700 text-white ${DIALOG_DIMENSIONS.MAX_WIDTH} ${DIALOG_DIMENSIONS.MAX_HEIGHT} overflow-y-auto`}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg">
-            <Factory className="h-5 w-5 text-orange-400" />
+            <Factory className={`${UI_DIMENSIONS.ICON_LARGE} text-orange-400`} />
             {t('new_project_wizard.title', 'New Project – Professional Header')}
           </DialogTitle>
           <DialogDescription className="text-xs text-gray-400">
@@ -261,11 +265,11 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                 className="text-xs"
                 onClick={() => setShowTuningStudio(true)}
               >
-                <Factory className="h-3.5 w-3.5 mr-1" />
+                <Factory className={`${UI_DIMENSIONS.ICON_SMALL} mr-1`} />
                 Tune Custom System
               </Button>
             </div>
-            <div className="grid grid-cols-1 gap-2 max-h-[260px] overflow-y-auto pr-1">
+            <div className="grid grid-cols-1 gap-2 overflow-y-auto pr-1" style={{ maxHeight: `${SCROLL_LIMITS.MAX_SYSTEM_PACK_SCROLL_HEIGHT_PX}px` }}>
               {allSystems.map((pack) => {
                 const stats = getPackStats(pack);
                 const isSelected = selectedSystemPackIds.includes(pack.meta.id);
@@ -283,12 +287,12 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${
+                          className={`${UI_DIMENSIONS.CHECKBOX_SIZE} rounded flex items-center justify-center border transition-colors ${
                             isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-600 bg-gray-900'
                           }`}
                         >
                           {isSelected && (
-                            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <svg viewBox="0 0 24 24" className={UI_DIMENSIONS.CHECKMARK_SIZE + ' text-white'} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M5 13l4 4L19 7" />
                             </svg>
                           )}

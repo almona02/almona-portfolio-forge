@@ -88,7 +88,6 @@ export function UnifiedARManager({
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const { toast } = useToast();
-  const detectionTimeoutRef = useRef<NodeJS.Timeout>();
   const performanceIntervalRef = useRef<NodeJS.Timeout>();
 
   // Device and capability detection
@@ -197,13 +196,6 @@ export function UnifiedARManager({
     };
 
     detectCapabilities();
-
-    // Cleanup timeout
-    return () => {
-      if (detectionTimeoutRef.current) {
-        clearTimeout(detectionTimeoutRef.current);
-      }
-    };
   }, [enableWebXR, enableSceneViewer, enableQuickLook, onError]);
 
   // Performance monitoring during AR sessions
@@ -259,6 +251,37 @@ export function UnifiedARManager({
       }
     };
   }, [arSession.isActive]);
+
+  // Helper functions for AR launch methods
+  const launchWebXR = useCallback(async () => {
+    if (!capabilities?.webXR) throw new Error('WebXR not supported');
+
+    // WebXR implementation would go here
+    // This would integrate with your existing EnhancedGLBViewer WebXR code
+    console.log('Launching WebXR AR session');
+  }, [capabilities?.webXR]);
+
+  const launchSceneViewer = useCallback(async () => {
+    if (!capabilities?.sceneViewer) throw new Error('Scene Viewer not supported');
+
+    const url = new URL(modelPath, window.location.origin).toString();
+    const sceneViewerUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(url)}&mode=ar_preferred&title=${encodeURIComponent('Industrial Machine')}`;
+
+    window.location.href = sceneViewerUrl;
+  }, [capabilities?.sceneViewer, modelPath]);
+
+  const launchQuickLook = useCallback(async () => {
+    if (!capabilities?.quickLook || !usdzPath) throw new Error('Quick Look not supported');
+
+    // iOS Quick Look for USDZ files
+    const link = document.createElement('a');
+    link.href = usdzPath;
+    link.rel = 'ar';
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [capabilities?.quickLook, usdzPath]);
 
   // Launch AR experience
   const launchAR = useCallback(async (modelName?: string) => {
@@ -333,37 +356,7 @@ export function UnifiedARManager({
       onError?.(error as Error);
       await launchFallback();
     }
-  }, [deviceInfo, capabilities, onARStart, onError, toast]);
-
-  const launchWebXR = async () => {
-    if (!capabilities?.webXR) throw new Error('WebXR not supported');
-
-    // WebXR implementation would go here
-    // This would integrate with your existing EnhancedGLBViewer WebXR code
-    console.log('Launching WebXR AR session');
-  };
-
-  const launchSceneViewer = async () => {
-    if (!capabilities?.sceneViewer) throw new Error('Scene Viewer not supported');
-
-    const url = new URL(modelPath, window.location.origin).toString();
-    const sceneViewerUrl = `https://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(url)}&mode=ar_preferred&title=${encodeURIComponent('Industrial Machine')}`;
-
-    window.location.href = sceneViewerUrl;
-  };
-
-  const launchQuickLook = async () => {
-    if (!capabilities?.quickLook || !usdzPath) throw new Error('Quick Look not supported');
-
-    // iOS Quick Look for USDZ files
-    const link = document.createElement('a');
-    link.href = usdzPath;
-    link.rel = 'ar';
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  }, [deviceInfo, capabilities, onARStart, onError, toast, modelPath, launchWebXR, launchSceneViewer, launchQuickLook]);
 
   // launchSwiftXR is now handled by swiftXRIntegration.ts
   // This function is kept for backward compatibility but uses the new integration

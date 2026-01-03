@@ -4,8 +4,8 @@
  * Supports machine-specific dialects and optimizations
  */
 
-import { CuttingPlan, Cut, Profile } from '@/types/fabricator';
 import { GCodeCommand } from '@/integrations/cnc/CNCController';
+import { Cut, CuttingPlan, Profile } from '@/types/fabricator';
 
 export type YilmazMachineModel = 
   | 'AIM-3410' 
@@ -192,7 +192,7 @@ export class YilmazGCodeGenerator {
       const toolPaths = this.optimizeToolPaths(plan);
       
       // Generate G-code for each tool path
-      toolPaths.forEach((toolPath, pathIndex) => {
+      toolPaths.forEach((toolPath) => {
         // Tool change if needed
         if (toolPath.toolNumber !== this.currentTool) {
           commands.push(...this.generateToolChange(toolPath.toolNumber));
@@ -394,7 +394,7 @@ export class YilmazGCodeGenerator {
   } {
     const angleRad = (cut.angle * Math.PI) / 180;
     const length = cut.length;
-    const profileWidth = profile.width || 50;
+    const _profileWidth = profile.width || 50;
     const profileHeight = profile.height || 50;
 
     // Start at current position or origin
@@ -416,7 +416,7 @@ export class YilmazGCodeGenerator {
   /**
    * Select appropriate tool for operation
    */
-  private selectTool(cut: Cut, profile: Profile): number {
+  private selectTool(cut: Cut, _profile: Profile): number {
     // Tool selection logic based on operation and material
     if (cut.angle === 90) {
       return 1; // Standard cutting tool
@@ -490,7 +490,7 @@ export class YilmazGCodeGenerator {
   /**
    * Generate operation commands for a tool path
    */
-  private generateOperationCommands(toolPath: ToolPath, profile: Profile): GCodeCommand[] {
+  private generateOperationCommands(toolPath: ToolPath, _profile: Profile): GCodeCommand[] {
     const commands: GCodeCommand[] = [];
 
     if (this.options.includeComments) {

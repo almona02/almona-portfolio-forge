@@ -14,6 +14,10 @@
 
 import type { Profile } from '@/types/fabricator';
 import { micronEngine } from './MicronEngine';
+import {
+    DEFAULT_BAR_VALUES,
+    OPTIMIZATION_PRECISION,
+} from './optimizationConstants';
 
 /**
  * Cut definition with comprehensive role support
@@ -123,10 +127,13 @@ export class SimplifiedOptimizationEngine {
         // CRITICAL: Kerf applies to N-1 cuts (not N)
         // Last cut doesn't need kerf (no material left after cut)
         const isLastCut = (index === sortedCuts.length - 1) && (q === cut.quantity - 1);
-        const kerf = isLastCut ? 0 : this.micronEngine.getConfig().sawBladeKerf;
+        const kerf = isLastCut 
+          ? DEFAULT_BAR_VALUES.DEFAULT_LAST_CUT_KERF_MM 
+          : this.micronEngine.getConfig().sawBladeKerf;
         
         // Correction 1: Floating Point Precision
-        const toPrecision = (num: number) => Math.round(num * 100) / 100;
+        const toPrecision = (num: number) => 
+          Math.round(num * OPTIMIZATION_PRECISION.PRECISION_MULTIPLIER) / OPTIMIZATION_PRECISION.PRECISION_MULTIPLIER;
         const cutWithKerf = toPrecision(cut.correctedLength + kerf);
 
         if (currentBar.remainingLength >= cutWithKerf) {
@@ -149,7 +156,7 @@ export class SimplifiedOptimizationEngine {
             id: `${cut.id}-${q}`,
             label: cut.label,
             length: cut.correctedLength,
-            position: 0,
+            position: DEFAULT_BAR_VALUES.DEFAULT_FIRST_CUT_POSITION_MM,
             kerf
           });
           currentBar.usedLength = toPrecision(cutWithKerf);
@@ -166,15 +173,17 @@ export class SimplifiedOptimizationEngine {
     // Calculate metrics
     const totalUsed = bars.reduce((sum, bar) => sum + bar.usedLength, 0);
     const totalMaterial = bars.reduce((sum, bar) => sum + bar.nominalLength, 0);
-    const utilization = totalMaterial > 0 ? (totalUsed / totalMaterial) * 100 : 0;
+    const utilization = totalMaterial > 0 
+      ? (totalUsed / totalMaterial) * OPTIMIZATION_PRECISION.PERCENTAGE_MULTIPLIER 
+      : 0;
     const waste = bars.reduce((sum, bar) => sum + bar.remainingLength, 0);
 
     const transomMillingCount = correctedCuts.filter(c => c.role === 'transom').length;
 
     return {
       bars,
-      utilization: Math.round(utilization * 100) / 100, // Round to 2 decimals
-      waste: Math.round(waste * 100) / 100,
+      utilization: Math.round(utilization * OPTIMIZATION_PRECISION.PRECISION_MULTIPLIER) / OPTIMIZATION_PRECISION.PRECISION_MULTIPLIER, // Round to 2 decimals
+      waste: Math.round(waste * OPTIMIZATION_PRECISION.PRECISION_MULTIPLIER) / OPTIMIZATION_PRECISION.PRECISION_MULTIPLIER,
       micronCorrections: {
         appliedKerf: this.micronEngine.getConfig().sawBladeKerf,
         appliedTrim: this.micronEngine.getConfig().barEndTrim,
@@ -194,7 +203,7 @@ export class SimplifiedOptimizationEngine {
       id: `bar-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       nominalLength: config.barNominalLength,
       usableLength,
-      usedLength: 0,
+      usedLength: DEFAULT_BAR_VALUES.DEFAULT_USED_LENGTH_MM,
       remainingLength: usableLength,
       cuts: []
     };

@@ -9,10 +9,9 @@
  * 2. User adds sash-level mullions INSIDE sashes (e.g., glass top, panel bottom)
  */
 
-import { BufferGeometry, BoxGeometry, Vector3 } from 'three';
-import { WindowUnit, ManualMullion } from '@/types/fabricator';
+import { Profile, WindowUnit } from '@/types/fabricator';
+import { BoxGeometry, BufferGeometry } from 'three';
 import { ProfileCrossSection, generateProfileCrossSection } from './windowGeometry';
-import { Profile } from '@/types/fabricator';
 
 /**
  * Render frame-level mullions (structural, part of main frame)
@@ -48,7 +47,6 @@ export function renderFrameLevelMullions(
   };
   const baseProfile = windowUnit.components?.[0]?.profile || defaultProfile;
   const mullionProfile = generateProfileCrossSection(baseProfile);
-  const mullionWidth = mullionProfile.width;
   const mullionDepth = mullionProfile.depth || 0.03;
 
   // Calculate grid proportions for accurate positioning
@@ -84,7 +82,7 @@ export function renderFrameLevelMullions(
       
       // Mullion spans full height minus frame bars
       const mullionHeight = height - frameProfile.width * 2;
-      const mullionW = (mullion.width || mullionProfile.width) / 1000;
+      const mullionW = mullionProfile.width / 1000;
       
       const bar = new BoxGeometry(mullionW, mullionHeight, mullionDepth);
       bar.translate(x, 0, 0);
@@ -101,7 +99,7 @@ export function renderFrameLevelMullions(
       
       // Mullion spans full width minus frame bars
       const mullionWidth = width - frameProfile.width * 2;
-      const mullionH = (mullion.width || mullionProfile.width) / 1000;
+      const mullionH = mullionProfile.width / 1000;
       
       const bar = new BoxGeometry(mullionWidth, mullionH, mullionDepth);
       bar.translate(0, y, 0);
@@ -163,7 +161,7 @@ export function renderSashLevelMullions(
       // Mullion spans sash height minus sash profile
       const sashProfileW = sashProfile.width;
       const mullionHeight = cellH - sashProfileW * 2;
-      const mullionW = (mullion.width || mullionProfile.width) / 1000;
+      const mullionW = mullionProfile.width / 1000;
       
       const bar = new BoxGeometry(mullionW, mullionHeight, mullionDepth);
       bar.translate(x, cellY, 0);
@@ -180,7 +178,7 @@ export function renderSashLevelMullions(
       // Mullion spans sash width minus sash profile
       const sashProfileW = sashProfile.width;
       const mullionWidth = cellW - sashProfileW * 2;
-      const mullionH = (mullion.width || mullionProfile.width) / 1000;
+      const mullionH = mullionProfile.width / 1000;
       
       const bar = new BoxGeometry(mullionWidth, mullionH, mullionDepth);
       bar.translate(cellX, y, 0);

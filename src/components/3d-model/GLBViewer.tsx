@@ -2,7 +2,7 @@ import { Window3DModel } from '@/components/fabricator/Window3DGenerator'
 import { WindowUnit } from '@/types/fabricator'
 import { useAnimations, useGLTF } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Group } from 'three'
 import * as THREE from 'three'
 import './SwiftXR.css'
@@ -64,7 +64,7 @@ export function GLBViewer({
   // GLB mode: Load GLTF model (always call hooks, conditionally use)
   const gltfResult = useGLTF(isGLBMode && modelPath ? modelPath : '')
   const scene = isGLBMode ? gltfResult.scene : null
-  const animations = isGLBMode ? gltfResult.animations : []
+  const animations = useMemo(() => isGLBMode ? gltfResult.animations : [], [isGLBMode, gltfResult.animations])
   const { actions } = useAnimations(animations, scene || groupRef.current || ({} as any))
 
   const [arSupported, setArSupported] = useState(false)
