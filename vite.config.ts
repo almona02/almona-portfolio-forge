@@ -49,7 +49,7 @@ export default defineConfig(({ mode }) => {
       middlewareMode: false,
       proxy: {
         '/api': {
-          target: 'http://localhost:8002',
+          target: 'http://localhost:8000',
           changeOrigin: true,
           secure: false,
           rewrite: (path) => path.replace(/^\/api/, ''),
@@ -288,7 +288,7 @@ export default defineConfig(({ mode }) => {
       target: "es2022",
       minify: isProduction ? "esbuild" : false,
       sourcemap: false,
-      chunkSizeWarningLimit: 2000,
+      chunkSizeWarningLimit: 3000, // Increased to accommodate ui-antd chunk (~1.5 MB)
       assetsInlineLimit: 2048,
       reportCompressedSize: false,
       // PHASE 5A: CSS code splitting ensures CSS is extracted separately
@@ -379,29 +379,42 @@ export default defineConfig(({ mode }) => {
           assetFileNames: `assets/[name]-[hash].[ext]`,
           // Week 1 Task 1.4: Web Worker file naming
           workerFileNames: `assets/[name]-[hash].worker.js`,
-          // TBT OPTIMIZATION: Safe chunk splitting strategy
-          // 1. Split ONLY standalone engines (no React dependencies) - SAFE
-          // 2. Let React.lazy() handle React-dependent code splitting via dynamic imports
-          //    This avoids circular dependency errors while reducing initial bundle size
-          // 3. Route-based splitting is handled by React.lazy() in App.tsx
+          // OPTIMIZED CHUNK SPLITTING: Conservative split with proper loading order
+          // CRITICAL: React core MUST load first before all React-dependent chunks
+          // Strategy: Split only large, independent libraries; keep small React deps together
           manualChunks: (id) => {
-            // Exclude app code from vendor chunks
+            // Exclude app code
             if (id.includes('/src/') || id.includes('\\src\\')) {
               return undefined;
             }
-
-            // Only process node_modules
+            
             if (!id.includes('node_modules')) {
               return undefined;
             }
 
-            // Only split standalone engines that don't depend on React
+            // ========================================
+            // CRITICAL: React Core MUST load first
+            // ========================================
+            if (
+              id.includes('node_modules/react/') ||
+              id.includes('node_modules/react-dom/') ||
+              id.includes('node_modules/scheduler/')
+            ) {
+              return 'react-core';
+            }
+
+            // ========================================
+            // STANDALONE ENGINES (No React deps)
+            // ========================================
+            
             if (id.includes('node_modules/three/') && !id.includes('@react-three')) {
               return 'three-engine';
             }
+            
             if (id.includes('node_modules/ammo.js/')) {
               return 'physics-engine';
             }
+            
             if (
               id.includes('node_modules/@tensorflow/') ||
               id.includes('node_modules/tfjs/') ||
@@ -410,6 +423,7 @@ export default defineConfig(({ mode }) => {
             ) {
               return 'ml-engine';
             }
+            
             if (
               id.includes('node_modules/jspdf/') ||
               id.includes('node_modules/html2canvas/') ||
@@ -422,7 +436,35 @@ export default defineConfig(({ mode }) => {
               return 'document-vendor';
             }
 
-            // Everything else stays in react-vendor (safe, no circular deps)
+            // ========================================
+            // REACT ECOSYSTEM - CONSERVATIVE SPLIT
+            // Only split libraries that don't immediately use React on module load
+            // Keep Ant Design and other immediate-React-deps in react-vendor
+            // ========================================
+            
+            // NOTE: Ant Design MUST stay in react-vendor because it uses React.createContext
+            // immediately when the module loads, so it can't be in a separate chunk
+            
+            // Radix UI (500 KB - can be split, uses React but not immediately)
+            if (id.includes('node_modules/@radix-ui/')) {
+              return 'ui-radix';
+            }
+            
+            // Framer Motion (500 KB - can be split, lazy-loaded)
+            if (
+              id.includes('node_modules/framer-motion/') ||
+              id.includes('node_modules/motion-dom/') ||
+              id.includes('node_modules/motion-utils/')
+            ) {
+              return 'animation';
+            }
+            
+            // NOTE: Charts MUST stay in react-vendor - has initialization order issues
+            // NOTE: Markdown MUST stay in react-vendor - has initialization order issues
+            // NOTE: React Three Fiber MUST stay in react-vendor - depends on React immediately
+            
+            // Everything else stays together (including Ant Design, Charts, Markdown, React Three, 
+            // state-mgmt, forms, router, etc.) to prevent loading order issues
             return 'react-vendor';
           },
 

@@ -26,14 +26,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
     
-    <!-- Enhanced font fallback chain in critical CSS ensures immediate text rendering -->
-    <style>
-      /* Font-display: swap ensures text is visible immediately with system font */
-      @font-face {
-        font-family: 'Inter';
-        font-display: swap;
-      }
-    </style>
+    <!-- Note: font-display: swap is already handled by Google Fonts URL parameter (&display=swap) -->
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@almona" />
@@ -157,7 +150,6 @@
       } else {
         // Provide a no-op gtag function for code that expects it
         window.gtag = function() { /* Analytics disabled */ };
-        console.log('Analytics disabled for privacy');
       }
     </script>
 
