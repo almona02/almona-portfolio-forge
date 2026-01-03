@@ -288,7 +288,7 @@ export default defineConfig(({ mode }) => {
       target: "es2022",
       minify: isProduction ? "esbuild" : false,
       sourcemap: false,
-      chunkSizeWarningLimit: 3000, // Increased to accommodate ui-antd chunk (~1.5 MB)
+      chunkSizeWarningLimit: 2000,
       assetsInlineLimit: 2048,
       reportCompressedSize: false,
       // PHASE 5A: CSS code splitting ensures CSS is extracted separately
@@ -379,33 +379,29 @@ export default defineConfig(({ mode }) => {
           assetFileNames: `assets/[name]-[hash].[ext]`,
           // Week 1 Task 1.4: Web Worker file naming
           workerFileNames: `assets/[name]-[hash].worker.js`,
-          // OPTIMIZED CHUNK SPLITTING: Split react-vendor (6.17 MB) into cacheable chunks
-          // This improves initial load time by 50-60% and enables better caching
+          // TBT OPTIMIZATION: Safe chunk splitting strategy
+          // 1. Split ONLY standalone engines (no React dependencies) - SAFE
+          // 2. Let React.lazy() handle React-dependent code splitting via dynamic imports
+          //    This avoids circular dependency errors while reducing initial bundle size
+          // 3. Route-based splitting is handled by React.lazy() in App.tsx
           manualChunks: (id) => {
-            // Exclude app code - only chunk node_modules
+            // Exclude app code from vendor chunks
             if (id.includes('/src/') || id.includes('\\src\\')) {
               return undefined;
             }
-            
+
+            // Only process node_modules
             if (!id.includes('node_modules')) {
               return undefined;
             }
 
-            // ========================================
-            // STANDALONE ENGINES (No React deps)
-            // ========================================
-            
-            // Three.js core (pure 3D engine)
+            // Only split standalone engines that don't depend on React
             if (id.includes('node_modules/three/') && !id.includes('@react-three')) {
               return 'three-engine';
             }
-            
-            // Physics engine (ammo.js)
             if (id.includes('node_modules/ammo.js/')) {
               return 'physics-engine';
             }
-            
-            // ML/AI engines (TensorFlow, ONNX, Google AI)
             if (
               id.includes('node_modules/@tensorflow/') ||
               id.includes('node_modules/tfjs/') ||
@@ -414,8 +410,6 @@ export default defineConfig(({ mode }) => {
             ) {
               return 'ml-engine';
             }
-            
-            // Document processing (PDF, Excel, DXF)
             if (
               id.includes('node_modules/jspdf/') ||
               id.includes('node_modules/html2canvas/') ||
@@ -428,206 +422,8 @@ export default defineConfig(({ mode }) => {
               return 'document-vendor';
             }
 
-            // ========================================
-            // REACT ECOSYSTEM SPLIT
-            // ========================================
-            
-            // 1. React Core (most stable, best caching)
-            if (
-              id.includes('node_modules/react/') ||
-              id.includes('node_modules/react-dom/') ||
-              id.includes('node_modules/scheduler/') ||
-              id.includes('node_modules/react/jsx-runtime')
-            ) {
-              return 'react-core';
-            }
-            
-            // 2. React Router (routing changes rarely)
-            if (
-              id.includes('node_modules/react-router/') ||
-              id.includes('node_modules/react-router-dom/') ||
-              id.includes('node_modules/@remix-run/router/')
-            ) {
-              return 'react-router';
-            }
-            
-            // 3. Animation (Framer Motion - large library)
-            if (
-              id.includes('node_modules/framer-motion/') ||
-              id.includes('node_modules/motion-dom/') ||
-              id.includes('node_modules/motion-utils/')
-            ) {
-              return 'animation';
-            }
-            
-            // 4. UI: Ant Design (largest UI library ~1.5 MB)
-            // Includes all rc-* components (Ant Design internals)
-            if (
-              id.includes('node_modules/antd/') ||
-              id.includes('node_modules/@ant-design/') ||
-              id.includes('node_modules/rc-picker/') ||
-              id.includes('node_modules/rc-dialog/') ||
-              id.includes('node_modules/rc-util/') ||
-              id.includes('node_modules/rc-pagination/') ||
-              id.includes('node_modules/rc-resize-observer/') ||
-              id.includes('node_modules/rc-progress/') ||
-              id.includes('node_modules/rc-overflow/') ||
-              id.includes('node_modules/rc-input-number/') ||
-              id.includes('node_modules/rc-notification/') ||
-              id.includes('node_modules/rc-motion/') ||
-              id.includes('node_modules/rc-tabs/') ||
-              id.includes('node_modules/rc-menu/') ||
-              id.includes('node_modules/rc-field-form/') ||
-              id.includes('node_modules/rc-tooltip/') ||
-              id.includes('node_modules/rc-dropdown/') ||
-              id.includes('node_modules/rc-input/') ||
-              id.includes('node_modules/rc-collapse/') ||
-              id.includes('node_modules/rc-textarea/') ||
-              id.includes('node_modules/rc-upload/') ||
-              id.includes('node_modules/@rc-component/')
-            ) {
-              return 'ui-antd';
-            }
-            
-            // 5. UI: Radix (used by shadcn/ui)
-            if (id.includes('node_modules/@radix-ui/')) {
-              return 'ui-radix';
-            }
-            
-            // 6. Charts (Recharts ecosystem)
-            if (
-              id.includes('node_modules/recharts/') ||
-              id.includes('node_modules/recharts-scale/') ||
-              id.includes('node_modules/react-smooth/')
-            ) {
-              return 'charts';
-            }
-            
-            // 7. Markdown (full ecosystem)
-            if (
-              id.includes('node_modules/react-markdown/') ||
-              id.includes('node_modules/react-md-editor/') ||
-              id.includes('node_modules/react-markdown-preview/') ||
-              id.includes('node_modules/remark-') ||
-              id.includes('node_modules/rehype-') ||
-              id.includes('node_modules/mdast-') ||
-              id.includes('node_modules/hast-') ||
-              id.includes('node_modules/micromark') ||
-              id.includes('node_modules/unified/') ||
-              id.includes('node_modules/unist-')
-            ) {
-              return 'markdown';
-            }
-            
-            // 8. 3D React Helpers (React Three Fiber ecosystem)
-            if (
-              id.includes('node_modules/@react-three/') ||
-              id.includes('node_modules/three-stdlib/') ||
-              id.includes('node_modules/three-mesh-bvh/') ||
-              id.includes('node_modules/postprocessing/') ||
-              id.includes('node_modules/camera-controls/') ||
-              id.includes('node_modules/maath/')
-            ) {
-              return 'react-three';
-            }
-            
-            // 9. Supabase (database client)
-            if (
-              id.includes('node_modules/@supabase/') ||
-              id.includes('node_modules/supabase-js/') ||
-              id.includes('node_modules/postgrest-js/') ||
-              id.includes('node_modules/storage-js/')
-            ) {
-              return 'supabase';
-            }
-            
-            // 10. Forms (React Hook Form + Zod validation)
-            if (
-              id.includes('node_modules/react-hook-form/') ||
-              id.includes('node_modules/@hookform/') ||
-              id.includes('node_modules/zod/')
-            ) {
-              return 'forms';
-            }
-            
-            // 11. State Management (Zustand + React Query)
-            if (
-              id.includes('node_modules/zustand/') ||
-              id.includes('node_modules/@tanstack/react-query/') ||
-              id.includes('node_modules/@tanstack/query-core/') ||
-              id.includes('node_modules/@tanstack/react-table/') ||
-              id.includes('node_modules/@tanstack/table-core/')
-            ) {
-              return 'state-mgmt';
-            }
-            
-            // 12. Date/Time utilities (date-fns)
-            if (id.includes('node_modules/date-fns/')) {
-              return 'date-utils';
-            }
-            
-            // 13. Utilities (lodash)
-            if (id.includes('node_modules/lodash/')) {
-              return 'lodash';
-            }
-            
-            // 14. i18n (internationalization)
-            if (
-              id.includes('node_modules/i18next/') ||
-              id.includes('node_modules/react-i18next/') ||
-              id.includes('node_modules/i18next-browser-languagedetector/')
-            ) {
-              return 'i18n';
-            }
-            
-            // 15. Icons (lucide-react)
-            if (id.includes('node_modules/lucide-react/')) {
-              return 'icons';
-            }
-            
-            // 16. Syntax Highlighting (refractor/prism)
-            if (
-              id.includes('node_modules/refractor/') ||
-              id.includes('node_modules/prismjs/') ||
-              id.includes('node_modules/rehype-prism')
-            ) {
-              return 'syntax-highlight';
-            }
-            
-            // 17. D3 (data visualization utilities)
-            if (
-              id.includes('node_modules/d3-') ||
-              id.includes('node_modules/internmap/')
-            ) {
-              return 'd3-utils';
-            }
-            
-            // 18. MapLibre (maps)
-            if (id.includes('node_modules/maplibre-gl/')) {
-              return 'maps';
-            }
-            
-            // 19. QR Code generation
-            if (
-              id.includes('node_modules/qrcode/') ||
-              id.includes('node_modules/qrcode.react/')
-            ) {
-              return 'qrcode';
-            }
-            
-            // 20. Miscellaneous utilities
-            if (
-              id.includes('node_modules/uuid/') ||
-              id.includes('node_modules/clsx/') ||
-              id.includes('node_modules/classnames/') ||
-              id.includes('node_modules/tailwind-merge/') ||
-              id.includes('node_modules/class-variance-authority/')
-            ) {
-              return 'utils';
-            }
-            
-            // Everything else goes here
-            return 'vendor-misc';
+            // Everything else stays in react-vendor (safe, no circular deps)
+            return 'react-vendor';
           },
 
         },
