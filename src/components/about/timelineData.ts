@@ -50,14 +50,8 @@ export const MILESTONES: Milestone[] = [
     impact: [
       "Built early market trust that enabled future exclusive agreements",
       "Created the service DNA that still guides post-sales support today",
-    ],
-    media: [
-      {
-        type: 'image',
-        url: '/images/company/founding-1991.jpg',
-        thumbnail: '/images/company/founding-1991-thumb.jpg'
-      }
     ]
+    // Note: Media removed - image file doesn't exist. Add /images/company/founding-1991.jpg if needed.
   },
   {
     year: 1995,
