@@ -1,8 +1,8 @@
 // Domain: Profiles (strict typing enabled)
+import type { Database, SectorType, UserRole } from '@/types/database';
 import { z } from 'zod';
-import type { Database, Address, SectorType, UserRole, UserPreferences } from '@/types/database';
-import { table } from './clientCore';
 import { monitorSupabasePerformance } from '../supabase';
+import { table } from './clientCore';
 
 const addressSchema = z.object({
   street: z.string().min(1),

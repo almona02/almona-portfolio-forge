@@ -4,7 +4,7 @@
  * Generates CSV/MDB files compatible with DC series machines
  */
 
-import { CuttingPlan, Cut, Profile } from '@/types/fabricator';
+import { Cut, CuttingPlan } from '@/types/fabricator';
 import { YilmazCutListData, YilmazExportOptions } from './YilmazCutListAdapter';
 
 export interface DCCutListRow {
@@ -32,7 +32,7 @@ export class DCCutListGenerator {
     data: YilmazCutListData,
     options: YilmazExportOptions
   ): string {
-    const rows: DCCutListRow[] = this.prepareRows(data);
+    const rows: DCCutListRow[] = this.prepareRows(data, options);
     const lines: string[] = [];
 
     // CSV Header
@@ -86,7 +86,7 @@ export class DCCutListGenerator {
    */
   async generateMDB(
     data: YilmazCutListData,
-    options: YilmazExportOptions
+    _options: YilmazExportOptions
   ): Promise<Buffer> {
     const rows: DCCutListRow[] = this.prepareRows(data);
     
@@ -136,7 +136,7 @@ export class DCCutListGenerator {
   /**
    * Prepare rows from cutting plan data
    */
-  private prepareRows(data: YilmazCutListData): DCCutListRow[] {
+  private prepareRows(data: YilmazCutListData, options?: YilmazExportOptions): DCCutListRow[] {
     const rows: DCCutListRow[] = [];
     let rowNumber = 1;
 
@@ -167,7 +167,7 @@ export class DCCutListGenerator {
           quantity: quantity,
           orderNumber: data.orderNumber,
           position: `P${planIndex + 1}-${groupIndex + 1}`,
-          barcode: options.includeBarcodes 
+          barcode: options?.includeBarcodes 
             ? this.generateBarcode(data.orderNumber, rowNumber - 1)
             : undefined
         });

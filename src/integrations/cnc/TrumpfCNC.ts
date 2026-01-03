@@ -3,8 +3,8 @@
  * For metal processing and laser cutting machines
  */
 
-import { CNCController, MachineStatus, GCodeCommand, ToolPath, MachineCapabilities, OptimizationOptions } from './CNCController';
-import { CuttingPlan, Cut, Profile } from '@/types/fabricator';
+import { Cut, CuttingPlan, Profile } from '@/types/fabricator';
+import { CNCController, GCodeCommand, MachineCapabilities, MachineStatus, OptimizationOptions, ToolPath } from './CNCController';
 
 export class TrumpfCNC extends CNCController {
   private statusUpdateInterval?: NodeJS.Timeout;
@@ -64,7 +64,7 @@ export class TrumpfCNC extends CNCController {
 
   async generateGCode(
     cuttingPlan: CuttingPlan[],
-    options?: OptimizationOptions
+    _options?: OptimizationOptions
   ): Promise<GCodeCommand[]> {
     const commands: GCodeCommand[] = [];
     let lineNumber = 1;
@@ -308,7 +308,7 @@ export class TrumpfCNC extends CNCController {
     };
   }
 
-  async estimateProductionTime(cuttingPlan: CuttingPlan[]): Promise<number> {
+  estimateProductionTime(cuttingPlan: CuttingPlan[]): number {
     let totalTime = 0;
 
     for (const plan of cuttingPlan) {
@@ -323,8 +323,8 @@ export class TrumpfCNC extends CNCController {
     return totalTime;
   }
 
-  async estimateEnergyConsumption(cuttingPlan: CuttingPlan[]): Promise<number> {
-    const productionTime = await this.estimateProductionTime(cuttingPlan);
+  estimateEnergyConsumption(cuttingPlan: CuttingPlan[]): number {
+    const productionTime = this.estimateProductionTime(cuttingPlan);
     const powerConsumption = 25; // 25 kW average for laser cutting
     return (productionTime / 60) * powerConsumption;
   }
@@ -341,7 +341,7 @@ export class TrumpfCNC extends CNCController {
     return feedRates[material.toLowerCase()] || 5000;
   }
 
-  private calculateSpindleSpeed(material: string): number {
+  private calculateSpindleSpeed(_material: string): number {
     // Laser doesn't use spindle speed
     return 0;
   }

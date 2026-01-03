@@ -1,8 +1,7 @@
-import React, { useState, Suspense } from 'react';
 import { Button } from '@/shared/ui/ui/button';
 import { lazyRetry } from '@/utils/lazyImport';
-import { Skeleton } from '@/shared/ui/ui/skeleton';
-import { Loader2, Box } from 'lucide-react';
+import { Box, Loader2 } from 'lucide-react';
+import React, { Suspense, useState } from 'react';
 
 // Lazy load the actual heavy viewer
 const AdvancedModelViewer = lazyRetry(
@@ -11,7 +10,7 @@ const AdvancedModelViewer = lazyRetry(
 );
 
 const LazyEnhancedGLBViewer = lazyRetry(
-  () => import('@/components/3d-model/EnhancedGLBViewer').then(m => ({ default: m.LazyEnhancedGLBViewer })),
+  () => import('@/components/3d-model/EnhancedGLBViewer').then(m => ({ default: m.EnhancedGLBViewer })),
   'LazyEnhancedGLBViewer'
 );
 

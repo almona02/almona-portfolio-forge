@@ -87,7 +87,7 @@ export class RemoteSupportLauncher {
       // If protocol handler exists, TeamViewer is likely installed
       // This is a heuristic check
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -103,7 +103,7 @@ export class RemoteSupportLauncher {
 
     try {
       window.location.href = protocol;
-    } catch (error) {
+    } catch {
       // Fallback: Open TeamViewer website with connection info
       this.openTeamViewerWebsite(id, password);
     }

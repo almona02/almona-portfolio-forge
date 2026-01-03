@@ -17,6 +17,13 @@ import { OptimizationPresets, type OptimizationStrategy } from '@/lib/optimizati
 import { supabase } from '@/lib/supabase';
 import type { Profile } from '@/types/fabricator';
 import { useTranslation } from 'react-i18next';
+import {
+  DEFAULT_OPTIMIZATION_PARAMS,
+  QUERY_LIMITS,
+  SLIDER_CONFIG,
+  INPUT_CONSTRAINTS,
+  UI_DIMENSIONS,
+} from './optimizationEqualizerConstants';
 
 interface OptimizationEqualizerProps {
   userId: string;
@@ -57,8 +64,8 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
     initialStrategy || OptimizationPresets.getPreset('balanced')
   );
   const [_profileOverrides, _setProfileOverrides] = useState<Map<string, ProfileOverride>>(new Map());
-  const [minRemnantLength, setMinRemnantLength] = useState<number>(200);
-  const [maxRemnantAge, setMaxRemnantAge] = useState<number>(90); // days
+  const [minRemnantLength, setMinRemnantLength] = useState<number>(DEFAULT_OPTIMIZATION_PARAMS.DEFAULT_MIN_REMNANT_LENGTH_MM);
+  const [maxRemnantAge, setMaxRemnantAge] = useState<number>(DEFAULT_OPTIMIZATION_PARAMS.DEFAULT_MAX_REMNANT_AGE_DAYS);
   const [_customStockLengths, _setCustomStockLengths] = useState<Map<string, number>>(new Map());
   const [isSaving, setIsSaving] = useState(false);
   const [_savedStrategies, _setSavedStrategies] = useState<OptimizationStrategy[]>([]);
@@ -70,7 +77,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
-        .limit(10)
+        .limit(QUERY_LIMITS.MAX_SAVED_PREFERENCES)
         .returns<OptimizationPreferenceRow[]>();
 
       if (error) throw error;
@@ -197,7 +204,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
     <Card className="bg-gray-800/50 border-gray-700">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Settings className="h-5 w-5 text-purple-400" /> {t('optimization_equalizer.title', 'Optimization Strategy Equalizer')}
+          <Settings className={`${UI_DIMENSIONS.ICON_LARGE} text-purple-400`} /> {t('optimization_equalizer.title', 'Optimization Strategy Equalizer')}
         </CardTitle>
         <CardDescription className="text-gray-400">
           {t('optimization_equalizer.description', 'Fine-tune optimization parameters to match your production needs')}
@@ -234,7 +241,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
           <div>
             <div className="flex items-center justify-between mb-2">
               <Label className="text-gray-300 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-green-400" />
+                <TrendingUp className={`${UI_DIMENSIONS.ICON_MEDIUM} text-green-400`} />
                 {t('optimization_equalizer.waste_reduction', 'Waste Reduction')}
               </Label>
               <Badge variant="outline" className="text-green-400 border-green-500/30">
@@ -244,9 +251,9 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
             <Slider
               value={[strategy.wasteReductionWeight]}
               onValueChange={(value) => handleWeightChange('wasteReductionWeight', value)}
-              min={0}
-              max={100}
-              step={1}
+              min={SLIDER_CONFIG.MIN_VALUE}
+              max={SLIDER_CONFIG.MAX_VALUE}
+              step={SLIDER_CONFIG.STEP}
               className="w-full"
             />
             <p className="text-xs text-gray-400 mt-1">
@@ -257,7 +264,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
           <div>
             <div className="flex items-center justify-between mb-2">
               <Label className="text-gray-300 flex items-center gap-2">
-                <Package className="h-4 w-4 text-blue-400" />
+                <Package className={`${UI_DIMENSIONS.ICON_MEDIUM} text-blue-400`} />
                 {t('optimization_equalizer.remnant_usage', 'Remnant Usage')}
               </Label>
               <Badge variant="outline" className="text-blue-400 border-blue-500/30">
@@ -267,9 +274,9 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
             <Slider
               value={[strategy.remnantUsageWeight]}
               onValueChange={(value) => handleWeightChange('remnantUsageWeight', value)}
-              min={0}
-              max={100}
-              step={1}
+              min={SLIDER_CONFIG.MIN_VALUE}
+              max={SLIDER_CONFIG.MAX_VALUE}
+              step={SLIDER_CONFIG.STEP}
               className="w-full"
             />
             <p className="text-xs text-gray-400 mt-1">
@@ -280,7 +287,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
           <div>
             <div className="flex items-center justify-between mb-2">
               <Label className="text-gray-300 flex items-center gap-2">
-                <Settings className="h-4 w-4 text-orange-400" />
+                <Settings className={`${UI_DIMENSIONS.ICON_MEDIUM} text-orange-400`} />
                 {t('optimization_equalizer.cut_complexity', 'Cut Complexity')}
               </Label>
               <Badge variant="outline" className="text-orange-400 border-orange-500/30">
@@ -290,9 +297,9 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
             <Slider
               value={[strategy.cutComplexityWeight]}
               onValueChange={(value) => handleWeightChange('cutComplexityWeight', value)}
-              min={0}
-              max={100}
-              step={1}
+              min={SLIDER_CONFIG.MIN_VALUE}
+              max={SLIDER_CONFIG.MAX_VALUE}
+              step={SLIDER_CONFIG.STEP}
               className="w-full"
             />
             <p className="text-xs text-gray-400 mt-1">
@@ -303,7 +310,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
           <div>
             <div className="flex items-center justify-between mb-2">
               <Label className="text-gray-300 flex items-center gap-2">
-                <Clock className="h-4 w-4 text-purple-400" />
+                <Clock className={`${UI_DIMENSIONS.ICON_MEDIUM} text-purple-400`} />
                 {t('optimization_equalizer.production_speed', 'Production Speed')}
               </Label>
               <Badge variant="outline" className="text-purple-400 border-purple-500/30">
@@ -313,9 +320,9 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
             <Slider
               value={[strategy.productionSpeedWeight]}
               onValueChange={(value) => handleWeightChange('productionSpeedWeight', value)}
-              min={0}
-              max={100}
-              step={1}
+              min={SLIDER_CONFIG.MIN_VALUE}
+              max={SLIDER_CONFIG.MAX_VALUE}
+              step={SLIDER_CONFIG.STEP}
               className="w-full"
             />
             <p className="text-xs text-gray-400 mt-1">
@@ -363,10 +370,10 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
                 id="min-remnant"
                 type="number"
                 value={minRemnantLength}
-                onChange={(e) => setMinRemnantLength(parseInt(e.target.value) || 200)}
+                onChange={(e) => setMinRemnantLength(parseInt(e.target.value) || DEFAULT_OPTIMIZATION_PARAMS.DEFAULT_MIN_REMNANT_LENGTH_MM)}
                 className="mt-1 w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm"
-                min={0}
-                max={1000}
+                min={INPUT_CONSTRAINTS.MIN_REMNANT_LENGTH_MM}
+                max={INPUT_CONSTRAINTS.MAX_REMNANT_LENGTH_MM}
               />
               <p className="text-xs text-gray-400 mt-1">
                 {t('optimization_equalizer.min_remnant_desc', 'Remnants shorter than this will not be considered for reuse')}
@@ -380,10 +387,10 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
                 id="max-remnant-age"
                 type="number"
                 value={maxRemnantAge}
-                onChange={(e) => setMaxRemnantAge(parseInt(e.target.value) || 90)}
+                onChange={(e) => setMaxRemnantAge(parseInt(e.target.value) || DEFAULT_OPTIMIZATION_PARAMS.DEFAULT_MAX_REMNANT_AGE_DAYS)}
                 className="mt-1 w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm"
-                min={1}
-                max={365}
+                min={INPUT_CONSTRAINTS.MIN_REMNANT_AGE_DAYS}
+                max={INPUT_CONSTRAINTS.MAX_REMNANT_AGE_DAYS}
               />
               <p className="text-xs text-gray-400 mt-1">
                 {t('optimization_equalizer.max_remnant_desc', 'Remnants older than this will be excluded from optimization')}
@@ -400,7 +407,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
             variant="outline"
             className="flex-1 border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
           >
-            <Save className="h-4 w-4 mr-2" />
+            <Save className={`${UI_DIMENSIONS.ICON_MEDIUM} mr-2`} />
             {t('optimization_equalizer.save_strategy', 'Save Strategy')}
           </Button>
           <Button

@@ -3,14 +3,14 @@
  * Provides Turkish-language customer support with regional context
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useRegionDetection, useRegionUtils } from '@/hooks/useRegionDetection';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { useRegionDetection, useRegionUtils } from '@/hooks/useRegionDetection';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ChatMessage {
   id: string;
@@ -46,7 +46,7 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
   });
 
   // Enhanced Turkish support responses for aluminum/UPVC machinery
-  const turkishResponses = {
+  const turkishResponses = useMemo(() => ({
     greeting: [
       "Merhaba! Almona müşteri hizmetlerine hoş geldiniz. YILMAZ alüminyum ve UPVC işleme makineleri konusunda size nasıl yardımcı olabilirim?",
       "İyi günler! Almona teknik destek ekibindeyim. Alüminyum pencere, kapı veya UPVC profil üretimi için hangi makineye ihtiyacınız var?",
@@ -82,9 +82,9 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
       "Size yardımcı olabilmem için üretim türünüzü (alüminyum/UPVC) ve makine ihtiyacınızı belirtebilir misiniz?",
       "Bu konuda teknik ekibimizden destek almanızı öneririm. YILMAZ makine uzmanımızla görüşmek ister misiniz?"
     ]
-  };
+  }), []);
 
-  const getResponseCategory = (message: string): keyof typeof turkishResponses => {
+  const getResponseCategory = useCallback((message: string): keyof typeof turkishResponses => {
     const lowerMessage = message.toLowerCase();
     
     if (lowerMessage.includes('fiyat') || lowerMessage.includes('maliyet') || lowerMessage.includes('ücret')) {
@@ -104,12 +104,12 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
     }
     
     return 'default';
-  };
+  }, []);
 
-  const getRandomResponse = (category: keyof typeof turkishResponses): string => {
+  const getRandomResponse = useCallback((category: keyof typeof turkishResponses): string => {
     const responses = turkishResponses[category];
     return responses[Math.floor(Math.random() * responses.length)];
-  };
+  }, [turkishResponses]);
 
   const simulateTyping = useCallback((response: string) => {
     setIsTyping(true);
@@ -144,7 +144,7 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
     const category = getResponseCategory(inputMessage);
     const response = getRandomResponse(category);
     simulateTyping(response);
-  }, [inputMessage, simulateTyping]);
+  }, [inputMessage, simulateTyping, getResponseCategory, getRandomResponse]);
 
   const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -165,7 +165,7 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
       timestamp: new Date()
     };
     setMessages([greeting]);
-  }, [onChatStarted]);
+  }, [onChatStarted, turkishResponses.greeting]);
 
   const endChat = useCallback(() => {
     setIsOpen(false);

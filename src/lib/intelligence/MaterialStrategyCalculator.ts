@@ -10,7 +10,7 @@
  * @since Egyptian Fabrication Intelligence Enhancement
  */
 
-import type { ShapeType, ShapePattern } from './ShapePatterns';
+import type { ShapeType } from './ShapePatterns';
 import type { MaterialStrategy } from './ShapeInferenceEngine';
 
 export interface MachineCapabilities {

@@ -12,66 +12,66 @@
  * - Bulk operations for pricing and stock updates
  */
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates';
+import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
+import {
+    JUMBO100_SYSTEM_PACK,
+    JUMBO100_WINDOW_SYSTEM_SPEC,
+    ROCK60_SYSTEM_PACK,
+    ROCK60_WINDOW_SYSTEM_TEMPLATE,
+    SYSTEM_PACKS,
+} from '@/data/systemPacks';
+import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
+import { supabase } from '@/lib/supabase';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/shared/ui/ui/alert-dialog';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/ui/collapsible';
-import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates';
-import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Progress } from '@/shared/ui/ui/progress';
-import { 
-  Plus, 
-  Trash2, 
-  Save, 
-  Edit2, 
-  AlertCircle, 
-  CheckCircle, 
-  Package,
-  Download,
-  Upload,
-  RefreshCw,
-  Search,
-  FileText,
-  Settings,
-  ChevronDown,
-  Sparkles,
-  Shield,
-  AlertTriangle,
-  Ruler,
-  GaugeCircle,
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
+import { Accessory, MachiningMacro, Profile, SystemPack } from '@/types/fabricator';
+import {
+    AlertCircle,
+    AlertTriangle,
+    CheckCircle,
+    ChevronDown,
+    Download,
+    Edit2,
+    FileText,
+    GaugeCircle,
+    Package,
+    Plus,
+    RefreshCw,
+    Ruler,
+    Save,
+    Search,
+    Settings,
+    Shield,
+    Sparkles,
+    Trash2,
+    Upload,
 } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/shared/ui/ui/alert-dialog';
-import { Profile, Accessory, MachiningMacro, SystemPack } from '@/types/fabricator';
-import { supabase } from '@/lib/supabase';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
-import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
-import {
-  ROCK60_WINDOW_SYSTEM_TEMPLATE,
-  ROCK60_SYSTEM_PACK,
-  JUMBO100_WINDOW_SYSTEM_SPEC,
-  JUMBO100_SYSTEM_PACK,
-  SYSTEM_PACKS,
-} from '@/data/systemPacks';
-import { ProfileDetailCard } from './ProfileDetailCard';
 import { AccessoryManagement } from './AccessoryManagement';
-import { ProfileDefinitionWizard } from './ProfileDefinitionWizard';
-import { ProfileTuningStudio } from './ProfileTuningStudio';
 import { CalibrationWizard } from './CalibrationWizard';
+import { ProfileDefinitionWizard } from './ProfileDefinitionWizard';
+import { ProfileDetailCard } from './ProfileDetailCard';
+import { ProfileTuningStudio } from './ProfileTuningStudio';
 
 // Material-specific color presets
 const MATERIAL_COLORS: Record<string, string[]> = {
@@ -532,7 +532,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       // Only load if we don't have initial profiles or skipInitialLoad is false
       loadProfiles();
     }
-  }, [userId, skipInitialLoad]); // Don't depend on loadProfiles or initialProfiles to avoid re-runs
+  }, [userId, skipInitialLoad, hasLoadedOnce, initialProfiles, loadProfiles]);
 
   // Update profiles when initialProfiles changes (for real-time updates from parent)
   useEffect(() => {
@@ -2663,8 +2663,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     ));
                     
                     // Save to Supabase
-                    const { error } = await supabase
-                      .from('profiles')
+                    const { error } = await (supabase
+                      .from('profiles') as any)
                       .update({
                         specifications: updatedProfile.specifications,
                         calibrations: updatedProfile.calibrations,

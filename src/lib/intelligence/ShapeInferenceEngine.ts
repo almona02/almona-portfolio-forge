@@ -18,7 +18,6 @@ import {
   type UShapePattern,
   type IrregularPattern,
   type MultiSegmentPattern,
-  L_SHAPE_PATTERNS,
   IRREGULAR_PATTERNS,
   MULTI_SEGMENT_PATTERNS
 } from './ShapePatterns';
@@ -269,7 +268,7 @@ export class ShapeInferenceEngine {
    */
   private generateUShapePattern(
     dimensions: NonNullable<UserInput['dimensions']>,
-    userInput: UserInput
+    _userInput: UserInput
   ): UShapePattern | null {
     const { width, height, additionalDimensions } = dimensions;
     
@@ -318,7 +317,7 @@ export class ShapeInferenceEngine {
   private generateIrregularPattern(
     shapeType: ShapeType,
     dimensions: NonNullable<UserInput['dimensions']>,
-    userInput: UserInput
+    _userInput: UserInput
   ): IrregularPattern | null {
     const variant = shapeType === 'arched' ? 'arched_top' :
                    shapeType === 'geometric_grid' ? 'geometric_grid' :
@@ -344,7 +343,7 @@ export class ShapeInferenceEngine {
   private generateMultiSegmentPattern(
     shapeType: ShapeType,
     dimensions: NonNullable<UserInput['dimensions']>,
-    userInput: UserInput
+    _userInput: UserInput
   ): MultiSegmentPattern | null {
     const variant = shapeType === 'curtain_wall' ? 'curtain_wall' :
                    shapeType === 'room_divider' ? 'room_divider' :
@@ -565,7 +564,7 @@ export class ShapeInferenceEngine {
    */
   private determineMaterialStrategy(
     pattern: ShapePattern | null,
-    userInput: UserInput
+    _userInput: UserInput
   ): MaterialStrategy {
     if (!pattern) {
       return {
@@ -625,8 +624,8 @@ export class ShapeInferenceEngine {
    */
   private generateMaalemAdvice(
     shapeType: ShapeType,
-    pattern: ShapePattern | null,
-    userInput: UserInput
+    _pattern: ShapePattern | null,
+    _userInput: UserInput
   ): string {
     if (shapeType === 'l_shape') {
       return '💡 نصيحة المعلم: نافذة L تحتاج لحام زاوية قوي. استخدم معززات زاوية (corner reinforcements) لضمان المتانة.';
@@ -650,7 +649,7 @@ export class ShapeInferenceEngine {
   /**
    * Get Egyptian workshop patterns (for pattern matching)
    */
-  async getEgyptianWorkshopPatterns(workshopId?: string): Promise<ShapePattern[]> {
+  async getEgyptianWorkshopPatterns(_workshopId?: string): Promise<ShapePattern[]> {
     // TODO: Load from database when workshop history is available
     // For now, return common patterns
     return [];

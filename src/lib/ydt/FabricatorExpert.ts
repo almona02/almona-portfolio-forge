@@ -7,7 +7,7 @@
 
 import { QuickStartYDT } from './QuickStartYDT';
 import { DocumentationKnowledgeGraph } from './DocumentationKnowledgeGraph';
-import type { YDTAnswer, UIExplanation, WorkflowGuide } from './types';
+import type { YDTAnswer, WorkflowGuide } from './types';
 
 export class FabricatorExpert {
   private ydt: QuickStartYDT;

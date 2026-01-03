@@ -9,7 +9,7 @@
  * @since Phase 4: 3D Visual Upgrade (Week 21)
  */
 
-import { BufferGeometry, BoxGeometry, CylinderGeometry, Group } from 'three';
+import { BoxGeometry, BufferGeometry, CylinderGeometry } from 'three';
 
 export interface HingeConfig {
   type: 'casement' | 'tilt_turn' | 'awning';
@@ -33,7 +33,7 @@ export class HingeGenerator {
   /**
    * Generate complete hinge model
    */
-  generateHinge(config: HingeConfig): HingeModel {
+  generateHinge(_config: HingeConfig): HingeModel {
     // Hinge dimensions (typical Egyptian standard)
     const barrelDiameter = 0.016; // 16mm barrel
     const barrelLength = 0.025; // 25mm barrel length
@@ -74,7 +74,7 @@ export class HingeGenerator {
       [plateWidth / 2 - 0.005, plateHeight / 2 - 0.005]
     ];
 
-    for (const [x, y] of screwPositions) {
+    for (const [_x, _y] of screwPositions) {
       const screw = new CylinderGeometry(
         screwDiameter / 2,
         screwDiameter / 2,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
@@ -29,7 +29,7 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
   onCostCalculated,
   className
 }) => {
-  const calculator = new EgyptianInstallationCalculator();
+  const calculator = useMemo(() => new EgyptianInstallationCalculator(), []);
   
   const [variables, setVariables] = useState<InstallationVariables>(() => 
     EgyptianInstallationCalculator.getDefaultVariables(initialFloorLevel, projectArea)
@@ -48,7 +48,7 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
       setBreakdown(costBreakdown);
       onCostCalculated?.(costBreakdown);
     }
-  }, [variables, projectArea, openingCount, onCostCalculated]);
+  }, [calculator, variables, projectArea, openingCount, onCostCalculated]);
 
   const handleVariableChange = (key: keyof InstallationVariables, value: any) => {
     const updated = { ...variables, [key]: value };

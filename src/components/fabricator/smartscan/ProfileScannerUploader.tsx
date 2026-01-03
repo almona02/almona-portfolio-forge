@@ -1,35 +1,35 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  Alert,
-  Button,
-  Card,
-  Collapse,
-  Descriptions,
-  InputNumber,
-  Modal,
-  Progress,
-  Space,
-  Tag,
-  Tooltip,
-  Typography,
-  Upload,
-  notification,
-} from "antd";
-import {
-  CheckCircleOutlined,
-  DownloadOutlined,
-  EyeOutlined,
-  InfoCircleOutlined,
-  ReloadOutlined,
-  ScanOutlined,
-  UploadOutlined,
-  WarningOutlined,
-} from "@ant-design/icons";
 import { scanProfileImage } from "@/services/scanApi";
 import type {
-  ProfileScanResult,
-  ScaleDetectionResult,
+    ProfileScanResult,
+    ScaleDetectionResult,
 } from "@/types/scan";
+import {
+    CheckCircleOutlined,
+    DownloadOutlined,
+    EyeOutlined,
+    InfoCircleOutlined,
+    ReloadOutlined,
+    ScanOutlined,
+    UploadOutlined,
+    WarningOutlined,
+} from "@ant-design/icons";
+import {
+    Alert,
+    Button,
+    Card,
+    Collapse,
+    Descriptions,
+    InputNumber,
+    Modal,
+    Progress,
+    Space,
+    Tag,
+    Tooltip,
+    Typography,
+    Upload,
+    notification,
+} from "antd";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const { Text } = Typography;
@@ -214,6 +214,20 @@ export function ProfileScannerUploader({
     setManualScaleMode(false);
   }, [file]);
 
+  const handleHighConfidenceDetection = useCallback((detection: ScaleDetectionResult) => {
+    if (detection.scale_mm_per_px) {
+      setScaleFactor(detection.scale_mm_per_px);
+      notification.success({
+        message: t('profile_scanner_uploader.scale_modal.auto_detected', 'Scale Auto-Detected'),
+        description: t('profile_scanner_uploader.scale_modal.auto_detected_desc', {
+          scale: detection.scale_mm_per_px.toFixed(6),
+          defaultValue: `High confidence scale applied: ${detection.scale_mm_per_px.toFixed(6)} mm/px`
+        }),
+        duration: 3,
+      });
+    }
+  }, [t]);
+
   useEffect(() => {
     if (result?.scaleDetection && autoDetectScale) {
       const detection = result.scaleDetection;
@@ -243,21 +257,7 @@ export function ProfileScannerUploader({
         setManualScaleMode(true);
       }
     }
-  }, [result, autoDetectScale]);
-
-  const handleHighConfidenceDetection = (detection: ScaleDetectionResult) => {
-    if (detection.scale_mm_per_px) {
-      setScaleFactor(detection.scale_mm_per_px);
-      notification.success({
-        message: t('profile_scanner_uploader.scale_modal.auto_detected', 'Scale Auto-Detected'),
-        description: t('profile_scanner_uploader.scale_modal.auto_detected_desc', {
-          scale: detection.scale_mm_per_px.toFixed(6),
-          defaultValue: `High confidence scale applied: ${detection.scale_mm_per_px.toFixed(6)} mm/px`
-        }),
-        duration: 3,
-      });
-    }
-  };
+  }, [result, autoDetectScale, handleHighConfidenceDetection, t]);
 
   const handleFileSelect = (incoming: File) => {
     if (!incoming.type.startsWith("image/")) {

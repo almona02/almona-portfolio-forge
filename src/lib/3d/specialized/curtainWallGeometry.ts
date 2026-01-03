@@ -11,10 +11,10 @@
  * @see preset-aware_3d_generation_with_accuracy_estimates_1a16569a.plan.md
  */
 
-import { BufferGeometry, BoxGeometry } from 'three';
-import type { FrameGeometry } from '../windowGeometry';
-import type { WindowUnit } from '@/types/fabricator';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
+import type { WindowUnit } from '@/types/fabricator';
+import { BoxGeometry, BufferGeometry } from 'three';
+import type { FrameGeometry } from '../windowGeometry';
 import { generatePresetAwareGeometries } from '../windowGeometry';
 
 /**
@@ -71,7 +71,7 @@ function createStructuralMullions(
   
   // Use pattern.mullions[] if available, otherwise create based on grid
   if (pattern.mullions && pattern.mullions.length > 0) {
-    pattern.mullions.forEach((mullion, index) => {
+    pattern.mullions.forEach((mullion) => {
       // Calculate position based on column index
       const colIndex = mullion.position;
       const totalCols = pattern.gridSpec.cols;
@@ -112,7 +112,7 @@ function createStructuralMullions(
 function createExpansionJoints(
   width: number,
   height: number,
-  pattern: EgyptianPattern
+  _pattern: EgyptianPattern
 ): BufferGeometry[] {
   const joints: BufferGeometry[] = [];
   

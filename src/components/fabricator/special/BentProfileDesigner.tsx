@@ -6,23 +6,23 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { BentProfileEngine } from '@/lib/presets/BentProfileEngine';
-import { BendRadiusValidator } from '@/lib/presets/BendRadiusValidator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { BendRadiusValidator } from '@/lib/presets/BendRadiusValidator';
+import { BentProfileEngine } from '@/lib/presets/BentProfileEngine';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
 
 export const BentProfileDesigner: React.FC = () => {
   const [radius, setRadius] = useState<number>(1500);
   const [angle, setAngle] = useState<number>(90);
   const [material, setMaterial] = useState<'aluminum' | 'upvc'>('aluminum');
   const [profileWidth, setProfileWidth] = useState<number>(70);
-  const [profileDepth, setProfileDepth] = useState<number>(50);
+  const [profileDepth, _setProfileDepth] = useState<number>(50);
 
   const engine = useMemo(() => new BentProfileEngine(), []);
   const validator = useMemo(() => new BendRadiusValidator(), []);
@@ -92,7 +92,7 @@ export const BentProfileDesigner: React.FC = () => {
               <div className="space-y-2">
                 <Label htmlFor="material">Material</Label>
                 <Select value={material} onValueChange={(v) => setMaterial(v as 'aluminum' | 'upvc')}>
-                  <SelectTrigger className="bg-gray-800 border-gray-700">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

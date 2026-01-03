@@ -1,6 +1,6 @@
 import {
-  getDefaultGlazing,
-  getDefaultProfileColor
+    getDefaultGlazing,
+    getDefaultProfileColor
 } from '@/data/egyptian-defaults';
 import { EGYPTIAN_PATTERNS, getPatternsForSystem, type EgyptianPattern } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
@@ -25,6 +25,13 @@ import { CustomSystemManager } from './CustomSystemManager';
 import { ProductionLabel } from './ProductionLabel';
 import { SmartDrawCanvas } from './SmartDrawCanvas';
 import { SystemTuningStudio } from './SystemTuningStudio';
+import {
+    ANIMATION_CONSTANTS,
+    BLUEPRINT_VIEW,
+    DEFAULT_GLAZING_SPECS,
+    DEFAULT_GRID,
+    DEFAULT_MEASUREMENTS,
+} from './measuringConstants';
 
 interface SmartMeasuringInterfaceProps {
   onMeasurementComplete: (data: MeasurementData) => void;
@@ -54,10 +61,10 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   
   const [measurements, setMeasurements] = useState({
     // Default professional stub dimensions – can be refined per system later.
-    width: '1200',
-    height: '1200',
+    width: String(DEFAULT_MEASUREMENTS.DEFAULT_WIDTH_MM),
+    height: String(DEFAULT_MEASUREMENTS.DEFAULT_HEIGHT_MM),
     measurementMode: 'hole', // 'hole' (rough opening) or 'manufacturing'
-    wallDeduction: '15', // mm deduction for wall tolerance
+    wallDeduction: String(DEFAULT_MEASUREMENTS.DEFAULT_WALL_DEDUCTION_MM), // mm deduction for wall tolerance
     windowType: 'sliding_window', // Default to sliding
     color: egyptianDefaults.color,
     glazingType: egyptianDefaults.glazingType,
@@ -75,9 +82,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
   // Grid State for Phase 4
   const [grid, setGrid] = useState<WindowGrid>({
-    rows: 1,
-    cols: 1,
-    cells: [{ id: '0-0', row: 0, col: 0, type: 'fixed' }]
+    rows: DEFAULT_GRID.DEFAULT_ROWS,
+    cols: DEFAULT_GRID.DEFAULT_COLS,
+    cells: [{ id: DEFAULT_GRID.DEFAULT_CELL_ID, row: 0, col: 0, type: 'fixed' }]
   });
   
   const [isGridMode, setIsGridMode] = useState(false);
@@ -103,7 +110,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedPatternId, setSelectedPatternId] = useState<string>('');
-  const [blueprintZoom, setBlueprintZoom] = useState<number>(1); // Zoom level (1 = 100%, 1.2 = 120%, etc.)
+  const [blueprintZoom, setBlueprintZoom] = useState<number>(BLUEPRINT_VIEW.DEFAULT_ZOOM); // Zoom level (1 = 100%, 1.2 = 120%, etc.)
   const [blueprintFullscreen, setBlueprintFullscreen] = useState<boolean>(false);
 
   // Escape key handler to reset zoom and exit fullscreen
@@ -115,8 +122,8 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
           setBlueprintFullscreen(false);
         }
         // Reset zoom to normal
-        if (blueprintZoom !== 1) {
-          setBlueprintZoom(1);
+        if (blueprintZoom !== BLUEPRINT_VIEW.DEFAULT_ZOOM) {
+          setBlueprintZoom(BLUEPRINT_VIEW.DEFAULT_ZOOM);
         }
       }
     };
@@ -165,9 +172,9 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
       color: measurements.color || 'Silver',
       glazing: {
         type: measurements.glazingType || 'double',
-        thickness: 24,
-        spacer: 12,
-        gasFill: 'argon'
+        thickness: DEFAULT_GLAZING_SPECS.DEFAULT_THICKNESS_MM,
+        spacer: DEFAULT_GLAZING_SPECS.DEFAULT_SPACER_MM,
+        gasFill: DEFAULT_GLAZING_SPECS.DEFAULT_GAS_FILL
       },
       hardware: [],
       status: 'design',
@@ -218,16 +225,16 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
   // Animation variants for smooth slide transitions
   const variants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? 50 : -50,
-      opacity: 0
+      x: direction > 0 ? ANIMATION_CONSTANTS.SLIDE_OFFSET_PX : -ANIMATION_CONSTANTS.SLIDE_OFFSET_PX,
+      opacity: ANIMATION_CONSTANTS.HIDDEN_OPACITY
     }),
     center: {
       x: 0,
-      opacity: 1
+      opacity: ANIMATION_CONSTANTS.DEFAULT_OPACITY
     },
     exit: (direction: number) => ({
-      x: direction < 0 ? 50 : -50,
-      opacity: 0
+      x: direction < 0 ? ANIMATION_CONSTANTS.SLIDE_OFFSET_PX : -ANIMATION_CONSTANTS.SLIDE_OFFSET_PX,
+      opacity: ANIMATION_CONSTANTS.HIDDEN_OPACITY
     })
   };
 
@@ -494,7 +501,7 @@ export const SmartMeasuringInterface: React.FC<SmartMeasuringInterfaceProps> = (
 
     // Log verification event if confirmed
     if (verificationConfirmed === true) {
-      const cutLength = Number(measurements.width) - 6; // Simplified calculation for MVP
+      const cutLength = Number(measurements.width) - DEFAULT_MEASUREMENTS.DEFAULT_CUT_LENGTH_DEDUCTION_MM; // Simplified calculation for MVP
       calibrationAnalytics.recordVerificationEvent({
         userId: 'current-user', // Ideally from auth context
         systemPackId: selectedSystemPackId,

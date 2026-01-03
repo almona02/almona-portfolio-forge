@@ -359,7 +359,7 @@ export class RealTimeQuoteCalculator {
    */
   private recommendPaymentTerms(
     total: number,
-    factors?: EgyptianQuoteFactors
+    _factors?: EgyptianQuoteFactors
   ): {
     recommendedPaymentTerms: 'cash' | 'credit30' | 'credit90';
     recommendationReason: string;

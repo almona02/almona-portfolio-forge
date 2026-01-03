@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
+import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 
 interface LoadingState {
   isLoading: boolean;
@@ -22,6 +22,21 @@ const LoadingContext = createContext<LoadingContextType | undefined>(undefined);
 export const LoadingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [loadingStates, setLoadingStates] = useState<Map<string, LoadingState>>(new Map());
   const timeoutRefs = useRef<Map<string, NodeJS.Timeout>>(new Map());
+
+  const clearLoading = useCallback((key: string) => {
+    setLoadingStates(prev => {
+      const newStates = new Map(prev);
+      newStates.delete(key);
+      return newStates;
+    });
+    
+    // Clear timeout if exists
+    const timeoutId = timeoutRefs.current.get(key);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutRefs.current.delete(key);
+    }
+  }, []);
 
   const setLoading = useCallback((
     key: string, 
@@ -59,7 +74,7 @@ export const LoadingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       
       return newStates;
     });
-  }, []);
+  }, [clearLoading]);
 
   const setProgress = useCallback((key: string, progress: number) => {
     setLoadingStates(prev => {
@@ -75,21 +90,6 @@ export const LoadingProvider: React.FC<{ children: React.ReactNode }> = ({ child
       
       return newStates;
     });
-  }, []);
-
-  const clearLoading = useCallback((key: string) => {
-    setLoadingStates(prev => {
-      const newStates = new Map(prev);
-      newStates.delete(key);
-      return newStates;
-    });
-    
-    // Clear timeout if exists
-    const timeoutId = timeoutRefs.current.get(key);
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-      timeoutRefs.current.delete(key);
-    }
   }, []);
 
   const clearAllLoading = useCallback(() => {

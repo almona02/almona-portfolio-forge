@@ -109,7 +109,7 @@ export class KnowledgeValidator {
    * Check against physics (immutable truth)
    */
   private async checkPhysics(claim: string): Promise<PhysicsCheck> {
-    const lowerClaim = claim.toLowerCase();
+    const _lowerClaim = claim.toLowerCase();
 
     // Physics violations
     const violations = [
@@ -168,7 +168,7 @@ export class KnowledgeValidator {
    */
   private async checkDocumentation(claim: string): Promise<SystemCheck> {
     // Query knowledge graph for contradictions
-    const query = this.knowledgeGraph.query({
+    const _query = this.knowledgeGraph.query({
       type: 'system',
       keyword: claim.substring(0, 50), // First 50 chars
     });
@@ -216,9 +216,9 @@ export class KnowledgeValidator {
    */
   private async reasonAboutSubjectiveClaim(
     claim: string,
-    context: ClaimContext
+    _context: ClaimContext
   ): Promise<SubjectiveCheck> {
-    const lowerClaim = claim.toLowerCase();
+    const _lowerClaim = claim.toLowerCase();
 
     // Classify claim type
     let classification: ValidationResult['classification'] = 'fact';

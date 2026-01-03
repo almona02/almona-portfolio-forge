@@ -1,7 +1,7 @@
+import { useTranslation } from '@/hooks/useTranslation';
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
-import { useTranslation } from '@/hooks/useTranslation';
 
 type FormData = {
   serialNumber: string;
@@ -41,7 +41,7 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
       } else {
         setValidationError(t('yilmazValidation.invalidSerial'));
       }
-    } catch (_err) {
+    } catch {
       setValidationError(t('yilmazValidation.invalidSerial'));
     } finally {
       setLoading(false);
@@ -74,7 +74,7 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
       } else {
         setValidationError(t('yilmazValidation.invalidSerial'));
       }
-    } catch (_err) {
+    } catch {
       setValidationError(t('yilmazValidation.invalidSerial'));
     } finally {
       setSubmitting(false);

@@ -9,7 +9,6 @@
 
 import type { SystemPack } from '@/data/systemPacks';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
-import type { EgyptianProjectContext } from '@/components/fabricator/EgyptianProjectWizard';
 import { calculateWindLoad } from '@/lib/codex/FormulaRegistry';
 
 /**
@@ -22,7 +21,6 @@ export interface EngineeringConstraints {
   openingHeight: number; // mm
   glazingType: 'single' | 'double' | 'triple' | 'laminated';
   requiredUValue?: number; // W/m²K
-  projectContext?: EgyptianProjectContext;
   budget?: number; // EGP per m²
   marketTier?: 'low' | 'medium' | 'high';
 }
@@ -94,7 +92,7 @@ export class SystemPackSolver {
     packs: SystemPack[],
     constraints: EngineeringConstraints
   ): SystemPack[] {
-    const windLoad = calculateWindLoad(
+    const _windLoad = calculateWindLoad(
       constraints.windZone,
       constraints.buildingHeight,
       1.0 // Topography factor (can be enhanced)

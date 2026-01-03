@@ -111,7 +111,7 @@ export class TRYCurrencyCalculator {
   getExchangeRate(
     fromCurrency: string,
     toCurrency: string,
-    date?: Date
+    _date?: Date
   ): number {
     if (fromCurrency === toCurrency) {
       return 1;

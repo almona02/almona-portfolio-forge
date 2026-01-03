@@ -53,7 +53,7 @@ const urlModule = {
         host: parsed.host,
         href: parsed.href
       };
-    } catch (e) {
+    } catch {
       return null;
     }
   },
@@ -72,7 +72,7 @@ const urlModule = {
   resolve: (from: string, to: string) => {
     try {
       return new URL(to, from).href;
-    } catch (e) {
+    } catch {
       return to;
     }
   }
@@ -95,11 +95,7 @@ const zlibModule = {
 };
 
 // Export as default exports to match Node.js module imports
-export { streamModule as stream };
-export { httpModule as http };
-export { httpsModule as https };
-export { urlModule as url };
-export { zlibModule as zlib };
+export { httpModule as http, httpsModule as https, streamModule as stream, urlModule as url, zlibModule as zlib };
 
 // Default exports for each module
 export default streamModule;

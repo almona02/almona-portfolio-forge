@@ -14,6 +14,16 @@
 
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import type { WindowUnit } from '@/types/fabricator';
+import {
+    DIMENSION_CONSTRAINTS,
+    GRID_CONSTRAINTS,
+    MECHANISM_CONSTRAINTS,
+    SASH_CONSTRAINTS,
+    STRUCTURAL_CONSTRAINTS,
+    UNIT_CONVERSION,
+    VALIDATION_CALCULATION,
+    VALIDATION_THRESHOLDS,
+} from './constraintValidationConstants';
 
 export interface ValidationWarning {
   severity: 'info' | 'warning' | 'error';
@@ -31,7 +41,7 @@ export interface ValidationResult {
 }
 
 export class ConstraintValidator {
-  private static readonly WARNING_THRESHOLD = 0.8; // 80% compliance required
+  private static readonly WARNING_THRESHOLD = VALIDATION_THRESHOLDS.WARNING_THRESHOLD;
   
   /**
    * Main validation entry point - validates pattern against window unit
@@ -43,7 +53,6 @@ export class ConstraintValidator {
     const warnings: ValidationWarning[] = [];
     let errorCount = 0;
     let warningCount = 0;
-    let infoCount = 0;
     
     // If no pattern, return basic validation
     if (!pattern) {
@@ -83,16 +92,16 @@ export class ConstraintValidator {
       switch (warning.severity) {
         case 'error': errorCount++; break;
         case 'warning': warningCount++; break;
-        case 'info': infoCount++; break;
+        case 'info': break; // infoCount not used
       }
     });
     
     // Calculate validation score
-    const totalTests = 6; // Six validation categories
-    const errorPenalty = errorCount * 0.3; // Each error reduces score by 30%
-    const warningPenalty = warningCount * 0.1; // Each warning reduces score by 10%
-    const baseScore = 1.0;
-    const score = Math.max(0, baseScore - errorPenalty - warningPenalty);
+    const _totalTests = VALIDATION_CALCULATION.TOTAL_VALIDATION_CATEGORIES;
+    const errorPenalty = errorCount * VALIDATION_THRESHOLDS.ERROR_PENALTY;
+    const warningPenalty = warningCount * VALIDATION_THRESHOLDS.WARNING_PENALTY;
+    const baseScore = VALIDATION_CALCULATION.BASE_SCORE;
+    const score = Math.max(VALIDATION_CALCULATION.MIN_SCORE, baseScore - errorPenalty - warningPenalty);
     
     return {
       valid: errorCount === 0 && score >= this.WARNING_THRESHOLD,
@@ -140,13 +149,13 @@ export class ConstraintValidator {
     // Aspect ratio validation
     const aspectRatio = width / height;
     const idealAspect = patternAny.constraints?.idealAspectRatio;
-    const aspectTolerance = patternAny.constraints?.aspectRatioTolerance || 0.3;
+    const aspectTolerance = patternAny.constraints?.aspectRatioTolerance || DIMENSION_CONSTRAINTS.ASPECT_RATIO_TOLERANCE;
     
     if (idealAspect && Math.abs(aspectRatio - idealAspect) > aspectTolerance) {
       warnings.push({
         severity: 'info',
         code: 'DIM-003',
-        message: `Aspect ratio (${aspectRatio.toFixed(2)}) differs from ideal (${idealAspect.toFixed(2)})`,
+        message: `Aspect ratio (${aspectRatio.toFixed(VALIDATION_CALCULATION.ASPECT_RATIO_DECIMAL_PLACES)}) differs from ideal (${idealAspect.toFixed(VALIDATION_CALCULATION.ASPECT_RATIO_DECIMAL_PLACES)})`,
         affectedComponents: ['frame', 'glass'],
         suggestedAction: 'Consider adjusting for better proportions',
         validationRule: 'aspectRatio'
@@ -172,13 +181,13 @@ export class ConstraintValidator {
     const cellHeight = windowUnit.overallHeight / grid.rows;
     
     // Minimum cell size check
-    const minCellSize = patternAny.constraints?.minCellSize || 300; // 300mm minimum
+    const minCellSize = patternAny.constraints?.minCellSize || GRID_CONSTRAINTS.MIN_CELL_SIZE_MM;
     
     if (cellWidth < minCellSize || cellHeight < minCellSize) {
       warnings.push({
         severity: 'warning',
         code: 'GRID-001',
-        message: `Cell size (${cellWidth.toFixed(0)}x${cellHeight.toFixed(0)}mm) may be too small for operation`,
+        message: `Cell size (${cellWidth.toFixed(VALIDATION_CALCULATION.CELL_DIMENSION_DECIMAL_PLACES)}x${cellHeight.toFixed(VALIDATION_CALCULATION.CELL_DIMENSION_DECIMAL_PLACES)}mm) may be too small for operation`,
         affectedComponents: ['all_cells'],
         suggestedAction: `Reduce grid density (${grid.rows}x${grid.cols} → ${Math.max(1, grid.rows-1)}x${Math.max(1, grid.cols-1)})`,
         validationRule: 'minCellSize'
@@ -186,7 +195,7 @@ export class ConstraintValidator {
     }
     
     // Check for very narrow cells (problematic for hardware)
-    if (cellWidth < 400 && grid.cells.some(c => c.type === 'sash' || c.type === 'sliding')) {
+    if (cellWidth < GRID_CONSTRAINTS.MIN_SASH_WIDTH_MM && grid.cells.some(c => c.type === 'sash' || c.type === 'sliding')) {
       warnings.push({
         severity: 'warning',
         code: 'GRID-002',
@@ -209,7 +218,6 @@ export class ConstraintValidator {
   ): ValidationWarning[] {
     const warnings: ValidationWarning[] = [];
     const grid = pattern.gridSpec;
-    const patternAny = pattern as any;
     
     grid.cells.forEach((cell, index) => {
       if (cell.type === 'sash' || cell.type === 'sliding') {
@@ -218,11 +226,11 @@ export class ConstraintValidator {
         
         // Sash area validation
         const sashArea = sashWidth * sashHeight;
-        if (pattern.constraints?.maxSashArea && sashArea > pattern.constraints.maxSashArea * 1000000) {
+        if (pattern.constraints?.maxSashArea && sashArea > pattern.constraints.maxSashArea * UNIT_CONVERSION.MM2_TO_M2) {
           warnings.push({
             severity: 'warning',
             code: 'SASH-001',
-            message: `Sash ${index + 1} area (${(sashArea / 1000000).toFixed(2)}m²) exceeds recommended maximum (${pattern.constraints.maxSashArea.toFixed(2)}m²)`,
+            message: `Sash ${index + 1} area (${(sashArea / UNIT_CONVERSION.MM2_TO_M2).toFixed(VALIDATION_CALCULATION.ASPECT_RATIO_DECIMAL_PLACES)}m²) exceeds recommended maximum (${pattern.constraints.maxSashArea.toFixed(VALIDATION_CALCULATION.ASPECT_RATIO_DECIMAL_PLACES)}m²)`,
             affectedComponents: [`sash-${index}`],
             suggestedAction: 'Use heavier hardware or add reinforcement',
             validationRule: 'maxSashArea'
@@ -230,14 +238,15 @@ export class ConstraintValidator {
         }
         
         // Sash weight calculation
-        // Default: 5mm for single glazing, 4mm for double/triple
         const glazingType = (windowUnit.glazing as any)?.type || 'double';
-        const defaultThickness = glazingType === 'single' ? 5 : 4; // 5mm for single glazing bead system
+        const defaultThickness = glazingType === 'single' 
+          ? SASH_CONSTRAINTS.DEFAULT_SINGLE_GLAZING_THICKNESS_MM 
+          : SASH_CONSTRAINTS.DEFAULT_MULTI_GLAZING_THICKNESS_MM;
         const glassThickness = (windowUnit.glazing as any)?.thickness || defaultThickness;
         const glassWeight = this.calculateGlassWeight(sashWidth, sashHeight, glassThickness);
-        const sashWeight = glassWeight + 2; // Add 2kg for frame
+        const sashWeight = glassWeight + SASH_CONSTRAINTS.ESTIMATED_FRAME_WEIGHT_KG;
         
-        if (sashWeight > 40) { // 40kg limit for standard hardware
+        if (sashWeight > SASH_CONSTRAINTS.MAX_SASH_WEIGHT_KG) {
           warnings.push({
             severity: 'warning',
             code: 'SASH-002',
@@ -249,11 +258,11 @@ export class ConstraintValidator {
         }
         
         // Sliding sash width check
-        if (cell.type === 'sliding' && sashWidth > 1200) {
+        if (cell.type === 'sliding' && sashWidth > SASH_CONSTRAINTS.SLIDING_SASH_DUAL_ROLLER_THRESHOLD_MM) {
           warnings.push({
             severity: 'info',
             code: 'SASH-003',
-            message: `Sliding sash width (${sashWidth.toFixed(0)}mm) may require dual rollers`,
+            message: `Sliding sash width (${sashWidth.toFixed(VALIDATION_CALCULATION.SASH_DIMENSION_DECIMAL_PLACES)}mm) may require dual rollers`,
             affectedComponents: [`sliding-sash-${index}`],
             suggestedAction: 'Verify roller spacing and track capacity',
             validationRule: 'slidingSashWidth'
@@ -296,7 +305,7 @@ export class ConstraintValidator {
         }
         
         // Check for wide sliding panels
-        if (windowUnit.overallWidth > 3000 && mechanism.type === 'sliding') {
+        if (windowUnit.overallWidth > MECHANISM_CONSTRAINTS.WIDE_SLIDING_WINDOW_THRESHOLD_MM && mechanism.type === 'sliding') {
           warnings.push({
             severity: 'info',
             code: 'MECH-002',
@@ -312,16 +321,16 @@ export class ConstraintValidator {
         // Check hinge spacing for tall sashes
         const maxSashHeight = this.getMaxSashHeight(pattern, windowUnit);
         
-        if (maxSashHeight > 1500) {
-          const recommendedHingeSpacing = mechanismAny.recommendedHingeSpacing || 700;
+        if (maxSashHeight > MECHANISM_CONSTRAINTS.TALL_SASH_HEIGHT_THRESHOLD_MM) {
+          const recommendedHingeSpacing = mechanismAny.recommendedHingeSpacing || MECHANISM_CONSTRAINTS.RECOMMENDED_HINGE_SPACING_MM;
           const requiredHinges = Math.ceil(maxSashHeight / recommendedHingeSpacing);
-          const providedHinges = mechanismAny.hingeCount || 2;
+          const providedHinges = mechanismAny.hingeCount || MECHANISM_CONSTRAINTS.DEFAULT_HINGE_COUNT;
           
           if (requiredHinges > providedHinges) {
             warnings.push({
               severity: 'warning',
               code: 'MECH-003',
-              message: `Tall sashes (${maxSashHeight.toFixed(0)}mm) require ${requiredHinges} hinges (pattern has ${providedHinges})`,
+              message: `Tall sashes (${maxSashHeight.toFixed(VALIDATION_CALCULATION.SASH_DIMENSION_DECIMAL_PLACES)}mm) require ${requiredHinges} hinges (pattern has ${providedHinges})`,
               affectedComponents: ['hinges'],
               suggestedAction: `Add ${requiredHinges - providedHinges} additional hinges per tall sash`,
               validationRule: 'hingeSpacing'
@@ -331,11 +340,11 @@ export class ConstraintValidator {
         
         // Check for very wide casement sashes
         const maxSashWidth = this.getMaxSashWidth(pattern, windowUnit);
-        if (maxSashWidth > 900) {
+        if (maxSashWidth > MECHANISM_CONSTRAINTS.WIDE_CASEMENT_SASH_THRESHOLD_MM) {
           warnings.push({
             severity: 'info',
             code: 'MECH-004',
-            message: `Wide casement sash (${maxSashWidth.toFixed(0)}mm) may require stay bars`,
+            message: `Wide casement sash (${maxSashWidth.toFixed(VALIDATION_CALCULATION.SASH_DIMENSION_DECIMAL_PLACES)}mm) may require stay bars`,
             affectedComponents: ['sash', 'stays'],
             suggestedAction: 'Add stay bars to prevent sagging',
             validationRule: 'wideCasementSash'
@@ -345,7 +354,7 @@ export class ConstraintValidator {
         
       case 'tilt-turn':
         // Tilt-turn specific validations
-        if (windowUnit.overallHeight > 1800) {
+        if (windowUnit.overallHeight > MECHANISM_CONSTRAINTS.TALL_TILT_TURN_THRESHOLD_MM) {
           warnings.push({
             severity: 'info',
             code: 'MECH-005',
@@ -429,11 +438,11 @@ export class ConstraintValidator {
     
     // Check wind load for large glass areas
     const totalGlassArea = this.calculateTotalGlassArea(pattern, windowUnit);
-    if (totalGlassArea > 4) { // 4m² threshold for wind load consideration
+    if (totalGlassArea > STRUCTURAL_CONSTRAINTS.WIND_LOAD_THRESHOLD_M2) {
       warnings.push({
         severity: 'info',
         code: 'STRUCT-002',
-        message: `Large glass area (${totalGlassArea.toFixed(1)}m²) - consider wind load requirements`,
+        message: `Large glass area (${totalGlassArea.toFixed(VALIDATION_CALCULATION.GLASS_AREA_DECIMAL_PLACES)}m²) - consider wind load requirements`,
         affectedComponents: ['frame', 'glass'],
         suggestedAction: 'Verify glass thickness and frame reinforcement',
         validationRule: 'windLoad'
@@ -446,7 +455,7 @@ export class ConstraintValidator {
   // ========== HELPER METHODS ==========
   
   private static calculateGlassWeight(width: number, height: number, thickness: number): number {
-    const area = (width * height) / 1000000; // Convert to m²
+    const area = (width * height) / UNIT_CONVERSION.MM2_TO_M2; // Convert to m²
     const weightPerSquareMeter = thickness * 2.5; // kg/m² per mm thickness
     return area * weightPerSquareMeter;
   }
@@ -479,7 +488,7 @@ export class ConstraintValidator {
     let maxHeight = 0;
     
     grid.cells.forEach(cell => {
-      if (cell.type === 'sash' || cell.type === 'casement') {
+      if (cell.type === 'sash' || cell.type === 'sliding') {
         const sashHeight = windowUnit.overallHeight / grid.rows;
         maxHeight = Math.max(maxHeight, sashHeight);
       }
@@ -496,7 +505,7 @@ export class ConstraintValidator {
     let maxWidth = 0;
     
     grid.cells.forEach(cell => {
-      if (cell.type === 'sash' || cell.type === 'casement') {
+      if (cell.type === 'sash' || cell.type === 'sliding') {
         const sashWidth = windowUnit.overallWidth / grid.cols;
         maxWidth = Math.max(maxWidth, sashWidth);
       }
@@ -509,10 +518,12 @@ export class ConstraintValidator {
     pattern: EgyptianPattern,
     windowUnit: WindowUnit
   ): boolean {
-    // Simple heuristic: window area > 6m² or width > 3m
-    const windowArea = (windowUnit.overallWidth * windowUnit.overallHeight) / 1000000; // m²
+    // Simple heuristic: window area > threshold or width/height > thresholds
+    const windowArea = (windowUnit.overallWidth * windowUnit.overallHeight) / UNIT_CONVERSION.MM2_TO_M2; // m²
     
-    return windowArea > 6 || windowUnit.overallWidth > 3000 || windowUnit.overallHeight > 2500;
+    return windowArea > STRUCTURAL_CONSTRAINTS.STRUCTURAL_MULLION_AREA_THRESHOLD_M2 || 
+           windowUnit.overallWidth > STRUCTURAL_CONSTRAINTS.STRUCTURAL_MULLION_WIDTH_THRESHOLD_MM || 
+           windowUnit.overallHeight > STRUCTURAL_CONSTRAINTS.STRUCTURAL_MULLION_HEIGHT_THRESHOLD_MM;
   }
   
   private static calculateTotalGlassArea(
@@ -526,7 +537,7 @@ export class ConstraintValidator {
       if (cell.type === 'fixed' || cell.type === 'sash' || cell.type === 'sliding') {
         const cellWidth = windowUnit.overallWidth / grid.cols;
         const cellHeight = windowUnit.overallHeight / grid.rows;
-        const cellArea = (cellWidth * cellHeight) / 1000000; // m²
+        const cellArea = (cellWidth * cellHeight) / UNIT_CONVERSION.MM2_TO_M2; // m²
         totalArea += cellArea;
       }
     });

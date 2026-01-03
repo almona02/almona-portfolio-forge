@@ -32,6 +32,13 @@ import {
   ProductionMetrics,
   Alert as ProductionAlert,
 } from '@/lib/monitoring/ProductionMonitor';
+import {
+  MONITORING_CONSTANTS,
+  TIME_CONVERSION,
+  DECIMAL_PLACES,
+  UI_DIMENSIONS,
+  GRID_LAYOUT,
+} from './productionDashboardConstants';
 
 export function ProductionDashboard() {
   const { t: _t, i18n } = useTranslation();
@@ -43,7 +50,7 @@ export function ProductionDashboard() {
 
   useEffect(() => {
     // Start monitoring
-    monitor.startMonitoring(5000); // Update every 5 seconds
+    monitor.startMonitoring(MONITORING_CONSTANTS.MONITORING_INTERVAL_MS);
 
     // Set up metrics listener
     const metricsListener = (newMetrics: ProductionMetrics) => {
@@ -58,7 +65,7 @@ export function ProductionDashboard() {
         if (existing) {
           return prev.map(a => (a.id === alert.id ? alert : a));
         }
-        return [alert, ...prev].slice(0, 50); // Keep last 50 alerts
+        return [alert, ...prev].slice(0, MONITORING_CONSTANTS.MAX_ALERTS_LIMIT);
       });
     };
 
@@ -84,9 +91,9 @@ export function ProductionDashboard() {
 
   if (isLoading || !metrics) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className={`flex items-center justify-center ${UI_DIMENSIONS.LOADING_CONTAINER_HEIGHT}`}>
         <div className="text-center">
-          <Activity className="h-8 w-8 animate-spin mx-auto mb-2" />
+          <Activity className={`${UI_DIMENSIONS.ICON_LOADING} animate-spin mx-auto mb-2`} />
           <p className="text-sm text-muted-foreground">
             {locale === 'ar' ? 'جارٍ تحميل البيانات...' : 'Loading metrics...'}
           </p>
@@ -122,34 +129,34 @@ export function ProductionDashboard() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className={`grid ${GRID_LAYOUT.KPI_CARDS_COLS} gap-4`}>
         {/* Workflow Metrics */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {locale === 'ar' ? 'معدل نجاح سير العمل' : 'Workflow Success Rate'}
             </CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            <CheckCircle className={`${UI_DIMENSIONS.ICON_MEDIUM} text-muted-foreground`} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics.workflow.successRate.toFixed(1)}%</div>
+            <div className="text-2xl font-bold">{metrics.workflow.successRate.toFixed(DECIMAL_PLACES.SUCCESS_RATE)}%</div>
             <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">
               {metrics.workflow.withinTarget ? (
                 <>
-                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  <CheckCircle className={`${UI_DIMENSIONS.ICON_SMALL} text-green-500`} />
                   <span>
                     {locale === 'ar'
                       ? 'ضمن الهدف'
-                      : `Within target (${(metrics.workflow.averageDuration / 60000).toFixed(1)} min)`}
+                      : `Within target (${(metrics.workflow.averageDuration / TIME_CONVERSION.MS_TO_MINUTES).toFixed(DECIMAL_PLACES.WORKFLOW_DURATION)} min)`}
                   </span>
                 </>
               ) : (
                 <>
-                  <AlertTriangle className="h-3 w-3 text-yellow-500" />
+                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-yellow-500`} />
                   <span>
                     {locale === 'ar'
                       ? 'يتجاوز الهدف'
-                      : `Exceeds target (${(metrics.workflow.averageDuration / 60000).toFixed(1)} min)`}
+                      : `Exceeds target (${(metrics.workflow.averageDuration / TIME_CONVERSION.MS_TO_MINUTES).toFixed(DECIMAL_PLACES.WORKFLOW_DURATION)} min)`}
                   </span>
                 </>
               )}
@@ -163,14 +170,14 @@ export function ProductionDashboard() {
             <CardTitle className="text-sm font-medium">
               {locale === 'ar' ? 'الدقة الإجمالية' : 'Overall Accuracy'}
             </CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <Target className={`${UI_DIMENSIONS.ICON_MEDIUM} text-muted-foreground`} />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{metrics.accuracy.overallAccuracy.toFixed(2)}%</div>
+            <div className="text-2xl font-bold">{metrics.accuracy.overallAccuracy.toFixed(DECIMAL_PLACES.ACCURACY)}%</div>
             <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">
               {metrics.accuracy.withinTarget ? (
                 <>
-                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  <CheckCircle className={`${UI_DIMENSIONS.ICON_SMALL} text-green-500`} />
                   <span>
                     {locale === 'ar'
                       ? `الهدف: ${metrics.accuracy.targetAccuracy}%`
@@ -179,7 +186,7 @@ export function ProductionDashboard() {
                 </>
               ) : (
                 <>
-                  <AlertTriangle className="h-3 w-3 text-red-500" />
+                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-red-500`} />
                   <span>
                     {locale === 'ar'
                       ? `أقل من الهدف (${metrics.accuracy.targetAccuracy}%)`
@@ -201,28 +208,28 @@ export function ProductionDashboard() {
             <CardTitle className="text-sm font-medium">
               {locale === 'ar' ? 'استخدام الذاكرة' : 'Memory Usage'}
             </CardTitle>
-            <MemoryStick className="h-4 w-4 text-muted-foreground" />
+            <MemoryStick className={`${UI_DIMENSIONS.ICON_MEDIUM} text-muted-foreground`} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {metrics.memory.currentStats
-                ? `${metrics.memory.currentStats.usagePercent.toFixed(1)}%`
+                ? `${metrics.memory.currentStats.usagePercent.toFixed(DECIMAL_PLACES.MEMORY_USAGE)}%`
                 : 'N/A'}
             </div>
             <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">
               {metrics.memory.isCriticalMemory ? (
                 <>
-                  <AlertTriangle className="h-3 w-3 text-red-500" />
+                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-red-500`} />
                   <span>{locale === 'ar' ? 'حرج' : 'Critical'}</span>
                 </>
               ) : metrics.memory.isLowMemory ? (
                 <>
-                  <AlertTriangle className="h-3 w-3 text-yellow-500" />
+                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-yellow-500`} />
                   <span>{locale === 'ar' ? 'منخفض' : 'Low'}</span>
                 </>
               ) : (
                 <>
-                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  <CheckCircle className={`${UI_DIMENSIONS.ICON_SMALL} text-green-500`} />
                   <span>{locale === 'ar' ? 'طبيعي' : 'Normal'}</span>
                 </>
               )}
@@ -242,14 +249,14 @@ export function ProductionDashboard() {
             <CardTitle className="text-sm font-medium">
               {locale === 'ar' ? 'الأحداث الأمنية' : 'Security Events'}
             </CardTitle>
-            <Shield className="h-4 w-4 text-muted-foreground" />
+            <Shield className={`${UI_DIMENSIONS.ICON_MEDIUM} text-muted-foreground`} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.security.totalEvents}</div>
             <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">
               {metrics.security.criticalEvents > 0 ? (
                 <>
-                  <AlertTriangle className="h-3 w-3 text-red-500" />
+                  <AlertTriangle className={`${UI_DIMENSIONS.ICON_SMALL} text-red-500`} />
                   <span>
                     {locale === 'ar'
                       ? `${metrics.security.criticalEvents} حرجة`
@@ -258,7 +265,7 @@ export function ProductionDashboard() {
                 </>
               ) : (
                 <>
-                  <CheckCircle className="h-3 w-3 text-green-500" />
+                  <CheckCircle className={`${UI_DIMENSIONS.ICON_SMALL} text-green-500`} />
                   <span>{locale === 'ar' ? 'لا توجد أحداث حرجة' : 'No critical events'}</span>
                 </>
               )}
@@ -271,12 +278,12 @@ export function ProductionDashboard() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
+            <Users className={UI_DIMENSIONS.ICON_LARGE} />
             {locale === 'ar' ? 'تأثير ورش العمل المصرية' : 'Egyptian Workshop Impact'}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className={`grid ${GRID_LAYOUT.WORKSHOP_IMPACT_COLS} gap-4`}>
             <div>
               <div className="text-sm text-muted-foreground">
                 {locale === 'ar' ? 'ورش العمل النشطة' : 'Active Workshops'}
@@ -323,7 +330,7 @@ export function ProductionDashboard() {
         <TabsContent value="alerts" className="space-y-4">
           {unresolvedAlerts.length === 0 ? (
             <Alert>
-              <CheckCircle className="h-4 w-4" />
+              <CheckCircle className={UI_DIMENSIONS.ICON_MEDIUM} />
               <AlertTitle>
                 {locale === 'ar' ? 'لا توجد تنبيهات' : 'No Alerts'}
               </AlertTitle>
@@ -339,7 +346,7 @@ export function ProductionDashboard() {
                 key={alert.id}
                 variant={alert.severity === 'critical' ? 'destructive' : 'default'}
               >
-                <AlertTriangle className="h-4 w-4" />
+                <AlertTriangle className={UI_DIMENSIONS.ICON_MEDIUM} />
                 <AlertTitle>
                   {locale === 'ar' ? alert.titleAr : alert.title}
                 </AlertTitle>
@@ -364,7 +371,7 @@ export function ProductionDashboard() {
         </TabsContent>
 
         <TabsContent value="trends" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className={`grid ${GRID_LAYOUT.TRENDS_COLS} gap-4`}>
             {/* Performance Trend */}
             <Card>
               <CardHeader>
@@ -376,21 +383,21 @@ export function ProductionDashboard() {
                 <div className="flex items-center space-x-2">
                   {metrics.performance.trend === 'improving' ? (
                     <>
-                      <TrendingUp className="h-5 w-5 text-green-500" />
+                      <TrendingUp className={UI_DIMENSIONS.ICON_LARGE + ' text-green-500'} />
                       <span className="text-green-600 font-semibold">
                         {locale === 'ar' ? 'تحسن' : 'Improving'}
                       </span>
                     </>
                   ) : metrics.performance.trend === 'degrading' ? (
                     <>
-                      <TrendingDown className="h-5 w-5 text-red-500" />
+                      <TrendingDown className={UI_DIMENSIONS.ICON_LARGE + ' text-red-500'} />
                       <span className="text-red-600 font-semibold">
                         {locale === 'ar' ? 'تدهور' : 'Degrading'}
                       </span>
                     </>
                   ) : (
                     <>
-                      <BarChart3 className="h-5 w-5 text-gray-500" />
+                      <BarChart3 className={UI_DIMENSIONS.ICON_LARGE + ' text-gray-500'} />
                       <span className="text-gray-600 font-semibold">
                         {locale === 'ar' ? 'مستقر' : 'Stable'}
                       </span>
@@ -402,17 +409,17 @@ export function ProductionDashboard() {
                     <div className="flex justify-between text-sm">
                       <span>{locale === 'ar' ? 'مدة سير العمل' : 'Workflow Duration'}</span>
                       <span>
-                        {(metrics.performance.currentBaseline.workflowDuration / 60000).toFixed(1)}{' '}
+                        {(metrics.performance.currentBaseline.workflowDuration / TIME_CONVERSION.MS_TO_MINUTES).toFixed(DECIMAL_PLACES.WORKFLOW_DURATION)}{' '}
                         {locale === 'ar' ? 'دقيقة' : 'min'}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>{locale === 'ar' ? 'معدل الدقة' : 'Accuracy Rate'}</span>
-                      <span>{metrics.performance.currentBaseline.accuracyRate.toFixed(2)}%</span>
+                      <span>{metrics.performance.currentBaseline.accuracyRate.toFixed(DECIMAL_PLACES.PERFORMANCE_METRICS)}%</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>{locale === 'ar' ? 'معدل الخطأ' : 'Error Rate'}</span>
-                      <span>{metrics.performance.currentBaseline.errorRate.toFixed(2)}%</span>
+                      <span>{metrics.performance.currentBaseline.errorRate.toFixed(DECIMAL_PLACES.PERFORMANCE_METRICS)}%</span>
                     </div>
                   </div>
                 )}
@@ -443,7 +450,7 @@ export function ProductionDashboard() {
                     </div>
                     <Progress
                       value={(metrics.workflow.averageDuration / metrics.workflow.targetDuration) * 100}
-                      className="h-2"
+                      className={UI_DIMENSIONS.PROGRESS_BAR_HEIGHT}
                     />
                   </div>
                   <div>
@@ -459,7 +466,7 @@ export function ProductionDashboard() {
                           : 'Warning'}
                       </span>
                     </div>
-                    <Progress value={metrics.accuracy.overallAccuracy} className="h-2" />
+                    <Progress value={metrics.accuracy.overallAccuracy} className={UI_DIMENSIONS.PROGRESS_BAR_HEIGHT} />
                   </div>
                   <div>
                     <div className="flex justify-between text-sm mb-1">
@@ -487,7 +494,7 @@ export function ProductionDashboard() {
                       </span>
                     </div>
                     {metrics.memory.currentStats && (
-                      <Progress value={metrics.memory.currentStats.usagePercent} className="h-2" />
+                      <Progress value={metrics.memory.currentStats.usagePercent} className={UI_DIMENSIONS.PROGRESS_BAR_HEIGHT} />
                     )}
                   </div>
                 </div>

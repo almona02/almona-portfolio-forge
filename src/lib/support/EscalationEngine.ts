@@ -105,7 +105,7 @@ export class EscalationEngine {
     const issue = this.issues.find(i => i.id === issueId);
     if (!issue || issue.escalatedAt) return;
 
-    const rule = ESCALATION_RULES.find(r => r.severity === issue.severity)!;
+    const _rule = ESCALATION_RULES.find(r => r.severity === issue.severity)!;
     
     // Determine next escalation level
     const escalationLevels: EscalationLevel[] = ['level1', 'level2', 'level3', 'executive'];

@@ -11,7 +11,6 @@ import { ComplexShapeGenerator, type ComplexShapeDesign } from './ComplexShapeGe
 import type { InferredShape } from './ShapeInferenceEngine';
 import { MaterialStrategyCalculator } from './MaterialStrategyCalculator';
 import { HardwareSpecifier } from './HardwareSpecifier';
-import type { ShapePattern } from './ShapePatterns';
 
 export interface WorkshopContext {
   workshopId?: string;
@@ -202,7 +201,7 @@ export class ZeroDecisionGenerator {
    * Note: This is handled by ComplexShapeGenerator.generateOptimalDesign()
    * This method is kept for potential future custom logic
    */
-  private generateIrregularCuttingPattern(shape: InferredShape): ComplexShapeDesign['production']['cuttingPattern'] {
+  private generateIrregularCuttingPattern(_shape: InferredShape): ComplexShapeDesign['production']['cuttingPattern'] {
     // This is handled by ComplexShapeGenerator, but we can add custom logic here if needed
     // For now, delegate to the generator
     return {

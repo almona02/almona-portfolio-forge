@@ -1,5 +1,4 @@
-import { supabase, createQuote, getProducts, getUserQuotes } from './supabase';
-import { buildNavigationState, TicketContext } from '@/lib/ticketing/unifiedTicketing';
+import { supabase } from './supabase';
 
 // =================================
 // Type Definitions

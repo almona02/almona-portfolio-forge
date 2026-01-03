@@ -5,7 +5,6 @@
  */
 
 import { KnowledgeValidator, type ValidationResult } from './KnowledgeValidator';
-import type { UserProfile } from '@/lib/trust/EgyptianTrustScoring';
 
 export interface CandidateFact {
   id: string;
@@ -127,7 +126,7 @@ export class CandidateMemory {
   /**
    * Verify a candidate fact
    */
-  async verifyFact(factId: string, verified: boolean, verifierId: string): Promise<void> {
+  async verifyFact(factId: string, verified: boolean, _verifierId: string): Promise<void> {
     const fact = this.memory.get(factId);
     if (!fact) return;
 

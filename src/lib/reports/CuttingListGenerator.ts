@@ -71,7 +71,7 @@ export class CuttingListGenerator {
   /**
    * Process cuts with positioning and sequencing
    */
-  private processCuts(cuts: any[], stockLength: number): ProcessedCut[] {
+  private processCuts(cuts: any[], _stockLength: number): ProcessedCut[] {
     let currentPosition = 0;
     const processed: ProcessedCut[] = [];
 

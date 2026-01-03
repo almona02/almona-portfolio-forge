@@ -5,9 +5,9 @@
 
 // Lazy import pdf-lib to reduce initial bundle size
 let PDFDocument: any, rgb: any, StandardFonts: any;
-import { WindowUnit, OptimizationResult, CuttingPlan } from '@/types/fabricator';
-import { Quote } from '@/modules/commercial/QuotingEngine';
 import { supabase } from '@/lib/supabase';
+import { Quote } from '@/modules/commercial/QuotingEngine';
+import { CuttingPlan, OptimizationResult, WindowUnit } from '@/types/fabricator';
 
 export interface CompanyBranding {
   logo?: string; // Base64 or URL
@@ -122,8 +122,12 @@ export class PDFExportService {
         .in('id', ids)
         .limit(ids.length);
       if (error || !data || !data.length) return null;
-      const found = data.find((row: any) => row.thumbnail_url);
-      return (found && found.thumbnail_url) || null;
+      interface ProfileRow {
+        id: string;
+        thumbnail_url?: string | null;
+      }
+      const found = (data as ProfileRow[]).find((row) => row.thumbnail_url);
+      return (found?.thumbnail_url) || null;
     } catch {
       return null;
     }
@@ -181,7 +185,7 @@ export class PDFExportService {
   async generateCuttingListPDF(
     project: WindowUnit,
     optimization: OptimizationResult,
-    options: PDFOptions
+    _options: PDFOptions
   ): Promise<Blob> {
     await this.initialize();
     this.currentY = this.margin;
@@ -894,7 +898,7 @@ export class PDFExportService {
     });
   }
 
-  private async addAssemblyGuide(project: WindowUnit) {
+  private async addAssemblyGuide(_project: WindowUnit) {
     const steps = [
       '1. Prepare all components according to cutting list',
       '2. For ROCK 60 / 45° systems:',

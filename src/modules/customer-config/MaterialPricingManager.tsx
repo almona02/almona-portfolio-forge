@@ -3,14 +3,13 @@
  * Set material-specific pricing (aluminum/uPVC/wood)
  */
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Save, DollarSign, TrendingUp, AlertCircle, CheckCircle } from 'lucide-react';
+import { CheckCircle, DollarSign, Save, TrendingUp } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 export interface MaterialPricing {
   material: 'aluminum' | 'upvc' | 'wood' | 'composite';

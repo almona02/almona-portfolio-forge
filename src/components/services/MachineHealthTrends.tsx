@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, LineChart, Line } from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { iotSensorService } from '@/lib/iot/sensorIntegration';
-import { subDays, format } from 'date-fns';
-import { Activity, Thermometer, Vibrate, TimerReset } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { format, subDays } from 'date-fns';
+import { Activity, Thermometer, TimerReset, Vibrate } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type TrendPoint = { ts: string; vibration?: number; temperature?: number; hours?: number };
 
@@ -45,7 +45,7 @@ export const MachineHealthTrends: React.FC<MachineHealthTrendsProps> = ({ machin
           });
           const arr = Array.from(buckets.values()).sort((a, b) => a.ts.localeCompare(b.ts));
           next[id] = arr;
-        } catch (_e) {
+        } catch {
           const mock: TrendPoint[] = Array.from({ length: days * 2 }).map((_, i) => {
             const d = subDays(end, days - Math.floor(i / 2));
             const ts = format(d, 'MM-dd HH:mm');

@@ -12,16 +12,15 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import type { EgyptianPattern } from '@/data/egyptian-window-patterns';
 import { EGYPTIAN_PATTERNS } from '@/data/egyptian-window-patterns';
 import { UnifiedCognitionEngine } from '@/lib/cognition/UnifiedCognitionEngine';
-import { PatternCard } from './patterns/PatternCard';
-import { ParameterControl } from './patterns/ParameterControl';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { WindowUnit } from '@/types/fabricator';
+import React, { useMemo, useState } from 'react';
+import { PatternCard } from './patterns/PatternCard';
 
 interface PatternLibraryWizardProps {
   onPatternSelected?: (pattern: EgyptianPattern, params: Record<string, any>) => void;
@@ -52,21 +51,13 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
     setParameters({});
   };
 
-  const handleParameterChange = (paramName: string, value: any) => {
-    setParameters(prev => ({
-      ...prev,
-      [paramName]: value
-    }));
-  };
-
   const handleGenerate = async () => {
     if (!selectedPattern) return;
 
     // Create window unit from pattern and parameters
     const windowUnit: Partial<WindowUnit> = {
       overallWidth: width,
-      overallHeight: height,
-      patternId: selectedPattern.id
+      overallHeight: height
     };
 
     // Get cognitive analysis

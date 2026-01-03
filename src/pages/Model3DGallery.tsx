@@ -1,25 +1,22 @@
-import React, { Suspense, useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Model3DGallery as Model3DGalleryComponent } from '@/components/3d-model/Model3DGallery';
-// Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)
-const EnhancedModel3DDialog = React.lazy(() => import('@/components/3d-model/EnhancedModel3DDialog').then(module => ({ default: module.EnhancedModel3DDialog })));
 import { ModelMeasurementTool } from '@/components/3d-model/ModelMeasurementTool';
 import { SwiftXRIframe } from '@/components/swiftxr/SwiftXRIframe';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { 
-  Grid3X3, 
-  Ruler, 
-  Download, 
-  Share2, 
-  Star,
-  Eye,
-  Move3D,
-  Settings
-} from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { motion } from 'framer-motion';
+import {
+    Eye,
+    Move3D,
+    Ruler,
+    Settings,
+    Star
+} from 'lucide-react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+// Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)
+const EnhancedModel3DDialog = React.lazy(() => import('@/components/3d-model/EnhancedModel3DDialog').then(module => ({ default: module.EnhancedModel3DDialog })));
 
 import modelsData from '@/data/models.json';
 

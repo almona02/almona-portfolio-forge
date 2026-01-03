@@ -10,6 +10,16 @@
  * No UI, no empire, just math that works.
  */
 
+import {
+    DEFAULT_BAR_END_TRIM_MM,
+    DEFAULT_BAR_NOMINAL_LENGTH_MM,
+    DEFAULT_SAW_BLADE_KERF_MM,
+    MACHINE_CLAMP_SAFETY_MM,
+    PRECISION_MULTIPLIER,
+    SCREEN_SASH_OFFSETS,
+    TRANSOM_MILLING_DEPTHS,
+} from './micronEngineConstants';
+
 /**
  * Micron Configuration
  */
@@ -33,10 +43,10 @@ export class MicronEngine {
 
   constructor(config?: Partial<MicronConfig>) {
     this.config = {
-      sawBladeKerf: 4.2,
-      barEndTrim: 15,
-      barNominalLength: 6000,
-      machineClampSafety: 50, // Safety factor for CNC clamp
+      sawBladeKerf: DEFAULT_SAW_BLADE_KERF_MM,
+      barEndTrim: DEFAULT_BAR_END_TRIM_MM,
+      barNominalLength: DEFAULT_BAR_NOMINAL_LENGTH_MM,
+      machineClampSafety: MACHINE_CLAMP_SAFETY_MM,
       ...config
     };
   }
@@ -73,7 +83,7 @@ export class MicronEngine {
 
     // Correction 1: Floating Point Precision
     // JavaScript is bad at math - round to 0.01mm precision
-    const toPrecision = (num: number) => Math.round(num * 100) / 100;
+    const toPrecision = (num: number) => Math.round(num * PRECISION_MULTIPLIER) / PRECISION_MULTIPLIER;
 
     const totalMaterialNeeded = cutLengths.reduce((sum, length, index) => {
       // Last cut doesn't need kerf (no material left after cut)
@@ -98,19 +108,16 @@ export class MicronEngine {
    */
   calculateTransomMillingLength(daylightWidth: number, profileId: string): number {
     // Profile-specific milling depths
-    const millingDepths: Record<string, number> = {
-      'rock-60': 2.5,
-      'rock60': 2.5,
-      'panda-50': 2.5,
-      'panda50': 2.5,
-      'panda-100': 2.5,
-      'panda100': 2.5,
-      'jumbo-100': 3.0,
-      'jumbo100': 3.0,
-      'generic': 2.0
-    };
-
-    const millingDepth = millingDepths[profileId.toLowerCase()] || 2.0;
+    const profileIdLower = profileId.toLowerCase();
+    let millingDepth: number = TRANSOM_MILLING_DEPTHS.GENERIC;
+    
+    if (profileIdLower.includes('rock') || profileIdLower.includes('rock60')) {
+      millingDepth = TRANSOM_MILLING_DEPTHS.ROCK60;
+    } else if (profileIdLower.includes('panda')) {
+      millingDepth = TRANSOM_MILLING_DEPTHS.PANDA;
+    } else if (profileIdLower.includes('jumbo')) {
+      millingDepth = TRANSOM_MILLING_DEPTHS.JUMBO100;
+    }
     
     // Formula: Cut_Length = Daylight_Width + (Milling_Depth × 2)
     // Correction 1: Floating Point Precision
@@ -134,8 +141,8 @@ export class MicronEngine {
   calculateScreenSashDimensions(
     frameWidth: number,
     frameHeight: number,
-    adapterOffset: number = 15,
-    clearance: number = 10
+    adapterOffset: number = SCREEN_SASH_OFFSETS.DEFAULT_ADAPTER_OFFSET_MM,
+    clearance: number = SCREEN_SASH_OFFSETS.DEFAULT_CLEARANCE_MM
   ): {
     width: number;
     height: number;

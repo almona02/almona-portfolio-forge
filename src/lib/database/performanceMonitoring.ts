@@ -1,6 +1,6 @@
 // Database performance monitoring and optimization utilities
 
-import { supabase } from './supabase';
+import { supabase } from '../supabase';
 
 interface QueryPerformanceMetric {
   query: string;
@@ -132,7 +132,7 @@ export async function checkDatabaseHealth(): Promise<{
   const startTime = performance.now();
   
   try {
-    const { data, error } = await supabase
+    const { data: _data, error } = await supabase
       .from('profiles')
       .select('id')
       .limit(1);
@@ -214,6 +214,8 @@ export const indexRecommendations = {
 };
 
 // Apply recommended indexes
+// NOTE: This requires a server-side RPC function 'exec_sql' to be created in Supabase
+// For security reasons, raw SQL execution is not available directly from the client
 export async function applyRecommendedIndexes(): Promise<{
   success: boolean;
   applied: string[];
@@ -222,10 +224,24 @@ export async function applyRecommendedIndexes(): Promise<{
   const applied: string[] = [];
   const errors: string[] = [];
   
+  // This function requires a custom RPC function on the Supabase server
+  // Example RPC function in Supabase SQL:
+  // CREATE OR REPLACE FUNCTION exec_sql(sql text)
+  // RETURNS void
+  // LANGUAGE plpgsql
+  // SECURITY DEFINER
+  // AS $$
+  // BEGIN
+  //   EXECUTE sql;
+  // END;
+  // $$;
+  
   for (const [table, indexes] of Object.entries(indexRecommendations)) {
     for (const indexSQL of indexes) {
       try {
-        const { error } = await supabase.rpc('exec_sql', { sql: indexSQL });
+        // Attempt to call RPC function if it exists
+        // If the function doesn't exist, this will fail gracefully
+        const { error } = await (supabase.rpc as any)('exec_sql', { sql: indexSQL });
         
         if (error) {
           errors.push(`${table}: ${error.message}`);

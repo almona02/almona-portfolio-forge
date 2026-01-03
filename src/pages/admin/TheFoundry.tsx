@@ -11,28 +11,26 @@
  * - Material Science Lab: Coastal Mode, Thermal Stress Mode
  */
 
-import React, { useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
+import { GuildSystem } from '@/lib/guild/GuildSystem';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Switch } from '@/shared/ui/ui/switch';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { 
-  Upload, 
-  Settings, 
-  Beaker, 
-  Ruler, 
-  Factory, 
-  AlertTriangle,
-  CheckCircle2,
-  FileUp,
-  Download,
-  Save
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { motion } from 'framer-motion';
+import {
+    AlertTriangle,
+    Beaker,
+    CheckCircle2,
+    Factory,
+    FileUp,
+    Ruler,
+    Save,
+    Upload
 } from 'lucide-react';
-import { GuildSystem } from '@/lib/guild/GuildSystem';
+import React, { useCallback, useState } from 'react';
 
 /**
  * Micron Configuration Interface

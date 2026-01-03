@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 export interface Toast {
   id: string;
@@ -12,6 +12,10 @@ export interface Toast {
 export const useToast = () => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
+  const dismissToast = useCallback((id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  }, []);
+
   const addToast = useCallback((toast: Omit<Toast, "id">) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newToast = { ...toast, id };
@@ -23,11 +27,7 @@ export const useToast = () => {
     setTimeout(() => {
       dismissToast(id);
     }, duration);
-  }, []);
-
-  const dismissToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  }, []);
+  }, [dismissToast]);
 
   const toast = (props: Omit<Toast, "id">) => {
     addToast(props);

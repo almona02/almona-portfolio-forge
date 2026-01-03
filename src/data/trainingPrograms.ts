@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 // We store icon identifiers as strings to keep this file free of JSX; components can map them to actual icons.
 export type IconName = 'layers' | 'scissors' | 'thermometer' | 'settings' | 'zap' | 'shield-check' | 'gauge';
 

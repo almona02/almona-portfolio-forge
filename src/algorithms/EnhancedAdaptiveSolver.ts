@@ -1,11 +1,11 @@
-/**
- * Enhanced Adaptive Solver with Runtime Optimization
- * Features:
- * - Real-time pre-solver for instant feedback
- * - Progressive optimization (start fast, refine in background)
- * - ML-based algorithm prediction
- * - Caching of optimization results
- */
+  /**
+   * Enhanced Adaptive Solver with Runtime Optimization
+   * Features:
+   * - Real-time pre-solver for instant feedback
+   * - Progressive optimization (start fast, refine in background)
+   * - Rule-based algorithm selection (deterministic, no ML)
+   * - Caching of optimization results
+   */
 
 import {
   Profile,
@@ -13,7 +13,7 @@ import {
   AdaptiveSolverConfig,
 } from '@/types/fabricator';
 import { AdaptiveSolver, JobComplexity, CuttingJob } from './adaptiveSolver';
-import { algorithmPredictor, TrainingDataPoint } from '@/lib/ml/AlgorithmPredictor';
+import { algorithmSelector } from '@/lib/fabricator/AlgorithmSelector';
 
 export interface OptimizationCache {
   key: string;
@@ -80,8 +80,8 @@ export class EnhancedAdaptiveSolver extends AdaptiveSolver {
       }
     }
 
-    // Select algorithm (with ML prediction if enabled)
-    const algorithm = await this.selectAlgorithmWithML(complexity);
+    // Select algorithm using deterministic rules
+    const algorithm = this.selectAlgorithmByRule(complexity);
 
     // Progressive optimization: start with fast solution, refine in background
     if (options.enableProgressiveOptimization !== false && this.config.enableProgressiveOptimization !== false) {
@@ -103,18 +103,8 @@ export class EnhancedAdaptiveSolver extends AdaptiveSolver {
       duration
     );
 
-    // Record training data for ML model if enabled
-    if (this.config.enableMLPrediction) {
-      const trainingData: TrainingDataPoint = {
-        complexity,
-        algorithm,
-        performance: {
-          wastePercentage: result.wastePercentage,
-          duration,
-        },
-      };
-      algorithmPredictor.addTrainingData(trainingData);
-    }
+    // Note: No ML training data collection needed for rule-based selection
+    // Algorithm selection is deterministic and does not require training
 
     // Cache result
     if (this.config.enableCaching) {
@@ -251,27 +241,26 @@ export class EnhancedAdaptiveSolver extends AdaptiveSolver {
   }
 
   /**
-   * Select algorithm with ML prediction if enabled
+   * Select algorithm using deterministic rules
+   * 
+   * Constitutional Compliance: Tier 3 (Protected Determinism)
+   * No ML, no AI, no predictions - just transparent, auditable rules.
    */
-  private async selectAlgorithmWithML(
+  private selectAlgorithmByRule(
     complexity: JobComplexity
-  ): Promise<'greedy' | 'linear' | 'genetic'> {
-    // Use ML prediction if enabled
-    if (this.config.enableMLPrediction) {
-      try {
-        const prediction = await algorithmPredictor.predict(complexity);
-        
-        // Record prediction for training
-        // (We'll record the actual performance after optimization completes)
-        
-        return prediction.algorithm;
-      } catch (error) {
-        console.warn('ML prediction failed, falling back to rule-based:', error);
-      }
+  ): 'greedy' | 'linear' | 'genetic' {
+    // Use rule-based selection (deterministic, constitutional)
+    const selection = algorithmSelector.selectByRule(complexity);
+    
+    // Validate selection for constitutional compliance
+    const validation = algorithmSelector.validateSelection(selection);
+    if (!validation.isValid) {
+      console.warn('Algorithm selection validation failed:', validation.errors);
+      // Fall back to standard algorithm selection
+      return this.selectAlgorithm(complexity);
     }
-
-    // Fall back to standard algorithm selection
-    return this.selectAlgorithm(complexity);
+    
+    return selection.algorithm;
   }
 
   /**
@@ -361,10 +350,12 @@ export class EnhancedAdaptiveSolver extends AdaptiveSolver {
   }
 
   /**
-   * Get ML model statistics
+   * Get algorithm selection rules (for transparency and auditability)
+   * 
+   * Constitutional Compliance: All rules are visible and auditable.
    */
-  getMLModelStats() {
-    return algorithmPredictor.getModelStats();
+  getAlgorithmSelectionRules() {
+    return algorithmSelector.getRules();
   }
 }
 

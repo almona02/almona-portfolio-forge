@@ -8,27 +8,26 @@
  * resume capability, scheduling, and performance analytics
  */
 
-import { 
-  ExportFormat, 
-  ExportOptions, 
-  ExportResult, 
-  ExportProgress, 
-  ExportProgressCallback, 
-  BatchExportConfig, 
-  BatchExportResult,
-  AdvancedBatchExportConfig,
-  AdvancedBatchExportResult,
-  ExportQueueItem,
-  ExportPriority,
-  BatchCheckpoint,
-  ResourceAllocation,
-  ExportTemplate
-} from './types';
-import { WindowUnit, OptimizationResult } from '@/types/fabricator';
-import { PDFExportGenerator } from './PDFExportGenerator';
+import { OptimizationResult, WindowUnit } from '@/types/fabricator';
 import { CSVExportGenerator } from './CSVExportGenerator';
 import { DXFExportGenerator } from './DXFExportGenerator';
+import { PDFExportGenerator } from './PDFExportGenerator';
 import { templateManager } from './TemplateManager';
+import {
+    AdvancedBatchExportConfig,
+    AdvancedBatchExportResult,
+    BatchCheckpoint,
+    BatchExportConfig,
+    BatchExportResult,
+    ExportFormat,
+    ExportOptions,
+    ExportPriority,
+    ExportProgress,
+    ExportProgressCallback,
+    ExportQueueItem,
+    ExportResult,
+    ResourceAllocation
+} from './types';
 
 /**
  * Main export service class
@@ -194,7 +193,7 @@ export class ExportService {
     }
 
     // Group projects if needed
-    const groupedProjects = this.groupProjects(projects, groupBy);
+    const _groupedProjects = this.groupProjects(projects, groupBy);
 
     // Apply template if provided
     const finalOptions = templateId 
@@ -558,18 +557,25 @@ export class ExportService {
       item.optimization,
       item.format,
       item.options
-    ).then((result) => {
+    ).then((result): ExportResult => {
       item.result = result;
       item.status = result.success ? 'completed' : 'failed';
       item.error = result.error;
       this.activeExports.delete(item.id);
       this.processQueue(); // Process next in queue
-    }).catch((error) => {
+      return result;
+    }).catch((error): ExportResult => {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       item.status = 'failed';
-      item.error = error instanceof Error ? error.message : 'Unknown error';
+      item.error = errorMessage;
       item.retryCount = (item.retryCount || 0) + 1;
       this.activeExports.delete(item.id);
       this.processQueue();
+      return {
+        success: false,
+        format: item.format,
+        error: errorMessage,
+      };
     });
 
     this.activeExports.set(item.id, exportPromise);
@@ -656,10 +662,10 @@ export class ExportService {
       let key: string;
       switch (groupBy) {
         case 'client':
-          key = project.clientId || 'unknown';
+          key = project.customer || project.customerCode || 'unknown';
           break;
         case 'jobSite':
-          key = project.jobSite || 'unknown';
+          key = project.projectCode || project.positionCode || 'unknown';
           break;
         case 'type':
           key = project.type || 'unknown';

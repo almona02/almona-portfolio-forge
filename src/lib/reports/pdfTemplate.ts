@@ -14,7 +14,7 @@ export async function generatePDFReport(
   }
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([600, 800]);
-  const { width, height } = page.getSize();
+  const { width: _width, height } = page.getSize();
   
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);

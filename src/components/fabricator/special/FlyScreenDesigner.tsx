@@ -19,7 +19,6 @@ import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Progress } from '@/shared/ui/ui/progress';
 import { 
   Grid3x3, 
   Ruler, 

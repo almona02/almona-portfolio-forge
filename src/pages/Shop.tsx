@@ -1,59 +1,53 @@
 // Enhanced Shop Component for Almona Portfolio
 
-import React, { useEffect, useState, useMemo, useCallback, lazy, Suspense } from "react";
-import { useLocation } from "react-router-dom";
 import SEO from "@/components/SEO";
-import { 
-  Search, 
-  Truck, 
-  Shield, 
-  RotateCcw,
-  Sparkles,
+import { useQuote } from "@/context/QuoteContext";
+import { inventory } from "@/data/inventory";
+import { useToast } from "@/hooks/useToast";
+import i18n from "@/lib/i18n";
+import {
   Grid,
   List,
+  RotateCcw,
+  Search,
+  Settings,
+  Shield,
   SlidersHorizontal,
-  Settings
+  Sparkles,
+  Truck
 } from "lucide-react";
-import i18n from "@/lib/i18n";
-import { inventory } from "@/data/inventory";
-import { useQuote } from "@/context/QuoteContext";
-import { useToast } from "@/hooks/useToast";
-import { useAuth } from "@/context/AuthContext";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 // import ErrorBoundary from "@/components/ErrorBoundary";
+import CategoryBreadcrumb from "@/components/products/CategoryBreadcrumb";
+import SmartCategoryNavigation from "@/components/products/SmartCategoryNavigation";
 import { IndustrialProductCard } from "@/components/shop/IndustrialProductCard";
 import { ProductQuickView } from "@/components/shop/ProductQuickView";
 import { RecentlyViewedProducts } from "@/components/shop/RecentlyViewedProducts";
-import SmartCategoryNavigation from "@/components/products/SmartCategoryNavigation";
-import CategoryBreadcrumb from "@/components/products/CategoryBreadcrumb";
-import SmartCategoryFilter from "@/components/products/SmartCategoryFilter";
 // import { EquipmentComparisonTool } from "@/components/shop/EquipmentComparisonTool";
 // PHASE 4: Use lazyRetry for better reliability
-import { lazyRetry } from '@/utils/lazyImport';
-const AiEquipmentAdvisor = lazyRetry(() => import("@/components/shop/ai-advisor/AiEquipmentAdvisor"), "AiEquipmentAdvisor");
-import FreightCalculator from "@/components/shop/FreightCalculator";
 import EgyptianStandardsGuide from "@/components/shop/EgyptianStandardsGuide";
 import EgyptianTechnicalSupportHub from "@/components/shop/EgyptianTechnicalSupportHub";
+import FreightCalculator from "@/components/shop/FreightCalculator";
+import { lazyRetry } from '@/utils/lazyImport';
+const AiEquipmentAdvisor = lazyRetry(() => import("@/components/shop/ai-advisor/AiEquipmentAdvisor"), "AiEquipmentAdvisor");
 
 // UI Components
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
+import { Button } from "@/shared/ui/ui/button";
 import { Input } from "@/shared/ui/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/ui/select";
-import { Button } from "@/shared/ui/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 // import { Badge } from "@/shared/ui/ui/badge";
 import { Card, CardContent } from "@/shared/ui/ui/card";
-import { Skeleton } from "@/shared/ui/ui/skeleton";
 import { NeonButton } from "@/shared/ui/ui/neon-button";
-import { Checkbox } from "@/shared/ui/ui/checkbox";
-import { Label } from "@/shared/ui/ui/label";
-import { Slider } from "@/shared/ui/ui/slider";
+import { Skeleton } from "@/shared/ui/ui/skeleton";
 
 // Data
 import { yilmazMachines, yilmazParts } from "@/constants/productsData";
-import { yilmazMachines as yilmazMachinesSpecs } from "@/constants/yilmazMachines";
-import { uniqueProducts } from "@/constants/uniqueProductsData";
 import { smartCategoryMapping } from "@/constants/smartCategories";
-import type { Database, ProductCategory } from "@/types/database";
+import { uniqueProducts } from "@/constants/uniqueProductsData";
+import { yilmazMachines as yilmazMachinesSpecs } from "@/constants/yilmazMachines";
 import type { Machine as TypesMachine } from "@/types";
+import type { Database, ProductCategory } from "@/types/database";
 
 // Types
 interface Machine {
@@ -356,7 +350,6 @@ const ProductGrid = ({
 const Shop = () => {
   const { addToQuote } = useQuote();
   const { toast } = useToast();
-  const { user } = useAuth();
   
   const [activeTab, setActiveTab] = useState<ProductTab>('industrial-machines');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
@@ -559,7 +552,7 @@ const Shop = () => {
     });
 
     return filtered;
-  }, [activeTab, enhancedProducts, uniqueProductsArray, allParts, filters]);
+  }, [activeTab, enhancedProducts, uniqueProductsArray, allParts, filters, getLegacyCategoryFilter]);
 
   // Loading simulation
   useEffect(() => {
@@ -577,14 +570,6 @@ const Shop = () => {
     { label: "Local Support", key: "local-support", icon: <RotateCcw className="h-4 w-4" /> }
   ];
 
-  const categories = [
-    { id: "all", name: "All Categories" },
-    { id: "cutting", name: "Cutting Machines" },
-    { id: "welding", name: "Welding Machines" },
-    { id: "processing", name: "Processing Centers" },
-    { id: "milling", name: "Milling Machines" },
-    { id: "cnc", name: "CNC Machines" }
-  ];
 
   const productTabs: ProductTab[] = ['industrial-machines', 'industrial-parts', 'unique-prototypes', 'unique-custom-fabrications'];
 
@@ -593,7 +578,7 @@ const Shop = () => {
       <SEO
         title="Shop - Industrial Machinery & Equipment | Almona Co."
         description="Browse our extensive catalog of industrial machinery, spare parts, and custom fabrications. YILMAZ authorized dealer in Egypt."
-        url={`https://www.almona02.com${location.pathname}`}
+        url={`https://www.almona02.com${window.location.pathname}`}
         keywords="industrial machinery shop, YILMAZ machines, spare parts, custom fabrications"
       />
       <main className="flex-grow pt-20">
@@ -643,7 +628,10 @@ const Shop = () => {
               style={{ animationDelay: '0.2s' }}
             >
               <SmartCategoryNavigation
-                machines={enhancedProducts}
+                machines={enhancedProducts.map(m => ({
+                  ...m,
+                  specifications: m.specifications.map(s => `${s.key}: ${s.value}`)
+                })) as any}
                 selectedCategory={filters.category}
                 onCategorySelect={(categoryId) => handleFilterChange('category', categoryId)}
                 className="sticky top-24"

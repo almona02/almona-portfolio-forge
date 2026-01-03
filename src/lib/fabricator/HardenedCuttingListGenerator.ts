@@ -11,8 +11,8 @@
  */
 
 import type { SystemPack } from '@/data/systemPacks';
-import type { WindowUnit, Cut } from '@/types/fabricator';
-import { getAccuracyTracker, trackAccuracyCheckpoint } from '@/lib/fabricator/AccuracyTracker';
+import { trackAccuracyCheckpoint } from '@/lib/fabricator/AccuracyTracker';
+import type { Cut } from '@/lib/fabricator/OptimizationEngine';
 import { getBaselineTracker } from '@/lib/performance/BaselineTracker';
 
 export interface CuttingListResult {
@@ -67,10 +67,10 @@ export class HardenedCuttingListGenerator {
       const secondaryResult = this.calculateSecondary(systemPack, width, height, options);
       
       // Cross-verification
-      const verification = this.verifyCalculations(primaryResult, secondaryResult);
+      const verificationDetails = this.verifyCalculations(primaryResult, secondaryResult);
       
       // Calculate accuracy
-      const accuracy = this.calculateAccuracy(primaryResult, secondaryResult, verification);
+      const accuracy = this.calculateAccuracy(primaryResult, secondaryResult, verificationDetails);
       
       // Validate Egyptian engineering standards
       const egyptianValidation = this.validateEgyptianStandards(
@@ -84,15 +84,15 @@ export class HardenedCuttingListGenerator {
       const warnings: string[] = [];
       const errors: string[] = [];
       
-      if (!verification.match) {
-        if (verification.difference > this.MAX_DIFFERENCE_MICRONS) {
+      if (!verificationDetails.match) {
+        if (verificationDetails.difference > this.MAX_DIFFERENCE_MICRONS) {
           status = 'mismatch';
           errors.push(
-            `Calculation mismatch: ${verification.difference.toFixed(3)}mm difference exceeds ${this.MAX_DIFFERENCE_MICRONS / 1000}mm threshold`
+            `Calculation mismatch: ${verificationDetails.difference.toFixed(3)}mm difference exceeds ${this.MAX_DIFFERENCE_MICRONS / 1000}mm threshold`
           );
         } else {
           warnings.push(
-            `Minor calculation difference: ${verification.difference.toFixed(3)}mm (within tolerance)`
+            `Minor calculation difference: ${verificationDetails.difference.toFixed(3)}mm (within tolerance)`
           );
         }
       }
@@ -121,7 +121,7 @@ export class HardenedCuttingListGenerator {
         { systemPackId: systemPack.meta.id, width, height },
         { cuts: primaryResult.cuts, accuracy },
         accuracy,
-        { verification, egyptianValidation }
+        { verification: { primary: primaryResult, secondary: secondaryResult, match: verificationDetails.match, difference: verificationDetails.difference }, egyptianValidation }
       );
       
       // Record baseline
@@ -136,7 +136,12 @@ export class HardenedCuttingListGenerator {
         status,
         cuts: primaryResult.cuts, // Use primary result
         accuracy,
-        verification,
+        verification: {
+          primary: primaryResult,
+          secondary: secondaryResult,
+          match: verificationDetails.match,
+          difference: verificationDetails.difference,
+        },
         warnings,
         errors,
       };
@@ -190,12 +195,9 @@ export class HardenedCuttingListGenerator {
       options
     );
     
-    // Convert to standard format (handle both plannedLength and length)
-    const normalizedCuts: Cut[] = cuts.map(cut => ({
-      ...cut,
-      length: (cut as any).plannedLength || cut.length || 0,
-      plannedLength: (cut as any).plannedLength || cut.length || 0,
-    }));
+    // Cuts from generateCuttingListFromSystemPack already have plannedLength
+    // No conversion needed - they're already in the correct format
+    const normalizedCuts: Cut[] = cuts;
     
     const totalLength = this.calculateTotalLength(normalizedCuts);
     const totalWaste = this.calculateTotalWaste(normalizedCuts, systemPack);
@@ -228,7 +230,7 @@ export class HardenedCuttingListGenerator {
     // Frame calculations
     if (systemPack.profiles) {
       const frameProfile = systemPack.profiles.find(p => 
-        p.role === 'frame' || p.role === 'main_frame'
+        p.profileRole === 'frame' || p.profileRole === 'frame_architrave'
       );
       
       if (frameProfile) {
@@ -238,16 +240,18 @@ export class HardenedCuttingListGenerator {
         
         cuts.push({
           id: 'frame-vertical-1',
+          label: 'Frame Vertical',
           profileId: frameProfile.id,
-          length: this.roundToMicrons(verticalLength),
+          plannedLength: this.roundToMicrons(verticalLength),
           quantity: 2,
           role: 'frame',
         });
         
         cuts.push({
           id: 'frame-horizontal-1',
+          label: 'Frame Horizontal',
           profileId: frameProfile.id,
-          length: this.roundToMicrons(horizontalLength),
+          plannedLength: this.roundToMicrons(horizontalLength),
           quantity: 2,
           role: 'frame',
         });
@@ -255,7 +259,7 @@ export class HardenedCuttingListGenerator {
       
       // Sash calculations
       const sashProfile = systemPack.profiles.find(p => 
-        p.role === 'sash' || p.role === 'main_sash'
+        p.profileRole === 'sash' || p.profileRole === 'sash_casement' || p.profileRole === 'sash_sliding'
       );
       
       if (sashProfile && options?.includeTransom !== false) {
@@ -263,8 +267,9 @@ export class HardenedCuttingListGenerator {
         const sashLength = width * 0.9; // Approximate
         cuts.push({
           id: 'sash-1',
+          label: 'Sash',
           profileId: sashProfile.id,
-          length: this.roundToMicrons(sashLength),
+          plannedLength: this.roundToMicrons(sashLength),
           quantity: 2,
           role: 'sash',
         });
@@ -310,15 +315,18 @@ export class HardenedCuttingListGenerator {
         const primaryCut = primary.cuts[i];
         const secondaryCut = secondary.cuts[i];
         
+        const primaryLength = primaryCut.plannedLength;
+        const secondaryLength = secondaryCut.plannedLength;
+        
         if (primaryCut.profileId !== secondaryCut.profileId) {
           cutsMatch = false;
           break;
         }
         
-        const lengthDiff = Math.abs(primaryCut.length - secondaryCut.length);
+        const lengthDiff = Math.abs(primaryLength - secondaryLength);
         cutDifferences.push(lengthDiff);
         
-        if (lengthDiff > this.MICRON_TOLERANCE * 1000) { // Convert to microns
+        if (lengthDiff > this.MICRON_TOLERANCE * 1000) { // Convert to mm (tolerance is in mm)
           cutsMatch = false;
         }
       }
@@ -391,27 +399,30 @@ export class HardenedCuttingListGenerator {
     
     // Check each cut
     for (const cut of cuts) {
+      const cutLength = cut.plannedLength;
+      const cutId = cut.id || 'unknown';
+      
       // Check minimum length
-      if (cut.length < MIN_CUT_LENGTH_MM) {
+      if (cutLength < MIN_CUT_LENGTH_MM) {
         errors.push(
-          `Cut ${cut.id}: Length ${cut.length.toFixed(2)}mm below Egyptian minimum ${MIN_CUT_LENGTH_MM}mm`
+          `Cut ${cutId}: Length ${cutLength.toFixed(2)}mm below Egyptian minimum ${MIN_CUT_LENGTH_MM}mm`
         );
       }
       
       // Check maximum length
-      if (cut.length > MAX_CUT_LENGTH_MM) {
+      if (cutLength > MAX_CUT_LENGTH_MM) {
         errors.push(
-          `Cut ${cut.id}: Length ${cut.length.toFixed(2)}mm exceeds Egyptian maximum ${MAX_CUT_LENGTH_MM}mm`
+          `Cut ${cutId}: Length ${cutLength.toFixed(2)}mm exceeds Egyptian maximum ${MAX_CUT_LENGTH_MM}mm`
         );
       }
       
       // Check precision (must be within micron tolerance)
-      const roundedLength = this.roundToMicrons(cut.length);
-      const difference = Math.abs(cut.length - roundedLength);
+      const roundedLength = this.roundToMicrons(cutLength);
+      const difference = Math.abs(cutLength - roundedLength);
       
       if (difference > this.MICRON_TOLERANCE) {
         warnings.push(
-          `Cut ${cut.id}: Precision ${difference.toFixed(4)}mm exceeds ${this.MICRON_TOLERANCE}mm tolerance`
+          `Cut ${cutId}: Precision ${difference.toFixed(4)}mm exceeds ${this.MICRON_TOLERANCE}mm tolerance`
         );
       }
     }
@@ -446,8 +457,8 @@ export class HardenedCuttingListGenerator {
    */
   private calculateTotalLength(cuts: Cut[]): number {
     return cuts.reduce((sum, cut) => {
-      const length = (cut as any).plannedLength || cut.length || 0;
-      const quantity = cut.quantity || 1;
+      const length = cut.plannedLength;
+      const quantity = cut.quantity;
       return sum + (length * quantity);
     }, 0);
   }
@@ -459,7 +470,7 @@ export class HardenedCuttingListGenerator {
     // Simplified waste calculation
     // In production, this would consider stock lengths and optimization
     const totalLength = this.calculateTotalLength(cuts);
-    const stockLength = systemPack.meta.stockLength || 6000; // Default 6m stock
+    const stockLength = systemPack.meta.defaultStockLengthMm || 6000; // Default 6m stock
     
     // Estimate waste (simplified)
     const stockPieces = Math.ceil(totalLength / stockLength);

@@ -6,6 +6,13 @@
  */
 
 import type { Profile } from '@/types/fabricator';
+import {
+    DEFAULT_CUTTING_FORMULA,
+    FRAME_CUTTING_OFFSETS,
+    GLAZING_BEAD_CUTTING_OFFSETS,
+    SASH_CUTTING_OFFSETS,
+    STRUCTURAL_CUTTING_OFFSETS,
+} from './cuttingFormulaConstants';
 
 /**
  * Detect profile role from profile name
@@ -113,7 +120,7 @@ export function detectRoleFromName(profileName: string, profileType?: string): P
  */
 export function getRoleCuttingFormula(
   role: Profile['profileRole'],
-  systemType?: 'sliding' | 'casement' | 'tilt_turn' | 'fixed'
+  _systemType?: 'sliding' | 'casement' | 'tilt_turn' | 'fixed'
 ): string {
   switch (role) {
     // Frame roles: Add allowance for miter joints
@@ -124,66 +131,65 @@ export function getRoleCuttingFormula(
     case 'sill':
     case 'head':
     case 'jamb':
-      return 'L + 50'; // Standard frame allowance
+      return `L + ${FRAME_CUTTING_OFFSETS.STANDARD_FRAME_ALLOWANCE_MM}`; // Standard frame allowance
     
     // Sliding sash: Deduct for overlap and track clearance
     case 'sash_sliding':
-      return 'L - 40'; // Standard sliding sash deduction
+      return `L - ${SASH_CUTTING_OFFSETS.STANDARD_SASH_DEDUCTION_MM}`; // Standard sliding sash deduction
     
     // Fly-screen sash: Smaller deduction (no overlap needed)
     case 'sash_flyscreen':
-      return 'L - 25'; // Fly-screen has minimal overlap
+      return `L - ${SASH_CUTTING_OFFSETS.FLYSCREEN_SASH_DEDUCTION_MM}`; // Fly-screen has minimal overlap
     
     // Door sash: Similar to sliding but may vary
     case 'sash_door':
-      return 'L - 40'; // Door sash deduction
+      return `L - ${SASH_CUTTING_OFFSETS.STANDARD_SASH_DEDUCTION_MM}`; // Door sash deduction
     
     // Casement sash: Standard deduction
     case 'sash_casement':
     case 'sash':
-      return 'L - 40'; // Standard sash deduction
+      return `L - ${SASH_CUTTING_OFFSETS.STANDARD_SASH_DEDUCTION_MM}`; // Standard sash deduction
     
     // Screen sash: Similar to fly-screen
     case 'screen_sash':
-      return 'L - 25';
+      return `L - ${SASH_CUTTING_OFFSETS.SCREEN_SASH_DEDUCTION_MM}`;
     
     // Mullion: Exact length (no deduction, no allowance)
     case 'mullion':
     case 'mullion_false':
-      return 'L'; // Exact length
+      return DEFAULT_CUTTING_FORMULA.EXACT_LENGTH; // Exact length
     
     // Transom: Exact length
     case 'transom':
-      return 'L';
+      return DEFAULT_CUTTING_FORMULA.EXACT_LENGTH;
     
     // Interlock: Small deduction (fits between sashes)
     case 'interlock':
-      return 'L - 8'; // Small deduction for interlock
+      return `L - ${STRUCTURAL_CUTTING_OFFSETS.INTERLOCK_DEDUCTION_MM}`; // Small deduction for interlock
     
     // Glazing bead: Large deduction (fits inside sash)
     case 'glazing_bead':
     case 'glazing_bead_inner':
     case 'glazing_bead_outer':
-      return 'L - 167'; // Standard glazing bead deduction
+      return `L - ${GLAZING_BEAD_CUTTING_OFFSETS.STANDARD_BEAD_DEDUCTION_MM}`; // Standard glazing bead deduction
     
     // Accessories: Varies by type
     case 'panel':
-    case 'filler':
-      return 'L'; // Exact length
+      return DEFAULT_CUTTING_FORMULA.EXACT_LENGTH; // Exact length
     case 'gasket':
     case 'weather_strip':
-      return 'L'; // Exact length
+      return DEFAULT_CUTTING_FORMULA.EXACT_LENGTH; // Exact length
     case 'accessory':
-      return 'L'; // Default: exact length
+      return DEFAULT_CUTTING_FORMULA.EXACT_LENGTH; // Default: exact length
     
     // Structural
     case 'reinforcement':
-      return 'L - 12'; // Reinforcement is shorter than PVC
+      return `L - ${STRUCTURAL_CUTTING_OFFSETS.REINFORCEMENT_DEDUCTION_MM}`; // Reinforcement is shorter than PVC
     case 'corner_cleat':
-      return 'L'; // Exact length
+      return DEFAULT_CUTTING_FORMULA.EXACT_LENGTH; // Exact length
     
     default:
-      return 'L + 0'; // Default: no change
+      return DEFAULT_CUTTING_FORMULA.NO_CHANGE; // Default: no change
   }
 }
 

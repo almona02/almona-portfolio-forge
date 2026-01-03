@@ -4,7 +4,7 @@
  * Generates barcode labels for cut pieces
  */
 
-import { CuttingPlan, Cut } from '@/types/fabricator';
+import { Cut, CuttingPlan } from '@/types/fabricator';
 
 export interface BarcodeLabel {
   barcode: string;
@@ -36,7 +36,6 @@ export class BarcodeLabelGenerator {
     options: BarcodeLabelOptions
   ): BarcodeLabel[] {
     const labels: BarcodeLabel[] = [];
-    let labelIndex = 1;
 
     cuttingPlans.forEach((plan, planIndex) => {
       // Group cuts by length and angle
@@ -70,7 +69,6 @@ export class BarcodeLabelGenerator {
         // Generate one label per quantity
         for (let i = 0; i < quantity; i++) {
           labels.push({ ...label });
-          labelIndex++;
         }
       });
     });
@@ -252,7 +250,7 @@ export class BarcodeLabelGenerator {
     }
 
     // Text lines
-    text.forEach((line, index) => {
+    text.forEach((line) => {
       zpl += `^FO20,${yPos}^A0N,20,20^FD${line}^FS`;
       yPos += 25;
     });

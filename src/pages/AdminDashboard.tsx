@@ -1,34 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { Navigate } from 'react-router-dom'
-import { useAuth } from '@/context/AuthContext'
-import { supabase } from '@/lib/supabase'
-import {
-  BarChart3,
-  Package,
-  Users,
-  ShoppingCart,
-  Settings,
-  DollarSign,
-  FileText,
-  AlertCircle,
-  Shield,
-  Boxes,
-  Wrench,
-  HelpCircle,
-  Bell,
-  Search,
-  Menu,
-  X,
-  LogOut,
-  User as UserIcon,
-} from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { useToast } from '@/hooks/use-toast'
+import { SparePartsImportPanel } from '@/components/admin/SparePartsImportPanel'
+import { AdminTicketDashboard } from '@/components/support/AdminTicketDashboard'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,18 +12,44 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { AdminTicketDashboard } from '@/components/support/AdminTicketDashboard'
-import { SparePartsImportPanel } from '@/components/admin/SparePartsImportPanel'
+import { Input } from '@/components/ui/input'
+import { useAuth } from '@/context/AuthContext'
+import { useToast } from '@/hooks/use-toast'
+import { supabase } from '@/lib/supabase'
+import { cn } from '@/lib/utils'
+import {
+  AlertCircle,
+  BarChart3,
+  Bell,
+  Boxes,
+  DollarSign,
+  FileText,
+  HelpCircle,
+  LogOut,
+  Menu,
+  Package,
+  Search,
+  Settings,
+  Shield,
+  ShoppingCart,
+  User as UserIcon,
+  Users,
+  Wrench,
+  X,
+} from 'lucide-react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { Navigate } from 'react-router-dom'
 // Dashboard components
+import { GovernanceHealthMini } from '@/components/governance/GovernanceHealthMini'
+import { CustomerActivity } from '../components/admin/CustomerActivity'
 import { DashboardStats } from '../components/admin/DashboardStats'
+import { LowStockAlerts } from '../components/admin/LowStockAlerts'
 import { RecentOrders } from '../components/admin/RecentOrders'
 import { TopProducts } from '../components/admin/TopProducts'
-import { LowStockAlerts } from '../components/admin/LowStockAlerts'
-import { CustomerActivity } from '../components/admin/CustomerActivity'
 // PHASE 4: Use lazyRetry for better reliability
-import { lazyRetry } from '@/utils/lazyImport';
+import { lazyRetry } from '@/utils/lazyImport'
 
-const SalesChart = lazyRetry(() => import('../components/admin/SalesChart'), 'SalesChart')
+const SalesChart = lazyRetry(() => import('../components/admin/SalesChart').then(m => ({ default: m.SalesChart })), 'SalesChart')
 const ProductsPanel = lazyRetry(() => import('@/components/admin/panels/ProductsPanel'), 'ProductsPanel')
 const OrdersPanel = lazyRetry(() => import('@/components/admin/panels/OrdersPanel'), 'OrdersPanel')
 const CustomersPanel = lazyRetry(() => import('@/components/admin/panels/CustomersPanel'), 'CustomersPanel')
@@ -184,6 +185,50 @@ const AdminDashboard: React.FC = () => {
         return (
           <div className="space-y-6">
             <DashboardStats stats={stats} />
+            
+            {/* Constitutional AI Governance Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="h-3 w-3 rounded-full bg-green-500"></div>
+                <h3 className="text-lg font-semibold">Constitutional AI Governance</h3>
+              </div>
+              <GovernanceHealthMini />
+              <div className="p-4 bg-muted/50 border border-border rounded-lg text-sm">
+                <div className="font-semibold mb-3 text-foreground">📊 Governance Metrics Explained</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <div className="font-medium text-foreground">Constitutional Health</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Overall governance integrity (0-100). Measures tier compliance, reasoning quality, and violation rates.
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-medium text-foreground">Tier 1 Coverage</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      % of strategic decisions using YDT. Tier 1 decisions (pricing, viability, strategy) require YDT.
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-medium text-foreground">Reasoning Quality</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      % of YDT responses with proper reasoning. Every YDT decision must explain why.
+                    </div>
+                  </div>
+                  <div>
+                    <div className="font-medium text-foreground">Tier Violations</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Count of AI operating outside authority bounds. Should always be 0.
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-border text-xs text-muted-foreground">
+                  <strong>Refactored Services:</strong> Pricing, Business Viability
+                  <br />
+                  <strong>Next:</strong> Optimization Strategy
+                </div>
+              </div>
+            </div>
+            
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <React.Suspense fallback={<div className="h-56 flex items-center justify-center text-sm text-muted-foreground">Loading chart...</div>}>
                 <SalesChart />

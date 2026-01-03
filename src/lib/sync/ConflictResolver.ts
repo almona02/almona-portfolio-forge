@@ -113,7 +113,7 @@ export class ConflictResolver {
   /**
    * Merge two values (for update conflicts)
    */
-  mergeValues(value1: any, value2: any, path: string): any {
+  mergeValues(value1: any, value2: any, _path: string): any {
     // Simple merge strategy
     // For objects, merge recursively
     if (typeof value1 === 'object' && typeof value2 === 'object' && !Array.isArray(value1) && !Array.isArray(value2)) {

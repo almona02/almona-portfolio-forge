@@ -8,7 +8,7 @@
  */
 
 import { CheckpointManager, WorkflowCheckpoint, CheckpointResumeInfo } from './CheckpointManager';
-import { WorkflowProfiler, WorkflowStage } from '@/lib/performance/WorkflowProfiler';
+import { WorkflowProfiler } from '@/lib/performance/WorkflowProfiler';
 import { SecurityGateway } from '@/lib/security/SecurityGateway';
 
 export interface WorkflowStageConfig {

@@ -9,7 +9,7 @@
  * - Natural responses with mannerisms
  */
 
-import { EgyptianWorkshopNLP, type UserType, type EgyptianDialect } from '@/lib/nlp/EgyptianWorkshopNLP';
+import { EgyptianWorkshopNLP, type EgyptianDialect, type UserType } from '@/lib/nlp/EgyptianWorkshopNLP';
 
 export interface ConversationMemory {
   userId: string;
@@ -290,14 +290,14 @@ export class HumanConversationEngine {
     location: string
   ): ConversationStyle {
     // Detect dialect from location
-    let dialect: EgyptianDialect = 'cairo_shobra';
+    let _dialect: EgyptianDialect = 'cairo_shobra';
     if (location.toLowerCase().includes('alexandria')) {
-      dialect = 'alexandria';
+      _dialect = 'alexandria';
     } else if (location.toLowerCase().includes('upper')) {
-      dialect = 'upper_egypt';
+      _dialect = 'upper_egypt';
     }
 
-    const styles: Record<UserType, ConversationStyle> = {
+    const styles: Partial<Record<UserType, ConversationStyle>> & { general: ConversationStyle } = {
       workshop_owner: {
         greeting: 'يا ريس',
         closing: 'ربنا يبارك',
@@ -311,13 +311,6 @@ export class HumanConversationEngine {
         transitions: ['خلينا نشوف', 'اتفضل', 'قول'],
         confirmations: ['تمام', 'صح', 'كويس'],
         clarifications: ['يعني إيه', 'تقصد', 'ازاي'],
-      },
-      maalem: {
-        greeting: 'يا معلم',
-        closing: 'الله يفتح عليك',
-        transitions: ['ده سر المهنة', 'من الخبرة', 'اتعلم'],
-        confirmations: ['برافو', 'ممتاز', 'ده الصح'],
-        clarifications: ['يعني', 'تقصد', 'إيه رأيك'],
       },
       technical_office: {
         greeting: 'من الناحية الهندسية',
@@ -387,7 +380,7 @@ export class HumanConversationEngine {
     response: string,
     style: ConversationStyle,
     emotion: Emotion,
-    userType: UserType
+    _userType: UserType
   ): string {
     let manneredResponse = response;
 
@@ -423,7 +416,7 @@ export class HumanConversationEngine {
   /**
    * Add humor to response
    */
-  private addHumor(response: string, style: ConversationStyle): string {
+  private addHumor(response: string, _style: ConversationStyle): string {
     const jokes = [
       'الشغلانة دي أسهل من شرب المية... تقريباً',
       'ده أبسط من تركيب عروة... والله مش بهزر',

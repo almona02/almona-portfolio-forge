@@ -12,11 +12,11 @@
  * @since Phase 4: 3D Visual Upgrade (Week 21)
  */
 
-import { BufferGeometry, BoxGeometry, CylinderGeometry, Group, Vector3 } from 'three';
-import { HingeGenerator } from './HingeGenerator';
-import { HandleGenerator } from './HandleGenerator';
-import { RollerGenerator } from './RollerGenerator';
 import type { WindowUnit } from '@/types/fabricator';
+import { BoxGeometry, BufferGeometry, Vector3 } from 'three';
+import { HandleGenerator } from './HandleGenerator';
+import { HingeGenerator } from './HingeGenerator';
+import { RollerGenerator } from './RollerGenerator';
 
 export type HardwareType = 'hinge' | 'handle' | 'lock' | 'roller' | 'corner_key' | 'gasket';
 
@@ -105,7 +105,7 @@ export class HardwareModelLibrary {
   private generateHinges(
     width: number,
     height: number,
-    openingType: string
+    _openingType: string
   ): HardwareModel[] {
     const hinges: HardwareModel[] = [];
     const hingeHeight = 0.15; // 150mm from top/bottom (Egyptian Code 2020)

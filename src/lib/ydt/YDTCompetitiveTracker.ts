@@ -135,17 +135,17 @@ export class YDTCompetitiveTracker {
 
   // Private helper methods
 
-  private async collectLocalPrices(location: string): Promise<number[]> {
+  private async collectLocalPrices(_location: string): Promise<number[]> {
     // Would collect from market data, customer feedback, etc.
     return [1500, 1600, 1400, 1700, 1550]; // Sample prices
   }
 
-  private async analyzeCompetitorFeatures(location: string): Promise<string[]> {
+  private async analyzeCompetitorFeatures(_location: string): Promise<string[]> {
     // Would analyze competitor offerings
     return ['fast_delivery', 'cheap_prices', 'good_marketing'];
   }
 
-  private async monitorSocialMedia(location: string): Promise<string[]> {
+  private async monitorSocialMedia(_location: string): Promise<string[]> {
     // Would monitor social media for complaints
     return ['poor_quality', 'slow_delivery'];
   }

@@ -3,10 +3,9 @@
  * Manages profile definitions, calibrations, and data sheet integration
  */
 
+import { kFactorEngine } from '@/lib/calibration/KFactorEngine';
 import { supabase } from '@/lib/supabase';
 import type { Profile } from '@/types/fabricator';
-import { profileDataSheetParser, type ParsedProfileData } from './ProfileDataSheetParser';
-import { kFactorEngine } from '@/lib/calibration/KFactorEngine';
 
 export interface ProfileDefinitionInput {
   profileCode: string;

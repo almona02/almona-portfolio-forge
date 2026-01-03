@@ -3,9 +3,8 @@
  * Conflict resolution logic for concurrent edits
  */
 
-import { useState, useCallback, useRef } from 'react';
 import { useFabricatorCollaboration } from '@/contexts/FabricatorCollaborationContext';
-import type { WindowUnit } from '@/types/fabricator';
+import { useCallback, useRef, useState } from 'react';
 
 export interface EditOperation {
   type: 'add' | 'update' | 'delete';
@@ -55,14 +54,13 @@ export function useCollaborativeEditing(projectId: string) {
       setConflicts(prev => [...prev, conflict]);
 
       // Try automatic resolution
-      const resolved = await resolveConflict({
+      await resolveConflict({
         edits: [edit, conflictingEdit],
       });
 
-      if (resolved) {
-        setConflicts(prev => prev.filter(c => c !== conflict));
-        lastAppliedEditRef.current = Math.max(edit.timestamp, conflictingEdit.timestamp);
-      }
+      // Assume resolution succeeded if no error thrown
+      setConflicts(prev => prev.filter(c => c !== conflict));
+      lastAppliedEditRef.current = Math.max(edit.timestamp, conflictingEdit.timestamp);
     } else {
       // No conflict, apply immediately
       lastAppliedEditRef.current = edit.timestamp;

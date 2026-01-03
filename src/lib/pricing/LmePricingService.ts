@@ -59,7 +59,7 @@ class LmePricingService {
    * Fetch price from LME API
    * Note: This is a placeholder - replace with actual LME API integration
    */
-  private async fetchLMEPrice(metal: 'aluminum' | 'copper' | 'zinc'): Promise<LMEPrice> {
+  private async fetchLMEPrice(_metal: 'aluminum' | 'copper' | 'zinc'): Promise<LMEPrice> {
     // TODO: Replace with actual LME API call
     // Example: https://www.lme.com/api/pricing/{metal}
     

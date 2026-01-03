@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 interface PerformanceMetrics {
   lcp?: number;
@@ -68,7 +68,8 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
       const entries = list.getEntries();
       
       entries.forEach((entry) => {
-        const fid = entry.processingStart - entry.startTime;
+        const inputEntry = entry as PerformanceEventTiming;
+        const fid = inputEntry.processingStart - inputEntry.startTime;
         const metrics = { fid };
         
         onMetricsUpdate?.(metrics);
@@ -129,7 +130,7 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
 
     try {
       observer.observe({ type: 'paint', buffered: true });
-    } catch (e) {
+    } catch {
       // Fallback for browsers that don't support new format
       observer.observe({ entryTypes: ['paint'] });
     }
@@ -158,7 +159,7 @@ export function usePerformanceMonitoring(options: PerformanceMonitoringOptions =
 
     try {
       observer.observe({ type: 'navigation', buffered: true });
-    } catch (e) {
+    } catch {
       // Fallback for browsers that don't support new format
       observer.observe({ entryTypes: ['navigation'] });
     }

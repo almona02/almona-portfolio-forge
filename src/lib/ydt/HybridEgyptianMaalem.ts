@@ -7,12 +7,12 @@
  * - Human Layer: Captured maalem wisdom (stories, tricks, warnings)
  */
 
-import { QuickStartYDT } from './QuickStartYDT';
-import { DocumentationKnowledgeGraph } from './DocumentationKnowledgeGraph';
+import { HumanConversationEngine } from '@/lib/conversation/HumanConversationEngine';
 import { EgyptianWorkshopNLP, type UserType } from '@/lib/nlp/EgyptianWorkshopNLP';
 import { MaalemReasoningEngine } from '@/lib/reasoning/MaalemReasoningEngine';
-import { HumanConversationEngine } from '@/lib/conversation/HumanConversationEngine';
 import { MaalemTeachingEngine } from '@/lib/teaching/MaalemTeachingEngine';
+import { DocumentationKnowledgeGraph } from './DocumentationKnowledgeGraph';
+import { QuickStartYDT } from './QuickStartYDT';
 import type { YDTAnswer } from './types';
 
 export interface HybridResponse {
@@ -134,8 +134,8 @@ export class HybridEgyptianMaalem {
    */
   private async processWithAI(
     question: string,
-    userType: UserType,
-    location: string
+    _userType: UserType,
+    _location: string
   ): Promise<YDTAnswer> {
     return this.quickStartYDT.answerQuestion(question);
   }
@@ -145,6 +145,7 @@ export class HybridEgyptianMaalem {
    */
   private async queryKnowledgeBase(question: string): Promise<YDTAnswer> {
     const result = this.knowledgeGraph.query({
+      type: 'system',
       keyword: this.extractKeywords(question),
       context: question,
     });
@@ -172,7 +173,7 @@ export class HybridEgyptianMaalem {
   /**
    * HUMAN LAYER: Get oral wisdom
    */
-  private async getOralWisdom(question: string, location: string): Promise<{
+  private async getOralWisdom(question: string, _location: string): Promise<{
     story?: string;
     trick?: string;
     warning?: string;
@@ -275,9 +276,9 @@ export class HybridEgyptianMaalem {
    * Learn from user (captures maalem wisdom)
    */
   async learnFromUser(
-    userId: string,
-    statement: string,
-    context: HybridContext
+    _userId: string,
+    _statement: string,
+    _context: HybridContext
   ): Promise<{
     accepted: boolean;
     message: string;

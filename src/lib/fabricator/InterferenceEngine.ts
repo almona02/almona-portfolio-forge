@@ -546,12 +546,12 @@ export class EgyptianInterferenceEngine {
     {
       ruleId: 'MILLING_ADD',
       description: 'Validates transom cut length includes milling depth addition for T-joint assembly.',
-      condition: (assembly) => {
+      condition: (_assembly) => {
         // This rule is validated during cutting list generation
         // The actual validation happens in the optimization engine
         return true;
       },
-      errorMessage: (assembly) => {
+      errorMessage: (_assembly) => {
         return `Transom cut length missing milling addition. Should include milling depth (2.5mm per side for ROCK/Panda, 3.0mm for JUMBO). Without milling, gaps will appear in T-joint.`;
       },
       severity: 'block'

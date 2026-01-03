@@ -1,5 +1,5 @@
-import { useEffect, useCallback, useState } from 'react';
-import { preloadImages, preloadImage } from '@/lib/imageOptimization';
+import { getOptimizedImageUrl, preloadImage, preloadImages } from '@/lib/imageOptimization';
+import { useCallback, useEffect, useState } from 'react';
 
 interface PreloadConfig {
   src: string;
@@ -21,7 +21,7 @@ export function useImagePreloading({
   images,
   enabled = true,
   delay = 0,
-  priority = 'medium'
+  priority: _priority = 'medium'
 }: UseImagePreloadingOptions) {
   const [preloadedImages, setPreloadedImages] = useState<Set<string>>(new Set());
   const [isPreloading, setIsPreloading] = useState(false);
@@ -36,7 +36,11 @@ export function useImagePreloading({
     try {
       const imagePromises = images.map(async (config, index) => {
         try {
-          await preloadImage(config.src, config.options);
+          // Optimize image URL if options provided, then preload
+          const imageUrl = config.options 
+            ? getOptimizedImageUrl(config.src, config.options)
+            : config.src;
+          await preloadImage(imageUrl);
           setPreloadedImages(prev => new Set([...prev, config.src]));
           setPreloadProgress(((index + 1) / images.length) * 100);
         } catch (error) {
@@ -79,10 +83,12 @@ export function useRouteImagePreloading(routeImages: Record<string, PreloadConfi
     if (!images || images.length === 0) return;
 
     try {
-      await preloadImages(images.map(config => ({
-        src: config.src,
-        options: config.options
-      })));
+      const imageUrls = images.map(config => 
+        config.options 
+          ? getOptimizedImageUrl(config.src, config.options)
+          : config.src
+      );
+      await preloadImages(imageUrls);
       console.log(`Preloaded ${images.length} images for route: ${route}`);
     } catch (error) {
       console.warn(`Failed to preload images for route ${route}:`, error);
@@ -98,7 +104,7 @@ export function useRouteImagePreloading(routeImages: Record<string, PreloadConfi
 
 // Hook for preloading critical images - DISABLED to prevent preload warnings
 export function useCriticalImagePreloading() {
-  const [criticalImagesLoaded, setCriticalImagesLoaded] = useState(false);
+  const [_criticalImagesLoaded, _setCriticalImagesLoaded] = useState(false);
 
   // DISABLED: Images are lazy-loaded, no need to preload
   // useEffect(() => {
@@ -135,7 +141,10 @@ export function useHoverImagePreloading() {
     // Debounce preloading
     const timeoutId = setTimeout(async () => {
       try {
-        await preloadImage(src, options);
+        const imageUrl = options 
+          ? getOptimizedImageUrl(src, options)
+          : src;
+        await preloadImage(imageUrl);
         console.log(`Preloaded image on hover: ${src}`);
       } catch (error) {
         console.warn(`Failed to preload image on hover: ${src}`, error);

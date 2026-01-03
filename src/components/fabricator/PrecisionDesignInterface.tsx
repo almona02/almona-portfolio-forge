@@ -8,6 +8,15 @@ import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { GridCell, Profile, WindowGrid, WindowUnit } from '@/types/fabricator';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  CALCULATION_MULTIPLIERS,
+  CELL_CONSTRAINTS,
+  GRID_DEFAULTS,
+  INTERACTION_TOLERANCES,
+  PROFILE_CONSTANTS,
+  SVG_CONSTANTS,
+  VIEW_CONSTANTS,
+} from './designConstants';
 
 interface PrecisionDesignInterfaceProps {
   project: WindowUnit | null;
@@ -43,8 +52,8 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
   const [hoveredCell, setHoveredCell] = useState<string | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState<number>(VIEW_CONSTANTS.DEFAULT_ZOOM);
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: VIEW_CONSTANTS.DEFAULT_PAN_X, y: VIEW_CONSTANTS.DEFAULT_PAN_Y });
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
 
@@ -70,7 +79,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
                   name: profileData.name,
                   brands: [profileData.manufacturer],
                   regions: ['turkey'],
-                  defaultStockLengthMm: profileData.profiles?.[0]?.barLength || 6500,
+                  defaultStockLengthMm: profileData.profiles?.[0]?.barLength || PROFILE_CONSTANTS.DEFAULT_STOCK_LENGTH_MM,
                 },
                 windowSystemSpec: {
                   ...profileData,
@@ -130,8 +139,8 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
 
     // Convert pattern layout to WindowGrid
     // Parse layout string to determine grid dimensions
-    let rows = 1;
-    let cols = 1;
+    let rows: number = GRID_DEFAULTS.DEFAULT_ROWS;
+    let cols: number = GRID_DEFAULTS.DEFAULT_COLS;
     
     // Extract number from layout string (e.g., "2-panel sliding" -> 2)
     const panelMatch = pattern.layout.match(/(\d+)[- ]panel/);
@@ -139,7 +148,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
       const panelCount = parseInt(panelMatch[1], 10);
       // For sliding windows, panels are side-by-side (1 row, N cols)
       if (pattern.type === 'sliding' || pattern.type === 'door') {
-        rows = 1;
+        rows = GRID_DEFAULTS.DEFAULT_ROWS;
         cols = panelCount;
       } else {
         // For other types, try to create a square-ish grid
@@ -147,8 +156,8 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
         cols = Math.ceil(panelCount / rows);
       }
     } else if (pattern.layout.includes('single') || pattern.layout.includes('lite')) {
-      rows = 1;
-      cols = 1;
+      rows = GRID_DEFAULTS.DEFAULT_ROWS;
+      cols = GRID_DEFAULTS.DEFAULT_COLS;
     }
 
     const newGrid: WindowGrid = {
@@ -268,7 +277,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
 
         // Calculate price
         const _pricingEngine = new PricingEngine({ region: 'egypt', currency: 'EGP' });
-        const lengthM = totalBarLength / 1000;
+        const lengthM = totalBarLength / CALCULATION_MULTIPLIERS.MM_TO_M;
         const price = profile.costPerMeter ? lengthM * profile.costPerMeter : 0;
         totalPrice += price;
 
@@ -281,10 +290,10 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
       const wastePercentage = totalMaterial > 0 ? (totalWaste / totalMaterial) * 100 : 0;
 
       return {
-        efficiency: Math.round(efficiency * 10) / 10,
-        wastePercentage: Math.round(wastePercentage * 10) / 10,
-        price: Math.round(totalPrice * 100) / 100,
-        materialWeight: Math.round(totalWeight * 10) / 10
+        efficiency: Math.round(efficiency * CALCULATION_MULTIPLIERS.ROUNDING_MULTIPLIER_1_DECIMAL) / CALCULATION_MULTIPLIERS.ROUNDING_MULTIPLIER_1_DECIMAL,
+        wastePercentage: Math.round(wastePercentage * CALCULATION_MULTIPLIERS.ROUNDING_MULTIPLIER_1_DECIMAL) / CALCULATION_MULTIPLIERS.ROUNDING_MULTIPLIER_1_DECIMAL,
+        price: Math.round(totalPrice * CALCULATION_MULTIPLIERS.ROUNDING_MULTIPLIER_2_DECIMAL) / CALCULATION_MULTIPLIERS.ROUNDING_MULTIPLIER_2_DECIMAL,
+        materialWeight: Math.round(totalWeight * CALCULATION_MULTIPLIERS.ROUNDING_MULTIPLIER_1_DECIMAL) / CALCULATION_MULTIPLIERS.ROUNDING_MULTIPLIER_1_DECIMAL
       };
     } catch (error) {
       console.error('Error calculating waste metrics:', error);
@@ -294,10 +303,10 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
 
   // Calculate cell dimensions with proper aspect ratio
   // Use fixed dimensions to avoid floating point precision issues
-  const baseSvgWidth = 1200;
+  const baseSvgWidth = SVG_CONSTANTS.BASE_SVG_WIDTH_PX;
   const baseSvgHeight = project && project.overallWidth > 0 
-    ? Math.round((project.overallHeight / project.overallWidth) * 1200) 
-    : 1200;
+    ? Math.round((project.overallHeight / project.overallWidth) * SVG_CONSTANTS.BASE_SVG_WIDTH_PX) 
+    : SVG_CONSTANTS.BASE_SVG_HEIGHT_PX;
   const svgWidth = baseSvgWidth;
   const svgHeight = baseSvgHeight;
 
@@ -335,8 +344,8 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
 
   // Get system max width constraint
   const maxSashWidth = useMemo(() => {
-    if (!systemPack?.smartDrawPreset) return 1500; // Default
-    return systemPack.smartDrawPreset.maxPanelWidthMm || 1500;
+    if (!systemPack?.smartDrawPreset) return CELL_CONSTRAINTS.DEFAULT_MAX_SASH_WIDTH_MM; // Default
+    return systemPack.smartDrawPreset.maxPanelWidthMm || CELL_CONSTRAINTS.DEFAULT_MAX_SASH_WIDTH_MM;
   }, [systemPack]);
 
   // Check constraints for each cell
@@ -444,7 +453,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     const leftCellWidth = ((newColWidths[colIndex] + deltaWeight) / totalColWeight) * project.overallWidth;
     const rightCellWidth = ((newColWidths[colIndex + 1] - deltaWeight) / totalColWeight) * project.overallWidth;
 
-    if (leftCellWidth < 200 || rightCellWidth < 200) return; // Min width
+    if (leftCellWidth < CELL_CONSTRAINTS.MIN_CELL_WIDTH_MM || rightCellWidth < CELL_CONSTRAINTS.MIN_CELL_WIDTH_MM) return; // Min width
     if (leftCellWidth > maxSashWidth || rightCellWidth > maxSashWidth) return; // Max width
 
     newColWidths[colIndex] += deltaWeight;
@@ -468,7 +477,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     // Check if clicking on a mullion (vertical)
     for (let i = 1; i < colStarts.length; i++) {
       const mullionX = colStarts[i];
-      if (Math.abs(svgX - mullionX) < 10) {
+      if (Math.abs(svgX - mullionX) < INTERACTION_TOLERANCES.MULLION_CLICK_TOLERANCE_PX) {
         setDragState({ type: 'mullion-vertical', index: i - 1, startX: x });
         return;
       }
@@ -477,7 +486,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
     // Check if clicking on a transom (horizontal)
     for (let i = 1; i < rowStarts.length; i++) {
       const transomY = rowStarts[i];
-      if (Math.abs(svgY - transomY) < 10) {
+      if (Math.abs(svgY - transomY) < INTERACTION_TOLERANCES.MULLION_CLICK_TOLERANCE_PX) {
         setDragState({ type: 'mullion-horizontal', index: i - 1, startY: y });
         return;
       }
@@ -493,7 +502,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
 
         if (svgX >= cellX && svgX <= cellX + cellW && svgY >= cellY && svgY <= cellY + cellH) {
           // Check if near vertical edge (split vertical)
-          if (Math.abs(svgX - cellX) < 20 && c > 0) {
+          if (Math.abs(svgX - cellX) < INTERACTION_TOLERANCES.SPLIT_EDGE_TOLERANCE_PX && c > 0) {
             setDragState({ type: 'split-vertical', index: c - 1, startX: x });
             return;
           }

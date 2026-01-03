@@ -15,14 +15,19 @@
  */
 
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
+import type { FabricationData, WindowUnit } from '@/types/fabricator';
 import { SystemPack } from '@/types/fabricator';
-import type { WindowUnit, FabricationData } from '@/types/fabricator';
-import { ProfileBOMCalculator } from './bom/ProfileBOMCalculator';
-import { HardwareBOMCalculator } from './bom/HardwareBOMCalculator';
-import { GlassBOMCalculator } from './bom/GlassBOMCalculator';
 import { AccessoriesBOMCalculator } from './bom/AccessoriesBOMCalculator';
 import { AssemblySequenceGenerator } from './bom/AssemblySequenceGenerator';
 import { CostCalculator } from './bom/CostCalculator';
+import { GlassBOMCalculator } from './bom/GlassBOMCalculator';
+import { HardwareBOMCalculator } from './bom/HardwareBOMCalculator';
+import { ProfileBOMCalculator } from './bom/ProfileBOMCalculator';
+import {
+    BOM_ACCURACY_TARGETS,
+    CHECKSUM_CONSTANTS,
+    CONFIDENCE_WEIGHTS,
+} from './bom/bomGeneratorConstants';
 
 export interface CompleteBOM {
   profiles: FabricationData['profiles'];
@@ -120,7 +125,7 @@ export class PresetAwareBOMGenerator {
       accessories,
       assemblySequence,
       cost,
-      accuracy: 0.998, // 99.8% target
+      accuracy: BOM_ACCURACY_TARGETS.TARGET_ACCURACY,
       confidence: this.calculateConfidence(profiles, hardware, glazing),
       metadata: {
         generationTimestamp: new Date().toISOString(),
@@ -143,24 +148,24 @@ export class PresetAwareBOMGenerator {
     let maxScore = 0;
 
     // Profile completeness (40% weight)
-    maxScore += 40;
+    maxScore += CONFIDENCE_WEIGHTS.PROFILE_COMPLETENESS;
     if (profiles.length > 0) {
       const hasFrame = profiles.some(p => p.role === 'frame');
       const hasSash = profiles.some(p => p.role === 'sash');
-      score += hasFrame ? 20 : 0;
-      score += hasSash ? 20 : 0;
+      score += hasFrame ? CONFIDENCE_WEIGHTS.FRAME_PROFILE_SCORE : 0;
+      score += hasSash ? CONFIDENCE_WEIGHTS.SASH_PROFILE_SCORE : 0;
     }
 
     // Hardware completeness (30% weight)
-    maxScore += 30;
+    maxScore += CONFIDENCE_WEIGHTS.HARDWARE_COMPLETENESS;
     if (hardware.length > 0) {
-      score += 30; // Hardware present
+      score += CONFIDENCE_WEIGHTS.HARDWARE_COMPLETENESS; // Hardware present
     }
 
     // Glazing completeness (30% weight)
-    maxScore += 30;
+    maxScore += CONFIDENCE_WEIGHTS.GLAZING_COMPLETENESS;
     if (glazing.length > 0) {
-      score += 30; // Glazing present
+      score += CONFIDENCE_WEIGHTS.GLAZING_COMPLETENESS; // Glazing present
     }
 
     return maxScore > 0 ? score / maxScore : 0;
@@ -177,7 +182,7 @@ export class PresetAwareBOMGenerator {
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
-    return btoa(data).substring(0, 32);
+    return btoa(data).substring(0, CHECKSUM_CONSTANTS.FALLBACK_CHECKSUM_LENGTH);
   }
 }
 
