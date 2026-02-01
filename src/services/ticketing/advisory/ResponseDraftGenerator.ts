@@ -130,7 +130,7 @@ export class ResponseDraftGenerator {
 
       return hardened.hardenedAdvisory as ResponseAdvisory;
 
-    } catch (error) {
+    } catch (_error) {
       const responseTime = performance.now() - startTime;
       
       this.metrics.record({

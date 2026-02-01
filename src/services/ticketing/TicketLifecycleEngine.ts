@@ -19,7 +19,7 @@ export interface TicketTransitionResult {
 }
 
 // Helper for deterministic ID generation (mock implementation)
-function generateDeterministicId(ticketId: string, targetStatus: string, actorId: string, timestamp: number): string {
+function generateDeterministicId(ticketId: string, targetStatus: string, _actorId: string, timestamp: number): string {
     return `TRANS-${ticketId}-${targetStatus}-${timestamp}`;
 }
 
@@ -44,7 +44,7 @@ export class TicketLifecycleEngine {
   ): { valid: boolean; ruleId: string; rationale: string } {
     const allowed = this.STATUS_TRANSITIONS[currentStatus as keyof typeof this.STATUS_TRANSITIONS] || [];
     
-    if (allowed.includes(targetStatus)) {
+    if ((allowed as string[]).includes(targetStatus)) {
       return {
         valid: true,
         ruleId: `TRANSITION-${currentStatus.toUpperCase()}-TO-${targetStatus.toUpperCase()}`,
@@ -93,8 +93,5 @@ export class TicketLifecycleEngine {
     };
   }
 
-  // Mock method to satisfy the usage in executeTransition if we don't pass currentStatus
-  private getCurrentStatus(ticketId: string): string {
-      return 'open'; // Stub
-  }
+
 }

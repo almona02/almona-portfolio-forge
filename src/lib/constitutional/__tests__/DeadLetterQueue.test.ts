@@ -80,7 +80,7 @@ describe('PositionStateSyncService DLQ Integration', () => {
         vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
             throw new Error('Disk full');
         });
-        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const _consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
         
         // Log entries to trigger flush
         await (service as any).logToConstitutionalAudit({ type: 'TEST1' });

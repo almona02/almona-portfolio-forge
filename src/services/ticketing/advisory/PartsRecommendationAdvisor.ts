@@ -126,7 +126,7 @@ export class PartsRecommendationAdvisor {
 
       return hardened.hardenedAdvisory as PartsAdvisory;
 
-    } catch (error) {
+    } catch (_error) {
       const responseTime = performance.now() - startTime;
       
       this.metrics.record({

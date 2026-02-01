@@ -53,7 +53,7 @@ export class AdvisoryCircuitBreaker {
         circuitState: this.state,
         usedFallback: false
       };
-    } catch (error) {
+    } catch (_error) {
       // Failure handling
       this.recordFailure();
       return this.fallback(advisoryType);

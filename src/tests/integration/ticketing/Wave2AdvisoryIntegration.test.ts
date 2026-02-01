@@ -237,7 +237,7 @@ describe('Wave 2 Advisory Integration Tests', () => {
           await circuitBreaker.execute('routing', async () => {
             throw new Error('Service failure');
           });
-        } catch (error) {
+        } catch (_error) {
           // Expected
         }
       }

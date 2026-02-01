@@ -47,7 +47,7 @@ export class RoutingAdvisor {
             const prediction = this.mlModel.predict(ticket);
             suggestion = `Technician ${prediction.technicianId} (ML suggested)`;
             confidence = prediction.confidence;
-        } catch (e) {
+        } catch (_e) {
              // Fallback if ML fails or not loaded
              suggestion = this.generateRuleBasedSuggestion(ticket, availableTechnicians);
              confidence = 0.8;
@@ -68,23 +68,10 @@ export class RoutingAdvisor {
     };
   }
 
-  private generateRuleBasedSuggestion(ticket: Ticket, technicians: Technician[]): string {
+  private generateRuleBasedSuggestion(_ticket: Ticket, technicians: Technician[]): string {
       // Simple heuristic
       return technicians.length > 0 ? technicians[0].name : "Unassigned";
   }
   
-  /**
-   * Constitutional wrapper for ML suggestions
-   */
-  private wrapMLSuggestion(prediction: any): RoutingAdvisory {
-    return {
-      suggestion: prediction.technicianId,
-      confidence: prediction.confidence,
-      tier: 'Tier 2',
-      constitutionalDisclaimer: 'ML-based advisory suggestion. Human validation mandatory before execution. This system makes no claims of accuracy or authority.',
-      requiresHumanValidation: true,
-      mlModelUsed: prediction.modelName,
-      mlModelVersion: prediction.modelVersion
-    };
-  }
+
 }
