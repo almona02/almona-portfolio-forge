@@ -8,10 +8,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useAdvisoryWebSocket } from '../../../../hooks/useAdvisoryWebSocket';
 import { AdvisoryInsights, AdvisoryMetrics } from '../../../../lib/ticketing/advisory/AdvisoryMetrics';
-import { PartsRecommendationAdvisor } from '../../../../services/ticketing/advisory/PartsRecommendationAdvisor';
-import { PredictiveMaintenanceAdvisor } from '../../../../services/ticketing/advisory/PredictiveMaintenanceAdvisor';
-import { ResponseDraftGenerator } from '../../../../services/ticketing/advisory/ResponseDraftGenerator';
-import { RoutingAdvisor } from '../../../../services/ticketing/advisory/RoutingAdvisor';
 import { AdvisoryGate } from '../../gates/AdvisoryGate';
 
 // Icons (using Lucide React for gold-tier icons)
@@ -60,34 +56,13 @@ export const AdvisoryDashboard: React.FC = () => {
     const [metrics, setMetrics] = useState<AdvisoryInsights | null>(null);
 
     // Initialize advisors
-    const maintenanceAdvisor = useMemo(() => new PredictiveMaintenanceAdvisor(), []);
-    const responseAdvisor = useMemo(() => new ResponseDraftGenerator(), []);
-    const partsAdvisor = useMemo(() => new PartsRecommendationAdvisor(), []);
-    const routingAdvisor = useMemo(() => new RoutingAdvisor(), []);
+    // Initialize advisors
     const metricsCollector = useMemo(() => new AdvisoryMetrics(), []);
 
     // WebSocket for real-time updates
     const ws = useAdvisoryWebSocket();
 
-    // Load initial data
-    useEffect(() => {
-        loadAdvisories();
-        loadMetrics();
-
-        // Set up real-time subscription
-        const unsubscribe = ws.subscribe('advisory-update', (data) => {
-            if (data.type === 'new-advisory') {
-                setPendingAdvisories(prev => [data.advisory, ...prev]);
-            } else if (data.type === 'validation') {
-                setPendingAdvisories(prev => prev.filter(a => a.id !== data.advisoryId));
-                setValidatedAdvisories(prev => [data.validatedAdvisory, ...prev]);
-            }
-        });
-
-        return () => unsubscribe();
-    }, []);
-
-    const loadAdvisories = async () => {
+    const loadAdvisories = React.useCallback(async () => {
         setIsRefreshing(true);
         try {
             // In production, this would fetch from API
@@ -136,12 +111,30 @@ export const AdvisoryDashboard: React.FC = () => {
         } finally {
             setIsRefreshing(false);
         }
-    };
+    }, []);
 
-    const loadMetrics = async () => {
+    const loadMetrics = React.useCallback(async () => {
         const insights = metricsCollector.getInsights();
         setMetrics(insights);
-    };
+    }, [metricsCollector]);
+
+    // Load initial data
+    useEffect(() => {
+        void loadAdvisories();
+        void loadMetrics();
+
+        // Set up real-time subscription
+        const unsubscribe = ws.subscribe('advisory-update', (data) => {
+            if (data.type === 'new-advisory') {
+                setPendingAdvisories(prev => [data.advisory, ...prev]);
+            } else if (data.type === 'validation') {
+                setPendingAdvisories(prev => prev.filter(a => a.id !== data.advisoryId));
+                setValidatedAdvisories(prev => [data.validatedAdvisory, ...prev]);
+            }
+        });
+
+        return () => unsubscribe();
+    }, [ws, loadAdvisories, loadMetrics]);
 
     // Filter advisories based on selection
     const filteredAdvisories = useMemo(() => {
@@ -188,7 +181,7 @@ export const AdvisoryDashboard: React.FC = () => {
 
             // Show success notification
             showNotification('Advisory validated successfully', 'success');
-        } catch (error) {
+        } catch (_error) {
             showNotification('Validation failed', 'error');
         }
     };
@@ -524,7 +517,7 @@ const AdvisoryCard: React.FC<{
     advisory: Advisory;
     onValidate: (id: string, decision: ValidationDecision, rationale: string) => void;
     activeTab: string;
-}> = ({ advisory, onValidate, activeTab }) => {
+}> = ({ advisory, onValidate: _onValidate, activeTab }) => {
     const getIcon = (type: string) => {
         switch (type) {
             case 'predictive_maintenance': return <Wrench size={16} />;

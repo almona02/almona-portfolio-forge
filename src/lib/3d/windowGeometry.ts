@@ -1622,8 +1622,6 @@ function generateGenericGeometries(windowUnit: WindowUnit): FrameGeometry {
           ? Math.min(0.05, frameProfile.width * 0.9)
           : Math.min(frameProfile.width * 0.4, 0.01); // tighter fit than subtracting full profile width
         const glassInset = Math.min(frameProfile.width * 0.25, 0.006);
-        const mullionGap = Math.min(0.008, frameProfile.width * 0.45);
-        const mullionDepth = Math.max(frameProfile.depth || 0.03, 0.02);
 
         // Mullion/Transom Generation
         // const muntins: BufferGeometry[] = []; // Removed: Declared at function scope

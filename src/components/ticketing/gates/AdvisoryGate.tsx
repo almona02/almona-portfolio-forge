@@ -25,7 +25,7 @@ interface AdvisoryGateProps<T> {
 export function AdvisoryGate<T extends { tier: string; requiresHumanValidation: boolean; constitutionalDisclaimer: string; suggestion: any; confidence?: number }>({
     advisoryOutput,
     onValidate,
-    validationType
+    validationType: _validationType
 }: AdvisoryGateProps<T>) {
     // Constitutional enforcement
     if (advisoryOutput.tier !== 'Tier 2') {

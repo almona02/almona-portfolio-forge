@@ -13,15 +13,12 @@
  */
 
 import {
-  yilmazEgyptRulesEngine,
-  YilmazTechnicianInput,
-  YilmazRuleResult,
-  YilmazMachineModel,
-  YILMAZ_EGYPT_PARTS,
-  YilmazPartNumber
+    YilmazMachineModel,
+    YilmazRuleResult,
+    YilmazTechnicianInput,
+    yilmazEgyptRulesEngine
 } from '../rules/YilmazEgyptRules';
 
-import { AdvisoryHardener } from '../../../../lib/ticketing/advisory/AdvisoryHardener';
 import { AdvisoryMetrics } from '../../../../lib/ticketing/advisory/AdvisoryMetrics';
 import { AdvisoryCircuitBreaker } from '../../../../lib/ticketing/advisory/CircuitBreaker';
 
@@ -107,8 +104,7 @@ export class YilmazExpertAdvisor {
         throw new Error(`Invalid technician input: ${validation.errors.join(', ')}`);
       }
 
-      // Execute deterministic rules (Tier 3)
-      const ruleResult = await this.circuitBreaker.execute('yilmaz-rules', async () => {
+      const ruleResult = await this.circuitBreaker.execute('maintenance', async () => {
         return yilmazEgyptRulesEngine.executeRules(input);
       });
 
@@ -131,7 +127,7 @@ export class YilmazExpertAdvisor {
 
       return hardenedAdvisory;
 
-    } catch (error) {
+    } catch (_error) {
       const responseTime = performance.now() - startTime;
 
       this.metrics.record({
