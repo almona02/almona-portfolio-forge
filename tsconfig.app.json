@@ -2,10 +2,13 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
-
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -13,26 +16,30 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
-
+    "resolveJsonModule": true,
     /* Linting - Gradual strict mode (Week 1 hardening) */
     "strict": true,
-    "strictNullChecks": true,   // Phase 2: Enable strict null checks
-    "noImplicitAny": true,      // Phase 3: Enable no implicit any types
+    "strictNullChecks": true, // Phase 2: Enable strict null checks
+    "noImplicitAny": true, // Phase 3: Enable no implicit any types
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
-    "strictPropertyInitialization": true,   // Phase 4: Enable strict property initialization
+    "strictPropertyInitialization": true, // Phase 4: Enable strict property initialization
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,     // Phase 4: Enable no fallthrough cases
-    
+    "noFallthroughCasesInSwitch": true, // Phase 4: Enable no fallthrough cases
     /* Type definitions - suppress implicit type library warnings */
     "types": [],
-    "typeRoots": ["./node_modules/@types"],
-
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

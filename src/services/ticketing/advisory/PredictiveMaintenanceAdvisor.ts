@@ -98,7 +98,7 @@ export class PredictiveMaintenanceAdvisor {
 
       return hardened.hardenedAdvisory as MaintenanceAdvisory;
 
-    } catch (error) {
+    } catch (_error) {
       const responseTime = performance.now() - startTime;
       
       this.metrics.record({

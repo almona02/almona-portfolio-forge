@@ -8,7 +8,7 @@ uvicorn[standard]==0.24.0
 click==8.1.7  # Required by uvicorn (needed when using --no-deps)
 pydantic==2.9.0
 pydantic-settings==2.1.0
-python-multipart==0.0.20
+python-multipart>=0.0.20
 
 # Database
 supabase==2.8.0
