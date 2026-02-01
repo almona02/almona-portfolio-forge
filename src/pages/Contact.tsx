@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import SEO from "@/components/SEO";
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
 import { Button } from "@/shared/ui/ui/button";
 import { Input } from "@/shared/ui/ui/input";
-import { Textarea } from "@/shared/ui/ui/textarea";
 import { Label } from "@/shared/ui/ui/label";
-import { Phone, Mail, MapPin, Clock } from "lucide-react";
-import { withErrorBoundary } from "@/hocs/withErrorBoundary";
+import { Textarea } from "@/shared/ui/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useLocation } from "react-router-dom";
-import SEO from "@/components/SEO";
+import * as z from "zod";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -34,7 +34,7 @@ const Contact = () => {
     resolver: zodResolver(contactSchema),
   });
 
-  const onSubmit = (_data: ContactFormValues) => {
+  const onSubmit = useCallback((_data: ContactFormValues) => {
     setIsSubmitting(true);
     // Simulate API call
     setTimeout(() => {
@@ -43,10 +43,18 @@ const Contact = () => {
       // Reset form after 3 seconds
       setTimeout(() => setSubmitSuccess(false), 3000);
     }, 1500);
-  };
+  }, []);
 
   const location = useLocation();
-  const currentUrl = `https://www.almona02.com${location.pathname}`;
+  const currentUrl = useMemo(() => `https://www.almona02.com${location.pathname}`, [location.pathname]);
+
+  const handleMapClick = useCallback(() => {
+    window.open('https://share.google/Pah6FoMlL3e5MuGnq', '_blank');
+  }, []);
+
+  const handleNeighborhoodClick = useCallback(() => {
+    window.open('/neighborhood-discovery.html', '_blank');
+  }, []);
 
   return (
     <>
@@ -59,7 +67,7 @@ const Contact = () => {
       <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 py-12">
           <div className="mb-16 text-center fade-in-up">
-            <h1 className="text-4xl font-bold mb-4">
+            <h1 className="typography-h1 mb-4">
               <span className="text-gradient-orange">Contact Us</span>
             </h1>
             <p className="text-gray-400 max-w-2xl mx-auto">
@@ -71,7 +79,7 @@ const Contact = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div className="bg-almona-darker p-8 rounded-xl border border-almona-light/20 fade-in-up">
-              <h2 className="text-2xl font-semibold mb-6">Send us a message</h2>
+              <h2 className="typography-h2 font-semibold mb-6">Send us a message</h2>
 
               {submitSuccess && (
                 <div className="mb-6 p-4 bg-green-900/30 border border-green-500 rounded-lg">
@@ -81,10 +89,10 @@ const Contact = () => {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="name" className="typography-label">Full Name</Label>
                     <Input
                       id="name"
                       className="mt-2 bg-almona-dark border-almona-light/30"
@@ -99,7 +107,7 @@ const Contact = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label htmlFor="email" className="typography-label">Email Address</Label>
                     <Input
                       id="email"
                       type="email"
@@ -117,7 +125,7 @@ const Contact = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="phone" className="typography-label">Phone Number</Label>
                     <Input
                       id="phone"
                       className="mt-2 bg-almona-dark border-almona-light/30"
@@ -132,7 +140,7 @@ const Contact = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="subject">Subject</Label>
+                    <Label htmlFor="subject" className="typography-label">Subject</Label>
                     <Input
                       id="subject"
                       className="mt-2 bg-almona-dark border-almona-light/30"
@@ -148,7 +156,7 @@ const Contact = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="message">Message</Label>
+                  <Label htmlFor="message" className="typography-label">Message</Label>
                   <Textarea
                     id="message"
                     className="mt-2 bg-almona-dark border-almona-light/30 min-h-[150px]"
@@ -176,7 +184,7 @@ const Contact = () => {
             <div className="fade-in-up space-y-8"
             >
               <div className="bg-almona-darker p-8 rounded-xl border border-almona-light/20">
-                <h2 className="text-2xl font-semibold mb-6">
+                <h2 className="typography-h2 font-semibold mb-6">
                   Contact Information
                 </h2>
 
@@ -184,7 +192,7 @@ const Contact = () => {
                   <div className="flex items-start">
                     <MapPin className="h-6 w-6 text-almona-orange mr-4 mt-1" />
                     <div>
-                      <h3 className="font-medium text-lg mb-1">Our Location</h3>
+                      <h3 className="typography-h3 font-medium text-lg mb-1">Our Location</h3>
                       <p className="text-gray-400">
                         ALMONA Co. 13B/18 Tarik Ibn Ziad st. Taawen , Haram ,
                         Giza, Egypt
@@ -197,9 +205,10 @@ const Contact = () => {
                   <div className="flex items-start">
                     <Phone className="h-6 w-6 text-almona-orange mr-4 mt-1" />
                     <div>
-                      <h3 className="font-medium text-lg mb-1">Phone</h3>
+                      <h3 className="typography-h3 font-medium text-lg mb-1">Phone</h3>
                       <p className="text-gray-400">
-                        +20 100 309 7177
+                        +20 100 309 7177,
+                        +20 102 800 3520
                         <br />
                         +20 235 856 305
                       </p>
@@ -209,7 +218,7 @@ const Contact = () => {
                   <div className="flex items-start">
                     <Mail className="h-6 w-6 text-almona-orange mr-4 mt-1" />
                     <div>
-                      <h3 className="font-medium text-lg mb-1">Email</h3>
+                      <h3 className="typography-h3 font-medium text-lg mb-1">Email</h3>
                       <p className="text-gray-400">
                         almona02@yahoo.com
                         <br />
@@ -221,7 +230,7 @@ const Contact = () => {
                   <div className="flex items-start">
                     <Clock className="h-6 w-6 text-almona-orange mr-4 mt-1" />
                     <div>
-                      <h3 className="font-medium text-lg mb-1">
+                      <h3 className="typography-h3 font-medium text-lg mb-1">
                         Working Hours
                       </h3>
                       <p className="text-gray-400">
@@ -235,14 +244,14 @@ const Contact = () => {
               </div>
 
               <div className="bg-almona-darker p-1 rounded-xl border border-almona-light/20 overflow-hidden">
-                <div className="rounded-lg overflow-hidden h-80 relative group cursor-pointer" onClick={() => window.open('https://share.google/Pah6FoMlL3e5MuGnq', '_blank')}>
+                <div className="rounded-lg overflow-hidden h-80 relative group cursor-pointer" onClick={handleMapClick}>
                   {/* Map placeholder with location info */}
                   <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
                     <div className="text-center text-white">
                       <svg className="w-16 h-16 mx-auto mb-4 text-almona-orange" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                       </svg>
-                      <h3 className="text-xl font-semibold mb-2">Almona Industrial</h3>
+                      <h3 className="typography-h3 mb-2">Almona Industrial</h3>
                       <p className="text-gray-300 mb-4">Cairo, Egypt</p>
                       <p className="text-sm text-gray-400">Click to view on Google Maps</p>
                     </div>
@@ -262,7 +271,7 @@ const Contact = () => {
               
               {/* Neighborhood Discovery Button */}
               <div className="mt-4 text-center">
-                <Button variant="outline" className="w-full border-almona-light/30 hover:bg-almona-light/10" onClick={() => window.open('/neighborhood-discovery.html', '_blank')}>
+                <Button variant="outline" className="w-full border-almona-light/30 hover:bg-almona-light/10" onClick={handleNeighborhoodClick}>
                   Explore Our Neighborhood
                 </Button>
               </div>

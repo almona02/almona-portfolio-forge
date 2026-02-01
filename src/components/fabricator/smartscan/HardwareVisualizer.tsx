@@ -18,7 +18,7 @@ export const HardwareVisualizer: React.FC<HardwareVisualizerProps> = ({
   return (
     <div className="border rounded bg-white p-4 relative">
       <div className="flex justify-between items-center mb-3">
-        <h3 className="font-medium text-gray-800">Profile Cross-Section</h3>
+        <h3 className="typography-h3 font-medium text-gray-800">Profile Cross-Section</h3>
         <div className="text-xs text-gray-500">
           {profile.widthMm || '?'} × {profile.heightMm || '?'} mm
         </div>

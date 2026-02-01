@@ -56,21 +56,21 @@ export const DurabilityDetailsModal: React.FC<DurabilityDetailsModalProps> = ({
         </DialogHeader>
         <div className="py-4">
           <div className="mb-4">
-            <h4 className="font-semibold text-lg mb-2">Durability Score:</h4>
-            <Badge className="bg-orange-600 text-white text-xl px-4 py-2">
+            <h4 className="typography-h4 mb-2">Durability Score:</h4>
+            <Badge className="btn-primary">
               {durabilityInfo.score}/5
             </Badge>
             <p className="text-gray-300 mt-2">This score reflects the machine&apos;s expected resilience and lifespan under typical operating conditions.</p>
           </div>
 
           <div className="mb-4">
-            <h4 className="font-semibold text-lg mb-2">Recommended Maintenance Interval:</h4>
+            <h4 className="typography-h4 mb-2">Recommended Maintenance Interval:</h4>
             <p className="text-gray-300">{durabilityInfo.maintenanceInterval}</p>
             <p className="text-sm text-gray-400 mt-1">Adhering to this schedule is crucial for maximizing the machine&apos;s lifespan and ensuring optimal performance.</p>
           </div>
 
           <div className="mb-4">
-            <h4 className="font-semibold text-lg mb-2">Key Durability Features:</h4>
+            <h4 className="typography-h4 mb-2">Key Durability Features:</h4>
             <ul className="list-disc list-inside space-y-1 text-gray-300">
               {durabilityInfo.keyDurabilityFeatures.map((feature, index) => (
                 <li key={index}>{feature}</li>

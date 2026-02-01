@@ -33,7 +33,7 @@ export const EgyptianDefaultsPreview: React.FC<EgyptianDefaultsPreviewProps> = (
     <Card className={className}>
       <CardHeader>
         <CardTitle className="text-sm font-semibold flex items-center gap-2">
-          <Palette className="h-4 w-4 text-orange-500" />
+          <Palette className="h-4 w-4 text-amber-500" />
           Egyptian Defaults
         </CardTitle>
         <CardDescription className="text-xs">

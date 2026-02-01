@@ -95,7 +95,7 @@ export const EngineeringValidationOverlay: React.FC<EngineeringValidationOverlay
                 <Badge variant={firman.severity === 'IMPERIAL_DECREE' ? 'destructive' : 'secondary'}>
                   {firman.code}
                 </Badge>
-                <h4 className="font-semibold font-cairo">{firman.title}</h4>
+                <h4 className="typography-h4 font-cairo">{firman.title}</h4>
               </div>
               <p className="text-sm mb-2">{firman.message}</p>
 
@@ -176,12 +176,12 @@ export const EngineeringValidationOverlay: React.FC<EngineeringValidationOverlay
       <div className="flex items-center justify-between p-4 bg-canvas rounded-lg border">
         <div className="flex items-center gap-3">
           {validationResult.isValid ? (
-            <CheckCircle2 className="h-6 w-6 text-green-500" />
+            <CheckCircle2 className="h-6 w-6  status-valid" />
           ) : (
             <XCircle className="h-6 w-6 text-red-500" />
           )}
           <div>
-            <h3 className="font-semibold font-cairo">
+            <h3 className="typography-h3 font-cairo">
               {validationResult.isValid ? 'Design Valid' : 'Design Has Issues'}
             </h3>
             <p className="text-xs text-muted-foreground">

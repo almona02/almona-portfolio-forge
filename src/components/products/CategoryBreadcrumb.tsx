@@ -52,7 +52,7 @@ const CategoryBreadcrumb: React.FC<CategoryBreadcrumbProps> = ({
               className={`
                 p-1 h-auto text-xs
                 ${isLast 
-                  ? 'text-orange-400 font-medium cursor-default' 
+                  ? 'text-amber-400 font-medium cursor-default' 
                   : 'text-gray-400 hover:text-white cursor-pointer'
                 }
               `}

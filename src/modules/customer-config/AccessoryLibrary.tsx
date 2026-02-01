@@ -177,7 +177,7 @@ export const AccessoryLibrary: React.FC<AccessoryLibraryProps> = ({
       lock: 'bg-purple-500/20 text-purple-400',
       handle: 'bg-green-500/20 text-green-400',
       seal: 'bg-yellow-500/20 text-yellow-400',
-      spacer: 'bg-orange-500/20 text-orange-400',
+      spacer: 'bg-amber-500/20 text-amber-400',
       corner: 'bg-red-500/20 text-red-400',
       other: 'bg-gray-500/20 text-gray-400',
     };
@@ -322,7 +322,7 @@ export const AccessoryLibrary: React.FC<AccessoryLibraryProps> = ({
           <div className="flex gap-2">
             {editingId ? (
               <>
-                <Button onClick={handleUpdateAccessory} className="bg-orange-500 hover:bg-orange-600">
+                <Button onClick={handleUpdateAccessory} className="btn-primary">
                   <Save className="h-4 w-4 mr-2" />
                   Update Accessory
                 </Button>
@@ -331,7 +331,7 @@ export const AccessoryLibrary: React.FC<AccessoryLibraryProps> = ({
                 </Button>
               </>
             ) : (
-              <Button onClick={handleAddAccessory} className="bg-orange-500 hover:bg-orange-600">
+              <Button onClick={handleAddAccessory} className="btn-primary">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Accessory
               </Button>
@@ -361,7 +361,7 @@ export const AccessoryLibrary: React.FC<AccessoryLibraryProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h4 className="font-semibold">{accessory.name}</h4>
+                      <h4 className="typography-h4">{accessory.name}</h4>
                       <Badge className={getTypeColor(accessory.type)}>{accessory.type}</Badge>
                       {accessory.category && <Badge variant="outline">{accessory.category}</Badge>}
                     </div>

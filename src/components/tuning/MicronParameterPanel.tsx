@@ -79,7 +79,7 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
       <div className="flex justify-between items-start">
         <div>
           <div className="flex items-center gap-2">
-            <label className="font-bold text-gray-900 text-sm">{label}</label>
+            <label className="typography-label font-bold text-gray-900 text-sm">{label}</label>
             <span className="text-xs text-gray-500">({labelArabic})</span>
           </div>
           <p className="text-xs text-gray-600 mt-1">{description}</p>
@@ -122,7 +122,7 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
     <div className="space-y-6" dir="ltr">
       {/* Header */}
       <div className="bg-gradient-to-r from-[#003366] to-[#001133] text-white p-4 rounded-lg">
-        <h3 className="text-lg font-bold font-cairo">Micron Parameters</h3>
+        <h3 className="typography-h3 text-lg font-cairo">Micron Parameters</h3>
         <p className="text-sm text-yellow-100 mt-1">99.8% Accuracy Tuning</p>
         {systemName && (
           <p className="text-xs text-gray-300 mt-1">System: {systemName}</p>
@@ -143,7 +143,7 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
 
       {/* Core Parameters (All Systems) */}
       <div className="space-y-4">
-        <h4 className="font-bold text-gray-700 text-sm">Core Parameters</h4>
+        <h4 className="typography-h4 text-gray-700 text-sm">Core Parameters</h4>
         
         <ParameterSlider
           label="Saw Blade Kerf"
@@ -191,7 +191,7 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
       {/* UPVC-Specific Parameters */}
       {category === 'upvc' && params.upvcWeldingLoss !== undefined && (
         <div className="space-y-4">
-          <h4 className="font-bold text-gray-700 text-sm">UPVC-Specific</h4>
+          <h4 className="typography-h4 text-gray-700 text-sm">UPVC-Specific</h4>
           
           <ParameterSlider
             label="Welding Loss"
@@ -212,7 +212,7 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
       {/* Aluminum-Specific Parameters (Panda Screen Adapter) */}
       {category === 'aluminum' && params.screenAdapterOffset !== undefined && (
         <div className="space-y-4">
-          <h4 className="font-bold text-gray-700 text-sm">Screen Adapter (Panda-Specific)</h4>
+          <h4 className="typography-h4 text-gray-700 text-sm">Screen Adapter (Panda-Specific)</h4>
           
           <ParameterSlider
             label="Screen Adapter Offset"
@@ -237,7 +237,7 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
       {/* Batch Calibration (Optional) */}
       {params.batchCalibrationOffset !== undefined && (
         <div className="space-y-4">
-          <h4 className="font-bold text-gray-700 text-sm">Machine Calibration</h4>
+          <h4 className="typography-h4 text-gray-700 text-sm">Machine Calibration</h4>
           
           <ParameterSlider
             label="Batch Calibration Offset"
@@ -257,7 +257,7 @@ export const MicronParameterPanel: React.FC<MicronParameterPanelProps> = ({
 
       {/* Summary */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 className="font-bold text-blue-900 text-sm mb-2">Formula Impact</h4>
+        <h4 className="typography-h4 text-blue-900 text-sm mb-2">Formula Impact</h4>
         <div className="text-xs text-blue-800 space-y-1">
           <p>• <strong>Glass Fit:</strong> Frame inner gap - (2 × Kerf) - Trim</p>
           <p>• <strong>Cutting Length:</strong> Design length + Kerf + Calibration</p>

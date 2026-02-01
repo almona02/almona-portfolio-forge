@@ -5,6 +5,7 @@
 
 // Lazy import pdf-lib to reduce initial bundle size
 let PDFDocument: any, rgb: any, StandardFonts: any;
+import { generatePatternVisualization, generateWindowUnitsRow } from '@/lib/exports/windowSnapshotGenerator';
 import { supabase } from '@/lib/supabase';
 import { Quote } from '@/modules/commercial/QuotingEngine';
 import { CuttingPlan, OptimizationResult, WindowUnit } from '@/types/fabricator';
@@ -30,6 +31,9 @@ export interface PDFOptions {
   includeGlazing?: boolean;
   includeAssemblyGuide?: boolean;
   layoutThumbnailUrl?: string;
+  includePatternVisualization?: boolean;
+  windowUnits?: WindowUnit[];
+  includeBarDrawings?: boolean;
 }
 
 export class PDFExportService {
@@ -77,6 +81,62 @@ export class PDFExportService {
         return await this.pdfDoc.embedJpg(buffer);
       }
     } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Embed SVG image from data URL
+   * Converts SVG data URL to PNG for PDF embedding
+   */
+  private async embedSVGFromDataUrl(dataUrl: string): Promise<any> {
+    try {
+      // Extract base64 data from data URL
+      const base64Data = dataUrl.split(',')[1];
+      if (!base64Data) return null;
+
+      // Decode base64 to get SVG string
+      // const _svgString = atob(base64Data);
+      
+      // Create a temporary image element to convert SVG to PNG
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = async () => {
+          try {
+            // Create canvas to render SVG
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width || 800;
+            canvas.height = img.height || 600;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+              reject(new Error('Failed to get canvas context'));
+              return;
+            }
+            ctx.drawImage(img, 0, 0);
+            
+            // Convert canvas to blob, then to array buffer
+            canvas.toBlob(async (blob) => {
+              if (!blob) {
+                reject(new Error('Failed to convert canvas to blob'));
+                return;
+              }
+              const arrayBuffer = await blob.arrayBuffer();
+              try {
+                const pngImage = await this.pdfDoc.embedPng(arrayBuffer);
+                resolve(pngImage);
+              } catch {
+                reject(new Error('Failed to embed PNG'));
+              }
+            }, 'image/png');
+          } catch (error) {
+            reject(error);
+          }
+        };
+        img.onerror = () => reject(new Error('Failed to load SVG image'));
+        img.src = dataUrl;
+      });
+    } catch (error) {
+      console.error('Failed to embed SVG:', error);
       return null;
     }
   }
@@ -150,9 +210,102 @@ export class PDFExportService {
     // Project Information
     await this.addSectionTitle('Project Quotation');
     await this.addProjectInfo(project, quote);
-    if (options.layoutThumbnailUrl) {
-      await this.addSectionTitle('Design Summary');
-      await this.drawImageBlock(options.layoutThumbnailUrl, 'Layout thumbnail', 120, 120);
+    
+    // Prestige: 3D Window Visualization & Pattern
+    const includePattern = options.includePatternVisualization !== false; // Default: true
+    
+    if (includePattern) {
+      await this.addSectionTitle('Design Visualization');
+      
+      // Multi-unit row visualization (if multiple units provided)
+      if (options.windowUnits && options.windowUnits.length > 1) {
+        const unitsRow = await generateWindowUnitsRow(options.windowUnits, {
+          width: this.pageWidth - (this.margin * 2),
+          height: 300,
+        });
+        
+        if (unitsRow) {
+          const rowImage = await this.embedSVGFromDataUrl(unitsRow);
+          if (rowImage) {
+            if (this.currentY > this.pageHeight - 350) {
+              this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
+              this.currentY = this.margin;
+              this.pageNumber++;
+            }
+            
+            const imageWidth = this.pageWidth - (this.margin * 2);
+            const imageHeight = 300;
+            const imageX = this.margin;
+            const imageY = this.pageHeight - this.currentY - imageHeight;
+            
+            this.currentPage.drawImage(rowImage, {
+              x: imageX,
+              y: imageY,
+              width: imageWidth,
+              height: imageHeight,
+            });
+            
+            const prestigeColor = this.hexToRgb(this.branding.primaryColor || '#F59E0B');
+            this.currentPage.drawText(`Window Units Layout (${options.windowUnits.length} units)`, {
+              x: imageX,
+              y: imageY - 15,
+              size: 11,
+              font: this.boldFont,
+              color: rgb(prestigeColor[0] / 255, prestigeColor[1] / 255, prestigeColor[2] / 255),
+            });
+            
+            this.currentY += imageHeight + 30;
+          }
+        }
+      } else {
+        // Single unit pattern visualization
+        const patternVisualization = generatePatternVisualization(project, {
+          width: 500,
+          height: 350,
+          showLabels: true,
+        });
+        
+        if (patternVisualization) {
+          const patternImage = await this.embedSVGFromDataUrl(patternVisualization);
+          if (patternImage) {
+            if (this.currentY > this.pageHeight - 400) {
+              this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
+              this.currentY = this.margin;
+              this.pageNumber++;
+            }
+            
+            // Draw pattern visualization with prestige styling
+            const imageWidth = 500;
+            const imageHeight = 350;
+            const imageX = this.margin;
+            const imageY = this.pageHeight - this.currentY - imageHeight;
+            
+            this.currentPage.drawImage(patternImage, {
+              x: imageX,
+              y: imageY,
+              width: imageWidth,
+              height: imageHeight,
+            });
+            
+            // Add caption with prestige styling
+            const prestigeColor = this.hexToRgb(this.branding.primaryColor || '#F59E0B');
+            this.currentPage.drawText('Window Pattern Layout', {
+              x: imageX,
+              y: imageY - 15,
+              size: 11,
+              font: this.boldFont,
+              color: rgb(prestigeColor[0] / 255, prestigeColor[1] / 255, prestigeColor[2] / 255),
+            });
+            
+            this.currentY += imageHeight + 30;
+          }
+        }
+      }
+      
+      // 3D Preview (if available)
+      if (options.layoutThumbnailUrl) {
+        await this.drawImageBlock(options.layoutThumbnailUrl, '3D Window Preview', 200, 150);
+      }
     }
 
     // Scope & Technical Summary
@@ -185,7 +338,7 @@ export class PDFExportService {
   async generateCuttingListPDF(
     project: WindowUnit,
     optimization: OptimizationResult,
-    _options: PDFOptions
+    options: PDFOptions
   ): Promise<Blob> {
     await this.initialize();
     this.currentY = this.margin;
@@ -198,6 +351,58 @@ export class PDFExportService {
     // Project Information
     await this.addSectionTitle('Cutting List');
     await this.addProjectInfo(project);
+    
+    // Prestige: Window Pattern Visualization
+    const includePattern = options.includePatternVisualization !== false; // Default: true
+    
+    if (includePattern) {
+      await this.addSectionTitle('Window Design Pattern');
+      
+      // Generate pattern visualization
+      const patternVisualization = generatePatternVisualization(project, {
+        width: 500,
+        height: 350,
+        showLabels: true,
+      });
+      
+      if (patternVisualization) {
+        const patternImage = await this.embedSVGFromDataUrl(patternVisualization);
+        if (patternImage) {
+          if (this.currentY > this.pageHeight - 400) {
+            this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
+            this.currentY = this.margin;
+            this.pageNumber++;
+          }
+          
+          // Draw pattern visualization with prestige styling
+          const imageWidth = 500;
+          const imageHeight = 350;
+          const imageX = this.margin;
+          const imageY = this.pageHeight - this.currentY - imageHeight;
+          
+          this.currentPage.drawImage(patternImage, {
+            x: imageX,
+            y: imageY,
+            width: imageWidth,
+            height: imageHeight,
+          });
+          
+          // Add caption with prestige styling
+          const prestigeColor = this.hexToRgb(this.branding.primaryColor || '#F59E0B');
+          this.currentPage.drawText('Window Pattern Layout', {
+            x: imageX,
+            y: imageY - 15,
+            size: 11,
+            font: this.boldFont,
+            color: rgb(prestigeColor[0] / 255, prestigeColor[1] / 255, prestigeColor[2] / 255),
+          });
+          
+          this.currentY += imageHeight + 30;
+        }
+      }
+    }
+    
+    // Profile Visual
     const profileThumb =
       (project.components && project.components[0] && (project.components[0].profile as any)?.thumbnailUrl) ||
       (project.components && project.components[0] && (project.components[0].profile as any)?.thumbnail_url) ||
@@ -205,7 +410,7 @@ export class PDFExportService {
       null;
     if (profileThumb) {
       await this.addSectionTitle('Profile Visual');
-      await this.drawImageBlock(profileThumb, 'Profile thumbnail');
+      await this.drawImageBlock(profileThumb, 'Profile thumbnail', 150, 150);
     }
 
     // Cutting Plans
@@ -216,7 +421,7 @@ export class PDFExportService {
         this.currentY = this.margin;
         this.pageNumber++;
       }
-      await this.addCuttingPlan(plan, index + 1);
+      await this.addCuttingPlan(plan, index + 1, options);
     }
 
     // Summary
@@ -262,7 +467,7 @@ export class PDFExportService {
           this.currentY = this.margin;
           this.pageNumber++;
         }
-        await this.addCuttingPlan(plan, index + 1);
+        await this.addCuttingPlan(plan, index + 1, options);
       }
     }
 
@@ -563,7 +768,7 @@ export class PDFExportService {
   /**
    * Scope of work & technical summary section
    */
-  private async addScopeAndTechnicalSections(project: WindowUnit, quote: Quote) {
+  private async addScopeAndTechnicalSections(_project: WindowUnit, quote: Quote) {
     const scope = quote.projectScope;
     const tech = quote.technicalSummary;
 
@@ -768,15 +973,18 @@ export class PDFExportService {
     this.currentY += 16;
   }
 
-  private async addCuttingPlan(plan: CuttingPlan, index: number) {
+  private async addCuttingPlan(plan: CuttingPlan, index: number, options?: PDFOptions) {
+    // Prestige: Enhanced cutting plan with bar drawing visualization
+    const prestigeColor = this.hexToRgb(this.branding.primaryColor || '#F59E0B');
+    
     this.currentPage.drawText(`Plan ${index}: ${plan.profile.name}`, {
       x: this.margin,
       y: this.pageHeight - this.currentY,
-      size: 12,
+      size: 14,
       font: this.boldFont,
-      color: rgb(0, 0, 0),
+      color: rgb(prestigeColor[0] / 255, prestigeColor[1] / 255, prestigeColor[2] / 255),
     });
-    this.currentY += 15;
+    this.currentY += 20;
 
     const details = [
       `Stock Length: ${plan.stockLength}mm`,
@@ -794,6 +1002,14 @@ export class PDFExportService {
       });
       this.currentY += 12;
     });
+
+    // Prestige: Add bar drawing visualization (if enabled)
+    const includeBarDrawings = options?.includeBarDrawings !== false; // Default: true
+    if (includeBarDrawings) {
+      this.currentY += 10;
+      await this.addBarDrawingVisualization(plan);
+      this.currentY += 10;
+    }
 
     this.currentPage.drawText('Cuts:', {
       x: this.margin,
@@ -822,6 +1038,134 @@ export class PDFExportService {
     });
 
     this.currentY += 10;
+  }
+
+  /**
+   * Add bar drawing visualization for a cutting plan
+   * Creates a visual representation of the stock bar with cuts
+   */
+  private async addBarDrawingVisualization(plan: CuttingPlan) {
+    if (this.currentY > this.pageHeight - 200) {
+      this.currentPage = this.pdfDoc.addPage([this.pageWidth, this.pageHeight]);
+      this.currentY = this.margin;
+      this.pageNumber++;
+    }
+
+    const barWidth = this.pageWidth - (this.margin * 2);
+    const barHeight = 60;
+    const startX = this.margin;
+    const startY = this.pageHeight - this.currentY - barHeight;
+    const stockLength = plan.stockLength || 6000;
+
+    // Draw stock bar outline
+    const prestigeColor = this.hexToRgb(this.branding.primaryColor || '#F59E0B');
+    this.currentPage.drawRectangle({
+      x: startX,
+      y: startY,
+      width: barWidth,
+      height: barHeight,
+      borderColor: rgb(prestigeColor[0] / 255, prestigeColor[1] / 255, prestigeColor[2] / 255),
+      borderWidth: 2,
+      borderOpacity: 0.8,
+    });
+
+    // Draw cuts
+    let currentPosition = 0;
+    const cutColors = [
+      rgb(0.23, 0.51, 0.96), // Blue
+      rgb(0.55, 0.36, 0.96), // Purple
+      rgb(0.06, 0.73, 0.51), // Green
+      rgb(0.96, 0.62, 0.04), // Amber
+      rgb(0.94, 0.27, 0.27), // Red
+    ];
+
+    plan.cuts.forEach((cut, index) => {
+      const cutWidth = (cut.length / stockLength) * barWidth;
+      const cutX = startX + (currentPosition / stockLength) * barWidth;
+      
+      // Draw cut rectangle
+      const cutColor = cutColors[index % cutColors.length];
+      this.currentPage.drawRectangle({
+        x: cutX,
+        y: startY + 5,
+        width: cutWidth - 2,
+        height: barHeight - 10,
+        color: cutColor,
+        opacity: 0.7,
+      });
+
+      // Draw cut label if space allows
+      if (cutWidth > 30) {
+        this.currentPage.drawText(`${cut.length}mm`, {
+          x: cutX + cutWidth / 2 - 15,
+          y: startY + barHeight / 2 - 5,
+          size: 8,
+          font: this.font,
+          color: rgb(1, 1, 1),
+        });
+      }
+
+      // Draw cut line marker
+      if (index < plan.cuts.length - 1) {
+        this.currentPage.drawLine({
+          start: { x: cutX + cutWidth, y: startY },
+          end: { x: cutX + cutWidth, y: startY + barHeight },
+          thickness: 1,
+          color: rgb(0.94, 0.27, 0.27), // Red for cut lines
+          opacity: 0.6,
+        });
+      }
+
+      currentPosition += cut.length;
+    });
+
+    // Draw waste segment (if any)
+    const totalCutLength = plan.cuts.reduce((sum, cut) => sum + cut.length, 0);
+    const wasteLength = stockLength - totalCutLength;
+    if (wasteLength > 1) {
+      const wasteWidth = (wasteLength / stockLength) * barWidth;
+      const wasteX = startX + (totalCutLength / stockLength) * barWidth;
+      
+      this.currentPage.drawRectangle({
+        x: wasteX,
+        y: startY + 5,
+        width: wasteWidth - 2,
+        height: barHeight - 10,
+        color: rgb(0.86, 0.15, 0.15), // Red for waste
+        opacity: 0.3,
+        borderColor: rgb(0.86, 0.15, 0.15),
+        borderWidth: 1,
+        borderOpacity: 0.5,
+      });
+
+      if (wasteWidth > 40) {
+        this.currentPage.drawText(`Waste: ${wasteLength.toFixed(0)}mm`, {
+          x: wasteX + wasteWidth / 2 - 25,
+          y: startY + barHeight / 2 - 5,
+          size: 8,
+          font: this.font,
+          color: rgb(0.86, 0.15, 0.15),
+        });
+      }
+    }
+
+    // Add dimension markers
+    this.currentPage.drawText('0', {
+      x: startX,
+      y: startY - 5,
+      size: 8,
+      font: this.font,
+      color: rgb(0.4, 0.4, 0.4),
+    });
+    this.currentPage.drawText(`${stockLength}mm`, {
+      x: startX + barWidth - 30,
+      y: startY - 5,
+      size: 8,
+      font: this.font,
+      color: rgb(0.4, 0.4, 0.4),
+    });
+
+    this.currentY += barHeight + 20;
   }
 
   private async addCuttingSummary(optimization: OptimizationResult) {

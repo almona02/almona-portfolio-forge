@@ -124,7 +124,7 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Quick View Analytics</h1>
+          <h1 className="typography-h1 text-2xl text-white">Quick View Analytics</h1>
           <p className="text-gray-400">Enhanced ProductQuickView Performance Metrics</p>
         </div>
         <div className="flex gap-2">
@@ -175,13 +175,13 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
         <Card className="bg-gray-800 border-gray-700">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-500/20 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-orange-400" />
+              <div className="btn-primary">
+                <TrendingUp className="w-5 h-5 text-amber-400" />
               </div>
               <div>
                 <p className="text-sm text-gray-400">Conversion Rate</p>
                 <p className="text-2xl font-bold text-white">{getConversionRate()}%</p>
-                <p className="text-xs text-orange-400">All actions</p>
+                <p className="text-xs text-amber-400">All actions</p>
               </div>
             </div>
           </CardContent>
@@ -216,7 +216,7 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-4 text-center">
-                <ShoppingCart className="w-8 h-8 text-orange-400 mx-auto mb-2" />
+                <ShoppingCart className="w-8 h-8 text-amber-400 mx-auto mb-2" />
                 <p className="text-2xl font-bold text-white">{analyticsData.conversions.quoteRequests}</p>
                 <p className="text-sm text-gray-400">Quote Requests</p>
               </CardContent>
@@ -293,7 +293,7 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
                       <p className="text-sm text-gray-400">{product.views} views</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-bold text-orange-400">{product.conversions}</p>
+                      <p className="text-lg font-bold text-amber-400">{product.conversions}</p>
                       <p className="text-xs text-gray-400">conversions</p>
                     </div>
                   </div>
@@ -320,8 +320,8 @@ export const QuickViewAnalyticsDashboard: React.FC = () => {
                     <strong>Mobile usage is {analyticsData.deviceBreakdown.mobile}%</strong> - Factory floor users are actively using mobile devices
                   </p>
                 </div>
-                <div className="p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg">
-                  <p className="text-sm text-orange-400">
+                <div className="btn-primary">
+                  <p className="text-sm text-amber-400">
                     <strong>Average session time is {analyticsData.averageSessionTime} minutes</strong> - Users are spending quality time reviewing products
                   </p>
                 </div>

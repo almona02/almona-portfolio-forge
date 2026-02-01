@@ -239,7 +239,7 @@ export function ModelMeasurementTool({
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-white flex items-center gap-2">
-              <Ruler className="w-5 h-5 text-orange-500" />
+              <Ruler className="w-5 h-5 text-amber-500" />
               Measurement Tool
             </CardTitle>
             <div className="flex items-center gap-1">
@@ -266,7 +266,7 @@ export function ModelMeasurementTool({
         <CardContent className="space-y-4">
           {/* Measurement Mode */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">Measurement Mode</label>
+            <label className="typography-label text-sm font-medium text-gray-300">Measurement Mode</label>
             <div className="flex gap-1 bg-gray-800 rounded-lg p-1">
               <Button
                 size="sm"
@@ -302,7 +302,7 @@ export function ModelMeasurementTool({
 
           {/* Unit Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">Unit</label>
+            <label className="typography-label text-sm font-medium text-gray-300">Unit</label>
             <div className="flex gap-1 bg-gray-800 rounded-lg p-1">
               {(['mm', 'cm', 'm', 'in', 'ft'] as const).map((unitOption) => (
                 <Button
@@ -321,7 +321,7 @@ export function ModelMeasurementTool({
           {/* Model Dimensions */}
           {modelDimensions && (
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">Model Dimensions</label>
+              <label className="typography-label text-sm font-medium text-gray-300">Model Dimensions</label>
               <div className="bg-gray-800 p-3 rounded-lg space-y-1">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Length:</span>
@@ -409,7 +409,7 @@ export function ModelMeasurementTool({
                 animate="visible"
                 exit="exit"
               >
-                <h4 className="text-sm font-medium text-white">Display Settings</h4>
+                <h4 className="typography-h4 text-sm font-medium text-white">Display Settings</h4>
                 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -450,7 +450,7 @@ export function ModelMeasurementTool({
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm text-gray-300">Measurement Color</label>
+                  <label className="typography-label text-sm text-gray-300">Measurement Color</label>
                   <div className="flex gap-2">
                     {['#ff6b35', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'].map((color) => (
                       <button
@@ -472,7 +472,7 @@ export function ModelMeasurementTool({
           {measurements.length > 0 && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-300">Measurements</label>
+                <label className="typography-label text-sm font-medium text-gray-300">Measurements</label>
                 <Badge variant="secondary" className="bg-gray-800 text-gray-300">
                   {measurements.length}
                 </Badge>
@@ -489,7 +489,7 @@ export function ModelMeasurementTool({
                       exit="exit"
                       className={`p-2 rounded-lg border cursor-pointer transition-colors ${
                         selectedMeasurement === measurement.id
-                          ? 'bg-orange-500/20 border-orange-500'
+                          ? 'bg-amber-500/20 border-amber-500'
                           : 'bg-gray-800 border-gray-600 hover:border-gray-500'
                       }`}
                       onClick={() => setSelectedMeasurement(

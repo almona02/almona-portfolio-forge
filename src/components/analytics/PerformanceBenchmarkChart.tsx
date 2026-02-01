@@ -120,7 +120,7 @@ export const PerformanceBenchmarkChart: React.FC<PerformanceBenchmarkChartProps>
   };
 
   return (
-    <Card className="bg-gray-900 border-gray-700">
+    <Card className="bg-gray-900 border-gray-700 card-dark">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Performance Benchmark</CardTitle>

@@ -134,7 +134,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
         <Button
           variant="outline"
           size="sm"
-          className={`gap-2 border-orange-500/30 hover:border-orange-500/60 hover:bg-orange-500/10 ${className}`}
+          className={`gap-2 border-amber-500/30 hover:border-amber-500/60 hover:bg-amber-500/10 ${className}`}
         >
           <Share2 className="h-4 w-4" />
           <span className="hidden sm:inline">Share Results</span>
@@ -148,7 +148,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
         >
           {copied ? (
             <>
-              <Check className="mr-2 h-4 w-4 text-green-500" />
+              <Check className="mr-2 h-4 w-4  status-valid" />
               <span>Copied!</span>
             </>
           ) : (
@@ -162,7 +162,7 @@ export const ShareFilteredResults: React.FC<ShareFilteredResultsProps> = ({
           onClick={handleShareWhatsApp}
           className="cursor-pointer hover:bg-gray-800"
         >
-          <MessageCircle className="mr-2 h-4 w-4 text-green-500" />
+          <MessageCircle className="mr-2 h-4 w-4  status-valid" />
           <span>Share via WhatsApp</span>
         </DropdownMenuItem>
         {navigator.share && (

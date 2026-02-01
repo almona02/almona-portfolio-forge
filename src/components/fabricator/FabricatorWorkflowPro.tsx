@@ -1,15 +1,15 @@
-import React, { Suspense, useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/ui/card';
+import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
+import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { useJobsStore } from '@/store/jobsStore';
 import { WindowUnit } from '@/types/fabricator';
-import { supabase } from '@/lib/supabase';
-import { Factory, Sparkles, AlertCircle, ArrowRight, Wand2, CheckCircle2, Loader2 } from 'lucide-react';
-import { FabricatorLoader } from '@/components/ui/EnhancedLoadingStates';
-import { useNavigate } from 'react-router-dom';
+import { AlertCircle, ArrowRight, CheckCircle2, Factory, Loader2, Sparkles, Wand2 } from 'lucide-react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const MassProductionDashboard = React.lazy(() =>
   import('@/components/fabricator/MassProductionDashboard').then((m) => ({
@@ -74,25 +74,25 @@ export const FabricatorWorkflowPro: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] text-amber-200 pt-20">
       <div className="container mx-auto px-4 py-8 space-y-6">
         {/* Header */}
-        <Card className="bg-gray-900/80 border-gray-800 shadow-2xl">
+        <Card className="bg-[#0f0f0f]/80 border-amber-600/30 shadow-2xl card-glass-dark">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="relative flex items-center justify-center">
-                  <Factory className="h-9 w-9 text-orange-400" />
-                  <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse ring-2 ring-emerald-400/40" />
+                  <Factory className="h-9 w-9 text-amber-400" />
+                  <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full animate-pulse ring-2 ring-emerald-400/40 status-valid" />
                 </div>
                 <div>
-                  <div className="text-[11px] font-semibold tracking-[0.25em] text-orange-300/80 uppercase">
+                  <div className="text-[11px] font-semibold tracking-[0.25em] text-amber-300/80 uppercase">
                     {t('workflow_pro.title', 'FABRICATOR WORKFLOW PRO')}
                   </div>
-                  <CardTitle className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-orange-400 via-red-400 to-red-500 bg-clip-text text-transparent">
+                  <CardTitle className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-amber-400 via-red-400 to-red-500 bg-clip-text text-transparent">
                     {t('workflow_pro.mass_production_cockpit', 'Mass Production Cockpit')}
                   </CardTitle>
-                  <CardDescription className="text-xs md:text-sm text-gray-300 mt-1">
+                  <CardDescription className="text-xs md:text-sm text-amber-600/80 mt-1">
                     {t('workflow_pro.description', 'Cross‑project optimisation using GA + remnant‑aware cutting, built for high‑volume workshops.')}
                   </CardDescription>
                 </div>
@@ -100,7 +100,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
               <div className="flex flex-col items-end gap-2">
                 <Badge
                   variant="outline"
-                  className="bg-blue-500/15 border-blue-500/40 text-[11px] text-blue-300"
+                  className="bg-amber-500/15 border-amber-500/40 text-[11px] text-amber-300"
                 >
                   <Sparkles className="h-3 w-3 mr-1" />
                   {optimizedJobs.length} {optimizedJobs.length === 1 
@@ -108,9 +108,9 @@ export const FabricatorWorkflowPro: React.FC = () => {
                     : t('workflow_pro.optimised_jobs_plural', 'optimised jobs')}
                 </Badge>
                 {userId && (
-                  <p className="text-[11px] text-gray-400">
+                  <p className="text-[11px] text-amber-600/70">
                     {t('workflow_pro.user', 'User')}:{' '}
-                    <span className="font-mono text-gray-200">
+                    <span className="font-mono text-amber-300">
                       {userId.slice(0, 4)}…{userId.slice(-4)}
                     </span>
                   </p>
@@ -147,7 +147,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
           }
         >
           {/* Optimization CTA */}
-          <div className="flex flex-wrap items-center gap-3 p-4 bg-gray-900/60 border border-gray-800 rounded-lg">
+          <div className="flex flex-wrap items-center gap-3 p-4 bg-[#0f0f0f]/60 border border-amber-600/30 rounded-lg card-dark">
             <Button
               size="lg"
               onClick={handleOptimize}
@@ -169,7 +169,7 @@ export const FabricatorWorkflowPro: React.FC = () => {
             {optStatus === 'complete' && (
               <Button
                 size="lg"
-                className="bg-orange-500 hover:bg-orange-600 animate-in fade-in slide-in-from-left-4"
+                className="btn-primary"
                 onClick={() => navigate('/fabricator/production')}
               >
                 {t('workflow_pro.go_to_production', 'Go to Production Command')}
@@ -181,8 +181,8 @@ export const FabricatorWorkflowPro: React.FC = () => {
           {userId ? (
             <MassProductionDashboard projects={optimizedJobs} userId={userId} />
           ) : (
-            <Card className="bg-gray-900/70 border-gray-800">
-              <CardContent className="p-6 text-sm text-gray-300">
+            <Card className="bg-[#0f0f0f]/70 border-amber-600/30 card-glass-dark">
+              <CardContent className="p-6 text-sm text-amber-300">
                 {t('workflow_pro.disabled_until_auth', 'Mass production optimisation is disabled until a user is authenticated.')}
               </CardContent>
             </Card>

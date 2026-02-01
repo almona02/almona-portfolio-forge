@@ -259,7 +259,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
             >
               <DialogHeader>
                 <DialogTitle className="text-2xl font-bold flex items-center justify-center gap-2">
-                  <MapPin className="h-6 w-6 text-orange-500" />
+                  <MapPin className="h-6 w-6 text-amber-500" />
                   Select Your Market
                 </DialogTitle>
                 <DialogDescription className="text-gray-400">
@@ -273,19 +273,19 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   whileTap={{ scale: 0.95 }}
                   className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${
                     selectedMarket === "egypt" 
-                      ? "border-orange-500 bg-orange-500/10" 
+                      ? "border-amber-500 bg-amber-500/10" 
                       : "border-almona-light/20 hover:border-almona-light/40"
                   }`}
                   onClick={() => handleMarketSelect("egypt")}
                 >
                   <div className="text-4xl mb-4">🇪🇬</div>
-                  <h3 className="text-xl font-bold mb-2">Egypt Market</h3>
+                  <h3 className="typography-h3 mb-2">Egypt Market</h3>
                   <p className="text-gray-400 text-sm mb-4">
                     Specialized maintenance for aluminum machinery in Egyptian industrial zones
                   </p>
                   <div className="space-y-1 text-xs text-gray-400">
                     <div className="flex items-center">
-                      <Shield className="h-3 w-3 mr-1 text-green-500" />
+                      <Shield className="h-3 w-3 mr-1  status-valid" />
                       Local Egyptian technicians
                     </div>
                     <div className="flex items-center">
@@ -304,19 +304,19 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   whileTap={{ scale: 0.95 }}
                   className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${
                     selectedMarket === "turkey" 
-                      ? "border-orange-500 bg-orange-500/10" 
+                      ? "border-amber-500 bg-amber-500/10" 
                       : "border-almona-light/20 hover:border-almona-light/40"
                   }`}
                   onClick={() => handleMarketSelect("turkey")}
                 >
                   <div className="text-4xl mb-4">🇹🇷</div>
-                  <h3 className="text-xl font-bold mb-2">Turkey Market</h3>
+                  <h3 className="typography-h3 mb-2">Turkey Market</h3>
                   <p className="text-gray-400 text-sm mb-4">
                     Premium maintenance services for Turkish aluminum machinery industry
                   </p>
                   <div className="space-y-1 text-xs text-gray-400">
                     <div className="flex items-center">
-                      <Shield className="h-3 w-3 mr-1 text-green-500" />
+                      <Shield className="h-3 w-3 mr-1  status-valid" />
                       Turkish-speaking engineers
                     </div>
                     <div className="flex items-center">
@@ -342,7 +342,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
             >
               <DialogHeader>
                 <DialogTitle className="text-2xl font-bold flex items-center gap-2">
-                  <Calendar className="h-6 w-6 text-orange-500" />
+                  <Calendar className="h-6 w-6 text-amber-500" />
                   {selectedMarket === "egypt" ? "Egypt" : "Turkey"} Maintenance Plans
                 </DialogTitle>
                 <DialogDescription className="text-gray-400">
@@ -353,7 +353,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
               <div className="space-y-6 mt-6">
                 {/* Service Contract Selection */}
                 <div>
-                  <Label className="text-lg font-semibold mb-4 block">
+                  <Label className="typography-label text-lg font-semibold mb-4 block">
                     Select Maintenance Plan for Aluminum Machinery
                   </Label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -362,7 +362,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                         key={contract.id}
                         className={`relative p-4 rounded-lg border-2 transition-all duration-300 ${
                           selectedContract?.id === contract.id
-                            ? "border-orange-500 bg-orange-500/10"
+                            ? "border-amber-500 bg-amber-500/10"
                             : "border-almona-light/20 hover:border-almona-light/40"
                         }`}
                         whileHover={{ scale: 1.02 }}
@@ -370,8 +370,8 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                         onClick={() => setSelectedContract(contract)}
                       >
                         <div className="text-center">
-                          <h3 className="font-bold text-lg">{contract.type}</h3>
-                          <p className="text-2xl font-bold text-orange-500 mt-2">
+                          <h3 className="typography-h3 text-lg">{contract.type}</h3>
+                          <p className="text-2xl font-bold text-amber-500 mt-2">
                             {formatPrice(selectedMarket === "egypt" ? contract.priceEGP : contract.priceTRY)} {getCurrencySymbol()}
                           </p>
                           <p className="text-sm text-gray-400">{contract.frequency}</p>
@@ -381,7 +381,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                           <ul className="text-xs text-gray-400 mt-3 space-y-1 text-left">
                             {contract.features.map((feature, index) => (
                               <li key={index} className="flex items-start">
-                                <CheckCircle2 className="h-3 w-3 text-green-500 mr-1 mt-0.5 flex-shrink-0" />
+                                <CheckCircle2 className="h-3 w-3  mr-1 mt-0.5 flex-shrink-0 status-valid" />
                                 <span className="text-xs">{feature}</span>
                               </li>
                             ))}
@@ -394,7 +394,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                         </div>
                         {selectedContract?.id === contract.id && (
                           <LazyMotionDiv
-                            className="absolute inset-0 rounded-lg border-2 border-orange-500"
+                            className="absolute inset-0 rounded-lg card-premium"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                           />
@@ -406,7 +406,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
 
                 {/* Machine Count */}
                 <div>
-                  <Label htmlFor="machineCount">Number of Aluminum Machines</Label>
+                  <Label htmlFor="machineCount" className="typography-label">Number of Aluminum Machines</Label>
                   <Input
                     id="machineCount"
                     type="number"
@@ -428,7 +428,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   <Button
                     onClick={() => setStep("details")}
                     disabled={!selectedContract}
-                    className="bg-gradient-to-r from-orange-500 to-red-500"
+                    className="bg-gradient-to-r from-amber-500 to-red-500"
                   >
                     Continue
                   </Button>
@@ -456,7 +456,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="companyName">
+                    <Label htmlFor="companyName" className="typography-label">
                       {selectedMarket === "egypt" ? "Company Name (الشركة)" : "Company Name (Şirket Adı)"} *
                     </Label>
                     <Input
@@ -471,7 +471,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   </div>
 
                   <div>
-                    <Label htmlFor="contactName">
+                    <Label htmlFor="contactName" className="typography-label">
                       {selectedMarket === "egypt" ? "Contact Name (اسم المسؤول)" : "Contact Name (Yetkili Adı)"} *
                     </Label>
                     <Input
@@ -486,7 +486,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   </div>
 
                   <div>
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email" className="typography-label">Email *</Label>
                     <Input
                       id="email"
                       type="email"
@@ -499,7 +499,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   </div>
 
                   <div>
-                    <Label htmlFor="phone">
+                    <Label htmlFor="phone" className="typography-label">
                       {selectedMarket === "egypt" ? "Phone (هاتف)" : "Phone (Telefon)"} *
                     </Label>
                     <Input
@@ -516,7 +516,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
 
                   {/* Location Fields */}
                   <div>
-                    <Label htmlFor="governorate">
+                    <Label htmlFor="governorate" className="typography-label">
                       {selectedMarket === "egypt" ? "Governorate (المحافظة)" : "City (Şehir)"} *
                     </Label>
                     <Select
@@ -540,7 +540,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   </div>
 
                   <div>
-                    <Label htmlFor="city">
+                    <Label htmlFor="city" className="typography-label">
                       {selectedMarket === "egypt" ? "City/Area (المدينة/المنطقة)" : "District (İlçe)"} *
                     </Label>
                     <Input
@@ -556,7 +556,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
 
                   {/* Machine Details */}
                   <div>
-                    <Label htmlFor="machineType">Machine Type *</Label>
+                    <Label htmlFor="machineType" className="typography-label">Machine Type *</Label>
                     <Select
                       onValueChange={(value) => setValue("machineType", value as MaintenanceFormData["machineType"])}
                       {...register("machineType", { required: "Machine type is required" })}
@@ -578,7 +578,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   </div>
 
                   <div>
-                    <Label htmlFor="machineBrand">Machine Brand *</Label>
+                    <Label htmlFor="machineBrand" className="typography-label">Machine Brand *</Label>
                     <Select
                       onValueChange={(value) => setValue("machineBrand", value)}
                       {...register("machineBrand", { required: "Machine brand is required" })}
@@ -600,7 +600,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   </div>
 
                   <div>
-                    <Label htmlFor="machineModel">Machine Model *</Label>
+                    <Label htmlFor="machineModel" className="typography-label">Machine Model *</Label>
                     <Input
                       id="machineModel"
                       {...register("machineModel", { required: "Machine model is required" })}
@@ -613,7 +613,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   </div>
 
                   <div>
-                    <Label htmlFor="preferredLanguage">Preferred Language</Label>
+                    <Label htmlFor="preferredLanguage" className="typography-label">Preferred Language</Label>
                     <Select
                       onValueChange={(value: "ar" | "tr" | "en") => setValue("preferredLanguage", value)}
                       defaultValue={selectedMarket === "egypt" ? "ar" : "tr"}
@@ -630,7 +630,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   </div>
 
                   <div>
-                    <Label htmlFor="startDate">Preferred Start Date *</Label>
+                    <Label htmlFor="startDate" className="typography-label">Preferred Start Date *</Label>
                     <Input
                       id="startDate"
                       type="date"
@@ -643,7 +643,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   </div>
 
                   <div>
-                    <Label htmlFor="machineCount">Machine Count</Label>
+                    <Label htmlFor="machineCount" className="typography-label">Machine Count</Label>
                     <Input
                       id="machineCount"
                       type="number"
@@ -655,7 +655,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                 </div>
 
                 <div>
-                  <Label htmlFor="notes">
+                  <Label htmlFor="notes" className="typography-label">
                     {selectedMarket === "egypt" ? "Special Requirements (متطلبات خاصة)" : "Special Requirements (Özel İstekler)"}
                   </Label>
                   <Textarea
@@ -701,7 +701,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                       <Separator />
                       <div className="flex justify-between text-lg">
                         <span>Total Price:</span>
-                        <span className="font-bold text-orange-500">
+                        <span className="font-bold text-amber-500">
                           {formatPrice(totalPrice)} {getCurrencySymbol()}
                         </span>
                       </div>
@@ -745,7 +745,7 @@ export const PreventiveMaintenanceDialog = ({ open, onOpenChange }: PreventiveMa
                   <CheckCircle2 className="h-10 w-10 text-white" />
                 </div>
               </LazyMotionDiv>
-              <h3 className="text-2xl font-bold mb-2">
+              <h3 className="typography-h3 mb-2">
                 {selectedMarket === "egypt" ? "الصيانة المجدولة! (Maintenance Scheduled!)" : "Bakım Planlandı! (Maintenance Scheduled!)"}
               </h3>
               <p className="text-gray-400 mb-4">

@@ -8,7 +8,7 @@ const RegisterMachinePage = () => {
     <>
       <main className="flex-grow pt-24 pb-12">
         <div className="container mx-auto px-4 max-w-5xl">
-          <h1 className="text-3xl sm:text-4xl font-bold mb-8 text-gradient-orange text-center">Register New Machine</h1>
+          <h1 className="typography-h1 sm:text-4xl mb-8 text-gradient-orange text-center">Register New Machine</h1>
           <Suspense fallback={<FormSkeleton />}> 
             <MachineRegistrationEnhanced />
           </Suspense>

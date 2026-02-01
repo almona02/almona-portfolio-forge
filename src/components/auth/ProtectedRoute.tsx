@@ -1,6 +1,6 @@
 import { useAuth } from '@/context/AuthContext';
-import { Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user, loading } = useAuth();
@@ -12,13 +12,19 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   }, [loading, user]);
 
   if (loading) {
+    console.log('[ProtectedRoute] Loading...', { user: !!user, timedOut });
     if (timedOut && !user) {
+      console.log('[ProtectedRoute] Timed out, redirecting');
       return <Navigate to="/login" replace />;
     }
     return <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">Loading…</div>;
   }
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) {
+    console.log('[ProtectedRoute] No user, redirecting');
+    return <Navigate to="/login" replace />;
+  }
 
+  console.log('[ProtectedRoute] Access granted');
   return children;
 };
 

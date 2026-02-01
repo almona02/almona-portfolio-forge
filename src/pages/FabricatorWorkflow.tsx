@@ -19,23 +19,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Tabs, TabsContent } from '@/shared/ui/ui/tabs';
 import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import {
-  AlertCircle,
-  BarChart3,
-  Box,
-  CheckCircle2,
-  Clock,
-  Factory,
-  Loader2,
-  Package,
-  Ruler,
-  Scissors,
-  Search,
-  Settings,
-  Share2,
-  Zap,
+    AlertCircle,
+    BarChart3,
+    Box,
+    CheckCircle2,
+    Clock,
+    Factory,
+    Loader2,
+    Package,
+    Ruler,
+    Scissors,
+    Search,
+    Settings,
+    Share2,
+    Zap,
 } from 'lucide-react';
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 // NOTE: Heavy Fabricator Pro modules are lazy‑loaded per tab to keep
 // initial bundle size and TTI low for heavy‑duty usage.
@@ -193,21 +194,21 @@ import { deriveSystemConstraintsFromProfiles, validateProject, validateProjectWi
 import { parseLegacyOrderData } from '@/lib/legacyDataParser';
 import { trainingDataCollector } from '@/lib/ml/TrainingDataCollector';
 import {
-  markFabricatorReady,
-  trackFabricatorLoadTime,
-  trackInventoryLoad,
-  trackOptimization
+    markFabricatorReady,
+    trackFabricatorLoadTime,
+    trackInventoryLoad,
+    trackOptimization
 } from '@/lib/performance';
 import { YDTBusinessLayer } from '@/lib/ydt/YDTBusinessLayer';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { useJobsStore } from '@/store/jobsStore';
 import {
-  AdaptiveSolverConfig,
-  MeasurementData,
-  OptimizationResult,
-  Profile,
-  WindowComponent,
-  WindowUnit,
+    AdaptiveSolverConfig,
+    MeasurementData,
+    OptimizationResult,
+    Profile,
+    WindowComponent,
+    WindowUnit,
 } from '@/types/fabricator';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -397,7 +398,7 @@ export const FabricatorWorkflow: React.FC = () => {
     // those can be filled if/when the types carry them.
   }), []);
 
-  // Filter workflow steps based on persona visible tabs
+  // Filter workflow steps based on persona visible tabs - memoized for performance
   const workflowSteps = useMemo(() => {
     const allWorkflowSteps = [
       {
@@ -445,8 +446,8 @@ export const FabricatorWorkflow: React.FC = () => {
     ];
     return allWorkflowSteps.filter(step => visibleTabs.includes(step.id));
   }, [visibleTabs, t]);
-
-  // Screen reader announcements for state changes
+  
+  // Screen reader announcements for state changes - defined first to avoid TDZ error
   const announceStateChange = useCallback((message: string) => {
     const announcement = document.createElement('div');
     announcement.setAttribute('role', 'status');
@@ -462,6 +463,16 @@ export const FabricatorWorkflow: React.FC = () => {
       }
     }, 1000);
   }, []);
+
+  // Memoize tab change handler to prevent unnecessary re-renders
+  const handleTabChange = useCallback((tabId: string) => {
+    setActiveTab(tabId);
+    // Announce to screen readers
+    const step = workflowSteps.find(s => s.id === tabId);
+    if (step) {
+      announceStateChange(`Navigated to ${step.name} tab`);
+    }
+  }, [workflowSteps, announceStateChange]);
 
   // Redirect logic for hidden tabs
   useEffect(() => {
@@ -559,6 +570,21 @@ export const FabricatorWorkflow: React.FC = () => {
       setShowProjectWizard(true);
     }
   }, [currentProject, projectMeta, jobs.length]);
+
+  // Check for new=true query parameter on mount and location change
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const newProject = params.get('new');
+    
+    // Check for new=true query parameter to open wizard
+    if (newProject === 'true') {
+      setShowProjectWizard(true);
+      setActiveTab('measuring');
+      // Clear the query parameter from URL after opening wizard
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [location.search, location.pathname]);
 
   // URL param override for wizard selection
   useEffect(() => {
@@ -975,6 +1001,9 @@ export const FabricatorWorkflow: React.FC = () => {
         workspaceDispatch({ type: 'SET_MEASUREMENT_DATA', payload: data });
         addOrUpdateJob(newProject);
         setSelectedJob(newProject.id);
+        // Increment measurement session ID to prevent wizard from restarting if user goes back
+        // This ensures a fresh wizard session for the next measurement
+        setMeasurementSessionId((prev) => prev + 1);
         setActiveTab('design');
         track('fabricator_job_created', {
           jobId: newProject.id,
@@ -988,7 +1017,7 @@ export const FabricatorWorkflow: React.FC = () => {
         setProjectError(error instanceof Error ? error.message : 'Failed to create project');
       }
     },
-    [addOrUpdateJob, setSelectedJob, projectMeta, setActiveTab, workspaceDispatch, jobs, workshopId, ydtBusinessLayer]
+    [addOrUpdateJob, setSelectedJob, projectMeta, setActiveTab, workspaceDispatch, jobs, workshopId, ydtBusinessLayer, setMeasurementSessionId]
   );
 
   const handleDesignComplete = useCallback(async (components: WindowComponent[]) => {
@@ -1252,8 +1281,8 @@ export const FabricatorWorkflow: React.FC = () => {
           workshopId={workshopId}
         />
       )}
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white pt-20">
-        <div className="container mx-auto px-4 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white pt-16 sm:pt-20">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 max-w-7xl">
           {/* Alert System */}
           <LazyAnimatePresence>
             {inventoryError && (
@@ -1328,14 +1357,14 @@ export const FabricatorWorkflow: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="relative flex items-center justify-center">
-                    <Factory className="h-10 w-10 text-orange-400" />
+                    <Factory className="h-10 w-10 text-amber-400" />
                     <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse ring-2 ring-green-400/40" />
                   </div>
                   <div className="space-y-1">
-                    <div className="text-xs font-semibold tracking-[0.2em] text-orange-300/80 uppercase">
+                    <div className="text-xs font-semibold tracking-[0.2em] text-amber-300/80 uppercase">
                       {t('fabricator:workflow.header.fabricator_pro', 'FABRICATOR PRO')}
                     </div>
-                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-orange-400 via-red-400 to-red-500 bg-clip-text text-transparent">
+                    <h1 className="typography-h1 md:text-4xl lg:text-5xl bg-gradient-to-r from-amber-400 via-red-400 to-red-500 bg-clip-text text-transparent">
                       {t('fabricator:workflow.header.ai_workflow', 'AI WORKFLOW v4.0')}
                     </h1>
                   </div>
@@ -1347,12 +1376,12 @@ export const FabricatorWorkflow: React.FC = () => {
                   )}
                 </p>
                 {activeWorkshopLabel && (
-                  <div className="inline-flex items-center gap-2 rounded-full bg-gray-900/80 border border-orange-500/40 px-3 py-1 text-[11px] text-orange-200">
-                    <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="uppercase tracking-[0.18em] text-orange-300/90">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-gray-900/80 border border-amber-500/40 px-3 py-1 text-[11px] text-amber-200">
+                    <span className="inline-flex h-1.5 w-1.5 rounded-full animate-pulse status-valid" />
+                    <span className="uppercase tracking-[0.18em] text-amber-300/90">
                       {t('fabricator:workflow.workshop_label', 'Workshop')}
                     </span>
-                    <span className="font-medium text-orange-100 truncate max-w-[220px] md:max-w-xs">
+                    <span className="font-medium text-amber-100 truncate max-w-[220px] md:max-w-xs">
                       {activeWorkshopLabel}
                     </span>
                   </div>
@@ -1362,30 +1391,30 @@ export const FabricatorWorkflow: React.FC = () => {
               {/* Right: System status & search */}
               <div className="w-full lg:w-auto">
                 <div className="grid grid-cols-3 gap-3 mb-3">
-                  <Card className="bg-gray-900/70 border-gray-700">
+                  <Card className="bg-gray-900/70 border-gray-700 card-dark">
                     <CardContent className="py-3 px-4">
                       <div className="text-[10px] uppercase tracking-wide text-gray-400">
                         {t('fabricator:workflow.status.system', 'System')}
                       </div>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="inline-flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="inline-flex h-2 w-2 rounded-full animate-pulse status-valid" />
                         <span className="text-sm font-semibold text-emerald-300">
                           {t('fabricator:workflow.status.optimal', 'Optimal')}
                         </span>
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-900/70 border-gray-700">
+                  <Card className="bg-gray-900/70 border-gray-700 card-dark">
                     <CardContent className="py-3 px-4">
                       <div className="text-[10px] uppercase tracking-wide text-gray-400">
                         {t('fabricator:workflow.status.efficiency', 'Efficiency')}
                       </div>
                       <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-sm font-semibold text-orange-300">92.5%</span>
+                        <span className="text-sm font-semibold text-amber-300">92.5%</span>
                       </div>
                     </CardContent>
                   </Card>
-                  <Card className="bg-gray-900/70 border-gray-700">
+                  <Card className="bg-gray-900/70 border-gray-700 card-dark">
                     <CardContent className="py-3 px-4">
                       <div className="text-[10px] uppercase tracking-wide text-gray-400">
                         {t('fabricator:workflow.status.active_jobs', 'Active Jobs')}
@@ -1405,7 +1434,7 @@ export const FabricatorWorkflow: React.FC = () => {
                       'fabricator:workflow.search_placeholder',
                       'Search machines, orders...',
                     )}
-                    className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl bg-gray-900/70 border border-gray-700 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/60 focus:border-orange-500/60"
+                    className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-gray-700 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/60 card-premium"
                   />
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                 </div>
@@ -1413,7 +1442,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   <Suspense fallback={null}>
                     <Button
                       size="sm"
-                      className="bg-orange-500 hover:bg-orange-600 text-xs"
+                      className="btn-primary"
                       onClick={() => {
                         // Reset current context and open a fresh project header wizard
                         workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: null });
@@ -1446,7 +1475,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-orange-500 text-orange-300 bg-orange-500/10 text-xs"
+                    className="btn-primary"
                     onClick={() => navigate('/fabricator-workflow/pro')}
                   >
                     <Factory className="h-3 w-3 mr-1" />
@@ -1463,14 +1492,14 @@ export const FabricatorWorkflow: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-6"
           >
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 p-4 md:p-6 bg-gray-900/40 rounded-xl border border-gray-800">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 p-4 md:p-6 bg-gray-900/40 rounded-xl border border-gray-800 card-dark">
               <div className="space-y-1">
                 <p className="text-[11px] uppercase tracking-[0.25em] text-gray-500">
                   {t('fabricator:workflow.module_label', 'MODULE')}
                 </p>
-                <h2 className="text-xl md:text-2xl font-semibold text-gray-100 flex items-center gap-2">
+                <h2 className="typography-h2 text-xl md:text-2xl font-semibold text-gray-100 flex items-center gap-2">
                   <span>{t('fabricator:workflow.title', 'Fabricator Workflow Pro')}</span>
-                  <Badge variant="outline" className="border-orange-500/40 text-orange-300 bg-orange-500/10 text-[10px] uppercase tracking-wide">
+                  <Badge variant="outline" className="btn-primary">
                     {t('fabricator:workflow.badge_end_to_end', 'End-to-End')}
                   </Badge>
                 </h2>
@@ -1499,7 +1528,7 @@ export const FabricatorWorkflow: React.FC = () => {
                   <>
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="bg-orange-500/10 text-orange-300 border-orange-500/40 text-[11px]">
+                        <Badge variant="outline" className="btn-primary">
                           <Clock className="h-3 w-3 mr-1" />
                           {currentProject.orderNumber}
                         </Badge>
@@ -1562,17 +1591,15 @@ export const FabricatorWorkflow: React.FC = () => {
             currentTypeLabel={currentProject ? currentProject.type.replace('_', ' ') : undefined}
           />
 
-          {/* Status progress */}
+          {/* Status progress - Compact sticky at top */}
           {currentProject && (
-            <div className="mb-6">
-              <Suspense
-                fallback={
-                  <div className="h-10 w-full rounded-lg bg-gray-800/60 animate-pulse" />
-                }
-              >
-                <WorkflowProgress currentStatus={currentProject.status} />
-              </Suspense>
-            </div>
+            <Suspense
+              fallback={
+                <div className="sticky top-0 z-50 h-20 bg-[#0a0a0a]/95 backdrop-blur-md border-b border-amber-600/30 animate-pulse" />
+              }
+            >
+              <WorkflowProgress currentStatus={currentProject.status} />
+            </Suspense>
           )}
 
           {/* Mobile context panel trigger */}
@@ -1621,27 +1648,28 @@ export const FabricatorWorkflow: React.FC = () => {
             <div className="flex-1">
               <Tabs 
                 value={activeTab} 
-                onValueChange={setActiveTab} 
+                onValueChange={handleTabChange} 
                 className="space-y-8"
                 aria-label="Fabricator workflow steps"
               >
                 {/* Measuring Tab */}
             <TabsContent value="measuring" className="space-y-6">
-              <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center gap-3 text-2xl">
-                    <div className="p-2 bg-orange-500/20 rounded-lg">
-                      <Ruler className="h-6 w-6 text-orange-400" />
+              {/* Main Measuring Card - Enhanced size and prominence */}
+              <Card className="bg-gray-800/50 border-gray-700 shadow-glow-strong">
+                <CardHeader className="pb-6 px-8 pt-8">
+                  <CardTitle className="flex items-center gap-4 text-3xl">
+                    <div className="btn-primary p-3">
+                      <Ruler className="h-8 w-8 text-amber-400" />
                     </div>
                     <div>
                       Smart Measuring Interface
-                      <CardDescription className="text-lg text-gray-300 mt-1">
+                      <CardDescription className="text-xl text-gray-300 mt-2">
                         Digital measurement capture with AI-assisted dimension verification and validation
                       </CardDescription>
                     </div>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-4">
+                <CardContent className="px-8 pb-8 pt-6">
                   {currentProject && currentProject.status !== 'measuring' && (
                     <Alert className="mb-4 bg-yellow-900/30 border-yellow-500/60">
                       <AlertCircle className="h-4 w-4" />
@@ -1662,7 +1690,7 @@ export const FabricatorWorkflow: React.FC = () => {
                           Select an existing project to continue, then choose whether to edit a pose or add a new one.
                         </p>
                         <div className="flex items-center gap-2">
-                          <label className="text-[11px] text-gray-300">Existing project</label>
+                          <label className="typography-label text-[11px] text-gray-300">Existing project</label>
                           <select
                               className="h-8 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-gray-100"
                             value={selectedExistingProjectKey}
@@ -1685,7 +1713,7 @@ export const FabricatorWorkflow: React.FC = () => {
                       {selectedExistingProjectKey && (
                         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between rounded-lg border border-gray-700 bg-gray-900/40 p-3">
                           <div className="flex flex-col gap-2">
-                            <label className="text-[11px] text-gray-300">Pose in selected project</label>
+                            <label className="typography-label text-[11px] text-gray-300">Pose in selected project</label>
                             <select
                               className="h-8 w-full md:w-64 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-gray-100"
                               value={selectedExistingPoseId}
@@ -1728,7 +1756,7 @@ export const FabricatorWorkflow: React.FC = () => {
                             </Button>
                             <Button
                               size="sm"
-                              className="bg-orange-500 hover:bg-orange-600"
+                              className="btn-primary"
                           onClick={handleAddNewPose}
                             >
                               Add new pose to this project
@@ -1751,17 +1779,17 @@ export const FabricatorWorkflow: React.FC = () => {
                   )}
 
                   {!projectMeta ? (
-                    <div className="border border-dashed border-gray-700 rounded-lg p-6 text-center space-y-3">
-                      <p className="text-sm text-gray-300 font-medium">
+                    <div className="border border-dashed border-gray-700 rounded-lg p-10 text-center space-y-5">
+                      <p className="text-base text-gray-300 font-semibold">
                         Project header required before measuring
                       </p>
-                      <p className="text-xs text-gray-400 max-w-md mx-auto">
+                      <p className="text-sm text-gray-400 max-w-lg mx-auto leading-relaxed">
                         In professional workflows, each project starts with a clear client, site,
                         currency and system definition. Create the project header to continue.
                       </p>
                       <Button
-                        size="sm"
-                        className="bg-orange-500 hover:bg-orange-600 text-xs mt-2"
+                        size="default"
+                        className="btn-primary text-sm px-8 py-6 h-auto"
                         onClick={() => setShowProjectWizard(true)}
                       >
                         Create Project Header
@@ -1769,11 +1797,11 @@ export const FabricatorWorkflow: React.FC = () => {
                     </div>
                   ) : (
                     <ErrorBoundary level="component">
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-2">
                           <Suspense
                             fallback={
-                              <div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />
+                              <div className="h-80 rounded-lg bg-gray-800/60 animate-pulse" />
                             }
                           >
                             <SmartMeasuringInterface
@@ -1784,29 +1812,7 @@ export const FabricatorWorkflow: React.FC = () => {
                             />
                           </Suspense>
                         </div>
-                        <div className="lg:col-span-1">
-                          {currentProject && (
-                            <Suspense fallback={<div className="h-64 rounded-lg bg-gray-800/60 animate-pulse" />}>
-                              <RealTimeQuote
-                                dimensions={{
-                                  width: currentProject.overallWidth,
-                                  height: currentProject.overallHeight
-                                }}
-                                materials={{
-                                  type: 'aluminum',
-                                  systemPackId: projectMeta?.systemPackId || 'panda-50'
-                                }}
-                                egyptianFactors={{
-                                  location: projectMeta?.region as any,
-                                  installationComplexity: 'simple'
-                                }}
-                                workshopContext={{
-                                  location: projectMeta?.region
-                                }}
-                              />
-                            </Suspense>
-                          )}
-                        </div>
+                        {/* RealTimeQuote moved to InventoryStatusPanel */}
                       </div>
                     </ErrorBoundary>
                   )}
@@ -1821,8 +1827,8 @@ export const FabricatorWorkflow: React.FC = () => {
                 <CardHeader className="pb-4">
                   <div className="flex items-center justify-between gap-3">
                     <CardTitle className="flex items-center gap-3 text-2xl">
-                      <div className="p-2 bg-orange-500/20 rounded-lg">
-                        <Settings className="h-6 w-6 text-orange-400" />
+                      <div className="btn-primary">
+                        <Settings className="h-6 w-6 text-amber-400" />
                       </div>
                       <div>
                         Technical Design & Component Specification
@@ -1836,7 +1842,7 @@ export const FabricatorWorkflow: React.FC = () => {
                         {/* Pose selector: choose which position/unit of the project to engage in design */}
                         {relatedPositions.length > 0 && (
                           <div className="flex items-center gap-2">
-                            <label className="text-[11px] text-gray-400">Active pose</label>
+                            <label className="typography-label text-[11px] text-gray-400">Active pose</label>
                             <select
                               className="h-8 rounded-md bg-gray-900 border border-gray-700 text-xs px-2 text-gray-100"
                               value={currentProject.id}
@@ -1861,7 +1867,7 @@ export const FabricatorWorkflow: React.FC = () => {
                           </div>
                         )}
                         <div className="flex flex-col items-end gap-1">
-                          <label className="text-[11px] text-gray-400">Quantity (poses)</label>
+                          <label className="typography-label text-[11px] text-gray-400">Quantity (poses)</label>
                           <input
                             type="number"
                             min={1}
@@ -1913,7 +1919,7 @@ export const FabricatorWorkflow: React.FC = () => {
                                 </Button>
                                 <Button
                                   size="sm"
-                                  className="h-7 text-xs bg-orange-500 hover:bg-orange-600"
+                                  className="btn-primary"
                                   onClick={() => {
                                     if (pendingLayoutComponents && pendingLayoutComponents.length) {
                                       void handleDesignComplete(pendingLayoutComponents);
@@ -1997,8 +2003,8 @@ export const FabricatorWorkflow: React.FC = () => {
                 <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
                   <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
-                    <div className="p-2 bg-orange-500/20 rounded-lg">
-                      <Ruler className="h-6 w-6 text-orange-400" />
+                    <div className="btn-primary">
+                      <Ruler className="h-6 w-6 text-amber-400" />
                     </div>
                     <div>
                       Blueprint Preview
@@ -2033,13 +2039,13 @@ export const FabricatorWorkflow: React.FC = () => {
                       ) : (
                         <div className="text-center py-16">
                           <Ruler className="h-20 w-20 text-gray-600 mx-auto mb-4" />
-                          <h3 className="text-2xl font-semibold mb-3 text-gray-400">No Project Available</h3>
+                          <h3 className="typography-h3 mb-3 text-gray-400">No Project Available</h3>
                           <p className="text-gray-500 max-w-md mx-auto mb-6">
                             Please complete the measurement and design phases first to generate a blueprint preview of your window project.
                           </p>
                           <Button 
                             onClick={() => setActiveTab('measuring')}
-                            className="bg-orange-500 hover:bg-orange-600"
+                            className="btn-primary"
                           >
                             <Ruler className="h-4 w-4 mr-2" />
                             Start Measuring
@@ -2060,8 +2066,8 @@ export const FabricatorWorkflow: React.FC = () => {
                 <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
                   <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
-                    <div className="p-2 bg-orange-500/20 rounded-lg">
-                      <Scissors className="h-6 w-6 text-orange-400" />
+                    <div className="btn-primary">
+                      <Scissors className="h-6 w-6 text-amber-400" />
                     </div>
                     <div className="flex-1">
                       <div>
@@ -2074,7 +2080,7 @@ export const FabricatorWorkflow: React.FC = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="border-orange-500 text-orange-300 bg-orange-500/10 text-xs"
+                          className="btn-primary"
                           onClick={() => navigate('/fabricator-workflow/pro')}
                         >
                           <Factory className="h-3 w-3 mr-1" />
@@ -2193,8 +2199,8 @@ export const FabricatorWorkflow: React.FC = () => {
               <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
-                    <div className="p-2 bg-orange-500/20 rounded-lg">
-                      <Package className="h-6 w-6 text-orange-400" />
+                    <div className="btn-primary">
+                      <Package className="h-6 w-6 text-amber-400" />
                     </div>
                     <div>
                       Profile Management
@@ -2258,8 +2264,8 @@ export const FabricatorWorkflow: React.FC = () => {
               <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
-                    <div className="p-2 bg-orange-500/20 rounded-lg">
-                      <Package className="h-6 w-6 text-orange-400" />
+                    <div className="btn-primary">
+                      <Package className="h-6 w-6 text-amber-400" />
                     </div>
                     <div>
                       Inventory Management & Stock Control
@@ -2292,8 +2298,8 @@ export const FabricatorWorkflow: React.FC = () => {
               <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
-                    <div className="p-2 bg-orange-500/20 rounded-lg">
-                      <Factory className="h-6 w-6 text-orange-400" />
+                    <div className="btn-primary">
+                      <Factory className="h-6 w-6 text-amber-400" />
                     </div>
                     <div>
                       Production Planning & Scheduling
@@ -2325,8 +2331,8 @@ export const FabricatorWorkflow: React.FC = () => {
               <Card className="bg-gray-800/50 border-gray-700 shadow-xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-2xl">
-                    <div className="p-2 bg-orange-500/20 rounded-lg">
-                      <Zap className="h-6 w-6 text-orange-400" />
+                    <div className="btn-primary">
+                      <Zap className="h-6 w-6 text-amber-400" />
                     </div>
                     <div>
                       Quality Control & Inspection
@@ -2459,10 +2465,57 @@ export const FabricatorWorkflow: React.FC = () => {
                   .replace(/\s+/g, '')
                   .toUpperCase()
                   .slice(0, 3)}-${Date.now().toString(36).toUpperCase().slice(-3)}`;
-                setProjectMeta({ ...meta, projectCode, customerCode });
+                const newProjectMeta = { ...meta, projectCode, customerCode };
+                setProjectMeta(newProjectMeta);
                 setUseEgyptWizard(true);
                 setShowProjectWizard(false);
-                setActiveTab('measuring');
+                
+                // CREATE AND PERSIST THE PROJECT as a WindowUnit
+                const newProject: WindowUnit = {
+                  id: `project-${Date.now()}-${Math.random().toString(36).substring(7)}`,
+                  orderNumber: projectCode,
+                  posNumber: '1',
+                  type: 'window',
+                  components: [],
+                  overallWidth: 1200, // Default dimensions
+                  overallHeight: 1400,
+                  color: '#FFFFFF',
+                  glazing: { type: 'clear', thickness: 24 },
+                  hardware: [],
+                  status: 'draft',
+                  createdAt: new Date(),
+                  updatedAt: new Date(),
+                  customer: meta.clientName,
+                  projectCode,
+                  systemPackId: meta.systemPackId,
+                  quantity: 1,
+                  positionMeta: {
+                    siteName: meta.siteName,
+                    elevation: meta.siteName,
+                    governorate: meta.governorate,
+                    windZone: meta.windZone,
+                    exposure: meta.exposure,
+                    floorLevel: meta.floorLevel,
+                    usageType: meta.usageType,
+                    baseShape: meta.baseShape,
+                    openingType: meta.openingType,
+                  },
+                };
+                
+                // Save to jobs store (this will also persist to Supabase in the background)
+                addOrUpdateJob(newProject);
+                
+                // Set as current project in workspace
+                workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: newProject });
+                
+                // Set as selected job
+                setSelectedJob(newProject.id);
+                
+                // Navigate directly to drafting center (gold tier DraftingWorkbench) after project creation
+                navigate('/fabricator/workflow/engineering-bay?mode=drafting');
+                
+                // Show success message
+                toast.success(t('fabricator:project.created', 'Project created successfully. Opening drafting center...'));
               }}
             />
           ) : (
@@ -2477,9 +2530,15 @@ export const FabricatorWorkflow: React.FC = () => {
                     .replace(/\s+/g, '')
                     .toUpperCase()
                     .slice(0, 3)}-${Date.now().toString(36).toUpperCase().slice(-3)}`;
-                  setProjectMeta({ ...meta, projectCode, customerCode });
+                  const newProjectMeta = { ...meta, projectCode, customerCode };
+                  setProjectMeta(newProjectMeta);
                   setShowProjectWizard(false);
-                  setActiveTab('measuring');
+                  // Navigate directly to drafting center (gold tier DraftingWorkbench) after project creation
+                  navigate('/fabricator/workflow/engineering-bay?mode=drafting');
+                  // Reset any existing project in workspace context
+                  workspaceDispatch({ type: 'SET_CURRENT_PROJECT', payload: null });
+                  // Show success message
+                  toast.success(t('fabricator:project.created', 'Project created successfully. Opening drafting center...'));
                 }}
               />
             </Suspense>

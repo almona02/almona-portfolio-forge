@@ -193,11 +193,11 @@ export const InventoryPanel: React.FC = () => {
         </div>
         <div className="flex flex-wrap gap-3 items-end">
           <div className="w-56">
-            <label className="text-xs text-muted-foreground">Search SKU/Name</label>
+            <label className="typography-label text-xs text-muted-foreground">Search SKU/Name</label>
             <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. ALM-123 or Saw" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Category</label>
+            <label className="typography-label text-xs text-muted-foreground">Category</label>
             <Select value={category} onValueChange={(v: string) => { setCategory(v as ProductCategory | 'all'); setPage(1) }}>
               <SelectTrigger>
                 <SelectValue placeholder="All" />
@@ -213,7 +213,7 @@ export const InventoryPanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Stock</label>
+            <label className="typography-label text-xs text-muted-foreground">Stock</label>
             <Select value={stockStatus} onValueChange={(v: string) => { setStockStatus(v as 'all' | 'ok' | 'low' | 'out'); setPage(1) }}>
               <SelectTrigger>
                 <SelectValue placeholder="All" />
@@ -227,7 +227,7 @@ export const InventoryPanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Active</label>
+            <label className="typography-label text-xs text-muted-foreground">Active</label>
             <Select value={active} onValueChange={(v: string) => { setActive(v as 'all' | 'active' | 'inactive'); setPage(1) }}>
               <SelectTrigger>
                 <SelectValue placeholder="All" />
@@ -280,7 +280,7 @@ export const InventoryPanel: React.FC = () => {
           </AlertDialogHeader>
           {pendingAction?.type === 'stock' && (
             <div className="mt-2">
-              <label className="text-xs text-muted-foreground">Delta (can be negative)</label>
+              <label className="typography-label text-xs text-muted-foreground">Delta (can be negative)</label>
               <Input
                 type="number"
                 step="1"

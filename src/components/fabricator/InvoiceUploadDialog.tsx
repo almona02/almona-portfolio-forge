@@ -113,7 +113,7 @@ export const InvoiceUploadDialog: React.FC<InvoiceUploadDialogProps> = ({
       <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-orange-400" />
+            <FileText className="h-5 w-5 text-amber-400" />
             Upload Supplier Invoice
           </DialogTitle>
           <DialogDescription className="text-gray-400">
@@ -150,11 +150,11 @@ export const InvoiceUploadDialog: React.FC<InvoiceUploadDialogProps> = ({
             <div
               onDrop={handleDrop}
               onDragOver={handleDragOver}
-              className="border-2 border-dashed border-gray-700 rounded-lg p-8 text-center hover:border-orange-500/50 transition-colors cursor-pointer"
+              className="border-dashed border-gray-700 rounded-lg p-8 text-center /50 transition-colors cursor-pointer card-premium"
             >
               {loading ? (
                 <div className="flex flex-col items-center gap-2">
-                  <Loader2 className="h-8 w-8 animate-spin text-orange-400" />
+                  <Loader2 className="h-8 w-8 animate-spin text-amber-400" />
                   <p className="text-sm text-gray-400">Parsing invoice...</p>
                 </div>
               ) : file ? (
@@ -244,7 +244,7 @@ export const InvoiceUploadDialog: React.FC<InvoiceUploadDialogProps> = ({
           <Button
             onClick={handleImport}
             disabled={!parsedInvoice || mappedItems.length === 0}
-            className="bg-orange-500 hover:bg-orange-600"
+            className="btn-primary"
           >
             Import {mappedItems.length > 0 ? `${mappedItems.length} ` : ''}Items
           </Button>

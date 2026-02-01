@@ -41,7 +41,7 @@ const emergencyTypes = [
     icon: Settings,
     description: "Complete hydraulic system breakdown",
     responseTime: "30-60 minutes",
-    color: "from-red-500 to-orange-500"
+    color: "from-red-500 to-amber-500"
   },
   {
     id: "electrical-fault",
@@ -49,7 +49,7 @@ const emergencyTypes = [
     icon: Zap,
     description: "Power issues, control failures, wiring problems",
     responseTime: "45-90 minutes",
-    color: "from-yellow-500 to-orange-500"
+    color: "from-yellow-500 to-amber-500"
   },
   {
     id: "mechanical-breakdown",
@@ -140,7 +140,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-6">
                 {/* Emergency Type Selection */}
                 <div>
-                  <Label className="text-lg font-semibold mb-4 block">Select Emergency Type</Label>
+                  <Label className="typography-label text-lg font-semibold mb-4 block">Select Emergency Type</Label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {emergencyTypes.map((type) => {
                       const Icon = type.icon;
@@ -151,7 +151,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                           onClick={() => setSelectedEmergency(type.id)}
                           className={`relative p-4 rounded-lg border-2 transition-all duration-300 ${
                             selectedEmergency === type.id
-                              ? "border-orange-500 bg-orange-500/10"
+                              ? "border-amber-500 bg-amber-500/10"
                               : "border-almona-light/20 hover:border-almona-light/40"
                           }`}
                           whileHover={{ scale: 1.02 }}
@@ -166,7 +166,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                               <Icon className="h-5 w-5 text-white" />
                             </LazyMotionDiv>
                             <div className="text-left">
-                              <h3 className="font-semibold">{type.title}</h3>
+                              <h3 className="typography-h3">{type.title}</h3>
                               <p className="text-sm text-gray-400">{type.description}</p>
                               <Badge variant="secondary" className="mt-2">
                                 <Clock className="h-3 w-3 mr-1" />
@@ -176,7 +176,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                           </div>
                           {selectedEmergency === type.id && (
                             <LazyMotionDiv
-                              className="absolute inset-0 rounded-lg border-2 border-orange-500"
+                              className="absolute inset-0 rounded-lg card-premium"
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                               exit={{ opacity: 0 }}
@@ -199,7 +199,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                     >
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="machineModel">Machine Model *</Label>
+                          <Label htmlFor="machineModel" className="typography-label">Machine Model *</Label>
                           <Input
                             id="machineModel"
                             placeholder="e.g., DK-502, KM-212"
@@ -212,7 +212,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="serialNumber">Serial Number *</Label>
+                          <Label htmlFor="serialNumber" className="typography-label">Serial Number *</Label>
                           <Input
                             id="serialNumber"
                             placeholder="Enter machine serial number"
@@ -227,7 +227,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="contactName">Contact Name *</Label>
+                          <Label htmlFor="contactName" className="typography-label">Contact Name *</Label>
                           <Input
                             id="contactName"
                             placeholder="Your full name"
@@ -240,7 +240,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="phone">Phone Number *</Label>
+                          <Label htmlFor="phone" className="typography-label">Phone Number *</Label>
                           <Input
                             id="phone"
                             type="tel"
@@ -255,7 +255,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="location">Facility Location *</Label>
+                        <Label htmlFor="location" className="typography-label">Facility Location *</Label>
                         <Input
                           id="location"
                           placeholder="Enter your facility address"
@@ -268,7 +268,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="description">Problem Description *</Label>
+                        <Label htmlFor="description" className="typography-label">Problem Description *</Label>
                         <Textarea
                           id="description"
                           rows={4}
@@ -282,7 +282,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="priority">Priority Level</Label>
+                        <Label htmlFor="priority" className="typography-label">Priority Level</Label>
                         <Select
                           onValueChange={(value) => register("priority").onChange({ target: { value } })}
                           defaultValue="critical"
@@ -295,7 +295,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                               <span className="text-red-500">🔴 Critical - Production Stopped</span>
                             </SelectItem>
                             <SelectItem value="high">
-                              <span className="text-orange-500">🟠 High - Major Impact</span>
+                              <span className="text-amber-500">🟠 High - Major Impact</span>
                             </SelectItem>
                             <SelectItem value="medium">
                               <span className="text-yellow-500">🟡 Medium - Minor Impact</span>
@@ -319,7 +319,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                   <LazyMotionButton
                     type="submit"
                     disabled={!selectedEmergency || isSubmitting}
-                    className="relative overflow-hidden bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-2 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="relative overflow-hidden bg-gradient-to-r from-red-500 to-amber-500 text-white px-6 py-2 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -351,7 +351,7 @@ export const EmergencyServiceDialog = ({ open, onOpenChange }: EmergencyServiceD
                   <CheckCircle2 className="h-10 w-10 text-white" />
                 </div>
               </LazyMotionDiv>
-              <h3 className="text-2xl font-bold mb-2">Emergency Request Submitted!</h3>
+              <h3 className="typography-h3 mb-2">Emergency Request Submitted!</h3>
               <p className="text-gray-400">
                 Our emergency response team has been notified and will contact you within 15 minutes.
               </p>

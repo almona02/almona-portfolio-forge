@@ -1,5 +1,5 @@
-import React from "react";
 import { cn } from "@/lib/utils";
+import React from "react";
 
 interface LogoProps {
   className?: string;
@@ -19,50 +19,35 @@ export const Logo: React.FC<LogoProps> = ({ className }) => (
     <circle cx="50" cy="50" r="48" fill="url(#logoGradient)" opacity="0.15" />
     <circle cx="50" cy="50" r="42" fill="url(#logoGradient)" />
     <circle cx="50" cy="50" r="42" fill="url(#metallicSheen)" opacity="0.3" />
-    {[...Array(24)].map((_, i) => {
-      const angle = (i * 15 - 5) * Math.PI / 180;
-      const isFlat = i % 2 === 0;
-      if (isFlat) {
-        const x1 = 50 + 40 * Math.cos(angle);
-        const y1 = 50 + 40 * Math.sin(angle);
-        const x2 = 50 + 47 * Math.cos(angle);
-        const y2 = 50 + 47 * Math.sin(angle);
-        return (
-          <line
-            key={i}
-            x1={x1}
-            y1={y1}
-            x2={x2}
-            y2={y2}
-            stroke="#E8E8E8"
-            strokeWidth="2.5"
-            strokeLinecap="square"
-          />
-        );
-      } else {
-        const x1 = 50 + 40 * Math.cos(angle);
-        const y1 = 50 + 40 * Math.sin(angle);
-        const x2 = 50 + 48 * Math.cos(angle);
-        const y2 = 50 + 48 * Math.sin(angle);
-        return (
-          <line
-            key={i}
-            x1={x1}
-            y1={y1}
-            x2={x2}
-            y2={y2}
-            stroke="#fff"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        );
-      }
-    })}
-    {[...Array(24)].map((_, i) => {
-      const angle = (i * 15 - 5) * Math.PI / 180;
-      const x = 50 + 44 * Math.cos(angle);
-      const y = 50 + 44 * Math.sin(angle);
-      return <circle key={`tip-${i}`} cx={x} cy={y} r="0.8" fill="#FFC107" opacity="0.8" />;
+    {[...Array(48)].map((_, i) => {
+      const angle = (i * 7.5 - 2.5) * Math.PI / 180; // 360 / 48 = 7.5 degrees per tooth
+      const tipRadius = 48;
+      const innerRadius = 39.5;
+      
+      // Sharp carbide blade edge: triangular tooth with sharp tip
+      const tipX = 50 + tipRadius * Math.cos(angle);
+      const tipY = 50 + tipRadius * Math.sin(angle);
+      
+      // Create sharp angular edges (carbide blade style)
+      const leftAngle = angle - (3.75 * Math.PI / 180); // Half tooth width
+      const rightAngle = angle + (3.75 * Math.PI / 180);
+      
+      const leftInnerX = 50 + innerRadius * Math.cos(leftAngle);
+      const leftInnerY = 50 + innerRadius * Math.sin(leftAngle);
+      const rightInnerX = 50 + innerRadius * Math.cos(rightAngle);
+      const rightInnerY = 50 + innerRadius * Math.sin(rightAngle);
+      
+      // Sharp triangular tooth path (carbide blade style)
+      return (
+        <path
+          key={i}
+          d={`M ${leftInnerX} ${leftInnerY} L ${tipX} ${tipY} L ${rightInnerX} ${rightInnerY} Z`}
+          fill="#fff"
+          stroke="#FFC107"
+          strokeWidth="0.5"
+          opacity="0.95"
+        />
+      );
     })}
     {[...Array(4)].map((_, i) => {
       const angle = (i * 90 + 45) * Math.PI / 180;

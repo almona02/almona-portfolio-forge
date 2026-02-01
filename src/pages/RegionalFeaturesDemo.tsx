@@ -46,7 +46,7 @@ const RegionalFeaturesDemo: React.FC = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">
+          <h1 className="typography-h1 text-white mb-4">
             {t('demo.regionalFeatures.title', 'Regional Features Demo')}
           </h1>
           <p className="text-gray-300 text-lg max-w-3xl mx-auto">
@@ -60,7 +60,7 @@ const RegionalFeaturesDemo: React.FC = () => {
             <CardTitle className="text-white flex items-center justify-between">
               <span>{t('demo.regionStatus.title', 'Current Region Status')}</span>
               <div className="flex items-center space-x-2">
-                <Badge variant="outline" className="text-orange-400 border-orange-400">
+                <Badge variant="outline" className="text-amber-400 border-amber-400">
                   {regionState.region}
                 </Badge>
                 <Button
@@ -80,7 +80,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                 <div className="text-2xl mb-2">
                   {regionState.region === 'TR' ? '🇹🇷' : regionState.region === 'EG' ? '🇪🇬' : '🌍'}
                 </div>
-                <h3 className="text-white font-semibold">
+                <h3 className="typography-h3 text-white">
                   {regionState.region === 'TR' ? 'Turkey' : 
                    regionState.region === 'EG' ? 'Egypt' : 'International'}
                 </h3>
@@ -91,7 +91,7 @@ const RegionalFeaturesDemo: React.FC = () => {
               
               <div className="text-center">
                 <div className="text-2xl mb-2">💱</div>
-                <h3 className="text-white font-semibold">
+                <h3 className="typography-h3 text-white">
                   {_config.currency.symbol} {_config.currency.code}
                 </h3>
                 <p className="text-gray-400 text-sm">
@@ -101,7 +101,7 @@ const RegionalFeaturesDemo: React.FC = () => {
               
               <div className="text-center">
                 <div className="text-2xl mb-2">📊</div>
-                <h3 className="text-white font-semibold">
+                <h3 className="typography-h3 text-white">
                   {_config.tax.vatRate * 100}% {_config.tax.vatName}
                 </h3>
                 <p className="text-gray-400 text-sm">
@@ -116,21 +116,21 @@ const RegionalFeaturesDemo: React.FC = () => {
               <Button
                 onClick={() => handleRegionChange('TR')}
                 variant={regionState.region === 'TR' ? 'default' : 'outline'}
-                className={regionState.region === 'TR' ? 'bg-orange-500 hover:bg-orange-600' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
+                className={regionState.region === 'TR' ? 'bg-amber-500 hover:bg-amber-600' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
               >
                 🇹🇷 Turkey
               </Button>
               <Button
                 onClick={() => handleRegionChange('EG')}
                 variant={regionState.region === 'EG' ? 'default' : 'outline'}
-                className={regionState.region === 'EG' ? 'bg-orange-500 hover:bg-orange-600' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
+                className={regionState.region === 'EG' ? 'bg-amber-500 hover:bg-amber-600' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
               >
                 🇪🇬 Egypt
               </Button>
               <Button
                 onClick={() => handleRegionChange('DEFAULT')}
                 variant={regionState.region === 'DEFAULT' ? 'default' : 'outline'}
-                className={regionState.region === 'DEFAULT' ? 'bg-orange-500 hover:bg-orange-600' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
+                className={regionState.region === 'DEFAULT' ? 'bg-amber-500 hover:bg-amber-600' : 'border-gray-600 text-gray-300 hover:bg-gray-700'}
               >
                 🌍 International
               </Button>
@@ -166,7 +166,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <h4 className="text-gray-300 font-medium">
+                    <h4 className="typography-h4 text-gray-300 font-medium">
                       {t('demo.overview.regionDetection.currentRegion', 'Current Region')}
                     </h4>
                     <p className="text-white">
@@ -175,7 +175,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <h4 className="text-gray-300 font-medium">
+                    <h4 className="typography-h4 text-gray-300 font-medium">
                       {t('demo.overview.regionDetection.features', 'Enabled Features')}
                     </h4>
                     <div className="flex flex-wrap gap-2">
@@ -192,7 +192,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <h4 className="text-gray-300 font-medium">
+                    <h4 className="typography-h4 text-gray-300 font-medium">
                       {t('demo.overview.regionDetection.businessHours', 'Business Hours')}
                     </h4>
                     <p className="text-white">
@@ -215,7 +215,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                   {turkishTaxUtils.isTurkish ? (
                     <>
                       <div className="space-y-2">
-                        <h4 className="text-gray-300 font-medium">
+                        <h4 className="typography-h4 text-gray-300 font-medium">
                           {t('demo.overview.turkishFeatures.kdv', 'KDV (VAT)')}
                         </h4>
                         <p className="text-white">
@@ -224,7 +224,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                       </div>
                       
                       <div className="space-y-2">
-                        <h4 className="text-gray-300 font-medium">
+                        <h4 className="typography-h4 text-gray-300 font-medium">
                           {t('demo.overview.turkishFeatures.currency', 'Currency Formatting')}
                         </h4>
                         <p className="text-white">
@@ -233,7 +233,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                       </div>
                       
                       <div className="space-y-2">
-                        <h4 className="text-gray-300 font-medium">
+                        <h4 className="typography-h4 text-gray-300 font-medium">
                           {t('demo.overview.turkishFeatures.compliance', 'Compliance Standards')}
                         </h4>
                         <div className="flex flex-wrap gap-2">
@@ -290,7 +290,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <h4 className="text-gray-300 font-medium mb-2">
+                      <h4 className="typography-h4 text-gray-300 font-medium mb-2">
                         {t('demo.compliance.standards.required', 'Required Standards')}
                       </h4>
                       <div className="flex flex-wrap gap-2">
@@ -303,7 +303,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                     </div>
                     
                     <div>
-                      <h4 className="text-gray-300 font-medium mb-2">
+                      <h4 className="typography-h4 text-gray-300 font-medium mb-2">
                         {t('demo.compliance.standards.certifications', 'Certifications')}
                       </h4>
                       <div className="flex flex-wrap gap-2">
@@ -316,7 +316,7 @@ const RegionalFeaturesDemo: React.FC = () => {
                     </div>
                     
                     <div>
-                      <h4 className="text-gray-300 font-medium mb-2">
+                      <h4 className="typography-h4 text-gray-300 font-medium mb-2">
                         {t('demo.compliance.standards.documents', 'Required Documents')}
                       </h4>
                       <ul className="text-white space-y-1">

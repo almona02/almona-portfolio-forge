@@ -60,8 +60,8 @@ export const EgyptianComplianceDocs: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
-        <FileText className="w-5 h-5 text-orange-500" />
-        <h3 className="font-semibold text-gray-900 dark:text-white">
+        <FileText className="w-5 h-5 text-amber-500" />
+        <h3 className="typography-h3 text-gray-900 dark:text-white">
           Egyptian Compliance Documents
         </h3>
       </div>
@@ -98,7 +98,7 @@ export const EgyptianComplianceDocs: React.FC = () => {
                   <Button
                     size="sm"
                     onClick={() => handleDownload(doc)}
-                    className="h-7 px-2 text-xs bg-orange-500 hover:bg-orange-600"
+                    className="btn-primary"
                   >
                     <Download className="w-3 h-3 mr-1" />
                     Download

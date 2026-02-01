@@ -238,7 +238,7 @@ export function EnhancedModel3DDialog({
         onClick={onClose}
       >
         <LazyMotionDiv 
-          className={`bg-gradient-to-br from-gray-900 to-black rounded-2xl shadow-2xl border border-orange-500/20 ${
+          className={`bg-gradient-to-br from-gray-900 to-black rounded-2xl shadow-2xl border border-amber-500/20 ${
             isFullscreen ? 'w-full h-full max-w-none max-h-none' : 'max-w-7xl w-full max-h-[95vh]'
           } overflow-hidden`}
           variants={modalVariants}
@@ -265,7 +265,7 @@ export function EnhancedModel3DDialog({
                 </Badge>
               )}
               {isFR222 && (
-                <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 ml-2">
+                <Badge className="bg-gradient-to-r from-amber-500 to-red-500 text-white border-0 ml-2">
                   <Move3D className="w-3 h-3 mr-1" />
                   SwiftXR Available
                 </Badge>
@@ -442,12 +442,12 @@ export function EnhancedModel3DDialog({
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.2 }}
                       >
-                        <div className="w-16 h-16 border-4 border-orange-500/30 border-t-orange-500 rounded-full animate-spin mx-auto"></div>
+                        <div className="w-16 h-16 border-4 border-amber-500/30 border-t-amber-500 rounded-full animate-spin mx-auto"></div>
                         <div className="space-y-2">
                           <p className="text-lg font-semibold">{loadingProgress.message}</p>
                           <div className="w-64 bg-gray-700 rounded-full h-2">
                             <LazyMotionDiv 
-                              className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full"
+                              className="bg-gradient-to-r from-amber-500 to-red-500 h-2 rounded-full"
                               initial={{ width: 0 }}
                               animate={{ width: `${loadingProgress.progress}%` }}
                               transition={{ duration: 0.5 }}
@@ -474,7 +474,7 @@ export function EnhancedModel3DDialog({
                           <X className="w-8 h-8 text-red-400" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold text-red-400">Error Loading Model</h3>
+                          <h3 className="typography-h3 text-lg text-red-400">Error Loading Model</h3>
                           <p className="text-sm text-gray-300 mt-2">{error}</p>
                         </div>
                       </div>
@@ -545,7 +545,7 @@ export function EnhancedModel3DDialog({
                   transition={{ delay: 0.3 }}
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-white">Machine Details</h3>
+                    <h3 className="typography-h3 text-lg text-white">Machine Details</h3>
                     <Button
                       size="sm"
                       variant="ghost"
@@ -591,7 +591,7 @@ export function EnhancedModel3DDialog({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <h3 className="text-lg font-semibold text-white">Actions</h3>
+                  <h3 className="typography-h3 text-lg text-white">Actions</h3>
                   
                   <div className="grid grid-cols-2 gap-2">
                     <Button
@@ -623,7 +623,7 @@ export function EnhancedModel3DDialog({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <h3 className="text-lg font-semibold text-white">Controls</h3>
+                  <h3 className="typography-h3 text-lg text-white">Controls</h3>
                   
                   <div className="space-y-2 text-sm text-gray-400">
                     <div className="flex items-center gap-2">

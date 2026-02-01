@@ -7,8 +7,17 @@
  * - Machine health integration (predictive maintenance alerts)
  */
 
-import { CuttingPlan, Cut, Profile } from '@/types/fabricator';
-import { aiQualityPredictor, OptimalCuttingParameters } from '../quality/AIQualityPredictor';
+import { Cut, CuttingPlan, Profile } from '@/types/fabricator';
+
+// CONSTITUTIONAL: Deterministic parameter calculation only
+export interface OptimalCuttingParameters {
+  sawSpeed: number; // RPM or m/min
+  feedRate: number; // mm/min
+  bladeType: string;
+  coolantFlow: 'low' | 'medium' | 'high';
+  recommendedBlade: string;
+  confidence: number;
+}
 
 export interface CNCMachine {
   id: string;
@@ -113,22 +122,24 @@ export class CNCIntegration {
       alerts: [],
     };
 
-    // Check for health issues
-    const healthPrediction = await aiQualityPredictor.predictMachineHealth(machineId, {
-      vibrationLevel: monitoringData.metrics.vibration,
-      temperature: monitoringData.metrics.temperature,
-    });
+    // CONSTITUTIONAL: Deterministic health checks only
+    // Check for health issues using rule-based thresholds
+    if (monitoringData.metrics.vibration && monitoringData.metrics.vibration > 0.5) {
+      monitoringData.alerts.push({
+        type: 'maintenance',
+        message: 'High vibration detected - check machine alignment',
+        severity: 'high',
+        timestamp: new Date(),
+      });
+    }
 
-    // Convert health alerts to CNC alerts
-    for (const alert of healthPrediction.maintenanceAlerts) {
-      if (alert.severity === 'high' || alert.severity === 'critical') {
-        monitoringData.alerts.push({
-          type: 'maintenance',
-          message: alert.message,
-          severity: alert.severity,
-          timestamp: new Date(),
-        });
-      }
+    if (monitoringData.metrics.temperature && monitoringData.metrics.temperature > 60) {
+      monitoringData.alerts.push({
+        type: 'maintenance',
+        message: 'High temperature detected - check cooling system',
+        severity: 'medium',
+        timestamp: new Date(),
+      });
     }
 
     return monitoringData;
@@ -168,10 +179,10 @@ export class CNCIntegration {
   ): Promise<QRCodeCutList> {
     const cuts: QRCodeCut[] = [];
 
-    // Generate optimal parameters for each cut
+    // Generate optimal parameters for each cut using DETERMINISTIC rules
     for (let i = 0; i < cuttingPlan.cuts.length; i++) {
       const cut = cuttingPlan.cuts[i];
-      const optimalParams = await aiQualityPredictor.predictOptimalParameters(
+      const optimalParams = this.calculateDeterministicParameters(
         cut,
         cuttingPlan.profile
       );
@@ -211,11 +222,8 @@ export class CNCIntegration {
     profile: Profile,
     materialBatchId?: string
   ): Promise<AdaptiveCuttingParameters> {
-    // Get base optimal parameters
-    const baseParameters = await aiQualityPredictor.predictOptimalParameters(
-      cut,
-      profile
-    );
+    // Get base optimal parameters using DETERMINISTIC rules
+    const baseParameters = this.calculateDeterministicParameters(cut, profile);
 
     // Adjust based on material batch if provided
     let adjustedParameters = { ...baseParameters };
@@ -238,6 +246,30 @@ export class CNCIntegration {
       adjustedParameters,
       adjustmentReason,
       materialBatchId,
+    };
+  }
+
+  /**
+   * CONSTITUTIONAL: Deterministic parameter calculation
+   * Based on material properties, profile dimensions, and cut requirements
+   */
+  private calculateDeterministicParameters(
+    cut: Cut,
+    profile: Profile
+  ): OptimalCuttingParameters {
+    const baseSpeed = profile.material === 'aluminum' ? 3000 : 2500; // RPM
+    const baseFeed = profile.material === 'aluminum' ? 2000 : 1500; // mm/min
+
+    // Adjust based on profile dimensions
+    const sizeFactor = (profile.width || 50) / 100;
+
+    return {
+      sawSpeed: baseSpeed * sizeFactor,
+      feedRate: baseFeed * sizeFactor,
+      bladeType: profile.material === 'aluminum' ? 'carbide_tipped' : 'hss',
+      coolantFlow: 'medium',
+      recommendedBlade: `${profile.material}_standard`,
+      confidence: 1.0, // 100% confidence in deterministic rules
     };
   }
 

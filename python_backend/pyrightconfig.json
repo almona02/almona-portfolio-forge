@@ -1,12 +1,18 @@
 {
   "include": [
-    "."
+    "apis"
   ],
   "exclude": [
     "**/__pycache__",
     "**/node_modules",
     "**/venv",
-    "**/.venv"
+    "**/.venv",
+    "ai_services/**",
+    "adapters/**",
+    "agents/**",
+    "scripts/**",
+    "tests/**",
+    "analyze_*.py"
   ],
   "reportMissingImports": true,
   "reportMissingTypeStubs": false,

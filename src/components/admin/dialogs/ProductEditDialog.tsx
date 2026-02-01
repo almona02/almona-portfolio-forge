@@ -67,16 +67,16 @@ export const ProductEditDialog: React.FC<ProductEditDialogProps> = ({ open, onOp
         {product && (
           <div className="space-y-4 py-2">
             <div>
-              <Label htmlFor="sku">SKU</Label>
+              <Label htmlFor="sku" className="typography-label">SKU</Label>
               <Input id="sku" value={product.sku} disabled />
             </div>
             <div>
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name" className="typography-label">Name</Label>
               <Input id="name" value={product.name_en} disabled />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="price">Price (EGP)</Label>
+                <Label htmlFor="price" className="typography-label">Price (EGP)</Label>
                 <Input
                   id="price"
                   type="number"
@@ -88,7 +88,7 @@ export const ProductEditDialog: React.FC<ProductEditDialogProps> = ({ open, onOp
                 />
               </div>
               <div>
-                <Label htmlFor="stock">Stock Quantity</Label>
+                <Label htmlFor="stock" className="typography-label">Stock Quantity</Label>
                 <Input
                   id="stock"
                   type="number"

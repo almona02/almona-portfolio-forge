@@ -49,13 +49,13 @@ export const WasteComparisonReport: React.FC<WasteComparisonReportProps> = ({
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-orange-400" />
+            <BarChart3 className="h-5 w-5 text-amber-400" />
             Waste Comparison Report
           </CardTitle>
           {onExportPDF && (
             <button
               onClick={onExportPDF}
-              className="text-xs text-orange-400 hover:text-orange-300"
+              className="text-xs text-amber-400 hover:text-amber-300"
             >
               Export PDF
             </button>
@@ -65,7 +65,7 @@ export const WasteComparisonReport: React.FC<WasteComparisonReportProps> = ({
       <CardContent className="space-y-6">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gray-900/50 border-gray-700">
+          <Card className="bg-gray-900/50 border-gray-700 card-dark">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Package className="h-4 w-4 text-blue-400" />
@@ -87,7 +87,7 @@ export const WasteComparisonReport: React.FC<WasteComparisonReportProps> = ({
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900/50 border-gray-700">
+          <Card className="bg-gray-900/50 border-gray-700 card-dark">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingDown className="h-4 w-4 text-yellow-400" />
@@ -109,7 +109,7 @@ export const WasteComparisonReport: React.FC<WasteComparisonReportProps> = ({
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900/50 border-gray-700">
+          <Card className="bg-gray-900/50 border-gray-700 card-dark">
             <CardContent className="p-4">
               <div className="flex items-center gap-2 mb-2">
                 <DollarSign className="h-4 w-4 text-green-400" />
@@ -127,7 +127,7 @@ export const WasteComparisonReport: React.FC<WasteComparisonReportProps> = ({
 
         {/* Comparison Chart */}
         <div>
-          <h4 className="text-sm font-semibold text-gray-300 mb-4">Visual Comparison</h4>
+          <h4 className="typography-h4 text-sm text-gray-300 mb-4">Visual Comparison</h4>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -145,7 +145,7 @@ export const WasteComparisonReport: React.FC<WasteComparisonReportProps> = ({
 
         {/* Detailed Breakdown */}
         <div className="space-y-3">
-          <h4 className="text-sm font-semibold text-gray-300">Detailed Breakdown</h4>
+          <h4 className="typography-h4 text-sm text-gray-300">Detailed Breakdown</h4>
           
           <div className="space-y-2">
             <div className="flex justify-between items-center p-2 bg-gray-900/50 rounded">

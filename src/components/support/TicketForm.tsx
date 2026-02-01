@@ -213,7 +213,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title" className="typography-label">Title</Label>
               <Controller name="title" control={control} render={({ field }) => (
                 <Input id="title" {...field} placeholder="Brief description" className={clsx("bg-almona-darker border-almona-light/30 focus:border-almona-orange/50", { "border-red-500 focus:border-red-500": errors.title })} />
               )} />
@@ -221,7 +221,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description" className="typography-label">Description</Label>
               <Controller name="description" control={control} render={({ field }) => (
                 <Textarea id="description" rows={6} {...field} placeholder="Details, steps to reproduce, error messages..." className={clsx("bg-almona-darker border-almona-light/30 focus:border-almona-orange/50", { "border-red-500 focus:border-red-500": errors.description })} />
               )} />
@@ -290,7 +290,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({
 
         {mode === 'page' && showAttachments && activeTab==='preview' && (
           <LazyMotionDiv key="preview" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
-            <h3 className="text-lg font-semibold">Preview</h3>
+            <h3 className="typography-h3 text-lg">Preview</h3>
             <div className="bg-almona-darker/40 p-4 rounded border border-almona-light/20 text-sm space-y-2">
               <div><strong>Title:</strong> {watch('title')}</div>
               <div><strong>Type:</strong> {watch('type')}</div>

@@ -15,7 +15,7 @@ export const QualityControl: React.FC<QualityControlProps> = ({ project }) => {
       <Card className="bg-gray-700/50 border-gray-600">
         <CardContent className="p-8 text-center">
           <Zap className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No Project Available</h3>
+          <h3 className="typography-h3 text-lg mb-2">No Project Available</h3>
           <p className="text-gray-400">
             Please complete the measurement and design phases first to enable quality control checks.
           </p>
@@ -88,7 +88,7 @@ export const QualityControl: React.FC<QualityControlProps> = ({ project }) => {
       <Card className="bg-gray-700/50 border-gray-600">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-orange-400" />
+            <Zap className="h-5 w-5 text-amber-400" />
             Quality Control Checks
           </CardTitle>
         </CardHeader>

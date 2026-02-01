@@ -3,6 +3,14 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
+import { useJobsStore } from "./store/jobsStore";
+
+// [DEV/E2E] Ensure critical stores are available globally
+if ((import.meta as any).env?.DEV) {
+  if (typeof window !== 'undefined') {
+    (window as any).jobsStore = useJobsStore;
+  }
+}
 // Persona integrity check - must run before React render
 import { assertPersonaIntegrity } from "@/lib/persona/assertPersonaIntegrity";
 // Ensure React is fully loaded before importing anything else
@@ -52,7 +60,7 @@ class CriticalErrorBoundary extends React.Component<
       return (
         <div className="min-h-screen flex items-center justify-center bg-background">
           <div className="text-center p-8 max-w-md">
-            <h1 className="text-2xl font-bold text-destructive mb-4">
+            <h1 className="typography-h1 text-2xl text-destructive mb-4">
               Application Error
             </h1>
             <p className="text-muted-foreground mb-6">
@@ -92,10 +100,10 @@ const startTime = performance.now();
 try {
   // Critical: Initialize polyfills synchronously (needed for app to work)
   initializePolyfills();
-  
+
   // Critical: Initialize performance monitoring (lightweight)
   initializePerformanceMonitoring();
-  
+
   // PHASE 1.7: Deferred non-critical initialization
   const initializeNonCriticalFeatures = () => {
     const features = [
@@ -104,7 +112,7 @@ try {
       initializeCacheWarming,
       initializeWebWorkers
     ];
-    
+
     features.forEach(fn => {
       try {
         fn();
@@ -116,7 +124,7 @@ try {
       }
     });
   };
-  
+
   // Defer non-critical initialization using requestIdleCallback or setTimeout
   if ('requestIdleCallback' in window) {
     (window as any).requestIdleCallback(initializeNonCriticalFeatures, { timeout: 5000 });
@@ -124,7 +132,7 @@ try {
     // Fallback: Wait 3 seconds then initialize
     setTimeout(initializeNonCriticalFeatures, 3000);
   }
-  
+
   // NON-CRITICAL: Defer everything else to avoid blocking initial render
   const deferNonCritical = () => {
     // Initialize critical CSS (deferred)
@@ -133,29 +141,29 @@ try {
     }).catch(() => {
       // Non-critical, fail silently
     });
-    
+
     // Preload critical Fabricator chunks (deferred)
     import('./lib/quickPerformance').then(({ quickPerformanceWins }) => {
       quickPerformanceWins.preloadCriticalChunks();
     }).catch(() => {
       // Non-critical, fail silently
     });
-    
+
     // Initialize Web Vitals monitoring (deferred)
     const isProdEnv = (import.meta as any).env?.PROD || process.env.NODE_ENV === 'production';
     if (isProdEnv) {
       import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }: any) => {
-        onCLS(() => {});
-        onINP(() => {});
-        onFCP(() => {});
-        onLCP(() => {}); // Removed console.log for production
-        onTTFB(() => {});
+        onCLS(() => { });
+        onINP(() => { });
+        onFCP(() => { });
+        onLCP(() => { }); // Removed console.log for production
+        onTTFB(() => { });
       }).catch(() => {
         // Non-critical, fail silently
       });
     }
   };
-  
+
   // Defer non-critical initialization using requestIdleCallback or setTimeout
   if ('requestIdleCallback' in window) {
     requestIdleCallback(deferNonCritical, { timeout: 2000 });
@@ -171,10 +179,10 @@ try {
 const initializeDeferredAnalytics = () => {
   const isProd = (import.meta as any).env?.PROD || process.env.NODE_ENV === 'production';
   if (!isProd) return;
-  
+
   // Google Analytics is already deferred in index.html
   // This is for any additional analytics setup
-  
+
   // Log Egyptian connection info for monitoring
   const connection = (navigator as any).connection;
   const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
@@ -201,7 +209,7 @@ const initializeBackgroundTasks = () => {
       }).catch(() => {
         // Ignore prefetch errors
       });
-      
+
       // Pre-fetch common materials for Egypt (low priority)
       fetch('/api/egypt/materials/common', {
         headers: { 'X-Prefetch': 'true' }
@@ -222,20 +230,20 @@ const initializeCacheWarming = () => {
     '/images/foxywin-logo.webp',
     '/images/caluminium-ps-logo.webp'
   ];
-  
+
   imagesToWarm.forEach(src => {
     const img = new Image();
     img.src = src;
     img.loading = 'lazy';
     img.decoding = 'async';
   });
-  
+
   // Pre-connect to likely next origins
   const origins = [
     'https://storage.supabase.co',
     'https://fonts.gstatic.com'
   ];
-  
+
   origins.forEach(origin => {
     const link = document.createElement('link');
     link.rel = 'preconnect';
@@ -255,7 +263,7 @@ const initializeWebWorkers = () => {
     }
     return;
   }
-  
+
   // Pre-load worker URLs (Vite will handle the actual worker files)
   // This is just for documentation - actual worker initialization happens on demand
   const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
@@ -281,7 +289,7 @@ window.addEventListener('error', (event) => {
 window.addEventListener('unhandledrejection', (event) => {
   const error = event.reason;
   const errorMessage = error?.message || String(error || '');
-  
+
   // Handle chunk loading errors - DISABLED AUTO-RELOAD (too aggressive)
   // Only log errors, don't auto-reload on first load
   if (errorMessage.includes('chunk') || errorMessage.includes('Failed to fetch dynamically imported module')) {
@@ -292,23 +300,23 @@ window.addEventListener('unhandledrejection', (event) => {
     event.preventDefault();
     return;
   }
-  
+
   // Suppress Supabase auth errors
-  if (errorMessage.includes('refresh_token') || 
-      errorMessage.includes('Invalid Refresh Token') ||
-      errorMessage.includes('Refresh Token Not Found')) {
+  if (errorMessage.includes('refresh_token') ||
+    errorMessage.includes('Invalid Refresh Token') ||
+    errorMessage.includes('Refresh Token Not Found')) {
     console.warn('[Global] Supabase auth error detected:', errorMessage);
     event.preventDefault();
     return;
   }
-  
+
   // Suppress browser extension communication errors
   if (errorMessage.includes('Could not establish connection') ||
-      errorMessage.includes('Receiving end does not exist') ||
-      errorMessage.includes('Extension context invalidated') ||
-      errorMessage.includes('content-script') ||
-      errorMessage.includes('chrome-extension://') ||
-      errorMessage.includes('moz-extension://')) {
+    errorMessage.includes('Receiving end does not exist') ||
+    errorMessage.includes('Extension context invalidated') ||
+    errorMessage.includes('content-script') ||
+    errorMessage.includes('chrome-extension://') ||
+    errorMessage.includes('moz-extension://')) {
     // These are harmless browser extension errors - suppress them
     const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
     if (isDev) {
@@ -336,7 +344,7 @@ window.addEventListener('error', (event) => {
     (target.tagName === 'LINK' && (target as HTMLLinkElement).href) ||
     (target.tagName === 'IMG' && (target as HTMLImageElement).src)
   );
-  
+
   if (isExternalResource) {
     let url = '';
     if (target.tagName === 'SCRIPT') {
@@ -346,9 +354,9 @@ window.addEventListener('error', (event) => {
     } else if (target.tagName === 'IMG') {
       url = (target as HTMLImageElement).src || '';
     }
-    
+
     const isExternalDomain = externalDomains.some(domain => url.includes(domain));
-    
+
     if (isExternalDomain) {
       // Suppress the error - it's from an external service and not critical
       event.preventDefault();
@@ -359,7 +367,7 @@ window.addEventListener('error', (event) => {
       return false;
     }
   }
-  
+
   // Check for HTTP2 protocol errors from external resources
   if (event.message && (
     event.message.includes('ERR_HTTP2_PROTOCOL_ERROR') ||
@@ -367,7 +375,7 @@ window.addEventListener('error', (event) => {
   )) {
     const errorSource = (event.filename || event.message || '').toLowerCase();
     const isExternalError = externalDomains.some(domain => errorSource.includes(domain));
-    
+
     if (isExternalError) {
       event.preventDefault();
       const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
@@ -377,7 +385,7 @@ window.addEventListener('error', (event) => {
       return false;
     }
   }
-  
+
   // Suppress browser extension content script errors
   if (event.filename && (
     event.filename.includes('content-script') ||
@@ -446,8 +454,16 @@ const renderApp = () => {
     assertPersonaIntegrity();
   } catch (error) {
     console.error('[PersonaIntegrity] Failed integrity check:', error);
-    // Fail fast - don't render app if persona configs are invalid
-    throw error;
+    // In development, show error but don't block rendering
+    // In production, fail fast for security
+    const isDev = (import.meta as any).env?.DEV || process.env.NODE_ENV === 'development';
+    if (!isDev) {
+      // Fail fast in production
+      throw error;
+    } else {
+      // In development, log but continue - allows debugging
+      console.warn('[PersonaIntegrity] Continuing in dev mode despite integrity check failure');
+    }
   }
 
   // Create React root (with HMR support)
@@ -474,6 +490,13 @@ const renderApp = () => {
       rootElement.classList.add('app-fade-enter-active');
       setTimeout(() => rootElement.classList.remove('app-fade-enter'), 300);
     });
+
+    // Clean up empty style attribute on body after React renders (if added during hydration)
+    requestAnimationFrame(() => {
+      if (document.body && document.body.getAttribute('style') === '') {
+        document.body.removeAttribute('style');
+      }
+    });
   } catch (error) {
     console.error('Failed to render application:', error);
     rootElement.innerHTML = `
@@ -489,6 +512,11 @@ const renderApp = () => {
     `;
   }
 };
+
+// Clean up empty style attribute on body if present (harmless but unnecessary)
+if (document.body && document.body.getAttribute('style') === '') {
+  document.body.removeAttribute('style');
+}
 
 // Ensure DOM is ready before rendering
 if (document.readyState === 'loading') {
@@ -508,11 +536,11 @@ window.addEventListener('load', () => {
   if (isDev) {
     console.log(`[Almona Egypt] Initial load completed in ${Math.round(loadTime)}ms`);
   }
-  
+
   // LCP timeout protection - ensure LCP doesn't block too long
   // Use PerformanceObserver instead of deprecated getEntriesByType
   let lastLCPEntry: any = null;
-  
+
   if ('PerformanceObserver' in window) {
     const lcpObserver = new PerformanceObserver((entryList) => {
       const entries = entryList.getEntries();
@@ -520,7 +548,7 @@ window.addEventListener('load', () => {
         lastLCPEntry = entries[entries.length - 1];
       }
     });
-    
+
     try {
       lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
     } catch {
@@ -531,7 +559,7 @@ window.addEventListener('load', () => {
         console.warn('[LCP Fix] PerformanceObserver not supported');
       }
     }
-    
+
     // Check after timeout
     setTimeout(() => {
       if (lastLCPEntry && lastLCPEntry.startTime > LCP_TIMEOUT) {
@@ -554,7 +582,7 @@ window.addEventListener('load', () => {
       lcpObserver.disconnect();
     }, LCP_TIMEOUT);
   }
-  
+
   // Measure Time to Interactive
   setTimeout(() => {
     const tti = performance.now() - startTime;
@@ -562,7 +590,7 @@ window.addEventListener('load', () => {
     if (isDev) {
       console.log(`[Almona Egypt] Time to Interactive ~${Math.round(tti)}ms`);
     }
-    
+
     // Report to analytics if available
     if ((window as any).analytics) {
       (window as any).analytics.track('app_loaded', {
@@ -598,6 +626,11 @@ if ('serviceWorker' in navigator && isProdEnv) {
         console.log('✅ Service Worker registered:', registration);
       },
       onRegisterError(error) {
+        // Suppress CacheStorage errors in development
+        if (error?.message?.includes('CacheStorage') || error?.name === 'UnknownError') {
+          console.warn('⚠️ Service Worker CacheStorage error (ignored in dev):', error.message);
+          return;
+        }
         console.error('❌ Service Worker registration error:', error);
       },
     });

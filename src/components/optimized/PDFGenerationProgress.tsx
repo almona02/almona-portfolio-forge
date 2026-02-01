@@ -54,7 +54,7 @@ export const PDFGenerationProgress = memo<PDFGenerationProgressProps>(({
       case 'preparing':
         return 'text-blue-500';
       case 'processing':
-        return 'text-orange-500';
+        return 'text-amber-500';
       case 'finalizing':
         return 'text-green-500';
       default:

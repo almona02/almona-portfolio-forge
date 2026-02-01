@@ -118,7 +118,8 @@
             script.async = true;
             script.src = 'https://www.googletagmanager.com/gtag/js?id=G-321C22X7E3';
             script.onerror = function() {
-              console.warn('Google Analytics failed to load - likely blocked by privacy extension');
+              // Silently fail - analytics blocked by privacy extensions is expected
+              // Don't log to console to reduce noise
             };
             document.head.appendChild(script);
 
@@ -388,6 +389,28 @@
     </script>
     <!-- White Page Fix: Add error handler before main script -->
     <script>
+      // Suppress expected network errors in production (ad blockers, missing APIs, etc.)
+      const isProduction = window.location.hostname !== 'localhost' && 
+                          window.location.hostname !== '127.0.0.1' &&
+                          !window.location.hostname.includes('localhost');
+      
+      // Suppress Google Analytics errors (expected with ad blockers)
+      const originalConsoleError = console.error;
+      if (isProduction) {
+        console.error = function(...args) {
+          const message = args.join(' ');
+          // Suppress expected errors
+          if (
+            message.includes('stats.g.doubleclick.net') ||
+            message.includes('ERR_BLOCKED_BY_CLIENT') ||
+            message.includes('net::ERR_BLOCKED_BY_CLIENT')
+          ) {
+            return; // Silently ignore
+          }
+          originalConsoleError.apply(console, args);
+        };
+      }
+      
       // Catch any errors during initial load
       // Use a unified reload key to prevent multiple handlers from reloading
       window.addEventListener('error', function(event) {
@@ -428,11 +451,11 @@
     <script>
       // Only register custom service worker in production
       // In development, VitePWA is disabled and we don't want SW conflicts
-      const isProduction = window.location.hostname !== 'localhost' && 
-                          window.location.hostname !== '127.0.0.1' &&
-                          !window.location.hostname.includes('localhost');
+      const isProdEnv = window.location.hostname !== 'localhost' && 
+                        window.location.hostname !== '127.0.0.1' &&
+                        !window.location.hostname.includes('localhost');
       
-      if ('serviceWorker' in navigator && isProduction) {
+      if ('serviceWorker' in navigator && isProdEnv) {
         window.addEventListener('load', () => {
           // Register custom service worker for Egypt workflow optimization
           // Note: In production, VitePWA handles /sw.js, our custom worker provides additional caching

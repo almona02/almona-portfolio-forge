@@ -3,9 +3,9 @@
  * Tests offline queue and conflict resolution
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { OfflineManager } from '../../services/OfflineManager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { OfflineManager } from '../../services/OfflineManager';
 
 // Mock AsyncStorage
 vi.mock('@react-native-async-storage/async-storage', () => ({
@@ -328,12 +328,12 @@ describe('OfflineManager: Subscriptions', () => {
     manager = new OfflineManager();
   });
 
-  it('should notify subscribers of queue changes', () => {
+  it('should notify subscribers of queue changes', async () => {
     const listener = vi.fn();
     const unsubscribe = manager.subscribe(listener);
 
     // Queue an operation
-    manager.queueOperation({
+    await manager.queueOperation({
       type: 'scan_remnant',
       payload: {
         remnantId: 'remnant-1',

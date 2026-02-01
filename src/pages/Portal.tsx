@@ -156,7 +156,7 @@ const Portal = () => {
           statusInfo.color === 'green' ? 'bg-green-100 text-green-800' :
           statusInfo.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
           statusInfo.color === 'blue' ? 'bg-blue-100 text-blue-800' :
-          statusInfo.color === 'orange' ? 'bg-orange-100 text-orange-800' :
+          statusInfo.color === 'orange' ? 'bg-amber-100 text-amber-800' :
           statusInfo.color === 'red' ? 'bg-red-100 text-red-800' :
           'bg-gray-100 text-gray-800'
         }`}
@@ -197,7 +197,7 @@ const Portal = () => {
       <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 py-12">
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
           </div>
         </div>
       </main>
@@ -216,7 +216,7 @@ const Portal = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl font-bold mb-4">
+          <h1 className="typography-h1 mb-4">
             <span className="text-gradient-orange">بوابة العميل</span>
           </h1>
           <p className="text-xl text-gray-600">

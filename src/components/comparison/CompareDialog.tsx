@@ -163,15 +163,15 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
             </div>
       <div className="border rounded-lg p-4 bg-muted/30 text-sm grid gap-4 sm:grid-cols-3">
               <div>
-                <h4 className="font-semibold mb-1">Total Power Required</h4>
+                <h4 className="typography-h4 mb-1">Total Power Required</h4>
         <p>{totalPowerKw.toFixed(2)} kW</p>
               </div>
               <div>
-                <h4 className="font-semibold mb-1">Total Air Consumption</h4>
+                <h4 className="typography-h4 mb-1">Total Air Consumption</h4>
         <p>{totalAir.toFixed(2)} L/min</p>
               </div>
               <div className="sm:col-span-1">
-                <h4 className="font-semibold mb-1">Notes</h4>
+                <h4 className="typography-h4 mb-1">Notes</h4>
                 <p className="text-muted-foreground">Ensure facility electrical & pneumatic capacity exceeds totals with safety margin (recommend 20%).</p>
               </div>
             </div>
@@ -186,7 +186,7 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
             </Button>
             <Button 
               onClick={handleRequestQuote}
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+              className="bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600 text-white"
             >
               Request Quote for All ({machines.length}) Machines
             </Button>

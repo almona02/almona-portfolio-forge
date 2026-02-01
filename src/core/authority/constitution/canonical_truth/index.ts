@@ -4,10 +4,11 @@
  * 
  * AICS-001 Reference: Section 6.3
  * 
- * Exports all truth domain interfaces.
+ * Exports all truth domain interfaces and operational services.
  * Location: Core Authority Layer (constitutional, immutable)
  */
 
+// Export interfaces
 export type {
   GeometryTruth,
   GeometrySchema,
@@ -61,4 +62,27 @@ export type {
   CertificationRequirement,
   CertificationValidity
 } from './certification_truth';
+
+// Export operational services
+export {
+  BaseTruthService,
+  GeometryTruthService,
+  MaterialTruthService,
+  MachineTruthService,
+  ProcessTruthService,
+  CertificationTruthService,
+  getGeometryTruthService,
+  getMaterialTruthService,
+  getMachineTruthService,
+  getProcessTruthService,
+  getCertificationTruthService,
+  resetGeometryTruthService,
+  resetMaterialTruthService,
+  resetMachineTruthService,
+  resetProcessTruthService,
+  resetCertificationTruthService,
+  type TruthDomain,
+  type ReferenceRecord,
+  type TruthVersion,
+} from '../../canonical_truth/services/index';
 

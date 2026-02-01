@@ -11,7 +11,7 @@ import React from 'react';
 
 const PERSONA_CONFIG = {
   operator: { icon: User, color: 'bg-blue-500/20 text-blue-300 border-blue-500/50', label: 'Operator' },
-  supervisor: { icon: Shield, color: 'bg-orange-500/20 text-orange-300 border-orange-500/50', label: 'Supervisor' },
+  supervisor: { icon: Shield, color: 'bg-amber-500/20 text-amber-300 border-amber-500/50', label: 'Supervisor' },
   manager: { icon: Briefcase, color: 'bg-purple-500/20 text-purple-300 border-purple-500/50', label: 'Manager' },
   inspector: { icon: Eye, color: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50', label: 'Inspector' },
 };

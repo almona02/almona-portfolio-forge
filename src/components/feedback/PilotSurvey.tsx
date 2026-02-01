@@ -116,10 +116,10 @@ export const PilotSurvey: React.FC<PilotSurveyProps> = ({
 
   if (submitted) {
     return (
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-gray-900 border-gray-800 card-dark">
         <CardContent className="p-6 text-center">
-          <CheckCircle2 className="h-16 w-16 mx-auto mb-4 text-green-500" />
-          <h3 className="text-xl font-semibold mb-2">Thank You!</h3>
+          <CheckCircle2 className="h-16 w-16 mx-auto mb-4  status-valid" />
+          <h3 className="typography-h3 mb-2">Thank You!</h3>
           <p className="text-gray-400">Your survey has been submitted successfully.</p>
         </CardContent>
       </Card>
@@ -129,7 +129,7 @@ export const PilotSurvey: React.FC<PilotSurveyProps> = ({
   return (
     <div className="min-h-screen bg-gray-950 p-6">
       <div className="max-w-4xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-gray-900 border-gray-800 card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">{surveyTitles[surveyType]}</CardTitle>
             <p className="text-gray-400">Your feedback helps us improve</p>

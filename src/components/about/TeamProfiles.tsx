@@ -25,7 +25,7 @@ const teamMembers = [
 export const TeamProfiles = () => {
   return (
     <div className="py-6 sm:py-8 md:py-12">
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8 text-white px-2">Meet Our Team</h2>
+      <h2 className="typography-h2 text-xl sm:text-2xl md:text-3xl text-center mb-6 sm:mb-8 text-white px-2">Meet Our Team</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 container mx-auto px-4 sm:px-6">
         {teamMembers.map((member) => (
           <Card key={member.name} className="bg-almona-dark/60 border-almona-light/20 backdrop-blur-sm hover:border-almona-orange/50 transition-colors h-full">

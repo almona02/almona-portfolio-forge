@@ -127,7 +127,7 @@ export const TurkishProfileGallery: React.FC = () => {
           {/* Controls */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <label className="text-sm font-medium">Filter by Manufacturer:</label>
+              <label className="typography-label text-sm font-medium">Filter by Manufacturer:</label>
               <select
                 value={selectedManufacturer}
                 onChange={(e) => setSelectedManufacturer(e.target.value)}
@@ -200,7 +200,7 @@ export const TurkishProfileGallery: React.FC = () => {
                       </Button>
                     </div>
                     
-                    <h3 className="font-semibold text-lg mb-3">{profile.name}</h3>
+                    <h3 className="typography-h3 text-lg mb-3">{profile.name}</h3>
                     
                     <div className="space-y-2 mb-4">
                       <div className="flex justify-between text-sm">

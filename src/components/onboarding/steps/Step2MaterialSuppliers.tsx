@@ -66,7 +66,7 @@ export const Step2MaterialSuppliers: React.FC<Step2MaterialSuppliersProps> = ({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-4">Material Suppliers</h3>
+        <h3 className="typography-h3 text-lg mb-4">Material Suppliers</h3>
         <p className="text-gray-400 mb-6">Configure your material suppliers or use our Egyptian defaults</p>
         <Button
           variant="outline"
@@ -79,7 +79,7 @@ export const Step2MaterialSuppliers: React.FC<Step2MaterialSuppliersProps> = ({
 
       {(['aluminum', 'upvc', 'glass', 'hardware'] as const).map((type) => (
         <div key={type} className="space-y-2">
-          <Label className="capitalize">{type} Suppliers</Label>
+          <Label className="typography-label capitalize">{type} Suppliers</Label>
           <div className="space-y-2">
             {data.suppliers[type].map((supplier, index) => (
               <div key={index} className="flex gap-2 items-center">

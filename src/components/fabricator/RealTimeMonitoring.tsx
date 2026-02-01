@@ -17,7 +17,7 @@ export const RealTimeMonitoring: React.FC<RealTimeMonitoringProps> = ({ projects
     <Card className="bg-gray-700/50 border-gray-600">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Activity className="h-5 w-5 text-orange-400" />
+          <Activity className="h-5 w-5 text-amber-400" />
           Real-time Production Monitoring
         </CardTitle>
       </CardHeader>
@@ -53,17 +53,17 @@ export const RealTimeMonitoring: React.FC<RealTimeMonitoringProps> = ({ projects
           {/* Active Projects */}
           {activeProjects.length > 0 ? (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Active Production</h3>
+              <h3 className="typography-h3 text-lg">Active Production</h3>
               {activeProjects.map((project) => (
                 <div key={project.id} className="p-4 bg-gray-800 rounded-lg">
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <h4 className="font-semibold">{project.orderNumber}</h4>
+                      <h4 className="typography-h4">{project.orderNumber}</h4>
                       <p className="text-sm text-gray-400">
                         {project.type.replace('_', ' ').toUpperCase()} • {project.overallWidth}mm × {project.overallHeight}mm
                       </p>
                     </div>
-                    <Badge variant="outline" className="bg-orange-500/20 text-orange-400">
+                    <Badge variant="outline" className="btn-primary">
                       IN PRODUCTION
                     </Badge>
                   </div>
@@ -85,7 +85,7 @@ export const RealTimeMonitoring: React.FC<RealTimeMonitoringProps> = ({ projects
           ) : (
             <div className="text-center py-8">
               <Activity className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Active Production</h3>
+              <h3 className="typography-h3 text-lg mb-2">No Active Production</h3>
               <p className="text-gray-400">Start a production run to see real-time monitoring.</p>
             </div>
           )}

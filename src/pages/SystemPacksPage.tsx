@@ -6,6 +6,7 @@
  */
 
 import { SystemTuningStudio } from '@/components/fabricator/SystemTuningStudio';
+import { UnifiedStudioWizard } from '@/components/fabricator/unifiedWorkflow/UnifiedStudioWizard';
 import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { addCustomSystemAsync, loadCustomSystems } from '@/lib/fabricator/customSystemStorage';
 import { getSystemPackTuningStatus, saveReturnUrl } from '@/lib/fabricator/systemTuningUtils';
@@ -15,19 +16,19 @@ import { Button } from '@/shared/ui/ui/button';
 import { Input } from '@/shared/ui/ui/input';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
-  AlertTriangle,
-  ArrowRight,
-  CheckCircle2,
-  Globe,
-  Layers,
-  Package,
-  Plus,
-  Search,
-  Settings,
-  Shield,
-  Sparkles,
-  Wrench,
-  Zap
+    AlertTriangle,
+    ArrowRight,
+    CheckCircle2,
+    Globe,
+    Layers,
+    Package,
+    Plus,
+    Search,
+    Settings,
+    Shield,
+    Sparkles,
+    Wrench,
+    Zap
 } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -39,6 +40,8 @@ export const SystemPacksPage: React.FC = () => {
   const [customSystems, setCustomSystems] = useState<any[]>([]);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [showSystemWizard, setShowSystemWizard] = useState(false);
+  const [showUnifiedWizard, setShowUnifiedWizard] = useState(false);
+  const [unifiedWizardType, _setUnifiedWizardType] = useState<'profile' | 'system-pack' | 'tuning'>('system-pack');
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -104,19 +107,19 @@ export const SystemPacksPage: React.FC = () => {
   }, [allSystems, searchQuery, filterType]);
 
   const handleTuneSystem = (systemPackId: string) => {
-    saveReturnUrl('/fabricator/system-packs', {
+    saveReturnUrl('/fabricator/studio/data', {
       returnToSystemPacks: 'true',
     });
-    navigate(`/fabricator/tuning-studio-no-dxf?systemPackId=${systemPackId}`);
+    navigate(`/fabricator/studio/data/tuning-no-dxf?systemPackId=${systemPackId}`);
   };
 
   const handleTuneProfile = (systemPackId: string, profileId?: string) => {
-    saveReturnUrl('/fabricator/system-packs', {
+    saveReturnUrl('/fabricator/studio/data', {
       returnToSystemPacks: 'true',
     });
     const url = profileId 
-      ? `/fabricator/tuning-studio?systemPackId=${systemPackId}&profileId=${profileId}`
-      : `/fabricator/tuning-studio?systemPackId=${systemPackId}`;
+      ? `/fabricator/studio/data/tuning?systemPackId=${systemPackId}&profileId=${profileId}`
+      : `/fabricator/studio/data/tuning?systemPackId=${systemPackId}`;
     navigate(url);
   };
 
@@ -163,13 +166,13 @@ export const SystemPacksPage: React.FC = () => {
         >
           <div className="flex items-center justify-between gap-4 mb-4">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-br from-orange-500/20 to-orange-600/20 rounded-xl backdrop-blur-sm border border-orange-500/30">
-                <Package className="h-8 w-8 text-orange-400" />
+              <div className="btn-primary-gradient">
+                <Package className="h-8 w-8 text-amber-400" />
               </div>
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-white flex items-center gap-3">
+                <h1 className="typography-h1 md:text-4xl text-white flex items-center gap-3">
                   System Packs Gallery
-                  <Sparkles className="h-6 w-6 text-orange-400" />
+                  <Sparkles className="h-6 w-6 text-amber-400" />
                 </h1>
                 <p className="text-slate-400 mt-2 text-sm md:text-base">
                   Explore and manage all available window and door system packs
@@ -178,7 +181,7 @@ export const SystemPacksPage: React.FC = () => {
             </div>
             <Button
               onClick={() => setShowSystemWizard(true)}
-              className="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white shadow-lg shadow-orange-500/20 px-6 py-6 h-auto"
+              className="btn-primary-gradient"
             >
               <Plus className="h-5 w-5 mr-2" />
               Add New System Pack
@@ -193,7 +196,7 @@ export const SystemPacksPage: React.FC = () => {
           transition={{ delay: 0.1 }}
           className="mb-8"
         >
-          <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
+          <div className="bg-slate-900/60 -sm border border-slate-700/50 rounded-2xl p-6 card-glass-dark">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
@@ -201,7 +204,7 @@ export const SystemPacksPage: React.FC = () => {
                   placeholder="Search system packs..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 bg-slate-800/80 border-slate-700/50 text-slate-100 placeholder-slate-500 h-12 rounded-xl focus:border-orange-500/50 focus:ring-2 focus:ring-orange-500/20"
+                  className="pl-12 border-slate-700/50 text-slate-100 placeholder-slate-500 h-12 rounded-xl focus:border-amber- 500/50 focus:ring-2 focus:ring-amber-500/20 card-premium"
                 />
               </div>
               <div className="flex flex-wrap gap-2">
@@ -211,7 +214,7 @@ export const SystemPacksPage: React.FC = () => {
                   onClick={() => setFilterType('all')}
                   className={`h-12 px-4 rounded-xl transition-all ${
                     filterType === 'all' 
-                      ? 'bg-orange-600 hover:bg-orange-500 text-white shadow-lg shadow-orange-500/20' 
+                      ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-lg shadow-amber-500/20' 
                       : 'bg-slate-800/50 border-slate-700/50 text-slate-300 hover:bg-slate-700/50'
                   }`}
                 >
@@ -309,7 +312,7 @@ export const SystemPacksPage: React.FC = () => {
                       border-2 ${getCardBorder(system)}
                       backdrop-blur-xl
                       transition-all duration-300
-                      ${isHovered ? 'scale-105 shadow-2xl shadow-orange-500/20' : 'shadow-lg'}
+                      ${isHovered ? 'scale-105 shadow-2xl shadow-amber-500/20' : 'shadow-lg'}
                     `}
                   >
                     {/* Glowing effect on hover */}
@@ -327,7 +330,7 @@ export const SystemPacksPage: React.FC = () => {
                       <div className="mb-4">
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1">
-                            <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                            <h3 className="typography-h3 text-white mb-2 flex items-center gap-2">
                               {system.meta.name}
                               {tuningStatus.isTuned && (
                                 <Badge className="bg-emerald-600/80 text-white border-emerald-400/50">
@@ -385,12 +388,12 @@ export const SystemPacksPage: React.FC = () => {
                         <div className="mb-4 flex items-center gap-2 flex-wrap">
                           <Globe className="h-4 w-4 text-slate-400" />
                           {system.meta.regions.slice(0, 3).map((region: string, i: number) => (
-                            <Badge key={i} variant="outline" className="text-xs bg-slate-800/30 border-slate-700/30 text-slate-300">
+                            <Badge key={i} variant="outline" className="text-xs bg-slate-800/30 border-slate-700 /30 text-slate-300 card-dark">
                               {region}
                             </Badge>
                           ))}
                           {system.meta.regions.length > 3 && (
-                            <Badge variant="outline" className="text-xs bg-slate-800/30 border-slate-700/30 text-slate-300">
+                            <Badge variant="outline" className="text-xs bg-slate-800/30 border-slate-700 /30 text-slate-300 card-dark">
                               +{system.meta.regions.length - 3}
                             </Badge>
                           )}
@@ -413,7 +416,7 @@ export const SystemPacksPage: React.FC = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="w-full border-slate-600/50 bg-slate-800/30 hover:bg-slate-700/50 text-slate-200"
+                            className="btn-secondary"
                             onClick={() => handleTuneProfile(system.meta.id)}
                           >
                             <Wrench className="h-4 w-4 mr-2" />
@@ -451,7 +454,7 @@ export const SystemPacksPage: React.FC = () => {
             className="text-center py-16"
           >
             <Package className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-slate-400 mb-2">No system packs found</h3>
+            <h3 className="typography-h3 text-slate-400 mb-2">No system packs found</h3>
             <p className="text-slate-500">Try adjusting your search or filter criteria</p>
           </motion.div>
         )}
@@ -466,7 +469,22 @@ export const SystemPacksPage: React.FC = () => {
           setCustomSystems(updated);
           setShowSystemWizard(false);
           // Navigate to the new system pack
-          navigate(`/fabricator/tuning-studio?systemPackId=${customPack.meta.id}`);
+          navigate(`/fabricator/studio/data/tuning?systemPackId=${customPack.meta.id}`);
+        }}
+      />
+      
+      {/* Unified Studio Wizard */}
+      <UnifiedStudioWizard
+        open={showUnifiedWizard}
+        onOpenChange={setShowUnifiedWizard}
+        studioType={unifiedWizardType}
+        onComplete={async (_data) => {
+          // Refresh system packs list
+          if (userId) {
+            const updated = await loadCustomSystems();
+            setCustomSystems(updated);
+          }
+          setShowUnifiedWizard(false);
         }}
       />
     </div>

@@ -28,8 +28,8 @@ export const OperatorTrainingIncentiveDialog = ({
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-almona-dark border-almona-light/20 text-white">
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold flex items-center gap-2">
-            <GraduationCap className="h-8 w-8 text-orange-500" />
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+            <GraduationCap className="h-8 w-8 text-amber-500" />
+            <span className="bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent">
               Operator Training & Certification Programs
             </span>
           </DialogTitle>

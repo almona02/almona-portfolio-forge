@@ -1,0 +1,36 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › tests\e2e\digital-twin.spec.ts:4:3 › Digital Twin Dashboard › should load dashboard with asset details
+[1A[2K  1) [chromium] › tests\e2e\digital-twin.spec.ts:4:3 › Digital Twin Dashboard › should load dashboard with asset details 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('tab', { name: 'Timeline' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('tab', { name: 'Timeline' })[22m
+
+
+      78 |     // 5. Timeline Tab
+      79 |     const timelineTab = page.getByRole('tab', { name: 'Timeline' });
+    > 80 |     await expect(timelineTab).toBeVisible();
+         |                               ^
+      81 |     await timelineTab.click(); 
+      82 |     
+      83 |     // Check for mock events (which are currently hardcoded in the component)
+        at C:\projects\almona-portfolio-forge\tests\e2e\digital-twin.spec.ts:80:31
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\digital-twin-Digital-Twin--454f8-ashboard-with-asset-details-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\digital-twin-Digital-Twin--454f8-ashboard-with-asset-details-chromium\error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › tests\e2e\digital-twin.spec.ts:4:3 › Digital Twin Dashboard › should load dashboard with asset details 

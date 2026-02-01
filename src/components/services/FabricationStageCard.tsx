@@ -23,7 +23,7 @@ export const FabricationStageCard = ({
   >
     <CardHeader className="pb-2">
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg">
+        <div className="p-2 bg-gradient-to-br from-amber-500 to-red-500 rounded-lg">
           {icon}
         </div>
         <CardTitle className="text-lg">{title}</CardTitle>
@@ -37,7 +37,7 @@ export const FabricationStageCard = ({
       <ul className="space-y-2">
         {keyPoints.map((point, i) => (
           <li key={i} className="flex items-start gap-2 text-sm">
-            <span className="text-orange-500">▹</span>
+            <span className="text-amber-500">▹</span>
             <span>{point}</span>
           </li>
         ))}

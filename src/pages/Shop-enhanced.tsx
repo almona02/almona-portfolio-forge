@@ -291,7 +291,7 @@ const ShopEnhanced = () => {
       <main className="flex-grow pt-24">
         <div className="container mx-auto px-4 py-12">
           <div className="mb-16 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="typography-h1 md:text-5xl mb-6">
               <span className="text-gradient-orange">{t("shop.title.yilmaz_authorized")}</span>
             </h1>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">

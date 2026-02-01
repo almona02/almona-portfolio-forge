@@ -3,14 +3,14 @@
  * Standard layout for international/default markets with enhanced region selection
  */
 
-import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { WhatsAppContact } from '@/components/contact/WhatsAppContact';
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
+import { isRTL } from '@/lib/i18n';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import ConditionalNavbar from '../ConditionalNavbar';
 import Footer from '../Footer';
-import { WhatsAppContact } from '@/components/contact/WhatsAppContact';
-import { isRTL } from '@/lib/i18n';
-import { useTranslation } from 'react-i18next';
 
 interface DefaultLayoutProps {
   children: React.ReactNode;
@@ -28,7 +28,7 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
   const { i18n } = useTranslation();
   const location = useLocation();
   const isFabricatorRoute = location.pathname.startsWith('/fabricator') || location.pathname.startsWith('/fabricator-workflow');
-  const rtl = isRTL(i18n.language);
+  const _rtl = isRTL(i18n.language);
   
   const _handleRegionChange = (region: RegionCode) => {
     onRegionChange(region);
@@ -40,16 +40,8 @@ export const DefaultLayout: React.FC<DefaultLayoutProps> = ({
       <ConditionalNavbar />
 
       {/* Main content */}
-      <div 
-        className={`relative transition-all duration-300 ${isFabricatorRoute ? 'ms-[var(--sidebar-width,320px)]' : ''}`}
-        style={
-          isFabricatorRoute
-            ? rtl
-              ? { marginRight: 'var(--sidebar-width, 320px)' }
-              : { marginLeft: 'var(--sidebar-width, 320px)' }
-            : {}
-        }
-      >
+      {/* Note: For fabricator routes, MasterLayout handles its own layout with flexbox, so no margin needed */}
+      <div className="relative transition-all duration-300">
         {children}
       </div>
 

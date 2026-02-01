@@ -225,7 +225,7 @@ const SpareParts = () => {
             transition={{ duration: 0.5 }}
             className="mb-12 text-center"
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="typography-h1 md:text-5xl mb-6">
               <span className="text-gradient-orange">Genuine Spare Parts</span>
             </h1>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
@@ -276,7 +276,7 @@ const SpareParts = () => {
               className="lg:col-span-1"
             >
               <div className="bg-almona-darker p-6 rounded-lg sticky top-24 border border-almona-light/20">
-                <h3 className="text-lg font-semibold mb-4">Part Categories</h3>
+                <h3 className="typography-h3 text-lg mb-4">Part Categories</h3>
                 <div className="space-y-2">
                   {partCategories.map(category => (
                     <button
@@ -300,7 +300,7 @@ const SpareParts = () => {
             {/* Parts Grid */}
             <div className="lg:col-span-3">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-semibold">
+                <h2 className="typography-h2 font-semibold">
                   {filteredParts.length} Parts Found
                   {selectedCategory !== "all" && ` in ${partCategories.find(c => c.id === selectedCategory)?.name}`}
                   {_selectedMachine !== "all" && ` for ${yilmazMachines.find(m => m.id === _selectedMachine)?.name}`}
@@ -321,7 +321,7 @@ const SpareParts = () => {
 
               {filteredParts.length === 0 ? (
                 <div className="text-center py-12">
-                  <h3 className="text-xl font-medium mb-2">No parts found</h3>
+                  <h3 className="typography-h3 font-medium mb-2">No parts found</h3>
                   <p className="text-gray-400 mb-4">
                     Try adjusting your search criteria
                   </p>
@@ -357,7 +357,7 @@ const SpareParts = () => {
                           </div>
                           
                           <div className="p-6">
-                            <h3 className="font-semibold text-lg mb-2 group-hover:text-almona-orange transition-colors">
+                            <h3 className="typography-h3 text-lg mb-2 group-hover:text-almona-orange transition-colors">
                               {part.name}
                             </h3>
                             <p className="text-gray-400 text-sm mb-4">{part.description}</p>

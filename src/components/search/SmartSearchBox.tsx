@@ -252,7 +252,7 @@ const SmartSearchBox: React.FC<SmartSearchBoxProps> = ({
                   onClick={() => handleSuggestionClick(search)}
                   className="w-full text-left px-3 py-2 hover:bg-almona-light/10 rounded text-sm transition-colors flex items-center"
                 >
-                  <TrendingUp className="w-3 h-3 mr-2 text-orange-400" />
+                  <TrendingUp className="w-3 h-3 mr-2 text-amber-400" />
                   {search}
                 </button>
               ))}

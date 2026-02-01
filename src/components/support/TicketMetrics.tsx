@@ -53,7 +53,7 @@ export const TicketMetrics: React.FC<TicketMetricsProps> = ({ metrics, isLoading
       case 'urgent':
         return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
       case 'high':
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300'
+        return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300'
       case 'medium':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
       case 'low':
@@ -86,7 +86,7 @@ export const TicketMetrics: React.FC<TicketMetricsProps> = ({ metrics, isLoading
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{metrics.openTickets}</div>
+            <div className="text-2xl font-bold text-amber-600">{metrics.openTickets}</div>
             <p className="text-xs text-muted-foreground">
               Awaiting assignment
             </p>

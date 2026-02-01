@@ -17,7 +17,7 @@ export interface LMEPricingCache {
   lastUpdated: Date;
 }
 
-class LmePricingService {
+export class LmePricingService {
   private cache: LMEPricingCache = {
     prices: {},
     lastUpdated: new Date(0),

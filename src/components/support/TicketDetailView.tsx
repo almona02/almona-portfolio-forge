@@ -149,7 +149,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({ ticketId, on
           Back to Tickets
         </Button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold">{ticket.ticket_number}</h1>
+          <h1 className="typography-h1 text-2xl">{ticket.ticket_number}</h1>
           <p className="text-muted-foreground">{ticket.title}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -174,7 +174,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({ ticketId, on
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <h4 className="font-medium mb-2">Description</h4>
+                  <h4 className="typography-h4 font-medium mb-2">Description</h4>
                   <p className="text-muted-foreground whitespace-pre-wrap">
                     {ticket.description || 'No description provided.'}
                   </p>
@@ -182,14 +182,14 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({ ticketId, on
                 
                 {ticket.machine_serial_number && (
                   <div>
-                    <h4 className="font-medium mb-2">Machine Serial Number</h4>
+                    <h4 className="typography-h4 font-medium mb-2">Machine Serial Number</h4>
                     <p className="text-muted-foreground">{ticket.machine_serial_number}</p>
                   </div>
                 )}
                 
                 {ticket.site_location && (
                   <div>
-                    <h4 className="font-medium mb-2">Site Location</h4>
+                    <h4 className="typography-h4 font-medium mb-2">Site Location</h4>
                     <p className="text-muted-foreground">{ticket.site_location}</p>
                   </div>
                 )}
@@ -280,7 +280,7 @@ export const TicketDetailView: React.FC<TicketDetailViewProps> = ({ ticketId, on
 
               {/* New Message Form */}
               <div className="space-y-4">
-                <h4 className="font-medium">Add a message</h4>
+                <h4 className="typography-h4 font-medium">Add a message</h4>
                 <Textarea
                   placeholder="Type your message here... (Ctrl+Enter to send)"
                   value={newMessage}

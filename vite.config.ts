@@ -15,6 +15,8 @@ export default defineConfig(({ mode }) => {
   // Simplified build configuration
 
   return {
+    // Show build output in production
+    logLevel: 'info',
     base: '/',
     // Week 1 Task 1.4: Web Worker Configuration
     // Required for Week 3 ProductionDXFParser with Web Worker pool
@@ -31,7 +33,7 @@ export default defineConfig(({ mode }) => {
     server: {
       host: "::",
       port: 3000,
-      open: false,
+      open: true,
       cors: true,
       historyApiFallback: true,
       hmr: {
@@ -58,13 +60,47 @@ export default defineConfig(({ mode }) => {
     },
     preview: {
       port: 4173,
-      host: "::",
+      host: true, // Faster than "::" binding
+      open: true, // Auto-open browser
+      cors: true,
+      strictPort: false, // Allow port fallback
+      // Optimized for large dist folders
+      fs: {
+        strict: false,
+        allow: ['..']
+      },
+      // Skip sourcemap serving for faster preview
+      sourcemapIgnoreList: true,
     },
     plugins: [
       react({
         // Optimize JSX runtime
         jsxRuntime: 'automatic'
       }),
+      // Suppress known build warnings
+      {
+        name: 'suppress-build-warnings',
+        configResolved(_config) {
+          // Suppress PDF.js worker warnings (resolved at runtime)
+          const originalWarn = console.warn;
+          console.warn = (...args: any[]) => {
+            const message = args.join(' ');
+            if (message.includes('pdfjs-dist/build/pdf.worker.min.js') ||
+                message.includes('doesn\'t exist at build time') ||
+                message.includes('will remain unchanged to be resolved at runtime')) {
+              return; // Suppress PDF.js worker warning
+            }
+            if (message.includes('Module "fs" has been externalized') ||
+                message.includes('Module "path" has been externalized') ||
+                message.includes('externalized for browser compatibility')) {
+              if (message.includes('ammo.js') || message.includes('ammo')) {
+                return; // Suppress ammo.js Node.js module warnings
+              }
+            }
+            originalWarn.apply(console, args);
+          };
+        },
+      },
       // PHASE 5A: CSS deferral plugin - defers non-critical CSS loading
       // This separates painting from scripting, improving FCP
       // Expected: ~440ms improvement in FCP, removes CSS from render-blocking
@@ -117,8 +153,9 @@ export default defineConfig(({ mode }) => {
         registerType: "prompt", // Changed from "autoUpdate" to "prompt" - user must confirm before reload
         injectRegister: "auto",
         devOptions: {
-          enabled: false, // Disable service worker in development for stability
+          enabled: false, // Disable service worker in development to avoid CacheStorage errors
           type: 'module', // Provide virtual module in dev mode
+          navigateFallback: 'index.html',
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
@@ -290,7 +327,7 @@ export default defineConfig(({ mode }) => {
       sourcemap: false,
       chunkSizeWarningLimit: 3000, // Increased to accommodate ui-antd chunk (~1.5 MB)
       assetsInlineLimit: 2048,
-      reportCompressedSize: false,
+      reportCompressedSize: true, // Show bundle sizes
       // PHASE 5A: CSS code splitting ensures CSS is extracted separately
       cssCodeSplit: true,
       // Disable automatic preloading of assets to prevent warnings
@@ -321,6 +358,10 @@ export default defineConfig(({ mode }) => {
           if (warning.code === 'UNKNOWN_OPTION' && warning.message?.includes('manualChunks')) {
             return;
           }
+          // Suppress manualChunks warning from Vite input validation
+          if (warning.message?.includes('Unknown input options: manualChunks')) {
+            return;
+          }
           // Suppress dynamic import warnings (they're just informational)
           if (warning.code === 'MODULE_LEVEL_DIRECTIVE' || warning.message?.includes('dynamically imported')) {
             return;
@@ -332,6 +373,20 @@ export default defineConfig(({ mode }) => {
           // Suppress Workbox sync errors (known compatibility issue)
           if (warning.message?.includes('Cannot read properties of undefined') || 
               warning.message?.includes('reading \'sync\'')) {
+            return;
+          }
+          // Suppress PDF.js worker warnings (resolved at runtime)
+          if (warning.message?.includes('pdfjs-dist/build/pdf.worker.min.js') ||
+              warning.message?.includes('doesn\'t exist at build time') ||
+              warning.message?.includes('pdf.worker.min.js')) {
+            return;
+          }
+          // Suppress ammo.js Node.js module externalization warnings (expected for browser compatibility)
+          // These are handled by polyfills in resolve.alias
+          if (warning.plugin === 'vite:resolve' && 
+              (warning.message?.includes('Module "fs" has been externalized') ||
+               warning.message?.includes('Module "path" has been externalized')) &&
+              (warning.message?.includes('ammo.js') || warning.message?.includes('ammo'))) {
             return;
           }
           warn(warning);

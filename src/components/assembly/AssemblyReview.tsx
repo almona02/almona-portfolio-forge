@@ -206,7 +206,7 @@ export const AssemblyReview: React.FC<AssemblyReviewProps> = ({
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Confirm Role</label>
+                <label className="typography-label block text-sm font-medium mb-2">Confirm Role</label>
                 <Select
                   value={component.user_confirmed_role || component.detected_role}
                   onValueChange={(value) => handleRoleChange(component.id, value)}

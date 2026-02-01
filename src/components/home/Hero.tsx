@@ -1,8 +1,10 @@
-import { useState, useEffect, useCallback, useMemo, lazy, Suspense, startTransition, useRef } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, Phone, CheckCircle, Award } from "lucide-react";
-import { NeonButton } from "@/shared/ui/ui/neon-button";
+import { Button } from "@/components/ui/button-gold-tier";
+import { FADE_IN, SLIDE_UP } from "@/lib/animations/motion";
+import { motion } from "framer-motion";
+import { ArrowRight, Award, CheckCircle, Phone } from "lucide-react";
+import { Suspense, lazy, startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { AIAgentStatus } from "./AIAgentStatus";
 
 // Lazy load the heavy background component to improve LCP
@@ -173,26 +175,22 @@ const Hero = () => {
     }
   };
 
+  // Gradient overlay style - theme-aware for dark mode
+  // Uses CSS variables that adapt to theme
+  const gradientOverlayStyle = {
+    background: [
+      'radial-gradient(ellipse at 20% 50%, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.85) 40%, transparent 70%)',
+      'linear-gradient(to right, rgba(10, 10, 10, 0.97) 0%, rgba(26, 26, 26, 0.88) 25%, rgba(26, 26, 26, 0.75) 40%, rgba(26, 26, 26, 0.60) 55%, rgba(26, 26, 26, 0.45) 70%, rgba(10, 10, 10, 0.35) 100%)'
+    ].join(', ')
+  };
+
   // Render hero content immediately for LCP
   const heroContent = (
     <>
-      {/* Enhanced gradient overlay - Egyptian desert gold + industrial dark - Enhanced opacity for text area */}
+      {/* Enhanced gradient overlay - Egyptian desert gold + industrial dark - Theme-aware */}
       <div 
-        className="absolute inset-0 z-[5]"
-        style={{
-          background: `
-            radial-gradient(ellipse at 20% 50%, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.85) 40%, transparent 70%),
-            linear-gradient(
-              to right,
-              rgba(10, 10, 10, 0.97) 0%,
-              rgba(26, 26, 26, 0.88) 25%,
-              rgba(26, 26, 26, 0.75) 40%,
-              rgba(26, 26, 26, 0.60) 55%,
-              rgba(26, 26, 26, 0.45) 70%,
-              rgba(10, 10, 10, 0.35) 100%
-            )
-          `
-        }}
+        className="absolute inset-0 z-[5] dark:opacity-100 opacity-90"
+        style={gradientOverlayStyle}
       />
 
       {/* Content - Optimized for mobile with proper spacing - Must be above background - Moved down 2cm for nav bar clearance */}
@@ -200,28 +198,27 @@ const Hero = () => {
         {/* Main Content Area - Enhanced positioning for large screens */}
         <div className="flex-1 flex flex-col justify-center px-3 sm:px-4 md:px-6 lg:px-12 xl:px-20 2xl:px-32 container mx-auto py-12 sm:py-16 md:py-20 lg:py-24">
           {slides.map((slide, index) => (
-            <div
+            <motion.div
               key={slide.id}
+              initial="hidden"
+              animate={activeSlide === index ? "visible" : "hidden"}
+              variants={FADE_IN}
               className={`${
                 activeSlide === index
-                  ? "opacity-100"
-                  : "opacity-0 absolute pointer-events-none"
+                  ? "block"
+                  : "absolute pointer-events-none opacity-0"
               }`}
-              style={{
-                transition: activeSlide === index ? 'opacity 0.3s ease-out' : 'none',
-                transform: 'none'
-              }}
-              aria-live="polite"
-              aria-atomic="true"
             >
               {activeSlide === index && (
                 <div className="max-w-3xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl">
                   {/* Official Partner Badge / National Badge */}
                   {slide.badge && (
-                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 animate-fade-in backdrop-blur-sm ${
+                    <motion.div 
+                      variants={SLIDE_UP}
+                      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 backdrop-blur-sm ${
                       slide.nationalFocus 
                         ? "bg-green-500/20 border border-green-500/40 text-green-400"
-                        : "bg-orange-500/20 border border-orange-500/40 text-orange-400"
+                        : "bg-amber-500/20 border border-amber-500/40 text-amber-400"
                     }`}>
                       {slide.nationalFocus ? (
                         <>
@@ -234,75 +231,67 @@ const Hero = () => {
                           <span className="text-sm font-semibold uppercase tracking-wide">{t('hero.slides.yilmaz_machines.badge_official')}</span>
                         </>
                       )}
-                    </div>
+                    </motion.div>
                   )}
 
-                  {/* Badge/Description - Optimized for mobile - Enhanced visibility with better contrast */}
-                  <span 
-                    className="block mb-3 sm:mb-4 md:mb-5 text-xs sm:text-sm md:text-base lg:text-lg font-bold uppercase tracking-wider animate-fade-in opacity-100 sm:opacity-100"
+                  {/* Badge/Description - Optimized for mobile - Theme-aware colors */}
+                  <motion.span 
+                    variants={SLIDE_UP}
+                    className="block mb-3 sm:mb-4 md:mb-5 text-xs sm:text-sm md:text-base lg:text-lg font-bold uppercase tracking-wider text-amber-400 dark:text-amber-400"
                     style={{
-                      color: '#FFC107',
-                      textShadow: '0 2px 8px rgba(0, 0, 0, 0.95), 0 0 20px rgba(255, 193, 7, 0.5), 0 1px 3px rgba(0, 0, 0, 1)',
+                      textShadow: '0 2px 8px rgba(0, 0, 0, 0.95), 0 0 20px rgba(251, 191, 36, 0.5), 0 1px 3px rgba(0, 0, 0, 1)',
                       WebkitTextStroke: '0.5px rgba(0, 0, 0, 0.8)'
                     }}
                     role="doc-subtitle"
                   >
                     {slide.description}
-                  </span>
+                  </motion.span>
                   
-                  {/* Main Title - Better mobile scaling - Enhanced visibility with better positioning */}
-                  {/* Priority content - renders immediately for LCP - no animation delays */}
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-white leading-[1.1] sm:leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]" style={{ opacity: 1, transform: 'none' }}>
-                    <span className="text-gradient-orange bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent drop-shadow-[0_3px_8px_rgba(255,95,31,0.6)]">
+                  {/* Main Title - Better mobile scaling - Theme-aware text colors */}
+                  <motion.h1 
+                    variants={SLIDE_UP}
+                    className="typography-h1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-foreground dark:text-white leading-[1.1] sm:leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] dark:drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]"
+                  >
+                    <span className="text-gradient-orange bg-gradient-to-r from-amber-400 to-amber-600 dark:from-amber-400 dark:to-amber-600 bg-clip-text text-transparent drop-shadow-[0_3px_8px_rgba(251,191,36,0.6)] dark:drop-shadow-[0_3px_8px_rgba(251,191,36,0.6)]">
                       {slide.title}
                     </span>
-                  </h1>
+                  </motion.h1>
                   
-                  {/* Subtitle - Better mobile scaling - Enhanced visibility */}
-                  <h2
-                    className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-white sm:text-white mb-4 sm:mb-5 md:mb-6 lg:mb-8 leading-[1.2] sm:leading-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]"
-                    style={{ opacity: 1, transform: 'none' }}
+                  {/* Subtitle - Better mobile scaling - Theme-aware text colors */}
+                  <motion.h2 
+                    variants={SLIDE_UP}
+                    className="typography-h2 text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-foreground dark:text-white mb-4 sm:mb-5 md:mb-6 lg:mb-8 leading-[1.2] sm:leading-tight drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)] dark:drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]"
                   >
                     {slide.subtitle}
-                  </h2>
+                  </motion.h2>
                   
                   {/* Action Buttons - Optimized for mobile - Better spacing on large screens */}
-                  <div
+                  <motion.div
+                    variants={SLIDE_UP}
                     className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-5 lg:gap-6 mt-2 sm:mt-3 md:mt-4"
-                    style={{ opacity: 1 }}
                   >
-                    <NeonButton
-                      variant="industrial"
-                      glow="industrialGlow"
-                      size="lg"
-                      className="px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-4 text-xs sm:text-sm md:text-base w-full sm:w-auto"
-                      aria-label={`Navigate to ${slide.nationalFocus ? 'Digital Transformation' : slide.title} section`}
-                    >
-                      <Link 
-                        to={slide.link} 
-                        className="flex items-center justify-center gap-2"
+                    <Link to={slide.link} className="w-full sm:w-auto">
+                      <Button
+                        variant="primary"
+                        size="lg"
+                        className="w-full sm:w-auto px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-4 text-xs sm:text-sm md:text-base font-bold shadow-lg shadow-amber-500/20"
+                        rightIcon={<ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />}
                       >
                         {slide.nationalFocus ? t('hero.slides.fabricator_pro.cta_primary') : slide.id === 2 ? t('hero.slides.yilmaz_machines.cta_primary') : t('hero.slides.almona_co.cta_primary')}
-                        <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:translate-x-1" />
-                      </Link>
-                    </NeonButton>
+                      </Button>
+                    </Link>
                     
-                    <NeonButton
-                      variant="outline"
-                      glow="subtle"
-                      size="lg"
-                      className="border-white/20 text-white hover:bg-white/10 transition-colors px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-4 text-xs sm:text-sm md:text-base w-full sm:w-auto"
-                      aria-label="Contact Almona for consultation and support"
-                    >
-                      <Link 
-                        to="/contact" 
-                        className="flex items-center justify-center gap-2"
+                    <Link to="/contact" className="w-full sm:w-auto">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="w-full sm:w-auto px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-4 text-xs sm:text-sm md:text-base border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+                        leftIcon={<Phone className="h-4 w-4 sm:h-5 sm:w-5" />}
                       >
-                        <Phone className="h-4 w-4 sm:h-5 sm:w-5" />
                         {t('hero.slides.fabricator_pro.cta_secondary')}
-                      </Link>
-                    </NeonButton>
-                  </div>
+                      </Button>
+                    </Link>
+                  </motion.div>
 
                   {/* YDT Agent - Gold Tier Industrial Model */}
                   <div className="mt-6 sm:mt-8 md:mt-10 max-w-md">
@@ -310,7 +299,7 @@ const Hero = () => {
                   </div>
                 </div>
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
 
@@ -325,10 +314,10 @@ const Hero = () => {
                     <button
                       key={index}
                       onClick={() => goToSlide(index)}
-                      className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-gray-900 ${
+                      className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 focus:ring-offset-background dark:focus:ring-offset-gray-900 ${
                         activeSlide === index
-                          ? "bg-almona-orange w-6 sm:w-8 shadow-lg shadow-orange-500/25"
-                          : "bg-white/30 hover:bg-white/50"
+                          ? "bg-almona-orange w-6 sm:w-8 shadow-lg shadow-amber-500/25"
+                          : "bg-foreground/30 dark:bg-white/30 hover:bg-foreground/50 dark:hover:bg-white/50"
                       }`}
                       aria-label={`Go to slide ${index + 1}`}
                       aria-selected={activeSlide === index}
@@ -337,8 +326,8 @@ const Hero = () => {
                   ))}
                 </div>
                 
-                {/* Progress Indicator - Optimized for mobile */}
-                <div className="w-full sm:w-32 bg-white/15 sm:bg-white/20 h-0.5 rounded-full overflow-hidden">
+                {/* Progress Indicator - Optimized for mobile - Theme-aware */}
+                <div className="w-full sm:w-32 bg-foreground/15 dark:bg-white/15 sm:bg-foreground/20 dark:sm:bg-white/20 h-0.5 rounded-full overflow-hidden">
                   <div 
                     className="bg-almona-orange h-full rounded-full"
                     style={{ 
@@ -360,7 +349,7 @@ const Hero = () => {
 
   return (
     <section 
-      className="relative min-h-screen h-screen overflow-hidden -mt-16 pt-16 bg-[#1a1a1a]"
+      className="relative bg-background dark:bg-[#0a0a0a]"
       style={{ minHeight: '-webkit-fill-available' }}
       role="region"
       aria-label="Hero carousel"
@@ -383,17 +372,17 @@ const Hero = () => {
       {/* Lazy load heavy background component after initial render */}
       <LazyBackground />
 
-      {/* Loading indicator for transition states */}
+      {/* Loading indicator for transition states - Theme-aware */}
       {isTransitioning && (
-        <div className="absolute inset-0 z-[110] flex items-center justify-center bg-black/35 backdrop-blur-[2px] transition-opacity duration-300">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-white/10 border border-white/15 shadow-xl shadow-orange-500/10">
+        <div className="absolute inset-0 z-[110] flex items-center justify-center bg-background/35 dark:bg-black/35 backdrop-blur-[2px] transition-opacity duration-300">
+            <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-foreground/10 dark:bg-white/10 border border-foreground/15 dark:border-white/15 shadow-xl shadow-amber-500/10">
               <div className="flex flex-col gap-1">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/80">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/80 dark:text-white/80">
                   {t('hero.transition.preparing')}
                 </span>
-              <div className="w-28 h-1.5 bg-white/15 rounded-full overflow-hidden">
+              <div className="w-28 h-1.5 bg-foreground/15 dark:bg-white/15 rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500 transition-all duration-500 ease-out"
+                  className="h-full rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 transition-all duration-500 ease-out"
                   style={{ width: `${transitionProgress}%` }}
                   aria-label="Slide transition in progress"
                 />

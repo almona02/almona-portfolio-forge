@@ -373,8 +373,8 @@ export function generateComponentsFromGrid(
   const frameProfile = getProfileByRole('frame') || profiles.find(p => p.profileRole === 'frame') || profiles[0];
 
   // Find appropriate sash profile - prioritize sliding sash for sliding systems
-  const isSlidingSystem = project.type?.includes('sliding') || 
-                          grid.cells.some(cell => cell.type === 'sliding');
+  const isSlidingSystem = project.type?.includes('sliding') ||
+                          (grid.cells && Array.isArray(grid.cells) && grid.cells.some(cell => cell.type === 'sliding'));
   
   const sashProfile = isSlidingSystem
     ? getProfileByRole('sash_sliding') || getProfileByRole('sash') || profiles.find(p => p.profileRole === 'sash_sliding') || profiles.find(p => p.profileRole === 'sash') || profiles[0]
@@ -507,6 +507,9 @@ export function generateComponentsFromGrid(
   // For sliding systems: Each sash is a complete unit (4 pieces: top, bottom, left, right)
   // For casement systems: Each sash is also a complete unit (4 pieces: top, bottom, left, right)
   // Sashes slide past each other - NO mullion between them
+  if (!grid.cells || !Array.isArray(grid.cells)) {
+    return { components, hardware };
+  }
   grid.cells.forEach(cell => {
       const isSashCell = cell.type === 'sliding' || cell.type === 'sash';
       if (isSashCell && sashProfile) {

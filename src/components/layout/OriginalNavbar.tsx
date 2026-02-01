@@ -120,7 +120,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
       ref={navbarRef}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
-          ? "bg-black/95 backdrop-blur-lg border-b border-orange-500/20 shadow-lg" 
+          ? "bg-black/95 backdrop-blur-lg border-b border-amber-500/20 shadow-lg" 
           : "bg-black/80 backdrop-blur-md"
       }`}
     >
@@ -132,7 +132,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
             to="/" 
             className="flex items-center space-x-3 text-white font-bold text-xl"
           >
-            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-amber-500 to-red-500 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">A</span>
             </div>
             <span>ALMONA</span>
@@ -152,7 +152,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                     to={item.path}
                     className={`px-4 py-2 rounded-lg transition-all duration-200 font-medium ${
                       isActivePath(item.path)
-                        ? "text-orange-400 bg-orange-500/10"
+                        ? "text-amber-400 bg-amber-500/10"
                         : "text-gray-300 hover:text-white hover:bg-white/5"
                     }`}
                   >
@@ -163,7 +163,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                     <button
                       className={`px-4 py-2 rounded-lg transition-all duration-200 font-medium flex items-center space-x-1 ${
                         isActivePath(item.path) || activeDropdown === item.name
-                          ? "text-orange-400 bg-orange-500/10"
+                          ? "text-amber-400 bg-amber-500/10"
                           : "text-gray-300 hover:text-white hover:bg-white/5"
                       }`}
                     >
@@ -175,13 +175,13 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
 
                     {/* Dropdown Menu */}
                     {activeDropdown === item.name && (
-                      <div className="absolute top-full left-0 mt-2 w-64 bg-gray-900/95 backdrop-blur-xl border border-orange-500/20 rounded-xl shadow-2xl overflow-hidden">
+                      <div className="absolute top-full left-0 mt-2 w-64 bg-gray-900/95 border 500/20 rounded-xl shadow-2xl overflow-hidden card-glass-dark">
                         <div className="p-2">
                           {item.items?.map((subItem) => (
                             <Link
                               key={subItem.name}
                               to={subItem.path}
-                              className="block px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-orange-500/10 rounded-lg transition-all duration-200"
+                              className="btn-primary"
                             >
                               {subItem.name}
                             </Link>
@@ -209,12 +209,12 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
               </button>
 
               {activeDropdown === "region" && (
-                <div className="absolute top-full right-0 mt-2 w-48 bg-gray-900/95 backdrop-blur-xl border border-orange-500/20 rounded-xl shadow-2xl overflow-hidden">
+                <div className="absolute top-full right-0 mt-2 w-48 bg-gray-900/95 border 500/20 rounded-xl shadow-2xl overflow-hidden card-glass-dark">
                   <div className="p-2">
                     {regions.map((region) => (
                       <button
                         key={region.code}
-                        className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-orange-500/10 rounded-lg transition-all duration-200 flex items-center space-x-2"
+                        className="btn-primary"
                       >
                         <span className="text-lg">{region.flag}</span>
                         <span>{region.name}</span>
@@ -232,7 +232,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
             >
               <ShoppingCart className="h-5 w-5" />
               {quoteItems.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                <span className="btn-primary">
                   {quoteItems.length}
                 </span>
               )}
@@ -250,12 +250,12 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                 </button>
 
                 {activeDropdown === "user" && (
-                  <div className="absolute top-full right-0 mt-2 w-48 bg-gray-900/95 backdrop-blur-xl border border-orange-500/20 rounded-xl shadow-2xl overflow-hidden">
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-gray-900/95 border 500/20 rounded-xl shadow-2xl overflow-hidden card-glass-dark">
                     <div className="p-2 space-y-1">
                       {user.role === "admin" && (
                         <Link
                           to="/admin"
-                          className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-orange-500/10 rounded-lg transition-all duration-200"
+                          className="btn-primary"
                         >
                           <Shield className="h-4 w-4" />
                           <span>Admin Panel</span>
@@ -263,14 +263,14 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                       )}
                       <Link
                         to="/portal"
-                        className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-orange-500/10 rounded-lg transition-all duration-200"
+                        className="btn-primary"
                       >
                         <User className="h-4 w-4" />
                         <span>My Portal</span>
                       </Link>
                       <button
                         onClick={onLogout}
-                        className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-orange-500/10 rounded-lg transition-all duration-200"
+                        className="btn-primary"
                       >
                         <LogOut className="h-4 w-4" />
                         <span>Logout</span>
@@ -289,7 +289,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-200"
+                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-red-500 text-white rounded-lg hover:from-amber-600 hover:to-red-600 transition-all duration-200"
                 >
                   Register
                 </Link>
@@ -308,7 +308,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden border-t border-orange-500/20 bg-black/95 backdrop-blur-lg">
+          <div className="lg:hidden border-t bg-black/95 -lg card-glass-dark">
             <div className="py-4 space-y-2">
               {navItems.map((item) => (
                 <div key={item.name}>
@@ -317,7 +317,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                       to={item.path}
                       className={`block px-4 py-3 text-lg font-medium transition-all duration-200 ${
                         isActivePath(item.path)
-                          ? "text-orange-400 bg-orange-500/10"
+                          ? "text-amber-400 bg-amber-500/10"
                           : "text-gray-300 hover:text-white hover:bg-white/5"
                       }`}
                     >
@@ -328,7 +328,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                       <button
                         className={`w-full text-left px-4 py-3 text-lg font-medium flex items-center justify-between transition-all duration-200 ${
                           isActivePath(item.path) || activeDropdown === item.name
-                            ? "text-orange-400 bg-orange-500/10"
+                            ? "text-amber-400 bg-amber-500/10"
                             : "text-gray-300 hover:text-white hover:bg-white/5"
                         }`}
                         onClick={() => setActiveDropdown(activeDropdown === item.name ? null : item.name)}
@@ -345,7 +345,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                             <Link
                               key={subItem.name}
                               to={subItem.path}
-                              className="block px-4 py-2 text-gray-300 hover:text-white hover:bg-orange-500/10 rounded-lg transition-all duration-200"
+                              className="btn-primary"
                             >
                               {subItem.name}
                             </Link>
@@ -358,7 +358,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
               ))}
 
               {/* Mobile User Actions */}
-              <div className="pt-4 border-t border-orange-500/20">
+              <div className="pt-4 border-t border-amber-500/20">
                 {user ? (
                   <div className="space-y-2">
                     <div className="px-4 py-2 text-gray-300">
@@ -387,7 +387,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
                     </Link>
                     <Link
                       to="/register"
-                      className="block px-4 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white text-center rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-200"
+                      className="block px-4 py-3 bg-gradient-to-r from-amber-500 to-red-500 text-white text-center rounded-lg hover:from-amber-600 hover:to-red-600 transition-all duration-200"
                     >
                       Register
                     </Link>

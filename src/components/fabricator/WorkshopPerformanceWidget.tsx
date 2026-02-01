@@ -83,7 +83,7 @@ export const WorkshopPerformanceWidget: React.FC<WorkshopPerformanceWidgetProps>
           </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <div className="text-2xl font-bold text-orange-400">{metrics.wasteReduction.toFixed(1)}%</div>
+              <div className="text-2xl font-bold text-amber-400">{metrics.wasteReduction.toFixed(1)}%</div>
               <TrendIcon trend={metrics.trends.waste} />
             </div>
             <div className="text-xs text-gray-400">Waste Reduction</div>

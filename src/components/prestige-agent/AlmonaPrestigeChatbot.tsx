@@ -298,18 +298,18 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
               className="relative"
             >
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center shadow-xl">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 flex items-center justify-center shadow-xl">
                 <BrainCircuit className="w-8 h-8 text-white" />
               </div>
               <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-yellow-400" />
             </motion.div>
             
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="typography-h1 text-gray-900">
                 YDT <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Agent</span>
               </h1>
               <p className="text-gray-600 flex items-center gap-2">
-                <Shield className="w-4 h-4 text-green-500" />
+                <Shield className="w-4 h-4  status-valid" />
                 <span className="font-semibold text-green-600">Online</span>
                 • Nervous System + Professor + Doctor + Tour Guide
               </p>
@@ -362,7 +362,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                     <Zap className="w-4 h-4 animate-pulse" />
                   )}
                 </div>
-                <h3 className="font-bold mt-2 text-sm">{persona.title}</h3>
+                <h3 className="typography-h3 mt-2 text-sm">{persona.title}</h3>
                 <p className="text-xs opacity-80 mt-1">{persona.subtitle}</p>
               </motion.button>
             );
@@ -379,7 +379,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                   <PersonaIcon className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-white">{currentPersona.title}</h2>
+                  <h2 className="typography-h2 text-xl text-white">{currentPersona.title}</h2>
                   <p className="text-gray-300 text-sm">{currentPersona.subtitle}</p>
                 </div>
               </div>
@@ -459,7 +459,7 @@ export const AlmonaPrestigeChatbot: React.FC = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder={`Ask ${currentPersona.title} about AIM 7510...`}
-                    className="w-full px-6 py-4 bg-white rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-400 text-gray-900 placeholder:text-gray-400 text-base font-medium"
+                    className="w-full px-6 py-4 bg-white rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-400 text-gray-900 placeholder:text-gray-400 text-base font-medium"
                     onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
                   />
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">

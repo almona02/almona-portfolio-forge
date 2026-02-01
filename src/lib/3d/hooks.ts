@@ -9,14 +9,14 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import {
-  AluminiumMaterialParams,
-  GlassMaterialParams,
-  UPVCMaterialParams,
-  createAdvancedAluminiumMaterial,
-  createAdvancedGlassMaterial,
-  createAdvancedUPVCMaterial,
-  updateMaterialEnvMap,
-  updateMaterialLights,
+    AluminiumMaterialParams,
+    GlassMaterialParams,
+    UPVCMaterialParams,
+    createAdvancedAluminiumMaterial,
+    createAdvancedGlassMaterial,
+    createAdvancedUPVCMaterial,
+    updateMaterialEnvMap,
+    updateMaterialLights,
 } from './AdvancedShaders';
 import { HingeConstraintConfig, PhysicsWorld } from './PhysicsEngine';
 
@@ -160,7 +160,7 @@ export function useAdvancedMaterials(options: UseAdvancedMaterialsOptions = {}):
   const shouldUseShaders = false; // Disabled due to shader compilation errors
   
   const createMaterial = useCallback((type: MaterialType, params: any = {}) => {
-    let material: THREE.Material;
+    let material: THREE.Material | undefined;
     
     // Check if WebGL context is ready
     if (!gl || !gl.domElement || !gl.getContext) {
@@ -207,35 +207,47 @@ export function useAdvancedMaterials(options: UseAdvancedMaterialsOptions = {}):
     }
     
     if (!shouldUseShaders || !material || shaderErrorRef.current) {
-      // Fallback to standard Three.js materials (WebGL 1.0 compatible)
+      // Fallback to standard Three.js materials (WebGL 1.0 compatible) - UPGRADED FOR V6 REALISM
       switch (type) {
         case 'aluminum':
           material = new THREE.MeshPhysicalMaterial({
             color: params.color ?? 0xC0C0C0,
-            metalness: 0.95,
-            roughness: params.roughness ?? 0.25,
-            clearcoat: params.clearcoat ?? 0.1,
-            clearcoatRoughness: params.clearcoatRoughness ?? 0.1,
-            envMapIntensity: params.envMapIntensity ?? 1.0,
+            metalness: 0.9, // Lower slightly to allow coating to shine
+            roughness: params.roughness ?? 0.35, // Brushed effect
+            clearcoat: 1.0, // Anodized layer
+            clearcoatRoughness: 0.15,
+            sheen: 0.5,
+            sheenColor: new THREE.Color(0xffffff),
+            envMapIntensity: params.envMapIntensity ?? 1.5, // Pop the reflections
           });
           break;
         case 'upvc':
           material = new THREE.MeshPhysicalMaterial({
             color: params.color ?? 0xFFFFFF,
-            metalness: 0.0,
-            roughness: params.roughness ?? 0.5,
-            envMapIntensity: params.envMapIntensity ?? 0.5,
+            metalness: 0.05, // Plastic has very low metalness
+            roughness: params.roughness ?? 0.2, // Smooth, glossy stick
+            clearcoat: 0.8, // High gloss finish
+            clearcoatRoughness: 0.05,
+            reflectivity: 0.9,
+            envMapIntensity: params.envMapIntensity ?? 0.8,
           });
           break;
         case 'glass':
+          // Physically correct tinted glass: White surface (specular) + Colored attenuation (absorption)
+          const tintColor = params.color ? new THREE.Color(params.color) : new THREE.Color(0xeefcfc);
+          
           material = new THREE.MeshPhysicalMaterial({
-            color: params.color ?? 0xFFFFFF,
+            color: 0xffffff, // Surface is always white for correct fresnel/specular
             metalness: 0.0,
             roughness: params.roughness ?? 0.0,
-            transmission: params.transmission ?? 0.95,
-            thickness: params.thickness ?? 0.006,
-            ior: params.ior ?? 1.52,
+            transmission: 1.0, 
+            thickness: 0.012, // 12mm
+            ior: 1.52,
+            attenuationColor: tintColor, // The color comes from volume absorption
+            attenuationDistance: 0.5, // How thick until it reaches full color
             transparent: true,
+            envMapIntensity: params.envMapIntensity ?? 2.0,
+            depthWrite: false, 
           });
           break;
         default:

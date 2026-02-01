@@ -1,0 +1,38 @@
+
+Running 2 tests using 2 workers
+
+[1A[2K[1/2] [chromium] › tests\e2e\drafting-smoke.spec.ts:14:3 › Almona Drafting Smoke Test › should navigate to drafting workbench
+[1A[2K[2/2] [chromium] › tests\e2e\drafting-smoke.spec.ts:4:3 › Almona Drafting Smoke Test › should load the dashboard and verify title
+[1A[2K  1) [chromium] › tests\e2e\drafting-smoke.spec.ts:14:3 › Almona Drafting Smoke Test › should navigate to drafting workbench 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByText('System Configuration')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByText('System Configuration')[22m
+
+
+      51 |     
+      52 |     // Check for the Props tab or Side panel elements that confirm EngineeringBay loaded
+    > 53 |     await expect(page.getByText('System Configuration')).toBeVisible();
+         |                                                          ^
+      54 |     await expect(page.getByText('Structure')).toBeVisible();
+      55 |   });
+      56 | });
+        at C:\projects\almona-portfolio-forge\tests\e2e\drafting-smoke.spec.ts:53:58
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\drafting-smoke-Almona-Draf-2ccf1-igate-to-drafting-workbench-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\drafting-smoke-Almona-Draf-2ccf1-igate-to-drafting-workbench-chromium\error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › tests\e2e\drafting-smoke.spec.ts:14:3 › Almona Drafting Smoke Test › should navigate to drafting workbench 
+  1 passed (7.5s)

@@ -19,7 +19,7 @@ const ServicesGrid: React.FC<ServicesGridProps> = ({ services }) => {
       {services.map((service) => (
         <div key={service.id} className="bg-gray-800 p-6 rounded-lg neon-glow">
           <img src={service.icon} alt={service.title} className="w-16 h-16 mb-4" loading="lazy" decoding="async" width="64" height="64" />
-          <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
+          <h3 className="typography-h3 mb-2">{service.title}</h3>
           <p className="mb-4">{service.description}</p>
           <ul className="list-disc list-inside space-y-1 text-sm">
             {service.features.map((feature, index) => (

@@ -207,8 +207,8 @@ const EgyptianStandardsGuide = () => {
         className="text-center mb-8"
       >
         <div className="flex items-center justify-center gap-3 mb-4">
-          <Shield className="h-12 w-12 text-orange-400" />
-          <h1 className="text-4xl md:text-5xl font-bold">
+          <Shield className="h-12 w-12 text-amber-400" />
+          <h1 className="typography-h1 md:text-5xl">
             <span className="text-gradient-orange">Egyptian Standards Guide</span>
           </h1>
         </div>
@@ -220,7 +220,7 @@ const EgyptianStandardsGuide = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
           <Card className="bg-gray-800/50 border-gray-700">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-orange-400">15+</div>
+              <div className="text-2xl font-bold text-amber-400">15+</div>
               <div className="text-sm text-gray-400">Standards</div>
             </CardContent>
           </Card>
@@ -259,7 +259,7 @@ const EgyptianStandardsGuide = () => {
           <Card className="bg-gray-800/50 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-6 w-6 text-orange-400" />
+                <Building2 className="h-6 w-6 text-amber-400" />
                 Egyptian Industrial Standards Overview
               </CardTitle>
             </CardHeader>
@@ -272,7 +272,7 @@ const EgyptianStandardsGuide = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-orange-400">Key Benefits:</h4>
+                  <h4 className="typography-h4 text-amber-400">Key Benefits:</h4>
                   <ul className="space-y-2 text-sm text-gray-300">
                     <li className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-400" />
@@ -294,7 +294,7 @@ const EgyptianStandardsGuide = () => {
                 </div>
                 
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-orange-400">Our Services:</h4>
+                  <h4 className="typography-h4 text-amber-400">Our Services:</h4>
                   <ul className="space-y-2 text-sm text-gray-300">
                     <li className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-400" />
@@ -329,7 +329,7 @@ const EgyptianStandardsGuide = () => {
                 className="cursor-pointer"
                 onClick={() => setSelectedStandard(standard)}
               >
-                <Card className="bg-gray-800/50 border-gray-700 hover:border-orange-500/50 transition-colors">
+                <Card className="bg-gray-800/50 border-gray-700 transition-colors card-premium">
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
@@ -371,7 +371,7 @@ const EgyptianStandardsGuide = () => {
           <Card className="bg-gray-800/50 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <CheckCircle className="h-6 w-6 text-orange-400" />
+                <CheckCircle className="h-6 w-6 text-amber-400" />
                 Compliance Process Guide
               </CardTitle>
             </CardHeader>
@@ -386,12 +386,12 @@ const EgyptianStandardsGuide = () => {
                     className="flex gap-4"
                   >
                     <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">
+                      <div className="btn-primary">
                         {step.step}
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-lg mb-2">{step.title}</h4>
+                      <h4 className="typography-h4 mb-2">{step.title}</h4>
                       <p className="text-gray-300 mb-2">{step.description}</p>
                       <div className="flex gap-4 text-sm text-gray-400">
                         <span className="flex items-center gap-1">
@@ -427,21 +427,21 @@ const EgyptianStandardsGuide = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-sm">
-                        <Phone className="h-4 w-4 text-orange-400" />
+                        <Phone className="h-4 w-4 text-amber-400" />
                         <span>{contact.phone}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Mail className="h-4 w-4 text-orange-400" />
+                        <Mail className="h-4 w-4 text-amber-400" />
                         <span>{contact.email}</span>
                       </div>
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="h-4 w-4 text-orange-400" />
+                        <MapPin className="h-4 w-4 text-amber-400" />
                         <span>{contact.address}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <Globe className="h-4 w-4 text-orange-400" />
+                        <Globe className="h-4 w-4 text-amber-400" />
                         <span>{contact.website}</span>
                       </div>
                     </div>
@@ -471,7 +471,7 @@ const EgyptianStandardsGuide = () => {
               <div className="flex items-center gap-3">
                 {getCategoryIcon(selectedStandard.category)}
                 <div>
-                  <h3 className="text-xl font-bold">{selectedStandard.title}</h3>
+                  <h3 className="typography-h3">{selectedStandard.title}</h3>
                   <p className="text-gray-400">{selectedStandard.titleAr}</p>
                   <p className="text-sm text-gray-500">Code: {selectedStandard.code}</p>
                 </div>
@@ -489,7 +489,7 @@ const EgyptianStandardsGuide = () => {
               <p className="text-gray-300">{selectedStandard.description}</p>
               
               <div>
-                <h4 className="font-semibold mb-2">Requirements:</h4>
+                <h4 className="typography-h4 mb-2">Requirements:</h4>
                 <ul className="space-y-1">
                   {selectedStandard.requirements.map((req, index) => (
                     <li key={index} className="flex items-center gap-2 text-sm text-gray-300">
@@ -502,7 +502,7 @@ const EgyptianStandardsGuide = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h4 className="font-semibold mb-2">Cost:</h4>
+                  <h4 className="typography-h4 mb-2">Cost:</h4>
                   <p className="text-sm text-gray-300">
                     Initial: {selectedStandard.cost.initial.toLocaleString()} {selectedStandard.cost.currency}
                   </p>
@@ -511,18 +511,18 @@ const EgyptianStandardsGuide = () => {
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-2">Processing:</h4>
+                  <h4 className="typography-h4 mb-2">Processing:</h4>
                   <p className="text-sm text-gray-300">{selectedStandard.processingTime}</p>
                   <p className="text-sm text-gray-300">Valid for: {selectedStandard.validityPeriod}</p>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-semibold mb-2">Required Documents:</h4>
+                <h4 className="typography-h4 mb-2">Required Documents:</h4>
                 <ul className="space-y-1">
                   {selectedStandard.documents.map((doc, index) => (
                     <li key={index} className="flex items-center gap-2 text-sm text-gray-300">
-                      <FileText className="h-4 w-4 text-orange-400" />
+                      <FileText className="h-4 w-4 text-amber-400" />
                       {doc}
                     </li>
                   ))}

@@ -73,7 +73,7 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
       {/* Selection Indicator */}
       {selected && (
         <div className="absolute top-4 right-4 z-10">
-          <div className="bg-amber-500 rounded-full p-1.5 shadow-lg">
+          <div className="btn-primary">
             <CheckCircle2 className="w-5 h-5 text-white" />
           </div>
         </div>
@@ -81,7 +81,7 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
 
       {/* Badge */}
       <div className="absolute top-4 left-4 z-10">
-        <Badge className="bg-amber-500 text-white shadow-md">
+        <Badge className="btn-primary">
           <Award className="w-3 h-3 mr-1" />
           {system.badge}
         </Badge>
@@ -100,7 +100,7 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
       <CardContent className="p-6 pt-16">
         {/* Header */}
         <div className="mb-4">
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">
+          <h3 className="typography-h3 text-gray-900 mb-2">
             {system.title}
           </h3>
           <p className="text-sm text-gray-600 leading-relaxed">
@@ -117,7 +117,7 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
 
         {/* Capabilities */}
         <div className="mb-6">
-          <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+          <h4 className="typography-h4 text-sm text-gray-700 mb-3 flex items-center gap-2">
             <Shield className="w-4 h-4 text-amber-500" />
             System Capabilities
           </h4>
@@ -133,7 +133,7 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
 
         {/* Recommended For */}
         <div className="mb-6">
-          <h4 className="text-sm font-semibold text-gray-700 mb-2">Recommended For</h4>
+          <h4 className="typography-h4 text-sm text-gray-700 mb-2">Recommended For</h4>
           <div className="flex flex-wrap gap-2">
             {system.recommendedFor.map((app, i) => (
               <Badge 
@@ -150,11 +150,11 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
         {/* Testimonials */}
         {system.testimonials && system.testimonials.length > 0 && (
           <div className="mb-6">
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Authority Proof</h4>
+            <h4 className="typography-h4 text-sm text-gray-700 mb-2">Authority Proof</h4>
             <ul className="space-y-2">
               {system.testimonials.map((testimonial, i) => (
                 <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
-                  <div className="w-1 h-1 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
+                  <div className="btn-primary" />
                   <span>{testimonial}</span>
                 </li>
               ))}
@@ -165,7 +165,7 @@ export const SystemAuthorityCard: React.FC<SystemAuthorityCardProps> = ({
         {/* Certifications */}
         {system.certifications && system.certifications.length > 0 && (
           <div className="mb-6">
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Certifications</h4>
+            <h4 className="typography-h4 text-sm text-gray-700 mb-2">Certifications</h4>
             <div className="flex flex-wrap gap-2">
               {system.certifications.map((cert, i) => (
                 <Badge 

@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 const YilmazDealer = () => {
   const benefits = [
     {
-      icon: <Award className="w-8 h-8 text-orange-500" />,
+      icon: <Award className="w-8 h-8 text-amber-500" />,
       title: "Authorized Dealer",
       description: "Official distributor in Egypt since 2000. Full warranty and manufacturer backing guaranteed."
     },
@@ -19,7 +19,7 @@ const YilmazDealer = () => {
       description: "Factory-trained technicians for installation, maintenance, and repair of all Yilmaz machinery."
     },
     {
-      icon: <GraduationCap className="w-8 h-8 text-green-500" />,
+      icon: <GraduationCap className="w-8 h-8 status-valid" />,
       title: "Expert Training",
       description: "Comprehensive operator training to ensure maximum efficiency and safety in your workshop."
     },
@@ -60,10 +60,10 @@ const YilmazDealer = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <span className="inline-block py-1 px-3 rounded-full bg-orange-500/20 text-orange-400 text-sm font-semibold mb-4 border border-orange-500/50">
+                <span className="btn-primary">
                   Official Partner
                 </span>
-                <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                <h1 className="typography-h1 md:text-6xl mb-6">
                   YILMAZ Machines Authorized Dealer in Egypt
                 </h1>
                 <p className="text-xl text-gray-300 mb-8 leading-relaxed">
@@ -72,7 +72,7 @@ const YilmazDealer = () => {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                   <Link to="/products/machines">
-                    <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white">
+                    <Button size="lg" className="btn-primary">
                       View Machine Catalog <ArrowRight className="ml-2 w-4 h-4" />
                     </Button>
                   </Link>
@@ -118,7 +118,7 @@ const YilmazDealer = () => {
         <section className="py-20">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Popular Yilmaz Machinery in Egypt</h2>
+              <h2 className="typography-h2 mb-4">Popular Yilmaz Machinery in Egypt</h2>
               <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
                 From high-speed CNC processing centers to precise cutting saws, we supply the full range of Yilmaz equipment tailored for the Egyptian market.
               </p>
@@ -147,8 +147,8 @@ const YilmazDealer = () => {
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
                     <div>
-                      <h3 className="text-xl font-bold text-white mb-2">{machine.name}</h3>
-                      <Link to={machine.link} className="text-orange-400 hover:text-orange-300 text-sm font-medium inline-flex items-center">
+                      <h3 className="typography-h3 text-white mb-2">{machine.name}</h3>
+                      <Link to={machine.link} className="text-amber-400 hover:text-amber-300 text-sm font-medium inline-flex items-center">
                         View Details <ArrowRight className="ml-1 w-3 h-3" />
                       </Link>
                     </div>
@@ -159,7 +159,7 @@ const YilmazDealer = () => {
             
             <div className="text-center mt-12">
               <Link to="/products/machines">
-                <Button variant="outline" className="border-orange-500 text-orange-500 hover:bg-orange-50">
+                <Button variant="outline" className="border-amber-500 text-amber-500 hover:bg-amber-50">
                   Explore Full Catalog
                 </Button>
               </Link>
@@ -168,15 +168,15 @@ const YilmazDealer = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-orange-600 text-white">
+        <section className="btn-primary">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Upgrade Your Production?</h2>
+            <h2 className="typography-h2 md:text-4xl mb-6">Ready to Upgrade Your Production?</h2>
             <p className="text-xl opacity-90 mb-8 max-w-3xl mx-auto">
               Join hundreds of Egyptian fabricators trusting ALMONA and Yilmaz for their manufacturing needs.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
                <Link to="/contact">
-                <Button size="lg" variant="secondary" className="w-full sm:w-auto bg-white text-orange-600 hover:bg-gray-100">
+                <Button size="lg" variant="secondary" className="w-full sm:w-auto bg-white text-amber-600 hover:bg-gray-100">
                   Request a Quote
                 </Button>
               </Link>

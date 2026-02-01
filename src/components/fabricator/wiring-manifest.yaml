@@ -1,0 +1,235 @@
+manifest:
+  version: 1.0.0
+  constitutionalAuthority: AICS-001-v1.0.0
+  lastUpdated: '2026-01-18'
+  governingDocument: docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md
+truthDomains:
+  serviceTruth:
+    tier_3:
+      - component: TicketLifecycleEngine
+        location: src/services/ticketing/TicketLifecycleEngine.ts
+        truth_domain: serviceTruth
+        execution_class: deterministic
+      - component: AssignmentExecutor
+        location: src/services/ticketing/AssignmentExecutor.ts
+        truth_domain: serviceTruth
+        execution_class: deterministic
+      - component: SLACalculator
+        location: src/services/ticketing/SLACalculator.ts
+        truth_domain: serviceTruth
+        execution_class: deterministic
+      - component: EscalationEngine
+        location: src/services/ticketing/EscalationEngine.ts
+        truth_domain: serviceTruth
+        execution_class: deterministic
+    tier_2:
+      - component: RoutingAdvisor
+        location: src/services/ticketing/advisory/RoutingAdvisor.ts
+        truth_domain: serviceTruth
+        execution_class: advisory
+        requires_human_validation: true
+      - component: PredictiveMaintenanceAdvisor
+        location: src/services/ticketing/advisory/PredictiveMaintenanceAdvisor.ts
+        truth_domain: serviceTruth
+        execution_class: advisory
+        requires_human_validation: true
+      - component: ResponseDraftGenerator
+        location: src/services/ticketing/advisory/ResponseDraftGenerator.ts
+        truth_domain: serviceTruth
+        execution_class: advisory
+        requires_human_validation: true
+      - component: PartsRecommendationAdvisor
+        location: src/services/ticketing/advisory/PartsRecommendationAdvisor.ts
+        truth_domain: serviceTruth
+        execution_class: advisory
+        requires_human_validation: true
+    tier_1:
+      - component: TicketDashboard
+        location: src/components/ticketing/dashboard/TicketDashboard.tsx
+        truth_domain: serviceTruth
+        execution_class: presentation
+      - component: TicketWizard
+        location: src/components/ticketing/wizard/TicketWizard.tsx
+        truth_domain: serviceTruth
+        execution_class: presentation
+      - component: AdvisoryGate
+        location: src/components/ticketing/gates/AdvisoryGate.tsx
+        truth_domain: serviceTruth
+        execution_class: presentation
+  geometryTruth:
+    canonicalSources:
+      - src/components/fabricator/drafting/DraftingCanvas2D.tsx
+      - src/components/fabricator/drafting/DraftingWorkbench.tsx
+      - src/components/fabricator/SmartDrawCanvas.tsx
+    derivedVisualizations:
+      - src/components/fabricator/Window3DGenerator.tsx
+      - src/future/visualization-experiments/
+    authority: Execution (Tier 3)
+    immutability: Versioned only
+  materialTruth:
+    canonicalSources:
+      - src/components/fabricator/smartscan/DXFProfileImporter.tsx
+      - src/components/fabricator/smartscan/ProfileScannerUploader.tsx
+      - src/components/fabricator/hardener/HardenerSelectionPanel.tsx
+    preservedLabs:
+      - src/future/material-labs/ProfileTuningStudio.tsx
+      - src/future/material-labs/ProfileStudioLite.tsx
+    authority: Execution (Tier 3)
+    immutability: Supplier-certified only
+  machineTruth:
+    canonicalSources:
+      - src/components/fabricator/safety/ToolpathPreviewModal.tsx
+      - src/components/fabricator/smartscan/MachiningZoneEditor.tsx
+    preservedLabs:
+      - src/future/machine-labs/
+    authority: Execution (Tier 3)
+    immutability: Machine-certified only
+  processTruth:
+    canonicalSources:
+      - src/components/fabricator/unifiedWorkflow/UnifiedStudioWizard.tsx
+    preservedEngines:
+      - src/future/wizard-engine/
+      - src/future/process-labs/
+    authority: Advisory (Tier 2)
+    immutability: Human-verified workflows only
+  certificationTruth:
+    canonicalSources:
+      - src/components/fabricator/safety/SafetyVerificationModal.tsx
+    authority: Absolute (Tier 3 override)
+    immutability: External authority supersedes internal
+executionClasses:
+  tier3_deterministic:
+    authority: Absolute
+    aiAllowed: false
+    components:
+      - src/components/fabricator/EngineeringBay.tsx
+      - src/components/fabricator/drafting/
+      - src/lib/fabricator/AlgorithmSelector.ts
+      - src/components/fabricator/bom/
+      - src/services/ticketing/TicketLifecycleEngine.ts
+      - src/services/ticketing/AssignmentExecutor.ts
+  tier2_collaborative:
+    authority: Advisory only
+    aiAllowed: true
+    wiringPath: AdvisoryGate.tier2()
+    components:
+      - src/future/advisory-panels/AISuggestionPanel.tsx
+      - src/future/advisory-panels/DesignModeComparison.tsx
+      - src/future/advisory-panels/OptimizationJobMonitor.tsx
+      - src/future/advisory-panels/JobRiskIndicator.tsx
+      - src/future/advisory-panels/ConstitutionalHealthDashboard.tsx
+      - src/future/advisory-panels/DesignModeSelector.tsx
+      - src/services/ticketing/advisory/RoutingAdvisor.ts
+      - src/components/ticketing/gates/AdvisoryGate.tsx
+  tier1_authoritative:
+    authority: YDT mandatory
+    aiAllowed: true
+    wiringPath: IntelligenceGate.strategic()
+    components:
+      - src/lib/services/YDTPricingOracle.ts
+      - src/lib/services/YDTBusinessLayer.ts
+      - src/lib/services/YDTOptimizationWrapper.ts
+  presentation:
+    authority: None
+    aiAllowed: false
+    stateMutation: false
+    components:
+      - src/future/ui-experiments/ZoomPresets.tsx
+      - src/future/ui-experiments/ContextMenu.tsx
+      - src/future/ui-experiments/ThemeToggle.tsx
+      - src/future/ui-experiments/CostCalculator.tsx
+  dormant:
+    authority: Suspended
+    execution: Blocked
+    components:
+      - src/future/material-labs/
+      - src/future/special-designers/
+      - src/future/template-library/
+      - src/future/wizard-engine/
+      - src/future/process-labs/
+      - src/future/machine-labs/
+validationRules:
+  noTruthDuplication:
+    description: No duplicate canonical sources (AICS-001 §6.2)
+    enforcement: Build-time error
+  noAuthorityAmbiguity:
+    description: Every component must have explicit truth domain
+    enforcement: WiringValidator rejection
+  noTierLeakage:
+    description: No AI in Tier 3, no execution in Tier 2
+    enforcement: IntelligenceGate rejection
+  noFutureExecution:
+    description: /future/ components cannot be imported directly
+    enforcement: Import path validation
+metrics:
+  constitutionalHealth:
+    target: 100
+    current: 100
+  authorityClarity:
+    target: 100%
+    current: 100%
+  advisoryContainment:
+    target: 100%
+    current: 100%
+serviceTruth:
+  tier_3: []
+  tier_2:
+    - component: PredictiveMaintenanceAdvisor
+      location: src/services/ticketing/advisory/PredictiveMaintenanceAdvisor.ts
+      truth_domain: serviceTruth
+      execution_class: advisory
+    - component: ResponseDraftGenerator
+      location: src/services/ticketing/advisory/ResponseDraftGenerator.ts
+      truth_domain: serviceTruth
+      execution_class: advisory
+    - component: PartsRecommendationAdvisor
+      location: src/services/ticketing/advisory/PartsRecommendationAdvisor.ts
+      truth_domain: serviceTruth
+      execution_class: advisory
+  tier_1:
+    - component: AdvisoryDashboard
+      location: src/components/ticketing/advisory/dashboard/AdvisoryDashboard.tsx
+      truth_domain: serviceTruth
+      execution_class: presentation
+  tier_2_support:
+    - component: AdvisoryHardener
+      location: src/lib/ticketing/advisory/AdvisoryHardener.ts
+      truth_domain: serviceTruth
+      execution_class: advisory_infrastructure
+    - component: CircuitBreaker
+      location: src/lib/ticketing/advisory/CircuitBreaker.ts
+      truth_domain: serviceTruth
+      execution_class: advisory_infrastructure
+    - component: AdvisoryMetrics
+      location: src/lib/ticketing/advisory/AdvisoryMetrics.ts
+      truth_domain: serviceTruth
+      execution_class: advisory_infrastructure
+  presentation: []
+  yilmaz_service:
+    tier_3:
+      - component: YilmazEgyptRulesEngine
+        location: src/services/ticketing/yilmaz/rules/YilmazEgyptRules.ts
+        truth_domain: yilmazServiceTruth
+        execution_class: deterministic
+        description: Deterministic rules based on 24 years of YILMAZ Egypt experience
+        authority: Absolute
+        aiAllowed: false
+        region: Egypt
+    tier_2:
+      - component: YilmazExpertAdvisor
+        location: src/services/ticketing/yilmaz/advisory/YilmazExpertAdvisor.ts
+        truth_domain: yilmazServiceTruth
+        execution_class: advisory
+        requires_human_validation: true
+        description: Expert advisory system for YILMAZ machines (Egypt)
+        authority: Advisory only
+        region: Egypt
+    tier_1:
+      - component: TechChecklist
+        location: src/components/ticketing/yilmaz/mobile/TechChecklist.tsx
+        truth_domain: yilmazServiceTruth
+        execution_class: presentation
+        description: Mobile-optimized technician checklist (Human-as-a-Sensor)
+        authority: None
+        region: Egypt
+        bilingual: true

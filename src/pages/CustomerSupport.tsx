@@ -122,7 +122,7 @@ const CustomerSupport: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Customer Support</h1>
+          <h1 className="typography-h1">Customer Support</h1>
           <p className="text-muted-foreground">
             Manage your support tickets and get help with your equipment
           </p>
@@ -152,7 +152,7 @@ const CustomerSupport: React.FC = () => {
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{stats.open}</div>
+              <div className="text-2xl font-bold text-amber-600">{stats.open}</div>
             </CardContent>
           </Card>
           
@@ -323,7 +323,7 @@ const CustomerSupport: React.FC = () => {
           ) : (
             <div className="text-center py-8">
               <Ticket className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">No tickets found</h3>
+              <h3 className="typography-h3 text-lg font-medium mb-2">No tickets found</h3>
               <p className="text-muted-foreground mb-4">
                 You haven&apos;t created any support tickets yet.
               </p>

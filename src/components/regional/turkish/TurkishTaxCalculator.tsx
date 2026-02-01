@@ -80,7 +80,7 @@ export const TurkishTaxCalculator: React.FC<TurkishTaxCalculatorProps> = ({
       <CardContent className="space-y-4">
         {/* Amount Input */}
         <div className="space-y-2">
-          <Label htmlFor="amount" className="text-gray-300">
+          <Label htmlFor="amount" className="typography-label text-gray-300">
             {t('turkish.taxCalculator.amount', 'Tutar')}
           </Label>
           <Input
@@ -95,7 +95,7 @@ export const TurkishTaxCalculator: React.FC<TurkishTaxCalculatorProps> = ({
 
         {/* KDV Rate Selection */}
         <div className="space-y-2">
-          <Label className="text-gray-300">
+          <Label className="typography-label text-gray-300">
             {t('turkish.taxCalculator.kdvRate', 'KDV Oranı')}
           </Label>
           <Select value={kdvRate} onValueChange={(value: KdvRate) => setKdvRate(value)}>
@@ -121,7 +121,7 @@ export const TurkishTaxCalculator: React.FC<TurkishTaxCalculatorProps> = ({
 
         {/* Category Selection */}
         <div className="space-y-2">
-          <Label className="text-gray-300">
+          <Label className="typography-label text-gray-300">
             {t('turkish.taxCalculator.category', 'Kategori')} ({t('turkish.taxCalculator.optional', 'İsteğe bağlı')})
           </Label>
           <Select value={category} onValueChange={setCategory}>
@@ -146,16 +146,16 @@ export const TurkishTaxCalculator: React.FC<TurkishTaxCalculatorProps> = ({
             id="kdvInclusive"
             checked={isKdvInclusive}
             onChange={(e) => setIsKdvInclusive(e.target.checked)}
-            className="rounded border-gray-600 bg-gray-700 text-orange-500"
+            className="rounded border-gray-600 bg-gray-700 text-amber-500"
           />
-          <Label htmlFor="kdvInclusive" className="text-gray-300">
+          <Label htmlFor="kdvInclusive" className="typography-label text-gray-300">
             {t('turkish.taxCalculator.kdvInclusive', 'KDV dahil fiyat')}
           </Label>
         </div>
 
         {/* Tax Number Validation */}
         <div className="space-y-2">
-          <Label htmlFor="taxNumber" className="text-gray-300">
+          <Label htmlFor="taxNumber" className="typography-label text-gray-300">
             {t('turkish.taxCalculator.taxNumber', 'Vergi Numarası')} ({t('turkish.taxCalculator.optional', 'İsteğe bağlı')})
           </Label>
           <div className="flex space-x-2">
@@ -180,7 +180,7 @@ export const TurkishTaxCalculator: React.FC<TurkishTaxCalculatorProps> = ({
           <Button
             onClick={handleCalculate}
             disabled={!amount || parseFloat(amount) <= 0}
-            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+            className="btn-primary"
           >
             {t('turkish.taxCalculator.calculate', 'Hesapla')}
           </Button>
@@ -196,7 +196,7 @@ export const TurkishTaxCalculator: React.FC<TurkishTaxCalculatorProps> = ({
         {/* Calculation Results */}
         {calculation && (
           <div className="mt-6 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
-            <h4 className="text-white font-semibold mb-3">
+            <h4 className="typography-h4 text-white mb-3">
               {t('turkish.taxCalculator.results', 'Hesaplama Sonuçları')}
             </h4>
             
@@ -217,7 +217,7 @@ export const TurkishTaxCalculator: React.FC<TurkishTaxCalculatorProps> = ({
               
               <div className="flex justify-between text-white font-bold">
                 <span>{t('turkish.taxCalculator.total', 'Toplam')}:</span>
-                <span className="text-orange-400">
+                <span className="text-amber-400">
                   {formatTurkishCurrency(calculation.totalWithKdv, { showSymbol: true })}
                 </span>
               </div>

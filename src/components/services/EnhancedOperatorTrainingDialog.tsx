@@ -32,11 +32,11 @@ export const EnhancedOperatorTrainingDialog = ({ open, onOpenChange }) => {
             <LazyMotionDiv
               key={module.id}
               onClick={() => toggleModule(module.id)}
-              className={`p-4 border rounded-lg cursor-pointer ${selectedModules.includes(module.id) ? 'border-orange-500' : 'border-almona-light/20'}`}
+              className={`p-4 border rounded-lg cursor-pointer ${selectedModules.includes(module.id) ? 'border-amber-500' : 'border-almona-light/20'}`}
               whileHover={{ scale: 1.05 }}
             >
               <div className="flex justify-between items-center">
-                <h3 className="font-bold">{module.title}</h3>
+                <h3 className="typography-h3">{module.title}</h3>
                 <Badge>{module.level}</Badge>
               </div>
               <p className="text-sm text-gray-400">Duration: {module.duration}</p>
@@ -45,7 +45,7 @@ export const EnhancedOperatorTrainingDialog = ({ open, onOpenChange }) => {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button className="bg-orange-500">Enroll ({selectedModules.length})</Button>
+          <Button className="btn-primary">Enroll ({selectedModules.length})</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

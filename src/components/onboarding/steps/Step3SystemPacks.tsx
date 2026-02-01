@@ -30,7 +30,7 @@ export const Step3SystemPacks: React.FC<Step3SystemPacksProps> = ({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-4">System Pack Selection</h3>
+        <h3 className="typography-h3 text-lg mb-4">System Pack Selection</h3>
         <p className="text-gray-400 mb-6">Choose your primary window system pack</p>
       </div>
 

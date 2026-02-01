@@ -36,7 +36,7 @@ export const Step4SampleProjects: React.FC<Step4SampleProjectsProps> = ({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-4">Sample Projects</h3>
+        <h3 className="typography-h3 text-lg mb-4">Sample Projects</h3>
         <p className="text-gray-400 mb-6">Import a sample project to explore the system (optional)</p>
       </div>
 

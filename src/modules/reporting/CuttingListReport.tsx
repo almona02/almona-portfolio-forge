@@ -488,7 +488,7 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
                   {/* Frame Cuts Section */}
                   {frameCuts.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-semibold mb-3 text-blue-400">Frame Cuts ({frameCuts.length})</h4>
+                      <h4 className="typography-h4 text-sm mb-3 text-blue-400">Frame Cuts ({frameCuts.length})</h4>
                       <div className="overflow-x-auto">
                         <table className={`w-full text-sm ${isRTL ? 'rtl' : ''}`} dir={dir}>
                           <thead>
@@ -532,7 +532,7 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
                   {/* Sash Cuts Section */}
                   {sashCuts.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-semibold mb-3 text-green-400">Sash Cuts ({sashCuts.length})</h4>
+                      <h4 className="typography-h4 text-sm mb-3 text-green-400">Sash Cuts ({sashCuts.length})</h4>
                       <div className="overflow-x-auto">
                         <table className={`w-full text-sm ${isRTL ? 'rtl' : ''}`} dir={dir}>
                           <thead>
@@ -576,7 +576,7 @@ export const CuttingListReport: React.FC<CuttingListReportProps> = ({
                   {/* Other Cuts Section */}
                   {otherCuts.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-semibold mb-3 text-gray-400">Other Cuts ({otherCuts.length})</h4>
+                      <h4 className="typography-h4 text-sm mb-3 text-gray-400">Other Cuts ({otherCuts.length})</h4>
                       <div className="overflow-x-auto">
                         <table className={`w-full text-sm ${isRTL ? 'rtl' : ''}`} dir={dir}>
                           <thead>

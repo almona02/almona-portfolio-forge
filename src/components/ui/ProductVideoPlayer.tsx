@@ -244,7 +244,7 @@ export const VideoTrigger: React.FC<VideoTriggerProps> = ({ onClick, isPlaying =
         flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold
         transition-all duration-200 shadow-lg
         ${isPlaying 
-          ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white' 
+          ? 'bg-gradient-to-r from-amber-500 to-red-500 text-white' 
           : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white'
         }
       `}

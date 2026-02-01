@@ -87,7 +87,7 @@ export const ServiceCoverageMap: React.FC = () => {
 
       TECHS.forEach(t => {
         const el = document.createElement('div');
-        el.className = 'rounded-full border border-white/20 bg-orange-500/90 w-3 h-3 shadow';
+        el.className = 'rounded-full border border-white/20 bg-amber-500/90 w-3 h-3 shadow';
         new maplibregl.Marker({ element: el })
           .setLngLat([t.coords[1], t.coords[0]])
           .setPopup(new maplibregl.Popup({ offset: 12 }).setHTML(`<div style="font-size:12px"><strong>${t.name}</strong><br/>${t.city}<br/>ETA: ${Math.round(t.responseMins)} min</div>`))
@@ -100,7 +100,7 @@ export const ServiceCoverageMap: React.FC = () => {
   }, [isMapLoaded]);
 
   return (
-    <Card className="bg-gradient-to-br from-gray-900 to-black border border-orange-500/20">
+    <Card className="bg-gradient-to-br from-gray-900 to-black border border-amber-500/20">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-white">Regional Service Coverage</CardTitle>
@@ -114,7 +114,7 @@ export const ServiceCoverageMap: React.FC = () => {
               {!isMapLoaded ? (
                 <div className="h-full w-full flex items-center justify-center bg-gray-900">
                   <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-2"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-2"></div>
                     <p className="text-xs text-gray-400">Loading map...</p>
                   </div>
                 </div>
@@ -134,7 +134,7 @@ export const ServiceCoverageMap: React.FC = () => {
                     <div className="text-sm text-gray-400">{t.city}</div>
                   </div>
                   <Badge className={
-                    t.responseMins <= 120 ? 'bg-green-600' : t.responseMins <= 180 ? 'bg-yellow-600' : 'bg-orange-600'
+                    t.responseMins <= 120 ? 'bg-green-600' : t.responseMins <= 180 ? 'bg-yellow-600' : 'bg-amber-600'
                   }>
                     {Math.round(t.responseMins)} min ETA
                   </Badge>

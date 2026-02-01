@@ -20,7 +20,7 @@ export const ReviewList: React.FC<ReviewListProps> = ({ reviews }) => {
 
   return (
     <div className="space-y-6 p-4 border rounded-lg bg-almona-darker border-almona-light">
-      <h3 className="text-xl font-semibold text-gradient-orange">{t('reviews.customer_reviews')} ({reviews.length})</h3>
+      <h3 className="typography-h3 text-gradient-orange">{t('reviews.customer_reviews')} ({reviews.length})</h3>
       {reviews.length === 0 ? (
         <p className="text-gray-400">{t('reviews.no_reviews')}</p>
       ) : (

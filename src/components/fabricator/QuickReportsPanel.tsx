@@ -1,5 +1,7 @@
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { track } from '@/lib/analytics';
 import { ExportService } from '@/lib/exports';
+import { trackError } from '@/lib/performance-monitoring';
 import { PricingEngine } from '@/lib/pricing/PricingEngine';
 import { AccessoriesReport } from '@/modules/reporting/AccessoriesReport';
 import { GlassReport } from '@/modules/reporting/GlassReport';
@@ -8,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/shared/ui/ui/dialog';
 import { OptimizationResult, WindowUnit } from '@/types/fabricator';
 import { FileCode, FileSpreadsheet, FileText, Loader2, Package, Scissors, Zap } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 interface QuickReportsPanelProps {
@@ -16,16 +18,19 @@ interface QuickReportsPanelProps {
   optimization: OptimizationResult | null;
 }
 
-export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
+const QuickReportsPanelComponent: React.FC<QuickReportsPanelProps> = ({
   project,
   optimization,
 }) => {
   const [generatingReport, setGeneratingReport] = useState<string | null>(null);
   const [showAccessoriesReport, setShowAccessoriesReport] = useState(false);
   const [showGlassReport, setShowGlassReport] = useState(false);
-  const pricingEngine = new PricingEngine();
+  
+  // ✅ PERFORMANCE: Memoize pricing engine instance
+  const pricingEngine = useMemo(() => new PricingEngine(), []);
 
-  const handleGenerateCuttingList = async () => {
+  // ✅ PERFORMANCE: Memoize handlers to prevent unnecessary re-renders
+  const handleGenerateCuttingList = useCallback(async () => {
     if (!project || !optimization || generatingReport) return;
 
     setGeneratingReport('cutting');
@@ -58,14 +63,15 @@ export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
         orderNumber: project.orderNumber,
       });
     } catch (error) {
-      console.error('Failed to generate cutting list:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('QuickReportsPanel', 'generate_cutting_list', err.message);
       toast.error('Failed to generate cutting list');
     } finally {
       setGeneratingReport(null);
     }
-  };
+  }, [project, optimization, generatingReport]);
 
-  const handleGenerateGlassReport = async () => {
+  const handleGenerateGlassReport = useCallback(async () => {
     if (!project || generatingReport) return;
 
     setGeneratingReport('glass');
@@ -78,14 +84,15 @@ export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
         orderNumber: project.orderNumber,
       });
     } catch (error) {
-      console.error('Failed to open glass report:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('QuickReportsPanel', 'open_glass_report', err.message);
       toast.error('Failed to open glass report');
     } finally {
       setGeneratingReport(null);
     }
-  };
+  }, [project, generatingReport]);
 
-  const handleGenerateAccessoriesList = async () => {
+  const handleGenerateAccessoriesList = useCallback(async () => {
     if (!project || generatingReport) return;
 
     setGeneratingReport('accessories');
@@ -98,14 +105,15 @@ export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
         orderNumber: project.orderNumber,
       });
     } catch (error) {
-      console.error('Failed to open accessories list:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('QuickReportsPanel', 'open_accessories_list', err.message);
       toast.error('Failed to open accessories list');
     } finally {
       setGeneratingReport(null);
     }
-  };
+  }, [project, generatingReport]);
 
-  const handleGenerateMachineCsv = async () => {
+  const handleGenerateMachineCsv = useCallback(async () => {
     if (!project || !optimization || generatingReport) return;
 
     setGeneratingReport('machine_csv');
@@ -129,14 +137,15 @@ export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
         throw new Error(result.error || 'Machine CSV export failed');
       }
     } catch (error) {
-      console.error('Failed to generate machine CSV:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('QuickReportsPanel', 'generate_machine_csv', err.message);
       toast.error('Failed to generate machine CSV');
     } finally {
       setGeneratingReport(null);
     }
-  };
+  }, [project, optimization, generatingReport]);
 
-  const handleGenerateMachineDxf = async () => {
+  const handleGenerateMachineDxf = useCallback(async () => {
     if (!project || !optimization || generatingReport) return;
 
     setGeneratingReport('machine_dxf');
@@ -159,18 +168,19 @@ export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
         throw new Error(result.error || 'Machine DXF export failed');
       }
     } catch (error) {
-      console.error('Failed to generate machine DXF:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('QuickReportsPanel', 'generate_machine_dxf', err.message);
       toast.error('Failed to generate machine DXF');
     } finally {
       setGeneratingReport(null);
     }
-  };
+  }, [project, optimization, generatingReport]);
 
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
-          <FileText className="h-4 w-4 text-orange-400" />
+          <FileText className="h-4 w-4 text-amber-400" />
           Quick Reports
         </CardTitle>
       </CardHeader>
@@ -331,6 +341,20 @@ export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = ({
     </Card>
   );
 };
+
+QuickReportsPanelComponent.displayName = 'QuickReportsPanel';
+
+// ✅ HARDENING: Memoize component for performance
+const QuickReportsPanelMemo = memo(QuickReportsPanelComponent);
+
+// ✅ HARDENING: Export with error boundary for production
+export const QuickReportsPanel: React.FC<QuickReportsPanelProps> = (props) => (
+  <ErrorBoundary level="component">
+    <QuickReportsPanelMemo {...props} />
+  </ErrorBoundary>
+);
+
+QuickReportsPanel.displayName = 'QuickReportsPanel';
 
 export default QuickReportsPanel;
 

@@ -51,10 +51,10 @@ export const MaterialEfficiencyDashboard: React.FC<MaterialEfficiencyDashboardPr
   };
 
   return (
-    <Card className="bg-gray-900 border-gray-700">
+    <Card className="bg-gray-900 border-gray-700 card-dark">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5 text-orange-400" />
+          <AlertCircle className="h-5 w-5 text-amber-400" />
           Material Efficiency Dashboard
         </CardTitle>
       </CardHeader>
@@ -75,7 +75,7 @@ export const MaterialEfficiencyDashboard: React.FC<MaterialEfficiencyDashboardPr
                 <Card key={forecast.profileId} className="bg-gray-800 border-gray-700">
                   <CardContent className="pt-4">
                     <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-sm">{forecast.profileName}</h4>
+                      <h4 className="typography-h4 font-medium text-sm">{forecast.profileName}</h4>
                       {getTrendIcon(forecast.trend)}
                     </div>
                     <div className="grid grid-cols-2 gap-4 text-sm">

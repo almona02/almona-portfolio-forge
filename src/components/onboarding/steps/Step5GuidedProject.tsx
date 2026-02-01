@@ -51,7 +51,7 @@ export const Step5GuidedProject: React.FC<Step5GuidedProjectProps> = ({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-4">Create Your First Project</h3>
+        <h3 className="typography-h3 text-lg mb-4">Create Your First Project</h3>
         <p className="text-gray-400 mb-6">Follow these steps to create your first window project</p>
       </div>
 

@@ -5,50 +5,96 @@
  * and alert management for production operations.
  * 
  * Week 6 Task 6.1: Production Dashboard
+ * 
+ * MODES:
+ * - 'supervisor': Full metrics dashboard (desktop, complex UI)
+ * - 'kiosk': Touch-first operator interface (tablet-mounted, barcode-driven)
  */
 
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { KioskModeDashboard } from '@/components/fabricator/production/KioskModeDashboard';
+import { usePersona } from '@/hooks/usePersona';
+import {
+  Alert as ProductionAlert,
+  ProductionMetrics,
+  ProductionMonitor,
+} from '@/lib/monitoring/ProductionMonitor';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Progress } from '@/shared/ui/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import {
   Activity,
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
-  CheckCircle,
-  Target,
-  MemoryStick,
-  Shield,
-  Users,
   BarChart3,
+  CheckCircle,
+  MemoryStick,
+  Monitor,
+  Shield,
+  Tablet,
+  Target,
+  TrendingDown,
+  TrendingUp,
+  Users
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
-  ProductionMonitor,
-  ProductionMetrics,
-  Alert as ProductionAlert,
-} from '@/lib/monitoring/ProductionMonitor';
-import {
+  DECIMAL_PLACES,
+  GRID_LAYOUT,
   MONITORING_CONSTANTS,
   TIME_CONVERSION,
-  DECIMAL_PLACES,
   UI_DIMENSIONS,
-  GRID_LAYOUT,
 } from './productionDashboardConstants';
+
+import { useTranslation } from 'react-i18next';
 
 export function ProductionDashboard() {
   const { t: _t, i18n } = useTranslation();
   const locale = i18n.language.startsWith('ar') ? 'ar' : 'en';
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { persona } = usePersona(); // Gold Tier: Persona detection
+
+  // Mode detection: 'kiosk' or 'supervisor' (default)
+  // Priority: 1) persona === 'operator' → kiosk  2) URL param  3) default supervisor
+  const urlMode = searchParams.get('mode') as 'kiosk' | 'supervisor' | null;
+  const [mode, setMode] = useState<'kiosk' | 'supervisor'>(
+    persona === 'operator' ? 'kiosk' : (urlMode || 'supervisor')
+  );
+
+  // Update mode when persona changes
+  useEffect(() => {
+    if (persona === 'operator' && mode !== 'kiosk') {
+      setMode('kiosk');
+      setSearchParams({ mode: 'kiosk' });
+    }
+  }, [persona, mode, setSearchParams]);
+
   const [metrics, setMetrics] = useState<ProductionMetrics | null>(null);
   const [alerts, setAlerts] = useState<ProductionAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const monitor = ProductionMonitor.getInstance();
 
+  // Update mode when URL changes
   useEffect(() => {
+    const urlMode = searchParams.get('mode');
+    if (urlMode === 'kiosk' || urlMode === 'supervisor') {
+      setMode(urlMode);
+    }
+  }, [searchParams]);
+
+  // Toggle mode
+  const toggleMode = () => {
+    const newMode = mode === 'kiosk' ? 'supervisor' : 'kiosk';
+    setMode(newMode);
+    setSearchParams({ mode: newMode });
+  };
+
+  // Supervisor monitoring effect (moved up to avoid conditional hook)
+  useEffect(() => {
+    if (mode !== 'supervisor') return;
+
     // Start monitoring
     monitor.startMonitoring(MONITORING_CONSTANTS.MONITORING_INTERVAL_MS);
 
@@ -82,7 +128,33 @@ export function ProductionDashboard() {
       monitor.removeAlertListener(alertListener);
       monitor.stopMonitoring();
     };
-  }, [monitor]);
+  }, [monitor, mode]);
+
+  // If kiosk mode, render KioskModeDashboard
+  if (mode === 'kiosk') {
+    return (
+      <div className="relative">
+        {/* Mode toggle button (small, top-right corner) */}
+        <Button
+          onClick={toggleMode}
+          variant="ghost"
+          size="sm"
+          className="absolute top-4 right-4 z-50"
+          title={locale === 'ar' ? 'تبديل للوضع العادي' : 'Switch to Supervisor Mode'}
+        >
+          <Monitor className="h-4 w-4 mr-2" />
+          {locale === 'ar' ? 'عادي' : 'Supervisor'}
+        </Button>
+
+        <KioskModeDashboard
+          machineId="2"
+          operatorName={locale === 'ar' ? 'محمود' : 'Mahmoud'}
+        />
+      </div>
+    );
+  }
+
+
 
   const resolveAlert = (alertId: string) => {
     monitor.resolveAlert(alertId);
@@ -110,7 +182,7 @@ export function ProductionDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="typography-h1">
             {locale === 'ar' ? 'لوحة تحكم الإنتاج' : 'Production Dashboard'}
           </h1>
           <p className="text-muted-foreground mt-1">
@@ -119,13 +191,26 @@ export function ProductionDashboard() {
               : 'Real-time performance and quality monitoring'}
           </p>
         </div>
-        <Badge variant={criticalAlerts.length > 0 ? 'destructive' : 'default'}>
-          {criticalAlerts.length > 0
-            ? `${criticalAlerts.length} ${locale === 'ar' ? 'تنبيهات حرجة' : 'Critical Alerts'}`
-            : locale === 'ar'
-            ? 'جميع الأنظمة تعمل بشكل طبيعي'
-            : 'All Systems Operational'}
-        </Badge>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setMode('kiosk');
+              setSearchParams({ mode: 'kiosk' });
+            }}
+          >
+            <Tablet className="mr-2 h-4 w-4" />
+            {locale === 'ar' ? 'وضع الشاشة' : 'Kiosk Mode'}
+          </Button>
+          <Badge variant={criticalAlerts.length > 0 ? 'destructive' : 'default'}>
+            {criticalAlerts.length > 0
+              ? `${criticalAlerts.length} ${locale === 'ar' ? 'تنبيهات حرجة' : 'Critical Alerts'}`
+              : locale === 'ar'
+                ? 'جميع الأنظمة تعمل بشكل طبيعي'
+                : 'All Systems Operational'}
+          </Badge>
+        </div>
       </div>
 
       {/* KPI Cards */}
@@ -444,8 +529,8 @@ export function ProductionDashboard() {
                             ? 'صحي'
                             : 'Healthy'
                           : locale === 'ar'
-                          ? 'تحذير'
-                          : 'Warning'}
+                            ? 'تحذير'
+                            : 'Warning'}
                       </span>
                     </div>
                     <Progress
@@ -462,8 +547,8 @@ export function ProductionDashboard() {
                             ? 'صحي'
                             : 'Healthy'
                           : locale === 'ar'
-                          ? 'تحذير'
-                          : 'Warning'}
+                            ? 'تحذير'
+                            : 'Warning'}
                       </span>
                     </div>
                     <Progress value={metrics.accuracy.overallAccuracy} className={UI_DIMENSIONS.PROGRESS_BAR_HEIGHT} />
@@ -476,8 +561,8 @@ export function ProductionDashboard() {
                           metrics.memory.isCriticalMemory
                             ? 'text-red-600'
                             : metrics.memory.isLowMemory
-                            ? 'text-yellow-600'
-                            : 'text-green-600'
+                              ? 'text-yellow-600'
+                              : 'text-green-600'
                         }
                       >
                         {metrics.memory.isCriticalMemory
@@ -485,12 +570,12 @@ export function ProductionDashboard() {
                             ? 'حرج'
                             : 'Critical'
                           : metrics.memory.isLowMemory
-                          ? locale === 'ar'
-                            ? 'منخفض'
-                            : 'Low'
-                          : locale === 'ar'
-                          ? 'صحي'
-                          : 'Healthy'}
+                            ? locale === 'ar'
+                              ? 'منخفض'
+                              : 'Low'
+                            : locale === 'ar'
+                              ? 'صحي'
+                              : 'Healthy'}
                       </span>
                     </div>
                     {metrics.memory.currentStats && (

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Label } from '../ui/label';
 import { AlertTriangle, Check, HardHat, Loader2, Search, Wrench } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
@@ -155,7 +154,7 @@ export const SupportPortal = () => {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="machineSerial">Enter Machine Serial Number</Label>
+        <label htmlFor="machineSerial" className="typography-label">Enter Machine Serial Number</label>
         <div className="relative">
           <Input
             id="machineSerial"
@@ -167,7 +166,7 @@ export const SupportPortal = () => {
             <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin" />
           )}
           {serialValid === true && (
-            <Check className="absolute right-3 top-3 h-4 w-4 text-green-500" />
+            <Check className="absolute right-3 top-3 h-4 w-4  status-valid" />
           )}
           {serialValid === false && (
             <AlertTriangle className="absolute right-3 top-3 h-4 w-4 text-red-500" />
@@ -179,7 +178,7 @@ export const SupportPortal = () => {
         <div className="bg-almona-darker/50 p-4 rounded-lg border border-almona-light/10">
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-lg font-bold">{machineInfo.model}</h3>
+              <h3 className="typography-h3 text-lg">{machineInfo.model}</h3>
               <div className="text-sm space-y-1 mt-2">
                 <div>Serial: {machineInfo.serial}</div>
                 <div>Warranty until: {machineInfo.warranty}</div>
@@ -206,7 +205,7 @@ export const SupportPortal = () => {
         <TabsContent value="troubleshooting" className="mt-6">
           {machineInfo ? (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Troubleshooting Guide for {machineInfo.model}</h3>
+              <h3 className="typography-h3 text-lg">Troubleshooting Guide for {machineInfo.model}</h3>
               
               <div className="space-y-2">
                 {troubleshootingSteps.map(step => (
@@ -291,7 +290,7 @@ export const SupportPortal = () => {
 
               {cart.length > 0 && (
                 <div className="border-t border-almona-light/10 pt-4">
-                  <h4 className="font-medium mb-3">Your Cart ({cart.length})</h4>
+                  <h4 className="typography-h4 font-medium mb-3">Your Cart ({cart.length})</h4>
                   <div className="space-y-3">
                     {cart.map(item => (
                       <div key={item.id} className="flex justify-between items-center">
@@ -319,7 +318,7 @@ export const SupportPortal = () => {
                     </div>
                   </div>
                   <div className="mt-4 space-y-2">
-                    <label className="inline-flex items-center space-x-2">
+                    <label className="typography-label inline-flex items-center space-x-2">
                       <input
                         type="radio"
                         name="paymentMethod"
@@ -330,7 +329,7 @@ export const SupportPortal = () => {
                       />
                       <span>Cash on Delivery</span>
                     </label>
-                    <label className="inline-flex items-center space-x-2">
+                    <label className="typography-label inline-flex items-center space-x-2">
                       <input
                         type="radio"
                         name="paymentMethod"

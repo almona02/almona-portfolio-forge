@@ -69,48 +69,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Track ongoing profile fetches to prevent duplicates
   const ongoingFetches = useRef<Set<string>>(new Set());
-  
+
   // Circuit breaker for failing profile fetches (reserved for future use)
   // const circuitBreaker = useRef<{
   //   failures: number;
   //   lastFailure: number;
   //   isOpen: boolean;
   // }>({ failures: 0, lastFailure: 0, isOpen: false });
-  
+
+  // Store fetchUserProfile in ref to avoid dependency issues
+  const fetchUserProfileRef = useRef<((userId: string) => Promise<void>) | null>(null);
+
   // Fetch user profile data with improved caching and deduplication
   const fetchUserProfile = useCallback(async (userId: string) => {
     // Prevent duplicate calls for the same user
     const cacheKey = `profile-${userId}`;
     const lastFetch = sessionStorage.getItem(cacheKey);
     const now = Date.now();
-    
+
     // If we fetched this profile less than 60 seconds ago, skip
     if (lastFetch && (now - parseInt(lastFetch)) < 60000) {
       return;
     }
-    
+
     // If there's an RLS error for this user, skip fetching to prevent retries
     if (sessionStorage.getItem(`${cacheKey}-rls-error`)) {
       return;
     }
-    
+
     // If there's already an ongoing fetch for this user, skip
     if (ongoingFetches.current.has(userId)) {
       return;
     }
-    
+
     // Mark this fetch as ongoing
     ongoingFetches.current.add(userId);
-    
+
     try {
       // Add timeout to prevent hanging requests
       const profilePromise = getProfileById(userId);
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('Profile fetch timeout')), 10000)
       );
-      
+
       const profile = await Promise.race([profilePromise, timeoutPromise]);
-      
+
       if (profile) {
         setUser(profile);
         if (!stableEmailRef.current && (profile as User).email) {
@@ -134,13 +137,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ongoingFetches.current.delete(userId);
         return;
       }
-      
+
       // Only log error once per session to avoid console spam
       if (!sessionStorage.getItem('profile-fetch-error-logged')) {
         console.error('Error fetching user profile:', error);
         sessionStorage.setItem('profile-fetch-error-logged', 'true');
       }
-      
+
       // Try to use cached profile data if available
       const cachedData = sessionStorage.getItem(`${cacheKey}-data`);
       if (cachedData) {
@@ -152,7 +155,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Ignore parse errors
         }
       }
-      
+
       // Build immediate placeholder instead of null to avoid portal flicker
       if (supabaseUser) {
         setUser({
@@ -184,20 +187,74 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [supabaseUser]);
 
+  // Update ref when fetchUserProfile changes
+  fetchUserProfileRef.current = fetchUserProfile;
+
   useEffect(() => {
     let isMounted = true;
-    
+
     // Listen for auth changes with debouncing to prevent excessive updates
     let authChangeTimeout: NodeJS.Timeout;
-    
+
     // Only set up auth listener if Supabase is properly configured
     let subscription: any = null;
-    
+
     // Capture ref value at effect start for cleanup (fixes ESLint warning)
     const ongoingFetchesRef = ongoingFetches;
 
     const getInitialSession = async () => {
       try {
+        if (typeof window !== 'undefined') {
+            console.log('[AuthDebug] Env Check:', { 
+                isDev: import.meta.env.DEV, 
+                mode: import.meta.env.MODE,
+                lsToken: window.localStorage.getItem('almona_dev_auth') 
+            });
+        }
+
+        // [DEV BYPASS] Check for persisted dev session
+        if (import.meta.env.DEV && window.localStorage.getItem('almona_dev_auth') === 'true') {
+          console.log('[Auth] Restoring persisted DEV session');
+          const mockUser = {
+            id: 'dev-bypass-user-id',
+            email: 'admin@local.test',
+            username: 'dev_admin',
+            full_name: 'Dev Admin',
+            role: 'admin',
+            is_verified: true,
+            preferences: {
+              language: 'en',
+              currency: 'SAR',
+              notifications: { email: true, sms: false, push: false },
+              theme: 'dark'
+            },
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            // Required nulls
+            avatar_url: null,
+            company_name: 'Almona Dev',
+            phone: null,
+            sector: 'ALUMINIUM',
+            workshop_location: null,
+            governorate: null,
+            address: null,
+            tax_number: null,
+            commercial_register: null
+          };
+          // Set states
+          setSupabaseUser({
+            id: 'dev-bypass-user-id',
+            email: 'admin@local.test',
+            user_metadata: { full_name: 'Dev Admin' },
+            app_metadata: { provider: 'email' },
+            aud: 'authenticated',
+            created_at: new Date().toISOString(),
+          } as any);
+          setUser(mockUser as any);
+          setLoading(false);
+          return;
+        }
+
         // Check if Supabase is properly configured
         if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
           console.warn('Supabase not configured, skipping authentication');
@@ -211,21 +268,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         // Add timeout to prevent hanging on network issues
         const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('Session timeout')), 10000)
+        const timeoutPromise = new Promise<{ data: { session: null }, error: { message: 'Session timeout' } }>((resolve) =>
+          setTimeout(() => resolve({ data: { session: null }, error: { message: 'Session timeout' } }), 5000)
         );
-        
+
         const result = await Promise.race([
           sessionPromise,
           timeoutPromise
         ]);
-        
+
         if (!isMounted) return;
-        
+
         const { data: { session }, error } = result;
-        
+
         if (error) {
-          console.error('Error getting session:', error);
+          // Session timeout is expected behavior, don't log as error
+          if (error.message === 'Session timeout') {
+            console.warn('Session check timed out (expected in some network conditions)');
+          } else {
+            console.error('Error getting session:', error);
+          }
           // Handle auth errors including refresh token issues
           await handleAuthError(error);
           if (isMounted) setLoading(false);
@@ -239,13 +301,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             // Use requestIdleCallback if available, otherwise setTimeout
             if ('requestIdleCallback' in window) {
               requestIdleCallback(() => {
-                fetchUserProfile(session.user.id).catch(() => {
+                fetchUserProfileRef.current?.(session.user.id).catch(() => {
                   // Silently fail - profile will be fetched on next interaction
                 });
               }, { timeout: 2000 });
             } else {
               setTimeout(() => {
-                fetchUserProfile(session.user.id).catch(() => {
+                fetchUserProfileRef.current?.(session.user.id).catch(() => {
                   // Silently fail - profile will be fetched on next interaction
                 });
               }, 100);
@@ -274,14 +336,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (authChangeTimeout) {
           clearTimeout(authChangeTimeout);
         }
-        
+
         // Debounce auth state changes to prevent rapid updates
         authChangeTimeout = setTimeout(() => {
           // Only log significant auth events, not every state change
           if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
             console.log('[Auth]', event, session?.user?.id ? `user: ${session.user.id}` : 'no user');
           }
-          
+
           // Handle token refresh errors
           if (event === 'TOKEN_REFRESHED' && !session) {
             console.warn('[Auth] Token refresh failed, clearing session');
@@ -290,7 +352,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setLoading(false);
             return;
           }
-          
+
           // Handle sign out events
           if (event === 'SIGNED_OUT') {
             setSupabaseUser(null);
@@ -298,7 +360,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setLoading(false);
             return;
           }
-          
+
           if (session?.user) {
             // Use startTransition for non-urgent updates to improve INP
             startTransition(() => {
@@ -326,17 +388,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               });
               if (!stableEmailRef.current && session.user.email) stableEmailRef.current = session.user.email;
             });
-            
+
             // Defer profile fetch to avoid blocking UI interaction
             if ('requestIdleCallback' in window) {
               requestIdleCallback(() => {
-                fetchUserProfile(session.user.id).catch(() => {
+                fetchUserProfileRef.current?.(session.user.id).catch(() => {
                   // Silently fail - will retry on next interaction
                 });
               }, { timeout: 2000 });
             } else {
               setTimeout(() => {
-                fetchUserProfile(session.user.id).catch(() => {
+                fetchUserProfileRef.current?.(session.user.id).catch(() => {
                   // Silently fail - will retry on next interaction
                 });
               }, 100);
@@ -365,7 +427,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         subscription.unsubscribe();
       }
     };
-  }, [fetchUserProfile]);
+  }, []); // Empty deps: getInitialSession only runs on mount, fetchUserProfile accessed via ref
 
   // Absolute safety timeout: never let loading stay true indefinitely
   useEffect(() => {
@@ -387,38 +449,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Helper function to parse Supabase auth errors into polished, prestigious user messages
   const parseAuthError = (error: any): string => {
     if (!error) return 'We encountered an unexpected issue. Please try again, and if the problem persists, our support team is here to assist you.';
-    
+
     const errorMessage = error.message || '';
     const status = error.status || error.statusCode || 0;
-    
+
     // Handle specific error cases with refined messaging
-    if (errorMessage.includes('Invalid login credentials') || 
-        errorMessage.includes('invalid_credentials') ||
-        errorMessage.includes('Invalid email or password')) {
+    if (errorMessage.includes('Invalid login credentials') ||
+      errorMessage.includes('invalid_credentials') ||
+      errorMessage.includes('Invalid email or password')) {
       return 'The credentials you entered do not match our records. Please verify your email address and password, ensuring correct capitalization and spelling.';
     }
-    
-    if (errorMessage.includes('Email not confirmed') || 
-        errorMessage.includes('email_not_confirmed') ||
-        errorMessage.includes('Email address not confirmed')) {
+
+    if (errorMessage.includes('Email not confirmed') ||
+      errorMessage.includes('email_not_confirmed') ||
+      errorMessage.includes('Email address not confirmed')) {
       return 'Your account requires email verification to ensure security. Please check your inbox for our confirmation message. If you don\'t see it, please check your spam or junk folder. Should you need assistance, our support team is ready to help.';
     }
-    
-    if (errorMessage.includes('User not found') || 
-        errorMessage.includes('user_not_found')) {
+
+    if (errorMessage.includes('User not found') ||
+      errorMessage.includes('user_not_found')) {
       return 'We couldn\'t locate an account associated with this email address. Please verify your email or create a new account to get started with our platform.';
     }
-    
-    if (errorMessage.includes('Too many requests') || 
-        errorMessage.includes('rate_limit') ||
-        status === 429) {
+
+    if (errorMessage.includes('Too many requests') ||
+      errorMessage.includes('rate_limit') ||
+      status === 429) {
       return 'For your security, we\'ve temporarily limited login attempts. Please wait a few moments before trying again. This helps us protect your account from unauthorized access.';
     }
-    
+
     if (errorMessage.includes('Email rate limit exceeded')) {
       return 'We\'ve reached the maximum number of email requests for your account. Please allow a few minutes before requesting another email. This measure helps us maintain service quality for all users.';
     }
-    
+
     if (status === 400) {
       if (errorMessage.includes('email')) {
         return 'The email address format appears to be incorrect. Please review and ensure it follows the standard format (e.g., name@example.com).';
@@ -428,19 +490,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return 'The information provided doesn\'t match our records. Please carefully review your email address and password, then try again.';
     }
-    
+
     if (status === 401) {
       return 'The credentials you entered are incorrect. Please verify your email address and password. If you\'ve forgotten your password, you can reset it through our password recovery system.';
     }
-    
+
     if (status === 403) {
       return 'Access to your account is currently restricted. This may be due to security measures or account status. Please contact our support team for assistance, and we\'ll be happy to help restore your access.';
     }
-    
+
     if (status >= 500) {
       return 'We\'re experiencing technical difficulties on our end. Our team has been notified and is working to resolve this promptly. Please try again in a few moments. We apologize for any inconvenience.';
     }
-    
+
     // Return a polished generic message if we can't parse the specific error
     return errorMessage || 'We were unable to complete your login request. Please verify your credentials and try again. If the issue continues, please contact our support team for personalized assistance.';
   };
@@ -452,15 +514,62 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!email || !email.trim()) {
         throw new Error('Please provide your email address to continue.');
       }
+
+      // [DEV BYPASS] Allow local testing without hitting Supabase rate limits
+      if (import.meta.env.DEV && email === 'admin@local.test' && password === 'dev_bypass') {
+        console.warn('[Auth] 🔓 Using DEVELOPMENT BYPASS login');
+
+        const mockSupabaseUser = {
+          id: 'dev-bypass-user-id',
+          email: 'admin@local.test',
+          user_metadata: { full_name: 'Dev Admin' },
+          app_metadata: { provider: 'email' },
+          aud: 'authenticated',
+          created_at: new Date().toISOString(),
+        } as any;
+
+        setSupabaseUser(mockSupabaseUser);
+
+        setUser({
+          id: 'dev-bypass-user-id',
+          email: 'admin@local.test',
+          username: 'dev_admin',
+          full_name: 'Dev Admin',
+          role: 'admin',
+          is_verified: true,
+          preferences: {
+            language: 'en',
+            currency: 'SAR',
+            notifications: { email: true, sms: false, push: false },
+            theme: 'dark'
+          },
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          // Required nulls
+          avatar_url: null,
+          company_name: 'Almona Dev',
+          phone: null,
+          sector: 'ALUMINIUM',
+          workshop_location: null,
+          governorate: null,
+          address: null,
+          tax_number: null,
+          commercial_register: null
+        });
+
+        window.localStorage.setItem('almona_dev_auth', 'true');
+        return; // Skip actual Supabase call
+      }
+
       if (!password || !password.trim()) {
         throw new Error('Please enter your password to access your account.');
       }
 
-      const { data, error } = await supabase.auth.signInWithPassword({ 
-        email: email.trim().toLowerCase(), 
-        password 
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password
       });
-      
+
       if (error) {
         // Parse Supabase error messages for better user feedback
         const errorMessage = parseAuthError(error);
@@ -520,7 +629,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // But we also ensure it exists and update it with all metadata fields
       if (authData.user) {
         setSupabaseUser(authData.user);
-        
+
         // Wait a moment for the trigger to create the profile, then ensure it's complete
         // Use a ref to prevent multiple simultaneous checks
         const profileCheckKey = `profile-check-${authData.user!.id}`;
@@ -529,16 +638,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
         sessionStorage.setItem(profileCheckKey, 'true');
-        
+
         setTimeout(async () => {
           try {
             // First, check if profile exists - use getProfileById which has caching
             const existingProfile = await getProfileById(authData.user!.id);
-            
+
             // If profile doesn't exist, create it manually (trigger might have failed)
             if (!existingProfile) {
               console.warn('Profile not found after signup, creating manually...');
-              
+
               const profileInsert: Database['public']['Tables']['profiles']['Insert'] = {
                 id: authData.user!.id,
                 full_name: userData.full_name || authData.user!.email || 'User',
@@ -546,12 +655,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 phone: userData.phone || null,
                 sector: (userData.sector || 'GENERAL') as Database['public']['Tables']['profiles']['Row']['sector'],
               };
-              
+
               // Use type assertion to fix TypeScript inference issue
               const { error: insertError } = await (supabase
                 .from('profiles') as any)
                 .insert(profileInsert);
-              
+
               if (insertError) {
                 console.error('Error creating profile manually:', insertError);
                 // Still try to continue - maybe trigger will create it later
@@ -562,21 +671,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               if (userData.company_name) profileUpdates.company_name = userData.company_name;
               if (userData.phone) profileUpdates.phone = userData.phone;
               if (userData.sector) profileUpdates.sector = userData.sector as Database['public']['Tables']['profiles']['Row']['sector'];
-              
+
               if (Object.keys(profileUpdates).length > 0) {
                 // Use type assertion to fix TypeScript inference issue
                 const { error: updateError } = await (supabase
                   .from('profiles') as any)
                   .update(profileUpdates)
                   .eq('id', authData.user!.id);
-                
+
                 if (updateError) {
                   console.warn('Error updating profile with metadata:', updateError);
                   // Don't throw - profile exists, this is just additional data
                 }
               }
             }
-            
+
             // Fetch the complete profile
             await fetchUserProfile(authData.user!.id);
           } catch (error) {
@@ -615,9 +724,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async (): Promise<void> => {
     setActionLoading(true);
     try {
+      window.localStorage.removeItem('almona_dev_auth'); // Clear dev session
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      
+
       setSupabaseUser(null);
       setUser(null);
     } catch (error) {
@@ -665,7 +775,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateProfile = async (updates: Database['public']['Tables']['profiles']['Update']): Promise<void> => {
     if (!user) throw new Error('No user logged in');
-    
+
     try {
       const updated = await updateProfileDomain(user.id, updates);
       setUser(updated as unknown as User); // runtime shape compatible
@@ -677,7 +787,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshUser = async (): Promise<void> => {
     if (!supabaseUser) return;
-    
+
     try {
       await fetchUserProfile(supabaseUser.id);
     } catch (error) {

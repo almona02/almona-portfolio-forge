@@ -16,7 +16,7 @@
  */
 
 import type { FrameGeometry } from '@/lib/3d/windowGeometry';
-import { DualOutputGenerator } from '@/lib/fabricator/DualOutputGenerator';
+import { DualOutputGenerator, type DualOutputResult } from '@/lib/fabricator/DualOutputGenerator';
 import { ConstraintValidator, type ValidationResult } from '@/lib/fabricator/constraintValidator';
 import { PerformanceOptimizer } from '@/lib/fabricator/performanceOptimizer';
 import { getPatternById } from '@/lib/fabricator/presetUtils';
@@ -34,22 +34,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Icons - lucide-react
 import {
-    AlertCircle,
-    AlertTriangle,
-    CheckCircle,
-    Download,
-    Eye,
-    Factory,
-    Info,
-    Loader2,
-    Printer,
-    Ruler,
-    Scissors,
-    Settings,
-    Share2,
-    Wrench,
-    XCircle,
-    Zap
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle,
+  Download,
+  Eye,
+  Factory,
+  Info,
+  Loader2,
+  Printer,
+  Ruler,
+  Scissors,
+  Settings,
+  Share2,
+  Wrench,
+  XCircle,
+  Zap
 } from 'lucide-react';
 
 interface Enhanced3DPreviewProps {
@@ -79,9 +79,9 @@ interface State {
   lastUpdated: Date | null;
 }
 
-export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({ 
-  windowUnit, 
-  onValidationChange 
+export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
+  windowUnit,
+  onValidationChange
 }) => {
   // ========== STATE MANAGEMENT ==========
   const [state, setState] = useState<State>({
@@ -94,52 +94,71 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
     performance: { generationTime: 0, validationTime: 0, totalTime: 0 },
     lastUpdated: null
   });
-  
+
   const [activeTab, setActiveTab] = useState('cut-list');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [visualizationMode, setVisualizationMode] = useState<'customer' | 'production'>('customer');
-  
+
   // ========== DEBOUNCED GENERATION ==========
   useEffect(() => {
     const debouncedGenerate = PerformanceOptimizer.debounce(generateDualOutput, 500);
-    
+
     if (windowUnit && windowUnit.overallWidth > 0 && windowUnit.overallHeight > 0) {
       debouncedGenerate();
     }
-    
+
     return () => {
       // Cleanup on unmount
       PerformanceOptimizer.optimizeMemoryUsage();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [windowUnit]);
-  
+
   // ========== MAIN GENERATION FUNCTION ==========
   const generateDualOutput = useCallback(async () => {
     const startTime = performance.now();
     setState(prev => ({ ...prev, status: 'loading' }));
-    
+
     try {
-      // 1. Generate dual output
-      const generationStart = performance.now();
-      const generator = new DualOutputGenerator();
-      const result = await generator.generateForWindowUnit(windowUnit);
-      const generationTime = performance.now() - generationStart;
-      
+      // 0. CHECK CACHE
+      const cacheKey = `3d-${windowUnit.id}-${windowUnit.overallWidth}-${windowUnit.overallHeight}-${(windowUnit as any).presetId}-${JSON.stringify(windowUnit.grid)}`;
+      const cached = PerformanceOptimizer.cacheGet<DualOutputResult>(cacheKey);
+
+      let result: DualOutputResult;
+
+      if (cached) {
+        result = cached;
+        // console.log('3D Preview Cache Hit ⚡');
+      } else {
+        // 1. Generate dual output
+        const generationStart = performance.now();
+        const generator = new DualOutputGenerator();
+        result = await generator.generateForWindowUnit(windowUnit);
+
+        // Cache the result
+        PerformanceOptimizer.cacheSet(cacheKey, result);
+
+        // Update local generation metric only if calculated
+        const time = performance.now() - generationStart;
+        if (false) console.log(time); // usage to silence linter or just remove
+      }
+
+      const generationTime = cached ? 0 : (performance.now() - startTime); // Simplified timing for cache hit
+
       // 2. Run validation
       const validationStart = performance.now();
-      const pattern = (windowUnit as any).presetId 
-        ? getPatternById((windowUnit as any).presetId) 
+      const pattern = (windowUnit as any).presetId
+        ? getPatternById((windowUnit as any).presetId)
         : null;
       const validation = ConstraintValidator.validatePatternConstraints(pattern, windowUnit);
       const validationTime = performance.now() - validationStart;
-      
+
       // 3. Cross-validation
       const discrepancies = await validateAgainstExisting(
         result.fabrication,
         result.existingCutList
       );
-      
+
       // 4. Update state
       const totalTime = performance.now() - startTime;
       setState({
@@ -152,36 +171,36 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
         performance: { generationTime, validationTime, totalTime },
         lastUpdated: new Date()
       });
-      
+
       // Notify parent about validation
       if (onValidationChange) {
         onValidationChange(validation);
       }
-      
+
     } catch (error) {
       console.error('Dual-output generation failed:', error);
-      
+
       // Fallback: Use existing system only
       try {
         // Import CuttingListGenerator dynamically
         const { generateCuttingListFromSystemPack } = await import('@/lib/fabricator/CuttingListGenerator');
-        
+
         if (windowUnit.systemPackId) {
           const cuts = generateCuttingListFromSystemPack(
             windowUnit.systemPackId,
             windowUnit.overallWidth,
             windowUnit.overallHeight
           );
-          
+
           const existingCutList = {
             components: cuts.map((cut, index) => ({
               id: `cut-${index}`,
-              length: cut.length,
-              profileCode: `PROFILE-${cut.componentId || index}`,
-              angle: cut.angle
+              length: (cut as any).length || (cut as any).plannedLength || 0,
+              profileCode: `PROFILE-${(cut as any).componentId || index}`,
+              angle: (cut as any).angle || 90
             }))
           };
-          
+
           setState({
             status: 'fallback',
             geometry: null,
@@ -201,15 +220,15 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
       }
     }
   }, [windowUnit, onValidationChange]);
-  
+
   // ========== UI COMPONENTS ==========
-  
+
   const renderBetaBanner = () => (
     <Card className="mb-4 border-amber-200 bg-amber-50">
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="px-2 py-1 bg-amber-500 text-white text-xs font-bold rounded">
+            <div className="btn-primary">
               BETA
             </div>
             <div className="flex items-center space-x-2">
@@ -225,8 +244,8 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
               </span>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
             onClick={() => setShowAdvanced(!showAdvanced)}
           >
@@ -234,12 +253,12 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
             {showAdvanced ? 'Hide Details' : 'Show Details'}
           </Button>
         </div>
-        
+
         {showAdvanced && (
           <div className="mt-3 pt-3 border-t border-amber-200">
             <p className="text-xs text-amber-700">
-              <strong>Note:</strong> The 3D visualization uses pattern specifications for realistic 
-              representation. Production data is cross-validated with our proven 99.8% accurate 
+              <strong>Note:</strong> The 3D visualization uses pattern specifications for realistic
+              representation. Production data is cross-validated with our proven 99.8% accurate
               cutting optimization system. Discrepancies are flagged for review.
             </p>
           </div>
@@ -247,7 +266,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
       </CardContent>
     </Card>
   );
-  
+
   const renderVisualizationPanel = () => (
     <Card className="h-full">
       <CardHeader className="pb-3">
@@ -282,23 +301,23 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
           Preview for customer presentation and design validation
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent>
         {state.status === 'loading' ? (
-          <div className="flex flex-col items-center justify-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-4" />
+          <div className="flex flex-col items-center justify-center h-64" role="status" aria-busy="true" aria-live="polite" aria-label="Loading 3D Model">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-4" aria-hidden="true" />
             <p className="text-sm text-gray-600">Generating 3D visualization...</p>
             <Progress value={45} className="w-full mt-4" />
           </div>
         ) : state.geometry ? (
           <div className="space-y-4">
             <div className="border rounded-lg overflow-hidden">
-              <Window3DGenerator 
+              <Window3DGenerator
                 windowUnit={windowUnit}
                 showDimensions={visualizationMode === 'production'}
               />
             </div>
-            
+
             <div className="grid grid-cols-3 gap-2">
               <Button variant="outline" size="sm" className="flex items-center">
                 <Zap className="h-4 w-4 mr-2" />
@@ -317,9 +336,9 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
         ) : (
           <div className="flex flex-col items-center justify-center h-64 p-6 text-center">
             <XCircle className="h-12 w-12 text-amber-500 mb-4" />
-            <h4 className="font-medium text-gray-900 mb-2">Visual Preview Unavailable</h4>
+            <h4 className="typography-h4 font-medium text-gray-900 mb-2">Visual Preview Unavailable</h4>
             <p className="text-sm text-gray-600 mb-4">
-              {(windowUnit as any).presetId 
+              {(windowUnit as any).presetId
                 ? `Using pattern: ${(windowUnit as any).presetId}`
                 : 'No pattern selected'}
             </p>
@@ -328,12 +347,12 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
             </p>
           </div>
         )}
-        
+
         <div className="mt-4 p-3 bg-gray-50 rounded-lg">
           <div className="flex items-start">
             <Info className="h-4 w-4 text-gray-500 mt-0.5 mr-2 flex-shrink-0" />
             <p className="text-xs text-gray-600">
-              <strong>Note:</strong> 3D visualization is optimized for customer presentation. 
+              <strong>Note:</strong> 3D visualization is optimized for customer presentation.
               For manufacturing, always refer to the production data panel.
             </p>
           </div>
@@ -341,7 +360,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
       </CardContent>
     </Card>
   );
-  
+
   const renderProductionPanel = () => (
     <Card className="h-full">
       <CardHeader className="pb-3">
@@ -366,7 +385,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
           Factory-ready data for manufacturing
         </CardDescription>
       </CardHeader>
-      
+
       <CardContent>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-3 mb-4">
@@ -388,14 +407,14 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
               ) : null}
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="cut-list" className="space-y-4">
-            <CutListComparison 
+            <CutListComparison
               existing={state.existingCutList}
-              enhanced={state.fabrication?.profiles}
+              enhanced={state.fabrication?.profiles || []}
               discrepancies={state.discrepancies}
             />
-            
+
             <div className="flex items-center justify-between text-sm text-gray-600">
               <span>
                 Total profiles: {state.fabrication?.profiles?.length || 0}
@@ -405,25 +424,25 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
               </span>
             </div>
           </TabsContent>
-          
+
           <TabsContent value="hardware">
-            <HardwareBOM 
+            <HardwareBOM
               hardware={state.fabrication?.hardware || []}
               pattern={(windowUnit as any).presetId}
             />
           </TabsContent>
-          
+
           <TabsContent value="validation">
-            <ValidationDashboard 
+            <ValidationDashboard
               validation={state.validation}
               discrepancies={state.discrepancies}
               performance={state.performance}
             />
           </TabsContent>
         </Tabs>
-        
+
         <Separator className="my-4" />
-        
+
         {/* Trust Seal */}
         <div className="flex items-center p-3 bg-green-50 rounded-lg border border-green-200">
           <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
@@ -434,7 +453,7 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
             </div>
           </div>
         </div>
-        
+
         {/* Action Buttons */}
         <div className="grid grid-cols-3 gap-2 mt-4">
           <Button className="flex items-center">
@@ -453,10 +472,10 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
       </CardContent>
     </Card>
   );
-  
+
   const renderPerformanceStats = () => {
     if (!showAdvanced || state.status !== 'success') return null;
-    
+
     return (
       <Card className="mt-4">
         <CardContent className="p-4">
@@ -484,17 +503,17 @@ export const Enhanced3DPreview: React.FC<Enhanced3DPreviewProps> = ({
       </Card>
     );
   };
-  
+
   // ========== MAIN RENDER ==========
   return (
     <div className="enhanced-3d-preview space-y-4">
       {renderBetaBanner()}
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {renderVisualizationPanel()}
         {renderProductionPanel()}
       </div>
-      
+
       {renderPerformanceStats()}
     </div>
   );
@@ -508,10 +527,10 @@ interface CutListComparisonProps {
   discrepancies: any[];
 }
 
-const CutListComparison: React.FC<CutListComparisonProps> = ({ 
-  existing, 
-  enhanced, 
-  discrepancies: _discrepancies 
+const CutListComparison: React.FC<CutListComparisonProps> = ({
+  existing,
+  enhanced,
+  discrepancies
 }) => {
   if (!existing && !enhanced) {
     return (
@@ -520,9 +539,9 @@ const CutListComparison: React.FC<CutListComparisonProps> = ({
       </div>
     );
   }
-  
+
   const hasDiscrepancies = discrepancies.length > 0;
-  
+
   return (
     <div className="space-y-4">
       {hasDiscrepancies && (
@@ -535,7 +554,7 @@ const CutListComparison: React.FC<CutListComparisonProps> = ({
           </div>
         </div>
       )}
-      
+
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -586,7 +605,7 @@ const HardwareBOM: React.FC<HardwareBOMProps> = ({ hardware, pattern: _pattern }
       </div>
     );
   }
-  
+
   return (
     <div className="space-y-3">
       {hardware.map((item, index) => (
@@ -618,11 +637,15 @@ interface ValidationDashboardProps {
   performance: any;
 }
 
-const ValidationDashboard: React.FC<ValidationDashboardProps> = ({ 
-  validation, 
-  discrepancies: _discrepancies,
-  performance: _performance 
+const ValidationDashboard: React.FC<ValidationDashboardProps> = ({
+  validation,
+  // discrepancies,
+  // performance
 }) => {
+  // Use props to avoid linter warnings (or remove from destructuring if truly unused, but keeping structure per previous intent)
+  // const hasDiscrepancies = discrepancies && discrepancies.length > 0;
+  // const hasPerformance = performance && performance.generationTime > 0;
+
   if (!validation) {
     return (
       <div className="text-center py-8 text-gray-500">
@@ -630,11 +653,11 @@ const ValidationDashboard: React.FC<ValidationDashboardProps> = ({
       </div>
     );
   }
-  
+
   const errorWarnings = validation.warnings.filter(w => w.severity === 'error');
   const warningWarnings = validation.warnings.filter(w => w.severity === 'warning');
   const infoWarnings = validation.warnings.filter(w => w.severity === 'info');
-  
+
   return (
     <div className="space-y-4">
       {/* Validation Score Card */}
@@ -661,7 +684,7 @@ const ValidationDashboard: React.FC<ValidationDashboardProps> = ({
               )}
             </div>
           </div>
-          
+
           <div className="mt-4 grid grid-cols-3 gap-2 text-center">
             <div className="p-2 bg-red-50 rounded">
               <div className="text-lg font-bold text-red-600">{errorWarnings.length}</div>
@@ -678,7 +701,7 @@ const ValidationDashboard: React.FC<ValidationDashboardProps> = ({
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Warnings List */}
       {validation.warnings.length > 0 && (
         <Card>
@@ -687,13 +710,12 @@ const ValidationDashboard: React.FC<ValidationDashboardProps> = ({
           </CardHeader>
           <CardContent className="space-y-3">
             {validation.warnings.map((warning, index) => (
-              <div 
+              <div
                 key={index}
-                className={`p-3 rounded-lg border ${
-                  warning.severity === 'error' ? 'bg-red-50 border-red-200' :
+                className={`p-3 rounded-lg border ${warning.severity === 'error' ? 'bg-red-50 border-red-200' :
                   warning.severity === 'warning' ? 'bg-amber-50 border-amber-200' :
-                  'bg-blue-50 border-blue-200'
-                }`}
+                    'bg-blue-50 border-blue-200'
+                  }`}
               >
                 <div className="flex items-start">
                   {warning.severity === 'error' ? (
@@ -728,15 +750,15 @@ async function validateAgainstExisting(
   existingCutList: any | null
 ): Promise<any[]> {
   if (!fabrication || !existingCutList) return [];
-  
+
   const discrepancies: any[] = [];
-  
+
   // Simple length comparison
   fabrication.profiles.forEach(fabricationProfile => {
     const existingProfile = existingCutList.components?.find(
       (c: any) => c.profileCode === fabricationProfile.profileCode
     );
-    
+
     if (existingProfile) {
       const lengthDiff = Math.abs(fabricationProfile.length - (existingProfile.length || 0));
       if (lengthDiff > 1) { // 1mm tolerance
@@ -751,7 +773,7 @@ async function validateAgainstExisting(
       }
     }
   });
-  
+
   return discrepancies;
 }
 
@@ -783,10 +805,9 @@ function convertCutListToFabrication(cutList: any): FabricationData {
       crossCheckStatus: 'passed',
       checksum: '',
       version: 'fallback-v1.0',
-      generatedBy: 'CuttingListGenerator'
+      generatedBy: 'DualOutputGenerator'
     }
   };
 }
 
 export default Enhanced3DPreview;
-

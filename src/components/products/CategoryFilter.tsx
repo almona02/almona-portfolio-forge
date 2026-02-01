@@ -70,7 +70,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
     return (
       <div className={`relative ${className}`}>
         <Select value={selectedCategory} onValueChange={onCategoryChange}>
-          <SelectTrigger className="w-full bg-black/70 border-gray-600 focus:border-orange-500 focus:ring-0 hover:bg-black/80 transition-colors">
+          <SelectTrigger className="w-full bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/80 transition-colors">
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent className="bg-[linear-gradient(160deg,rgba(0,0,0,0.95)_0%,rgba(28,28,28,0.95)_60%,rgba(46,46,46,0.9)_100%)] border border-gray-700">
@@ -109,13 +109,13 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
       <Button
         variant="outline"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full justify-between bg-black/70 border-gray-600 hover:bg-black/80 hover:border-orange-500/50 transition-colors"
+        className="w-full justify-between bg-black/70 border-gray-600 hover:bg-black/80 hover:border-amber-500/50 transition-colors"
       >
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4" />
           <span>{getSelectedCategoryName()}</span>
           {getSelectedCategoryCount() > 0 && (
-            <Badge variant="secondary" className="text-xs bg-orange-500/20 text-orange-400">
+            <Badge variant="secondary" className="btn-primary">
               {getSelectedCategoryCount()}
             </Badge>
           )}
@@ -144,7 +144,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                   className={`
                     w-full text-left p-3 rounded-lg transition-colors
                     ${selectedCategory === 'all' 
-                      ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' 
+                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
                       : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
                     }
                   `}
@@ -168,7 +168,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                       className={`
                         w-full text-left p-3 rounded-lg transition-colors
                         ${selectedCategory === category.id 
-                          ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' 
+                          ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
                           : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
                         }
                       `}
@@ -196,7 +196,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                           className={`
                             w-full text-left p-2 rounded-lg transition-colors text-sm
                             ${selectedCategory === subCategory.id 
-                              ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' 
+                              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
                               : 'text-gray-400 hover:bg-gray-700/50 hover:text-gray-200'
                             }
                           `}

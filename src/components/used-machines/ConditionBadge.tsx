@@ -59,10 +59,10 @@ const ConditionBadge: React.FC<ConditionBadgeProps> = ({
       borderColor: 'border-yellow-400'
     },
     'Needs Repair': {
-      color: 'bg-orange-600 hover:bg-orange-700 text-white',
+      color: 'bg-amber-600 hover:bg-amber-700 text-white',
       icon: '🔧',
       description: 'Requires maintenance or repair',
-      borderColor: 'border-orange-400'
+      borderColor: 'border-amber-400'
     },
     'As-Is': {
       color: 'bg-gray-600 hover:bg-gray-700 text-white',

@@ -251,7 +251,7 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
       {/* Loading Overlay */}
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-          <Loader2 className="h-8 w-8 text-orange-500 animate-spin" />
+          <Loader2 className="h-8 w-8 text-amber-500 animate-spin" />
         </div>
       )}
 
@@ -269,7 +269,7 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
                   variant="ghost"
                   size="sm"
                   onClick={togglePlay}
-                  className="text-white hover:text-orange-500"
+                  className="text-white hover:text-amber-500"
                 >
                   {isPlaying ? (
                     <Pause className="h-5 w-5" />
@@ -282,7 +282,7 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
                   variant="ghost"
                   size="sm"
                   onClick={toggleMute}
-                  className="text-white hover:text-orange-500"
+                  className="text-white hover:text-amber-500"
                 >
                   {isMuted ? (
                     <VolumeX className="h-5 w-5" />
@@ -304,7 +304,7 @@ export const OnboardingVideoPlayer: React.FC<OnboardingVideoPlayerProps> = ({
                   variant="ghost"
                   size="sm"
                   onClick={handleFullscreen}
-                  className="text-white hover:text-orange-500"
+                  className="text-white hover:text-amber-500"
                 >
                   <Maximize2 className="h-5 w-5" />
                 </Button>

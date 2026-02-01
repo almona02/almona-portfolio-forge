@@ -25,7 +25,7 @@ export const AuthForm = ({ onLogin }: AuthFormProps) => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email" className="typography-label">Email</label>
               <Input
                 id="email"
                 type="email"
@@ -36,7 +36,7 @@ export const AuthForm = ({ onLogin }: AuthFormProps) => {
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password" className="typography-label">Password</label>
               <Input
                 id="password"
                 type="password"

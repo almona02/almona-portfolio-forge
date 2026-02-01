@@ -64,7 +64,7 @@ export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
       className={`space-y-8 ${className}`}
     >
       <div className="text-center">
-        <h3 className="text-2xl font-bold text-white mb-2">
+        <h3 className="typography-h3 text-white mb-2">
           {t('services.compare_service_packages')}
         </h3>
         <p className="text-gray-400">
@@ -72,7 +72,7 @@ export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
         </p>
       </div>
 
-      <Card className="bg-slate-800/50 backdrop-blur-sm border border-white/10 overflow-hidden">
+      <Card className="bg-slate-800/50 -sm border border-white/10 overflow-hidden card-glass-dark card-dark">
         <CardHeader className="bg-gradient-to-r from-slate-700/50 to-slate-800/50">
           <CardTitle className="text-white text-center">
             {t('services.service_package_comparison')}
@@ -110,7 +110,7 @@ export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
                         <div className="space-y-2">
                           <div className="font-bold text-white">{packageData?.name}</div>
                           <div className="text-sm text-gray-400">{packageData?.machines}</div>
-                          <div className="text-lg font-bold text-orange-400">
+                          <div className="text-lg font-bold text-amber-400">
                             {packageData?.price}
                           </div>
                           {packageData?.popular && (
@@ -128,8 +128,8 @@ export const PackageComparisonTable: React.FC<PackageComparisonTableProps> = ({
                 {features.map((category, categoryIndex) => (
                   <React.Fragment key={categoryIndex}>
                     <tr className="border-b border-white/5">
-                      <td colSpan={4} className="p-3 bg-slate-700/30">
-                        <div className="font-semibold text-orange-400 text-sm uppercase tracking-wide">
+                      <td colSpan={4} className="btn-secondary">
+                        <div className="font-semibold text-amber-400 text-sm uppercase tracking-wide">
                           {category.category}
                         </div>
                       </td>

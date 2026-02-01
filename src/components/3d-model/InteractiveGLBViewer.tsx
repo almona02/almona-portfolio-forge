@@ -271,14 +271,14 @@ function PartAnnotation({
   return (
     <Html position={position} center>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 max-w-xs border border-gray-200 dark:border-gray-600">
-        <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
+        <h4 className="typography-h4 text-gray-900 dark:text-white text-sm">
           {getLocalizedName()}
         </h4>
         <p className="text-gray-600 dark:text-gray-300 text-xs mt-1">
           {getLocalizedDescription()}
         </p>
         <div className="mt-2 flex justify-between items-center">
-          <span className="text-orange-500 font-bold text-sm">
+          <span className="text-amber-500 font-bold text-sm">
             {utils.formatCurrency(annotation.price, { showSymbol: true })}
           </span>
           {annotation.material && (
@@ -472,7 +472,7 @@ export function InteractiveGLBViewer({
         {/* Part Selection Info */}
         {selectedPart && (
           <div className="absolute top-4 left-4 z-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm">
-            <h3 className="font-semibold text-gray-900 dark:text-white">
+            <h3 className="typography-h3 text-gray-900 dark:text-white">
               {i18n.language === 'tr' ? selectedPart.nameTr || selectedPart.name : 
                i18n.language === 'ar' ? selectedPart.nameAr || selectedPart.name : 
                selectedPart.name}
@@ -483,7 +483,7 @@ export function InteractiveGLBViewer({
                selectedPart.description}
             </p>
             <div className="mt-2 flex justify-between items-center">
-              <span className="text-orange-500 font-bold">
+              <span className="text-amber-500 font-bold">
                 {utils.formatCurrency(selectedPart.price, { showSymbol: true })}
               </span>
               {selectedPart.material && (
@@ -550,7 +550,7 @@ export function InteractiveGLBViewer({
         
         <div className="space-y-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Configuration</h3>
+            <h3 className="typography-h3 text-gray-900 dark:text-white mb-4">Configuration</h3>
             <div className="space-y-2">
               {parts.map(part => (
                 <div 
@@ -564,7 +564,7 @@ export function InteractiveGLBViewer({
                 >
                   <div className="flex justify-between items-center">
                     <span className="font-medium">{part.name}</span>
-                    <span className="text-orange-500 font-bold">
+                    <span className="text-amber-500 font-bold">
                       {utils.formatCurrency(part.price, { showSymbol: true })}
                     </span>
                   </div>

@@ -130,7 +130,7 @@ export const ProgressLoader: React.FC<ProgressLoaderProps> = ({
       )}>
         <div
           className={cn(
-            'h-full bg-gradient-to-r from-orange-500 to-orange-600 rounded-full transition-all duration-300 ease-out',
+            'h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full transition-all duration-300 ease-out',
             sizeClasses[size]
           )}
           style={{ width: `${clampedProgress}%` }}
@@ -181,15 +181,15 @@ export const FabricatorLoader: React.FC<FabricatorLoaderProps> = ({
       <div className="flex flex-col items-center space-y-6 p-8 max-w-md w-full mx-4">
         {/* Icon with animation */}
         <div className="relative">
-          <div className="absolute inset-0 bg-orange-500/20 rounded-full blur-xl animate-pulse" />
-          <div className="relative bg-slate-800/80 rounded-full p-6 border border-orange-500/30">
-            <Factory className="h-12 w-12 text-orange-500 animate-pulse" />
+          <div className="btn-primary" />
+          <div className="relative rounded-full p-6 border border-amber- 500/30 card-premium">
+            <Factory className="h-12 w-12 text-amber-500 animate-pulse" />
           </div>
         </div>
 
         {/* Stage text */}
         <div className="text-center space-y-2">
-          <h3 className="text-lg font-semibold text-white">{currentStage}</h3>
+          <h3 className="typography-h3 text-lg text-white">{currentStage}</h3>
           {message && (
             <p className="text-sm text-slate-400">{message}</p>
           )}
@@ -211,7 +211,7 @@ export const FabricatorLoader: React.FC<FabricatorLoaderProps> = ({
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="h-2 w-2 rounded-full bg-orange-500 animate-pulse"
+              className="btn-primary"
               style={{ animationDelay: `${i * 150}ms` }}
             />
           ))}

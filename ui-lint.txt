@@ -1,0 +1,7 @@
+[0m[0m
+[0m[4mC:\projects\almona-portfolio-forge\src\components\ui\SearchBar.tsx[24m[0m
+[0m  [2m133:10[22m  [33mwarning[39m  'focusedByKeyboard' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m499:57[22m  [33mwarning[39m  'idx' is defined but never used. Allowed unused args must match /^_/u                                    [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[33m[1m✖ 2 problems (0 errors, 2 warnings)[22m[39m[0m
+[0m[33m[1m[22m[39m[0m

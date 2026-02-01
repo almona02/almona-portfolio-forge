@@ -1,7 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import StandardNavbar from './Navbar';
-import EnterpriseSidebar from './EnterpriseSidebar';
 
 interface ConditionalNavbarProps {
   user?: {
@@ -22,15 +21,14 @@ const ConditionalNavbar: React.FC<ConditionalNavbarProps> = (props) => {
   const isFabricatorRoute =
     pathname.startsWith('/fabricator') || pathname.startsWith('/fabricator-workflow');
 
-  return isFabricatorRoute ? (
-    <EnterpriseSidebar 
-      user={props.user as { name: string; email: string; role: 'operator' | 'supervisor' | 'admin' } | undefined}
-      currentWorkflow={props.currentWorkflow}
-      onWorkflowChange={props.onWorkflowChange}
-    />
-  ) : (
-    <StandardNavbar {...props} />
-  );
+  // For fabricator routes, don't render navbar here - MasterLayout already includes UniversalNavSidebar
+  // Returning null prevents duplicate sidebars
+  if (isFabricatorRoute) {
+    return null;
+  }
+
+  // For non-fabricator routes, use StandardNavbar
+  return <StandardNavbar {...props} />;
 };
 
 export default ConditionalNavbar;

@@ -29,7 +29,7 @@ export const RecentlyViewedProducts: React.FC = () => {
             <Link to={`/products/machines/${product?.id}`} key={product?.id}>
               <div className="flex flex-col items-center text-center bg-almona-dark p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
                 <img src={product?.imageUrl} alt={product?.name} className="w-24 h-24 object-cover rounded-md mb-2" loading="lazy" />
-                <h4 className="font-semibold text-lg">{product?.name}</h4>
+                <h4 className="typography-h4">{product?.name}</h4>
                 <p className="text-sm text-gray-400">{product?.description.substring(0, 50)}...</p>
               </div>
             </Link>

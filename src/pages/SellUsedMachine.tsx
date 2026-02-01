@@ -68,7 +68,7 @@ const SellUsedMachine = () => {
       <main className="flex-grow pt-24 pb-12">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
-            <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-gradient-orange">
+            <h1 className="typography-h1 sm:text-4xl mb-4 text-gradient-orange">
               Sell Your Used Machine
             </h1>
             <p className="text-gray-400 max-w-2xl mx-auto">
@@ -84,7 +84,7 @@ const SellUsedMachine = () => {
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Machine Name</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Machine Name</label>
                     <Input 
                       {...register('name')} 
                       placeholder="e.g., YILMAZ DC 421 PBS"
@@ -94,7 +94,7 @@ const SellUsedMachine = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2">Model</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Model</label>
                     <Input 
                       {...register('model')} 
                       placeholder="Model number or name"
@@ -104,7 +104,7 @@ const SellUsedMachine = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2">Year of Manufacture</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Year of Manufacture</label>
                     <Input 
                       {...register('year', { valueAsNumber: true })} 
                       type="number" 
@@ -115,7 +115,7 @@ const SellUsedMachine = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2">Description</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Description</label>
                     <Textarea 
                       {...register('description')} 
                       placeholder="Detailed description of the machine's condition, features, usage history, and any included accessories..."
@@ -126,7 +126,7 @@ const SellUsedMachine = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2">Price (EGP)</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Price (EGP)</label>
                     <Input 
                       {...register('price', { valueAsNumber: true })} 
                       type="number" 

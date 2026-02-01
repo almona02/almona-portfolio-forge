@@ -18,14 +18,14 @@ export const ServiceViewToggle: React.FC<ServiceViewToggleProps> = ({
 
   return (
     <div className={`flex justify-center mb-8 ${className}`}>
-      <div className="inline-flex items-center bg-slate-800/50 backdrop-blur-sm border border-white/10 rounded-2xl p-2">
+      <div className="inline-flex items-center bg-slate-800/50 -sm border border-white/10 rounded-2xl p-2 card-glass-dark">
         <Button
           variant={viewMode === 'simple' ? 'default' : 'ghost'}
           size="lg"
           onClick={() => onViewChange('simple')}
           className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all ${
             viewMode === 'simple' 
-              ? 'bg-orange-500 hover:bg-orange-600 text-white' 
+              ? 'bg-amber-500 hover:bg-amber-600 text-white' 
               : 'text-gray-400 hover:text-white hover:bg-white/10'
           }`}
         >
@@ -38,7 +38,7 @@ export const ServiceViewToggle: React.FC<ServiceViewToggleProps> = ({
           onClick={() => onViewChange('advanced')}
           className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all ${
             viewMode === 'advanced' 
-              ? 'bg-orange-500 hover:bg-orange-600 text-white' 
+              ? 'bg-amber-500 hover:bg-amber-600 text-white' 
               : 'text-gray-400 hover:text-white hover:bg-white/10'
           }`}
         >

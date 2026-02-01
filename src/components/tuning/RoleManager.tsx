@@ -133,7 +133,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
       {/* Toolbar */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="font-bold text-gray-700 text-lg">Profile Roles</h3>
+          <h3 className="typography-h3 text-gray-700 text-lg">Profile Roles</h3>
           <p className="text-xs text-gray-500">Import DXF files and assign roles to profiles</p>
         </div>
         <button 
@@ -162,7 +162,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
             {/* System Profiles (Tagged) */}
             {system.profiles.length > 0 && (
               <div>
-                <h4 className="text-xs font-bold text-gray-500 mb-2 uppercase">System Profiles ({system.profiles.length})</h4>
+                <h4 className="typography-h4 text-xs text-gray-500 mb-2">System Profiles ({system.profiles.length})</h4>
                 <div className="space-y-2">
                   {system.profiles.map(profile => (
                     <div 
@@ -217,7 +217,7 @@ export const RoleManager: React.FC<RoleManagerProps> = ({ system, onSystemUpdate
             {/* Untagged Imported Profiles */}
             {untaggedImported.length > 0 && (
               <div>
-                <h4 className="text-xs font-bold text-gray-500 mb-2 uppercase">Imported (Needs Tagging) ({untaggedImported.length})</h4>
+                <h4 className="typography-h4 text-xs text-gray-500 mb-2">Imported (Needs Tagging) ({untaggedImported.length})</h4>
                 <div className="space-y-2">
                   {untaggedImported.map(imported => (
                     <div 

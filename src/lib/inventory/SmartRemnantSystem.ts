@@ -7,10 +7,9 @@
  * - Auto-remnant prioritization (smart suggestion engine)
  */
 
-import { Remnant, RemnantMatch, RemnantManager } from './RemnantManager';
-import { Profile, Cut } from '@/types/fabricator';
-import { remnantMLPredictor } from '../ml/RemnantUsagePredictor';
-import { featureEngineer } from '../analytics/FeatureEngineer';
+import { Cut, Profile } from '@/types/fabricator';
+import { Remnant, RemnantManager, RemnantMatch } from './RemnantManager';
+import { remnantPredictor } from './RemnantPredictor';
 
 export interface RemnantMarketplaceListing {
   id: string;
@@ -75,21 +74,15 @@ export class SmartRemnantSystem {
       }
     );
 
-    // Score each match with ML prediction
+    // Score each match with DETERMINISTIC prediction (CONSTITUTIONAL)
     for (const match of matches) {
       try {
-        // Extract features for ML prediction
-        const features = await featureEngineer.extractRemnantFeatures(match.remnant);
-        
-        // Get ML prediction
-        const mlPrediction = await remnantMLPredictor.predict(
-          match.remnant,
-          features as any
-        );
+        // DETERMINISTIC ONLY: Rule-based prediction
+        const reuseLikelihood = await remnantPredictor.predictReuseLikelihood(match.remnant);
 
-        // Calculate match score (combination of utilization, ML prediction, and location)
+        // Calculate match score (combination of utilization and deterministic prediction)
         const utilizationScore = match.utilization / 100;
-        const mlScore = mlPrediction.reuseLikelihood / 100;
+        const predictionScore = reuseLikelihood / 100;
         const locationScore = this.calculateLocationScore(
           match.remnant,
           options.prioritizeLocation
@@ -97,7 +90,7 @@ export class SmartRemnantSystem {
 
         const matchScore = (
           utilizationScore * 0.4 +
-          mlScore * 0.4 +
+          predictionScore * 0.4 +
           locationScore * 0.2
         ) * 100;
 
@@ -115,14 +108,14 @@ export class SmartRemnantSystem {
         // Generate reason
         const reason = this.generateSuggestionReason(
           match,
-          mlPrediction,
+          { reuseLikelihood },
           locationScore
         );
 
         suggestions.push({
           remnant: match.remnant,
           matchScore,
-          predictedReuseLikelihood: mlPrediction.reuseLikelihood,
+          predictedReuseLikelihood: reuseLikelihood,
           estimatedSavings,
           reason,
           priority,

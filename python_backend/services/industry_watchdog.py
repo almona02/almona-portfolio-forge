@@ -1,21 +1,17 @@
 """
 Industry Watchdog Service - The "Industry Watchtower"
 
-A background agent that runs independently, constantly scanning the horizon for:
-- New technologies
-- Price shifts
-- Global trends
-- Market intelligence
-- Social media insights (Facebook groups)
+A background agent that runs independently, scanning for:
+- New technologies, price shifts, global trends, market intelligence,
+  and social media insights (Facebook groups).
 
 Then translates them into actionable advice for Egyptian workshops.
 """
 
-import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Any, Optional
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from enum import Enum
 
 logger = logging.getLogger(__name__)
@@ -51,7 +47,8 @@ class IndustryArticle:
 class MarketAlert:
     """Proactive alert for workshop owners"""
 
-    alert_type: str  # "price_change", "new_technology", "trend_shift", "social_insight"
+    # "price_change", "new_technology", "trend_shift", "social_insight"
+    alert_type: str
     severity: str  # "critical", "high", "medium", "low"
     title: str
     message_arabic: str
@@ -313,7 +310,7 @@ class IndustryWatchdog:
                 # This is a simplified version
                 return [
                     {
-                        "title": f"LME Aluminum Price Update",
+                        "title": "LME Aluminum Price Update",
                         "url": source["url"],
                         "published": datetime.now(timezone.utc).isoformat(),
                         "summary": "Latest aluminum prices from LME",
@@ -324,7 +321,7 @@ class IndustryWatchdog:
         except Exception as e:
             # LME and some sites block scraping - this is expected
             # Log at debug level, not error
-            logger.debug(f"Could not scrape {source['name']}: {e}")
+            logger.debug("Could not scrape %s: %s", source["name"], e)
             return []
 
     async def _filter_relevance(
@@ -402,7 +399,7 @@ class IndustryWatchdog:
                         published_at = parsed_date.replace(tzinfo=timezone.utc)
                     else:
                         published_at = parsed_date.astimezone(timezone.utc)
-                except:
+                except (ImportError, Exception):
                     pass
 
             return IndustryArticle(
@@ -523,12 +520,13 @@ class IndustryWatchdog:
         Returns:
             List of relevant articles
         """
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
+        # Calculate date range
+        date_range_start = datetime.now(timezone.utc) - timedelta(days=days)
 
         filtered = [
             article
             for article in self.stored_articles
-            if article.published_at >= cutoff_date
+            if article.published_at >= date_range_start
         ]
 
         if topic:
@@ -572,6 +570,8 @@ class IndustryWatchdog:
         ]
 
         # Sort by severity
+        # Priority mapping
+        # Priority mapping
         severity_order = {"critical": 4, "high": 3, "medium": 2, "low": 1}
         active.sort(key=lambda x: severity_order.get(x.severity, 0), reverse=True)
 
@@ -585,7 +585,6 @@ class IndustryWatchdog:
             Dictionary with summary, alerts, price updates, tech news
         """
         now = datetime.now(timezone.utc)
-        cutoff_date = now - timedelta(days=1)
 
         # Get latest articles
         latest_articles = self.get_latest_trends(days=1)
@@ -603,14 +602,8 @@ class IndustryWatchdog:
             )
         ]
 
-        tech_news = [
-            article
-            for article in latest_articles
-            if any(
-                kw in article.title.lower() or kw in article.content.lower()
-                for kw in ["technology", "innovation", "new", "تكنولوجيا", "جديد"]
-            )
-        ]
+        # No specialized tech news logic implemented yet
+        # tech_news_articles = []
 
         # Social insights
         social_insights = [
@@ -624,48 +617,55 @@ class IndustryWatchdog:
         if social_insights:
             summary += f" ({len(social_insights)} من الشارع)"
 
+        # Consolidate articles for frontend compatibility (FutureIntelligence interface)
+        all_news = []
+        for article in latest_articles[:15]:
+            all_news.append(
+                {
+                    "id": f"art_{article.published_at.timestamp()}",
+                    "title": article.title,
+                    "url": article.url,
+                    "source": article.source,
+                    "publishedAt": article.published_at.isoformat(),
+                    "content": article.content,
+                    "relevance": article.relevance.value,
+                    "maalemSummary": article.maalem_summary,
+                    "actionableAdvice": article.actionable_advice,
+                    "keywords": article.keywords,
+                    "categories": article.categories,
+                }
+            )
+
         return {
             "date": now.isoformat(),
+            "lastUpdated": now.isoformat(),
             "summary": summary,
+            "articles": all_news,
             "alerts": [
                 {
-                    "alert_type": alert.alert_type,
+                    "id": f"alert_{alert.created_at.timestamp()}",
+                    "alertType": alert.alert_type,
                     "severity": alert.severity,
                     "title": alert.title,
-                    "message_arabic": alert.message_arabic,
-                    "message_english": alert.message_english,
+                    "messageArabic": alert.message_arabic,
+                    "messageEnglish": alert.message_english,
                     "actionable": alert.actionable,
-                    "created_at": alert.created_at.isoformat(),
-                    "expires_at": (
+                    "createdAt": alert.created_at.isoformat(),
+                    "expiresAt": (
                         alert.expires_at.isoformat() if alert.expires_at else None
                     ),
                 }
                 for alert in alerts
             ],
-            "price_updates": [
+            "trends": [],  # To be implemented if trend analysis is needed
+            "priceUpdates": [
                 {
                     "title": article.title,
-                    "url": article.url,
-                    "source": article.source,
-                    "published_at": article.published_at.isoformat(),
-                    "maalem_summary": article.maalem_summary,
-                    "actionable_advice": article.actionable_advice,
-                    "relevance": article.relevance.value,
+                    "publishedAt": article.published_at.isoformat(),
+                    "maalemSummary": article.maalem_summary,
                 }
                 for article in price_updates[:5]
             ],
-            "tech_news": [
-                {
-                    "title": article.title,
-                    "url": article.url,
-                    "source": article.source,
-                    "published_at": article.published_at.isoformat(),
-                    "maalem_summary": article.maalem_summary,
-                    "actionable_advice": article.actionable_advice,
-                    "relevance": article.relevance.value,
-                }
-                for article in tech_news[:5]
-            ],
-            "total_articles": len(latest_articles),
-            "critical_alerts": len([a for a in alerts if a.severity == "critical"]),
+            "totalArticles": len(latest_articles),
+            "criticalAlerts": len([a for a in alerts if a.severity == "critical"]),
         }

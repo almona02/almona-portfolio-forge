@@ -102,7 +102,7 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
     <Card className="bg-gray-800/50 border-gray-700">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Upload className="h-5 w-5 text-orange-400" />
+          <Upload className="h-5 w-5 text-amber-400" />
           Import Profiles
         </CardTitle>
         <CardDescription>
@@ -116,11 +116,11 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
           <div
             onDrop={handleDrop}
             onDragOver={handleDragOver}
-            className="border-2 border-dashed border-gray-700 rounded-lg p-8 text-center hover:border-orange-500/50 transition-colors cursor-pointer mt-2"
+            className="border-dashed border-gray-700 rounded-lg p-8 text-center /50 transition-colors cursor-pointer mt-2 card-premium"
           >
             {loading ? (
               <div className="flex flex-col items-center gap-2">
-                <Loader2 className="h-8 w-8 animate-spin text-orange-400" />
+                <Loader2 className="h-8 w-8 animate-spin text-amber-400" />
                 <p className="text-sm text-gray-400">Parsing file...</p>
               </div>
             ) : file ? (
@@ -269,7 +269,7 @@ export const ProfileImporter: React.FC<ProfileImporterProps> = ({ onImport, user
           <Button
             onClick={handleImport}
             disabled={loading}
-            className="w-full bg-orange-500 hover:bg-orange-600"
+            className="btn-primary"
           >
             {loading ? (
               <>

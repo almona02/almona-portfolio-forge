@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Database } from '@/types/database';
 import { calculateTieredPrice } from '@/lib/pricing';
@@ -209,10 +209,17 @@ export const ProductConfigurator: React.FC<ProductConfiguratorProps> = ({
   const [quantity, setQuantity] = useState(1);
   const [configurationCategories] = useState(() => getConfigurationCategories(product.category));
 
-  const basePrice = product.price || 0;
-  const configurationsPrice = Object.values(selectedConfigurations).reduce((sum, option) => sum + option.price, 0);
-  const unitPrice = calculateTieredPrice(basePrice + configurationsPrice, quantity);
-  const totalPrice = unitPrice * quantity;
+  // Memoize price calculations to prevent unnecessary recalculations
+  const basePrice = useMemo(() => product.price || 0, [product.price]);
+  const configurationsPrice = useMemo(() => 
+    Object.values(selectedConfigurations).reduce((sum, option) => sum + option.price, 0),
+    [selectedConfigurations]
+  );
+  const unitPrice = useMemo(() => 
+    calculateTieredPrice(basePrice + configurationsPrice, quantity),
+    [basePrice, configurationsPrice, quantity]
+  );
+  const totalPrice = useMemo(() => unitPrice * quantity, [unitPrice, quantity]);
 
   // Update parent component when configuration changes
   useEffect(() => {
@@ -255,9 +262,13 @@ export const ProductConfigurator: React.FC<ProductConfiguratorProps> = ({
     }
   }, [addToQuote, product, quantity, selectedConfigurations, toast, t, i18n.language]);
 
-  const isConfigurationComplete = configurationCategories
-    .filter(cat => cat.required)
-    .every(cat => selectedConfigurations[cat.id]);
+  // Memoize configuration completeness check
+  const isConfigurationComplete = useMemo(() => 
+    configurationCategories
+      .filter(cat => cat.required)
+      .every(cat => selectedConfigurations[cat.id]),
+    [configurationCategories, selectedConfigurations]
+  );
 
   return (
     <div className="space-y-6">
@@ -270,7 +281,7 @@ export const ProductConfigurator: React.FC<ProductConfiguratorProps> = ({
         <CardContent className="space-y-6">
           {/* Base Product Info */}
           <div className="space-y-2">
-            <h3 className="font-medium text-lg">
+            <h3 className="typography-h3 font-medium text-lg">
               {i18n.language === 'ar' ? product.name_ar : product.name_en}
             </h3>
             <p className="text-sm text-muted-foreground">
@@ -288,7 +299,7 @@ export const ProductConfigurator: React.FC<ProductConfiguratorProps> = ({
           {configurationCategories.map((category) => (
             <div key={category.id} className="space-y-3">
               <div className="space-y-1">
-                <Label className="text-base font-medium flex items-center gap-2">
+                <Label className="typography-label text-base font-medium flex items-center gap-2">
                   {i18n.language === 'ar' ? category.name_ar : category.name_en}
                   {category.required && (
                     <Badge variant="secondary" className="text-xs bg-red-100 text-red-800">
@@ -343,7 +354,7 @@ export const ProductConfigurator: React.FC<ProductConfiguratorProps> = ({
 
           {/* Quantity Selection */}
           <div className="space-y-3">
-            <Label className="text-base font-medium">
+            <Label className="typography-label text-base font-medium">
               {t('common.forms.quantity')}
             </Label>
             <div className="flex items-center gap-3">
@@ -370,7 +381,7 @@ export const ProductConfigurator: React.FC<ProductConfiguratorProps> = ({
 
           {/* Price Summary */}
           <div className="space-y-3">
-            <h4 className="font-medium">{t('shop.quote.title')}</h4>
+            <h4 className="typography-h4 font-medium">{t('shop.quote.title')}</h4>
             
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">

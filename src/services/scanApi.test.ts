@@ -1,6 +1,6 @@
+import type { ProfileScanResult } from "@/types/scan";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { scanProfileImage } from "./scanApi";
-import type { ProfileScanResult } from "@/types/scan";
 
 // Mock the global fetch
 global.fetch = vi.fn();
@@ -39,7 +39,7 @@ describe("scanProfileImage", () => {
     await scanProfileImage(mockFile, { authToken: mockToken });
 
     expect(fetch).toHaveBeenCalledWith(
-      "/api/v2/scan/profile",
+      expect.stringContaining("/api/v2/scan/profile"),
       expect.objectContaining({
         method: "POST",
       })

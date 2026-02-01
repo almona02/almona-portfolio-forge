@@ -24,7 +24,7 @@ const AIFeatures = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-bold text-center">AI Features</h1>
+      <h1 className="typography-h1 text-center">AI Features</h1>
 
       {/* AI Spare Parts Finder */}
       <section>
@@ -39,7 +39,7 @@ const AIFeatures = () => {
 
       {/* Equipment Comparison Tool */}
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Equipment Comparison Tool</h2>
+        <h2 className="typography-h2 font-semibold mb-4">Equipment Comparison Tool</h2>
         <EquipmentComparisonTool 
           selectedMachines={selectedMachines}
           allMachines={allMachines}
@@ -49,7 +49,7 @@ const AIFeatures = () => {
 
       {/* Manual Maintenance Reporting Form */}
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Manual Maintenance Reporting</h2>
+        <h2 className="typography-h2 font-semibold mb-4">Manual Maintenance Reporting</h2>
         <IntelligentForm emergencyMode={emergencyMode} emergencyToggle={setEmergencyMode} />
       </section>
     </div>

@@ -185,7 +185,7 @@ export const RegionalProfileDatabase: React.FC<RegionalProfileDatabaseProps> = (
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Globe className="h-5 w-5 text-orange-400" />
+              <Globe className="h-5 w-5 text-amber-400" />
               Regional Profile Database
             </CardTitle>
             <div className="flex gap-2">
@@ -236,7 +236,7 @@ export const RegionalProfileDatabase: React.FC<RegionalProfileDatabaseProps> = (
                     <Button
                       onClick={() => handleLoadBrand(brand)}
                       size="sm"
-                      className="bg-orange-500 hover:bg-orange-600"
+                      className="btn-primary"
                     >
                       <Download className="h-4 w-4 mr-2" />
                       Load Profiles
@@ -258,7 +258,7 @@ export const RegionalProfileDatabase: React.FC<RegionalProfileDatabaseProps> = (
                   </div>
                   {brand.website && (
                     <div className="mt-3 text-sm text-gray-400">
-                      Website: <a href={brand.website} target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">{brand.website}</a>
+                      Website: <a href={brand.website} target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:underline">{brand.website}</a>
                     </div>
                   )}
                 </CardContent>

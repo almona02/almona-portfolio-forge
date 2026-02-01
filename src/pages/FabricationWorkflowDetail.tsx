@@ -328,7 +328,7 @@ const FabricationWorkflowDetail = () => {
           <Badge variant="secondary" className="mb-4 text-lg py-2 px-4 bg-almona-orange/10 text-almona-orange border-almona-orange/30">
             مصر - Egypt
           </Badge>
-          <h1 className="text-5xl font-bold text-gradient-orange mb-4">Egyptian Fabrication Workflows</h1>
+          <h1 className="typography-h1 text-gradient-orange mb-4">Egyptian Fabrication Workflows</h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Specialized processes developed for Egypt&apos;s unique climate and market needs
           </p>
@@ -355,7 +355,7 @@ const FabricationWorkflowDetail = () => {
               variants={itemVariants}
             >
               <div>
-                <h2 className="text-2xl font-bold text-white">{workflowData[activeTab].title}</h2>
+                <h2 className="typography-h2 text-white">{workflowData[activeTab].title}</h2>
                 <p className="text-gray-400">{workflowData[activeTab].description}</p>
               </div>
               <div className="w-full md:w-64">
@@ -383,7 +383,7 @@ const FabricationWorkflowDetail = () => {
                         {index + 1}
                       </Badge>
                       <div>
-                        <h3 className="text-lg font-medium text-white">{step.title}</h3>
+                        <h3 className="typography-h3 text-lg font-medium text-white">{step.title}</h3>
                         <p className="text-gray-400">{step.description}</p>
                       </div>
                     </div>
@@ -403,7 +403,7 @@ const FabricationWorkflowDetail = () => {
                           <div className="mt-4 space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="bg-almona-light/5 p-4 rounded-lg border border-almona-light/10">
-                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2 text-almona-light">
+                                <h4 className="typography-h4 text-sm flex items-center gap-2 mb-2 text-almona-light">
                                   <Icons.tip className="h-4 w-4" />
                                   Professional Tips
                                 </h4>
@@ -415,7 +415,7 @@ const FabricationWorkflowDetail = () => {
                               </div>
                               
                               <div className="bg-almona-orange/10 p-4 rounded-lg border border-almona-orange/30">
-                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2 text-almona-orange">
+                                <h4 className="typography-h4 text-sm flex items-center gap-2 mb-2 text-almona-orange">
                                   <Icons.egypt className="h-4 w-4" />
                                   Egypt-Specific Advice
                                 </h4>
@@ -425,7 +425,7 @@ const FabricationWorkflowDetail = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="bg-red-500/10 p-4 rounded-lg border border-red-500/30">
-                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2 text-red-400">
+                                <h4 className="typography-h4 text-sm flex items-center gap-2 mb-2 text-red-400">
                                   <Icons.warning className="h-4 w-4" />
                                   Common Challenges
                                 </h4>
@@ -437,13 +437,13 @@ const FabricationWorkflowDetail = () => {
                               </div>
                               
                               <div className="bg-green-500/10 p-4 rounded-lg border border-green-500/30">
-                                <h4 className="text-sm font-semibold flex items-center gap-2 mb-2 text-green-400">
+                                <h4 className="typography-h4 text-sm flex items-center gap-2 mb-2 text-green-400">
                                   <Icons.solution className="h-4 w-4" />
                                   Recommended Solutions
                                 </h4>
                                 <ul className="space-y-2 text-sm text-gray-300">
                                   {step.solutions.map((solution, i) => (
-                                    <li key={i} className="flex items-start"><span className="mr-2 text-green-500">•</span>{solution}</li>
+                                    <li key={i} className="flex items-start"><span className="mr-2  status-valid">•</span>{solution}</li>
                                   ))}
                                 </ul>
                               </div>
@@ -495,13 +495,13 @@ const FabricationWorkflowDetail = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="p-4 bg-almona-light/5 rounded-lg border border-almona-light/10">
-                    <h3 className="font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.phone className="h-4 w-4" />Technical Hotline</h3>
+                    <h3 className="typography-h3 font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.phone className="h-4 w-4" />Technical Hotline</h3>
                     <p className="text-sm text-gray-400">Arabic-speaking support: <span className="font-mono text-white">0122 345 6789</span></p>
                     <p className="text-sm text-gray-400 mt-1">Hours: Sat-Thu 8AM-5PM (GMT+2)</p>
                   </div>
                   
                   <div className="p-4 bg-almona-light/5 rounded-lg border border-almona-light/10">
-                    <h3 className="font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.training className="h-4 w-4" />Training Centers</h3>
+                    <h3 className="typography-h3 font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.training className="h-4 w-4" />Training Centers</h3>
                     <ul className="text-sm text-gray-400 space-y-1">
                       <li className="flex items-start"><span className="mr-2 text-almona-orange">•</span><strong>Cairo:</strong> 10th of Ramadan City, Thursdays</li>
                       <li className="flex items-start"><span className="mr-2 text-almona-orange">•</span><strong>Alexandria:</strong> Borg El Arab, Tuesdays</li>
@@ -510,7 +510,7 @@ const FabricationWorkflowDetail = () => {
                   </div>
                   
                   <div className="p-4 bg-almona-light/5 rounded-lg border border-almona-light/10">
-                    <h3 className="font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.certificate className="h-4 w-4" />Egyptian Fabricator Certification</h3>
+                    <h3 className="typography-h3 font-medium mb-1 flex items-center gap-2 text-almona-light"><Icons.certificate className="h-4 w-4" />Egyptian Fabricator Certification</h3>
                     <p className="text-sm text-gray-400">Ministry of Trade & Industry recognized program</p>
                     <Button variant="link" className="text-almona-orange p-0 h-auto mt-2 hover:underline">View Certification Requirements</Button>
                   </div>
@@ -560,7 +560,7 @@ const FabricationWorkflowDetail = () => {
             <Badge variant="secondary" className="mb-4 bg-almona-orange/20 text-almona-orange border-almona-orange/50">
               Egyptian Fabricators Program
             </Badge>
-            <h2 className="text-3xl font-bold text-white mb-4">Need a Custom Workflow Solution?</h2>
+            <h2 className="typography-h2 text-white mb-4">Need a Custom Workflow Solution?</h2>
             <p className="text-gray-300 mb-6">
               Our Egyptian engineering team will visit your facility to develop a fabrication 
               process tailored to your specific:

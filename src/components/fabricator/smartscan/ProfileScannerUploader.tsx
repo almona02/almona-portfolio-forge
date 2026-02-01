@@ -456,7 +456,7 @@ export function ProfileScannerUploader({
                   }}
                   disabled={uploading}
                 />
-                <label htmlFor="autoDetectScale">
+                <label htmlFor="autoDetectScale" className="typography-label">
                   <Space size="small">
                     <Text strong>{t('profile_scanner_uploader.scale.auto_detect', 'Auto-detect scale from drawing')}</Text>
                     <Tooltip title={t('profile_scanner_uploader.scale.auto_detect_tooltip', 'AI will attempt to detect scale from dimension labels in the image')}>

@@ -1,22 +1,26 @@
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { useAuth } from "@/context/AuthContext";
+import { trackError } from "@/lib/performance-monitoring";
 import {
-    ScanResultData,
-    SmartScanResult,
-    enhancedSmartScan,
-    getSupportedFormats,
-    scanSingleProfile,
+  BatchScanResponse,
+  ScanResultData,
+  SmartScanResult,
+  enhancedSmartScan,
+  getSupportedFormats,
+  scanBatchProfiles,
+  scanSingleProfile,
 } from "@/services/smartScanApi";
 import { Alert, AlertDescription } from "@/shared/ui/ui/alert";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    Dialog as UIDialog,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  Dialog as UIDialog,
 } from "@/shared/ui/ui/dialog";
 import { Input } from "@/shared/ui/ui/input";
 import { Label } from "@/shared/ui/ui/label";
@@ -25,18 +29,18 @@ import { Switch } from "@/shared/ui/ui/switch";
 import { useProfileTuningStore } from "@/stores/profileTuningStore";
 import { saveScannedProfile } from "@/utils/profileImport";
 import {
-    AlertCircle,
-    AlertTriangle,
-    CheckCircle,
-    Download,
-    Eye,
-    FileText,
-    Loader2,
-    Settings,
-    Upload,
-    X,
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle,
+  Download,
+  Eye,
+  FileText,
+  Loader2,
+  Settings,
+  Upload,
+  X,
 } from "lucide-react";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -83,7 +87,22 @@ export const SmartScanUploader: React.FC = () => {
   }, []);
 
   const onDrop = useCallback((accepted: File[]) => {
-    const next: ScanJob[] = accepted.map((file) => ({
+    // Validate file types and sizes before adding
+    const validFiles = accepted.filter((file) => {
+      const isValidSize = file.size <= 50 * 1024 * 1024; // 50MB max
+      const isValidType = file.type.startsWith("image/") || 
+                         file.type === "application/pdf" ||
+                         file.name.toLowerCase().endsWith(".dxf");
+      return isValidSize && isValidType;
+    });
+
+    if (validFiles.length < accepted.length) {
+      toast.warning(
+        `${accepted.length - validFiles.length} file(s) skipped: invalid type or size > 50MB`
+      );
+    }
+
+    const next: ScanJob[] = validFiles.map((file) => ({
       id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       file,
       status: "pending",
@@ -102,50 +121,165 @@ export const SmartScanUploader: React.FC = () => {
   });
 
   const pendingJobs = useMemo(() => jobs.filter((j) => j.status === "pending"), [jobs]);
+  const [batchSessionId, setBatchSessionId] = useState<string | null>(null);
+  const [useBatchMode, setUseBatchMode] = useState(true); // Default to batch mode for better performance
+
+  // Load session from localStorage on mount
+  React.useEffect(() => {
+    const savedSession = localStorage.getItem("smartscan_batch_session");
+    if (savedSession) {
+      try {
+        const sessionData = JSON.parse(savedSession);
+        if (sessionData.sessionId && sessionData.timestamp) {
+          const age = Date.now() - sessionData.timestamp;
+          // Keep session if less than 1 hour old
+          if (age < 3600000) {
+            setBatchSessionId(sessionData.sessionId);
+          } else {
+            localStorage.removeItem("smartscan_batch_session");
+          }
+        }
+      } catch {
+        localStorage.removeItem("smartscan_batch_session");
+      }
+    }
+  }, []);
 
   const processQueue = async () => {
-    if (jobs.length === 0) return;
+    if (jobs.length === 0 || pendingJobs.length === 0) return;
     setIsProcessing(true);
     setOverallProgress(0);
 
-    for (let i = 0; i < pendingJobs.length; i += 1) {
-      const job = pendingJobs[i];
-      setJobs((prev) =>
-        prev.map((j) => (j.id === job.id ? { ...j, status: "processing", progress: 5 } : j)),
-      );
+    // Mark all pending jobs as processing
+    setJobs((prev) =>
+      prev.map((j) => (j.status === "pending" ? { ...j, status: "processing", progress: 10 } : j)),
+    );
 
-      try {
+    try {
+      if (useBatchMode && pendingJobs.length > 1) {
+        // Use true batch API for multiple files
         const width = knownWidthMm ? parseFloat(knownWidthMm) : undefined;
-        const result = useEnhancedScan
-          ? await enhancedSmartScan(job.file, width, {
-              enableOCR,
-              requireValidation,
-            })
-          : await scanSingleProfile(job.file, width);
+        const files = pendingJobs.map((j) => j.file);
+        
+        setOverallProgress(15);
 
-        setJobs((prev) =>
-          prev.map((j) =>
-            j.id === job.id
-              ? { ...j, status: "success", result: result.data, progress: 100 }
-              : j,
-          ),
+        const batchResponse: BatchScanResponse = await scanBatchProfiles(
+          files,
+          width,
+          batchSessionId || undefined,
+          (processed, total) => {
+            const progress = Math.round((processed / total) * 90 + 15);
+            setOverallProgress(progress);
+          },
         );
-      } catch (err: any) {
+
+        // Save session ID for potential recovery
+        if (batchResponse.session_id) {
+          setBatchSessionId(batchResponse.session_id);
+          localStorage.setItem(
+            "smartscan_batch_session",
+            JSON.stringify({
+              sessionId: batchResponse.session_id,
+              timestamp: Date.now(),
+            }),
+          );
+        }
+
+        // Map batch results to jobs
         setJobs((prev) =>
-          prev.map((j) =>
-            j.id === job.id
-              ? { ...j, status: "error", error: err?.message || "Scan failed", progress: 100 }
-              : j,
-          ),
+          prev.map((j) => {
+            if (j.status !== "processing") return j;
+            const result = batchResponse.results.find((r) => r.filename === j.file.name);
+            if (!result) return j;
+
+            if (result.success && result.data) {
+              return {
+                ...j,
+                status: "success",
+                result: result.data,
+                progress: 100,
+              };
+            } else {
+              return {
+                ...j,
+                status: "error",
+                error: result.error || "Batch scan failed",
+                progress: 100,
+              };
+            }
+          }),
         );
+
+        setOverallProgress(100);
+      } else {
+        // Fallback to sequential processing for single files or when batch mode is disabled
+        for (let i = 0; i < pendingJobs.length; i += 1) {
+          const job = pendingJobs[i];
+          setJobs((prev) =>
+            prev.map((j) =>
+              j.id === job.id ? { ...j, status: "processing", progress: 10 } : j,
+            ),
+          );
+
+          try {
+            const width = knownWidthMm ? parseFloat(knownWidthMm) : undefined;
+            const result = useEnhancedScan
+              ? await enhancedSmartScan(job.file, width, {
+                  enableOCR,
+                  requireValidation,
+                })
+              : await scanSingleProfile(job.file, width);
+
+            setJobs((prev) =>
+              prev.map((j) =>
+                j.id === job.id
+                  ? { ...j, status: "success", result: result.data, progress: 100 }
+                  : j,
+              ),
+            );
+          } catch (err: any) {
+            setJobs((prev) =>
+              prev.map((j) =>
+                j.id === job.id
+                  ? { ...j, status: "error", error: err?.message || "Scan failed", progress: 100 }
+                  : j,
+              ),
+            );
+          }
+
+          const processedCount =
+            jobs.filter((j) => j.status === "success" || j.status === "error").length + 1;
+          setOverallProgress(Math.round((processedCount / jobs.length) * 100));
+        }
       }
-
-      const processedCount =
-        jobs.filter((j) => j.status === "success" || j.status === "error").length + 1;
-      setOverallProgress(Math.round((processedCount / jobs.length) * 100));
+    } catch (err: unknown) {
+      // Global error handling for batch mode
+      const error = err instanceof Error ? err : new Error(String(err));
+      const errorMessage = error.message || "Batch processing failed";
+      
+      // Track error for monitoring
+      trackError("SmartScan", "batch_processing", errorMessage);
+      
+      toast.error(`Batch processing failed: ${errorMessage}`);
+      setJobs((prev) =>
+        prev.map((j) =>
+          j.status === "processing"
+            ? { ...j, status: "error", error: errorMessage, progress: 100 }
+            : j,
+        ),
+      );
+    } finally {
+      setIsProcessing(false);
+      // Clean up session if all jobs are done
+      setJobs((currentJobs) => {
+        const allDone = currentJobs.every((j) => j.status === "success" || j.status === "error");
+        if (allDone && batchSessionId) {
+          localStorage.removeItem("smartscan_batch_session");
+          setBatchSessionId(null);
+        }
+        return currentJobs;
+      });
     }
-
-    setIsProcessing(false);
   };
 
   const removeJob = (id: string) => {
@@ -155,7 +289,17 @@ export const SmartScanUploader: React.FC = () => {
   const clearAll = () => {
     setJobs([]);
     setOverallProgress(0);
+    setBatchSessionId(null);
+    localStorage.removeItem("smartscan_batch_session");
   };
+
+  const retryFailedJobs = () => {
+    setJobs((prev) =>
+      prev.map((j) => (j.status === "error" ? { ...j, status: "pending", error: undefined } : j)),
+    );
+  };
+
+  const failedJobsCount = useMemo(() => jobs.filter((j) => j.status === "error").length, [jobs]);
 
   const downloadSVG = (job: ScanJob) => {
     if (!job.result) return;
@@ -208,7 +352,10 @@ export const SmartScanUploader: React.FC = () => {
   };
 
   const handleImport = async (profileData: Partial<any>): Promise<string> => {
-    if (!importWizardData.jobId || !importWizardData.scanData) return "";
+    if (!importWizardData.jobId || !importWizardData.scanData) {
+      toast.error("Missing scan data. Please try scanning again.");
+      return "";
+    }
     if (!user?.id) {
       toast.error("You must be signed in to import profiles.");
       return "";
@@ -231,8 +378,22 @@ export const SmartScanUploader: React.FC = () => {
           },
         },
       };
+      
+      // Validate payload before sending
+      if (!payload.specifications.geometry_config.svg_path) {
+        throw new Error("Missing SVG path in scan data");
+      }
+      if (!payload.specifications.geometry_config.view_box) {
+        throw new Error("Missing view box in scan data");
+      }
+
       const newId = await saveScannedProfile(payload, user.id);
-      toast.success(`Profile imported (id: ${newId})`);
+      
+      if (!newId) {
+        throw new Error("Failed to save profile - no ID returned");
+      }
+
+      toast.success(`Profile imported successfully (ID: ${newId})`);
       tuningStore.setCurrentProfileId(newId);
       tuningStore.setActiveTab("geometry");
       navigate(`/fabricator/profiles/${newId}/tune`, {
@@ -241,30 +402,38 @@ export const SmartScanUploader: React.FC = () => {
       setImportWizardData({ isOpen: false });
       setJobs((prev) => prev.filter((j) => j.id !== importWizardData.jobId));
       return newId;
-    } catch (err: any) {
-      toast.error(err?.message || "Import failed");
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      const errorMessage = error.message || "Import failed";
+      
+      // Track error for monitoring
+      trackError("SmartScan", "profile_import", errorMessage);
+      
+      toast.error(`Import failed: ${errorMessage}`);
       return "";
     }
   };
 
-  const StatusIcon = ({ status }: { status: JobStatus }) => {
+  const StatusIcon: React.FC<{ status: JobStatus }> = useCallback(({ status }) => {
     switch (status) {
       case "pending":
         return <FileText className="w-5 h-5 text-zinc-500" />;
       case "processing":
-        return <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />;
+        return <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />;
       case "success":
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
+        return <CheckCircle className="w-5 h-5 text-emerald-400" />;
       case "error":
-        return <AlertCircle className="w-5 h-5 text-red-500" />;
+        return <AlertCircle className="w-5 h-5 text-red-400" />;
+      default:
+        return <FileText className="w-5 h-5 text-zinc-500" />;
     }
-  };
+  }, []);
 
   return (
-    <div className="space-y-6 p-4 bg-zinc-950/50 rounded-xl border border-zinc-800">
+    <div className="space-y-6 p-4 bg-slate-900/60 backdrop-blur-sm rounded-xl border border-amber-500/20 shadow-lg shadow-amber-500/5">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-white">
+          <h2 className="typography-h2 text-xl font-semibold text-white tracking-wide uppercase">
             AI-Assisted Engineering Drawing Scanner
           </h2>
           <p className="text-sm text-zinc-400">
@@ -288,7 +457,7 @@ export const SmartScanUploader: React.FC = () => {
               </DialogHeader>
               <div className="space-y-3">
                 <div>
-                  <h4 className="font-medium mb-2">Direct Support:</h4>
+                  <h4 className="typography-h4 font-medium mb-2">Direct Support:</h4>
                   <div className="flex flex-wrap gap-2">
                     {supportedFormats.supported.map((fmt) => (
                       <Badge key={fmt} variant="secondary">
@@ -319,17 +488,17 @@ export const SmartScanUploader: React.FC = () => {
             {...getRootProps()}
             className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
               isDragActive
-                ? "border-blue-500 bg-blue-500/5"
-                : "border-zinc-700 hover:border-zinc-500 hover:bg-zinc-900/50"
+                ? "border-amber-500 bg-amber-500/10 shadow-lg shadow-amber-500/20"
+                : "border-amber-500/30 hover:border-amber-500/50 hover:bg-amber-500/5"
             }`}
           >
             <input {...getInputProps()} />
             <div className="flex flex-col items-center gap-4">
-              <div className="p-3 rounded-full bg-zinc-800">
-                <Upload className="w-6 h-6 text-zinc-400" />
+              <div className="p-3 rounded-full bg-amber-500/10 border border-amber-500/20">
+                <Upload className="w-6 h-6 text-amber-400" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-lg font-medium text-zinc-200">
+                <h3 className="typography-h3 text-lg font-medium text-zinc-200">
                   {isDragActive ? "Drop files here" : "Drag & drop catalog pages"}
                 </h3>
                 <p className="text-sm text-zinc-500">Or click to browse · Max 50MB per file</p>
@@ -340,7 +509,7 @@ export const SmartScanUploader: React.FC = () => {
 
         <div className="space-y-4">
           <div>
-            <Label htmlFor="knownWidth" className="text-sm text-zinc-400">
+            <Label htmlFor="knownWidth" className="typography-label text-sm text-zinc-400">
               Known Width (mm) - Optional
             </Label>
             <Input
@@ -358,7 +527,22 @@ export const SmartScanUploader: React.FC = () => {
           <div className="space-y-3 p-3 bg-zinc-900/50 rounded-lg border border-zinc-800">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label className="text-sm font-medium text-zinc-300">Enhanced SmartScan</Label>
+                <Label className="typography-label text-sm font-medium text-zinc-300">Batch Processing</Label>
+                <p className="text-xs text-zinc-500">
+                  Process multiple files simultaneously (faster)
+                </p>
+              </div>
+              <Switch
+                checked={useBatchMode}
+                onCheckedChange={setUseBatchMode}
+                className="data-[state=checked]:bg-amber-500"
+                disabled={pendingJobs.length <= 1}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label className="typography-label text-sm font-medium text-zinc-300">Enhanced SmartScan</Label>
                 <p className="text-xs text-zinc-500">
                   Better accuracy with OCR and scale detection
                 </p>
@@ -366,26 +550,26 @@ export const SmartScanUploader: React.FC = () => {
               <Switch
                 checked={useEnhancedScan}
                 onCheckedChange={setUseEnhancedScan}
-                className="data-[state=checked]:bg-blue-500"
+                className="data-[state=checked]:bg-amber-500"
               />
             </div>
 
             {useEnhancedScan && (
-              <div className="space-y-2 pl-1 border-l-2 border-blue-500/30 ml-1">
+              <div className="space-y-2 pl-1 border-l-2 border-amber-500/30 ml-1">
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs text-zinc-400">Extract text (OCR)</Label>
+                  <Label className="typography-label text-xs text-zinc-400">Extract text (OCR)</Label>
                   <Switch
                     checked={enableOCR}
                     onCheckedChange={setEnableOCR}
-                    className="scale-90 origin-right"
+                    className="scale-90 origin-right data-[state=checked]:bg-amber-500"
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs text-zinc-400">Strict validation</Label>
+                  <Label className="typography-label text-xs text-zinc-400">Strict validation</Label>
                   <Switch
                     checked={requireValidation}
                     onCheckedChange={setRequireValidation}
-                    className="scale-90 origin-right"
+                    className="scale-90 origin-right data-[state=checked]:bg-amber-500"
                   />
                 </div>
               </div>
@@ -395,22 +579,36 @@ export const SmartScanUploader: React.FC = () => {
           <div className="flex gap-2">
             <Button
               onClick={processQueue}
-              disabled={isProcessing || jobs.length === 0}
-              className="flex-1 bg-blue-600 hover:bg-blue-500"
+              disabled={isProcessing || pendingJobs.length === 0}
+              className="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-medium shadow-lg shadow-amber-500/20"
             >
               {isProcessing ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing...
                 </>
               ) : (
-                "Start SmartScan"
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Start SmartScan {useBatchMode && pendingJobs.length > 1 ? `(${pendingJobs.length} files)` : ""}
+                </>
               )}
             </Button>
+            {failedJobsCount > 0 && (
+              <Button
+                onClick={retryFailedJobs}
+                variant="outline"
+                className="border-amber-500/30 hover:bg-amber-500/10 text-amber-400"
+                size="sm"
+              >
+                Retry Failed ({failedJobsCount})
+              </Button>
+            )}
             {jobs.length > 0 && (
               <Button
                 onClick={clearAll}
                 variant="outline"
                 className="border-zinc-700 hover:bg-zinc-800"
+                size="sm"
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -431,27 +629,27 @@ export const SmartScanUploader: React.FC = () => {
 
       {jobs.length > 0 && (
         <div className="grid grid-cols-4 gap-4 text-center">
-          <div className="bg-zinc-900 rounded p-3">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-amber-500/10 shadow-md">
             <div className="text-2xl font-bold text-white">{jobs.length}</div>
-            <div className="text-xs text-zinc-400">Total Files</div>
+            <div className="text-xs text-zinc-400 uppercase tracking-wide">Total Files</div>
           </div>
-          <div className="bg-zinc-900 rounded p-3">
-            <div className="text-2xl font-bold text-green-500">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-emerald-500/20 shadow-md">
+            <div className="text-2xl font-bold text-emerald-400">
               {jobs.filter((j) => j.status === "success").length}
             </div>
-            <div className="text-xs text-zinc-400">Successful</div>
+            <div className="text-xs text-zinc-400 uppercase tracking-wide">Successful</div>
           </div>
-          <div className="bg-zinc-900 rounded p-3">
-            <div className="text-2xl font-bold text-yellow-500">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-amber-500/20 shadow-md">
+            <div className="text-2xl font-bold text-amber-400">
               {jobs.filter((j) => j.status === "pending").length}
             </div>
-            <div className="text-xs text-zinc-400">Pending</div>
+            <div className="text-xs text-zinc-400 uppercase tracking-wide">Pending</div>
           </div>
-          <div className="bg-zinc-900 rounded p-3">
-            <div className="text-2xl font-bold text-red-500">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-3 border border-red-500/20 shadow-md">
+            <div className="text-2xl font-bold text-red-400">
               {jobs.filter((j) => j.status === "error").length}
             </div>
-            <div className="text-xs text-zinc-400">Failed</div>
+            <div className="text-xs text-zinc-400 uppercase tracking-wide">Failed</div>
           </div>
         </div>
       )}
@@ -494,7 +692,7 @@ export const SmartScanUploader: React.FC = () => {
                       <Button
                         size="sm"
                         onClick={() => openImportWizard(job)}
-                        className="h-8 text-xs bg-green-600 hover:bg-green-500"
+                        className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
                       >
                         <Settings className="w-3 h-3 mr-1" />
                         Tune & Import
@@ -530,7 +728,7 @@ export const SmartScanUploader: React.FC = () => {
               {job.status === "success" && job.result && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-3 border-t border-zinc-800">
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-zinc-400">Vector Preview</h4>
+                    <h4 className="typography-h4 text-sm font-medium text-zinc-400">Vector Preview</h4>
                     <div className="bg-white rounded p-2 border border-zinc-700">
                       <svg viewBox={job.result.view_box} className="w-full h-32">
                         <path d={job.result.svg_path} fill="#333333" stroke="none" />
@@ -540,7 +738,7 @@ export const SmartScanUploader: React.FC = () => {
 
                   <div className="space-y-3">
                     <div>
-                      <h4 className="text-sm font-medium text-zinc-400 mb-2">Detected Dimensions</h4>
+                      <h4 className="typography-h4 text-sm font-medium text-zinc-400 mb-2">Detected Dimensions</h4>
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
                           <span className="text-zinc-400">Width:</span>
@@ -595,7 +793,7 @@ export const SmartScanUploader: React.FC = () => {
 
                     {job.result.technical_data && (
                       <div className="space-y-2">
-                        <h4 className="text-sm font-medium text-zinc-400">OCR Extracted</h4>
+                        <h4 className="typography-h4 text-sm font-medium text-zinc-400">OCR Extracted</h4>
                         <div className="space-y-2">
                           {job.result.technical_data.profile_name && (
                             <div className="p-2 bg-blue-500/10 rounded border border-blue-500/20">
@@ -627,11 +825,11 @@ export const SmartScanUploader: React.FC = () => {
                             </div>
                           )}
 
-                          {job.result.technical_data.detected_brands?.length > 0 && (
+                          {Array.isArray(job.result.technical_data.detected_brands) && job.result.technical_data.detected_brands.length > 0 && (
                             <div className="flex flex-wrap gap-1">
                               <span className="text-xs text-zinc-500">Brands:</span>
-                              {job.result.technical_data.detected_brands.map((brand, idx) => (
-                                <Badge key={idx} variant="outline" className="text-xs bg-green-500/10">
+                              {job.result.technical_data.detected_brands.map((brand: string, idx: number) => (
+                                <Badge key={idx} variant="outline" className="text-xs bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
                                   {brand}
                                 </Badge>
                               ))}
@@ -651,25 +849,25 @@ export const SmartScanUploader: React.FC = () => {
 
                   <div className="space-y-3">
                     <div>
-                      <h4 className="text-sm font-medium text-zinc-400 mb-2">Quality Assessment</h4>
+                      <h4 className="typography-h4 text-sm font-medium text-zinc-400 mb-2">Quality Assessment</h4>
                       <div className="space-y-3">
                         {job.result.quality?.accuracy_tier && (
                           <div
                             className={`p-3 rounded-lg border ${
                               job.result.quality.accuracy_tier === "production"
-                                ? "bg-green-500/10 border-green-500/30"
+                                ? "bg-emerald-500/10 border-emerald-500/30"
                                 : job.result.quality.accuracy_tier === "verified_required"
-                                ? "bg-yellow-500/10 border-yellow-500/30"
+                                ? "bg-amber-500/10 border-amber-500/30"
                                 : "bg-red-500/10 border-red-500/30"
                             }`}
                           >
                             <div className="flex items-center justify-between mb-2">
                               <div className="flex items-center gap-2">
                                 {job.result.quality.accuracy_tier === "production" && (
-                                  <CheckCircle className="w-4 h-4 text-green-500" />
+                                  <CheckCircle className="w-4 h-4 text-emerald-400" />
                                 )}
                                 {job.result.quality.accuracy_tier === "verified_required" && (
-                                  <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                                  <AlertTriangle className="w-4 h-4 text-amber-400" />
                                 )}
                                 {job.result.quality.accuracy_tier === "review_required" && (
                                   <AlertCircle className="w-4 h-4 text-red-500" />
@@ -686,9 +884,9 @@ export const SmartScanUploader: React.FC = () => {
                                 variant="outline"
                                 className={`text-xs ${
                                   job.result.quality.accuracy_tier === "production"
-                                    ? "text-green-400 border-green-400/30"
+                                    ? "text-emerald-400 border-emerald-400/30"
                                     : job.result.quality.accuracy_tier === "verified_required"
-                                    ? "text-yellow-400 border-yellow-400/30"
+                                    ? "text-amber-400 border-amber-400/30"
                                     : "text-red-400 border-red-400/30"
                                 }`}
                               >
@@ -806,7 +1004,7 @@ export const SmartScanUploader: React.FC = () => {
                             if (!standard) return;
                             toast.info(`Applied ${standard?.name || 'Egyptian standard'} standard dimensions`);
                           }}
-                          className="h-7 text-xs border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10"
+                          className="h-7 text-xs border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-400"
                         >
                           <CheckCircle className="w-3 h-3 mr-1" />
                           Apply Egyptian Standard
@@ -831,12 +1029,14 @@ export const SmartScanUploader: React.FC = () => {
       </div>
 
       {jobs.length === 0 && !isProcessing && (
-        <div className="text-center py-12 text-zinc-500">
+        <div className="text-center py-12 text-zinc-400">
           <div className="mb-4">
-            <Upload className="w-12 h-12 mx-auto opacity-50" />
+            <Upload className="w-12 h-12 mx-auto opacity-50 text-amber-500/30" />
           </div>
-          <h3 className="text-lg font-medium mb-2">No files uploaded</h3>
-          <p className="text-sm max-w-md mx-auto">
+          <h3 className="typography-h3 text-lg font-medium mb-2 text-white tracking-wide uppercase">
+            No files uploaded
+          </h3>
+          <p className="text-sm max-w-md mx-auto text-zinc-400">
             Drag & drop catalog pages or browse to start converting engineering drawings to vector
             profiles
           </p>
@@ -874,5 +1074,16 @@ export const SmartScanUploader: React.FC = () => {
   );
 };
 
-export default SmartScanUploader;
+// Memoize component for performance optimization
+const SmartScanUploaderMemo = memo(SmartScanUploader);
+SmartScanUploaderMemo.displayName = "SmartScanUploader";
+
+// Wrap with error boundary for production hardening
+const SmartScanUploaderWithErrorBoundary: React.FC = () => (
+  <ErrorBoundary level="component">
+    <SmartScanUploaderMemo />
+  </ErrorBoundary>
+);
+
+export default SmartScanUploaderWithErrorBoundary;
 

@@ -628,7 +628,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
             <Card className="max-w-md">
               <CardContent className="p-6 text-center">
                 <ImageIcon className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <h3 className="text-lg font-semibold mb-2">Upload Building Photo</h3>
+                <h3 className="typography-h3 text-lg mb-2">Upload Building Photo</h3>
                 <p className="text-sm text-gray-400 mb-4">
                   Upload a photo of the building to superimpose your window design
                 </p>
@@ -677,7 +677,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
 
             <TabsContent value="overlay" className="space-y-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Overlay Mode</label>
+                <label className="typography-label text-sm font-medium mb-2 block">Overlay Mode</label>
                 <Select value={overlayMode} onValueChange={(v) => setOverlayMode(v as OverlayMode)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -691,7 +691,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Window Scale</label>
+                <label className="typography-label text-sm font-medium mb-2 block">Window Scale</label>
                 <Slider
                   value={[windowScale]}
                   onValueChange={([value]) => setWindowScale(value)}
@@ -721,7 +721,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
 
             <TabsContent value="lighting" className="space-y-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Light Intensity</label>
+                <label className="typography-label text-sm font-medium mb-2 block">Light Intensity</label>
                 <Slider
                   value={[lighting.intensity]}
                   onValueChange={([value]) => setLighting({ ...lighting, intensity: value })}
@@ -733,7 +733,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Light Direction</label>
+                <label className="typography-label text-sm font-medium mb-2 block">Light Direction</label>
                 <Slider
                   value={[lighting.direction]}
                   onValueChange={([value]) => setLighting({ ...lighting, direction: value })}
@@ -745,7 +745,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Ambient Light</label>
+                <label className="typography-label text-sm font-medium mb-2 block">Ambient Light</label>
                 <Slider
                   value={[lighting.ambient]}
                   onValueChange={([value]) => setLighting({ ...lighting, ambient: value })}
@@ -757,7 +757,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Shadow Opacity</label>
+                <label className="typography-label text-sm font-medium mb-2 block">Shadow Opacity</label>
                 <Slider
                   value={[lighting.shadowOpacity]}
                   onValueChange={([value]) => setLighting({ ...lighting, shadowOpacity: value })}
@@ -771,7 +771,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
 
             <TabsContent value="position" className="space-y-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">X Position</label>
+                <label className="typography-label text-sm font-medium mb-2 block">X Position</label>
                 <Slider
                   value={[windowPosition.x]}
                   onValueChange={([value]) => setWindowPosition({ ...windowPosition, x: value })}
@@ -782,7 +782,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Y Position</label>
+                <label className="typography-label text-sm font-medium mb-2 block">Y Position</label>
                 <Slider
                   value={[windowPosition.y]}
                   onValueChange={([value]) => setWindowPosition({ ...windowPosition, y: value })}
@@ -793,7 +793,7 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Z Position</label>
+                <label className="typography-label text-sm font-medium mb-2 block">Z Position</label>
                 <Slider
                   value={[windowPosition.z]}
                   onValueChange={([value]) => setWindowPosition({ ...windowPosition, z: value })}
@@ -827,8 +827,8 @@ export const PhotoMatchViewer: React.FC<PhotoMatchViewerProps> = ({
                 </Button>
               </div>
 
-              <div className="p-3 bg-orange-500/10 rounded-lg">
-                <p className="text-xs text-orange-400">
+              <div className="btn-primary">
+                <p className="text-xs text-amber-400">
                   Exported presentations include Almona branding and can be shared with clients.
                 </p>
               </div>

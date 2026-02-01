@@ -3,6 +3,7 @@
  * Handles TRY/EGP/USD conversions with caching and fallback rates
  */
 
+import { useState, useCallback } from 'react';
 import { RegionCode } from '@/config/regionalConfig';
 
 export interface ExchangeRate {

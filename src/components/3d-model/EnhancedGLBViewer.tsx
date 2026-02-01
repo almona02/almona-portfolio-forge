@@ -308,7 +308,7 @@ export const EnhancedGLBViewer = forwardRef<any, EnhancedGLBViewerProps>(({
                   target="_blank"
                   rel="noopener noreferrer"
                   title="Open SwiftXR Interactive Experience"
-                  className="px-3 py-1.5 rounded-md bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-medium hover:from-orange-600 hover:to-red-600 transition-all cursor-pointer"
+                  className="px-3 py-1.5 rounded-md bg-gradient-to-r from-amber-500 to-red-500 text-white text-xs font-medium hover:from-amber-600 hover:to-red-600 transition-all cursor-pointer"
                 >SwiftXR Web App</a>
               )}
             </div>
