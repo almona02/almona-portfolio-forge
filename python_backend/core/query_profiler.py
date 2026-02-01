@@ -82,7 +82,12 @@ class QueryProfiler:
         session = self.session or AsyncSessionLocal()
 
         try:
+            # Validate format to prevent injection
+            if format.upper() not in ["JSON", "TEXT", "XML", "YAML"]:
+                raise ValueError("Invalid format: must be JSON, TEXT, XML, or YAML")
+
             # Build EXPLAIN ANALYZE query
+            # nosemgrep: python.sqlalchemy.security.audit.avoid-sqlalchemy-text.avoid-sqlalchemy-text
             explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT {format}) {query}"
 
             # Execute EXPLAIN ANALYZE

@@ -61,7 +61,7 @@ describe('Degraded Mode', () => {
     
     // Mock event emitter to verify degraded event
     const emitSpy = vi.spyOn(service as any, 'emitRealityOSEvent').mockResolvedValue(undefined);
-    const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const _consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     // Should NOT throw
     // Using private method access
@@ -103,7 +103,7 @@ describe('Degraded Mode', () => {
       // In the implementation, saveToUnifiedStoreWithRetry calls saveToUnifiedStore.
       // And saveToUnifiedStore catches error and returns if degraded.
       // So we make saveToUnifiedStore throw error.
-      const saveSpy = vi.spyOn(service as any, 'saveToUnifiedStore');
+      const _saveSpy = vi.spyOn(service as any, 'saveToUnifiedStore');
       // We want to simulate the behavior INSIDE saveToUnifiedStore throwing.
       // But we can't easily mock "half" of the function.
       // So we will rely on the fact that if we Mock saveToUnifiedStore to Throw,
@@ -131,11 +131,11 @@ describe('Degraded Mode', () => {
       mockSaveState.mockRejectedValue(new Error('IDB Fail'));
       
       // 2. Mock LocalStorage
-      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      const _setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
           throw new Error('LS Fail');
       });
       
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const _consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
       // Call retry wrapper
       const result = await (service as any).saveToUnifiedStoreWithRetry(data);
