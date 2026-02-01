@@ -75,7 +75,7 @@ export const MachineHealthTrends: React.FC<MachineHealthTrendsProps> = ({ machin
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-slate-800/50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Vibrate className="h-4 w-4 text-orange-400"/>Vibration Analysis</CardTitle>
+            <CardTitle className="flex items-center gap-2"><Vibrate className="h-4 w-4 text-amber-400"/>Vibration Analysis</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-sm text-gray-400">FFT-derived RMS trend for early fault detection</div>
@@ -99,11 +99,11 @@ export const MachineHealthTrends: React.FC<MachineHealthTrendsProps> = ({ machin
         </Card>
       </div>
 
-      <Card className="bg-gradient-to-br from-gray-900 to-black border border-orange-500/20">
+      <Card className="bg-gradient-to-br from-gray-900 to-black border border-amber-500/20">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-orange-400" /> Machine Health Trends
+              <Activity className="h-5 w-5 text-amber-400" /> Machine Health Trends
             </CardTitle>
             <Badge variant="outline" className="text-xs">{machineIds.join(', ')}</Badge>
           </div>

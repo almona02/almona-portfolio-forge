@@ -95,7 +95,7 @@ export const SystemPackSelector: React.FC<SystemPackSelectorProps> = ({
         {filteredPacks.map((pack) => (
           <Card
             key={pack.id}
-            className="bg-gray-700 border-gray-600 cursor-pointer hover:border-orange-400 transition-colors"
+            className="bg-gray-700 border-gray-600 cursor-pointer transition-colors card-premium"
             onClick={() => onSystemPackSelect(pack)}
           >
             <CardContent className="p-4">

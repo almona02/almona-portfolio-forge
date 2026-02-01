@@ -30,13 +30,13 @@ export const EgyptianConstraintsCard: React.FC<EgyptianConstraintsCardProps> = (
   const windLabel = constraints.windZone ? `${constraints.windZone} wind` : 'Wind';
 
   return (
-    <Card className={`p-4 bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 ${className}`}>
+    <Card className={`p-4 bg-gradient-to-r from-amber-50 to-amber-50 border-amber-200 ${className}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1 space-y-3">
           <div className="flex items-center gap-2">
             <Flag className="h-5 w-5 text-amber-600" />
             <div>
-              <h4 className="font-semibold text-amber-800">Egyptian Engineering Standards</h4>
+              <h4 className="typography-h4 text-amber-800">Egyptian Engineering Standards</h4>
               <p className="text-xs text-amber-600">
                 {constraints.governorate || 'Egypt'} {constraints.wizardVersion ? `• v${constraints.wizardVersion}` : ''}
               </p>
@@ -45,8 +45,8 @@ export const EgyptianConstraintsCard: React.FC<EgyptianConstraintsCardProps> = (
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div className="space-y-1">
-              <div className="flex items-center gap-1 text-orange-600 font-medium">
-                <Building className="h-4 w-4 text-orange-500" />
+              <div className="flex items-center gap-1 text-amber-600 font-medium">
+                <Building className="h-4 w-4 text-amber-500" />
                 <span>Location</span>
               </div>
               <p className="text-gray-800">{constraints.governorate || '—'}</p>

@@ -66,7 +66,7 @@ export const ToastTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <h3
     ref={ref}
-    className={cn("text-sm font-semibold [&+div]:text-xs", className)}
+    className={cn("typography-h3", className)}
     {...props}
   />
 ));

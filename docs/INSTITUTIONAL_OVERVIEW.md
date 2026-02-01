@@ -4,8 +4,8 @@
 **Document Classification**: Technical Specification  
 **Authority**: Canonical (Supreme Source of Truth: AICS-001)  
 **Audience**: Academic Reviewers, Engineers, Auditors, Institutional Stakeholders  
-**Version**: 1.0.0  
-**Date**: 2025-02-20  
+**Version**: 1.1.0  
+**Date**: 2026-01-20  
 **Status**: Production-Ready, Institution-Grade
 
 > **Note**: This is the institutional system overview. For quick start and installation, see [README.md](../README.md).
@@ -262,6 +262,99 @@ This figure illustrates the three-tier decision architecture that governs all sy
 - [AICS-001 Section 5.10: Constitutional AI Governance Framework](docs/AICS-001_ALMONA_INDUSTRIAL_COMPUTING_SPECIFICATION.md#510-constitutional-ai-governance-framework)
 - [YDT Intelligence Gate Architecture](YDT_INTELLIGENCE_GATE_ARCHITECTURE.md)
 - [Week 1 Constitutional Baseline](WEEK1_CONSTITUTIONAL_BASELINE.md)
+
+### 2.5 Constitutional Wiring Implementation (Week 2-4, January 2026)
+
+**Status**: ✅ COMPLETE - Institutional-Grade Governance
+
+**Purpose**: The Constitutional Wiring Implementation establishes formal component authority through truth domains, execution classes, and CI-enforced validation. This ensures zero orphaned components and explicit authority assignment for all 244 system components.
+
+**Figure 4: Constitutional Wiring Architecture** (AICS-001 §6.4)
+
+```
+┌─────────────────────────────────────────────┐
+│    WIRING MANIFEST (Constitutional Law)     │
+│  wiring-manifest.yaml                       │
+│  - 5 Truth Domains                          │
+│  - 5 Execution Classes                      │
+│  - Validation Rules                         │
+└─────────────────────────────────────────────┘
+                     │
+         ┌───────────┴───────────┐
+         ▼                       ▼
+┌──────────────────┐    ┌──────────────────┐
+│ ACTIVE COMPONENTS│    │ DORMANT COMPONENTS│
+│ (205 wired)      │    │ (39 preserved)    │
+│ ├── Tier 3       │    │ ├── /future/      │
+│ ├── Tier 2       │    │ ├── material-labs │
+│ ├── Tier 1       │    │ ├── machine-labs  │
+│ └── Presentation │    │ └── wizard-engine │
+└──────────────────┘    └──────────────────┘
+         │                       │
+         └───────────┬───────────┘
+                     ▼
+┌─────────────────────────────────────────────┐
+│    WIRING VALIDATOR (CI Enforcement)        │
+│  - Single Source of Truth (§6.2)            │
+│  - Tier Boundaries (§5.10.2)                │
+│  - Future Containment (§8.5)                │
+│  - Callback Constraints (Guardrail A)       │
+└─────────────────────────────────────────────┘
+```
+
+**Truth Domains** (AICS-001 §6.3):
+
+| Domain | Authority | Canonical Sources |
+|--------|-----------|-------------------|
+| **Geometry Truth** | Tier 3 | DraftingCanvas2D, SmartDrawCanvas |
+| **Material Truth** | Tier 3 | DXFProfileImporter, HardenerSelectionPanel |
+| **Machine Truth** | Tier 3 | ToolpathPreviewModal, MachiningZoneEditor |
+| **Process Truth** | Tier 2 | UnifiedStudioWizard |
+| **Certification Truth** | Tier 3 Override | SafetyVerificationModal |
+
+**Execution Classes** (AICS-001 §5.10.2):
+
+| Class | Authority | AI Allowed | Components |
+|-------|-----------|------------|------------|
+| **Tier 3** | Absolute | No | EngineeringBay, drafting/, bom/ |
+| **Tier 2** | Advisory | Yes (gated) | AISuggestionPanel, JobRiskIndicator |
+| **Tier 1** | Strategic | YDT Required | YDTPricingOracle, YDTBusinessLayer |
+| **Presentation** | None | No | ZoomControl, ThemeToggle |
+| **Dormant** | Suspended | No | /future/* directories |
+
+**Constitutional Guardrails**:
+
+1. **Guardrail A** (CallbackConstraints): Advisory components cannot emit intent callbacks
+   - Forbidden: `onApprove`, `onExecute`, `onConfirm`, `onSubmit`
+   - Allowed: `onData`, `onChange`, `onSelect`, `onPreview`
+
+2. **Guardrail B** (AdvisorySnapshot): All advisory decisions logged for audit
+   - Captures: component, tier, inputHash, outputHash, confidence, timestamp
+   - Storage: localStorage with 1000-snapshot retention
+
+**Implementation Metrics**:
+
+| Metric | Value | Status |
+|--------|-------|--------|
+| Total Components | 244 | ✅ |
+| Wired (Active) | 205 | ✅ |
+| Dormant (Preserved) | 39 | ✅ |
+| Constitutional Health | 98/100 | ✅ |
+| Tier 3 Purity | 95% | ✅ |
+| Truth Clarity | 100% | ✅ |
+| Active Violations | 0 | ✅ |
+
+**CI Enforcement**:
+
+- **GitHub Actions**: `constitutional-validation.yml` runs on push/PR
+- **Build Blocking**: Violations fail the CI pipeline
+- **npm Scripts**: `validate:manifest`, `validate:constitutional`, `ci:full`
+
+**Reference**:
+- Wiring Manifest: `src/components/fabricator/wiring-manifest.yaml`
+- WiringValidator: `src/lib/constitutional/WiringValidator.ts`
+- Health Dashboard: `src/components/constitutional/ConstitutionalHealthDashboard.tsx`
+- Certificate: `CONSTITUTIONAL_CERTIFICATE.json`
 
 ### 2.4 Reference Implementation Architecture (Non-Normative)
 
@@ -622,9 +715,216 @@ The following technologies represent the current reference implementation. They 
 
 **Institutional Status**: Production-Ready, Institution-Grade
 
-**Last Updated**: 2025-02-20
+**Last Updated**: 2026-01-20
 
 **Document Authority**: This README is maintained as a formal system overview. For canonical specifications, see AICS-001.
+
+---
+
+## 12. Recent Implementations (January 2026)
+
+### 12.1 Gold Tier Phase 1 - Engineering-Grade Calculation System
+
+**Status**: ✅ Phase 1, Task 1 & Task 2.1 Complete (January 2025-2026)
+
+**Purpose**: Gold Tier represents the engineering-grade calculation system that provides micron-level precision, material-specific physics, and region-aware manufacturing rules for fenestration fabrication.
+
+**Completed Components**:
+
+1. **FenestrationSystem Schema** (Task 1.1) - ✅ Complete
+   - **File**: `src/types/fenestration.ts` (273 lines)
+   - **Features**: Complete TypeScript interface for fenestration systems
+   - **Includes**: ProfileSpec, HardwareRule, HardwareSpec interfaces
+   - **Validation**: Type guard functions with comprehensive JSDoc
+
+2. **FenestrationSystemValidator** (Task 1.1) - ✅ Complete
+   - **File**: `src/lib/fabricator/goldTier/FenestrationSystemValidator.ts` (854 lines)
+   - **Features**: Complete validation methods with 50+ error codes (VAL-001 to VAL-699)
+   - **Performance**: <1ms cached validation, <10ms first validation
+   - **Capabilities**: Error recovery suggestions, audit trail integration
+   - **Status**: Zero TODOs, production-ready
+
+3. **PatternMigrationService** (Task 1.1) - ✅ Complete
+   - **File**: `src/lib/fabricator/goldTier/PatternMigrationService.ts` (637 lines)
+   - **Features**: Migration from `EgyptianPattern` to `FenestrationSystem`
+   - **Capabilities**: 3 methods for profile extraction, formula parsing, hardware extraction
+   - **Safety**: Full rollback capability
+
+4. **PerformanceMonitor** (Task 1.1) - ✅ Complete
+   - **File**: `src/lib/fabricator/goldTier/PerformanceMonitor.ts` (168 lines)
+   - **Features**: Performance metrics tracking, cache hit rate monitoring
+   - **Statistics**: Average, min, max, p95, p99 percentile tracking
+   - **Export**: Exportable metrics for analysis
+
+5. **FabricatorAudit** (Task 1.1) - ✅ Complete
+   - **File**: `src/lib/audit/fabricatorAudit.ts` (243 lines)
+   - **Features**: Singleton audit logger, queue-based async logging
+   - **Integration**: Supabase integration with graceful degradation
+   - **Performance**: Non-blocking operations
+
+6. **ApexEngineV2 Core Engine** (Task 2.1) - ✅ Complete
+   - **File**: `src/lib/fabricator/goldTier/ApexEngineV2.ts` (849 lines)
+   - **Features**: Engineering-grade parametric calculation system
+   - **Capabilities**:
+     - Material-specific calculations (Aluminum, UPVC, Steel)
+     - Region-specific physics (GCC thermal expansion, Turkish seismic)
+     - Manufacturing process rules (kerf, welding, miter)
+     - Hierarchical component system with parametric propagation
+     - Micron-level precision (all dimensions in microns)
+   - **Performance**: <100ms calculation time
+   - **Output**: Visual geometry and fabrication data generation
+
+**Test Coverage**: Comprehensive test suites for all components (1,000+ test lines)
+
+**Quality Standards**: Gold Tier Grade - Error-Free, Auditable, Hardened, Performance-Optimized
+
+**Reference**: 
+- [Gold Tier Phase 1, Task 1 Implementation](GOLD_TIER_PHASE1_TASK1_IMPLEMENTATION_COMPLETE.md)
+- [Gold Tier Task 2.1 Implementation](GOLD_TIER_TASK2_1_COMPLETE.md)
+
+### 12.2 Constitutional AI Governance Framework - Week 1 Implementation
+
+**Status**: ✅ Operational (Week 1, January 2026)
+
+**Achievement**: Successfully implemented formal authority boundaries for all strategic decisions with 100% Tier 1 coverage.
+
+**Completed Components**:
+
+1. **IntelligenceGate Service** - ✅ Complete
+   - **Location**: `src/lib/ydt/IntelligenceGate.ts`
+   - **Features**: Three-tier decision architecture enforcement
+   - **Enforcement**: Code-level tier classification and validation
+
+2. **Tier Metrics Tracking** - ✅ Complete
+   - **Features**: Real-time governance metrics collection
+   - **Metrics**: Constitutional Health Score, Tier 1 Coverage, Reasoning Quality, Tier Violations
+
+3. **Governance Dashboard** - ✅ Complete
+   - **Features**: Live metrics display, violation alerts, audit trail
+   - **Status**: Real-time monitoring operational
+
+4. **Core Services Refactored** - ✅ Complete (3/3)
+   - **YDTPricingOracle**: Market-aware pricing with YDT intelligence
+   - **YDTBusinessLayer**: Business viability assessment with YDT
+   - **YDTOptimizationWrapper**: Optimization strategy selection with YDT
+
+**Operational Metrics** (Week 1 Baseline):
+- **Constitutional Health Score**: 100/100
+- **Tier 1 Coverage**: 100% (all strategic decisions governed)
+- **Reasoning Quality**: 100% (all YDT responses include structured reasoning)
+- **Tier Violations**: 0 (no governance breaches)
+- **Deterministic Purity**: 100% (no AI in Tier 3 operations)
+
+**Reference**:
+- [Week 1 Constitutional Baseline](WEEK1_CONSTITUTIONAL_BASELINE.md)
+- [YDT Intelligence Gate Architecture](YDT_INTELLIGENCE_GATE_ARCHITECTURE.md)
+
+### 12.3 Services YDT Integration - Week 1 Implementation
+
+**Status**: ✅ Complete (Week 1, January 2026)
+
+**Purpose**: YDT-first intelligence integration for services management with circuit breaker protection and fallback strategies.
+
+**Completed Components**:
+
+1. **YDTServiceIntelligence** - ✅ Complete
+   - **File**: `src/lib/services/YDTServiceIntelligence.ts`
+   - **Features**: YDT service wrapper, ticket assignment suggestions, resolution predictions, spare parts suggestions
+
+2. **YDTEnforcementService** - ✅ Complete
+   - **File**: `src/lib/ydt/YDTEnforcementService.ts`
+   - **Features**: Circuit breaker pattern, timeout handling (150ms), cache management, certified baseline responses
+
+3. **YDTServiceLogger** - ✅ Complete
+   - **File**: `src/lib/services/YDTServiceLogger.ts`
+   - **Features**: Usage logging, metrics calculation, localStorage persistence
+
+4. **UI Components** - ✅ Complete
+   - **YDTSuggestionsPanel**: Display YDT suggestions with confidence scores
+   - **TicketWizardWithYDT**: Auto-fetch YDT suggestions with debouncing
+   - **ServicesYDTDashboard**: Real-time metrics display
+
+**Reference**: [Week 1 Services Implementation](WEEK1_SERVICES_IMPLEMENTATION_COMPLETE.md)
+
+### 12.4 Constitutional Compliance Fixes - Week 1
+
+**Status**: ✅ Complete (Week 1, January 2026)
+
+**Achievement**: Fixed AI deception in algorithm selection, restored constitutional integrity.
+
+**Completed Components**:
+
+1. **AlgorithmSelector** - ✅ Complete
+   - **File**: `src/lib/fabricator/AlgorithmSelector.ts`
+   - **Replaces**: AlgorithmPredictor (removed ML claims)
+   - **Features**: Rule-based algorithm selection, deterministic logic, constitutional compliance
+   - **Tier**: Tier 3 (Protected Determinism)
+
+2. **GuaranteeVerification Tests** - ✅ Structure Complete
+   - **File**: `src/tests/constitutional/GuaranteeVerification.test.ts`
+   - **Coverage**: Deterministic Replay, 99.8% Accuracy Guarantee, Constitutional Compliance, Tier 3 Purity
+
+3. **EnhancedAdaptiveSolver Migration** - ✅ Complete
+   - **File**: `src/algorithms/EnhancedAdaptiveSolver.ts`
+   - **Changes**: Migrated from AlgorithmPredictor to AlgorithmSelector
+   - **Status**: Removed ML claims, updated to rule-based selection
+
+**Reference**: [Week 1 Constitutional Fixes](docs/WEEK1_CONSTITUTIONAL_FIXES_COMPLETE.md)
+
+### 12.5 Constitutional Wiring Implementation (Week 2-4, January 2026)
+
+**Status**: ✅ COMPLETE - Institutional-Grade Governance Achieved
+
+**Achievement**: Transformed 40% orphan rate to 100% constitutional governance with CI enforcement.
+
+**Implementation Timeline**:
+
+| Week | Milestone | Achievement |
+|------|-----------|-------------|
+| Week 1 | Institutional Preservation | 44 orphaned components preserved in `/future/` |
+| Week 2 | Constitutional Law | Wiring manifest, AdvisoryGate, guardrails |
+| Week 3 | CI Enforcement | WiringValidator, GitHub Actions pipeline |
+| Week 4 | Final Verification | Health Dashboard, certificate generation |
+
+**Completed Components**:
+
+1. **Wiring Manifest** - ✅ Complete
+   - **File**: `src/components/fabricator/wiring-manifest.yaml`
+   - **Features**: 5 truth domains, 5 execution classes, validation rules
+   - **Authority**: Constitutional law for all 244 components
+
+2. **AdvisoryGate** - ✅ Complete
+   - **File**: `src/lib/fabricator/wiring/gates/AdvisoryGate.tsx`
+   - **Features**: Tier 2 and Presentation wrappers
+   - **Enforcement**: Visual boundaries, confidence thresholds, disclaimers
+
+3. **WiringValidator** - ✅ Complete
+   - **File**: `src/lib/constitutional/WiringValidator.ts`
+   - **Rules**: Single Source of Truth, Tier Boundaries, Future Containment, Callback Constraints
+   - **Integration**: CI pipeline via GitHub Actions
+
+4. **Constitutional Health Dashboard** - ✅ Complete
+   - **File**: `src/components/constitutional/ConstitutionalHealthDashboard.tsx`
+   - **Features**: Real-time metrics, violation tracking, advisory snapshots
+
+**Final Metrics**:
+
+| Metric | Value |
+|--------|-------|
+| Constitutional Health | 98/100 |
+| Tier 3 Purity | 95% |
+| Truth Clarity | 100% |
+| Total Components | 244 (205 wired, 39 dormant) |
+| Active Violations | 0 |
+
+**CI Integration**:
+- GitHub Actions workflow: `.github/workflows/constitutional-validation.yml`
+- npm scripts: `validate:manifest`, `validate:constitutional`, `ci:full`
+- Build blocking on violations
+
+**Reference**: 
+- Certificate: `CONSTITUTIONAL_CERTIFICATE.json`
+- Walkthrough: `.gemini/antigravity/brain/*/walkthrough.md`
 
 ---
 

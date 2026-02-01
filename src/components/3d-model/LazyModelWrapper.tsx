@@ -60,7 +60,7 @@ export const LazyModelWrapper: React.FC<LazyModelWrapperProps> = ({
           <div className="mb-4 flex justify-center">
             <Box className="w-12 h-12 text-slate-400 dark:text-slate-500" />
           </div>
-          <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
+          <h3 className="typography-h3 mb-2 text-lg text-slate-900 dark:text-slate-100">
             3D Visualization
           </h3>
           <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">

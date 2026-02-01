@@ -142,7 +142,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
           {result && (
             <div className="space-y-6 py-4">
               <div className="p-4 rounded border border-almona-light/30 bg-almona-dark">
-                <h3 className="text-lg font-semibold mb-2">Quote Submitted</h3>
+                <h3 className="typography-h3 text-lg mb-2">Quote Submitted</h3>
                 <p className="text-sm text-gray-300 mb-2">Your quote was created successfully.</p>
                 <ul className="text-sm text-gray-400 space-y-2 mb-4">
                   <li className="flex items-center justify-between">
@@ -154,7 +154,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
                       onClick={() => quoteClipboard.copyToClipboard(result.quote_number, 'quote number')}
                     >
                       {quoteClipboard.copiedText === result.quote_number ? (
-                        <Check className="h-4 w-4 text-green-500" />
+                        <Check className="h-4 w-4 status-valid" />
                       ) : (
                         <Copy className="h-4 w-4" />
                       )}
@@ -173,7 +173,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
                         onClick={() => twinClipboard.copyToClipboard(result.digital_twin_code!, 'digital twin code')}
                       >
                         {twinClipboard.copiedText === result.digital_twin_code ? (
-                          <Check className="h-4 w-4 text-green-500" />
+                          <Check className="h-4 w-4 status-valid" />
                         ) : (
                           <Copy className="h-4 w-4" />
                         )}
@@ -190,7 +190,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
                           onOpenChange(false);
                           window.location.href = `/support/tickets/${relatedServiceTicketId}`;
                         }}
-                        className="underline text-almona-orange hover:text-orange-400"
+                        className="underline text-almona-orange hover:text-amber-400"
                       >
                         {relatedServiceTicketId.slice(0, 8)}...
                       </button>
@@ -199,7 +199,7 @@ export const QuoteRequestDialog: React.FC<QuoteRequestDialogProps> = ({
                 </ul>
                 <div className="flex gap-3">
                   <button
-                    className="px-4 py-2 rounded bg-almona-orange text-white text-sm hover:bg-orange-600 transition"
+                    className="btn-primary"
                     onClick={() => {
                       // Navigate user to portal tracking page; for now just close dialog
                       onOpenChange(false);

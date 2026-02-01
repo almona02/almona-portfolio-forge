@@ -77,7 +77,7 @@ export const FabricatorProFeatures: React.FC = () => {
             <Zap className="h-5 w-5 text-blue-400" />
             <span className="text-blue-400 font-semibold">Fabricator Pro</span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="typography-h2 text-4xl md:text-5xl text-white mb-4">
             Built for Fabricators,{' '}
             <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               Powered by Intelligence
@@ -144,7 +144,7 @@ export const FabricatorProFeatures: React.FC = () => {
             <CardContent className="p-8">
               <div className="flex items-center justify-center gap-3 mb-4">
                 <Shield className="h-8 w-8 text-blue-400" />
-                <h3 className="text-2xl font-bold text-white">
+                <h3 className="typography-h3 text-white">
                   Ready to Transform Your Workshop?
                 </h3>
               </div>

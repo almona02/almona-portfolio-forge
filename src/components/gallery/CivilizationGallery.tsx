@@ -103,7 +103,7 @@ export const CivilizationGallery: React.FC = () => {
         {filteredSystems.length === 0 && (
           <div className="text-center py-20">
             <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-xl font-bold text-gray-700">لا توجد نتائج</h3>
+            <h3 className="typography-h3 text-gray-700">لا توجد نتائج</h3>
             <p className="text-gray-500">جرب تغيير معايير البحث</p>
           </div>
         )}

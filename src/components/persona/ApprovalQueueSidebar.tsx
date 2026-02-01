@@ -17,10 +17,10 @@ export const ApprovalQueueSidebar: React.FC = () => {
       'fixed top-20 right-4 w-80 z-30',
       'max-h-[calc(100vh-6rem)] overflow-y-auto'
     )}>
-      <Card className="bg-gray-900/95 border-gray-700 backdrop-blur-md">
+      <Card className="bg-gray-900/95 border-gray-700 card-dark">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-orange-400" />
+            <CheckCircle2 className="h-5 w-5 text-amber-400" />
             Approval Queue
           </CardTitle>
         </CardHeader>

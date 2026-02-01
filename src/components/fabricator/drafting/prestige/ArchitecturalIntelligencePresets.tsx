@@ -16,13 +16,13 @@ import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent } from '@/shared/ui/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import {
-    Award,
-    Building2,
-    CheckCircle2,
-    Crown,
-    Home,
-    Sparkles,
-    Users
+  Award,
+  Building2,
+  CheckCircle2,
+  Crown,
+  Home,
+  Sparkles,
+  Users
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { logDraftingAction } from '../utils/constitutionalAudit';
@@ -139,7 +139,7 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Sparkles className="w-6 h-6 text-amber-500" />
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="typography-h2 text-gray-900">
             {marketTier === 'enterprise' 
               ? 'Commission Architectural Intelligence' 
               : 'Choose Window Design Pattern'}
@@ -204,7 +204,7 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
                   {/* Selection Indicator */}
                   {isSelected && (
                     <div className="absolute top-4 right-4 z-10">
-                      <div className="bg-amber-500 rounded-full p-1.5 shadow-lg">
+                      <div className="btn-primary">
                         <CheckCircle2 className="w-5 h-5 text-white" />
                       </div>
                     </div>
@@ -233,7 +233,7 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
                     {/* Title & Description */}
                     <div className="mb-4">
                       <h3 className={cn(
-                        "text-lg font-bold mb-2",
+                        "typography-h3 text-lg font-bold mb-2",
                         isLocal ? "text-gray-900" : "text-gray-900"
                       )}>
                         {isLocal ? preset.title.local : preset.title.enterprise}
@@ -245,7 +245,7 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
 
                     {/* Applications */}
                     <div className="mb-4">
-                      <h4 className="text-xs font-semibold text-gray-700 mb-2">Best For</h4>
+                      <h4 className="typography-h4 text-xs text-gray-700 mb-2">Best For</h4>
                       <p className="text-xs text-gray-600 mb-2">
                         {isLocal ? preset.bestFor.local : preset.bestFor.enterprise}
                       </p>
@@ -300,11 +300,11 @@ export const ArchitecturalIntelligencePresets: React.FC<ArchitecturalIntelligenc
                     {/* Testimonials (Enterprise only) */}
                     {!isLocal && preset.testimonials && preset.testimonials.length > 0 && (
                       <div className="mb-4">
-                        <h4 className="text-xs font-semibold text-gray-700 mb-2">Authority Proof</h4>
+                        <h4 className="typography-h4 text-xs text-gray-700 mb-2">Authority Proof</h4>
                         <ul className="space-y-1">
                           {preset.testimonials.slice(0, 2).map((testimonial, i) => (
                             <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
-                              <div className="w-1 h-1 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
+                              <div className="btn-primary" />
                               <span>{testimonial}</span>
                             </li>
                           ))}

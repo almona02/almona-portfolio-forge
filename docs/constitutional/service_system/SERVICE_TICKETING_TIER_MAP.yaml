@@ -1,0 +1,74 @@
+version: "1.0.0"
+constitutional_reference: "AICS-001 §5.10.2"
+last_updated: "2026-01-01"
+
+components:
+  # TIER 3: EXECUTION PATH (DETERMINISTIC REQUIRED)
+  tier_3:
+    ticket_lifecycle_engine:
+      classification: "execution_authority"
+      determinism_required: true
+      ml_prohibited: true
+      location: "src/services/ticketing/TicketLifecycleEngine.ts"
+
+    sla_calculator:
+      classification: "execution_authority"
+      determinism_required: true
+      ml_prohibited: true
+      location: "src/services/ticketing/SLACalculator.ts"
+
+    assignment_executor:
+      classification: "execution_authority"
+      determinism_required: true
+      ml_prohibited: true
+      location: "src/services/ticketing/AssignmentExecutor.ts"
+
+    escalation_engine:
+      classification: "execution_authority"
+      determinism_required: true
+      ml_prohibited: true
+      location: "src/services/ticketing/EscalationEngine.ts"
+
+    parts_workflow_engine:
+      classification: "execution_authority"
+      determinism_required: true
+      ml_prohibited: true
+      location: "src/services/ticketing/PartsWorkflowEngine.ts"
+
+  # TIER 2: ADVISORY ONLY (HUMAN VALIDATION REQUIRED)
+  tier_2:
+    routing_advisor:
+      classification: "advisory_intelligence"
+      requires_human_validation: true
+      disclaimer_required: true
+      location: "src/services/ticketing/advisory/RoutingAdvisor.ts"
+
+    predictive_maintenance_advisor:
+      classification: "advisory_intelligence"
+      requires_human_validation: true
+      disclaimer_required: true
+      location: "src/services/ticketing/advisory/PredictiveMaintenanceAdvisor.ts"
+
+    response_draft_generator:
+      classification: "advisory_intelligence"
+      requires_human_validation: true
+      disclaimer_required: true
+      location: "src/services/ticketing/advisory/ResponseDraftGenerator.ts"
+
+    parts_recommendation_advisor:
+      classification: "advisory_intelligence"
+      requires_human_validation: true
+      disclaimer_required: true
+      location: "src/services/ticketing/advisory/PartsRecommendationAdvisor.ts"
+
+  # TIER 1: PRESENTATION ONLY
+  tier_1:
+    ticket_dashboard:
+      classification: "presentation_layer"
+      no_business_logic: true
+      location: "src/components/ticketing/TicketDashboard.tsx"
+
+    analytics_dashboard:
+      classification: "presentation_layer"
+      no_business_logic: true
+      location: "src/components/ticketing/AnalyticsDashboard.tsx"

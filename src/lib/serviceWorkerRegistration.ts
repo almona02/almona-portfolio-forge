@@ -35,7 +35,48 @@ export const unregisterServiceWorker = () => {
         await Promise.all(keys.map((k) => caches.delete(k)));
         console.info('[SW] All caches cleared');
       } catch (err) {
-        console.info('[SW] Cache clear error:', err);
+        // Suppress CacheStorage errors (common in development)
+        if (err?.name === 'UnknownError' || err?.message?.includes('CacheStorage')) {
+          console.warn('[SW] CacheStorage error (ignored):', err.message);
+        } else {
+          console.info('[SW] Cache clear error:', err);
+        }
       }
     });
 };
+
+/**
+ * Clear all caches and unregister service workers
+ * Useful for fixing CacheStorage errors in development
+ * Call from browser console: window.clearAllCaches()
+ */
+export const clearAllCaches = async () => {
+  try {
+    // Unregister all service workers
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((reg) => reg.unregister()));
+      console.log(`[SW] Unregistered ${registrations.length} service worker(s)`);
+    }
+
+    // Clear all caches
+    const cacheKeys = await caches.keys();
+    await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+    console.log(`[SW] Cleared ${cacheKeys.length} cache(s)`);
+    
+    return { success: true, cachesCleared: cacheKeys.length };
+  } catch (error) {
+    // Suppress CacheStorage errors
+    if (error?.name === 'UnknownError' || error?.message?.includes('CacheStorage')) {
+      console.warn('[SW] CacheStorage error (ignored):', error.message);
+      return { success: false, error: 'CacheStorage error (ignored)' };
+    }
+    console.error('[SW] Error clearing caches:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Make clearAllCaches available globally for debugging
+if (typeof window !== 'undefined') {
+  (window as any).clearAllCaches = clearAllCaches;
+}

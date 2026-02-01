@@ -459,11 +459,11 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
           </DialogDescription>
           <div className="mt-4">
             <div className="h-2 w-full rounded-full bg-almona-dark/40 overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-orange-500 via-red-500 to-rose-500 transition-all" style={{ width: `${progressPercent}%` }} aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100} role="progressbar" />
+              <div className="h-full bg-gradient-to-r from-amber-500 via-red-500 to-rose-500 transition-all" style={{ width: `${progressPercent}%` }} aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100} role="progressbar" />
             </div>
             <ol className="flex flex-wrap gap-2 mt-3 text-[11px] uppercase tracking-wide text-gray-400" aria-label="Steps">
               {steps.map((s, idx) => (
-                <li key={s.id} className={`${idx === activeStepIndex ? 'text-orange-400 font-medium' : idx < activeStepIndex ? 'text-green-400' : ''}`}>{s.label}</li>
+                <li key={s.id} className={`${idx === activeStepIndex ? 'text-amber-400 font-medium' : idx < activeStepIndex ? 'text-green-400' : ''}`}>{s.label}</li>
               ))}
             </ol>
           </div>
@@ -481,13 +481,13 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
               <LazyMotionDiv key="category" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <Label className="text-sm font-medium">Ticket Type</Label>
+                    <Label className="typography-label text-sm font-medium">Ticket Type</Label>
                     {/* Debug line removed for production cleanliness */}
                     <TypePills />
                     {errors.type && <p className="text-xs text-red-500">{errors.type.message}</p>}
                   </div>
                   <div className="space-y-4">
-                    <Label className="text-sm font-medium">Priority</Label>
+                    <Label className="typography-label text-sm font-medium">Priority</Label>
                     {import.meta.env.DEV && (
                       <div className="text-[10px] text-gray-500">debug: form.priority={selectedPriority} uiPriority={uiPriority}</div>
                     )}
@@ -502,7 +502,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
             {!isSuccess && activeStep.id === 'details' && (
               <LazyMotionDiv key="details" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="title">{t('ticket.title')}</Label>
+                  <Label htmlFor="title" className="typography-label">{t('ticket.title')}</Label>
                   <Controller name="title" control={control} render={({ field }) => (
                     <Input id="title" {...field} placeholder="Brief description" className="bg-almona-darker border-almona-light/30 focus:border-almona-orange/50" />
                   )} />
@@ -536,8 +536,8 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                     return (
                       <div className="border border-almona-light/30 rounded-md overflow-hidden">
                         <div className="flex text-xs bg-almona-dark/60 border-b border-almona-light/10">
-                          <button type="button" className={`px-3 py-2 transition-colors ${mdMode==='edit' ? 'text-orange-400' : 'hover:text-almona-orange'}`} onClick={() => setMdMode('edit')} aria-pressed={mdMode==='edit'}>{t('ticket.edit')}</button>
-                          <button type="button" className={`px-3 py-2 transition-colors ${mdMode==='preview' ? 'text-orange-400' : 'hover:text-almona-orange'}`} onClick={() => setMdMode('preview')} aria-pressed={mdMode==='preview'} disabled={!mdRenderer && !sanitizer && mdMode==='preview'}>{t('ticket.preview')}</button>
+                          <button type="button" className={`px-3 py-2 transition-colors ${mdMode==='edit' ? 'text-amber-400' : 'hover:text-almona-orange'}`} onClick={() => setMdMode('edit')} aria-pressed={mdMode==='edit'}>{t('ticket.edit')}</button>
+                          <button type="button" className={`px-3 py-2 transition-colors ${mdMode==='preview' ? 'text-amber-400' : 'hover:text-almona-orange'}`} onClick={() => setMdMode('preview')} aria-pressed={mdMode==='preview'} disabled={!mdRenderer && !sanitizer && mdMode==='preview'}>{t('ticket.preview')}</button>
                         </div>
                         {mdMode === 'edit' && (
                           <Textarea rows={8} {...field} placeholder="Details, steps to reproduce, error messages... (Markdown supported)" className="bg-almona-darker border-0 focus-visible:ring-0 focus:border-0" />
@@ -560,7 +560,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
 
             {!isSuccess && activeStep.id === 'attachments' && (
               <LazyMotionDiv key="attachments" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
-                <h3 className="text-lg font-semibold">{t('ticket.attachments_optional')}</h3>
+                <h3 className="typography-h3 text-lg">{t('ticket.attachments_optional')}</h3>
                 <p className="text-xs text-gray-400">{t('ticket.add_reference_files')}</p>
                 <input
                   type="file"
@@ -615,7 +615,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
 
             {!isSuccess && activeStep.id === 'preview' && (
               <LazyMotionDiv key="preview" initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-10}} className="space-y-4">
-                <h3 className="text-lg font-semibold">{t('ticket.preview_title')}</h3>
+                <h3 className="typography-h3 text-lg">{t('ticket.preview_title')}</h3>
                 <div className="bg-almona-darker/40 p-4 rounded border border-almona-light/20 text-sm space-y-2">
                   <div><strong>{t('ticket.preview_title_label')}</strong> {watch('title')}</div>
                   <div><strong>Type:</strong> {watch('type')}</div>
@@ -634,9 +634,9 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                       <ul className="mt-2 space-y-1 text-xs max-h-40 overflow-y-auto pr-1">
                         {attachments.map((a, idx) => (
                           <li key={idx} className="flex gap-2 items-center">
-                            <span className={`truncate max-w-[160px] ${a.selected ? 'text-orange-400' : ''}`}>{a.name}</span>
+                            <span className={`truncate max-w-[160px] ${a.selected ? 'text-amber-400' : ''}`}>{a.name}</span>
                             <span className="text-gray-500 text-[10px]">{a.status}{a.progress != null && a.status !== 'uploaded' ? ` ${a.progress}%` : ''}</span>
-                            {a.uploadedUrl && <span className="text-green-500 text-[10px]">linked</span>}
+                            {a.uploadedUrl && <span className=" text-[10px] status-valid">linked</span>}
                           </li>
                         ))}
                       </ul>
@@ -657,7 +657,7 @@ export const TicketWizardDialog: React.FC<TicketWizardDialogProps> = ({ open, on
                   <CheckCircle2 className="h-10 w-10 text-green-400" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-semibold mb-2">{t('ticket.created')}</h3>
+                  <h3 className="typography-h3 mb-2">{t('ticket.created')}</h3>
                   <p className="text-gray-400 max-w-md mx-auto">{t('ticket.created_message')}</p>
                   {createdTicketTwin ? (
                     <div className="mt-4 inline-flex flex-col items-center gap-2">
@@ -762,7 +762,7 @@ const MachineAndContactSection: React.FC<{ control: any; setValue: any; userId: 
                 type="button"
                 onClick={() => setValue('preferred_contact_method', method, { shouldDirty: true })}
                 aria-pressed={active}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-orange-500/20 border-orange-400 text-orange-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-orange-400/60 hover:text-orange-300'}`}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-amber-400/60 hover:text-amber-300'}`}
               >{method.toUpperCase()}</button>
             );
           })}
@@ -787,7 +787,7 @@ const MachineAndContactSection: React.FC<{ control: any; setValue: any; userId: 
                   key={m}
                   type="button"
                   onClick={() => { setValue('machine_model', active ? '' : m, { shouldDirty: true }); setValue('machine_serial_number',''); }}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-orange-500/20 border-orange-400 text-orange-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-orange-400/60 hover:text-orange-300'}`}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-amber-500/20 border-amber-400 text-amber-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-amber-400/60 hover:text-amber-300'}`}
                   aria-pressed={active}
                 >{m}</button>
               );
@@ -814,14 +814,14 @@ const MachineAndContactSection: React.FC<{ control: any; setValue: any; userId: 
                   type="button"
                   onClick={() => setValue('machine_serial_number', active ? '' : sn, { shouldDirty: true })}
                   aria-pressed={active}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-orange-500/25 border-orange-400 text-orange-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-orange-400/60 hover:text-orange-300'}`}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${active ? 'bg-amber-500/25 border-amber-400 text-amber-300 shadow-[0_0_0_1px_rgba(255,153,0,0.4)]' : 'border-almona-light/30 text-gray-400 hover:border-amber-400/60 hover:text-amber-300'}`}
                 >{sn}</button>
               );
             })}
             <button
               type="button"
               onClick={() => setValue('machine_serial_number','', { shouldDirty: true })}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${currentSerial === '' ? 'bg-orange-500/10 border-orange-400/70 text-orange-300' : 'border-almona-light/30 text-gray-400 hover:border-orange-400/60 hover:text-orange-300'}`}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${currentSerial === '' ? 'bg-amber-500/10 border-amber-400/70 text-amber-300' : 'border-almona-light/30 text-gray-400 hover:border-amber-400/60 hover:text-amber-300'}`}
             >(None)</button>
           </div>
         ) : (

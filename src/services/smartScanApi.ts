@@ -22,7 +22,6 @@ const getApiBase = (): string => {
 };
 
 const API_BASE = getApiBase();
-console.log(`📡 SmartScan API configured for: ${API_BASE}`);
 
 export interface SmartScanDimensions {
   width_mm: number;
@@ -55,6 +54,16 @@ export interface SmartScanResult {
   data: ScanResultData;
 }
 
+export interface EgyptianStandardMatch {
+  name: string;
+  material?: "aluminum" | "upvc" | "wood";
+  match_score: number;
+  deviation_mm?: {
+    width: number;
+    height: number;
+  };
+}
+
 export interface ScanResultData {
   svg_path: string;
   view_box: string;
@@ -64,22 +73,23 @@ export interface ScanResultData {
     resolution?: string;
     contour_area?: number;
     processing_time_ms?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   technical_data?: {
     profile_name?: string;
-    dimension_labels?: any[];
+    dimension_labels?: unknown[];
     material_hints?: string[];
     thermal_break_mentions?: string[];
+    detected_brands?: string[];
     confidence?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   suggestions?: {
     profile_name?: string;
     likely_material?: string;
-    likely_role?: string;
-    egyptian_standard_match?: string;
-    [key: string]: any;
+    likely_role?: "frame" | "sash" | "mullion" | "transom";
+    egyptian_standard_match?: EgyptianStandardMatch;
+    [key: string]: unknown;
   };
 }
 
@@ -227,46 +237,66 @@ export async function scanSingleProfile(
   return await waitForScanJob(job_id);
 }
 
+/**
+ * Scan multiple profile images in a single batch request.
+ * Uses the true batch endpoint for efficient server-side processing.
+ * 
+ * @param files - Array of image files to scan
+ * @param knownWidthMm - Optional known width for scale detection
+ * @param sessionId - Optional session ID for tracking batch progress
+ * @param onProgress - Optional progress callback (called when batch completes)
+ * @returns Batch scan response with results for all files
+ */
 export async function scanBatchProfiles(
   files: File[],
   knownWidthMm?: number,
+  sessionId?: string,
   onProgress?: (processed: number, total: number) => void,
 ): Promise<BatchScanResponse> {
-  const results: BatchScanResponse["results"] = [];
-  let successful = 0;
-  let failed = 0;
+  const token = await getAuthToken();
+  if (!token) throw new Error("No auth token");
 
-  for (let i = 0; i < files.length; i += 1) {
-    try {
-      const result = await scanSingleProfile(files[i], knownWidthMm);
-      results.push({
-        filename: files[i].name,
-        success: true,
-        data: result.data,
-      });
-      successful += 1;
-    } catch (error: any) {
-      results.push({
-        filename: files[i].name,
-        success: false,
-        error: error?.message || "Unknown error",
-      });
-      failed += 1;
-    }
-
-    if (onProgress) {
-      onProgress(i + 1, files.length);
-    }
+  if (!files || files.length === 0) {
+    throw new Error("No files provided for batch scan");
   }
 
-  return {
-    success: failed === 0,
-    session_id: `batch_${Date.now()}`,
-    total_files: files.length,
-    successful,
-    failed,
-    results,
-  };
+  // Use true batch endpoint
+  const formData = new FormData();
+  files.forEach(file => {
+    formData.append("files", file);
+  });
+  
+  if (knownWidthMm) {
+    formData.append("known_width_mm", String(knownWidthMm));
+  }
+  
+  if (sessionId) {
+    formData.append("session_id", sessionId);
+  }
+
+  const response = await fetch(`${API_BASE}/api/v2/smart-scan/batch`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response
+      .json()
+      .catch(() => ({ detail: `HTTP ${response.status}: ${response.statusText}` }));
+    throw new Error(errorData.detail || "Batch scan failed");
+  }
+
+  const batchResponse: BatchScanResponse = await response.json();
+
+  // Call progress callback if provided
+  if (onProgress) {
+    onProgress(batchResponse.total_files, batchResponse.total_files);
+  }
+
+  return batchResponse;
 }
 
 export async function getSupportedFormats() {

@@ -67,8 +67,8 @@ export const LanguageSwitcher: React.FC<{
   const renderMenu = (showFlag: boolean, textVariant: 'native' | 'name' | 'both') => {
     const solid = variant === 'solid';
     const baseButtonClasses = solid
-      ? 'bg-slate-900 text-white border-slate-700 hover:border-orange-500/60 hover:bg-slate-800 shadow-sm'
-      : 'border-gray-700/50 hover:border-orange-500/50 text-gray-300 hover:text-white bg-transparent hover:bg-white/5 backdrop-blur-sm';
+      ? 'bg-[#0f0f0f] text-amber-200 border-amber-600/30 hover:border-amber-500/60 hover:bg-[#1a1a1a] shadow-sm'
+      : 'border-amber-600/30 hover:border-amber-500/50 text-amber-300 hover:text-amber-200 bg-transparent hover:bg-amber-500/5 backdrop-blur-sm';
 
     return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -89,7 +89,7 @@ export const LanguageSwitcher: React.FC<{
             <ChevronDown className={`h-3 w-3 xl:h-3.5 xl:w-3.5 2xl:h-4 2xl:w-4 transition-transform duration-200 flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
           </span>
           {!solid && (
-            <span className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+            <span className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
           )}
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -97,7 +97,7 @@ export const LanguageSwitcher: React.FC<{
         side="bottom"
         sideOffset={8}
         alignOffset={isRTLMode ? 0 : -8}
-        className="bg-slate-900/98 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl min-w-[180px] max-w-[90vw] sm:max-w-none max-h-[calc(100vh-120px)] overflow-y-auto overflow-x-hidden p-1 z-[9999]"
+        className="border border-amber- 500/30 rounded-xl shadow-2xl min-w-[180px] max-w-[90vw] sm:max-w-none max-h-[calc(100vh-120px)] overflow-y-auto overflow-x-hidden p-1 z-[9999] card-premium"
         style={{
           WebkitBackdropFilter: 'blur(12px)',
           backdropFilter: 'blur(12px)',
@@ -116,8 +116,8 @@ export const LanguageSwitcher: React.FC<{
                 flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer
                 min-h-[44px] touch-manipulation
                 ${isActive 
-                  ? 'text-orange-400 bg-gradient-to-r from-orange-500/10 to-red-500/10' 
-                  : 'text-gray-300 hover:text-white hover:bg-white/5 active:bg-white/10'
+                  ? 'text-amber-400 bg-gradient-to-r from-amber-500/10 to-red-500/10' 
+                  : 'text-amber-300 hover:text-amber-200 hover:bg-amber-500/5 active:bg-amber-500/10'
                 }
                 group/item
               `}
@@ -129,7 +129,7 @@ export const LanguageSwitcher: React.FC<{
               )}
               <span className="flex-1 font-medium text-sm">{lang.nativeName}</span>
               {isActive && (
-                <span className="ml-auto text-orange-400 font-bold text-sm flex-shrink-0">
+                <span className="ml-auto text-amber-400 font-bold text-sm flex-shrink-0">
                   ✓
                 </span>
               )}
@@ -169,8 +169,8 @@ export const LanguageSwitcher: React.FC<{
               title={lang.name}
               className={`
                 h-9 w-9 rounded-full flex items-center justify-center text-base
-                ${isActive ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30 border border-orange-500/60' : 'bg-slate-900 text-slate-200 border border-slate-700 hover:border-orange-400 hover:text-white'}
-                transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-orange-400/70
+                ${isActive ? 'bg-amber-500 text-[#0a0a0a] shadow-lg shadow-amber-500/30 border border-amber-500/60' : 'bg-[#0f0f0f] text-amber-300 border border-amber-600/30 hover:border-amber-400 hover:text-amber-200'}
+                transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-400/70
               `}
             >
               <span>{lang.flag}</span>

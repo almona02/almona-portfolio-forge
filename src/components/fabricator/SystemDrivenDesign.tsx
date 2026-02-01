@@ -100,7 +100,7 @@ export const SystemDrivenDesign: React.FC<SystemDrivenDesignProps> = ({
     <Card className="bg-gray-800/50 border-gray-700">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Zap className="h-5 w-5 text-orange-400" />
+          <Zap className="h-5 w-5 text-amber-400" />
           <CardTitle>System-Driven Design</CardTitle>
           <Badge variant="outline" className="ml-auto bg-green-500/10 border-green-500/30 text-green-400">
             Fast & Accurate
@@ -113,7 +113,7 @@ export const SystemDrivenDesign: React.FC<SystemDrivenDesignProps> = ({
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <Label className="text-sm">System Pack *</Label>
+          <Label className="typography-label text-sm">System Pack *</Label>
           <Select value={selectedSystemPackId || ''} onValueChange={onSystemPackChange}>
             <SelectTrigger className="bg-gray-900 border-gray-700">
               <SelectValue placeholder="Select system pack" />
@@ -140,7 +140,7 @@ export const SystemDrivenDesign: React.FC<SystemDrivenDesignProps> = ({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label className="text-sm">Width (mm) *</Label>
+            <Label className="typography-label text-sm">Width (mm) *</Label>
             <Input
               type="number"
               value={width || ''}
@@ -150,7 +150,7 @@ export const SystemDrivenDesign: React.FC<SystemDrivenDesignProps> = ({
             />
           </div>
           <div>
-            <Label className="text-sm">Height (mm) *</Label>
+            <Label className="typography-label text-sm">Height (mm) *</Label>
             <Input
               type="number"
               value={height || ''}
@@ -177,7 +177,7 @@ export const SystemDrivenDesign: React.FC<SystemDrivenDesignProps> = ({
         <Button
           onClick={handleGenerate}
           disabled={!canGenerate}
-          className="w-full bg-orange-500 hover:bg-orange-600"
+          className="btn-primary"
         >
           <Zap className="h-4 w-4 mr-2" />
           Generate Window

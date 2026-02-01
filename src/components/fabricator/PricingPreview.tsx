@@ -1,3 +1,5 @@
+import ErrorBoundary from '@/components/ErrorBoundary';
+import { trackError } from '@/lib/performance-monitoring';
 import {
     PricingEngine,
     STUB_METAL_INDICES,
@@ -8,7 +10,7 @@ import {
 import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import type { FabricatorAccessory, Profile, WindowUnit } from '@/types/fabricator';
-import React, { useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 interface PricingPreviewProps {
   project: WindowUnit | null;
@@ -50,7 +52,7 @@ const getStubPricingConfig = (region: PricingPreviewProps['region']): PricingCon
   };
 };
 
-export const PricingPreview: React.FC<PricingPreviewProps> = ({
+const PricingPreviewComponent: React.FC<PricingPreviewProps> = ({
   project,
   profiles,
   accessories: _accessories = [],
@@ -61,54 +63,65 @@ export const PricingPreview: React.FC<PricingPreviewProps> = ({
   const [metalAlert, setMetalAlert] = useState<MetalAlert | null>(null);
   const [currency, setCurrency] = useState<string>('USD');
 
+  // ✅ PERFORMANCE: Memoize pricing config to avoid recalculation
+  const pricingConfig = useMemo(() => getStubPricingConfig(region), [region]);
+
+  // ✅ PERFORMANCE: Memoize length aggregation to avoid recalculation
+  const lengthByProfileId = useMemo(() => {
+    if (!project || !project.components || project.components.length === 0) {
+      return new Map<string, number>();
+    }
+
+    const lengthMap = new Map<string, number>();
+    project.components.forEach((component) => {
+      const profileId = component.profile.id;
+      const totalLenMm =
+        component.cuttingLengths?.reduce((sum, len) => sum + len, 0) ?? 0;
+      lengthMap.set(
+        profileId,
+        (lengthMap.get(profileId) ?? 0) + totalLenMm,
+      );
+    });
+    return lengthMap;
+  }, [project]);
+
+  // ✅ PERFORMANCE: Memoize pricing calculation callback
+  const calculatePricing = useCallback(async () => {
+    if (!project || !project.components || project.components.length === 0) {
+      setMaterialTotal(null);
+      setMetalAlert(null);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const engine = new PricingEngine(pricingConfig);
+      setCurrency(pricingConfig.currency);
+
+      let materialSum = 0;
+      for (const [profileId, totalLenMm] of lengthByProfileId.entries()) {
+        const profile = profiles.find((p) => p.id === profileId);
+        if (!profile) continue;
+        const perMeter = await engine.calculateMaterialPrice(profile, 1);
+        const meters = totalLenMm / 1000;
+        materialSum += perMeter.total * meters;
+      }
+
+      setMaterialTotal(materialSum);
+      setMetalAlert(checkMetalPriceAlert(pricingConfig.metalIndex));
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('PricingPreview', 'calculation_failed', error.message);
+      setMaterialTotal(null);
+      setMetalAlert(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [project, profiles, pricingConfig, lengthByProfileId]);
+
   useEffect(() => {
-    const run = async () => {
-      if (!project || !project.components || project.components.length === 0) {
-        setMaterialTotal(null);
-        setMetalAlert(null);
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const config = getStubPricingConfig(region);
-        const engine = new PricingEngine(config);
-        setCurrency(config.currency);
-
-        // Aggregate total length per profile across all components
-        const lengthByProfileId = new Map<string, number>();
-        project.components.forEach((component) => {
-          const profileId = component.profile.id;
-          const totalLenMm =
-            component.cuttingLengths?.reduce((sum, len) => sum + len, 0) ?? 0;
-          lengthByProfileId.set(
-            profileId,
-            (lengthByProfileId.get(profileId) ?? 0) + totalLenMm,
-          );
-        });
-
-        let materialSum = 0;
-        for (const [profileId, totalLenMm] of lengthByProfileId.entries()) {
-          const profile = profiles.find((p) => p.id === profileId);
-          if (!profile) continue;
-          const perMeter = await engine.calculateMaterialPrice(profile, 1);
-          const meters = totalLenMm / 1000;
-          materialSum += perMeter.total * meters;
-        }
-
-        setMaterialTotal(materialSum);
-        setMetalAlert(checkMetalPriceAlert(config.metalIndex));
-      } catch (err) {
-        console.error('Pricing preview calculation failed:', err);
-        setMaterialTotal(null);
-        setMetalAlert(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    void run();
-  }, [project, profiles, region]);
+    void calculatePricing();
+  }, [calculatePricing]);
 
   // If there is no active project yet, keep the card dormant.
   if (!project) {
@@ -192,6 +205,20 @@ export const PricingPreview: React.FC<PricingPreviewProps> = ({
     </Card>
   );
 };
+
+PricingPreviewComponent.displayName = 'PricingPreview';
+
+// ✅ HARDENING: Memoize and wrap with error boundary
+const PricingPreviewMemo = memo(PricingPreviewComponent);
+
+// ✅ HARDENING: Export with error boundary for production
+export const PricingPreview: React.FC<PricingPreviewProps> = (props) => (
+  <ErrorBoundary level="component">
+    <PricingPreviewMemo {...props} />
+  </ErrorBoundary>
+);
+
+PricingPreview.displayName = 'PricingPreview';
 
 export default PricingPreview;
 

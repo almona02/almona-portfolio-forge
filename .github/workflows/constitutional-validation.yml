@@ -1,0 +1,45 @@
+name: Constitutional Validation
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  constitutional-validation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: TypeScript compilation check
+      run: npx tsc --noEmit
+      
+    - name: Run Manifest Validation
+      run: npm run validate:manifest
+      
+    - name: Run Constitutional Validation
+      run: npm run validate:constitutional
+      
+    - name: Upload Constitutional Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: constitutional-validation-report
+        path: |
+          .ci/constitutional-report.json
+          .ci/constitutional-success.json
+          .ci/health-badge.json
+        retention-days: 90
+        if-no-files-found: ignore

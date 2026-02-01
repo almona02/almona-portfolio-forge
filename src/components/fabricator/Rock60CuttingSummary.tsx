@@ -30,7 +30,7 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
   const bead = config.glazing_beads?.bead_profile;
 
   return (
-    <Card className="bg-gray-900/60 border-gray-700">
+    <Card className="bg-gray-900/60 border-gray-700 card-dark">
       <CardHeader className="pb-3 flex flex-row items-center justify-between">
         <div>
           <CardTitle className="text-sm flex items-center gap-2">
@@ -60,7 +60,7 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
               {frame.cuts?.map((c: any, idx: number) => (
                 <div
                   key={`frame-${idx}`}
-                  className="grid grid-cols-5 px-2 py-1 border-t border-gray-800 bg-gray-900/60"
+                  className="grid grid-cols-5 px-2 py-1 border-t border-gray-800 bg-gray-900 /60 card-dark"
                 >
                   <div>{c.purpose?.replace(/_/g, ' ')}</div>
                   <div className="text-center">{c.quantity}</div>
@@ -88,7 +88,7 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
               {sash.cuts?.map((c: any, idx: number) => (
                 <div
                   key={`sash-${idx}`}
-                  className="grid grid-cols-5 px-2 py-1 border-t border-gray-800 bg-gray-900/60"
+                  className="grid grid-cols-5 px-2 py-1 border-t border-gray-800 bg-gray-900 /60 card-dark"
                 >
                   <div>{c.purpose?.replace(/_/g, ' ')}</div>
                   <div className="text-center">{c.quantity}</div>
@@ -118,7 +118,7 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
               {bead.cuts?.map((c: any, idx: number) => (
                 <div
                   key={`bead-${idx}`}
-                  className="grid grid-cols-5 px-2 py-1 border-t border-gray-800 bg-gray-900/60"
+                  className="grid grid-cols-5 px-2 py-1 border-t border-gray-800 bg-gray-900 /60 card-dark"
                 >
                   <div>{c.purpose?.replace(/_/g, ' ')}</div>
                   <div className="text-center">{c.quantity}</div>
@@ -145,7 +145,7 @@ export const Rock60CuttingSummary: React.FC<Rock60CuttingSummaryProps> = ({ prof
             </div>
             <div>
               <div className="font-semibold text-gray-200 mb-1">45° Installation Notes</div>
-              <div className="border border-orange-500/60 rounded-md px-2 py-2 bg-orange-500/10">
+              <div className="btn-primary">
                 <ul className="list-disc list-inside space-y-1 text-[10px]">
                   <li>All corners mitered at 45° with visible aluminum finish.</li>
                   <li>Use corner connectors 1130/1110 for 45° joint reinforcement and locking.</li>

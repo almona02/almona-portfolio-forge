@@ -1,0 +1,30 @@
+Epic,Story,Description,Acceptance Criteria,Estimate,Owner,Phase,Target Week,Priority,Status
+Phase 1 - Design System,Design System Tokens,Create colors.json and typography.json token files,Tokens validated, JSON syntax correct, 100% alignment with CSS,2,Design Lead,Phase 1,Week 1,High,Complete
+Phase 1 - Design System,Component States Implementation,Implement button and input component states per ComponentStates.md,All states (default/hover/active/focus/disabled) implemented, WCAG AA compliant,3,FE Engineer,Phase 1,Week 2,High,Complete
+Phase 1 - Design System,Spacing System Integration,Apply 4px base spacing system across components,Consistent spacing, Tailwind classes mapped,2,FE Engineer,Phase 1,Week 2,Medium,Complete
+Phase 1 - Design System,Visual Audit,Execute visual audit using Phase1_VisualAudit_Template.md,85%+ visual parity, cross-browser verified,3,QA/Design,Phase 1,Week 4,High,Complete
+Phase 1 - Design System,Performance Checklist,Execute performance checklist per Phase1_Performance_Checklist.md,Bundle < 200KB, TTI < 3s, LCP < 2.5s,2,FE Engineer,Phase 1,Week 4,High,Complete
+Phase 2 - Keyboard Shortcuts,Keyboard Shortcuts Modal,Implement KeyboardShortcutsModal component,Modal opens on ? key, searchable, printable cheat sheet, ARIA compliant,5,FE Engineer,Phase 2,Week 5,High,Complete
+Phase 2 - Keyboard Shortcuts,Global Shortcut Handler,Implement GlobalKeyboardShortcuts handler,? key works globally, text input safety, platform-aware,3,FE Engineer,Phase 2,Week 5,High,Complete
+Phase 2 - Keyboard Shortcuts,Shortcut Architecture,Implement KeyboardContext and useKeyboardShortcuts hook,Registry pattern, scope management, platform normalization,5,FE Engineer,Phase 2,Week 5,High,Pending
+Phase 2 - Keyboard Shortcuts,Shortcut Test Matrix,Execute KeyboardShortcutTestMatrix.csv tests,85%+ shortcuts working, Windows/macOS verified,3,QA,Phase 2,Week 5,High,Complete
+Phase 3 - Enterprise Features,Search Service,Implement SearchService per SearchService.md spec,Full-text search, debouncing, pagination, error handling,8,Backend/FE Engineer,Phase 3,Week 6,High,Pending
+Phase 3 - Enterprise Features,Filter Service,Implement FilterService per FilterService.md spec,Multi-select filters, URL sync, presets, persistence,5,FE Engineer,Phase 3,Week 6,High,Pending
+Phase 3 - Enterprise Features,Bulk Operation Service,Implement BulkOperationService per BulkOperationService.md spec,Async jobs, progress tracking, cancellation, idempotency,8,Backend/FE Engineer,Phase 3,Week 7,High,Pending
+Phase 3 - Enterprise Features,SearchBar Component,Implement SearchBar per SearchBar.md spec,Debounced input, keyboard nav, autocomplete, grouped results,5,FE Engineer,Phase 3,Week 6,High,Pending
+Phase 3 - Enterprise Features,AdvancedFilters Component,Implement AdvancedFilters per AdvancedFilters.md spec,Multi-select, date range, filter pills, saved presets,5,FE Engineer,Phase 3,Week 6,High,Pending
+Phase 3 - Enterprise Features,MultiSelectGrid Component,Implement MultiSelectGrid per MultiSelectGrid.md spec,Checkboxes, select all, virtualization, accessibility,5,FE Engineer,Phase 3,Week 7,High,Pending
+Phase 3 - Enterprise Features,BulkOperationToolbar Component,Implement BulkOperationToolbar per BulkOperationToolbar.md spec,Visible on selection, actions, progress, error handling,5,FE Engineer,Phase 3,Week 7,High,Pending
+Phase 3 - Enterprise Features,ProjectTemplates Component,Implement ProjectTemplates per ProjectTemplates.md spec,Browse, clone, create, metadata editing, categories,5,FE Engineer,Phase 3,Week 8,High,Pending
+Phase 3 - Enterprise Features,ProjectActivityTimeline Component,Implement ProjectActivityTimeline per ProjectActivityTimeline.md spec,Activity history, attribution, revert, comments,5,FE Engineer,Phase 3,Week 8,High,Pending
+Phase 4 - Reporting,Report Template Schema,Implement ReportTemplateSchema per ReportTemplateSchema.md spec,JSON schema, sections, fields, data bindings, validation,5,Backend/FE Engineer,Phase 4,Week 9,High,Pending
+Phase 4 - Reporting,PDF Generation Service,Implement PDFGenerationService per PDFGenerationServiceSpec.md,Template-driven, pagination, caching, background jobs, SLA < 2s,8,Backend Engineer,Phase 4,Week 10,High,Pending
+Phase 4 - Analytics,Analytics Metrics,Implement AnalyticsMetrics per AnalyticsMetrics.md spec,Metrics defined, data contracts, SLAs, freshness,5,Backend Engineer,Phase 4,Week 9,High,Pending
+Phase 4 - Analytics,Analytics Queries,Implement AnalyticsQueries per AnalyticsQueries.md spec,Query interface, performance targets, export formats, security,5,Backend/FE Engineer,Phase 4,Week 10,High,Pending
+Phase 5 - Mobile,Mobile Optimization,Apply MobileOptimizationChecklist.md optimizations,Touch gestures, hit targets, performance budgets, responsive,8,FE Engineer,Phase 5,Week 12,Medium,Pending
+Phase 5 - Mobile,Workshop Portal,Implement WorkshopPortal per WorkshopPortalSpec.md,Screens, workflows, offline/PWA, large-button UI,8,FE Engineer,Phase 5,Week 12,Medium,Pending
+Cross-Cutting,Performance Optimization,Apply performance optimizations across all phases,Transform-only animations, virtualization, code-splitting, memoization,5,FE Engineer,All Phases,Ongoing,High,In Progress
+Cross-Cutting,Security Hardening,Apply security best practices,Input sanitization, CSP, HTTPS, RBAC, validation,3,Security Lead,All Phases,Ongoing,High,In Progress
+Cross-Cutting,Accessibility,Ensure WCAG 2.1 AA compliance,Focus rings, ARIA roles, keyboard nav, contrast, alt text,3,FE Engineer,All Phases,Ongoing,High,In Progress
+Cross-Cutting,Testing,Unit and integration tests,Test coverage, snapshot tests, E2E tests, cross-browser,5,QA Engineer,All Phases,Ongoing,High,In Progress
+Cross-Cutting,Documentation,Update documentation,CHANGELOG, Storybook, API docs, user guides,2,Tech Writer,All Phases,Ongoing,Medium,In Progress

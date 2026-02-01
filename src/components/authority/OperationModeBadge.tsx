@@ -48,7 +48,7 @@ export const OperationModeBadge: React.FC<OperationModeBadgeProps> = ({
       label: 'PRODUCTION',
       sub: 'Logged',
       icon: Shield,
-      style: 'border-orange-500/50 bg-orange-950/90 text-orange-400',
+      style: 'border-amber-500/50 bg-amber-950/90 text-amber-400',
       desc: 'Live Operations'
     },
     certified: {

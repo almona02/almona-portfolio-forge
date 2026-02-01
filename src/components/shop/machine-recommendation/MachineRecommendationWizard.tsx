@@ -316,7 +316,7 @@ const MachineRecommendationWizard: React.FC<MachineRecommendationWizardProps> = 
         Matching: {previewMatches.length} / {totalMachines}
       </Badge>
       {usePresetBundle && (
-        <Badge variant="secondary" className="bg-orange-500/20 text-orange-200 border-orange-400/40">
+        <Badge variant="secondary" className="btn-primary">
           Preset bundles on
         </Badge>
       )}
@@ -537,7 +537,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
           >
             <div className="text-center">
               <Building2 className="h-10 w-10 sm:h-12 sm:w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="text-xl sm:text-2xl font-bold mb-2">Select Primary Substrate</h3>
+              <h3 className="typography-h3 sm:text-2xl mb-2">Select Primary Substrate</h3>
               <p className="text-gray-400 text-sm sm:text-base">What substrate dominates your current or planned production mix?</p>
             </div>
             <SelectionStrip />
@@ -551,7 +551,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-start space-x-3 sm:space-x-4">
                       <RadioGroupItem value="aluminum" id="aluminum" className="mt-1" />
                       <div className="flex-1 min-w-0">
-                        <Label htmlFor="aluminum" className="text-base sm:text-lg font-semibold cursor-pointer">Aluminum</Label>
+                        <Label htmlFor="aluminum" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">Aluminum</Label>
                         <p className="text-xs sm:text-sm text-gray-400 mt-1">High-rigidity frames with premium finishing and corrosion resistance</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">High Strength</Badge>
@@ -569,7 +569,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-start space-x-3 sm:space-x-4">
                       <RadioGroupItem value="upvc" id="upvc" className="mt-1" />
                       <div className="flex-1 min-w-0">
-                        <Label htmlFor="upvc" className="text-base sm:text-lg font-semibold cursor-pointer">UPVC</Label>
+                        <Label htmlFor="upvc" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">UPVC</Label>
                         <p className="text-xs sm:text-sm text-gray-400 mt-1">Thermal-first systems with low maintenance and superior acoustic insulation</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">Energy Efficient</Badge>
@@ -587,7 +587,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-start space-x-3 sm:space-x-4">
                       <RadioGroupItem value="both" id="both" className="mt-1" />
                       <div className="flex-1 min-w-0">
-                        <Label htmlFor="both" className="text-base sm:text-lg font-semibold cursor-pointer">Both Materials</Label>
+                        <Label htmlFor="both" className="typography-label text-base sm:text-lg font-semibold cursor-pointer">Both Materials</Label>
                         <p className="text-xs sm:text-sm text-gray-400 mt-1">Dual-line capability for mixed aluminum and UPVC portfolios</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">Versatile</Badge>
@@ -611,7 +611,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
           >
             <div className="text-center">
               <Square className="h-10 w-10 sm:h-12 sm:w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="text-xl sm:text-2xl font-bold mb-2">Core Operation Focus</h3>
+              <h3 className="typography-h3 sm:text-2xl mb-2">Core Operation Focus</h3>
               <p className="text-gray-400 text-sm sm:text-base">
                 Choose the operation family that drives your current workload.
               </p>
@@ -628,11 +628,11 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                   <div className="flex items-center gap-2">
                     <span
                       className={`mt-1 inline-flex h-4 w-4 items-center justify-center rounded-full border ${
-                        usePresetBundle ? 'border-orange-400 bg-orange-500' : 'border-gray-500'
+                        usePresetBundle ? 'border-amber-400 bg-amber-500' : 'border-gray-500'
                       }`}
                       aria-hidden="true"
                     />
-                    <Label className="text-base sm:text-lg font-semibold cursor-pointer">
+                    <Label className="typography-label text-base sm:text-lg font-semibold cursor-pointer">
                       Workshop Bundle (recommended)
                     </Label>
                   </div>
@@ -659,7 +659,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                         <div className="flex items-start space-x-3 sm:space-x-4">
                           <RadioGroupItem value={category.id} id={category.id} className="mt-1" />
                           <div className="flex-1 min-w-0">
-                            <Label htmlFor={category.id} className="text-base sm:text-lg font-semibold cursor-pointer">
+                            <Label htmlFor={category.id} className="typography-label text-base sm:text-lg font-semibold cursor-pointer">
                               {category.label}
                             </Label>
                             <p className="text-xs sm:text-sm text-gray-400 mt-1">
@@ -674,12 +674,12 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                                 {category.count} machines
                               </Badge>
                               {category.id === 'fabrication-equipment' && (
-                                <Badge variant="outline" className="text-[11px] border-orange-400/50 text-orange-300">
+                                <Badge variant="outline" className="text-[11px] border-amber-400/50 text-amber-300">
                                   Full line (recommended)
                                 </Badge>
                               )}
                               {usePresetBundle && category.id === 'fabrication-equipment' && (
-                                <Badge variant="secondary" className="text-[11px] bg-orange-500/20 text-orange-200 border-orange-400/50">
+                                <Badge variant="secondary" className="btn-primary">
                                   Workshop set active
                                 </Badge>
                               )}
@@ -704,7 +704,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
           >
             <div className="text-center">
               <Cpu className="h-12 w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="text-2xl font-bold mb-2">Automation Level</h3>
+              <h3 className="typography-h3 mb-2">Automation Level</h3>
               <p className="text-gray-400">Select the control philosophy that matches your quality and throughput targets.</p>
             </div>
             <SelectionStrip />
@@ -718,7 +718,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="manual" id="manual" />
                       <div className="flex-1">
-                        <Label htmlFor="manual" className="text-lg font-semibold cursor-pointer">Manual Operation</Label>
+                        <Label htmlFor="manual" className="typography-label text-lg font-semibold cursor-pointer">Manual Operation</Label>
                         <p className="text-sm text-gray-400 mt-1">Operator-first cells for bespoke work and low-volume series</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">Operator Control</Badge>
@@ -736,7 +736,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="automatic" id="automatic" />
                       <div className="flex-1">
-                        <Label htmlFor="automatic" className="text-lg font-semibold cursor-pointer">Semi-Automatic</Label>
+                        <Label htmlFor="automatic" className="typography-label text-lg font-semibold cursor-pointer">Semi-Automatic</Label>
                         <p className="text-sm text-gray-400 mt-1">Assisted automation with safeguarded repeatability and human oversight</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">Automated Process</Badge>
@@ -754,7 +754,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="optimized" id="optimized" />
                       <div className="flex-1">
-                        <Label htmlFor="optimized" className="text-lg font-semibold cursor-pointer">Optimized (Recommended)</Label>
+                        <Label htmlFor="optimized" className="typography-label text-lg font-semibold cursor-pointer">Optimized (Recommended)</Label>
                         <p className="text-sm text-gray-400 mt-1">Auto-prioritize CNC/automatic cells for throughput and quality.</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">Preset</Badge>
@@ -772,7 +772,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="cnc" id="cnc" />
                       <div className="flex-1">
-                        <Label htmlFor="cnc" className="text-lg font-semibold cursor-pointer">CNC & Fully Automatic</Label>
+                        <Label htmlFor="cnc" className="typography-label text-lg font-semibold cursor-pointer">CNC & Fully Automatic</Label>
                         <p className="text-sm text-gray-400 mt-1">Closed-loop CNC control for high-volume output and micron-level fidelity</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">CNC Control</Badge>
@@ -796,7 +796,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
           >
             <div className="text-center">
               <TrendingUp className="h-12 w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="text-2xl font-bold mb-2">Production Scale</h3>
+              <h3 className="typography-h3 mb-2">Production Scale</h3>
               <p className="text-gray-400">Align capacity with demand to right-size the cell and investment.</p>
             </div>
             <SelectionStrip />
@@ -810,7 +810,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="small-scale" id="small-scale" />
                       <div className="flex-1">
-                        <Label htmlFor="small-scale" className="text-lg font-semibold cursor-pointer">Small Scale (1-50 units/day)</Label>
+                        <Label htmlFor="small-scale" className="typography-label text-lg font-semibold cursor-pointer">Small Scale (1-50 units/day)</Label>
                         <p className="text-sm text-gray-400 mt-1">Custom work, prototyping, and boutique fabrication lines</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">Custom Work</Badge>
@@ -828,7 +828,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="medium-scale" id="medium-scale" />
                       <div className="flex-1">
-                        <Label htmlFor="medium-scale" className="text-lg font-semibold cursor-pointer">Medium Scale (50-200 units/day)</Label>
+                        <Label htmlFor="medium-scale" className="typography-label text-lg font-semibold cursor-pointer">Medium Scale (50-200 units/day)</Label>
                         <p className="text-sm text-gray-400 mt-1">Balanced throughput for regional demand with disciplined quality</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">Regional Scale</Badge>
@@ -846,7 +846,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                     <div className="flex items-center space-x-4">
                       <RadioGroupItem value="high-volume" id="high-volume" />
                       <div className="flex-1">
-                        <Label htmlFor="high-volume" className="text-lg font-semibold cursor-pointer">High Volume (200+ units/day)</Label>
+                        <Label htmlFor="high-volume" className="typography-label text-lg font-semibold cursor-pointer">High Volume (200+ units/day)</Label>
                         <p className="text-sm text-gray-400 mt-1">Integrated production lines for sustained volume with QA checkpoints</p>
                         <div className="flex gap-2 mt-2">
                           <Badge variant="secondary">Production Line</Badge>
@@ -888,7 +888,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
           >
             <div className="text-center">
               <Award className="h-10 w-10 sm:h-12 sm:w-12 text-almona-orange mx-auto mb-4" />
-              <h3 className="text-xl sm:text-2xl font-bold mb-2">Precision-Fit Recommendations</h3>
+              <h3 className="typography-h3 sm:text-2xl mb-2">Precision-Fit Recommendations</h3>
               <p className="text-gray-400 text-sm sm:text-base">Curated to your inputs with CE/ISO-grade alignment and production readiness.</p>
             </div>
 
@@ -896,7 +896,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
             <Card className="bg-gray-800/50 border-gray-600">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold flex items-center gap-2">
+                  <h4 className="typography-h4 flex items-center gap-2">
                     <FileText className="h-5 w-5 text-almona-orange" />
                     Selection Brief
                   </h4>
@@ -940,7 +940,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                         <Settings className="h-6 w-6 sm:h-8 sm:w-8 text-almona-orange" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-base sm:text-lg">{machine.name}</h4>
+                        <h4 className="typography-h4 text-base sm:text-lg">{machine.name}</h4>
                         <p className="text-xs sm:text-sm text-gray-400 mt-1 line-clamp-2">{machine.description}</p>
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
                           {machine.tags?.slice(0, 3).map(tag => (
@@ -974,7 +974,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                 <Card>
                   <CardContent className="p-8 text-center">
                     <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h4 className="text-lg font-semibold mb-2">Let’s Curate This Together</h4>
+                    <h4 className="typography-h4 mb-2">Let’s Curate This Together</h4>
                     <p className="text-gray-400 mb-4">Share your project constraints and we will build a precision short-list for you.</p>
                     <Button asChild className="bg-almona-orange hover:bg-almona-orange-dark">
                       <Link to="/contact">
@@ -1065,7 +1065,7 @@ Produced by the Almona Precision AI Machine Wizard (Industry 4.0 aligned).
                 <span className="text-[11px] text-gray-400">Filters stay active through the wizard.</span>
               </div>
               {usePresetBundle && (
-                <Badge variant="outline" className="text-[11px] border-orange-400/50 text-orange-200">
+                <Badge variant="outline" className="text-[11px] border-amber-400/50 text-amber-200">
                   Preset bundles enabled
                 </Badge>
               )}

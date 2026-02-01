@@ -170,7 +170,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
         <CardTitle className="text-white flex items-center justify-between">
           <span>{t('pricing.calculator.title', 'Pricing Calculator')}</span>
           {showRegionalPricing && (
-            <Badge variant="outline" className="text-orange-400 border-orange-400">
+            <Badge variant="outline" className="text-amber-400 border-amber-400">
               {regionState.region} - {getRegionalConfig(regionState.region).currency.symbol}
             </Badge>
           )}
@@ -179,7 +179,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
       <CardContent className="space-y-4">
         {/* Selected Parts */}
         <div className="space-y-3">
-          <h4 className="text-white font-medium">
+          <h4 className="typography-h4 text-white font-medium">
             {t('pricing.calculator.selectedParts', 'Selected Parts')} ({selectedParts.length})
           </h4>
           
@@ -215,7 +215,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
                 <div className="flex items-center space-x-2">
                   {enableQuantityAdjustment && (
                     <>
-                      <Label htmlFor={`qty-${item.part.id}`} className="text-gray-300 text-xs">
+                      <Label htmlFor={`qty-${item.part.id}`} className="typography-label text-gray-300 text-xs">
                         {t('pricing.calculator.quantity', 'Qty')}:
                       </Label>
                       <Input
@@ -231,7 +231,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
                 </div>
                 
                 <div className="text-right">
-                  <div className="text-orange-400 font-bold text-sm">
+                  <div className="text-amber-400 font-bold text-sm">
                     {utils.formatCurrency(item.total, { showSymbol: true })}
                   </div>
                   {showTaxBreakdown && (
@@ -268,7 +268,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
             
             <div className="flex justify-between text-white font-bold text-lg">
               <span>{t('pricing.calculator.total', 'Total')}:</span>
-              <span className="text-orange-400">
+              <span className="text-amber-400">
                 {utils.formatCurrency(totalPricing.total, { showSymbol: true })}
               </span>
             </div>
@@ -292,7 +292,7 @@ export const InteractivePricingCalculator: React.FC<InteractivePricingCalculator
         {/* Action Buttons */}
         <div className="flex space-x-2 pt-4">
           <Button 
-            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+            className="btn-primary"
             disabled={!totalPricing || totalPricing.parts.length === 0}
           >
             {t('pricing.calculator.requestQuote', 'Request Quote')}

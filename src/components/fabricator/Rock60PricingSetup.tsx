@@ -9,7 +9,7 @@ import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import type { Profile } from '@/types/fabricator';
-import { AlertCircle, DollarSign, Plus, Save, Trash2 } from 'lucide-react';
+import { AlertCircle, DollarSign, Maximize2, Plus, Save, Trash2 } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -45,6 +45,7 @@ interface SystemPricingSetupProps {
   userId?: string;
   selectedProfileId?: string;
   onProfileChange?: (profileId: string) => void;
+  onOpenStudio?: (systemPackId?: string, profileId?: string) => void; // Callback to open Pricing Tuning Studio
 }
 
 type GlazingType = {
@@ -76,7 +77,8 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   profiles, 
   userId, 
   selectedProfileId,
-  onProfileChange 
+  onProfileChange,
+  onOpenStudio 
 }) => {
   // Get regional config for currency
   const { config: regionalConfig } = useRegionalConfig();
@@ -577,29 +579,46 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
   };
 
   return (
-    <Card className="bg-gray-900/70 border-gray-700">
+    <Card className="bg-gray-900/70 border-gray-700 card-dark">
       <CardHeader className="pb-3 flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="text-sm flex items-center gap-2">
-            System Pricing Setup
-            <Badge
-              variant={isConfigured ? 'outline' : 'destructive'}
-              className="text-[10px]"
-            >
-              {isConfigured ? 'Configured' : 'Required'}
-            </Badge>
-          </CardTitle>
-          <CardDescription className="text-[11px]">
+        <div className="flex-1">
+          <div className="flex items-center justify-between gap-2">
+            <CardTitle className="text-sm flex items-center gap-2">
+              System Pricing Setup
+              <Badge
+                variant={isConfigured ? 'outline' : 'destructive'}
+                className="text-[10px]"
+              >
+                {isConfigured ? 'Configured' : 'Required'}
+              </Badge>
+            </CardTitle>
+            {onOpenStudio && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onOpenStudio(systemName || undefined, selectedProfile?.id)}
+                className="h-7 text-xs bg-amber-600/20 hover:bg-amber-600/30 border-amber-600/40 text-amber-300"
+                title="Open in Pricing Tuning Studio"
+              >
+                <Maximize2 className="h-3 w-3 mr-1.5" />
+                Open Studio
+              </Button>
+            )}
+          </div>
+          <CardDescription className="text-[11px] mt-1">
             Set base prices for {systemName} elements: profiles, glass, hardware, and gaskets.
+            {onOpenStudio && (
+              <span className="text-amber-400/70 ml-1">Click "Open Studio" for advanced pricing management.</span>
+            )}
           </CardDescription>
         </div>
-        <DollarSign className="h-4 w-4 text-green-400" />
+        <DollarSign className="h-4 w-4 text-green-400 ml-2 flex-shrink-0" />
       </CardHeader>
       <CardContent className="space-y-4 text-[11px]">
         {/* System Pack Selector */}
         {Object.keys(profilesBySystem).length > 1 && (
           <div className="space-y-2">
-            <label className="text-xs text-gray-400">Select System Pack</label>
+            <Label className="typography-label text-xs text-gray-400">Select System Pack</Label>
             <Select 
               value={systemName || ''} 
               onValueChange={(system) => {
@@ -626,9 +645,9 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
         {/* Profile Selector - Show all profiles with code and role */}
         {profilesBySystem[systemName || ''] && profilesBySystem[systemName || ''].length > 0 && (
           <div className="space-y-2">
-            <label className="text-xs text-gray-400">
+            <Label className="typography-label text-xs text-gray-400">
               Select Profile • <span className="font-semibold text-gray-300">{systemName}</span> ({profilesBySystem[systemName || '']?.length} available)
-            </label>
+            </Label>
             <Select value={currentProfileId} onValueChange={handleProfileChange}>
               <SelectTrigger className="h-8 text-xs">
                 <SelectValue placeholder={`Select a ${systemName || 'system'} profile`} />
@@ -672,7 +691,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
           <div className="font-semibold text-gray-200">Daily Aluminum Price</div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-gray-400 mb-1 block">Price per kg ({currency})</label>
+              <Label className="typography-label text-xs text-gray-400 mb-1 block">Price per kg ({currency})</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -863,7 +882,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
               {selectedGlazingType && (
                 <div className="grid grid-cols-12 gap-2 p-2 rounded-lg border border-gray-700 bg-gray-800/50">
                   <div className="col-span-5">
-                    <Label className="text-[10px] text-gray-400 mb-1 block">Name</Label>
+                    <Label className="typography-label text-[10px] text-gray-400 mb-1 block">Name</Label>
                     <Input
                       type="text"
                       value={selectedGlazingType.name}
@@ -873,7 +892,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                     />
                   </div>
                   <div className="col-span-4">
-                    <Label className="text-[10px] text-gray-400 mb-1 block">Price / m²</Label>
+                    <Label className="typography-label text-[10px] text-gray-400 mb-1 block">Price / m²</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -897,7 +916,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
                   </div>
                   {selectedGlazingType.description && (
                     <div className="col-span-12">
-                      <Label className="text-[10px] text-gray-400 mb-1 block">Description</Label>
+                      <Label className="typography-label text-[10px] text-gray-400 mb-1 block">Description</Label>
                       <Input
                         type="text"
                         value={selectedGlazingType.description}
@@ -946,7 +965,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
             {selectedHardware && (
               <div className="grid grid-cols-12 gap-2 p-2 rounded-lg border border-gray-700 bg-gray-800/50">
                 <div className="col-span-9">
-                  <Label className="text-[10px] text-gray-400 mb-1 block">
+                  <Label className="typography-label text-[10px] text-gray-400 mb-1 block">
                     {selectedHardware.code} - {selectedHardware.label}
                   </Label>
                   <Input
@@ -996,7 +1015,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
             {selectedGasket && (
               <div className="grid grid-cols-12 gap-2 p-2 rounded-lg border border-gray-700 bg-gray-800/50">
                 <div className="col-span-9">
-                  <Label className="text-[10px] text-gray-400 mb-1 block">
+                  <Label className="typography-label text-[10px] text-gray-400 mb-1 block">
                     {selectedGasket.code} - {selectedGasket.label}
                   </Label>
                   <Input
@@ -1019,7 +1038,7 @@ export const Rock60PricingSetup: React.FC<SystemPricingSetupProps> = ({
             size="sm"
             onClick={handleSave}
             disabled={saving || !userId}
-            className="bg-orange-500 hover:bg-orange-600 text-xs"
+            className="btn-primary"
           >
             <Save className="h-4 w-4 mr-1" />
             {saving ? 'Saving...' : `Save ${systemName} Pricing`}

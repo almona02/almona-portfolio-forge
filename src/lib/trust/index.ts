@@ -1,8 +1,13 @@
 /**
- * Trust System Index
+ * Trust Module - Public API
  * 
- * Central exports for Egyptian trust scoring
+ * Phase 4: Precision Upgrade Plan
+ * 
+ * @since Phase 4: Precision Upgrade Plan (January 2026)
  */
 
-export { EgyptianTrustScoring, type UserProfile, type TrustScore } from './EgyptianTrustScoring';
+export * from './types';
+export * from './TrustMetricsService';
 
+// Re-export singleton instance for convenience
+export { trustMetricsService } from './TrustMetricsService';

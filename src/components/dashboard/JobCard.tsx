@@ -23,7 +23,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
       className="w-full text-left bg-gray-800 rounded-lg p-3 cursor-pointer hover:bg-gray-700 transition-colors border border-gray-700"
     >
       <div className="flex justify-between items-start mb-2 gap-2">
-        <h4 className="font-medium text-sm truncate">{job.orderNumber}</h4>
+        <h4 className="typography-h4 font-medium text-sm truncate">{job.orderNumber}</h4>
         <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded capitalize">
           {job.type.replace('_', ' ')}
         </span>

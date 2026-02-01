@@ -223,16 +223,16 @@ const InventoryPage: React.FC = () => {
   if (!user) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700">
+        <Card className="bg-gradient-to-br from-[#0a0a0a] to-[#0f0f0f] border-amber-600/30 card-glass-dark">
           <CardContent className="py-16 text-center">
-            <Package className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-slate-300 mb-2">Authentication Required</h3>
-            <p className="text-slate-400 max-w-md mx-auto mb-6">
+            <Package className="h-16 w-16 text-amber-600/70 mx-auto mb-4" />
+            <h3 className="typography-h3 text-amber-300 mb-2">Authentication Required</h3>
+            <p className="text-amber-600/70 max-w-md mx-auto mb-6">
               Please log in to access your inventory management dashboard and remnant analytics.
             </p>
             <Button
               onClick={() => (window.location.href = '/login')}
-              className="bg-orange-500 hover:bg-orange-600"
+              className="btn-primary"
             >
               Sign In
             </Button>
@@ -246,7 +246,7 @@ const InventoryPage: React.FC = () => {
     <div className="container mx-auto px-4 py-8 space-y-6">
       {/* Draft profile edits indicator */}
       {unsavedChangesCount > 0 && (
-        <Card className="bg-amber-500/10 border-amber-500/30">
+        <Card className="btn-primary">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -264,14 +264,14 @@ const InventoryPage: React.FC = () => {
               <div className="flex gap-2">
                 <Button
                   onClick={handleSaveAllEdits}
-                  className="bg-amber-500 hover:bg-amber-600 text-xs"
+                  className="btn-primary"
                 >
                   Save All
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => dispatch({ type: 'CLEAR_PROFILE_EDITS' })}
-                  className="border-amber-500 text-amber-300 hover:bg-amber-500/20 text-xs"
+                  className="btn-primary"
                 >
                   Discard
                 </Button>
@@ -302,23 +302,23 @@ const InventoryPage: React.FC = () => {
         </Card>
       )}
       {/* Enhanced Header Card */}
-      <Card className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-slate-700/50 shadow-2xl">
+      <Card className="bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] border-amber-600/30 shadow-2xl card-glass-dark">
         <CardHeader className="pb-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="space-y-2">
               <CardTitle className="text-2xl flex items-center gap-3">
-                <div className="p-2 bg-orange-500/20 rounded-lg">
-                  <Package className="h-6 w-6 text-orange-400" />
+                <div className="btn-primary">
+                  <Package className="h-6 w-6 text-amber-400" />
                 </div>
-                {t('inventory.title', 'Inventory Intelligence Hub')}
+                {t('inventory.title', 'Inventory Management')}
               </CardTitle>
-              <CardDescription className="text-slate-300/80 text-base">
+              <CardDescription className="text-amber-300/80 text-base">
                 {t('inventory.description', 'Centralized inventory management with real-time analytics, remnant optimization, and AI-powered stock predictions for Turkish & Egyptian markets.')}
               </CardDescription>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
-                className="bg-orange-500 hover:bg-orange-600 border-orange-500"
+                className="btn-primary"
                 onClick={() => navigate('/fabricator/profiles')}
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -326,7 +326,7 @@ const InventoryPage: React.FC = () => {
               </Button>
               <Button
                 variant="outline"
-                className="border-slate-600 hover:bg-slate-700/50 text-slate-300"
+                className="btn-secondary"
                 onClick={() => (window.location.href = '/fabricator-workflow#inventory')}
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
@@ -338,20 +338,20 @@ const InventoryPage: React.FC = () => {
 
         <CardContent className="space-y-4">
           {/* User & Scope Info */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-4 bg-slate-800/30 rounded-lg border border-slate-700/30">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-4 bg-[#0f0f0f]/30 rounded-lg border border-amber-600/30 card-dark">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm text-slate-400">
+              <div className="flex items-center gap-2 text-sm text-amber-600/70">
                 <span>Workspace:</span>
                 <Badge
                   variant="outline"
-                  className="bg-slate-700/50 text-slate-300 border-slate-600"
+                  className="btn-secondary"
                 >
                   {user.email || `${user.id.slice(0, 4)}…${user.id.slice(-4)}`}
                 </Badge>
               </div>
-              <div className="flex items-center gap-2 text-sm text-slate-400">
+              <div className="flex items-center gap-2 text-sm text-amber-600/70">
                 <span>Last Sync:</span>
-                <span className="text-slate-300 font-mono">
+                <span className="text-amber-300 font-mono">
                   {isLoading ? 'Syncing…' : 'Just now'}
                 </span>
               </div>
@@ -362,56 +362,56 @@ const InventoryPage: React.FC = () => {
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                 <span>Live Data</span>
               </div>
-              <div className="text-slate-500">Supabase • Real-time</div>
+              <div className="text-amber-600/70">Supabase • Real-time</div>
             </div>
           </div>
 
           {/* Quick Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="bg-slate-800/40 rounded-lg p-4 border border-slate-700/30">
-              <div className="text-2xl font-bold text-white mb-1">{inventoryStats.totalItems}</div>
-              <div className="text-sm text-slate-400">Total Items</div>
+            <div className="bg-[#0f0f0f]/40 rounded-lg p-4 border border-amber-600/30 card-dark">
+              <div className="text-2xl font-bold text-amber-200 mb-1">{inventoryStats.totalItems}</div>
+              <div className="text-sm text-amber-600/70">Total Items</div>
             </div>
-            <div className="bg-slate-800/40 rounded-lg p-4 border border-slate-700/30">
-              <div className="text-2xl font-bold text-emerald-400 mb-1">
+            <div className="bg-[#0f0f0f]/40 rounded-lg p-4 border border-amber-600/30 card-dark">
+              <div className="text-2xl font-bold mb-1 status-valid">
                 {inventoryStats.tunedItems}
               </div>
-              <div className="text-sm text-slate-400">Tuned Items</div>
+              <div className="text-sm text-amber-600/70">Tuned Items</div>
             </div>
-            <div className="bg-slate-800/40 rounded-lg p-4 border border-slate-700/30">
-              <div className="text-2xl font-bold text-orange-400 mb-1">
+            <div className="bg-[#0f0f0f]/40 rounded-lg p-4 border border-amber-600/30 card-dark">
+              <div className="text-2xl font-bold text-amber-400 mb-1">
                 {inventoryStats.lowStockItems}
               </div>
-              <div className="text-sm text-slate-400">Low Stock</div>
+              <div className="text-sm text-amber-600/70">Low Stock</div>
             </div>
-            <div className="bg-slate-800/40 rounded-lg p-4 border border-slate-700/30">
+            <div className="bg-[#0f0f0f]/40 rounded-lg p-4 border border-amber-600/30 card-dark">
               <div className="text-2xl font-bold text-red-400 mb-1">
                 {inventoryStats.outOfStockItems}
               </div>
-              <div className="text-sm text-slate-400">Out of Stock</div>
+              <div className="text-sm text-amber-600/70">Out of Stock</div>
             </div>
-            <div className="bg-slate-800/40 rounded-lg p-4 border border-slate-700/30">
+            <div className="bg-[#0f0f0f]/40 rounded-lg p-4 border border-amber-600/30 card-dark">
               <div className="text-2xl font-bold text-green-400 mb-1">
                 ${inventoryStats.totalValue}
               </div>
-              <div className="text-sm text-slate-400">Total Value</div>
+              <div className="text-sm text-amber-600/70">Total Value</div>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Enhanced Navigation & Search */}
-      <Card className="bg-slate-800/50 border-slate-700/50">
+      <Card className="bg-[#0f0f0f]/50 border-amber-600/30 card-glass-dark">
         <CardContent className="p-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             {/* Tabs */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full lg:w-auto">
-              <TabsList className="bg-slate-700/50 border border-slate-600/50">
-                <TabsTrigger value="dashboard" className="data-[state=active]:bg-orange-500">
+              <TabsList className="btn-secondary">
+                <TabsTrigger value="dashboard" className="btn-primary">
                   <Package className="h-4 w-4 mr-2" />
                   {t('inventory.tabs.dashboard', 'Dashboard')}
                 </TabsTrigger>
-                <TabsTrigger value="analytics" className="data-[state=active]:bg-orange-500">
+                <TabsTrigger value="analytics" className="btn-primary">
                   <TrendingUp className="h-4 w-4 mr-2" />
                   {t('inventory.tabs.analytics', 'Analytics')}
                 </TabsTrigger>
@@ -421,12 +421,12 @@ const InventoryPage: React.FC = () => {
             {/* Search & Filters */}
             <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
               <div className="relative flex-1 lg:w-80">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-amber-600/70" />
                 <Input
                   placeholder="Search profiles, brands, materials..."
                   value={searchQuery}
                   onChange={(e) => dispatch({ type: 'SET_GLOBAL_SEARCH', payload: e.target.value })}
-                  className="pl-9 bg-slate-700/50 border-slate-600/50 text-slate-100 placeholder-slate-500"
+                  className="btn-secondary"
                 />
               </div>
 
@@ -435,10 +435,10 @@ const InventoryPage: React.FC = () => {
                   value={tuningFilter}
                   onValueChange={(v) => setTuningFilter(v as any)}
                 >
-                  <SelectTrigger className="w-40 bg-slate-700/50 border-slate-600/50 text-slate-100 text-xs">
+                  <SelectTrigger className="btn-secondary">
                     <SelectValue placeholder="Tuning status" />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700 text-xs">
+                  <SelectContent className="bg-[#0f0f0f] border-amber-600/30 text-xs card-glass-dark">
                     <SelectItem value="all">All Tuning</SelectItem>
                     <SelectItem value="tuned">Tuned Only</SelectItem>
                     <SelectItem value="in_progress">Tuning In Progress</SelectItem>
@@ -448,7 +448,7 @@ const InventoryPage: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-slate-600 hover:bg-slate-700/50"
+                  className="btn-secondary"
                   onClick={() => setViewMode(viewMode === 'grid' ? 'table' : 'grid')}
                 >
                   <Filter className="h-4 w-4 mr-2" />
@@ -457,7 +457,7 @@ const InventoryPage: React.FC = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-slate-600 hover:bg-slate-700/50"
+                  className="btn-secondary"
                   onClick={() => refetch()}
                 >
                   <Download className="h-4 w-4 mr-2" />
@@ -471,22 +471,22 @@ const InventoryPage: React.FC = () => {
 
       {/* Alerts Section */}
       {inventoryStats.lowStockItems > 0 && (
-        <Card className="bg-orange-500/10 border-orange-500/30">
+        <Card className="btn-primary">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <AlertTriangle className="h-5 w-5 text-orange-400" />
+              <AlertTriangle className="h-5 w-5 text-amber-400" />
               <div className="flex-1">
-                <p className="text-orange-300 font-medium">
+                <p className="text-amber-300 font-medium">
                   {inventoryStats.lowStockItems} item(s) need attention
                 </p>
-                <p className="text-orange-400/80 text-sm">
+                <p className="text-amber-400/80 text-sm">
                   Low stock levels detected. Consider reordering to avoid production delays.
                 </p>
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                className="border-orange-500 text-orange-300 hover:bg-orange-500/20"
+                className="btn-primary"
                 onClick={() => {
                   dispatch({ type: 'SET_GLOBAL_SEARCH', payload: '' });
                   navigate('/fabricator/profiles');
@@ -502,13 +502,13 @@ const InventoryPage: React.FC = () => {
       {/* Main Content */}
       <Suspense
         fallback={
-          <Card className="bg-slate-800/50 border-slate-700/50">
+          <Card className="bg-[#0f0f0f]/50 border-amber-600/30 card-glass-dark">
             <CardContent className="p-12 text-center">
               <div className="flex flex-col items-center gap-4">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500" />
                 <div>
-                  <p className="text-slate-300 font-medium">Loading Inventory Intelligence</p>
-                  <p className="text-slate-500 text-sm">Preparing your fabricator data...</p>
+                  <p className="text-amber-300 font-medium">Loading Inventory Intelligence</p>
+                  <p className="text-amber-600/70 text-sm">Preparing your fabricator data...</p>
                 </div>
               </div>
             </CardContent>
@@ -525,7 +525,7 @@ const InventoryPage: React.FC = () => {
         )}
 
         {activeTab === 'analytics' && (
-          <Card className="bg-slate-800/50 border-slate-700/50">
+          <Card className="bg-[#0f0f0f]/50 border-amber-600/30 card-glass-dark">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-green-400" />
@@ -536,7 +536,7 @@ const InventoryPage: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-12 text-slate-500">
+              <div className="text-center py-12 text-amber-600/70">
                 <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>{t('inventory.analytics.coming_soon', 'Advanced analytics dashboard coming soon.')}</p>
                 <p className="text-sm">
@@ -549,9 +549,9 @@ const InventoryPage: React.FC = () => {
       </Suspense>
 
       {/* Enhanced Footer */}
-      <Card className="bg-slate-800/30 border-slate-700/30">
+      <Card className="bg-[#0f0f0f]/30 border-amber-600/30 card-glass-dark">
         <CardContent className="p-4">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 text-xs text-slate-500">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 text-xs text-amber-600/70">
             <div className="flex items-center gap-6">
               <span>• Real-time synchronization</span>
               <span>• Turkish &amp; Egyptian market optimized</span>

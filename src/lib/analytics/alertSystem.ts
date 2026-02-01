@@ -570,7 +570,7 @@ export const getSeverityColor = (severity: Alert['severity']): string => {
   switch (severity) {
     case 'low': return 'text-blue-600';
     case 'medium': return 'text-yellow-600';
-    case 'high': return 'text-orange-600';
+    case 'high': return 'text-amber-600';
     case 'critical': return 'text-red-600';
     default: return 'text-gray-600';
   }

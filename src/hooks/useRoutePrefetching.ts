@@ -39,7 +39,8 @@ const EGYPT_WORKFLOW_PATTERNS: Record<string, string[]> = {
 
 // Component chunk mapping for deeper prefetching
 // Note: Actual chunk names will be determined after build - update based on dist/assets output
-const COMPONENT_CHUNKS: Record<string, string[]> = {
+// Reserved for future use when component-level prefetching is implemented
+const _COMPONENT_CHUNKS: Record<string, string[]> = {
   '/fabricator-workflow': [
     'FabricatorWorkflow',
     'EgyptProjectWizard',
@@ -65,7 +66,8 @@ const COMPONENT_CHUNKS: Record<string, string[]> = {
 export const useRoutePrefetching = () => {
   const location = useLocation();
   const prefetchedRoutes = useRef<Set<string>>(new Set());
-  const prefetchedComponents = useRef<Set<string>>(new Set());
+  // Reserved for future component-level prefetching
+  const _prefetchedComponents = useRef<Set<string>>(new Set());
 
   // Prefetch a route and its associated components
   // NOTE: Removed document prefetching - it causes 404s for SPA routes

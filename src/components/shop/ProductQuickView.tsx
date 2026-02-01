@@ -206,7 +206,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                     className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 object-cover rounded-lg flex-shrink-0"
                   />
                   <div className="min-w-0 flex-1">
-                    <h2 id="quickview-title" className="text-sm sm:text-base lg:text-xl font-bold text-white truncate">
+                    <h2 id="quickview-title" className="typography-h2 text-sm sm:text-base lg:text-xl text-white truncate">
                       {product.name}
                     </h2>
                     <p className="text-gray-400 text-[10px] sm:text-xs lg:text-sm truncate capitalize">{product.category?.replace(/-/g, ' ')}</p>
@@ -246,7 +246,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   {/* Price overlay on image */}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 sm:p-4">
                     <div>
-                      <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-400">
+                      <p className="text-lg sm:text-xl lg:text-2xl font-bold text-amber-400">
                         Price on Request
                       </p>
                       <div className="flex items-center gap-2 mt-1">
@@ -263,7 +263,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                 <div className="flex gap-2 overflow-x-auto pb-1 -mx-3 px-3 sm:mx-0 sm:px-0 sm:flex-wrap scrollbar-hide">
                   {product.specifications?.slice(0, 4).map((spec, index) => (
                     <div key={index} className="flex-shrink-0 flex items-center gap-1.5 bg-gray-800/60 rounded-full px-2.5 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs">
-                      <Zap className="w-3 h-3 text-orange-500 flex-shrink-0" />
+                      <Zap className="w-3 h-3 text-amber-500 flex-shrink-0" />
                       <span className="text-gray-300 whitespace-nowrap">{spec.length > 35 ? spec.slice(0, 35) + '...' : spec}</span>
                         </div>
                       ))}
@@ -274,24 +274,24 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                 {/* Enhanced Tabs - Scrollable on mobile */}
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3 sm:space-y-4">
                   <TabsList className="w-full grid grid-cols-4 h-8 sm:h-9 lg:h-10 bg-gray-800/50">
-                    <TabsTrigger value="overview" className="text-[10px] sm:text-xs lg:text-sm px-1 sm:px-2 data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-400">Overview</TabsTrigger>
-                    <TabsTrigger value="specifications" className="text-[10px] sm:text-xs lg:text-sm px-1 sm:px-2 data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-400">Specs</TabsTrigger>
-                    <TabsTrigger value="features" className="text-[10px] sm:text-xs lg:text-sm px-1 sm:px-2 data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-400">Features</TabsTrigger>
-                    <TabsTrigger value="support" className="text-[10px] sm:text-xs lg:text-sm px-1 sm:px-2 data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-400">Support</TabsTrigger>
+                    <TabsTrigger value="overview" className="btn-primary">Overview</TabsTrigger>
+                    <TabsTrigger value="specifications" className="btn-primary">Specs</TabsTrigger>
+                    <TabsTrigger value="features" className="btn-primary">Features</TabsTrigger>
+                    <TabsTrigger value="support" className="btn-primary">Support</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="overview" className="space-y-4 sm:space-y-5">
                     <div className="space-y-3 sm:space-y-4">
-                      <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-orange-400">Product Description</h3>
+                      <h3 className="typography-h3 text-sm sm:text-base lg:text-lg text-amber-400">Product Description</h3>
                       <p className="text-gray-300 leading-relaxed text-xs sm:text-sm lg:text-base">{product.description}</p>
                       
                       {/* Key Features */}
                       <div className="bg-gray-800/50 p-3 sm:p-4 rounded-lg">
-                        <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-orange-400 mb-2 sm:mb-3">Key Features</h3>
+                        <h3 className="typography-h3 text-sm sm:text-base lg:text-lg text-amber-400 mb-2 sm:mb-3">Key Features</h3>
                         <div className="space-y-1.5 sm:space-y-2">
                           {product.specifications?.slice(0, 4).map((spec, index) => (
                             <div key={index} className="flex items-start gap-2 text-xs sm:text-sm">
-                              <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                              <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 mt-0.5 flex-shrink-0" />
                               <span className="text-gray-300">{spec}</span>
                             </div>
                           ))}
@@ -305,7 +305,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       {/* Power & Electrical */}
                       {product.powerSpec && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                          <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">Power & Electrical</h4>
+                          <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">Power & Electrical</h4>
                           <div className="grid grid-cols-2 gap-2 sm:gap-3 text-[10px] sm:text-xs lg:text-sm">
                             <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                               <span className="text-gray-400">Power</span>
@@ -330,7 +330,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       {/* Air Requirements */}
                       {product.airSpec && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                          <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">Air Requirements</h4>
+                          <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">Air Requirements</h4>
                           <div className="grid grid-cols-2 gap-2 sm:gap-3 text-[10px] sm:text-xs lg:text-sm">
                             <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                               <span className="text-gray-400">Consumption</span>
@@ -348,7 +348,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
 
                       {/* Dimensions & Weight - Combined compact view */}
                       <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                        <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">Dimensions & Weight</h4>
+                        <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">Dimensions & Weight</h4>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 text-[10px] sm:text-xs lg:text-sm">
                           {product.dimensions && (
                             <>
@@ -384,7 +384,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       {/* Working Capacity (for copy routers etc.) */}
                       {(product as any).workingCapacity && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                          <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">Working Capacity</h4>
+                          <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">Working Capacity</h4>
                           <div className="grid grid-cols-3 gap-2 sm:gap-3 text-[10px] sm:text-xs lg:text-sm">
                             {(product as any).workingCapacity.x1 && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
@@ -429,7 +429,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       {/* Spindle & Tooling */}
                       {((product as any).spindleSpeed || (product as any).cutterBits || (product as any).spindlePower || (product as any).toolCollet) && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                          <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">Spindle & Tooling</h4>
+                          <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">Spindle & Tooling</h4>
                           <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm">
                             {(product as any).spindleSpeed && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
@@ -462,7 +462,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       {/* Clamping Capacity */}
                       {(product as any).clampingCapacity && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                          <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">Clamping Capacity</h4>
+                          <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">Clamping Capacity</h4>
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[10px] sm:text-xs lg:text-sm">
                             {(product as any).clampingCapacity.widthMax && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
@@ -507,7 +507,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       {/* Saw Blade Specifications */}
                       {(product as any).sawBlade && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                          <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">Saw Blade</h4>
+                          <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">Saw Blade</h4>
                           <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm">
                             {(product as any).sawBlade.diameter && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
@@ -540,7 +540,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       {/* Cutting Capacity */}
                       {(product as any).cuttingCapacity && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                          <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">Cutting Capacity</h4>
+                          <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">Cutting Capacity</h4>
                           <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm">
                             {(product as any).cuttingCapacity.maxLength5m && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
@@ -585,7 +585,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       {/* Angular Capacity */}
                       {(product as any).angularCapacity && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                          <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">Angular Capacity</h4>
+                          <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">Angular Capacity</h4>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm">
                             {(product as any).angularCapacity.tilting && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
@@ -624,7 +624,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       {/* Welding Capacity */}
                       {(product as any).weldingCapacity && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                          <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">Welding Capacity</h4>
+                          <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">Welding Capacity</h4>
                           <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm">
                             {(product as any).weldingCapacity.heightMax && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
@@ -679,7 +679,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       {/* CNC / Machining Center Specs */}
                       {((product as any).cncAxes || (product as any).processingCapacity || (product as any).profileCapacity) && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                          <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">CNC Specifications</h4>
+                          <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">CNC Specifications</h4>
                           <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs lg:text-sm">
                             {(product as any).cncAxes && (
                               <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
@@ -746,11 +746,11 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                       {/* Features List - Collapsible on mobile */}
                       {product.specifications && product.specifications.length > 0 && (
                         <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                          <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">Features</h4>
+                          <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">Features</h4>
                           <div className="space-y-1.5 sm:space-y-2 max-h-40 sm:max-h-none overflow-y-auto">
                             {product.specifications.map((spec, index) => (
                               <div key={index} className="flex items-start gap-1.5 sm:gap-2 text-[10px] sm:text-xs lg:text-sm">
-                                <Settings className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                                <Settings className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 mt-0.5 flex-shrink-0" />
                                 <span className="text-gray-300">{spec}</span>
                               </div>
                             ))}
@@ -760,7 +760,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
 
                       {/* Product Details - Compact */}
                       <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                        <h4 className="text-xs sm:text-sm font-semibold text-orange-300 mb-2 sm:mb-3">Product Details</h4>
+                        <h4 className="typography-h4 text-xs sm:text-sm text-amber-300 mb-2 sm:mb-3">Product Details</h4>
                         <div className="grid grid-cols-2 gap-2 sm:gap-3 text-[10px] sm:text-xs lg:text-sm">
                           <div className="flex justify-between items-center py-1 border-b border-gray-700/50">
                             <span className="text-gray-400">Category</span>
@@ -786,18 +786,18 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   <TabsContent value="features" className="space-y-3 sm:space-y-4">
                     <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
                       <div className="bg-gray-800/70 p-2 sm:p-3 lg:p-4 rounded-lg text-center">
-                        <Truck className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-orange-500 mx-auto mb-1 sm:mb-2" />
-                        <h4 className="font-semibold text-white text-[10px] sm:text-xs lg:text-sm mb-0.5">Free Shipping</h4>
+                        <Truck className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-amber-500 mx-auto mb-1 sm:mb-2" />
+                        <h4 className="typography-h4 text-white text-[10px] sm:text-xs lg:text-sm mb-0.5">Free Shipping</h4>
                         <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400">Cairo area</p>
                       </div>
                       <div className="bg-gray-800/70 p-2 sm:p-3 lg:p-4 rounded-lg text-center">
-                        <Shield className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-orange-500 mx-auto mb-1 sm:mb-2" />
-                        <h4 className="font-semibold text-white text-[10px] sm:text-xs lg:text-sm mb-0.5">Warranty</h4>
+                        <Shield className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-amber-500 mx-auto mb-1 sm:mb-2" />
+                        <h4 className="typography-h4 text-white text-[10px] sm:text-xs lg:text-sm mb-0.5">Warranty</h4>
                         <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400">1-year</p>
                       </div>
                       <div className="bg-gray-800/70 p-2 sm:p-3 lg:p-4 rounded-lg text-center">
-                        <Zap className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-orange-500 mx-auto mb-1 sm:mb-2" />
-                        <h4 className="font-semibold text-white text-[10px] sm:text-xs lg:text-sm mb-0.5">Installation</h4>
+                        <Zap className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-amber-500 mx-auto mb-1 sm:mb-2" />
+                        <h4 className="typography-h4 text-white text-[10px] sm:text-xs lg:text-sm mb-0.5">Installation</h4>
                         <p className="text-[9px] sm:text-[10px] lg:text-xs text-gray-400">Professional</p>
                       </div>
                     </div>
@@ -806,36 +806,36 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   <TabsContent value="support" className="space-y-3 sm:space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                        <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-orange-400 mb-2 sm:mb-3">Contact Support</h3>
+                        <h3 className="typography-h3 text-xs sm:text-sm lg:text-base text-amber-400 mb-2 sm:mb-3">Contact Support</h3>
                         <div className="space-y-1.5 sm:space-y-2">
                           <div className="flex items-center gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            <Monitor className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 flex-shrink-0" />
+                            <Monitor className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />
                             <span className="text-gray-300">Online: 24/7</span>
                           </div>
                           <div className="flex items-center gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            <Smartphone className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 flex-shrink-0" />
+                            <Smartphone className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />
                             <span className="text-gray-300">+20 2 2274 0000</span>
                           </div>
                           <div className="flex items-center gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 flex-shrink-0" />
+                            <Globe className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />
                             <span className="text-gray-300 truncate">support@almona.com</span>
                           </div>
                         </div>
                       </div>
                       
                       <div className="bg-gray-800/70 p-3 sm:p-4 rounded-lg">
-                        <h3 className="text-xs sm:text-sm lg:text-base font-semibold text-orange-400 mb-2 sm:mb-3">Services</h3>
+                        <h3 className="typography-h3 text-xs sm:text-sm lg:text-base text-amber-400 mb-2 sm:mb-3">Services</h3>
                         <div className="space-y-1.5 sm:space-y-2">
                           <div className="flex items-center gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            <Settings className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 flex-shrink-0" />
+                            <Settings className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />
                             <span className="text-gray-300">Installation & Setup</span>
                           </div>
                           <div className="flex items-center gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 flex-shrink-0" />
+                            <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />
                             <span className="text-gray-300">Maintenance</span>
                           </div>
                           <div className="flex items-center gap-2 text-[10px] sm:text-xs lg:text-sm">
-                            <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-orange-500 flex-shrink-0" />
+                            <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 flex-shrink-0" />
                             <span className="text-gray-300">Training & Docs</span>
                           </div>
                         </div>
@@ -853,7 +853,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                   onClick={handleCompare}
                   variant="outline"
                   size="sm"
-                  className="flex-1 h-8 sm:h-9 lg:h-10 text-[10px] sm:text-xs lg:text-sm border-orange-500/70 text-orange-400 hover:bg-orange-500/10 px-2 sm:px-3"
+                  className="btn-primary"
                 >
                   <Scale className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" />
                   <span className="hidden xs:inline">Compare</span>
@@ -877,7 +877,7 @@ export const ProductQuickView: React.FC<ProductQuickViewProps> = ({
                 <Button
                   onClick={handleAddToQuote}
                   size="sm"
-                  className="flex-[1.5] sm:flex-1 h-8 sm:h-9 lg:h-10 text-[10px] sm:text-xs lg:text-sm bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium px-2 sm:px-3"
+                  className="btn-primary-gradient"
                 >
                   <Heart className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5" />
                   <span className="hidden sm:inline">{t('shop.buttons.add_to_quote', 'Add to Quote')}</span>

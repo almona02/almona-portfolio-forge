@@ -29,6 +29,7 @@ import {
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import { AlmonaNavbarLogo } from '@/components/ui/AlmonaNavbarLogo';
 
 interface IndustrialNavbarProps {
   user?: {
@@ -267,7 +268,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
       optimal: { color: 'text-green-400', bg: 'bg-green-400/20', border: 'border-green-400/30' },
       running: { color: 'text-blue-400', bg: 'bg-blue-400/20', border: 'border-blue-400/30' },
       monitoring: { color: 'text-purple-400', bg: 'bg-purple-400/20', border: 'border-purple-400/30' },
-      active: { color: 'text-orange-400', bg: 'bg-orange-400/20', border: 'border-orange-400/30' },
+      active: { color: 'text-amber-400', bg: 'bg-amber-400/20', border: 'border-amber-400/30' },
       pending: { color: 'text-yellow-400', bg: 'bg-yellow-400/20', border: 'border-yellow-400/30' }
     };
 
@@ -290,7 +291,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
     className?: string;
   }> = ({ children, onClick, variant = 'primary', className = '' }) => {
     const variants = {
-      primary: 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600',
+      primary: 'bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600',
       secondary: 'bg-gray-800 border border-gray-600 hover:bg-gray-700',
       danger: 'bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600'
     };
@@ -329,7 +330,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
       transition={{ type: 'spring', stiffness: 200, damping: 25 }}
       className={`fixed top-0 left-0 right-0 z-[200] transition-all duration-500 ${
         isScrolled
-          ? 'bg-slate-950/95 backdrop-blur-xl border-b border-orange-500/30 shadow-2xl shadow-orange-500/10'
+          ? 'bg-slate-950/95 backdrop-blur-xl border-b border-amber-500/30 shadow-2xl shadow-amber-500/10'
           : 'bg-slate-950/90 backdrop-blur-lg border-b border-slate-800'
       }`}
     >
@@ -339,15 +340,12 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
           {/* Left Section – Brand + workflow access */}
           <div className="flex items-center gap-4 flex-shrink-0">
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="relative h-9 w-9 rounded-full bg-gradient-to-br from-orange-400 via-amber-300 to-sky-400 shadow-lg shadow-orange-500/40 flex items-center justify-center">
-                <Factory className="w-4 h-4 text-slate-950" />
-                <div className="absolute -inset-[1px] rounded-full border border-white/15" />
-              </div>
+              <AlmonaNavbarLogo size={36} />
               <div className="flex flex-col">
-                <span className="text-sm font-semibold tracking-[0.18em] text-slate-300 uppercase">
-                  Almona
+                <span className="text-sm font-semibold tracking-[0.18em] bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent uppercase">
+                  ALMONA
                 </span>
-                <span className="text-[11px] font-semibold text-slate-100">
+                <span className="text-[11px] font-semibold text-amber-600/90">
                   {cockpitOwner} Cockpit
                 </span>
               </div>
@@ -377,7 +375,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full left-0 mt-2 w-64 bg-gray-800/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl shadow-orange-500/20 overflow-hidden z-50"
+                    className="absolute top-full left-0 mt-2 w-64 bg-gray-800/95 border 500/30 rounded-xl shadow-2xl shadow-amber-500/20 overflow-hidden z-50 card-glass-dark"
                   >
                     <div className="p-3 space-y-1">
                       {workflowStages.map((stage) => {
@@ -392,8 +390,8 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                             }}
                             className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-left text-[11px] transition-colors ${
                               isActive
-                                ? 'bg-orange-500/90 text-slate-950'
-                                : 'text-slate-200 hover:bg-orange-500/10'
+                                ? 'bg-amber-500/90 text-slate-950'
+                                : 'text-slate-200 hover:bg-amber-500/10'
                             }`}
                           >
                             <stage.icon className="w-3.5 h-3.5" />
@@ -412,17 +410,17 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
           <div className="hidden lg:flex items-center justify-center flex-1">
             <div className="inline-flex items-center gap-4 rounded-full bg-slate-950/70 px-3 py-1.5 border border-slate-700/80 text-[11px]">
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full animate-pulse status-valid" />
                 <span className="text-slate-300">System</span>
                 <span className="font-semibold text-emerald-300">Optimal</span>
               </div>
-              <div className="h-4 w-px bg-slate-700" />
+              <div className="btn-secondary" />
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
                 <span className="text-slate-300">Efficiency</span>
                 <span className="font-semibold text-sky-300">92.5%</span>
               </div>
-              <div className="h-4 w-px bg-slate-700" />
+              <div className="btn-secondary" />
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                 <span className="text-slate-300">Active Jobs</span>
@@ -442,7 +440,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                   placeholder="Search machines, orders..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-3 py-2 rounded-full bg-slate-900/90 border border-slate-700 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-orange-400 focus:ring-1 focus:ring-orange-400/60 w-60"
+                  className="pl-9 pr-3 py-2 rounded-full border border-slate-700 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber- 400 focus:ring-1 focus:ring-amber-400/60 w-60 card-premium"
                 />
               </div>
             )}
@@ -456,7 +454,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="relative p-2 rounded-full bg-slate-900/90 border border-slate-700 text-slate-200 hover:border-orange-400/70 hover:text-white transition-all"
+              className="relative p-2 rounded-full border border-slate-700 text-slate-200 hover:border-amber- 400/70 hover:text-white transition-all card-premium"
             >
               <Bell className="w-4 h-4" />
               {notifications > 0 && (
@@ -494,17 +492,17 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full right-0 mt-2 w-[420px] bg-gray-800/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl shadow-orange-500/20 overflow-hidden z-50"
+                    className="absolute top-full right-0 mt-2 w-[420px] bg-gray-800/95 border 500/30 rounded-xl shadow-2xl shadow-amber-500/20 overflow-hidden z-50 card-glass-dark"
                   >
                     <div className="p-4 grid grid-cols-2 gap-2">
                       {businessNav.map((item) => (
                         <Link
                           key={item.name}
                           to={item.path}
-                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-orange-500/10 transition-all duration-200"
+                          className="btn-primary"
                           onClick={() => setActiveMenu(null)}
                         >
-                          <div className="text-orange-400">{item.icon}</div>
+                          <div className="text-amber-400">{item.icon}</div>
                           <div className="flex-1 min-w-0">
                             <div className="font-medium text-white truncate text-sm">{item.name}</div>
                           </div>
@@ -539,10 +537,10 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full right-0 mt-2 w-96 bg-gray-800/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl shadow-orange-500/20 overflow-hidden z-50"
+                    className="absolute top-full right-0 mt-2 w-96 bg-gray-800/95 border 500/30 rounded-xl shadow-2xl shadow-amber-500/20 overflow-hidden z-50 card-glass-dark"
                   >
                     <div className="p-4">
-                      <h3 className="text-orange-400 font-bold mb-3 flex items-center gap-2">
+                      <h3 className="typography-h3 text-amber-400 mb-3 flex items-center gap-2">
                         <Cpu className="w-4 h-4" />
                         {t('fabricator:navbar.fabrication_modules_title', 'Fabrication Modules')}
                       </h3>
@@ -551,10 +549,10 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                           <Link
                             key={module.name}
                             to={module.path}
-                            className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-500/10 transition-all duration-200 group"
+                            className="btn-primary"
                             onClick={() => setActiveMenu(null)}
                           >
-                            <div className="text-orange-400 group-hover:scale-110 transition-transform">
+                            <div className="text-amber-400 group-hover:scale-110 transition-transform">
                               {module.icon}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -592,7 +590,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full right-0 mt-2 w-64 bg-gray-800/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl shadow-orange-500/20 overflow-hidden z-50"
+                    className="absolute top-full right-0 mt-2 w-64 bg-gray-800/95 border 500/30 rounded-xl shadow-2xl shadow-amber-500/20 overflow-hidden z-50 card-glass-dark"
                   >
                     <div className="p-2">
                       {quickActions.map((action) => (
@@ -602,9 +600,9 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                             action.action();
                             setActiveMenu(null);
                           }}
-                          className="flex items-center gap-3 w-full p-3 rounded-lg hover:bg-orange-500/10 transition-all duration-200 group"
+                          className="btn-primary"
                         >
-                          <action.icon className="w-4 h-4 text-orange-400 group-hover:scale-110 transition-transform" />
+                          <action.icon className="w-4 h-4 text-amber-400 group-hover:scale-110 transition-transform" />
                           <span className="text-white font-medium">{action.name}</span>
                         </button>
                       ))}
@@ -631,7 +629,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full right-0 mt-2 w-48 bg-gray-800/95 backdrop-blur-xl border border-orange-500/30 rounded-xl shadow-2xl shadow-orange-500/20 overflow-hidden z-50"
+                    className="absolute top-full right-0 mt-2 w-48 bg-gray-800/95 border 500/30 rounded-xl shadow-2xl shadow-amber-500/20 overflow-hidden z-50 card-glass-dark"
                   >
                     <div className="p-2">
                       <div className="px-3 py-2 border-b border-gray-700">
@@ -641,13 +639,13 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                         </div>
                       </div>
                       <button
-                        className="flex items-center gap-2 w-full p-3 rounded-lg hover:bg-orange-500/10 transition-all duration-200"
+                        className="btn-primary"
                         onClick={() => {
                           navigate('/fabricator/settings/branding');
                           setActiveMenu(null);
                         }}
                       >
-                        <Settings className="w-4 h-4 text-orange-400" />
+                        <Settings className="w-4 h-4 text-amber-400" />
                         <span className="text-white">Branding & Settings</span>
                       </button>
                       <button className="flex items-center gap-2 w-full p-3 rounded-lg hover:bg-red-500/10 transition-all duration-200 text-red-400">
@@ -663,7 +661,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-2 rounded-full bg-slate-900/90 border border-slate-700 text-slate-300 hover:text-white hover:border-orange-400/70 transition-all"
+              className="lg:hidden p-2 rounded-full border border-slate-700 text-slate-300 hover:text-white hover:border-amber- 400/70 transition-all card-premium"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </motion.button>
@@ -678,7 +676,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-slate-950/95 backdrop-blur-xl border-t border-orange-500/30"
+            className="lg:hidden bg-slate-950/95 border-t 500/30 card-glass-dark"
           >
             <div className="container mx-auto px-4 py-4 max-h-[78vh] overflow-y-auto space-y-4">
               {/* Mobile Workflow Navigation */}
@@ -692,8 +690,8 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                     }}
                     className={`flex items-center gap-2 p-3 rounded-lg transition-all ${
                       currentWorkflow === stage.id
-                        ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                        : 'bg-gray-800 text-gray-300 border border-gray-700 hover:text-white hover:border-orange-400/40'
+                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                        : 'bg-gray-800 text-gray-300 border border-gray-700 hover:text-white hover:border-amber-400/40'
                     }`}
                   >
                     <stage.icon className="w-4 h-4 flex-shrink-0" />
@@ -711,9 +709,9 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                       action.action();
                       setMobileOpen(false);
                     }}
-                    className="flex items-center gap-2 p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:text-white hover:border-orange-500/30 transition-all"
+                    className="flex items-center gap-2 p-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:text-white hover:border-amber-500/30 transition-all"
                   >
-                    <action.icon className="w-4 h-4 text-orange-400 flex-shrink-0" />
+                    <action.icon className="w-4 h-4 text-amber-400 flex-shrink-0" />
                     <span className="text-sm font-medium text-left">{action.name}</span>
                   </button>
                 ))}
@@ -735,7 +733,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                         }
                       }}
                     >
-                      <item.icon className="w-4 h-4 flex-shrink-0 text-orange-400" />
+                      <item.icon className="w-4 h-4 flex-shrink-0 text-amber-400" />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium">{item.label}</div>
                         {item.description && <div className="text-xs text-slate-400 truncate">{item.description}</div>}
@@ -758,7 +756,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                               }
                             }}
                           >
-                            <child.icon className="w-4 h-4 flex-shrink-0 text-orange-300" />
+                            <child.icon className="w-4 h-4 flex-shrink-0 text-amber-300" />
                             <span className="text-sm">{child.label}</span>
                           </Link>
                         ))}
@@ -774,7 +772,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
 
       {/* Animated Scanning Line */}
       <motion.div
-        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-orange-400 to-transparent"
+        className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent"
         animate={{
           scaleX: [0, 1, 0],
           opacity: [0, 1, 0],
@@ -797,7 +795,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
           >
             <div className="mx-auto max-w-5xl bg-slate-950/98 border border-slate-800/80 rounded-2xl shadow-2xl shadow-black/60 overflow-hidden backdrop-blur-xl">
               <div className="px-4 py-3 border-b border-slate-800 flex items-center gap-2">
-                <Search className="h-4 w-4 text-orange-400" />
+                <Search className="h-4 w-4 text-amber-400" />
                 <span className="text-sm font-semibold text-slate-100">
                   Search Fabricator Pro
                 </span>
@@ -822,14 +820,14 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                         }}
                         className="w-full text-left px-4 py-3 hover:bg-white/5 transition-colors flex items-center gap-3"
                       >
-                        <item.icon className="h-4 w-4 text-orange-400" />
+                        <item.icon className="h-4 w-4 text-amber-400" />
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <span className="text-sm font-semibold text-slate-100">
                               {item.label}
                             </span>
                             {item.badge && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-orange-500/40 text-orange-300 bg-orange-500/10 uppercase font-semibold">
+                              <span className={item.badge === 'LIVE' ? 'badge-live-bronze' : 'btn-primary'}>
                                 {item.badge}
                               </span>
                             )}
@@ -860,7 +858,7 @@ const FabricatorNavbar: React.FC<IndustrialNavbarProps> = ({
                                 {child.label}
                               </span>
                               {child.badge && (
-                                <span className="ml-2 text-[9px] px-1.5 py-0.5 rounded-full border border-slate-600 text-slate-300 bg-slate-800/60 uppercase">
+                                <span className={child.badge === 'LIVE' ? 'badge-live-bronze ml-2' : 'ml-2 text-[9px] px-1.5 py-0.5 rounded-full border border-slate-600 text-slate-300 bg-slate-800/60 uppercase'}>
                                   {child.badge}
                                 </span>
                               )}

@@ -217,7 +217,7 @@ export const WhiteLabelPortal: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-medium">{title}</h3>
+                <h3 className="typography-h3 font-medium">{title}</h3>
                 {premium && <Crown className="h-4 w-4 text-yellow-500" />}
               </div>
               <p className="text-sm text-muted-foreground">{description}</p>
@@ -288,7 +288,7 @@ export const WhiteLabelPortal: React.FC = () => {
               <Building2 className="h-6 w-6" style={{ color: tenantConfig.branding.primaryColor }} />
             </div>
             <div>
-              <h1 className="text-xl font-bold" style={{ color: tenantConfig.branding.primaryColor }}>
+              <h1 className="typography-h1 text-xl" style={{ color: tenantConfig.branding.primaryColor }}>
                 {tenantConfig.branding.companyName}
               </h1>
               <p className="text-sm text-gray-600">Industrial Equipment Solutions</p>
@@ -300,24 +300,24 @@ export const WhiteLabelPortal: React.FC = () => {
               className="p-3 rounded-lg text-white text-center"
               style={{ backgroundColor: tenantConfig.branding.primaryColor }}
             >
-              <h3 className="font-medium">Products</h3>
+              <h3 className="typography-h3 font-medium">Products</h3>
             </div>
             <div 
               className="p-3 rounded-lg text-white text-center"
               style={{ backgroundColor: tenantConfig.branding.secondaryColor }}
             >
-              <h3 className="font-medium">Services</h3>
+              <h3 className="typography-h3 font-medium">Services</h3>
             </div>
             <div 
               className="p-3 rounded-lg text-white text-center"
               style={{ backgroundColor: tenantConfig.branding.accentColor }}
             >
-              <h3 className="font-medium">Contact</h3>
+              <h3 className="typography-h3 font-medium">Contact</h3>
             </div>
           </div>
           
           <div className="p-4 border rounded-lg">
-            <h3 className="font-medium mb-2">Welcome to Our Platform</h3>
+            <h3 className="typography-h3 font-medium mb-2">Welcome to Our Platform</h3>
             <p className="text-sm text-gray-600 mb-3">
               Discover our comprehensive range of industrial equipment and services.
             </p>
@@ -338,7 +338,7 @@ export const WhiteLabelPortal: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+          <h2 className="typography-h2 tracking-tight flex items-center gap-2">
             <Crown className="h-8 w-8 text-yellow-500" />
             White Label Portal
           </h2>
@@ -568,7 +568,7 @@ export const WhiteLabelPortal: React.FC = () => {
                       <span className="text-sm font-medium">3,456 / {tenantConfig.limits.apiCalls.toLocaleString()}</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-orange-600 h-2 rounded-full" style={{ width: '35%' }}></div>
+                      <div className="btn-primary" style={{ width: '35%' }}></div>
                     </div>
                   </div>
 
@@ -632,7 +632,7 @@ export const WhiteLabelPortal: React.FC = () => {
         {/* Live Preview */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
+            <h3 className="typography-h3 text-lg flex items-center gap-2">
               <Eye className="h-5 w-5" />
               Live Preview
             </h3>

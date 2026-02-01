@@ -110,7 +110,7 @@ export const SetupChecklist: React.FC<SetupChecklistProps> = ({ userId }) => {
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Overall Progress</span>
-            <span className="font-medium text-orange-400">
+            <span className="font-medium text-amber-400">
               {Math.round(progressPercentage)}% Complete
             </span>
           </div>

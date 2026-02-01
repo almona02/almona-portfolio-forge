@@ -205,13 +205,13 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
     <div className="space-y-6" dir="ltr">
       {/* Header */}
       <div className="bg-gradient-to-r from-[#003366] to-[#001133] text-white p-4 rounded-lg">
-        <h3 className="text-lg font-bold font-cairo">Validation Sandbox</h3>
+        <h3 className="typography-h3 text-lg font-cairo">Validation Sandbox</h3>
         <p className="text-sm text-yellow-100 mt-1">Stress Test System with 100 Random Windows</p>
       </div>
 
       {/* System Constraints Display */}
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <h4 className="font-bold text-gray-700 text-sm mb-3">System Constraints</h4>
+        <h4 className="typography-h4 text-gray-700 text-sm mb-3">System Constraints</h4>
         <div className="grid grid-cols-2 gap-4 text-xs">
           <div>
             <span className="text-gray-500">Width Range:</span>
@@ -275,7 +275,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
               : 'bg-red-50 border-red-300'
           }`}>
             <div className="flex items-center justify-between mb-3">
-              <h4 className="font-bold text-lg">Validation Results</h4>
+              <h4 className="typography-h4">Validation Results</h4>
               <div className={`px-3 py-1 rounded-full text-xs font-bold ${
                 currentReport.status === 'passed'
                   ? 'bg-green-600 text-white'
@@ -320,7 +320,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
           {/* Recommendations */}
           {currentReport.recommendations.length > 0 && (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="font-bold text-blue-900 text-sm mb-2">Recommendations</h4>
+              <h4 className="typography-h4 text-blue-900 text-sm mb-2">Recommendations</h4>
               <ul className="space-y-1 text-xs text-blue-800">
                 {currentReport.recommendations.map((rec, i) => (
                   <li key={i}>• {rec}</li>
@@ -332,7 +332,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
           {/* Failures List */}
           {currentReport.failures.length > 0 && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 max-h-64 overflow-y-auto">
-              <h4 className="font-bold text-red-900 text-sm mb-2">
+              <h4 className="typography-h4 text-red-900 text-sm mb-2">
                 Failed Cases ({currentReport.failures.length})
               </h4>
               <div className="space-y-2 text-xs">
@@ -358,7 +358,7 @@ export const ValidationSandbox: React.FC<ValidationSandboxProps> = ({
           {/* Edge Cases */}
           {currentReport.edgeCases.length > 0 && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-h-48 overflow-y-auto">
-              <h4 className="font-bold text-yellow-900 text-sm mb-2">
+              <h4 className="typography-h4 text-yellow-900 text-sm mb-2">
                 Edge Cases ({currentReport.edgeCases.length})
               </h4>
               <div className="space-y-1 text-xs">

@@ -274,7 +274,7 @@ const FabricationServices = () => {
             <Badge className="mb-6 text-lg py-2 px-4 bg-almona-orange/20 text-almona-orange border-almona-orange/30">
               Premium Fabrication Services
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-gradient-orange">
+            <h1 className="typography-h1 md:text-6xl mb-6 text-gradient-orange">
               Precision Fabrication for Discerning Clients
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-10">
@@ -320,7 +320,7 @@ const FabricationServices = () => {
                       <item.icon className="h-8 w-8 text-almona-orange" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                  <h3 className="typography-h3 mb-2">{item.title}</h3>
                   <p className="text-gray-300">{item.description}</p>
                 </CardContent>
               </Card>
@@ -339,7 +339,7 @@ const FabricationServices = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-4xl font-bold mb-6">Professional Estimation Calculator</h2>
+            <h2 className="typography-h2 text-4xl mb-6">Professional Estimation Calculator</h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
               Get an instant preliminary estimate for your window and door project with our advanced calculator
             </p>
@@ -355,14 +355,14 @@ const FabricationServices = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Calculator Inputs */}
               <div>
-                <h3 className="text-2xl font-semibold mb-6 flex items-center">
+                <h3 className="typography-h3 mb-6 flex items-center">
                   <Calculator className="h-6 w-6 mr-2 text-almona-orange" /> Project Specifications
                 </h3>
                 
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="width" className="text-almona-light">Width (cm)</Label>
+                      <Label htmlFor="width" className="typography-label text-almona-light">Width (cm)</Label>
                       <Input
                         id="width"
                         type="number"
@@ -373,7 +373,7 @@ const FabricationServices = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="height" className="text-almona-light">Height (cm)</Label>
+                      <Label htmlFor="height" className="typography-label text-almona-light">Height (cm)</Label>
                       <Input
                         id="height"
                         type="number"
@@ -386,7 +386,7 @@ const FabricationServices = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="quantity" className="text-almona-light">Quantity</Label>
+                    <Label htmlFor="quantity" className="typography-label text-almona-light">Quantity</Label>
                     <Slider
                       defaultValue={[1]}
                       max={10}
@@ -404,22 +404,20 @@ const FabricationServices = () => {
                   </div>
                   
                   <div className="space-y-3">
-                    <Label className="text-almona-light">System Type</Label>
+                    <Label className="typography-label text-almona-light">System Type</Label>
                     <RadioGroup
                         value={calculatorValues.systemType}
                         onValueChange={(value) => handleCalculatorChange('systemType', value)}
                         className="grid grid-cols-2 gap-4"
                     >
-                        <Label
-                            htmlFor="upvc"
-                            className="flex items-center justify-center rounded-md border-2 p-4 font-semibold cursor-pointer transition-colors duration-300 border-almona-light/30 bg-almona-dark/80 text-almona-light peer-data-[state=checked]:border-almona-orange peer-data-[state=checked]:bg-almona-orange/10 peer-data-[state=checked]:text-almona-orange hover:bg-almona-light/10 hover:border-almona-light/50"
+                        <Label htmlFor="upvc"
+                            className="typography-label flex items-center justify-center rounded-md border-2 p-4 font-semibold cursor-pointer transition-colors duration-300 border-almona-light/30 bg-almona-dark/80 text-almona-light peer-data-[state=checked]:border-almona-orange peer-data-[state=checked]:bg-almona-orange/10 peer-data-[state=checked]:text-almona-orange hover:bg-almona-light/10 hover:border-almona-light/50"
                         >
                             <RadioGroupItem value="upvc" id="upvc" className="peer sr-only" />
                             UPVC System
                         </Label>
-                        <Label
-                            htmlFor="aluminum"
-                            className="flex items-center justify-center rounded-md border-2 p-4 font-semibold cursor-pointer transition-colors duration-300 border-almona-light/30 bg-almona-dark/80 text-almona-light peer-data-[state=checked]:border-almona-orange peer-data-[state=checked]:bg-almona-orange/10 peer-data-[state=checked]:text-almona-orange hover:bg-almona-light/10 hover:border-almona-light/50"
+                        <Label htmlFor="aluminum"
+                            className="typography-label flex items-center justify-center rounded-md border-2 p-4 font-semibold cursor-pointer transition-colors duration-300 border-almona-light/30 bg-almona-dark/80 text-almona-light peer-data-[state=checked]:border-almona-orange peer-data-[state=checked]:bg-almona-orange/10 peer-data-[state=checked]:text-almona-orange hover:bg-almona-light/10 hover:border-almona-light/50"
                         >
                             <RadioGroupItem value="aluminum" id="aluminum" className="peer sr-only" />
                             Aluminum System
@@ -428,7 +426,7 @@ const FabricationServices = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="profileType" className="text-almona-light">Profile Quality</Label>
+                    <Label htmlFor="profileType" className="typography-label text-almona-light">Profile Quality</Label>
                     <Select 
                       value={calculatorValues.profileType} 
                       onValueChange={(value) => handleCalculatorChange('profileType', value)}
@@ -446,7 +444,7 @@ const FabricationServices = () => {
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="glassType" className="text-almona-light">Glass Type</Label>
+                      <Label htmlFor="glassType" className="typography-label text-almona-light">Glass Type</Label>
                       <Select 
                         value={calculatorValues.glassType} 
                         onValueChange={(value) => handleCalculatorChange('glassType', value)}
@@ -463,7 +461,7 @@ const FabricationServices = () => {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="openingType" className="text-almona-light">Opening Type</Label>
+                      <Label htmlFor="openingType" className="typography-label text-almona-light">Opening Type</Label>
                       <Select 
                         value={calculatorValues.openingType} 
                         onValueChange={(value) => handleCalculatorChange('openingType', value)}
@@ -501,7 +499,7 @@ const FabricationServices = () => {
               
               {/* Calculator Results */}
               <div className="relative">
-                <h3 className="text-2xl font-semibold mb-6 flex items-center">
+                <h3 className="typography-h3 mb-6 flex items-center">
                   <DollarSign className="h-6 w-6 mr-2 text-almona-orange" /> Project Estimate
                 </h3>
                 
@@ -595,7 +593,7 @@ const FabricationServices = () => {
                       className="bg-almona-dark/80 rounded-xl p-12 text-center border border-almona-light/20 border-dashed flex flex-col justify-center items-center h-full"
                     >
                       <Calculator className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                      <h4 className="text-lg font-medium text-gray-500 mb-2">Calculation Results</h4>
+                      <h4 className="typography-h4 font-medium text-gray-500 mb-2">Calculation Results</h4>
                       <p className="text-gray-600">Enter your project details and click Calculate to see your estimate</p>
                     </motion.div>
                   )}
@@ -611,7 +609,7 @@ const FabricationServices = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h3 className="text-2xl font-bold mb-4">Need a Precise Quotation?</h3>
+            <h3 className="typography-h3 mb-4">Need a Precise Quotation?</h3>
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
               Our experts will provide you with a detailed quotation tailored to your specific project requirements
             </p>
@@ -636,7 +634,7 @@ const FabricationServices = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-4xl font-bold mb-6">Advanced Window & Door Systems</h2>
+            <h2 className="typography-h2 text-4xl mb-6">Advanced Window & Door Systems</h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
               Discover the perfect solution for your home or project with our premium fabrication technologies
             </p>
@@ -661,11 +659,11 @@ const FabricationServices = () => {
                 >
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
                     <div>
-                      <h3 className="text-3xl font-bold mb-4">{system.title}</h3>
+                      <h3 className="typography-h3 text-3xl mb-4">{system.title}</h3>
                       <p className="text-xl text-gray-300 mb-6">{system.description}</p>
                       
                       <div className="mb-8">
-                        <h4 className="text-lg font-semibold mb-3 text-almona-light">Ideal For:</h4>
+                        <h4 className="typography-h4 mb-3 text-almona-light">Ideal For:</h4>
                         <div className="flex flex-wrap gap-2">
                           {system.applications.map((app, i) => (
                             <Badge key={i} variant="secondary" className="bg-almona-orange/20 text-almona-orange border-almona-orange/30">
@@ -759,7 +757,7 @@ const FabricationServices = () => {
                   </div>
 
                   <div className="bg-almona-dark/60 p-8 rounded-2xl border border-almona-light/20">
-                    <h4 className="text-2xl font-semibold mb-6 text-center">Advanced Technologies</h4>
+                    <h4 className="typography-h4 text-2xl mb-6 text-center">Advanced Technologies</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       {system.technologies.map((tech, i) => (
                         <div key={i} className="text-center p-4 bg-almona-dark/40 rounded-lg">
@@ -781,7 +779,7 @@ const FabricationServices = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h3 className="text-2xl font-bold mb-4">Ready to Start Your Project?</h3>
+            <h3 className="typography-h3 mb-4">Ready to Start Your Project?</h3>
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
               Our team is ready to assist you with a detailed consultation and quote
             </p>
@@ -806,7 +804,7 @@ const FabricationServices = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-4xl font-bold mb-6">Our Premium Projects</h2>
+            <h2 className="typography-h2 text-4xl mb-6">Our Premium Projects</h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
               Discover our exceptional fabrication work across Egypt's most prestigious residences and commercial properties
             </p>
@@ -828,7 +826,7 @@ const FabricationServices = () => {
                 ></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-almona-dark/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2">Luxury {item % 2 === 0 ? 'UPVC' : 'Aluminum'} Installation</h3>
+                    <h3 className="typography-h3 mb-2">Luxury {item % 2 === 0 ? 'UPVC' : 'Aluminum'} Installation</h3>
                     <p className="text-gray-300">Cairo, Egypt</p>
                   </div>
                 </div>
@@ -854,7 +852,7 @@ const FabricationServices = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-4xl font-bold mb-6">Client Resources</h2>
+            <h2 className="typography-h2 text-4xl mb-6">Client Resources</h2>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
               Everything you need to make an informed decision about your window and door investment
             </p>
@@ -880,7 +878,7 @@ const FabricationServices = () => {
                         <item.icon className="h-8 w-8 text-almona-orange" />
                       </div>
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                    <h3 className="typography-h3 mb-2">{item.title}</h3>
                     <p className="text-gray-300 mb-4">{item.description}</p>
                     <Button variant="outline" className="border-almona-light text-almona-light hover:bg-almona-light/10">
                       <Download className="mr-2 h-4 w-4" /> Access Now
@@ -899,10 +897,10 @@ const FabricationServices = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="bg-almona-dark/60 p-8 rounded-2xl border border-almona-light/20"
           >
-            <h3 className="text-2xl font-semibold mb-6 text-center">Advanced Comparison Tools</h3>
+            <h3 className="typography-h3 mb-6 text-center">Advanced Comparison Tools</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
-                <h4 className="text-lg font-medium text-almona-light flex items-center">
+                <h4 className="typography-h4 font-medium text-almona-light flex items-center">
                   <Square className="h-5 w-5 mr-2 text-almona-orange" /> Material Comparison
                 </h4>
                 <div className="bg-almona-dark/40 p-4 rounded-lg">
@@ -942,7 +940,7 @@ const FabricationServices = () => {
               </div>
               
               <div className="space-y-4">
-                <h4 className="text-lg font-medium text-almona-light flex items-center">
+                <h4 className="typography-h4 font-medium text-almona-light flex items-center">
                   <Thermometer className="h-5 w-5 mr-2 text-almona-orange" /> Climate Performance
                 </h4>
                 <div className="bg-almona-dark/40 p-4 rounded-lg">
@@ -994,22 +992,22 @@ const FabricationServices = () => {
               className="bg-almona-dark/95 backdrop-blur-md rounded-2xl border border-almona-light/20 p-6 max-w-md w-full"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-2xl font-bold mb-2">Request Consultation</h3>
+              <h3 className="typography-h3 mb-2">Request Consultation</h3>
               <p className="text-gray-400 mb-6">Our expert will contact you within 24 hours</p>
               
               <form className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name" className="typography-label">Full Name</Label>
                   <Input id="name" placeholder="Your name" className="bg-almona-dark/80 border-almona-light/30" />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
+                  <Label htmlFor="phone" className="typography-label">Phone Number</Label>
                   <Input id="phone" placeholder="+20XXXXXXXXXX" className="bg-almona-dark/80 border-almona-light/30" />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="projectType">Project Type</Label>
+                  <Label htmlFor="projectType" className="typography-label">Project Type</Label>
                   <Select value={selectedProjectType} onValueChange={setSelectedProjectType}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select project type" />
@@ -1023,7 +1021,7 @@ const FabricationServices = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="message">Additional Details</Label>
+                  <Label htmlFor="message" className="typography-label">Additional Details</Label>
                   <Textarea 
                     id="message" 
                     placeholder="Tell us about your project, preferred system, or any specific requirements..." 

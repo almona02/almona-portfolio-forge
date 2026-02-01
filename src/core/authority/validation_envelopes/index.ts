@@ -40,3 +40,57 @@ export {
     enhanceValidationWithConsequences, mapErrorToConsequences
 } from './consequenceMapper';
 
+// Export ValidationEnvelopeEngine and ConstraintRegistry
+export {
+    ValidationEnvelopeEngine,
+    getValidationEnvelope,
+    resetValidationEnvelope,
+    type ValidationEnvelopeResult,
+    type CategoryValidationResult,
+    type ConstraintValidationResult,
+    type ValidationContext,
+} from './ValidationEnvelope';
+
+export {
+    ConstraintRegistry,
+    ConstraintCategory,
+    getConstraintRegistry,
+    resetConstraintRegistry,
+    type ConstraintRegistryEntry,
+} from './ConstraintRegistry';
+
+// Export Registered Constraints
+export {
+    registerGeometricConstraints,
+    GeometricConstraints,
+    type DesignValidationContext,
+} from './RegisteredConstraints';
+
+// Export Material and Certification Constraints
+export {
+    registerMaterialConstraints,
+    registerCertificationConstraints,
+    registerMaterialAndCertificationConstraints,
+    MaterialConstraints,
+    CertificationConstraints,
+    type HardenerValidationContext,
+} from './MaterialCertificationConstraints';
+
+// Export Machine Constraints
+export {
+    registerMachineConstraints,
+    MachineConstraints,
+    type MachineValidationContext,
+} from './MachineConstraints';
+
+// Export Process Constraints
+export {
+    registerProcessConstraints,
+    ProcessConstraints,
+    type ProcessValidationContext,
+    type ProcessStep,
+    type ProcessDependency,
+    type ParallelOperation,
+    type QualityCheck,
+} from './ProcessConstraints';
+

@@ -46,6 +46,26 @@ export const HARDWARE_PRICES_EGP = {
    * Default price for other hardware items (EGP)
    */
   OTHER: 20,
+
+  /**
+   * Shutter Winder (Manual)
+   */
+  SHUTTER_WINDER: 150,
+
+  /**
+   * Shutter Strap (Coiler)
+   */
+  SHUTTER_STRAP: 85,
+
+  /**
+   * Shutter Motor (Standard)
+   */
+  SHUTTER_MOTOR: 1200,
+
+  /**
+   * Fly Screen Roller
+   */
+  SCREEN_ROLLER: 15,
 } as const;
 
 /**

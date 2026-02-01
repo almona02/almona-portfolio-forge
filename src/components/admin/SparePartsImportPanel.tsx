@@ -48,7 +48,7 @@ export const SparePartsImportPanel: React.FC = () => {
       <CardContent className="p-4 md:p-6">
         <div className="flex flex-col md:flex-row md:items-end gap-4">
           <div className="flex-1">
-            <label className="block text-sm font-medium mb-2">Target</label>
+            <label className="typography-label block text-sm font-medium mb-2">Target</label>
             <Select value={target} onValueChange={(v) => setTarget(v as TargetTable)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select target" />
@@ -64,7 +64,7 @@ export const SparePartsImportPanel: React.FC = () => {
           </div>
 
           <div className="flex-1">
-            <label className="block text-sm font-medium mb-2">Excel file (.xlsx)</label>
+            <label className="typography-label block text-sm font-medium mb-2">Excel file (.xlsx)</label>
             <input type="file" accept=".xlsx,.xls" onChange={onFileChange} className="block w-full text-sm" />
           </div>
 

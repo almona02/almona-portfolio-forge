@@ -122,7 +122,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
       {specCategories.map((category) => (
         <div key={category.name} className="border rounded-lg overflow-hidden shadow-sm bg-background/50">
           <div className="bg-muted/60 backdrop-blur-sm px-4 py-2 flex items-center justify-between">
-            <h3 className="font-semibold tracking-wide text-sm uppercase text-muted-foreground/90">{category.name}</h3>
+            <h3 className="typography-h3 text-sm text-muted-foreground/90">{category.name}</h3>
           </div>
           <div className="overflow-x-auto supports-[backdrop-filter]:backdrop-blur-xs">
             <Table className="border-collapse w-full min-w-[640px]">
@@ -144,7 +144,7 @@ const CompareTable: React.FC<CompareTableProps> = ({ machines }) => {
                       <TableCell className="font-medium sticky left-0 z-10 bg-background/80 backdrop-blur-sm border-r border-border/40">
                         <span className="inline-flex items-center gap-1">
                           {spec.name}
-                          {differs && <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" aria-label="Values differ across machines" />}
+                          {differs && <span className="btn-primary" aria-label="Values differ across machines" />}
                         </span>
                       </TableCell>
                       {machines.map((machine) => {

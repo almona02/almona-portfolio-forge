@@ -33,10 +33,10 @@ const palette = {
     border: 'border-yellow-300 dark:border-yellow-700'
   },
   orange: {
-    soft: 'bg-orange-50 dark:bg-orange-900/25',
-    solid: 'bg-orange-500',
-    text: 'text-orange-700 dark:text-orange-300',
-    border: 'border-orange-300 dark:border-orange-700'
+    soft: 'bg-amber-50 dark:bg-amber-900/25',
+    solid: 'bg-amber-500',
+    text: 'text-amber-700 dark:text-amber-300',
+    border: 'border-amber-300 dark:border-amber-700'
   },
   red: {
     soft: 'bg-red-50 dark:bg-red-900/25',
@@ -74,7 +74,7 @@ const statusMap: Record<TicketStatus, StyleConfig> = {
 const priorityMap: Record<TicketPriority, { badge: string; rowAccent?: string; weight: number }> = {
   low: { badge: 'bg-emerald-50 dark:bg-emerald-900/25 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700', weight: 1 },
   medium: { badge: 'bg-blue-50 dark:bg-blue-900/25 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700', weight: 2 },
-  high: { badge: 'bg-orange-50 dark:bg-orange-900/25 text-orange-700 dark:text-orange-300 border border-orange-300 dark:border-orange-700', rowAccent: 'border-l-2 border-orange-400', weight: 3 },
+  high: { badge: 'bg-amber-50 dark:bg-amber-900/25 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700', rowAccent: 'border-l-2 border-amber-400', weight: 3 },
   urgent: { badge: 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700', rowAccent: 'border-l-2 border-red-500', weight: 4 },
   critical: { badge: 'bg-red-50 dark:bg-red-900/40 text-red-700 dark:text-red-200 shadow-inner border border-red-400 dark:border-red-600', rowAccent: 'border-l-2 border-red-600', weight: 5 }
 }
@@ -117,12 +117,12 @@ export function comparePriority(a: TicketPriority, b: TicketPriority) {
 export const ticketStatusStyles = {
   active: 'bg-opacity-100 saturate-100',
   inactive: 'opacity-55 saturate-75 contrast-90 hover:opacity-85', // resolved / closed / cancelled baseline
-  selected: 'ring-2 ring-orange-400/40 shadow-[0_0_0_1px_theme(colors.orange.500/30),0_0_8px_-2px_theme(colors.orange.500/40)]'
+  selected: 'ring-2 ring-amber-400/40 shadow-[0_0_0_1px_theme(colors.orange.500/30),0_0_8px_-2px_theme(colors.orange.500/40)]'
 }
 
 interface TicketInteractiveOpts { selected?: boolean; inactive?: boolean; focusable?: boolean; lift?: boolean }
 export function ticketInteractiveClasses({ selected = false, inactive = false, focusable = true, lift = true }: TicketInteractiveOpts) {
-  const focus = focusable ? 'focus:outline-none focus:ring-2 focus:ring-orange-500/70 focus:ring-offset-2 focus:ring-offset-background' : ''
+  const focus = focusable ? 'focus:outline-none focus:ring-2 focus:ring-amber-500/70 focus:ring-offset-2 focus:ring-offset-background' : ''
   const hover = inactive ? '' : 'hover:bg-muted/30 hover:saturate-110'
   const liftCls = lift ? 'transition-all duration-200 will-change-transform hover:-translate-y-0.5 hover:shadow-sm' : 'transition-colors'
   return [focus, hover, liftCls, selected && ticketStatusStyles.selected, inactive && ticketStatusStyles.inactive].filter(Boolean).join(' ')

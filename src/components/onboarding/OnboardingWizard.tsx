@@ -119,7 +119,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   return (
     <div className="min-h-screen bg-gray-950 p-6">
       <div className="max-w-4xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-gray-900 border-gray-800 card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Welcome to Almona Portfolio Forge</CardTitle>
             <p className="text-gray-400">Let's get you set up in just 5 steps (15 minutes)</p>

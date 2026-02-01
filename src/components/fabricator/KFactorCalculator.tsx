@@ -138,7 +138,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
         {/* Input Parameters */}
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <Label htmlFor="profile-width" className="text-gray-300">
+            <Label htmlFor="profile-width" className="typography-label text-gray-300">
               {t('calibration_wizard.k_factor.profile_width', 'Profile Width (mm)')}
             </Label>
             <Input
@@ -151,7 +151,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
             />
           </div>
           <div>
-            <Label htmlFor="profile-height" className="text-gray-300">
+            <Label htmlFor="profile-height" className="typography-label text-gray-300">
               {t('calibration_wizard.k_factor.profile_height', 'Profile Height (mm)')}
             </Label>
             <Input
@@ -165,7 +165,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
             />
           </div>
           <div>
-            <Label htmlFor="material-thickness" className="text-gray-300">
+            <Label htmlFor="material-thickness" className="typography-label text-gray-300">
               {t('calibration_wizard.k_factor.material_thickness', 'Material Thickness (mm)')}
             </Label>
             <Input
@@ -181,7 +181,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
 
         {/* Joint Type Selection */}
         <div>
-          <Label htmlFor="joint-type" className="text-gray-300">
+          <Label htmlFor="joint-type" className="typography-label text-gray-300">
             {t('calibration_wizard.k_factor.joint_type', 'Joint Type')}
           </Label>
           <Select value={jointType} onValueChange={handleJointTypeChange}>
@@ -201,7 +201,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
         {/* Custom Angle Input */}
         {jointType === 'custom' && (
           <div>
-            <Label htmlFor="custom-angle" className="text-gray-300">
+            <Label htmlFor="custom-angle" className="typography-label text-gray-300">
               {t('calibration_wizard.k_factor.cut_angle', 'Cut Angle (degrees)')}
             </Label>
             <Input
@@ -268,7 +268,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
 
         {/* Test Cut Simulation */}
         <div className="p-4 bg-gray-900 rounded-lg border border-gray-700">
-          <Label htmlFor="test-dimension" className="text-gray-300 mb-2 block">
+          <Label htmlFor="test-dimension" className="typography-label text-gray-300 mb-2 block">
             {t('calibration_wizard.k_factor.test_simulation', 'Test Cut Simulation')}
           </Label>
           <p className="text-xs text-gray-400 mb-3">
@@ -276,7 +276,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
           </p>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="final-dimension" className="text-xs text-gray-400">
+              <Label htmlFor="final-dimension" className="typography-label text-xs text-gray-400">
                 {t('calibration_wizard.k_factor.final_dimension', 'Final Dimension (mm)')}
               </Label>
               <Input
@@ -289,7 +289,7 @@ export const KFactorCalculator: React.FC<KFactorCalculatorProps> = ({
               />
             </div>
             <div>
-              <Label htmlFor="cut-length" className="text-xs text-gray-400">
+              <Label htmlFor="cut-length" className="typography-label text-xs text-gray-400">
                 {t('calibration_wizard.k_factor.cut_length', 'Cut Length (mm)')}
               </Label>
               <div className="mt-1 p-2 bg-gray-800 border border-gray-600 rounded text-white font-semibold">

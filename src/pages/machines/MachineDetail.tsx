@@ -78,7 +78,7 @@ const MachineDetail: React.FC = () => {
   if (!machine) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <h1 className="text-3xl font-bold mb-4">Machine Not Found</h1>
+        <h1 className="typography-h1 mb-4">Machine Not Found</h1>
         <p className="mb-4">The machine you are looking for does not exist.</p>
         <Link to="/products/machines" className="text-blue-600 underline">
           Back to Machines
@@ -101,7 +101,7 @@ const MachineDetail: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-4xl font-bold mb-4">{machine.name}</h1>
+      <h1 className="typography-h1 mb-4">{machine.name}</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div>
@@ -144,7 +144,7 @@ const MachineDetail: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="font-semibold text-lg mb-2">Technical Details</h3>
+          <h3 className="typography-h3 text-lg mb-2">Technical Details</h3>
           <div className="space-y-2">
             <div><strong>Type:</strong> {machine.type}</div>
             <div><strong>Power:</strong> {machine.powerSpec.consumption} ({machine.powerSpec.voltage})</div>
@@ -153,7 +153,7 @@ const MachineDetail: React.FC = () => {
         </div>
         
         <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="font-semibold text-lg mb-2">Specifications</h3>
+          <h3 className="typography-h3 text-lg mb-2">Specifications</h3>
           <ul className="list-disc list-inside space-y-1">
             {machine.specifications.map((spec, index) => (
               <li key={index}>{spec}</li>
@@ -189,7 +189,7 @@ const MachineDetail: React.FC = () => {
           <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
-                <Eye className="w-5 h-5 text-orange-500" />
+                <Eye className="w-5 h-5 text-amber-500" />
                 SwiftXR Interactive Experience
               </CardTitle>
             </CardHeader>
@@ -215,7 +215,7 @@ const MachineDetail: React.FC = () => {
       )}
 
       <div className="mt-12">
-        <h2 className="text-3xl font-bold mb-6 text-gradient-orange">{t('reviews.section_title')}</h2>
+        <h2 className="typography-h2 mb-6 text-gradient-orange">{t('reviews.section_title')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <ReviewForm productId={machine.id} onSubmit={handleAddReview} />
           <ReviewList reviews={reviews} />

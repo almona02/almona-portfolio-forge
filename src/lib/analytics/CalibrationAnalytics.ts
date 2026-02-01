@@ -289,12 +289,18 @@ export class CalibrationAnalytics {
       } as any);
 
       if (error) {
-        // Table might not exist yet - that's okay, we'll create it
-        console.warn('Calibration analytics table not found, will be created in migration:', error);
+        // Table might not exist yet or access denied - that's okay
+        // Only log in dev mode to reduce console noise in production
+        if (import.meta.env.DEV) {
+          console.warn('Calibration analytics storage failed (non-critical):', error);
+        }
       }
     } catch (error) {
       // Silently fail - analytics should not break the app
-      console.warn('Analytics storage failed (non-critical):', error);
+      // Only log in dev mode
+      if (import.meta.env.DEV) {
+        console.warn('Analytics storage failed (non-critical):', error);
+      }
     }
   }
 

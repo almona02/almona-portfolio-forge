@@ -51,15 +51,15 @@ export const PredictiveMaintenanceEngine = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-gradient-to-r from-orange-500/10 to-purple-500/10 border-orange-500/20">
+      <Card className="bg-gradient-to-r from-amber-500/10 to-purple-500/10 border-amber-500/20">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-500/20 rounded-lg">
-                <Brain className="h-6 w-6 text-orange-400" />
+              <div className="btn-primary">
+                <Brain className="h-6 w-6 text-amber-400" />
               </div>
               <div>
-                <CardTitle className="text-orange-400">AI Predictive Maintenance Engine</CardTitle>
+                <CardTitle className="text-amber-400">AI Predictive Maintenance Engine</CardTitle>
                 <CardDescription>Machine learning-driven failure prediction and maintenance optimization</CardDescription>
               </div>
             </div>
@@ -95,7 +95,7 @@ export const PredictiveMaintenanceEngine = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-orange-400" />
+                <AlertTriangle className="h-5 w-5 text-amber-400" />
                 Active Predictive Alerts
               </CardTitle>
             </CardHeader>
@@ -108,7 +108,7 @@ export const PredictiveMaintenanceEngine = () => {
                       alert.severity === "critical"
                         ? "border-red-500/30 bg-red-500/10"
                         : alert.severity === "high"
-                        ? "border-orange-500/30 bg-orange-500/10"
+                        ? "border-amber-500/30 bg-amber-500/10"
                         : "border-yellow-500/30 bg-yellow-500/10"
                     }`}
                   >
@@ -169,7 +169,7 @@ export const PredictiveMaintenanceEngine = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-orange-400" />
+                  <Zap className="h-5 w-5 text-amber-400" />
                   Cutting Machines Health
                 </CardTitle>
               </CardHeader>
@@ -214,7 +214,7 @@ export const PredictiveMaintenanceEngine = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-orange-400" />
+                  <BarChart3 className="h-5 w-5 text-amber-400" />
                   Milling Machines Health
                 </CardTitle>
               </CardHeader>
@@ -263,7 +263,7 @@ export const PredictiveMaintenanceEngine = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Cpu className="h-5 w-5 text-orange-400" />
+                <Cpu className="h-5 w-5 text-amber-400" />
                 Machine Learning Algorithms
               </CardTitle>
               <CardDescription>Advanced AI algorithms powering predictive maintenance</CardDescription>
@@ -271,8 +271,8 @@ export const PredictiveMaintenanceEngine = () => {
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <h4 className="font-semibold flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-orange-400" />
+                  <h4 className="typography-h4 flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-amber-400" />
                     Vibration Analysis (FFT)
                   </h4>
                   <div className="space-y-2 text-sm">
@@ -296,8 +296,8 @@ export const PredictiveMaintenanceEngine = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="font-semibold flex items-center gap-2">
-                    <Brain className="h-4 w-4 text-orange-400" />
+                  <h4 className="typography-h4 flex items-center gap-2">
+                    <Brain className="h-4 w-4 text-amber-400" />
                     AI Models
                   </h4>
                   <div className="space-y-2 text-sm">
@@ -322,8 +322,8 @@ export const PredictiveMaintenanceEngine = () => {
               </div>
 
               <div>
-                <h4 className="font-semibold mb-3 flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-orange-400" />
+                <h4 className="typography-h4 mb-3 flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-amber-400" />
                   Sensor Channels & Live Cadence
                 </h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -354,14 +354,14 @@ export const PredictiveMaintenanceEngine = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-orange-400" />
+                  <Zap className="h-5 w-5 text-amber-400" />
                   Aluminum Cutting Machines
                 </CardTitle>
                 <CardDescription>Single/Double Head Cutting Failure Patterns</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-orange-400">Common Failure Modes</h4>
+                  <h4 className="typography-h4 text-amber-400">Common Failure Modes</h4>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-center gap-2">
                       <AlertTriangle className="h-3 w-3 text-yellow-500" />
@@ -372,7 +372,7 @@ export const PredictiveMaintenanceEngine = () => {
                       <span>Bearing degradation in spindles</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <AlertTriangle className="h-3 w-3 text-orange-500" />
+                      <AlertTriangle className="h-3 w-3 text-amber-500" />
                       <span>Hydraulic system pressure drops</span>
                     </li>
                     <li className="flex items-center gap-2">
@@ -383,7 +383,7 @@ export const PredictiveMaintenanceEngine = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-green-400">Maintenance Rules</h4>
+                  <h4 className="typography-h4 text-green-400">Maintenance Rules</h4>
                   <div className="space-y-2 text-sm">
                     {maintenanceRules.slice(0, 2).map((rule, index) => (
                       <div key={index} className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
@@ -399,14 +399,14 @@ export const PredictiveMaintenanceEngine = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-orange-400" />
+                  <BarChart3 className="h-5 w-5 text-amber-400" />
                   Milling & Processing Machines
                 </CardTitle>
                 <CardDescription>Vertical Routers & End Mills Failure Patterns</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-orange-400">Common Failure Modes</h4>
+                  <h4 className="typography-h4 text-amber-400">Common Failure Modes</h4>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-center gap-2">
                       <AlertTriangle className="h-3 w-3 text-yellow-500" />
@@ -417,7 +417,7 @@ export const PredictiveMaintenanceEngine = () => {
                       <span>Tool wear affecting surface finish</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <AlertTriangle className="h-3 w-3 text-orange-500" />
+                      <AlertTriangle className="h-3 w-3 text-amber-500" />
                       <span>Ball screw backlash in positioning</span>
                     </li>
                     <li className="flex items-center gap-2">
@@ -428,7 +428,7 @@ export const PredictiveMaintenanceEngine = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <h4 className="font-semibold text-green-400">Maintenance Rules</h4>
+                  <h4 className="typography-h4 text-green-400">Maintenance Rules</h4>
                   <div className="space-y-2 text-sm">
                     {maintenanceRules.slice(2, 4).map((rule, index) => (
                       <div key={index} className="flex justify-between items-center p-2 bg-gray-800/50 rounded">
@@ -445,7 +445,7 @@ export const PredictiveMaintenanceEngine = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-orange-400" />
+                <TrendingUp className="h-5 w-5 text-amber-400" />
                 Remaining Useful Life (RUL) Concept
               </CardTitle>
               <CardDescription>AI-powered prediction of machinery lifespan</CardDescription>
@@ -456,21 +456,21 @@ export const PredictiveMaintenanceEngine = () => {
                   <div className="p-3 bg-blue-500/20 rounded-lg inline-block mb-2">
                     <Brain className="h-6 w-6 text-blue-400" />
                   </div>
-                  <h4 className="font-semibold mb-2">LSTM Neural Networks</h4>
+                  <h4 className="typography-h4 mb-2">LSTM Neural Networks</h4>
                   <p className="text-sm text-gray-400">Time-series prediction of degradation patterns</p>
                 </div>
                 <div className="text-center">
                   <div className="p-3 bg-green-500/20 rounded-lg inline-block mb-2">
                     <CheckCircle2 className="h-6 w-6 text-green-400" />
                   </div>
-                  <h4 className="font-semibold mb-2">Confidence Scoring</h4>
+                  <h4 className="typography-h4 mb-2">Confidence Scoring</h4>
                   <p className="text-sm text-gray-400">{alerts[0]?.confidence || 87}% prediction accuracy</p>
                 </div>
                 <div className="text-center">
                   <div className="p-3 bg-purple-500/20 rounded-lg inline-block mb-2">
                     <AlertTriangle className="h-6 w-6 text-purple-400" />
                   </div>
-                  <h4 className="font-semibold mb-2">Failure Mode Detection</h4>
+                  <h4 className="typography-h4 mb-2">Failure Mode Detection</h4>
                   <p className="text-sm text-gray-400">Early identification of specific component failures</p>
                 </div>
               </div>
@@ -482,7 +482,7 @@ export const PredictiveMaintenanceEngine = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Calculator className="h-5 w-5 text-orange-400" />
+                <Calculator className="h-5 w-5 text-amber-400" />
                 Return on Investment Analysis
               </CardTitle>
               <CardDescription>Financial impact of predictive maintenance implementation</CardDescription>
@@ -490,7 +490,7 @@ export const PredictiveMaintenanceEngine = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
-                  <h4 className="font-semibold text-lg">Financial Metrics</h4>
+                  <h4 className="typography-h4">Financial Metrics</h4>
                   <div className="space-y-4">
                     {[
                       { label: "Annual Downtime Reduction", value: `${roiData.traditionalDowntime - roiData.predictiveDowntime} hours` },
@@ -500,7 +500,7 @@ export const PredictiveMaintenanceEngine = () => {
                     ].map((metric, index) => (
                       <div key={index} className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg">
                         <span className="text-gray-300">{metric.label}</span>
-                        <Badge variant="default" className="bg-orange-500">
+                        <Badge variant="default" className="btn-primary">
                           {metric.value}
                         </Badge>
                       </div>
@@ -509,7 +509,7 @@ export const PredictiveMaintenanceEngine = () => {
                 </div>
 
                 <div className="space-y-6">
-                  <h4 className="font-semibold text-lg">Key Benefits</h4>
+                  <h4 className="typography-h4">Key Benefits</h4>
                   <div className="space-y-3">
                     {[
                       "37% reduction in unplanned downtime",
@@ -527,8 +527,8 @@ export const PredictiveMaintenanceEngine = () => {
                 </div>
               </div>
 
-              <div className="mt-8 p-4 bg-gradient-to-r from-orange-500/10 to-purple-500/10 rounded-lg border border-orange-500/20">
-                <h4 className="font-semibold mb-3 text-orange-400">Implementation Cost Breakdown</h4>
+              <div className="mt-8 p-4 bg-gradient-to-r from-amber-500/10 to-purple-500/10 rounded-lg border border-amber-500/20">
+                <h4 className="typography-h4 mb-3 text-amber-400">Implementation Cost Breakdown</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   {[
                     { item: "IoT Sensors", cost: "$15,000" },

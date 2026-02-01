@@ -654,7 +654,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
           {/* Pattern Selector */}
           {availablePatterns.length > 0 && (
             <div className="flex items-center gap-3">
-              <Label className="text-sm text-gray-600 font-semibold">Pattern:</Label>
+              <Label className="typography-label text-sm text-gray-600 font-semibold">Pattern:</Label>
               <Select
                 value={selectedPatternId}
                 onValueChange={handlePatternSelect}
@@ -961,7 +961,7 @@ export const PrecisionDesignInterface: React.FC<PrecisionDesignInterfaceProps> =
             }}
           >
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-bold text-sm">Cell Properties</h3>
+              <h3 className="typography-h3 text-sm">Cell Properties</h3>
               <button
                 onClick={() => setHudState({ cellId: null, x: 0, y: 0 })}
                 className="text-gray-500 hover:text-gray-900"

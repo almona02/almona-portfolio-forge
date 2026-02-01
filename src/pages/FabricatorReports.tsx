@@ -1,34 +1,40 @@
-import React, { useMemo, useState, Suspense } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
-import type { Profile } from '@/types/fabricator';
-import { userQueries } from '@/lib/database/optimizedQueries';
-import { WorkshopPerformanceAnalytics } from '@/lib/analytics/WorkshopPerformanceAnalytics';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/shared/ui/ui/card';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Progress } from '@/shared/ui/ui/progress';
-import {
-  BarChart3,
-  Package,
-  FileText,
-  TrendingUp,
-  Activity,
-  Sparkles,
-  AlertTriangle,
-  CheckCircle,
-} from 'lucide-react';
 import { InventoryDashboard } from '@/components/fabricator/InventoryDashboard';
+import { PricingTuningStudio } from '@/components/fabricator/PricingTuningStudio';
+import { useAuth } from '@/context/AuthContext';
+import { WorkshopPerformanceAnalytics } from '@/lib/analytics/WorkshopPerformanceAnalytics';
+import { userQueries } from '@/lib/database/optimizedQueries';
+import { pricingAnalyticsService } from '@/lib/pricing/PricingAnalyticsService';
+import { supabase } from '@/lib/supabase';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/shared/ui/ui/card';
+import { Progress } from '@/shared/ui/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import type { Profile } from '@/types/fabricator';
 import { WindowUnit } from '@/types/fabricator';
+import { useQuery } from '@tanstack/react-query';
+import {
+    Activity,
+    AlertTriangle,
+    BarChart3,
+    CheckCircle,
+    DollarSign,
+    FileText,
+    Package,
+    Settings,
+    Shield,
+    Sparkles,
+    TrendingUp,
+} from 'lucide-react';
+import React, { Suspense, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const analytics = new WorkshopPerformanceAnalytics();
 
@@ -46,6 +52,9 @@ export const FabricatorReports: React.FC = () => {
   const { t } = useTranslation('fabricator');
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'material' | 'quotes' | 'production'>('material');
+  const [showPricingStudio, setShowPricingStudio] = useState(false);
+  const [pricingStudioSystemPackId, setPricingStudioSystemPackId] = useState<string | undefined>();
+  const [pricingStudioProfileId, setPricingStudioProfileId] = useState<string | undefined>();
 
   const {
     data: inventory = [],
@@ -164,6 +173,33 @@ export const FabricatorReports: React.FC = () => {
     return metrics;
   }, []);
 
+  // Pricing analytics data
+  const {
+    data: pricingCoverage,
+    error: pricingCoverageError,
+  } = useQuery({
+    queryKey: ['pricing-coverage', user?.id],
+    enabled: !!user,
+    refetchOnWindowFocus: false,
+    queryFn: async () => {
+      if (!user) return null;
+      return pricingAnalyticsService.getPricingCoverage(user.id);
+    },
+  });
+
+  const {
+    data: pricingHealth,
+    error: pricingHealthError,
+  } = useQuery({
+    queryKey: ['pricing-health', user?.id],
+    enabled: !!user,
+    refetchOnWindowFocus: false,
+    queryFn: async () => {
+      if (!user) return null;
+      return pricingAnalyticsService.getPricingHealth(user.id);
+    },
+  });
+
   if (!user) {
     return (
       <div className="container mx-auto px-4 py-12">
@@ -177,15 +213,15 @@ export const FabricatorReports: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
+    <div className="container mx-auto px-4 py-8 space-y-6 overflow-y-auto h-full">
       {/* Header */}
       <Card className="bg-gradient-to-br from-slate-900 via-slate-900 to-black border-slate-700 shadow-2xl">
         <CardHeader className="pb-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="space-y-2">
               <CardTitle className="text-2xl flex items-center gap-3">
-                <div className="p-2 bg-orange-500/20 rounded-lg">
-                  <BarChart3 className="h-6 w-6 text-orange-400" />
+                <div className="btn-primary">
+                  <BarChart3 className="h-6 w-6 text-amber-400" />
                 </div>
                 {t('reports.title', 'Fabricator Reports Hub')}
               </CardTitle>
@@ -209,7 +245,7 @@ export const FabricatorReports: React.FC = () => {
               <div className="flex items-center gap-2 text-xs text-slate-400">
                 <span>Status:</span>
                 <span className="flex items-center gap-2 text-emerald-300">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full animate-pulse status-valid" />
                   Live data
                 </span>
               </div>
@@ -261,7 +297,7 @@ export const FabricatorReports: React.FC = () => {
             onValueChange={(v) => setActiveTab(v as any)}
             className="space-y-4"
           >
-            <TabsList className="bg-slate-800/70 border border-slate-700/80">
+            <TabsList className="bg-slate-800/70 border border-slate-700 /80 card-dark">
               <TabsTrigger value="material">
                 <Package className="h-4 w-4 mr-2" />
                 Material & Inventory
@@ -290,7 +326,7 @@ export const FabricatorReports: React.FC = () => {
                 <Card className="bg-slate-900/80 border-slate-700/70 lg:col-span-2">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-sm">
-                      <BarChart3 className="h-4 w-4 text-orange-400" />
+                      <BarChart3 className="h-4 w-4 text-amber-400" />
                       Stock Health Overview
                     </CardTitle>
                   </CardHeader>
@@ -298,7 +334,7 @@ export const FabricatorReports: React.FC = () => {
                     <div className="grid grid-cols-3 gap-4">
                       <div>
                         <div className="text-[11px] text-slate-400 mb-1">Low Stock</div>
-                        <div className="text-lg font-semibold text-orange-300">
+                        <div className="text-lg font-semibold text-amber-300">
                           {materialStats.lowStock}
                         </div>
                       </div>
@@ -351,6 +387,184 @@ export const FabricatorReports: React.FC = () => {
                   </CardContent>
                 </Card>
               </div>
+
+              {/* Pricing Analytics Section */}
+              <Card className="bg-slate-900/80 border-slate-700/70">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="h-4 w-4 text-amber-400" />
+                      Pricing Configuration & Health
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setShowPricingStudio(true);
+                      }}
+                      className="h-7 text-xs text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 border-amber-500/30"
+                    >
+                      <Settings className="h-3 w-3 mr-1.5" />
+                      Configure Pricing
+                    </Button>
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-400">
+                    Monitor pricing configuration coverage and health metrics
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 text-xs text-slate-200">
+                  {pricingCoverageError || pricingHealthError ? (
+                    <Alert className="bg-red-900/30 border-red-700/60 text-xs">
+                      <AlertDescription>
+                        Failed to load pricing analytics. Please try refreshing the page.
+                      </AlertDescription>
+                    </Alert>
+                  ) : pricingCoverage && pricingHealth ? (
+                    <>
+                      {/* Health Score */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/60">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="text-[11px] text-slate-400">Health Score</div>
+                            <Shield
+                              className={`h-4 w-4 ${
+                                pricingHealth.overallHealth === 'excellent'
+                                  ? 'text-emerald-400'
+                                  : pricingHealth.overallHealth === 'good'
+                                  ? 'text-green-400'
+                                  : pricingHealth.overallHealth === 'fair'
+                                  ? 'text-amber-400'
+                                  : 'text-red-400'
+                              }`}
+                            />
+                          </div>
+                          <div
+                            className={`text-2xl font-semibold ${
+                              pricingHealth.overallHealth === 'excellent'
+                                ? 'text-emerald-300'
+                                : pricingHealth.overallHealth === 'good'
+                                ? 'text-green-300'
+                                : pricingHealth.overallHealth === 'fair'
+                                ? 'text-amber-300'
+                                : 'text-red-300'
+                            }`}
+                          >
+                            {pricingHealth.healthScore}
+                          </div>
+                          <div className="text-[10px] text-slate-500 mt-1 capitalize">
+                            {pricingHealth.overallHealth}
+                          </div>
+                          <Progress
+                            value={pricingHealth.healthScore}
+                            className="h-1.5 mt-2"
+                          />
+                        </div>
+
+                        {/* Coverage */}
+                        <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/60">
+                          <div className="text-[11px] text-slate-400 mb-2">Configuration Coverage</div>
+                          <div className="text-2xl font-semibold text-sky-300">
+                            {Math.round(pricingCoverage.coveragePercentage)}%
+                          </div>
+                          <div className="text-[10px] text-slate-500 mt-1">
+                            {pricingCoverage.configuredSystemPacks} / {pricingCoverage.totalSystemPacks} system packs
+                          </div>
+                          <Progress
+                            value={pricingCoverage.coveragePercentage}
+                            className="h-1.5 mt-2"
+                          />
+                        </div>
+
+                        {/* Issues Count */}
+                        <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/60">
+                          <div className="text-[11px] text-slate-400 mb-2">Issues</div>
+                          <div
+                            className={`text-2xl font-semibold ${
+                              pricingHealth.issues.length === 0
+                                ? 'text-emerald-300'
+                                : pricingHealth.issues.filter((i) => i.severity === 'high').length > 0
+                                ? 'text-red-300'
+                                : 'text-amber-300'
+                            }`}
+                          >
+                            {pricingHealth.issues.length}
+                          </div>
+                          <div className="text-[10px] text-slate-500 mt-1">
+                            {pricingHealth.issues.filter((i) => i.severity === 'high').length} high priority
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Issues and Recommendations */}
+                      {pricingHealth.issues.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                            <AlertTriangle className="h-3 w-3 text-amber-400" />
+                            Issues Found
+                          </h4>
+                          <div className="space-y-1">
+                            {pricingHealth.issues.slice(0, 3).map((issue, idx) => (
+                              <Alert
+                                key={idx}
+                                className={`text-[10px] ${
+                                  issue.severity === 'high'
+                                    ? 'bg-red-500/10 border-red-500/30'
+                                    : issue.severity === 'medium'
+                                    ? 'bg-amber-500/10 border-amber-500/30'
+                                    : 'bg-blue-500/10 border-blue-500/30'
+                                }`}
+                              >
+                                <AlertDescription className="flex items-start gap-2">
+                                  <AlertTriangle
+                                    className={`h-3 w-3 mt-0.5 flex-shrink-0 ${
+                                      issue.severity === 'high'
+                                        ? 'text-red-400'
+                                        : issue.severity === 'medium'
+                                        ? 'text-amber-400'
+                                        : 'text-blue-400'
+                                    }`}
+                                  />
+                                  <span>{issue.message}</span>
+                                </AlertDescription>
+                              </Alert>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Recommendations */}
+                      {pricingHealth.recommendations.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-semibold text-slate-300 flex items-center gap-2">
+                            <Sparkles className="h-3 w-3 text-emerald-400" />
+                            Recommendations
+                          </h4>
+                          <div className="space-y-1">
+                            {pricingHealth.recommendations.slice(0, 2).map((rec, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-start gap-2 text-[10px] text-slate-400 bg-slate-800/50 rounded p-2 border border-slate-700/60"
+                              >
+                                <CheckCircle className="h-3 w-3 mt-0.5 flex-shrink-0 text-emerald-400" />
+                                <div className="flex-1">
+                                  <span>{rec.message}</span>
+                                  {rec.action && (
+                                    <div className="text-[9px] text-slate-500 mt-0.5">{rec.action}</div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center py-4 text-slate-400 text-[11px]">
+                      Loading pricing analytics...
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
 
               {/* Deep dive inventory dashboard reuse */}
               <Suspense fallback={<div className="text-xs text-slate-400">Loading inventory analytics…</div>}>
@@ -422,7 +636,7 @@ export const FabricatorReports: React.FC = () => {
                 <Card className="bg-slate-900/80 border-slate-700/70 md:col-span-2">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-sm">
-                      <FileText className="h-4 w-4 text-orange-300" />
+                      <FileText className="h-4 w-4 text-amber-300" />
                       Reports & Exports
                     </CardTitle>
                   </CardHeader>
@@ -431,7 +645,7 @@ export const FabricatorReports: React.FC = () => {
                       Use the Quick Reports panel inside each project to generate cutting lists,
                       machine exports, accessories, and glass reports with QR codes.
                     </p>
-                    <Alert className="bg-slate-800/80 border-slate-700 text-[11px]">
+                    <Alert className="bg-slate-800/80 border-slate-700 text-[11px] card-dark">
                       <AlertDescription className="flex items-start gap-2">
                         <Sparkles className="h-3 w-3 text-amber-300 mt-0.5" />
                         <span>
@@ -516,6 +730,29 @@ export const FabricatorReports: React.FC = () => {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Pricing Tuning Studio Modal */}
+      {user && showPricingStudio && (
+        <PricingTuningStudio
+          systemPackId={pricingStudioSystemPackId}
+          profileId={pricingStudioProfileId}
+          userId={user.id}
+          profiles={inventory}
+          onClose={(saved) => {
+            setShowPricingStudio(false);
+            setPricingStudioSystemPackId(undefined);
+            setPricingStudioProfileId(undefined);
+            if (saved) {
+              // Refetch pricing analytics when pricing is saved
+              // React Query will automatically refetch due to query key invalidation
+            }
+          }}
+          onPricingUpdated={(systemPackId) => {
+            console.log('Pricing updated for system pack:', systemPackId);
+            // Pricing analytics queries will auto-refetch
+          }}
+        />
+      )}
     </div>
   );
 };

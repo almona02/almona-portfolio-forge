@@ -287,11 +287,11 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
         <div className="relative">
           {/* Header */}
-          <div className="sticky top-0 z-10 bg-gradient-to-r from-orange-600 to-orange-700 text-white p-6">
+          <div className="sticky top-0 z-10 bg-gradient-to-r from-amber-600 to-amber-700 text-white p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <DialogTitle className="text-2xl font-bold">{t('onboarding.title', 'Welcome to Fabricator Pro')}</DialogTitle>
-                <p className="text-orange-100 text-sm mt-1">
+                <p className="text-amber-100 text-sm mt-1">
                   {t('onboarding.subtitle', "Let's get you started with a quick tutorial")}
                 </p>
               </div>
@@ -299,7 +299,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="text-white hover:bg-orange-800"
+                className="text-white hover:bg-amber-800"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -311,7 +311,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
                 <span>{t('onboarding.step_of', 'Step {current} of {total}', { current: currentStep + 1, total: steps.length })}</span>
                 <span>{t('onboarding.complete_percent', '{percent}% Complete', { percent: Math.round(progress) })}</span>
               </div>
-              <Progress value={progress} className="h-2 bg-orange-800/50" />
+              <Progress value={progress} className="h-2 bg-amber-800/50" />
             </div>
           </div>
 
@@ -327,7 +327,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
                         index < currentStep
                           ? 'bg-green-500 border-green-500 text-white'
                           : index === currentStep
-                          ? 'bg-orange-500 border-orange-500 text-white'
+                          ? 'bg-amber-500 border-amber-500 text-white'
                           : 'bg-gray-200 border-gray-300 text-gray-400'
                       )}
                     >
@@ -360,7 +360,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
             <div className="space-y-6">
               {/* Step Title and Description */}
               <div>
-                <h3 className="text-2xl font-semibold mb-2">{currentStepData.title}</h3>
+                <h3 className="typography-h3 mb-2">{currentStepData.title}</h3>
                 <p className="text-gray-600 mb-4">{currentStepData.description}</p>
                 {currentStepData.duration && (
                   <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -384,8 +384,8 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
               ) : (
                 <div className="bg-gray-100 rounded-lg p-12 text-center border-2 border-dashed border-gray-300">
                   <div className="space-y-4">
-                    <div className="mx-auto w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
-                      <Play className="h-8 w-8 text-orange-600" />
+                    <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center">
+                      <Play className="h-8 w-8 text-amber-600" />
                     </div>
                     <div>
                       <p className="text-gray-600 font-medium">{t('onboarding.video_coming_soon', 'Video Tutorial Coming Soon')}</p>
@@ -400,7 +400,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
               {/* Interactive Demo (if provided) */}
               {currentStepData.component && (
                 <div className="border-t pt-6">
-                  <h4 className="font-semibold mb-4">{t('onboarding.try_yourself', 'Try it yourself:')}</h4>
+                  <h4 className="typography-h4 mb-4">{t('onboarding.try_yourself', 'Try it yourself:')}</h4>
                   <currentStepData.component />
                 </div>
               )}
@@ -433,7 +433,7 @@ export const FabricatorOnboarding: React.FC<FabricatorOnboardingProps> = ({
               </Button>
               <Button
                 onClick={handleNext}
-                className="bg-orange-600 hover:bg-orange-700"
+                className="btn-primary"
               >
                 {isLastStep ? t('onboarding.complete', 'Complete Tutorial') : t('onboarding.next', 'Next')}
                 {!isLastStep && <ChevronRight className="h-4 w-4 ml-2" />}

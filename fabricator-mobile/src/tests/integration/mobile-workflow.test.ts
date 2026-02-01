@@ -3,9 +3,10 @@
  * Tests complete scanning and sync workflows
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { offlineManager } from '../../services/OfflineManager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { offlineManager } from '../../services/OfflineManager';
+import { supabase } from '../../services/supabaseClient';
 
 // Mock AsyncStorage
 vi.mock('@react-native-async-storage/async-storage', () => ({
@@ -32,6 +33,16 @@ describe('Mobile Workflow: End-to-End Scanning and Sync', () => {
     vi.clearAllMocks();
     (AsyncStorage.getItem as any).mockResolvedValue(null);
     (AsyncStorage.setItem as any).mockResolvedValue(undefined);
+    // Reset singleton state
+    (offlineManager as any).queue = [];
+    (offlineManager as any).isProcessing = false;
+
+    // Reset Supabase mocks to happy path
+    (supabase.from as any).mockReturnValue({
+      update: vi.fn(() => ({ eq: vi.fn(() => ({ error: null })) })),
+      insert: vi.fn(() => ({ error: null })),
+      select: vi.fn(() => ({ limit: vi.fn(() => ({ data: [{}] })) })),
+    });
   });
 
   it('should queue operations when offline and sync when back online', async () => {

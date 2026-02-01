@@ -22,7 +22,7 @@ export const ProtectedComponent: React.FC<ProtectedComponentProps> = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
       </div>
     );
   }
@@ -35,8 +35,8 @@ export const ProtectedComponent: React.FC<ProtectedComponentProps> = ({
     return (
       <Card className="max-w-md mx-auto">
         <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-4">
-            <Lock className="h-6 w-6 text-orange-600" />
+          <div className="mx-auto w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mb-4">
+            <Lock className="h-6 w-6 text-amber-600" />
           </div>
           <CardTitle className="text-lg">مطلوب تسجيل الدخول</CardTitle>
         </CardHeader>
@@ -44,7 +44,7 @@ export const ProtectedComponent: React.FC<ProtectedComponentProps> = ({
           <p className="text-gray-600">{message}</p>
           <Button 
             onClick={() => window.location.href = '/login'}
-            className="bg-orange-600 hover:bg-orange-700"
+            className="btn-primary"
           >
             تسجيل الدخول
           </Button>

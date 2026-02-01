@@ -170,7 +170,7 @@ export const TuningWorkbench: React.FC = () => {
             ⚙️
           </div>
           <div>
-            <h1 className="font-bold text-gray-800 font-cairo">استوديو ضبط الأنظمة</h1>
+            <h1 className="typography-h1 text-gray-800 font-cairo">استوديو ضبط الأنظمة</h1>
             <p className="text-xs text-gray-500">System Tuning Studio • {system.meta.name}</p>
           </div>
         </div>
@@ -220,7 +220,7 @@ export const TuningWorkbench: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span>1. Profile Roles</span>
                 {system.profiles.length > 0 && (
-                  <span className="text-xs text-green-500">{system.profiles.length}</span>
+                  <span className="text-xs  status-valid">{system.profiles.length}</span>
                 )}
               </div>
             </button>
@@ -235,7 +235,7 @@ export const TuningWorkbench: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span>2. Micron Parameters</span>
                 {system.meta.tuningStatus !== 'draft' && (
-                  <span className="text-green-500">✓</span>
+                  <span className=" status-valid">✓</span>
                 )}
               </div>
             </button>
@@ -295,7 +295,7 @@ export const TuningWorkbench: React.FC = () => {
           {system.profiles.length === 0 ? (
             <div className="bg-white rounded-xl shadow-lg border p-8 max-w-2xl w-full text-center">
               <div className="text-6xl mb-4">🛠️</div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2 font-cairo">لوحة العمل</h2>
+              <h2 className="typography-h2 text-gray-800 mb-2 font-cairo">لوحة العمل</h2>
               <p className="text-gray-500 mb-4">
                 Select a tool from the navigation panel to configure your system pack.
               </p>
@@ -305,7 +305,7 @@ export const TuningWorkbench: React.FC = () => {
             </div>
           ) : (
             <div className="bg-white rounded-xl shadow-lg border p-6 max-w-4xl w-full">
-              <h2 className="text-lg font-bold text-gray-800 mb-4 font-cairo">System Profiles Overview</h2>
+              <h2 className="typography-h2 text-lg text-gray-800 mb-4 font-cairo">System Profiles Overview</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {system.profiles.map(profile => (
                   <div key={profile.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">

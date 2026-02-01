@@ -45,7 +45,7 @@ const statusOptions: { value: TicketStatus; label: string }[] = [
 const priorityOptions: { value: TicketPriority; label: string; color: string }[] = [
   { value: 'low', label: 'Low', color: 'text-green-600' },
   { value: 'medium', label: 'Medium', color: 'text-blue-600' },
-  { value: 'high', label: 'High', color: 'text-orange-600' },
+  { value: 'high', label: 'High', color: 'text-amber-600' },
   { value: 'critical', label: 'Critical', color: 'text-red-600' },
   { value: 'urgent', label: 'Urgent', color: 'text-red-700' }
 ]
@@ -168,7 +168,7 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
                 ticket.priority === 'urgent' || ticket.priority === 'critical' 
                   ? 'text-red-600' 
                   : ticket.priority === 'high' 
-                  ? 'text-orange-600' 
+                  ? 'text-amber-600' 
                   : ticket.priority === 'medium'
                   ? 'text-blue-600'
                   : 'text-green-600'
@@ -180,7 +180,7 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
 
           {/* Status Selection */}
           <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
+            <Label htmlFor="status" className="typography-label">Status</Label>
             <Select
               value={selectedStatus}
               onValueChange={(value) => setSelectedStatus(value as TicketStatus)}
@@ -203,7 +203,7 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
 
           {/* Priority Selection */}
           <div className="space-y-2">
-            <Label htmlFor="priority">Priority</Label>
+            <Label htmlFor="priority" className="typography-label">Priority</Label>
             <Select
               value={selectedPriority}
               onValueChange={(value) => setSelectedPriority(value as TicketPriority)}
@@ -219,7 +219,7 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
                         option.value === 'critical' || option.value === 'urgent' 
                           ? 'bg-red-500' 
                           : option.value === 'high' 
-                          ? 'bg-orange-500' 
+                          ? 'bg-amber-500' 
                           : option.value === 'medium'
                           ? 'bg-blue-500'
                           : 'bg-green-500'
@@ -235,7 +235,7 @@ export const TicketStatusUpdateDialog: React.FC<TicketStatusUpdateDialogProps> =
           {/* Resolution Summary */}
           {isResolutionRequired && (
             <div className="space-y-2">
-              <Label htmlFor="resolution">
+              <Label htmlFor="resolution" className="typography-label">
                 Resolution Summary {isResolutionRequired && <span className="text-red-500">*</span>}
               </Label>
               <Textarea

@@ -20,11 +20,11 @@ export const ReportsPanel: React.FC = () => {
       <CardContent className="space-y-4">
         <div className="flex gap-3 items-end">
           <div>
-            <label className="text-xs text-muted-foreground">From</label>
+            <label className="typography-label text-xs text-muted-foreground">From</label>
             <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">To</label>
+            <label className="typography-label text-xs text-muted-foreground">To</label>
             <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
           </div>
           <div className="ml-auto">

@@ -405,7 +405,7 @@ export const InteractiveUserGuide: React.FC<{
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-almona-orange">Interactive Training Center</h2>
+                  <h2 className="typography-h2 text-almona-orange">Interactive Training Center</h2>
                   <p className="text-gray-400 mt-1">Master the new features with hands-on tutorials</p>
                 </div>
                 <Button variant="ghost" onClick={onClose}>
@@ -489,7 +489,7 @@ export const InteractiveUserGuide: React.FC<{
                 <div className="flex items-center gap-4">
                   {selectedModule.icon}
                   <div>
-                    <h3 className="text-xl font-bold">{selectedModule.title}</h3>
+                    <h3 className="typography-h3">{selectedModule.title}</h3>
                     <p className="text-sm text-gray-400">{selectedModule.description}</p>
                   </div>
                 </div>
@@ -516,7 +516,7 @@ export const InteractiveUserGuide: React.FC<{
                     >
                       {/* Step Header */}
                       <div>
-                        <h4 className="text-lg font-semibold mb-2">
+                        <h4 className="typography-h4 mb-2">
                           {selectedModule.steps[currentStep].title}
                         </h4>
                         <p className="text-gray-400">

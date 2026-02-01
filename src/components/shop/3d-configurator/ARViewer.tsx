@@ -1,52 +1,52 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogHeader,
+    AlertDialogTitle
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  AlertDialog, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
-} from '@/components/ui/alert-dialog';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
 } from '@/components/ui/select';
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipProvider, 
-  TooltipTrigger 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger
 } from '@/components/ui/tooltip';
-import { 
-  Zap, 
-  Camera, 
-  Ruler, 
-  Settings, 
-  Share2, 
-  Volume2, 
-  VolumeX,
-  Maximize2,
-  Scan,
-  Cpu,
-  Shield,
-  Battery,
-  Wrench,
-  AlertTriangle,
-  X
-} from 'lucide-react';
+import { useToast } from '@/hooks/useToast';
+import { getEquipmentRecommendation } from '@/lib/ai/gemini';
+import { cn } from '@/lib/utils';
 import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
+import {
+    AlertTriangle,
+    Battery,
+    Camera,
+    Cpu,
+    Maximize2,
+    Ruler,
+    Scan,
+    Settings,
+    Share2,
+    Shield,
+    Volume2,
+    VolumeX,
+    Wrench,
+    X,
+    Zap
+} from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { WorkshopARView } from '../ar/WorkspaceChecker';
 import { MACHINE_PRESETS } from '../ar/machinePresets';
-import { getEquipmentRecommendation } from '@/lib/ai/gemini';
-import { useToast } from '@/hooks/useToast';
-import { cn } from '@/lib/utils';
 
 interface ARPerformanceMetrics {
   fps: number;
@@ -282,8 +282,8 @@ export const ARViewer = ({
     }
   }, [selectedMachine, currentScale, calculateMeasurements]);
 
-  // Enhanced AR session management
-  const startAR = async () => {
+  // Enhanced AR session management - memoized
+  const startAR = useCallback(async () => {
     if (!isSupported || !selectedMachine) return;
 
     try {
@@ -329,9 +329,9 @@ export const ARViewer = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isSupported, selectedMachine, webXRSupported, calculateMeasurements, toast]);
 
-  const stopAR = () => {
+  const stopAR = useCallback(() => {
     const session = arSession as { end?: () => void } | null;
     if (session && typeof session.end === 'function') {
       session.end();
@@ -339,10 +339,10 @@ export const ARViewer = ({
     setArSession(null);
     setIsOpen(false);
     onClose?.();
-  };
+  }, [onClose, arSession]);
 
-  // Enhanced capture functionality
-  const captureSnapshot = async () => {
+  // Enhanced capture functionality - memoized
+  const captureSnapshot = useCallback(async () => {
     if (!arContainerRef.current) return;
     
     try {
@@ -359,9 +359,9 @@ export const ARViewer = ({
         variant: "destructive",
       });
     }
-  };
+  }, [arContainerRef, toast]);
 
-  const shareExperience = async () => {
+  const shareExperience = useCallback(async () => {
     if (navigator.share) {
       try {
         await navigator.share({
@@ -380,20 +380,20 @@ export const ARViewer = ({
         variant: "default",
       });
     }
-  };
+  }, [selectedMachine, toast]);
 
-  // Enhanced 2D fallback with interactive features
-  const handle2DFallback = () => {
+  // Enhanced 2D fallback with interactive features - memoized
+  const handle2DFallback = useCallback(() => {
     setIsOpen(true);
     toast({
       title: "Enhanced 3D View",
       description: "Using interactive 3D preview with measurement tools",
       variant: "default",
     });
-  };
+  }, [toast]);
 
-  // Scale adjustment
-  const adjustScale = (factor: number) => {
+  // Scale adjustment - memoized
+  const adjustScale = useCallback((factor: number) => {
     const newScale = Math.max(0.1, Math.min(5, currentScale * factor));
     setCurrentScale(newScale);
     
@@ -401,14 +401,14 @@ export const ARViewer = ({
       const machineData = MACHINE_PRESETS[selectedMachine];
       setMeasurements(calculateMeasurements(machineData));
     }
-  };
+  }, [currentScale, selectedMachine, calculateMeasurements]);
 
   if (isLoading && isSupported === null) {
     return (
       <div className="ar-skeleton">
-        <div className="flex items-center justify-center h-64 bg-gradient-to-br from-gray-900 to-black rounded-lg border border-orange-500/20">
+        <div className="flex items-center justify-center h-64 bg-gradient-to-br from-gray-900 to-black rounded-lg border border-amber-500/20">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gray-300 font-medium">Checking AR capabilities...</p>
             <p className="text-gray-500 text-sm mt-2">Detecting device sensors and AR support</p>
           </div>
@@ -419,16 +419,16 @@ export const ARViewer = ({
 
   if (!webXRSupported && !isSupported) {
     return (
-      <Card className="border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-transparent">
+      <Card className="border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-orange-400">
+          <CardTitle className="flex items-center gap-2 text-amber-400">
             <AlertTriangle className="h-5 w-5" />
             Enhanced AR Experience
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Badge variant="outline" className="bg-orange-500/10 text-orange-400">
+            <Badge variant="outline" className="btn-primary">
               Premium Feature
             </Badge>
             <p className="text-gray-300">
@@ -438,7 +438,7 @@ export const ARViewer = ({
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="space-y-2">
-              <h4 className="font-semibold text-gray-200">Recommended Devices</h4>
+              <h4 className="typography-h4 text-gray-200">Recommended Devices</h4>
               <ul className="text-gray-400 space-y-1">
                 <li>• iPhone with iOS 12+</li>
                 <li>• Android with ARCore</li>
@@ -446,7 +446,7 @@ export const ARViewer = ({
               </ul>
             </div>
             <div className="space-y-2">
-              <h4 className="font-semibold text-gray-200">Current Options</h4>
+              <h4 className="typography-h4 text-gray-200">Current Options</h4>
               <ul className="text-gray-400 space-y-1">
                 <li>• Interactive 3D Preview</li>
                 <li>• Virtual Measurement Tools</li>
@@ -458,7 +458,7 @@ export const ARViewer = ({
           <div className="flex gap-3 pt-2">
             <Button 
               onClick={handle2DFallback}
-              className="flex-1 bg-orange-500 hover:bg-orange-600"
+              className="btn-primary"
             >
               <Scan className="w-4 h-4 mr-2" />
               Launch 3D Preview
@@ -484,7 +484,7 @@ export const ARViewer = ({
         <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-800">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Cpu className="h-5 w-5 text-orange-400" />
+              <Cpu className="h-5 w-5 text-amber-400" />
               Select Industrial Machine
             </CardTitle>
           </CardHeader>
@@ -500,8 +500,8 @@ export const ARViewer = ({
                 {Object.entries(MACHINE_PRESETS).map(([key, machine]) => (
                   <SelectItem key={key} value={key}>
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-orange-500/20 rounded flex items-center justify-center">
-                        <Settings className="h-4 w-4 text-orange-400" />
+                      <div className="btn-primary">
+                        <Settings className="h-4 w-4 text-amber-400" />
                       </div>
                       <div>
                         <div className="font-medium text-white">{machine.id}</div>
@@ -530,7 +530,7 @@ export const ARViewer = ({
                   <TabsContent value="preview" className="space-y-4 mt-4">
                     <div 
                       ref={arContainerRef}
-                      className="relative h-64 bg-gradient-to-br from-gray-800 to-black rounded-lg border border-orange-500/20 overflow-hidden"
+                      className="relative h-64 bg-gradient-to-br from-gray-800 to-black rounded-lg border border-amber-500/20 overflow-hidden"
                     >
                       <WorkshopARView 
                         machine={MACHINE_PRESETS[selectedMachine]} 
@@ -582,7 +582,7 @@ export const ARViewer = ({
                         size="sm"
                         className={cn(
                           "border-gray-600",
-                          arMode === 'measure' && "bg-orange-500 hover:bg-orange-600"
+                          arMode === 'measure' && "bg-amber-500 hover:bg-amber-600"
                         )}
                       >
                         <Ruler className="h-4 w-4 mr-2" />
@@ -595,7 +595,7 @@ export const ARViewer = ({
                         size="sm"
                         className={cn(
                           "border-gray-600",
-                          arMode === 'inspect' && "bg-orange-500 hover:bg-orange-600"
+                          arMode === 'inspect' && "bg-amber-500 hover:bg-amber-600"
                         )}
                       >
                         <Shield className="h-4 w-4 mr-2" />
@@ -649,8 +649,8 @@ export const ARViewer = ({
                     {maintenanceInfo ? (
                       <div className="bg-gray-800/50 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-3">
-                          <Zap className="h-4 w-4 text-orange-400" />
-                          <span className="font-medium text-orange-400">AI-Powered Insights</span>
+                          <Zap className="h-4 w-4 text-amber-400" />
+                          <span className="font-medium text-amber-400">AI-Powered Insights</span>
                         </div>
                         <p className="text-gray-300 text-sm leading-relaxed">
                           {maintenanceInfo}
@@ -672,7 +672,7 @@ export const ARViewer = ({
               <Button 
                 onClick={startAR}
                 disabled={!isSupported || !selectedMachine}
-                className="h-12 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                className="h-12 bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600"
                 size="lg"
               >
                 <Scan className="w-5 h-5 mr-2" />
@@ -756,7 +756,7 @@ export const ARViewer = ({
           <AlertDialogContent className="max-w-4xl bg-gray-900 border border-gray-700">
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center gap-2">
-                <Scan className="h-5 w-5 text-orange-400" />
+                <Scan className="h-5 w-5 text-amber-400" />
                 AR Experience - {selectedMachine}
               </AlertDialogTitle>
               <AlertDialogDescription className="text-gray-300">
@@ -769,7 +769,7 @@ export const ARViewer = ({
               {/* AR view would be rendered here */}
               <div className="absolute inset-0 flex items-center justify-center text-gray-500">
                 <div className="text-center">
-                  <Scan className="h-16 w-16 mx-auto mb-4 text-orange-400" />
+                  <Scan className="h-16 w-16 mx-auto mb-4 text-amber-400" />
                   <p>AR View Active</p>
                   <p className="text-sm">Move your device to explore</p>
                 </div>

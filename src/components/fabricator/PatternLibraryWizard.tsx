@@ -74,7 +74,7 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
   return (
     <div className="min-h-screen bg-gray-950 p-6">
       <div className="max-w-6xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-gray-900 border-gray-800 card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Pattern Library</CardTitle>
             <p className="text-gray-400">Choose a smart pattern and customize it (2-3 minutes)</p>
@@ -97,11 +97,11 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
               // Parameter customization view
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Customize Pattern</h3>
+                  <h3 className="typography-h3 text-lg">Customize Pattern</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-sm text-gray-400">Width (mm)</label>
+                        <label className="typography-label text-sm text-gray-400">Width (mm)</label>
                         <Input
                           type="number"
                           value={width}
@@ -110,7 +110,7 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-gray-400">Height (mm)</label>
+                        <label className="typography-label text-sm text-gray-400">Height (mm)</label>
                         <Input
                           type="number"
                           value={height}
@@ -132,7 +132,7 @@ export const PatternLibraryWizard: React.FC<PatternLibraryWizardProps> = ({
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Preview</h3>
+                  <h3 className="typography-h3 text-lg">Preview</h3>
                   <Card className="bg-gray-800 border-gray-700">
                     <CardContent className="p-4">
                       <div className="space-y-2 text-sm">

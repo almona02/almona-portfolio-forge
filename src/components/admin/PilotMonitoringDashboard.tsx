@@ -37,7 +37,7 @@ export const PilotMonitoringDashboard: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-950 p-6">
         <div className="max-w-6xl mx-auto">
-          <Card className="bg-gray-900 border-gray-800">
+          <Card className="bg-gray-900 border-gray-800 card-dark">
             <CardContent className="p-6 text-center">
               <div className="text-gray-400">Loading metrics...</div>
             </CardContent>
@@ -54,7 +54,7 @@ export const PilotMonitoringDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-950 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-gray-900 border-gray-800 card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Pilot Monitoring Dashboard</CardTitle>
             <p className="text-gray-400">Real-time monitoring of pilot program</p>

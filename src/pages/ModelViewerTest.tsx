@@ -28,7 +28,7 @@ export function ModelViewerTest() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-6xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">3D Model Test</h1>
+          <h1 className="typography-h1 text-gray-900 mb-2">3D Model Test</h1>
           <p className="text-gray-600">
             Testing the 3D model viewer functionality
           </p>
@@ -36,7 +36,7 @@ export function ModelViewerTest() {
 
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-            <h3 className="text-red-800 font-semibold mb-2">Error Loading Model</h3>
+            <h3 className="typography-h3 text-red-800 mb-2">Error Loading Model</h3>
             <p className="text-red-600 text-sm">{error}</p>
           </div>
         )}
@@ -72,7 +72,7 @@ export function ModelViewerTest() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="typography-label block text-sm font-medium mb-2">
                     Scale: {scale.toFixed(1)}x
                   </label>
                   <input
@@ -87,7 +87,7 @@ export function ModelViewerTest() {
                 </div>
 
                 <div>
-                  <label className="flex items-center space-x-2">
+                  <label className="typography-label flex items-center space-x-2">
                     <input
                       type="checkbox"
                       checked={autoRotate}
@@ -139,15 +139,15 @@ export function ModelViewerTest() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div>
-                <h4 className="font-semibold mb-2">Rotate</h4>
+                <h4 className="typography-h4 mb-2">Rotate</h4>
                 <p className="text-gray-600">Click and drag to rotate the model</p>
               </div>
               <div>
-                <h4 className="font-semibold mb-2">Zoom</h4>
+                <h4 className="typography-h4 mb-2">Zoom</h4>
                 <p className="text-gray-600">Scroll wheel to zoom in/out</p>
               </div>
               <div>
-                <h4 className="font-semibold mb-2">Pan</h4>
+                <h4 className="typography-h4 mb-2">Pan</h4>
                 <p className="text-gray-600">Right-click and drag to pan</p>
               </div>
             </div>

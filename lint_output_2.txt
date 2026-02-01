@@ -1,0 +1,38 @@
+
+> vite_react_shadcn_ts@0.0.5 lint
+> eslint "src" --ext ts,tsx
+
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\FabricatorCustomersPanel.tsx
+  121:6  warning  React Hook useEffect has a missing dependency: 'user'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\SmartMeasuringInterface.tsx
+  101:26  warning  'isPredicting' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+  111:15  warning  'prev' is defined but never used. Allowed unused args must match /^_/u                              @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\drafting\hooks\useCanvasEvents.ts
+  590:6  warning  React Hook useCallback has an unnecessary dependency: 'setCurrentPoint'. Either exclude it or remove the dependency array                                                                                                                        react-hooks/exhaustive-deps
+  656:6  warning  React Hook useCallback has a missing dependency: 'setCurrentPoint'. Either include it or remove the dependency array. If 'setCurrentPoint' changes too often, find the parent component that defines it and wrap that definition in useCallback  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\hooks\fabricator\useEgyptianPredictiveGrid.ts
+  70:9  error  'rows' is never reassigned. Use 'const' instead  prefer-const
+
+C:\projects\almona-portfolio-forge\src\lib\3d\windowGeometry.ts
+  1625:15  warning  'mullionGap' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u    @typescript-eslint/no-unused-vars
+  1626:15  warning  'mullionDepth' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\constitutional\__tests__\DeadLetterQueue.test.ts
+  83:15  warning  'consoleSpy' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\constitutional\__tests__\DegradedMode.test.ts
+   64:11  warning  'consoleSpy' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+  106:13  warning  'saveSpy' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u     @typescript-eslint/no-unused-vars
+  134:13  warning  'setItemSpy' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+  138:13  warning  'consoleSpy' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\performance\benchmarks\GridPredictionBenchmark.test.ts
+  17:9  error  'rows' is never reassigned. Use 'const' instead  prefer-const
+
+✖ 14 problems (2 errors, 12 warnings)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+

@@ -3,26 +3,81 @@
 Purpose: one living document for internal roadmap, investor comms, grants, and technical specification. Grounded against current README (v5.2) to avoid overpromising.
 
 ## 0) Scope & Status (Grounded in README)
-- Implemented (per README): Fabricator Pro end-to-end, SmartDraw/3D/AR, verification gate, QR feedback loop, CalibrationWizard/Learner, remnant-first GA + glass CP solver + hybrid mass optimizer, ProductionLabel, Production Scheduler, Machine Twin, multi-brand CNC exports, machining macros, SmartScan/OCR (beta), PWA support, CNC security & kinematic collision detection, unified ticketing, quote→invoice (Commercial workspace), ERP bridge (mock/odoo-ready), Customer Portal, Supabase auth/RLS/realtime, SendGrid, Vercel/Docker, security hardening.
-- Not yet implemented (commitments here): waiver + 3-step safety flow; 3D toolpath gate as a hard blocker; IndexedDB + background sync for offline-first production; SmartScan batch UI with importer; Turborepo/Nx refactor; explicit CRM pipeline; hardened ERP sync milestones; outcome-based pricing pilot; government registrations; investor metrics views.
+
+### Current Implementation Status (As of January 2026)
+
+**✅ Fully Implemented:**
+- Fabricator Pro end-to-end, SmartDraw/3D/AR, verification gate, QR feedback loop
+- CalibrationWizard/Learner (ML-based K-factor tuning exists)
+- Remnant-first GA + glass CP solver + hybrid mass optimizer (all algorithms implemented)
+- ProductionLabel, Production Scheduler, Machine Twin
+- Multi-brand CNC exports, machining macros
+- **SmartScan batch UI** ✅ (`SmartScanUploader.tsx` with queue, progress, SVG preview, import wizard)
+- **SmartScan integration** ✅ (ProfileTuningStudio tab, TestScanner page)
+- PWA support (basic service worker)
+- CNC security & kinematic collision detection (CutSimulationViewer, cutSimulator)
+- Unified ticketing, quote→invoice (Commercial workspace)
+- ERP bridge (mock/odoo-ready with ErpBridge class, audit logging)
+- Customer Portal, Supabase auth/RLS/realtime, SendGrid, Vercel/Docker, security hardening
+- ProductionDashboard, ValidationDashboard (ROI metrics)
+- SustainabilityTracker (CO₂ calculations)
+
+**⚠️ Partially Implemented:**
+- **Safety verification**: `ProductionPreviewDialog` exists (single modal with collision checking), but NOT the planned 3-step flow (SafetyWarningModal → ToolpathPreviewModal → FinalVerificationModal)
+- **Offline-first**: Basic PWA service worker + WorkspaceSyncService (localStorage fallback), but NO IndexedDB/Dexie.js schema, NO Workbox background sync, NO offline UI components
+- **ERP sync**: Basic ErpBridge exists, but NO bidirectional Odoo sync, NO webhook endpoint, NO hardened milestones
+
+**❌ Not Yet Implemented:**
+- Waiver + 3-step safety flow (separate modals)
+- `cnc_safety_logs` database table
+- Safety envelope JSON files (`safety_profiles/yilmaz_w60.json`, etc.)
+- IndexedDB + background sync for offline-first production
+- Turborepo/Nx monorepo refactor
+- Explicit CRM pipeline (leads/opportunities/contacts/activities)
+- Hardened ERP sync milestones (M1-M4)
+- Patent drafts (calibration feedback loop, remnant-first genetic)
+- Investor metrics dashboard (dedicated view with materialized backend)
+- Outcome-based pricing pilot
+- Government registrations (ITIDA, etc.)
 
 ## 1) Liability & Safety (Immediate)
-- Deliverables: mandatory Digital Twin Verification (3 screens), logging, 3D collision gate, safety envelopes, insurance.
-- Components (new):
-  - `SafetyWarningModal.tsx` (Screen 1: warnings)
-  - `ToolpathPreviewModal.tsx` (Screen 2: 3D collision viz)
-  - `FinalVerificationModal.tsx` (Screen 3: digital signature)
-- Logging (example SQL):
-  - `cnc_safety_logs(job_id, user_id, verification_step_1_at, step_1_ip, verification_step_2_at, collision_check_passed, verification_step_3_at, digital_signature_hash, gcode_hash_before, gcode_hash_after)`
-- Collision & envelopes:
-  - Collision detector: three.js + ammo.js meshes; clamp zones, travel limits, emergency stop suggestion.
-  - Safety envelopes (JSON): `safety_profiles/yilmaz_w60.json`, `safety_profiles/elumatec_sbz151.json` used in pre-flight before G-code export.
-- Insurance: pursue “Technology E&O + Product Liability” (e.g., Marsh Egypt), target ~$15k/yr for ~$5M coverage.
+
+**Status:** ⚠️ **Partially Implemented** (1/3 screens, collision detection exists)
+
+**Current State:**
+- ✅ `ProductionPreviewDialog.tsx` exists (single modal with collision checking via `CutSimulationViewer`)
+- ✅ Collision detection implemented (`cutSimulator.generateFrameSimulation`, `cutSimulator.validateSimulation`)
+- ✅ Three.js + ammo.js integration present
+- ❌ **NOT implemented**: 3-step separate modal flow
+- ❌ **NOT implemented**: `cnc_safety_logs` database table
+- ❌ **NOT implemented**: Safety envelope JSON files
+
+**Remaining Deliverables:**
+- Split `ProductionPreviewDialog` into 3 separate modals:
+  - `SafetyWarningModal.tsx` (Screen 1: warnings + waiver acceptance)
+  - `ToolpathPreviewModal.tsx` (Screen 2: 3D collision visualization - can reuse CutSimulationViewer)
+  - `FinalVerificationModal.tsx` (Screen 3: digital signature + final confirmation)
+- Database migration: create `cnc_safety_logs` table with fields:
+  - `job_id, user_id, verification_step_1_at, step_1_ip, verification_step_2_at, collision_check_passed, verification_step_3_at, digital_signature_hash, gcode_hash_before, gcode_hash_after`
+- Safety envelope JSON files: `safety_profiles/yilmaz_w60.json`, `safety_profiles/elumatec_sbz151.json` (machine-specific travel limits, clamp zones)
+- Integration: enforce 3-step flow as hard blocker before G-code export
+- Insurance: pursue "Technology E&O + Product Liability" (e.g., Marsh Egypt), target ~$15k/yr for ~$5M coverage.
 
 ## 2) IP & Data Moat
+
+**Status:** ❌ **Not Implemented** (algorithms exist, but no patent drafts)
+
+**Current State:**
+- ✅ `CalibrationLearner` exists (`python_backend/ai_services/calibration/calibration_learner.py`) - ML-based K-factor tuning
+- ✅ `RemnantFirstGeneticOptimizer` exists (`src/algorithms/RemnantFirstGeneticOptimizer.ts`) - remnant-first strategy
+- ✅ QR feedback loop exists (production QR codes → calibration feedback)
+- ❌ **NOT implemented**: Patent draft documents
+- ❌ **NOT implemented**: Data partnership templates
+
+**Remaining Deliverables:**
 - Provisional patents (Week 1–2 drafting):
-  - “Calibration feedback loop via production QR for ML-based K-factor tuning.”
-  - “Remnant-first genetic optimizer for material waste reduction.”
+  - "Calibration feedback loop via production QR for ML-based K-factor tuning."
+  - "Remnant-first genetic optimizer for material waste reduction."
 - Draft structure (repo docs folder, not code):
   - `documents/patent_draft_1/{calibration_feedback_loop.md, claims.md, figures/…}`
   - `documents/patent_draft_2/remnant_first_genetic.md`
@@ -32,7 +87,19 @@ Purpose: one living document for internal roadmap, investor comms, grants, and t
   - Universities priority: Cairo Univ., Ain Shams, GUC (for EU funding access).
 
 ## 3) Offline-First (Production Continuity)
-- Goal: “factory never stops cutting” when Supabase/cloud is down.
+
+**Status:** ⚠️ **Partially Implemented** (basic PWA exists, but no IndexedDB/Workbox)
+
+**Current State:**
+- ✅ Basic PWA service worker (`public/service-worker.js`) with caching
+- ✅ `WorkspaceSyncService` (`src/lib/workspace/WorkspaceSyncService.ts`) with localStorage fallback
+- ✅ Basic offline sync logic (`src/lib/offline-sync.ts`, `fabricator-mobile/src/services/OfflineManager.ts`)
+- ❌ **NOT implemented**: IndexedDB/Dexie.js schema
+- ❌ **NOT implemented**: Workbox background sync
+- ❌ **NOT implemented**: Offline UI components
+
+**Remaining Deliverables:**
+- Goal: "factory never stops cutting" when Supabase/cloud is down.
 - IndexedDB (Dexie.js) schema target:
   - `optimizationJobs: ++id, projectId, status, createdAt`
   - `cncExports: ++id, jobId, machineType, gcode, synced`
@@ -44,26 +111,59 @@ Purpose: one living document for internal roadmap, investor comms, grants, and t
 - Testing protocol: 24h offline simulation with dropouts; multi-device conflict cases; ≥50 queued jobs; deterministic conflict resolution policy (last-write-wins with manual override where critical).
 
 ## 4) Architecture Refactor (DDD Monorepo)
+
+**Status:** ❌ **Not Implemented** (single package.json, no monorepo structure)
+
+**Current State:**
+- ✅ Single `package.json` with all dependencies
+- ✅ Modular code structure (components, lib, algorithms)
+- ❌ **NOT implemented**: Monorepo structure (Turborepo/Nx)
+- ❌ **NOT implemented**: Package extraction
+
+**Remaining Deliverables:**
 - Target packages: `fabricator-core`, `cnc-export`, `calibration-ai`, `workshop-ui`, `admin-portal`, `shared`.
 - Phase 1 (Week 3–4): extract `fabricator-core` (components, lib/optimization, algorithms). Provide temporary re-exports in `src/components/fabricator/index.ts` with deprecation warning.
 - Phase 2 (Week 5): Turborepo (or Nx) setup; sample `turbo.json` pipeline (build dependsOn ^build; test dependsOn build).
 - Principles: enforce package boundaries; keep backward compatibility during migration; measure build time reduction.
 
 ## 5) SmartScan UI Upgrade (Beta → Production-Ready)
-- New components (under `components/smartscan/`):
-  - `SmartScanBatchUploader.tsx` (drag/drop, queue)
-  - `SmartScanProgressQueue.tsx` (processing status)
-  - `SmartScanSVGPreview.tsx` (interactive preview)
-  - `SmartScanImportWizard.tsx` (Review → Map → Save)
-  - Hooks: `useSmartScanBatch`, `useSmartScanPreview`
-- Integration points:
-  - ProfileTuningStudio: “Import from SmartScan” action.
-  - TestScanner: bulk test mode.
-  - ProfileLibrary: batch import results.
-- Legacy: keep `/smartscan-old` route with deprecation banner.
+
+**Status:** ✅ **Fully Implemented** (all components exist, integrated)
+
+**Current State:**
+- ✅ `SmartScanUploader.tsx` (`src/components/fabricator/smartscan/SmartScanUploader.tsx`) - 1075 lines, includes:
+  - Drag/drop file upload (react-dropzone)
+  - Queue system with job status tracking
+  - Sequential processing with progress tracking
+  - SVG preview with download
+  - Import wizard integration
+- ✅ `ImportWizard.tsx` (`src/components/fabricator/smartscan/ImportWizard.tsx`) - Review → Map → Save workflow
+- ✅ `smartScanApi.ts` (`src/services/smartScanApi.ts`) - API client with single/batch/enhanced scan
+- ✅ **Integration complete:**
+  - ProfileTuningStudio: SmartScan tab (line 1818-1833)
+  - TestScanner page: uses SmartScanUploader
+- ⚠️ **Note**: Uses sequential processing (calls `/single` endpoint in loop) instead of true batch API endpoint, but functional
+
+**Status:** Production-ready ✅ (can mark as complete, optional enhancement: use true batch API endpoint for better performance)
 
 ## 6) CRM / ERP Roadmap (Staged)
-- Current (per README): Quote→invoice, Commercial workspace, VAT invoicing, ERP bridge (mock/odoo-ready), Customer Portal, unified ticketing. No explicit CRM pipeline; ERP not hardened.
+
+**Status:** ⚠️ **Partially Implemented** (ERP bridge exists, but not hardened; CRM not started)
+
+**Current State:**
+- ✅ ERP bridge exists (`python_backend/core/business/erp_bridge.py`):
+  - `ErpBridge` class with `emit_invoice_event`
+  - `ErpAuditLogger` for transaction logging
+  - Odoo adapter structure (`python_backend/core/business/adapters/odoo_adapter.py`)
+  - Egyptian e-invoice compliance (`EgyptianEinvoiceBuilder`)
+- ✅ Quote→invoice workflow exists
+- ✅ Commercial workspace, VAT invoicing, Customer Portal, unified ticketing
+- ❌ **NOT implemented**: CRM pipeline (leads/opportunities/contacts/activities)
+- ❌ **NOT implemented**: Hardened ERP sync (M1-M4 milestones)
+- ❌ **NOT implemented**: Odoo webhook endpoint
+- ❌ **NOT implemented**: Bidirectional sync
+
+**Remaining Deliverables:**
 - CRM (new): leads/opportunities, contact/org models, activity timeline tied to quotes/orders; surface in Customer Portal.
 - ERP-lite hardening: Odoo webhook `/api/odoo/webhook`; bidirectional sync for quotes/orders/invoices, stock moves; audit with before/after; retry with backoff + manual override UI.
 - Milestones:
@@ -83,15 +183,33 @@ Purpose: one living document for internal roadmap, investor comms, grants, and t
 - Messaging: “Digital Public Good / Sovereign Industrial Asset”; import-substitution FX savings; circular economy via remnant marketplace.
 
 ## 9) Metrics Dashboard (Investor/Grant)
+
+**Status:** ⚠️ **Partially Implemented** (dashboards exist, but not investor-specific)
+
+**Current State:**
+- ✅ `ProductionDashboard.tsx` - production metrics, workshop impact
+- ✅ `ValidationDashboard.tsx` - ROI calculator, validation metrics
+- ✅ `SustainabilityTracker.ts` (`src/analytics/SustainabilityTracker.ts`) - CO₂ calculations
+- ✅ Waste reduction metrics, time savings tracked
+- ❌ **NOT implemented**: Dedicated `investor_metrics` materialized view
+- ❌ **NOT implemented**: `LiveMetricsDashboard` component (investor-specific)
+- ❌ **NOT implemented**: `ImpactHeatmap` (regional waste reduction)
+- ❌ **NOT implemented**: `ExportForInvestors` (PDF/Excel export)
+
+**Remaining Deliverables:**
 - Backend (concept): materialized view `investor_metrics` with active workshops, ARPU, avg waste reduction, CO₂ saved (material_savings_kg * 14.3), data points, prediction accuracy.
 - Frontend components: `LiveMetricsDashboard`, `ImpactHeatmap` (regional waste reduction), `ExportForInvestors` (PDF/Excel).
 - KPIs to track: waste reduction, FX savings, offline uptime, data points collected, algorithm accuracy, ARPU/CAC/LTV, certified operators/jobs created.
 
-## 10) Execution Cadence (90 Days)
+## 10) Execution Cadence (90 Days) - **UPDATED STATUS**
+
+**Completed (as of January 2026):**
+- ✅ Weeks 5–8: SmartScan batch UI live; ProfileTuningStudio/TestScanner integration ✅ **DONE**
+
+**Remaining (revised timeline):**
 - Weeks 1–2: IP drafts filed; digital waiver flow (3 screens + logging); safety envelopes for Yilmaz/Elumatec; insurance quote.
 - Weeks 3–4: `fabricator-core` extraction; IndexedDB schema + basic sync; offline banner + conflict UI; Turborepo config.
-- Weeks 5–8: SmartScan batch UI live; ProfileTuningStudio/TestScanner integration; lighthouse workshops onboarded; baseline waste measured.
-- Weeks 9–12: CRM models + sync prototype; Odoo adapter; ITIDA submission; pilot results deck; metrics dashboard v1.
+- Weeks 9–12: CRM models + sync prototype; Odoo adapter hardening; ITIDA submission; pilot results deck; investor metrics dashboard v1.
 
 ## 11) Testing & Validation (Target Cases)
 - Safety: reject malicious G-code (e.g., M99 loops), validate Z-height vs envelope, require signature before export.
@@ -120,9 +238,28 @@ Purpose: one living document for internal roadmap, investor comms, grants, and t
 - Government: ITIDA registration submitted/approved milestone.
 
 ## 15) README Cross-Reference Notes
-- SmartScan currently beta; batch UI/import wizard/offline sync are new.
-- PWA mentioned; offline-first with IndexedDB + sync is a new commitment.
-- ERP bridge is noted as mock/odoo-ready; explicit CRM pipeline and hardened ERP sync are new.
-- Safety already includes pre-production verification and kinematic checks; waiver + enforced 3-step gate + envelopes are new.
+
+**Updated Status (January 2026):**
+- ✅ SmartScan batch UI/import wizard **COMPLETE** (no longer "new")
+- ⚠️ PWA mentioned; offline-first with IndexedDB + sync **STILL PENDING** (basic PWA exists, but not full offline-first)
+- ⚠️ ERP bridge is noted as mock/odoo-ready; explicit CRM pipeline and hardened ERP sync **STILL PENDING**
+- ⚠️ Safety already includes pre-production verification and kinematic checks; waiver + enforced 3-step gate + envelopes **STILL PENDING** (single modal exists, but not 3-step flow)
 - Keep doc updated as milestones ship to avoid overpromising.
+
+## 16) Implementation Analysis Summary
+
+**Completion Status:**
+- ✅ **Fully Complete (1/9)**: SmartScan UI Upgrade
+- ⚠️ **Partially Complete (4/9)**: Safety (1/3 screens), Offline-First (basic PWA only), ERP (bridge exists, not hardened), Metrics (dashboards exist, not investor-specific)
+- ❌ **Not Started (4/9)**: IP/Patents, Architecture Refactor, CRM Pipeline, Pricing Pilot, Government/Certification
+
+**Key Findings:**
+1. SmartScan is production-ready and can be marked complete
+2. Safety verification needs 3-step modal split (currently single modal)
+3. Offline-first needs IndexedDB/Dexie.js + Workbox implementation
+4. ERP bridge exists but needs hardening (M1-M4 milestones)
+5. No monorepo structure yet (single package.json)
+6. No CRM pipeline started
+7. No patent drafts filed
+8. Metrics dashboards exist but need investor-specific view
 

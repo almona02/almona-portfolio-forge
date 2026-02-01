@@ -19,7 +19,7 @@ export const ServicePackageGrid: React.FC<ServicePackageGridProps> = ({
     <div className={`space-y-12 ${className}`}>
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-4xl font-bold text-white mb-4">
+        <h2 className="typography-h2 text-4xl text-white mb-4">
           {t('services.service_packages')}
         </h2>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto">

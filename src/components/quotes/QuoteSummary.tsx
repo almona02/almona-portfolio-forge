@@ -34,7 +34,7 @@ export const QuoteSummary: React.FC<QuoteSummaryProps> = ({
 }) => {
   return (
     <div className="space-y-6">
-      <h3 className="text-xl font-semibold mb-4">Review Your Quote Request</h3>
+      <h3 className="typography-h3 mb-4">Review Your Quote Request</h3>
       
       <Card className="bg-almona-dark border-almona-light/20">
         <CardHeader>
@@ -93,11 +93,11 @@ export const QuoteSummary: React.FC<QuoteSummaryProps> = ({
         <CardContent>
           {products.length > 0 && (
             <div className="mb-4">
-              <h4 className="font-medium mb-2">Products</h4>
+              <h4 className="typography-h4 font-medium mb-2">Products</h4>
               {products.map((product) => (
                 <div key={product.id} className="flex justify-between items-center py-2">
                   <span>{product.name}</span>
-                  <Badge variant="outline" className="border-green-500 text-green-500">
+                  <Badge variant="outline" className="border-green-500  status-valid">
                     {product.price ? `${product.price.toLocaleString()} EGP` : "Price on request"}
                   </Badge>
                 </div>
@@ -107,7 +107,7 @@ export const QuoteSummary: React.FC<QuoteSummaryProps> = ({
           
           {services.length > 0 && (
             <div>
-              <h4 className="font-medium mb-2">Services</h4>
+              <h4 className="typography-h4 font-medium mb-2">Services</h4>
               {services.map((service) => (
                 <div key={service.id} className="flex justify-between items-center py-2">
                   <span>{service.name}</span>
@@ -126,7 +126,7 @@ export const QuoteSummary: React.FC<QuoteSummaryProps> = ({
           <CardTitle className="text-lg">Estimated Total</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-orange-500">
+          <div className="text-2xl font-bold text-amber-500">
             {estimatedPrice ? `${estimatedPrice.toLocaleString()} EGP` : "Calculating..."}
           </div>
           <p className="text-sm text-gray-400 mt-2">

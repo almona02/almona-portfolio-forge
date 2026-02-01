@@ -33,7 +33,7 @@ const Services = () => {
         <div className="container mx-auto px-4 py-12">
           {/* Hero Section */}
           <div className="mb-16 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="typography-h1 md:text-5xl mb-6">
               <span className="text-gradient-orange">Industrial Services Hub</span>
             </h1>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
@@ -90,9 +90,9 @@ const Services = () => {
               </div>
 
               <div className="bg-almona-darker/50 p-8 rounded-lg">
-                <h2 className="text-2xl font-bold mb-6">Connected Machine Network</h2>
+                <h2 className="typography-h2 mb-6">Connected Machine Network</h2>
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-semibold">
+                  <h3 className="typography-h3 text-lg">
                     {machineView === "list" ? "Registered Equipment" : "Facility Map View"}
                   </h3>
                   <Button 
@@ -108,7 +108,7 @@ const Services = () => {
                     {/* Sample machine - in reality would map through registered machines */}
                     <div className="p-4 border border-almona-light/20 rounded-lg flex justify-between items-center">
                       <div>
-                        <h4 className="font-medium">YILMAZ PRO-5000</h4>
+                        <h4 className="typography-h4 font-medium">YILMAZ PRO-5000</h4>
                         <p className="text-sm text-gray-400">Serial: YM-5K-238492 | Installed: 15/03/2022</p>
                       </div>
                       <Badge variant="secondary">Active Warranty</Badge>
@@ -125,7 +125,7 @@ const Services = () => {
             {/* Machine Registration */}
             <TabsContent value="register">
               <div className="text-center py-12">
-                <h3 className="text-xl font-semibold mb-4">Machine Registration</h3>
+                <h3 className="typography-h3 mb-4">Machine Registration</h3>
                 <p className="text-gray-400">Machine registration component will be available soon.</p>
               </div>
             </TabsContent>
@@ -138,7 +138,7 @@ const Services = () => {
             {/* Customer Portal */}
             <TabsContent value="portal">
               <div className="text-center py-12">
-                <h3 className="text-xl font-semibold mb-4">Customer Portal</h3>
+                <h3 className="typography-h3 mb-4">Customer Portal</h3>
                 <p className="text-gray-400">Customer portal component will be available soon.</p>
               </div>
             </TabsContent>
@@ -155,28 +155,28 @@ const Services = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div>
               <Badge className="mb-4">Patent Pending</Badge>
-              <h2 className="text-3xl font-bold mb-6">Machine DNA Technology</h2>
+              <h2 className="typography-h2 mb-6">Machine DNA Technology</h2>
               <p className="text-gray-400 mb-6">
                 Our proprietary registration system creates a complete digital fingerprint for each machine, 
                 enabling predictive maintenance and personalized service recommendations.
               </p>
               <ul className="space-y-4">
                 <li className="flex items-start">
-                  <span className="text-orange-500 mr-2">✓</span>
+                  <span className="text-amber-500 mr-2">✓</span>
                   <span>Automatic warranty validation and tracking</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-orange-500 mr-2">✓</span>
+                  <span className="text-amber-500 mr-2">✓</span>
                   <span>Equipment health scoring system</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-orange-500 mr-2">✓</span>
+                  <span className="text-amber-500 mr-2">✓</span>
                   <span>Spare parts consumption forecasting</span>
                 </li>
               </ul>
             </div>
             <div className="bg-almona-darker rounded-lg p-8 border border-almona-light/20">
-              <h3 className="text-xl font-semibold mb-4">Real-time Service Network</h3>
+              <h3 className="typography-h3 mb-4">Real-time Service Network</h3>
               <div className="aspect-video bg-almona-dark rounded flex items-center justify-center mb-4">
                 <p>Live map of service technicians and parts inventory would display here</p>
               </div>

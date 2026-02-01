@@ -27,7 +27,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
       content: (
         <div className="space-y-4">
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-            <h4 className="font-semibold text-red-400 mb-2">Before: Overwhelming List</h4>
+            <h4 className="typography-h4 text-red-400 mb-2">Before: Overwhelming List</h4>
             <div className="grid grid-cols-2 gap-2 text-sm">
               {[
                 "ALM6510", "DC 421 PBS", "DK502", "KM 212", "KD 402 S", "FR 221 S",
@@ -56,13 +56,13 @@ const ProgressiveDisclosureDemo: React.FC = () => {
       content: (
         <div className="space-y-4">
           <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-            <h4 className="font-semibold text-green-400 mb-2">After: Hierarchical Navigation</h4>
+            <h4 className="typography-h4 text-green-400 mb-2">After: Hierarchical Navigation</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <h5 className="font-medium text-white mb-2">Main Categories (5)</h5>
                 <ul className="space-y-1 text-sm">
                   <li className="flex items-center gap-2">
-                    <span className="text-orange-400">✂️</span>
+                    <span className="text-amber-400">✂️</span>
                     <span>Cutting Machines</span>
                     <Badge variant="secondary" className="text-xs">21 machines</Badge>
                   </li>
@@ -91,7 +91,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
               <div>
                 <h5 className="font-medium text-white mb-2">Subcategories Example</h5>
                 <div className="bg-gray-800/50 rounded-lg p-3">
-                  <div className="text-orange-400 font-medium mb-2">Cutting Machines</div>
+                  <div className="text-amber-400 font-medium mb-2">Cutting Machines</div>
                   <ul className="space-y-1 text-sm text-gray-300">
                     <li>• Double Head Cutting (8 machines)</li>
                     <li>• Single Head Cutting (4 machines)</li>
@@ -120,7 +120,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
                 <span className="text-sm">Expandable category tree</span>
               </div>
               <div className="flex items-center gap-2">
@@ -144,7 +144,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
                 <span className="text-sm">Reduced cognitive load</span>
               </div>
               <div className="flex items-center gap-2">
@@ -169,7 +169,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-white mb-4">
+        <h1 className="typography-h1 text-white mb-4">
           Progressive Disclosure Implementation
         </h1>
         <p className="text-gray-400 max-w-3xl mx-auto">
@@ -187,7 +187,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
               variant={demoStep === index ? "default" : "outline"}
               size="sm"
               onClick={() => setDemoStep(index)}
-              className={demoStep === index ? "bg-orange-500" : ""}
+              className={demoStep === index ? "bg-amber-500" : ""}
             >
               {index + 1}
             </Button>
@@ -262,7 +262,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
       </div>
 
       {/* Benefits Summary */}
-      <Card className="bg-gradient-to-r from-orange-500/10 to-blue-500/10 border-orange-500/20">
+      <Card className="bg-gradient-to-r from-amber-500/10 to-blue-500/10 border-amber-500/20">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <Info className="h-5 w-5" />
@@ -272,7 +272,7 @@ const ProgressiveDisclosureDemo: React.FC = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-400 mb-2">75%</div>
+              <div className="text-2xl font-bold text-amber-400 mb-2">75%</div>
               <div className="text-sm text-gray-300">Reduction in initial cognitive load</div>
             </div>
             <div className="text-center">

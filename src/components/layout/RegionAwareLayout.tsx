@@ -58,11 +58,11 @@ export const RegionAwareLayout: React.FC<RegionAwareLayoutProps> = ({
     return (
       <div className="min-h-screen bg-almona-dark text-white flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Region Detection Error</h2>
+          <h2 className="typography-h2 text-xl font-semibold mb-2">Region Detection Error</h2>
           <p className="text-gray-400 mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+            className="btn-primary"
           >
             Retry
           </button>
@@ -227,7 +227,7 @@ const RegionalFeaturesOverlay: React.FC<RegionalFeaturesOverlayProps> = ({ regio
       <div className="fixed bottom-4 right-4 z-50">
         <button
           onClick={() => setShowFeatures(true)}
-          className="bg-orange-500 text-white p-3 rounded-full shadow-lg hover:bg-orange-600 transition-all duration-300 transform hover:scale-110"
+          className="btn-primary"
           title="Regional Features"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,7 +241,7 @@ const RegionalFeaturesOverlay: React.FC<RegionalFeaturesOverlayProps> = ({ regio
   return (
     <div className="regional-features-overlay fixed bottom-4 right-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 max-w-sm border border-gray-200 dark:border-gray-700">
       <div className="flex justify-between items-center mb-3">
-        <h3 className="font-semibold text-gray-900 dark:text-white">
+        <h3 className="typography-h3 text-gray-900 dark:text-white">
           Regional Features ({region})
         </h3>
         <button

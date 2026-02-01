@@ -1,15 +1,16 @@
-import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
   value?: number;
+  indicatorClassName?: string;
 }
 
-export const Progress = ({ value = 0, className = "", ...props }: ProgressProps) => {
+export const Progress = ({ value = 0, className = "", indicatorClassName = "", ...props }: ProgressProps) => {
   const clamped = Math.max(0, Math.min(100, value));
   return (
-    <div className={`progress relative h-2 w-full rounded bg-gray-700 ${className}`} {...props}>
+    <div className={cn("progress relative h-2 w-full rounded bg-gray-700 overflow-hidden", className)} {...props}>
       <div
-        className="absolute left-0 top-0 h-full rounded bg-orange-500 transition-all"
+        className={cn("h-full transition-all duration-500 ease-in-out", indicatorClassName || "bg-almona-orange")}
         style={{ width: `${clamped}%` }}
       />
     </div>

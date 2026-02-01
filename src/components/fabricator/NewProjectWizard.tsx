@@ -200,7 +200,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
       <DialogContent className={`bg-gray-900 border-gray-700 text-white ${DIALOG_DIMENSIONS.MAX_WIDTH} ${DIALOG_DIMENSIONS.MAX_HEIGHT} overflow-y-auto`}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg">
-            <Factory className={`${UI_DIMENSIONS.ICON_LARGE} text-orange-400`} />
+            <Factory className={`${UI_DIMENSIONS.ICON_LARGE} text-amber-400`} />
             {t('new_project_wizard.title', 'New Project – Professional Header')}
           </DialogTitle>
           <DialogDescription className="text-xs text-gray-400">
@@ -218,7 +218,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
               <div className="mt-4 flex justify-end">
                 <Button
                   onClick={() => setShowProjectTypeSelection(false)}
-                  className="bg-orange-500 hover:bg-orange-600"
+                  className="btn-primary"
                 >
                   {t('new_project_wizard.continue_to_details', 'Continue to Project Details')}
                 </Button>
@@ -228,10 +228,10 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
         ) : (
           <>
             {projectType && (
-              <div className="mb-4 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+              <div className="btn-primary">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-orange-300">
+                    <p className="text-sm font-medium text-amber-300">
                       {t('new_project_wizard.project_type', 'Project Type: {name}', { name: getProjectTypeConfig(projectType)?.name || '' })}
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
@@ -254,7 +254,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div>
-                <Label className="text-xs flex items-center gap-1">
+                <Label className="typography-label text-xs flex items-center gap-1">
                   {t('new_project_wizard.project_system_packs', 'Project System Packs (multi-select)')}
                   <span className="text-[10px] text-gray-500">({t('new_project_wizard.use_to_shortlist', 'use to shortlist relevant systems')})</span>
                 </Label>
@@ -280,7 +280,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                     onClick={() => togglePack(pack.meta.id)}
                     className={`w-full text-left p-3 rounded border transition-all ${
                       isSelected
-                        ? 'border-orange-500 bg-orange-500/10 shadow-[0_0_8px_rgba(249,115,22,0.15)]'
+                        ? 'border-amber-500 bg-amber-500/10 shadow-[0_0_8px_rgba(249,115,22,0.15)]'
                         : 'border-gray-800 hover:bg-gray-800/50'
                     }`}
                   >
@@ -288,7 +288,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                       <div className="flex items-center gap-3">
                         <div
                           className={`${UI_DIMENSIONS.CHECKBOX_SIZE} rounded flex items-center justify-center border transition-colors ${
-                            isSelected ? 'bg-orange-500 border-orange-500' : 'border-gray-600 bg-gray-900'
+                            isSelected ? 'bg-amber-500 border-amber-500' : 'border-gray-600 bg-gray-900'
                           }`}
                         >
                           {isSelected && (
@@ -298,7 +298,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
                           )}
                         </div>
                         <div>
-                          <p className={`text-sm font-semibold ${isSelected ? 'text-orange-100' : 'text-gray-100'}`}>
+                          <p className={`text-sm font-semibold ${isSelected ? 'text-amber-100' : 'text-gray-100'}`}>
                             {pack.meta.name}
                           </p>
                           <p className="text-[11px] text-gray-400">{pack.meta.brands?.join(', ')}</p>
@@ -342,13 +342,13 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs flex items-center gap-1">
-                <Users className="h-3 w-3 text-orange-400" />
+              <Label className="typography-label text-xs flex items-center gap-1">
+                <Users className="h-3 w-3 text-amber-400" />
                 {t('new_project_wizard.client_company', 'Client / Company *')}
               </Label>
               {customers.length > 0 && (
                 <div className="mb-1">
-                  <Label className="text-[10px] text-gray-400">
+                  <Label className="typography-label text-[10px] text-gray-400">
                     {t('new_project_wizard.select_from_saved', 'Select from saved customers')}
                   </Label>
                   <Select
@@ -388,7 +388,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
               />
             </div>
             <div>
-              <Label className="text-xs">{t('new_project_wizard.project_name', 'Project Name *')}</Label>
+              <Label className="typography-label text-xs">{t('new_project_wizard.project_name', 'Project Name *')}</Label>
               <Input
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
@@ -399,7 +399,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
           </div>
 
           <div>
-            <Label className="text-xs flex items-center gap-1">
+            <Label className="typography-label text-xs flex items-center gap-1">
               <MapPin className="h-3 w-3 text-blue-400" />
               {t('new_project_wizard.site_address', 'Site / Address')}
             </Label>
@@ -413,7 +413,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs">{t('new_project_wizard.contact_phone', 'Contact Phone')}</Label>
+              <Label className="typography-label text-xs">{t('new_project_wizard.contact_phone', 'Contact Phone')}</Label>
               <Input
                 value={contactPhone}
                 onChange={(e) => setContactPhone(e.target.value)}
@@ -422,7 +422,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
               />
             </div>
             <div>
-              <Label className="text-xs">{t('new_project_wizard.order_number', 'Order Number (optional)')}</Label>
+              <Label className="typography-label text-xs">{t('new_project_wizard.order_number', 'Order Number (optional)')}</Label>
               <Input
                 value={orderNumber}
                 onChange={(e) => setOrderNumber(e.target.value)}
@@ -433,7 +433,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
           </div>
 
           <div>
-            <Label className="text-xs">{t('new_project_wizard.order_date', 'Order Date')}</Label>
+            <Label className="typography-label text-xs">{t('new_project_wizard.order_date', 'Order Date')}</Label>
             <Input
               type="date"
               value={orderDate}
@@ -444,7 +444,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs">{t('new_project_wizard.currency', 'Currency')}</Label>
+              <Label className="typography-label text-xs">{t('new_project_wizard.currency', 'Currency')}</Label>
               <Select value={currency} onValueChange={(v) => setCurrency(v)}>
                 <SelectTrigger className="h-8 text-xs bg-gray-800 border-gray-700">
                   <SelectValue />
@@ -460,7 +460,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
               </Select>
             </div>
             <div>
-              <Label className="text-xs">{t('new_project_wizard.region', 'Region')}</Label>
+              <Label className="typography-label text-xs">{t('new_project_wizard.region', 'Region')}</Label>
               <Select
                 value={region}
                 onValueChange={(v) => {
@@ -498,7 +498,7 @@ export const NewProjectWizard: React.FC<NewProjectWizardProps> = ({
               </Button>
               <Button
                 type="button"
-                className="bg-orange-500 hover:bg-orange-600 text-xs"
+                className="btn-primary"
                 disabled={!canSubmit}
                 onClick={handleCreate}
               >

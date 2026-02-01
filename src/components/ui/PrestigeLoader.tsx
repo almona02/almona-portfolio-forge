@@ -87,22 +87,27 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             50% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.6), 0 0 60px rgba(249, 115, 22, 0.4); }
           }
         `}</style>
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden" style={{ minHeight: '-webkit-fill-available' }}>
-          {/* Industry 4.0 Background Grid - Reduced opacity on mobile */}
-          <div className="absolute inset-0 opacity-5 sm:opacity-10">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-[#0a0a0a] via-[#050505] to-[#0a0a0a] overflow-hidden" style={{ minHeight: '-webkit-fill-available' }}>
+          {/* Ancient Pattern Background - Hieroglyphic-inspired grid */}
+          <div className="absolute inset-0 opacity-[0.03] sm:opacity-[0.05]">
             <div className="absolute inset-0" style={{
               backgroundImage: `
-                linear-gradient(rgba(251, 191, 36, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(251, 191, 36, 0.1) 1px, transparent 1px)
+                linear-gradient(rgba(217, 119, 6, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(217, 119, 6, 0.15) 1px, transparent 1px)
               `,
-              backgroundSize: '40px 40px'
+              backgroundSize: '60px 60px'
             }}></div>
             <div className="absolute inset-0" style={{
               backgroundImage: `
-                linear-gradient(rgba(249, 115, 22, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(249, 115, 22, 0.05) 1px, transparent 1px)
+                linear-gradient(rgba(245, 158, 11, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(245, 158, 11, 0.08) 1px, transparent 1px)
               `,
-              backgroundSize: '20px 20px'
+              backgroundSize: '30px 30px'
+            }}></div>
+            {/* Ancient decorative pattern overlay */}
+            <div className="absolute inset-0" style={{
+              backgroundImage: `radial-gradient(circle at 2px 2px, rgba(217, 119, 6, 0.1) 1px, transparent 0)`,
+              backgroundSize: '40px 40px'
             }}></div>
           </div>
         {/* Animated background particles - Reduced count on mobile */}
@@ -114,7 +119,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
                 {[...Array(15)].map((_, i) => (
                   <div
                     key={i}
-                    className="absolute w-1 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full animate-pulse"
+                    className="absolute w-1 h-1 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full animate-pulse"
                     style={{
                       left: `${Math.random() * 100}%`,
                       top: `${Math.random() * 100}%`,
@@ -126,7 +131,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
                 {[...Array(4)].map((_, i) => (
                   <div
                     key={`large-mobile-${i}`}
-                    className="absolute w-2 h-2 bg-gradient-to-r from-amber-300/60 to-orange-400/60 rounded-full animate-bounce"
+                    className="absolute w-2 h-2 bg-gradient-to-r from-amber-300/60 to-amber-400/60 rounded-full animate-bounce"
                     style={{
                       left: `${Math.random() * 100}%`,
                       top: `${Math.random() * 100}%`,
@@ -140,7 +145,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
                 {[...Array(30)].map((_, i) => (
                   <div
                     key={i}
-                    className="absolute w-1 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full animate-pulse"
+                    className="absolute w-1 h-1 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full animate-pulse"
                     style={{
                       left: `${Math.random() * 100}%`,
                       top: `${Math.random() * 100}%`,
@@ -152,7 +157,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
                 {[...Array(8)].map((_, i) => (
                   <div
                     key={`large-desktop-${i}`}
-                    className="absolute w-2 h-2 bg-gradient-to-r from-amber-300/60 to-orange-400/60 rounded-full animate-bounce"
+                    className="absolute w-2 h-2 bg-gradient-to-r from-amber-300/60 to-amber-400/60 rounded-full animate-bounce"
                     style={{
                       left: `${Math.random() * 100}%`,
                       top: `${Math.random() * 100}%`,
@@ -191,24 +196,39 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            <motion.h1 
-              className={cn(
-                "text-xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-black bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 bg-clip-text text-transparent",
-                "drop-shadow-2xl tracking-tight leading-[1.1] px-2 py-[6mm] text-center max-w-4xl mx-auto"
-              )}
-              style={{
-                textShadow: '0 0 20px rgba(251, 191, 36, 0.4), 0 0 40px rgba(249, 115, 22, 0.2)',
-                filter: 'drop-shadow(0 0 15px rgba(251, 191, 36, 0.3))',
-                textWrap: 'balance'
-              }}
+            <motion.div
+              className="space-y-2"
               animate={showWelcome ? { scale: [1, 1.05, 1] } : {}}
               transition={{ duration: 0.6, repeat: Infinity }}
             >
-              Welcome to Digitalization
-            </motion.h1>
+              <motion.h1 
+                className={cn(
+                  "text-xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-black bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 bg-clip-text text-transparent",
+                  "drop-shadow-2xl tracking-tight leading-[1.1] px-2 text-center max-w-4xl mx-auto block"
+                )}
+                style={{
+                  textShadow: '0 0 20px rgba(251, 191, 36, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)',
+                  filter: 'drop-shadow(0 0 15px rgba(251, 191, 36, 0.3))'
+                }}
+              >
+                Welcome to
+              </motion.h1>
+              <motion.h1 
+                className={cn(
+                  "text-xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl font-black bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 bg-clip-text text-transparent",
+                  "drop-shadow-2xl tracking-tight leading-[1.1] px-2 text-center max-w-4xl mx-auto block"
+                )}
+                style={{
+                  textShadow: '0 0 20px rgba(251, 191, 36, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)',
+                  filter: 'drop-shadow(0 0 15px rgba(251, 191, 36, 0.3))'
+                }}
+              >
+                Digitalization
+              </motion.h1>
+            </motion.div>
             
             <motion.div 
-              className="text-sm sm:text-base md:text-xl lg:text-2xl text-slate-200 font-semibold relative px-2 sm:px-4"
+              className="text-sm sm:text-base md:text-xl lg:text-2xl text-amber-200 font-semibold relative px-2 sm:px-4"
               key={loadingMessage}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -249,12 +269,12 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
                       <div className={cn(
                         "w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500",
                         active 
-                          ? "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-lg" 
-                          : "bg-slate-700 text-slate-400"
+                          ? "bg-gradient-to-r from-amber-400 to-amber-500 text-[#0a0a0a] shadow-lg shadow-amber-500/50" 
+                          : "bg-[#0f0f0f] border border-amber-600/20 text-amber-600/50"
                       )}>
                         <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                       </div>
-                      <span className="text-[10px] sm:text-xs text-slate-400 font-medium text-center max-w-[60px] sm:max-w-none">{label}</span>
+                      <span className="text-[10px] sm:text-xs text-amber-600/70 font-medium text-center max-w-[60px] sm:max-w-none">{label}</span>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -281,14 +301,14 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             transition={{ duration: 0.8, delay: 0.5 }}
           >
             <div className="relative">
-              {/* Progress bar container with Industry 4.0 styling - Smaller on mobile */}
-              <div className="w-full h-4 sm:h-5 md:h-6 bg-slate-800/60 rounded-full overflow-hidden shadow-2xl border border-slate-700/50 relative">
+              {/* Progress bar container with Ancient styling - Smaller on mobile */}
+              <div className="w-full h-4 sm:h-5 md:h-6 bg-[#0f0f0f]/80 rounded-full overflow-hidden shadow-2xl border border-amber-600/30 relative card-dark">
                 {/* Background gradient */}
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-700/30 to-slate-600/30 rounded-full"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-600/10 to-amber-500/10 rounded-full"></div>
                 
                 {/* Progress fill with animated data flow */}
                 <motion.div 
-                  className="h-full bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 rounded-full relative overflow-hidden"
+                  className="h-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 rounded-full relative overflow-hidden"
                   initial={{ width: 0 }}
                   animate={{ width: `${loadingProgress}%` }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
@@ -304,7 +324,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
                   }}></div>
                   
                   {/* Glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-amber-400/60 to-orange-500/60 blur-sm"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-amber-400/60 to-amber-500/60 blur-sm"></div>
                   
                   {/* Data particles */}
                   {[...Array(3)].map((_, i) => (
@@ -340,7 +360,7 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
               {[...Array(7)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full relative"
+                  className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-gradient-to-r from-amber-400 to-amber-500 rounded-full relative"
                   animate={{ 
                     scale: [1, 1.3, 1],
                     opacity: [0.5, 1, 0.5]
@@ -358,9 +378,9 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             </div>
           </motion.div>
 
-          {/* Industry 4.0 Tagline - Optimized for mobile */}
+          {/* Ancient Tagline - Optimized for mobile */}
           <motion.div 
-            className="text-xs sm:text-sm md:text-base text-slate-300 font-medium relative px-2"
+            className="text-xs sm:text-sm md:text-base text-amber-300/80 font-medium relative px-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 1 }}
@@ -380,8 +400,8 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             animate={{ rotate: 360 }}
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
           >
-            <div className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-amber-400/20 sm:border-amber-400/30 rounded-full flex items-center justify-center">
-              <Factory className="w-6 h-6 sm:w-8 sm:h-8 text-amber-400/40 sm:text-amber-400/50" />
+            <div className="w-16 h-16 sm:w-20 sm:h-20 border-2 border-amber-600/20 sm:border-amber-600/30 rounded-full flex items-center justify-center bg-[#0f0f0f]/30">
+              <Factory className="w-6 h-6 sm:w-8 sm:h-8 text-amber-500/40 sm:text-amber-500/50" />
             </div>
           </motion.div>
           
@@ -390,8 +410,8 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 3, repeat: Infinity }}
           >
-            <div className="w-12 h-12 sm:w-16 sm:h-16 border-2 border-orange-500/20 sm:border-orange-500/30 rounded-full flex items-center justify-center">
-              <Network className="w-4 h-4 sm:w-6 sm:h-6 text-orange-500/40 sm:text-orange-500/50" />
+            <div className="w-12 h-12 sm:w-16 sm:h-16 border border-amber-600/20 rounded-full flex items-center justify-center bg-[#0f0f0f]/30">
+              <Network className="w-4 h-4 sm:w-6 sm:h-6 text-amber-500/40 sm:text-amber-500/50" />
             </div>
           </motion.div>
           
@@ -400,8 +420,8 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             animate={{ y: [0, -20, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-400/15 sm:from-amber-400/20 to-orange-500/15 sm:to-orange-500/20 rounded-lg flex items-center justify-center">
-              <Cpu className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400/50 sm:text-amber-400/60" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-amber-600/10 sm:from-amber-600/15 to-amber-500/10 sm:to-amber-500/15 rounded-lg flex items-center justify-center border border-amber-600/20">
+              <Cpu className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500/50 sm:text-amber-500/60" />
             </div>
           </motion.div>
           
@@ -411,8 +431,8 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             animate={{ rotate: [0, 180, 360] }}
             transition={{ duration: 4, repeat: Infinity }}
           >
-            <div className="w-6 h-6 border border-red-500/20 rounded-full flex items-center justify-center">
-              <Database className="w-3 h-3 text-red-500/50" />
+            <div className="w-6 h-6 border border-amber-600/20 rounded-full flex items-center justify-center bg-[#0f0f0f]/30">
+              <Database className="w-3 h-3 text-amber-500/50" />
             </div>
           </motion.div>
           
@@ -421,24 +441,24 @@ export const PrestigeLoader: React.FC<PrestigeLoaderProps> = ({ children }) => {
             animate={{ scale: [1, 1.3, 1] }}
             transition={{ duration: 2.5, repeat: Infinity }}
           >
-            <div className="w-4 h-4 bg-gradient-to-br from-orange-400/30 to-red-500/30 rounded-full flex items-center justify-center">
-              <Cloud className="w-2 h-2 text-white/70" />
+            <div className="w-4 h-4 bg-gradient-to-br from-amber-500/30 to-amber-600/30 rounded-full flex items-center justify-center border border-amber-600/20">
+              <Cloud className="w-2 h-2 text-amber-200/70" />
             </div>
           </motion.div>
           
-          {/* Enhanced gradient orbs with Industry 4.0 colors - Reduced opacity on mobile */}
-          <div className="absolute top-1/3 right-1/3 w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 bg-gradient-to-br from-amber-400/5 sm:from-amber-400/8 to-orange-500/5 sm:to-orange-500/8 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-1/3 left-1/4 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-gradient-to-br from-orange-500/5 sm:from-orange-500/8 to-red-600/5 sm:to-red-600/8 rounded-full blur-xl sm:blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute top-2/3 left-1/2 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-br from-red-500/4 sm:from-red-500/6 to-amber-400/4 sm:to-amber-400/6 rounded-full blur-lg sm:blur-xl animate-pulse" style={{ animationDelay: '2.5s' }}></div>
+          {/* Enhanced gradient orbs with Ancient amber colors - Reduced opacity for darker theme */}
+          <div className="absolute top-1/3 right-1/3 w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 bg-gradient-to-br from-amber-600/3 sm:from-amber-600/5 to-amber-500/3 sm:to-amber-500/5 rounded-full blur-2xl sm:blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/3 left-1/4 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-gradient-to-br from-amber-500/3 sm:from-amber-500/5 to-amber-600/3 sm:to-amber-600/5 rounded-full blur-xl sm:blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-2/3 left-1/2 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-br from-amber-600/2 sm:from-amber-600/4 to-amber-500/2 sm:to-amber-500/4 rounded-full blur-lg sm:blur-xl animate-pulse" style={{ animationDelay: '2.5s' }}></div>
           
-          {/* Data flow lines */}
+          {/* Ancient data flow lines - darker amber */}
           <motion.div 
-            className="absolute top-1/6 left-1/6 w-32 h-px bg-gradient-to-r from-transparent via-amber-400/30 to-transparent"
+            className="absolute top-1/6 left-1/6 w-32 h-px bg-gradient-to-r from-transparent via-amber-600/20 to-transparent"
             animate={{ x: [0, 100, 0] }}
             transition={{ duration: 3, repeat: Infinity }}
           />
           <motion.div 
-            className="absolute bottom-1/6 right-1/6 w-24 h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent"
+            className="absolute bottom-1/6 right-1/6 w-24 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent"
             animate={{ x: [0, -80, 0] }}
             transition={{ duration: 2.5, repeat: Infinity, delay: 1 }}
           />

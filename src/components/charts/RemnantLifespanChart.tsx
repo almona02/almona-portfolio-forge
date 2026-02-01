@@ -83,11 +83,11 @@ export const RemnantLifespanChart: React.FC<RemnantLifespanChartProps> = ({ data
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
-        <h4 className="text-sm font-medium mb-2 text-gray-300">By Age</h4>
+        <h4 className="typography-h4 text-sm font-medium mb-2 text-gray-300">By Age</h4>
         <Bar data={ageChartData} options={chartOptions} />
       </div>
       <div>
-        <h4 className="text-sm font-medium mb-2 text-gray-300">By Status</h4>
+        <h4 className="typography-h4 text-sm font-medium mb-2 text-gray-300">By Status</h4>
         <Doughnut data={statusChartData} options={chartOptions} />
       </div>
     </div>

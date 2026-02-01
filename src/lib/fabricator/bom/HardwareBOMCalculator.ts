@@ -6,12 +6,16 @@
  * - Accurate quantity calculations (hinges, handles, locks, rollers)
  * - Egyptian hardware suppliers
  * - Part number integration
+ * - Hardener code selection (Phase 1: Precision Upgrade Plan)
  * 
  * @since Phase 2: Preset-Aware BOM System (Week 12)
+ * @updated Phase 1: Precision Upgrade Plan (January 2026) - Added hardener code integration
  */
 
 import { EgyptianPattern } from '@/data/egyptian-window-patterns';
+import { hardenerSelector } from '@/lib/fabricator/hardener';
 import type { FabricationData, SystemPack, WindowUnit } from '@/types/fabricator';
+// import type { HardenerSelectionResult } from '@/lib/fabricator/hardener';
 import {
     HARDWARE_POSITIONING,
     HARDWARE_QUANTITY,
@@ -29,11 +33,13 @@ import {
 export class HardwareBOMCalculator {
   /**
    * Calculate hardware BOM from pattern and system pack
+   * 
+   * Now includes hardener code selection (Phase 1: Precision Upgrade Plan)
    */
   async calculateHardwareBOM(
     windowUnit: WindowUnit,
     pattern: EgyptianPattern,
-    _systemPack: SystemPack
+    systemPack: SystemPack
   ): Promise<FabricationData['hardware']> {
     const hardware: FabricationData['hardware'] = [];
     const { ProductionUtils } = await import('../productionUtils');
@@ -44,11 +50,11 @@ export class HardwareBOMCalculator {
 
     // Get hardware from pattern.accessories
     if (patternAny.accessories && Array.isArray(patternAny.accessories)) {
-      for (const accessory of patternAny.accessories) {
+      for (const [index, accessory] of patternAny.accessories.entries()) {
         const quantity = ProductionUtils.calculateHardwareQuantity(accessory, windowUnit, pattern);
 
         hardware.push({
-          id: accessory.id || `hardware-${Date.now()}-${Math.random()}`,
+          id: accessory.id || `hardware-${pattern.id || 'pattern'}-${index}`,
           supplierCode: accessory.supplierCode || accessory.id || 'UNKNOWN',
           name: accessory.name || 'Hardware Item',
           category: this.mapCategory(accessory.category || accessory.type),
@@ -111,9 +117,10 @@ export class HardwareBOMCalculator {
     }
 
     // Handles (standard: 1 per operable sash)
-    const sashCount = pattern.gridSpec?.cells.filter(c => 
+    const hasCells = pattern.gridSpec?.cells && Array.isArray(pattern.gridSpec.cells);
+    const sashCount = hasCells ? pattern.gridSpec!.cells.filter(c => 
       c.type === 'sash' || c.type === 'sliding'
-    ).length || HARDWARE_QUANTITY_DEFAULTS.DEFAULT_SASH_COUNT;
+    ).length : HARDWARE_QUANTITY_DEFAULTS.DEFAULT_SASH_COUNT;
 
     hardware.push({
       id: 'handle-standard',
@@ -173,6 +180,37 @@ export class HardwareBOMCalculator {
       supplierLink: undefined
     });
 
+    // Phase 1: Add hardener code to hardware BOM
+    const hardenerSelection = hardenerSelector.selectHardenerForWindowUnit(windowUnit, systemPack);
+    
+    if (hardenerSelection.hardenerCode && hardenerSelection.validation !== 'FAIL') {
+      hardware.push({
+        id: 'hardener-code',
+        supplierCode: hardenerSelection.hardenerCode,
+        name: `Hardener Code: ${hardenerSelection.hardenerCode}`,
+        category: 'hardener',
+        quantity: 1, // One hardener code per window unit
+        positionSpec: 'As per manufacturer specifications',
+        installationNotes: [
+          `Hardener code: ${hardenerSelection.hardenerCode}`,
+          `Selection rule: ${hardenerSelection.ruleId}`,
+          hardenerSelection.justification,
+          'Install according to Egyptian Code 2020 specifications',
+        ],
+        torqueSpec: undefined,
+        alternatives: [],
+        estimatedTime: 0, // Hardener is part of profile, not separate installation
+        supplierLink: undefined,
+        // Constitutional metadata
+        metadata: {
+          tier: 'Tier 3',
+          deterministic: true,
+          ruleId: hardenerSelection.ruleId,
+          egyptianCodeCompliant: hardenerSelection.validationDetails.egyptianCodeCompliant,
+        },
+      });
+    }
+
     return hardware;
   }
 
@@ -199,6 +237,9 @@ export class HardwareBOMCalculator {
    * Map category to FabricationData hardware category
    */
   private mapCategory(category: string): FabricationData['hardware'][0]['category'] {
+    // Handle undefined or empty category
+    if (!category) return 'gasket';
+    
     const categoryLower = category.toLowerCase();
     if (categoryLower.includes('hinge')) return 'hinge';
     if (categoryLower.includes('handle')) return 'handle';
@@ -214,6 +255,9 @@ export class HardwareBOMCalculator {
    * Get default position for hardware category
    */
   private getDefaultPosition(_category: string): string {
+    // Handle undefined or empty category
+    if (!_category) return 'As per manufacturer instructions';
+    
     const categoryLower = _category.toLowerCase();
     if (categoryLower.includes('hinge')) return 'Evenly spaced along sash height';
     if (categoryLower.includes('handle')) {
@@ -239,6 +283,9 @@ export class HardwareBOMCalculator {
    * Get default installation time
    */
   private getDefaultInstallationTime(category: string): number {
+    // Handle undefined or empty category  
+    if (!category) return INSTALLATION_TIME.DEFAULT_MINUTES;
+    
     const categoryLower = category.toLowerCase();
     if (categoryLower.includes('hinge')) return INSTALLATION_TIME.PER_HINGE_MINUTES;
     if (categoryLower.includes('handle')) return INSTALLATION_TIME.PER_HANDLE_MINUTES;

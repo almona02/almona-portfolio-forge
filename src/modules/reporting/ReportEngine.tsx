@@ -195,7 +195,7 @@ export const ReportEngine: React.FC<ReportEngineProps> = ({
       <Card className="bg-gray-800/50 border-gray-700">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-orange-400" />
+            <FileText className="h-5 w-5 text-amber-400" />
             Report Generator
           </CardTitle>
         </CardHeader>
@@ -262,7 +262,7 @@ export const ReportEngine: React.FC<ReportEngineProps> = ({
               checked={showReportPreview}
               onCheckedChange={(checked) => setShowReportPreview(checked === true)}
             />
-            <Label htmlFor="show-preview" className="text-sm">
+            <Label htmlFor="show-preview" className="typography-label text-sm">
               Show Report Preview
             </Label>
           </div>
@@ -270,7 +270,7 @@ export const ReportEngine: React.FC<ReportEngineProps> = ({
           {/* Options for Complete Report */}
           {reportType === 'complete' && (
             <div className="space-y-3 p-4 bg-gray-700 rounded-lg">
-              <Label className="text-sm font-semibold">Report Sections</Label>
+              <Label className="typography-label text-sm font-semibold">Report Sections</Label>
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -280,7 +280,7 @@ export const ReportEngine: React.FC<ReportEngineProps> = ({
                       setOptions({ ...options, includeCuttingList: checked === true })
                     }
                   />
-                  <Label htmlFor="include-cutting" className="text-sm">
+                  <Label htmlFor="include-cutting" className="typography-label text-sm">
                     Include Cutting List
                   </Label>
                 </div>
@@ -292,7 +292,7 @@ export const ReportEngine: React.FC<ReportEngineProps> = ({
                       setOptions({ ...options, includeAccessories: checked === true })
                     }
                   />
-                  <Label htmlFor="include-accessories" className="text-sm">
+                  <Label htmlFor="include-accessories" className="typography-label text-sm">
                     Include Accessories & Hardware
                   </Label>
                 </div>
@@ -304,7 +304,7 @@ export const ReportEngine: React.FC<ReportEngineProps> = ({
                       setOptions({ ...options, includeGlazing: checked === true })
                     }
                   />
-                  <Label htmlFor="include-glazing" className="text-sm">
+                  <Label htmlFor="include-glazing" className="typography-label text-sm">
                     Include Glass & Glazing Report
                   </Label>
                 </div>
@@ -316,7 +316,7 @@ export const ReportEngine: React.FC<ReportEngineProps> = ({
                       setOptions({ ...options, includeAssemblyGuide: checked === true })
                     }
                   />
-                  <Label htmlFor="include-assembly" className="text-sm">
+                  <Label htmlFor="include-assembly" className="typography-label text-sm">
                     Include Assembly & Installation Guide
                   </Label>
                 </div>
@@ -328,7 +328,7 @@ export const ReportEngine: React.FC<ReportEngineProps> = ({
           <Button
             onClick={handleGenerateReport}
             disabled={isGenerating || !project}
-            className="w-full bg-orange-500 hover:bg-orange-600"
+            className="btn-primary"
           >
             {isGenerating ? (
               <>

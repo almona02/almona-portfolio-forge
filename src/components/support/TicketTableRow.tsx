@@ -31,7 +31,7 @@ export const TicketTableRow: React.FC<TicketTableRowProps> = ({ ticket, selected
       <TableCell className="font-medium whitespace-nowrap">{ticket.ticket_number}</TableCell>
       <TableCell className="align-top">
         <div>
-          <div className="font-medium group-hover:text-orange-500 transition-colors line-clamp-1 max-w-[220px]">{ticket.title}</div>
+          <div className="font-medium group-hover:text-amber-500 transition-colors line-clamp-1 max-w-[220px]">{ticket.title}</div>
           {ticket.description && (
             <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2 max-w-[260px]">{ticket.description}</div>
           )}

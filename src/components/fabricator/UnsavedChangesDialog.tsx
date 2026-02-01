@@ -64,11 +64,11 @@ export const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
         {/* Header */}
         <div className="p-6 pb-4">
           <div className="flex items-center gap-3 mb-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/15 border border-amber-500/30">
+            <div className="btn-primary">
               <AlertTriangle className="h-6 w-6 text-amber-400" />
             </div>
             <div className="flex-1">
-              <h2 className="text-lg font-semibold text-gray-100">
+              <h2 className="typography-h2 text-lg font-semibold text-gray-100">
                 {title || t('unsavedChanges.title', 'Unsaved Changes')}
               </h2>
               <p className="text-sm text-gray-400 mt-1">
@@ -90,7 +90,7 @@ export const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
           )}
 
           {/* Warning */}
-          <div className="py-3 px-4 bg-amber-500/10 border border-amber-500/30 rounded-lg mb-6">
+          <div className="btn-primary">
             <div className="flex items-start gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
               <div className="flex-1 text-xs text-amber-200">

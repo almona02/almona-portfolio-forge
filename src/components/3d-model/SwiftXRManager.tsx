@@ -331,7 +331,7 @@ export function SwiftXRManager({
             <div className="grid grid-cols-2 gap-3 text-xs pt-2 border-t">
               <div className="flex items-center gap-2">
                 {capabilities.webXR ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
                   <XCircle className="h-4 w-4 text-red-500" />
                 )}
@@ -339,7 +339,7 @@ export function SwiftXRManager({
               </div>
               <div className="flex items-center gap-2">
                 {capabilities.hitTest ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
                   <XCircle className="h-4 w-4 text-red-500" />
                 )}
@@ -347,7 +347,7 @@ export function SwiftXRManager({
               </div>
               <div className="flex items-center gap-2">
                 {capabilities.sceneViewer ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
                   <XCircle className="h-4 w-4 text-red-500" />
                 )}
@@ -355,7 +355,7 @@ export function SwiftXRManager({
               </div>
               <div className="flex items-center gap-2">
                 {capabilities.quickLook ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="h-4 w-4  status-valid" />
                 ) : (
                   <XCircle className="h-4 w-4 text-red-500" />
                 )}

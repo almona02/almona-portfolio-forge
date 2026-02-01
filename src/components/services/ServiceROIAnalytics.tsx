@@ -133,7 +133,7 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-center h-64">
-          <RefreshCw className="h-8 w-8 animate-spin text-orange-500" />
+          <RefreshCw className="h-8 w-8 animate-spin text-amber-500" />
         </div>
       </div>
     )
@@ -144,14 +144,14 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Service ROI Analytics</h3>
+          <h3 className="typography-h3 text-lg text-gray-900">Service ROI Analytics</h3>
           <p className="text-sm text-gray-600">Return on investment from service improvements</p>
         </div>
         <div className="flex items-center gap-2">
           <select
             value={timeRange}
             onChange={(e) => onTimeRangeChange?.(e.target.value)}
-            className="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
           >
             <option value="3m">Last 3 Months</option>
             <option value="6m">Last 6 Months</option>
@@ -176,7 +176,7 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
               {formatCurrency(metrics.totalSavings)}
             </div>
             <div className="flex items-center mt-1">
-              <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
+              <TrendingUp className="h-4 w-4  mr-1 status-valid" />
               <span className="text-sm text-green-600">+{formatPercentage(metrics.roiPercentage)} ROI</span>
             </div>
           </CardContent>
@@ -199,7 +199,7 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
             <CardTitle className="text-sm font-medium text-gray-600">Uptime Improvement</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">
+            <div className="text-2xl font-bold text-amber-600">
               {formatPercentage(metrics.uptimeImprovement)}
             </div>
             <Progress value={metrics.uptimeImprovement} className="mt-2" />
@@ -329,30 +329,30 @@ export const ServiceROIAnalytics: React.FC<ServiceROIAnalyticsProps> = ({
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Initial Investment</label>
+              <label className="typography-label text-sm font-medium text-gray-700">Initial Investment</label>
               <div className="text-2xl font-bold text-gray-900">
                 {formatCurrency(45000)}
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Annual Savings</label>
+              <label className="typography-label text-sm font-medium text-gray-700">Annual Savings</label>
               <div className="text-2xl font-bold text-green-600">
                 {formatCurrency(metrics.totalSavings)}
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">ROI</label>
-              <div className="text-2xl font-bold text-orange-600">
+              <label className="typography-label text-sm font-medium text-gray-700">ROI</label>
+              <div className="text-2xl font-bold text-amber-600">
                 {formatPercentage(metrics.roiPercentage)}
               </div>
             </div>
           </div>
-          <div className="mt-4 p-4 bg-orange-50 rounded-lg">
-            <div className="flex items-center gap-2 text-orange-800">
+          <div className="mt-4 p-4 bg-amber-50 rounded-lg">
+            <div className="flex items-center gap-2 text-amber-800">
               <CheckCircle className="h-5 w-5" />
               <span className="font-medium">Payback Period: 4.3 months</span>
             </div>
-            <p className="text-sm text-orange-700 mt-1">
+            <p className="text-sm text-amber-700 mt-1">
               Your service improvements have generated significant returns, with full payback achieved in less than 5 months.
             </p>
           </div>

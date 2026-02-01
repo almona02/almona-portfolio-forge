@@ -409,11 +409,11 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 bg-gray-900 border-gray-800">
+      <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 bg-gray-900 border-gray-800 card-dark">
         <div className="p-6 border-b border-gray-800">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
-              <ShoppingCart className="h-6 w-6 text-orange-400" />
+              <ShoppingCart className="h-6 w-6 text-amber-400" />
               Purchase Wizard
             </DialogTitle>
             <DialogDescription>
@@ -423,17 +423,17 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
           
           {/* Progress Stepper */}
           <div className="flex items-center gap-2 mt-6">
-            <div className={`flex items-center gap-2 ${step === 'system-select' ? 'text-orange-400' : 'text-gray-400'}`}>
+            <div className={`flex items-center gap-2 ${step === 'system-select' ? 'text-amber-400' : 'text-gray-400'}`}>
               <div className="flex items-center justify-center w-6 h-6 rounded-full border border-current text-xs">1</div>
               <span className="text-sm font-medium">System</span>
             </div>
             <div className="w-8 h-px bg-gray-700" />
-            <div className={`flex items-center gap-2 ${step === 'profile-select' ? 'text-orange-400' : 'text-gray-400'}`}>
+            <div className={`flex items-center gap-2 ${step === 'profile-select' ? 'text-amber-400' : 'text-gray-400'}`}>
               <div className="flex items-center justify-center w-6 h-6 rounded-full border border-current text-xs">2</div>
               <span className="text-sm font-medium">Profiles</span>
             </div>
             <div className="w-8 h-px bg-gray-700" />
-            <div className={`flex items-center gap-2 ${step === 'review' ? 'text-orange-400' : 'text-gray-400'}`}>
+            <div className={`flex items-center gap-2 ${step === 'review' ? 'text-amber-400' : 'text-gray-400'}`}>
               <div className="flex items-center justify-center w-6 h-6 rounded-full border border-current text-xs">3</div>
               <span className="text-sm font-medium">Review</span>
             </div>
@@ -457,7 +457,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                 {filteredSystems.map(sys => (
                   <Card 
                     key={sys.id} 
-                    className="bg-gray-800 border-gray-700 hover:border-orange-500 cursor-pointer transition-all"
+                    className="bg-gray-800 border-gray-700 cursor-pointer transition-all card-premium"
                     onClick={() => {
                       setSelectedSystem(sys);
                       setStep('profile-select');
@@ -465,7 +465,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                   >
                     <CardContent className="p-6 flex items-center justify-between">
                       <div>
-                        <h3 className="font-bold text-lg text-gray-100">{sys.name}</h3>
+                        <h3 className="typography-h3 text-lg text-gray-100">{sys.name}</h3>
                         <p className="text-sm text-gray-400">{sys.brand}</p>
                         <Badge variant="outline" className="mt-2 bg-gray-900/50">
                           {sys.profiles.length} profiles
@@ -483,7 +483,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold">{selectedSystem.name}</h3>
+                  <h3 className="typography-h3 text-lg">{selectedSystem.name}</h3>
                   <p className="text-sm text-gray-400">Select profiles to purchase</p>
                 </div>
                 <Button variant="ghost" size="sm" onClick={() => setStep('system-select')}>
@@ -641,7 +641,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
           {step === 'review' && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">Review Order</h3>
+                <h3 className="typography-h3 text-lg">Review Order</h3>
                 <Badge>{cart.length} items</Badge>
               </div>
 
@@ -657,7 +657,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                     
                     <div className="flex items-center gap-4">
                       <div>
-                        <label className="text-[10px] text-gray-500 block">Bars</label>
+                        <label className="typography-label text-[10px] text-gray-500 block">Bars</label>
                         <Input 
                           type="number" 
                           className="h-8 w-20 text-center"
@@ -666,7 +666,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] text-gray-500 block">Length (mm)</label>
+                        <label className="typography-label text-[10px] text-gray-500 block">Length (mm)</label>
                         <Input 
                           type="number" 
                           className="h-8 w-24 text-center"
@@ -675,7 +675,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] text-gray-500 block">Color</label>
+                        <label className="typography-label text-[10px] text-gray-500 block">Color</label>
                         <div className="flex items-center gap-1">
                           <div 
                             className="w-6 h-6 rounded border border-gray-600"
@@ -706,7 +706,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
           )}
         </ScrollArea>
 
-        <div className="p-4 border-t border-gray-800 bg-gray-900">
+        <div className="p-4 border-t border-gray-800 bg-gray-900 card-dark">
           <div className="flex justify-between items-center">
             <div className="text-sm text-gray-400">
               {cart.length > 0 && (
@@ -724,7 +724,7 @@ export const PurchaseWizard: React.FC<PurchaseWizardProps> = ({
               
               {step === 'profile-select' && (
                 <Button 
-                  className="bg-orange-500 hover:bg-orange-600"
+                  className="btn-primary"
                   disabled={cart.length === 0}
                   onClick={() => setStep('review')}
                 >

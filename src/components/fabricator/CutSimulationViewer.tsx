@@ -233,7 +233,7 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
         {/* Selected Cut Details */}
         {selectedCornerData && (
           <div className="p-4 bg-gray-900 rounded-lg border border-gray-700">
-            <h4 className="text-sm font-semibold text-gray-300 mb-2">Corner Details</h4>
+            <h4 className="typography-h4 text-sm text-gray-300 mb-2">Corner Details</h4>
             <div className="space-y-2">
               {selectedCornerData.cuts.map((cut, idx) => (
                 <div key={idx} className="p-2 bg-gray-800 rounded text-xs">
@@ -261,7 +261,7 @@ export const CutSimulationViewer: React.FC<CutSimulationViewerProps> = ({
 
         {/* Cut List Summary with Profile Thumbnails */}
         <div className="p-3 bg-gray-900 rounded border border-gray-700">
-          <h4 className="text-sm font-semibold text-gray-300 mb-2">Cut Summary</h4>
+          <h4 className="typography-h4 text-sm text-gray-300 mb-2">Cut Summary</h4>
           <div className="space-y-1 text-xs">
             {simulation.cuts.slice(0, 5).map((cut, idx) => {
               // Find profile for this cut

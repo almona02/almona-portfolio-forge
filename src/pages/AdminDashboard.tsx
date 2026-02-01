@@ -36,10 +36,12 @@ import {
   Users,
   Wrench,
   X,
+  Zap,
 } from 'lucide-react'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 // Dashboard components
+import { YDTPerformanceDashboard } from '@/components/admin/YDTPerformanceDashboard'
 import { GovernanceHealthMini } from '@/components/governance/GovernanceHealthMini'
 import { CustomerActivity } from '../components/admin/CustomerActivity'
 import { DashboardStats } from '../components/admin/DashboardStats'
@@ -59,6 +61,9 @@ const ReportsPanel = lazyRetry(() => import('@/components/admin/panels/ReportsPa
 const SettingsPanel = lazyRetry(() => import('@/components/admin/panels/SettingsPanel'), 'SettingsPanel')
 // BusinessKPIDashboard is heavy (charts + ML) - lazy load only when analytics tab is opened
 const BusinessKPIDashboard = lazyRetry(() => import('../components/analytics/BusinessKPIDashboard'), 'BusinessKPIDashboard')
+// Phase 4: Analytics components
+const AnalyticsDashboard = lazyRetry(() => import('../components/ui/AnalyticsDashboard').then(m => ({ default: m.AnalyticsDashboard })), 'AnalyticsDashboard')
+const AnalyticsQueryBuilder = lazyRetry(() => import('../components/ui/AnalyticsQueryBuilder').then(m => ({ default: m.AnalyticsQueryBuilder })), 'AnalyticsQueryBuilder')
 
 type Notification = { id: string; title: string; message: string; created_at: string }
 
@@ -86,6 +91,7 @@ const AdminDashboard: React.FC = () => {
   const navigationItems: NavItem[] = useMemo(() => ([
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'analytics', label: 'Business Analytics', icon: BarChart3 },
+    { id: 'ydt-performance', label: 'YDT Performance', icon: Zap },
     { id: 'products', label: 'Products', icon: Package },
     { id: 'orders', label: 'Orders', icon: ShoppingCart },
     { id: 'customers', label: 'Customers', icon: Users },
@@ -190,7 +196,7 @@ const AdminDashboard: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <div className="h-3 w-3 rounded-full bg-green-500"></div>
-                <h3 className="text-lg font-semibold">Constitutional AI Governance</h3>
+                <h3 className="typography-h3 text-lg">Constitutional AI Governance</h3>
               </div>
               <GovernanceHealthMini />
               <div className="p-4 bg-muted/50 border border-border rounded-lg text-sm">
@@ -245,6 +251,16 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         )
+      case 'ydt-performance':
+        return (
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Zap className="h-5 w-5 text-amber-400" />
+              <h2 className="typography-h2 text-lg">YDT Performance Monitoring</h2>
+            </div>
+            <YDTPerformanceDashboard refreshInterval={5000} />
+          </div>
+        )
       case 'support':
         return <AdminTicketDashboard currentUserId={user?.id || ''} userRole="admin" />
       case 'spare-parts':
@@ -287,9 +303,17 @@ const AdminDashboard: React.FC = () => {
         )
       case 'analytics':
         return (
-          <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading analytics…</div>}>
-            <BusinessKPIDashboard />
-          </React.Suspense>
+          <div className="space-y-6">
+            <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading analytics dashboard…</div>}>
+              <AnalyticsDashboard />
+            </React.Suspense>
+            <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading query builder…</div>}>
+              <AnalyticsQueryBuilder />
+            </React.Suspense>
+            <React.Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading business KPIs…</div>}>
+              <BusinessKPIDashboard />
+            </React.Suspense>
+          </div>
         )
       case 'settings':
         return (
@@ -462,7 +486,7 @@ const AdminDashboard: React.FC = () => {
 
         <main className="p-6">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">{navigationItems.find((i) => i.id === activeTab)?.label || 'Dashboard'}</h1>
+            <h1 className="typography-h1 text-gray-900">{navigationItems.find((i) => i.id === activeTab)?.label || 'Dashboard'}</h1>
             <p className="text-muted-foreground">Manage your industrial e-commerce platform</p>
           </div>
           {renderTabContent()}

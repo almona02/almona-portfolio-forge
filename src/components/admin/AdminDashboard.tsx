@@ -84,7 +84,7 @@ export const AdminDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+          <h1 className="typography-h1 tracking-tight">Admin Dashboard</h1>
           <p className="text-muted-foreground">
             Manage your business operations and monitor performance
           </p>
@@ -147,10 +147,10 @@ export const AdminDashboard: React.FC = () => {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Low Stock Items</CardTitle>
-                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-orange-600">
+                <div className="text-2xl font-bold text-amber-600">
                   {dashboardMetrics.lowStockItems}
                 </div>
                 <p className="text-xs text-muted-foreground">

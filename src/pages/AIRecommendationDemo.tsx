@@ -156,7 +156,7 @@ export const AIRecommendationDemo: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">AI-Powered Equipment Recommendations</h1>
+        <h1 className="typography-h1 mb-4">AI-Powered Equipment Recommendations</h1>
         <p className="text-lg text-muted-foreground mb-6">
           Experience advanced AI recommendations and interactive 3D configuration
         </p>
@@ -250,7 +250,7 @@ export const AIRecommendationDemo: React.FC = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="p-4 border rounded-lg">
-              <h3 className="font-semibold mb-2">✅ AI Recommendation Engine</h3>
+              <h3 className="typography-h3 mb-2">✅ AI Recommendation Engine</h3>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Advanced ML algorithms</li>
                 <li>• Multi-factor scoring</li>
@@ -260,7 +260,7 @@ export const AIRecommendationDemo: React.FC = () => {
             </div>
             
             <div className="p-4 border rounded-lg">
-              <h3 className="font-semibold mb-2">✅ Enhanced 3D Configuration</h3>
+              <h3 className="typography-h3 mb-2">✅ Enhanced 3D Configuration</h3>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Interactive part selection</li>
                 <li>• Regional pricing integration</li>
@@ -270,7 +270,7 @@ export const AIRecommendationDemo: React.FC = () => {
             </div>
             
             <div className="p-4 border rounded-lg">
-              <h3 className="font-semibold mb-2">✅ Turkish Market Features</h3>
+              <h3 className="typography-h3 mb-2">✅ Turkish Market Features</h3>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• KDV tax calculations</li>
                 <li>• Compliance document generation</li>
@@ -290,7 +290,7 @@ export const AIRecommendationDemo: React.FC = () => {
         <CardContent>
           <div className="space-y-4">
             <div>
-              <h3 className="font-semibold mb-2">Live Testing on almona02.com</h3>
+              <h3 className="typography-h3 mb-2">Live Testing on almona02.com</h3>
               <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
                 <p className="text-sm mb-2"><strong>URL:</strong> https://almona02.com/demo/ai-recommendations</p>
                 <p className="text-sm mb-2"><strong>Credentials:</strong></p>
@@ -302,7 +302,7 @@ export const AIRecommendationDemo: React.FC = () => {
             </div>
             
             <div>
-              <h3 className="font-semibold mb-2">Test Scenarios</h3>
+              <h3 className="typography-h3 mb-2">Test Scenarios</h3>
               <ol className="text-sm space-y-2 ml-4">
                 <li>1. <strong>Region Detection:</strong> Verify automatic region detection and manual switching</li>
                 <li>2. <strong>AI Recommendations:</strong> Test recommendation engine with different customer profiles</li>

@@ -125,7 +125,7 @@ export const FinancePanel: React.FC = () => {
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-3 items-end">
           <div>
-            <label className="text-xs text-muted-foreground">Payment</label>
+            <label className="typography-label text-xs text-muted-foreground">Payment</label>
             <Select value={payment} onValueChange={(v: string) => { setPayment(v as typeof payment); setPage(1) }}>
               <SelectTrigger>
                 <SelectValue placeholder="All" />
@@ -140,11 +140,11 @@ export const FinancePanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">From</label>
+            <label className="typography-label text-xs text-muted-foreground">From</label>
             <Input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1) }} />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">To</label>
+            <label className="typography-label text-xs text-muted-foreground">To</label>
             <Input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1) }} />
           </div>
           <div className="ml-auto flex items-center gap-2">

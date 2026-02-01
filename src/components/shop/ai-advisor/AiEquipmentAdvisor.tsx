@@ -310,7 +310,7 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
             {wizardStep === 3 && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">Top 3 Recommendations</h3>
+                  <h3 className="typography-h3">Top 3 Recommendations</h3>
                   <Button variant="outline" size="sm" onClick={() => {
                     setWizardStep(1);
                     setWindowTypes([]);
@@ -323,7 +323,7 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
                 </div>
                 <div className="space-y-3">
                   {equipmentRecommendations.map((rec, _idx) => (
-                    <Card key={rec.productId} className="bg-gray-900/50 border-gray-700">
+                    <Card key={rec.productId} className="bg-gray-900/50 border-gray-700 card-dark">
                       <CardHeader>
                         <div className="flex items-center justify-between">
                           <CardTitle className="text-lg">{rec.productName}</CardTitle>
@@ -392,7 +392,7 @@ const AiEquipmentAdvisorComponent = ({ open, onOpenChange }: AiEquipmentAdvisorP
 
         {result && (
           <div className="p-4 border rounded-lg mt-4">
-            <h3 className="font-semibold mb-2">Result:</h3>
+            <h3 className="typography-h3 mb-2">Result:</h3>
             <pre className="whitespace-pre-wrap text-sm">{result}</pre>
           </div>
         )}

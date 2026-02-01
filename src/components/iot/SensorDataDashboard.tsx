@@ -114,7 +114,7 @@ const SensorStatus: React.FC<{
               {getSensorIcon()}
             </div>
             <div>
-              <h4 className="font-medium capitalize">{type.replace('_', ' ')}</h4>
+              <h4 className="typography-h4 font-medium capitalize">{type.replace('_', ' ')}</h4>
               <div className="text-2xl font-bold">{value.toFixed(2)} <span className="text-sm text-gray-400">{unit}</span></div>
             </div>
           </div>

@@ -34,7 +34,7 @@ export const Step1WorkshopProfile: React.FC<Step1WorkshopProfileProps> = ({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-4">Workshop Information</h3>
+        <h3 className="typography-h3 text-lg mb-4">Workshop Information</h3>
         <p className="text-gray-400 mb-6">Tell us about your workshop to personalize your experience</p>
       </div>
 

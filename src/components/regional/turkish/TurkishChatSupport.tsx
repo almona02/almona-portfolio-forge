@@ -237,7 +237,7 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
                 <div
                   className={`max-w-xs p-2 rounded-lg text-sm ${
                     message.type === 'user'
-                      ? 'bg-orange-500 text-white'
+                      ? 'bg-amber-500 text-white'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                   }`}
                 >
@@ -275,7 +275,7 @@ export const TurkishChatSupport: React.FC<TurkishChatSupportProps> = ({
                 onClick={handleSendMessage}
                 disabled={!inputMessage.trim()}
                 size="sm"
-                className="bg-orange-500 hover:bg-orange-600 text-white"
+                className="btn-primary"
               >
                 {t('turkish.chat.send', 'Gönder')}
               </Button>

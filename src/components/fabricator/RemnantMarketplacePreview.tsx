@@ -146,7 +146,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
             <Button
               onClick={handleOneClickListing}
               disabled={!listingPrice || isCreatingListing}
-              className="bg-orange-500 hover:bg-orange-600"
+              className="btn-primary"
             >
               {isCreatingListing ? 'Creating...' : 'Create Listing'}
             </Button>
@@ -163,7 +163,7 @@ export const RemnantMarketplacePreview: React.FC<RemnantMarketplacePreviewProps>
       ) : (
         <div className="space-y-2">
           {recentListings.map((listing) => (
-            <Card key={listing.id} className="bg-gray-900/50 border-gray-800">
+            <Card key={listing.id} className="bg-gray-900/50 border-gray-800 card-dark">
               <CardContent className="p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">

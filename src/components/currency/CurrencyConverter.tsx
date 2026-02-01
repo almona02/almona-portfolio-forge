@@ -164,7 +164,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
 
         {/* Amount Input */}
         <div className="space-y-2">
-          <Label htmlFor="amount" className="text-gray-300">
+          <Label htmlFor="amount" className="typography-label text-gray-300">
             {t('currency.converter.amount', 'Miktar')}
           </Label>
           <Input
@@ -180,7 +180,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
         {/* Currency Selection */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label className="text-gray-300">
+            <Label className="typography-label text-gray-300">
               {t('currency.converter.from', 'Kaynak')}
             </Label>
             <Select value={fromCurrency} onValueChange={setFromCurrency}>
@@ -202,7 +202,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-gray-300">
+            <Label className="typography-label text-gray-300">
               {t('currency.converter.to', 'Hedef')}
             </Label>
             <Select value={toCurrency} onValueChange={setToCurrency}>
@@ -241,7 +241,7 @@ export const CurrencyConverter: React.FC<CurrencyConverterProps> = ({
         {/* Conversion Result */}
         <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
           <div className="text-center">
-            <div className="text-2xl font-bold text-orange-400 mb-2">
+            <div className="text-2xl font-bold text-amber-400 mb-2">
               {formatAmount(convertedAmount, toCurrency)}
             </div>
             <div className="text-sm text-gray-400">

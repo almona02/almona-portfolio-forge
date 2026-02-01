@@ -193,12 +193,12 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm font-medium">رقم عرض السعر</Label>
+                    <Label className="typography-label text-sm font-medium">رقم عرض السعر</Label>
                     <p className="text-lg font-mono">{result.quote_number}</p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium">كود التتبع</Label>
-                    <p className="text-lg font-mono text-orange-600">
+                    <Label className="typography-label text-sm font-medium">كود التتبع</Label>
+                    <p className="text-lg font-mono text-amber-600">
                       {result.digital_twin_code || 'قيد التعيين'}
                     </p>
                   </div>
@@ -206,7 +206,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                 
                 {result.portal_reference && (
                   <div>
-                    <Label className="text-sm font-medium">مرجع البوابة</Label>
+                    <Label className="typography-label text-sm font-medium">مرجع البوابة</Label>
                     <p className="text-sm text-gray-600">{result.portal_reference}</p>
                   </div>
                 )}
@@ -217,7 +217,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                       onOpenChange(false);
                       window.location.href = '/portal';
                     }}
-                    className="bg-orange-600 hover:bg-orange-700"
+                    className="btn-primary"
                   >
                     تتبع في البوابة
                   </Button>
@@ -256,7 +256,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
             </CardHeader>
             <CardContent className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="name">الاسم *</Label>
+                <Label htmlFor="name" className="typography-label">الاسم *</Label>
                 <Input
                   id="name"
                   value={contactInfo.name}
@@ -265,7 +265,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                 />
               </div>
               <div>
-                <Label htmlFor="email">البريد الإلكتروني *</Label>
+                <Label htmlFor="email" className="typography-label">البريد الإلكتروني *</Label>
                 <Input
                   id="email"
                   type="email"
@@ -275,7 +275,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                 />
               </div>
               <div>
-                <Label htmlFor="phone">رقم الهاتف</Label>
+                <Label htmlFor="phone" className="typography-label">رقم الهاتف</Label>
                 <Input
                   id="phone"
                   value={contactInfo.phone}
@@ -283,7 +283,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                 />
               </div>
               <div>
-                <Label htmlFor="company">الشركة</Label>
+                <Label htmlFor="company" className="typography-label">الشركة</Label>
                 <Input
                   id="company"
                   value={contactInfo.company}
@@ -300,7 +300,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="description">وصف المشروع *</Label>
+                <Label htmlFor="description" className="typography-label">وصف المشروع *</Label>
                 <Textarea
                   id="description"
                   value={projectDetails.description}
@@ -311,7 +311,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="urgency">الأولوية</Label>
+                  <Label htmlFor="urgency" className="typography-label">الأولوية</Label>
                   <Select
                     value={projectDetails.urgency}
                     onValueChange={(value) => setProjectDetails(prev => ({ ...prev, urgency: value }))}
@@ -328,7 +328,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="deliveryLocation">موقع التسليم</Label>
+                  <Label htmlFor="deliveryLocation" className="typography-label">موقع التسليم</Label>
                   <Input
                     id="deliveryLocation"
                     value={projectDetails.deliveryLocation}
@@ -338,7 +338,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                 </div>
               </div>
               <div>
-                <Label htmlFor="specialRequirements">متطلبات خاصة</Label>
+                <Label htmlFor="specialRequirements" className="typography-label">متطلبات خاصة</Label>
                 <Textarea
                   id="specialRequirements"
                   value={projectDetails.specialRequirements}
@@ -360,7 +360,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                   {selectedProducts.map((product) => (
                     <div key={product.id} className="flex items-center justify-between p-3 border rounded">
                       <div>
-                        <h4 className="font-medium">{product.name}</h4>
+                        <h4 className="typography-h4 font-medium">{product.name}</h4>
                         <p className="text-sm text-gray-600">{product.category}</p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -379,7 +379,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                   {selectedServices.map((service) => (
                     <div key={service.id} className="flex items-center justify-between p-3 border rounded">
                       <div>
-                        <h4 className="font-medium">{service.name}</h4>
+                        <h4 className="typography-h4 font-medium">{service.name}</h4>
                         <p className="text-sm text-gray-600">{service.description}</p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -398,7 +398,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
                   <div className="border-t pt-4">
                     <div className="flex justify-between items-center">
                       <span className="text-lg font-semibold">المجموع المقدر:</span>
-                      <span className="text-xl font-bold text-orange-600">
+                      <span className="text-xl font-bold text-amber-600">
                         {calculateTotal()} جنيه
                       </span>
                     </div>
@@ -419,7 +419,7 @@ export const EnhancedQuoteRequestDialog: React.FC<EnhancedQuoteRequestDialogProp
             <Button
               onClick={handleSubmit}
               disabled={submitting || !contactInfo.name || !contactInfo.email || !projectDetails.description}
-              className="bg-orange-600 hover:bg-orange-700"
+              className="btn-primary"
             >
               {submitting ? 'جاري الإرسال...' : 'إرسال طلب عرض السعر'}
             </Button>

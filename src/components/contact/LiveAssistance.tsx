@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Label } from '../ui/label';
 import { AlertTriangle, Video, Mic, ScreenShare, MessageSquare, X, Share2, Download } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
@@ -144,7 +143,7 @@ export const LiveAssistance = () => {
       {!callActive ? (
         <div className="space-y-6">
           <div className="bg-almona-darker/50 p-6 rounded-xl border border-almona-light/10">
-            <h3 className="text-xl font-bold mb-4 flex items-center">
+            <h3 className="typography-h3 mb-4 flex items-center">
               <AlertTriangle className="text-almona-orange mr-3" />
               Immediate Technical Support
             </h3>
@@ -154,7 +153,7 @@ export const LiveAssistance = () => {
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="technician">Select Technician</Label>
+                <label htmlFor="technician" className="typography-label">Select Technician</label>
                 <Select value={selectedTech} onValueChange={setSelectedTech}>
                   <SelectTrigger>
                     <SelectValue placeholder="Choose available technician" />

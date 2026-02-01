@@ -43,7 +43,7 @@ export const IndustrialProductConfigurator: React.FC<Props> = ({ product, onAddT
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Configure Your Machine</h3>
+      <h3 className="typography-h3 text-lg">Configure Your Machine</h3>
       {Object.entries(options).map(([category, items]) => (
         <div key={category} className="space-y-2">
           <div className="text-sm font-medium capitalize">{category}</div>

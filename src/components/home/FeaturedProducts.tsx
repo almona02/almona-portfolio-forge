@@ -77,12 +77,12 @@ const FeaturedProducts = () => {
   }));
 
   return (
-    <section className="py-12 sm:py-16 md:py-20 bg-almona-dark">
+    <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">
       <div className="container mx-auto px-3 sm:px-4 md:px-6">
         <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8 md:mb-12">
-          <span className="text-almona-orange font-medium text-xs sm:text-sm md:text-base opacity-90 sm:opacity-100">{t('featured_products.badge')}</span>
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mt-2 mb-2 sm:mb-3 md:mb-4 leading-tight px-2">
-            {t('featured_products.title_prefix')} <span className="text-gradient-orange">{t('featured_products.title_highlight')}</span>
+          <span className="text-amber-400 font-medium text-xs sm:text-sm md:text-base opacity-90 sm:opacity-100">{t('featured_products.badge')}</span>
+          <h2 className="typography-h2 text-xl sm:text-2xl md:text-3xl lg:text-4xl mt-2 mb-2 sm:mb-3 md:mb-4 leading-tight px-2">
+            {t('featured_products.title_prefix')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400">{t('featured_products.title_highlight')}</span>
           </h2>
           <p className="text-gray-400/90 sm:text-gray-400 text-xs sm:text-sm md:text-base px-3 sm:px-4">
             {t('featured_products.subtitle')}
@@ -91,7 +91,7 @@ const FeaturedProducts = () => {
 
         <Tabs defaultValue="machines" className="w-full" onValueChange={handleTabChange}>
           <div className="flex justify-center mb-6 sm:mb-8 md:mb-10">
-            <TabsList className="bg-almona-dark-lighter">
+            <TabsList className="bg-gradient-to-br from-slate-900/80 via-slate-800/60 to-slate-900/80 border border-slate-700/50 backdrop-blur-sm">
               <TabsTrigger 
                 value="machines" 
                 className={`${activeTab === "machines" ? "text-white" : "text-gray-400"} px-4 sm:px-5 md:px-6 text-xs sm:text-sm md:text-base`}
@@ -110,7 +110,7 @@ const FeaturedProducts = () => {
             <div className="mt-8 sm:mt-10 md:mt-12 text-center">
               <Button
                 asChild
-                className="bg-gradient-orange hover:bg-almona-orange-dark text-white text-xs sm:text-sm md:text-base px-4 py-2 sm:px-5 sm:py-2.5"
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white text-xs sm:text-sm md:text-base px-4 py-2 sm:px-5 sm:py-2.5 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 transition-all duration-300"
               >
                 <Link
                   to="/products/3d-gallery#swiftxr"

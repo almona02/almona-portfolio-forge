@@ -32,7 +32,7 @@ const MachineCard: React.FC<MachineCardProps> = ({
   const imageHeight = isCompact ? 'h-32' : 'h-48';
 
   return (
-    <Card className={`bg-almona-darker border-almona-light overflow-hidden hover:border-orange-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/20 group ${cardHeight}`}>
+    <Card className={`bg-almona-darker border-almona-light overflow-hidden hover:border-amber-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/20 group ${cardHeight}`}>
       {/* Image Section with Overlays */}
       <div className="relative">
         <div className={`${imageHeight} overflow-hidden`}>
@@ -71,10 +71,10 @@ const MachineCard: React.FC<MachineCardProps> = ({
 
       {/* Content Section */}
       <CardHeader className="pb-2">
-        <CardTitle className={`${isCompact ? 'text-lg' : 'text-xl'} line-clamp-2 group-hover:text-orange-400 transition-colors`}>
+        <CardTitle className={`${isCompact ? 'text-lg' : 'text-xl'} line-clamp-2 group-hover:text-amber-400 transition-colors`}>
           {machine.title}
         </CardTitle>
-        <div className="text-orange-400 font-bold text-xl">
+        <div className="text-amber-400 font-bold text-xl">
           {machine.price}
         </div>
       </CardHeader>
@@ -85,22 +85,22 @@ const MachineCard: React.FC<MachineCardProps> = ({
         {/* Machine Details Grid */}
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center">
-            <MapPin className="w-4 h-4 mr-2 text-orange-500 flex-shrink-0" />
+            <MapPin className="w-4 h-4 mr-2 text-amber-500 flex-shrink-0" />
             <span className="truncate">{machine.location}</span>
           </div>
           
           <div className="flex items-center">
-            <Factory className="w-4 h-4 mr-2 text-orange-500 flex-shrink-0" />
+            <Factory className="w-4 h-4 mr-2 text-amber-500 flex-shrink-0" />
             <span className="truncate">{machine.seller.name}</span>
           </div>
           
           <div className="flex items-center">
-            <Calendar className="w-4 h-4 mr-2 text-orange-500 flex-shrink-0" />
+            <Calendar className="w-4 h-4 mr-2 text-amber-500 flex-shrink-0" />
             <span>Year: {machine.year}</span>
           </div>
           
           <div className="flex items-center">
-            <Gauge className="w-4 h-4 mr-2 text-orange-500 flex-shrink-0" />
+            <Gauge className="w-4 h-4 mr-2 text-amber-500 flex-shrink-0" />
             <span>Hours: {machine.hours.toLocaleString()}</span>
           </div>
         </div>
@@ -124,7 +124,7 @@ const MachineCard: React.FC<MachineCardProps> = ({
         <Button 
           variant="outline" 
           size={isCompact ? "sm" : "default"}
-          className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white flex-1"
+          className="btn-primary"
         >
           📞 Request Info
         </Button>
@@ -132,7 +132,7 @@ const MachineCard: React.FC<MachineCardProps> = ({
         <Button 
           asChild
           size={isCompact ? "sm" : "default"}
-          className="bg-orange-600 hover:bg-orange-700 flex-1"
+          className="btn-primary"
         >
           <Link 
             to={`/used-machines/${machine.id}`} 

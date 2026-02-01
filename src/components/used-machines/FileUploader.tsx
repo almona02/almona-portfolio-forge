@@ -32,7 +32,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onNext, onBack }) => {
 
   return (
     <div>
-      <h3 className="text-xl font-semibold mb-4">Upload Machine Photos & Videos</h3>
+      <h3 className="typography-h3 mb-4">Upload Machine Photos & Videos</h3>
       <p className="text-gray-400 mb-6">
         Upload clear photos from multiple angles, and a short video of the machine in operation if possible.
         This increases the chances of selling your machine by 70%.

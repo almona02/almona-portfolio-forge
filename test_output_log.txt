@@ -1,0 +1,37 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › tests\e2e\digital-twin.spec.ts:4:3 › Digital Twin Dashboard › should load dashboard with asset details
+[1A[2K  1) [chromium] › tests\e2e\digital-twin.spec.ts:4:3 › Digital Twin Dashboard › should load dashboard with asset details 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByText('online')
+    Expected: visible
+    Error: strict mode violation: getByText('online') resolved to 2 elements:
+        1) <span class="badge outline text-green-400 border-green-500/30">…</span> aka getByText('online', { exact: true })
+        2) <a href="/shop" class="text-gray-400 hover:text-almona-orange transition-colors">Shop Online</a> aka getByRole('link', { name: 'Shop Online' })
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByText('online')[22m
+
+
+      64 |     
+      65 |     // Badges
+    > 66 |     await expect(page.getByText('online', { exact: false })).toBeVisible();
+         |                                                              ^
+      67 |     await expect(page.getByText('Warranty Active')).toBeVisible();
+      68 |
+      69 |     // Stats
+        at C:\projects\almona-portfolio-forge\tests\e2e\digital-twin.spec.ts:66:62
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\digital-twin-Digital-Twin--454f8-ashboard-with-asset-details-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\digital-twin-Digital-Twin--454f8-ashboard-with-asset-details-chromium\error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › tests\e2e\digital-twin.spec.ts:4:3 › Digital Twin Dashboard › should load dashboard with asset details 

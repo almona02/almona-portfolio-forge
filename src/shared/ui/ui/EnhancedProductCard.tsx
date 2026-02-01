@@ -139,8 +139,8 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
         whileTap="tap"
         className={`group relative h-full flex flex-col bg-gradient-to-br from-gray-900 to-black rounded-xl border-2 transition-all duration-300 hover:shadow-xl ${
           isSelected 
-            ? 'border-orange-500 shadow-lg shadow-orange-500/20' 
-            : 'border-gray-700 hover:border-orange-400/50'
+            ? 'border-amber-500 shadow-lg shadow-amber-500/20' 
+            : 'border-gray-700 hover:border-amber-400/50'
         }`}
       >
       {/* 3D Model Badge - Clickable */}
@@ -186,7 +186,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 }}
                 className={`cursor-pointer border-0 shadow-lg transition-all ${
                   isVideoPlaying 
-                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600' 
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-500 hover:from-amber-600 hover:to-amber-600' 
                     : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
                 } text-white`}
               >
@@ -214,7 +214,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
               animate="animate"
               exit="exit"
             >
-              <Badge variant="secondary" className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 shadow-lg">
+              <Badge variant="secondary" className="bg-gradient-to-r from-amber-500 to-red-500 text-white border-0 shadow-lg">
                 Featured
               </Badge>
             </LazyMotionDiv>
@@ -260,7 +260,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
             {onQuickPreview && (
               <Button
                 size="sm"
-                className="bg-orange-500 hover:bg-orange-600 text-white shadow-lg"
+                className="btn-primary"
                 onClick={handleQuickPreview}
               >
                 <Eye className="w-4 h-4 mr-1" />
@@ -386,7 +386,7 @@ const EnhancedProductCard: React.FC<EnhancedProductCardProps> = ({
                 className={`w-full ${
                   isSelected
                     ? 'bg-red-500 hover:bg-red-600'
-                    : 'bg-orange-500 hover:bg-orange-600'
+                    : 'bg-amber-500 hover:bg-amber-600'
                 } text-white transition-all duration-300`}
                 onClick={handleSelect}
               >

@@ -236,7 +236,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
   }, [isMobile]);
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-[#1a1a1a]" data-hero-bg="egyptian-industrial">
+    <div className="btn-secondary" data-hero-bg="egyptian-industrial">
       {/* IMMEDIATE: CSS Gradient Background - Never blocks LCP, shows instantly */}
       <div 
         className="absolute inset-0 z-0"
@@ -498,7 +498,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
             return (
               <motion.div
                 key={i}
-                className="absolute w-3 h-3 sm:w-4 sm:h-4 bg-orange-400 rounded-full"
+                className="absolute w-3 h-3 sm:w-4 sm:h-4 bg-amber-400 rounded-full"
                 style={{
                   left: `${x}%`,
                   top: `${y}%`,
@@ -530,7 +530,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
           })}
           {/* Central hub - Smaller on mobile */}
           <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 sm:w-6 sm:h-6 bg-orange-500 rounded-full"
+            className="btn-primary"
             style={{
               boxShadow: isMobile
                 ? '0 0 15px rgba(255, 140, 0, 0.8), 0 0 30px rgba(255, 140, 0, 0.5)'
@@ -635,7 +635,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
           <div className="absolute inset-3 flex items-center justify-between">
             {/* Inputs (Sensors) */}
             <motion.div
-              className="w-16 h-16 rounded-full border-2 border-orange-400/50 flex items-center justify-center"
+              className="w-16 h-16 rounded-full border-2 border-amber-400/50 flex items-center justify-center"
               style={{
                 background: 'radial-gradient(circle, rgba(255, 140, 0, 0.2) 0%, transparent 70%)',
                 boxShadow: '0 0 15px rgba(255, 140, 0, 0.4)'
@@ -649,7 +649,7 @@ export const EgyptianIndustrialHero: React.FC<EgyptianIndustrialHeroProps> = ({ 
                 ease: "easeInOut"
               }}
             >
-              <div className="w-2 h-2 bg-orange-400 rounded-full" />
+              <div className="w-2 h-2 bg-amber-400 rounded-full" />
             </motion.div>
             
             {/* Arrow */}

@@ -146,7 +146,7 @@ export const MobileTicketCreator: React.FC<{
   const priorities = [
     { id: 'low' as const, label: 'منخفضة', color: 'bg-green-500/20 text-green-300' },
     { id: 'medium' as const, label: 'متوسطة', color: 'bg-yellow-500/20 text-yellow-300' },
-    { id: 'high' as const, label: 'عالية', color: 'bg-orange-500/20 text-orange-300' },
+    { id: 'high' as const, label: 'عالية', color: 'bg-amber-500/20 text-amber-300' },
     { id: 'critical' as const, label: 'حرجة', color: 'bg-red-500/20 text-red-300' }
   ];
 
@@ -324,7 +324,7 @@ export const MobileTicketCreator: React.FC<{
           {/* Header */}
           <div className="sticky top-0 bg-almona-dark/95 backdrop-blur-sm border-b border-almona-light/20 p-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-bold text-almona-orange">إنشاء طلب خدمة</h2>
+              <h2 className="typography-h2 text-lg text-almona-orange">إنشاء طلب خدمة</h2>
               <div className="flex items-center gap-2">
                 {isOnline ? (
                   <Wifi className="h-4 w-4 text-green-400" />
@@ -396,7 +396,7 @@ export const MobileTicketCreator: React.FC<{
                   className="space-y-4"
                 >
                   <div>
-                    <label className="block text-sm font-medium mb-2">عنوان المشكلة</label>
+                    <label className="typography-label block text-sm font-medium mb-2">عنوان المشكلة</label>
                     <Input
                       value={ticketData.title}
                       onChange={(e) => setTicketData(prev => ({ ...prev, title: e.target.value }))}
@@ -406,7 +406,7 @@ export const MobileTicketCreator: React.FC<{
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium mb-2">وصف تفصيلي</label>
+                    <label className="typography-label block text-sm font-medium mb-2">وصف تفصيلي</label>
                     <Textarea
                       value={ticketData.description}
                       onChange={(e) => setTicketData(prev => ({ ...prev, description: e.target.value }))}
@@ -512,7 +512,7 @@ export const MobileTicketCreator: React.FC<{
                   </Button>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">مستوى الأولوية</label>
+                    <label className="typography-label block text-sm font-medium mb-2">مستوى الأولوية</label>
                     <div className="grid grid-cols-2 gap-2">
                       {priorities.map((priority) => (
                         <button

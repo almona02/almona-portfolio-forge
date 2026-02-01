@@ -15,20 +15,41 @@ interface VirtualizedProfileListProps {
   itemHeight?: number;
 }
 
+// ✅ PERFORMANCE: Virtualization threshold - only virtualize when list is large enough
+const VIRTUALIZATION_THRESHOLD = 50;
+
 export const VirtualizedProfileList: React.FC<VirtualizedProfileListProps> = ({
   profiles,
   renderProfile,
   containerHeight = 600,
-  itemHeight = 120,
+  itemHeight = 200, // Profile cards with detail can be taller
 }) => {
   const parentRef = React.useRef<HTMLDivElement>(null);
 
+  // ✅ PERFORMANCE: Only virtualize if list is large enough to benefit
+  const shouldVirtualize = profiles.length >= VIRTUALIZATION_THRESHOLD;
+
+  // ✅ FIX: Always call hooks unconditionally (Rules of Hooks)
+  // Always initialize virtualizer, but only use it when shouldVirtualize is true
   const virtualizer = useVirtualizer({
-    count: profiles.length,
+    count: shouldVirtualize ? profiles.length : 0,
     getScrollElement: () => parentRef.current,
     estimateSize: () => itemHeight,
     overscan: 5, // Render 5 extra items outside viewport for smooth scrolling
   });
+
+  // For small lists, render normally (no virtualization overhead)
+  if (!shouldVirtualize) {
+    return (
+      <div className="space-y-3">
+        {profiles.map((profile, index) => (
+          <div key={profile.id}>
+            {renderProfile(profile, index)}
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   const items = virtualizer.getVirtualItems();
 

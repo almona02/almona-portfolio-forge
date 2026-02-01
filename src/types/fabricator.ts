@@ -6,6 +6,55 @@ export type WindowUnitStatus =
   | 'quality'
   | 'delivered';
 
+// --- FACADE TYPES (Phase 2) ---
+export type FacadeSystemType = 'stick' | 'unitized' | 'spider';
+
+export interface FacadeGridSpec {
+  width: number;
+  height: number;
+  rows: number;
+  cols: number;
+  rowHeights: number[]; // if empty, evenly distributed
+  colWidths: number[]; // if empty, evenly distributed
+  mullionProfileId: string;
+  transomProfileId: string;
+  glassType: string;
+}
+
+export interface FacadePanel {
+  id: string;
+  row: number;
+  col: number;
+  width: number;
+  height: number;
+  type: 'fixed' | 'vent' | 'spandrel';
+  // Position for 3D rendering
+  position?: { x: number; y: number; z: number };
+  glassId?: string;
+  notes?: string;
+}
+
+export interface FacadeMember {
+  id: string;
+  type: 'mullion' | 'transom';
+  length: number;
+  profileId: string;
+  position: { x: number; y: number; z: number };
+  rotation: { x: number; y: number; z: number };
+  cutAngles: { start: number; end: number };
+}
+
+export interface FacadeModel {
+  id: string;
+  systemType: FacadeSystemType;
+  spec: FacadeGridSpec;
+  members: FacadeMember[];
+  panels: FacadePanel[];
+  totalArea: number;
+  totalPerimeter: number;
+}
+// ------------------------------
+
 export interface WindowUnit {
   id: string;
   orderNumber: string;
@@ -51,6 +100,8 @@ export interface WindowUnit {
     roomOrZone?: string;
     windowIndex?: string;
     remarks?: string;
+    posNumber?: string;
+    customer?: string;
   };
   /**
    * Optional metadata for mass‑production optimisation runs. This is
@@ -108,6 +159,11 @@ export interface WindowUnit {
     constraints: any;
     openingMechanism: any;
   }>;
+  /**
+   * Facade Model Data (Phase 2)
+   * If present, this overrides standard window geometry generation
+   */
+  facadeModel?: FacadeModel;
 }
 
 /**
@@ -247,36 +303,48 @@ export interface Profile {
   /** Category of profile: window, door, curtain_wall, structural, accessory */
   category?: 'window' | 'door' | 'curtain_wall' | 'structural' | 'accessory';
   /** System type: casement, sliding, tilt_turn, fixed, facade, commercial */
-  systemType?: 'casement' | 'sliding' | 'tilt_turn' | 'fixed' | 'facade' | 'commercial';
+  systemType?: 'casement' | 'sliding' | 'tilt_turn' | 'fixed' | 'facade' | 'commercial' | 'folding';
+  /**
+   * Egyptian Market System Families
+   * - PS: Standard hinging/sliding (Small/Large)
+   * - Jumbo: Heavy duty sliding
+   * - Tango: Economy sliding (60mm)
+   * - Sonata: Premium hinging (45mm)
+   */
+  systemFamily?: 'ps_small' | 'ps_large' | 'jumbo' | 'tango' | 'sonata' | 'alumil' | 'volcano' | 'other';
   /** Profile role in system: Gold-tier granular roles for accurate cutting lists */
   profileRole?: 
-    | 'frame'                    // Main frame profile
-    | 'frame_architrave'         // Frame with architrave (decorative border)
-    | 'sash'                     // Standard operable sash
+    | 'frame'                    // Main frame profile (Halq)
+    | 'frame_architrave'         // Frame with architrave (Bar)
+    | 'sash'                     // Standard operable sash (Dalfah)
     | 'sash_sliding'             // Sliding sash profile
     | 'sash_door'                // Door sash profile
-    | 'sash_flyscreen'           // Fly-screen sash profile
-    | 'sash_casement'            // Casement sash profile
-    | 'mullion'                  // Vertical divider (true mullion)
-    | 'mullion_false'            // False mullion (decorative)
-    | 'transom'                  // Horizontal divider
-    | 'glazing_bead'             // Glazing bead profile
+    | 'sash_flyscreen'           // Fly-screen sash (Dalfah Silk)
+    | 'sash_casement'            // Casement sash
+    | 'mullion'                  // Vertical divider (Sweas)
+    | 'mullion_false'            // False mullion (T-profile)
+    | 'transom'                  // Horizontal divider (Sweas)
+    | 'glazing_bead'             // Glazing bead (Barour)
     | 'glazing_bead_inner'       // Inner glazing bead
     | 'glazing_bead_outer'       // Outer glazing bead
-    | 'interlock'                // Interlock profile
-    | 'accessory'                // Accessory profile
+    | 'interlock'                // Interlock profile (Saken/Masken)
+    | 'accessory'                // Accessory
     | 'screen_sash'              // Screen sash
-    | 'screen_adapter'           // Screen adapter (Barour Shabaak)
-    | 'panel'                    // Panel / Filler
-    | 'architrave'               // Standalone architrave
+    | 'screen_adapter'           // Screen adapter (Barour Silk)
+    | 'screen_track'             // Screen track (Majra Silk)
+    | 'shutter_guide'            // Shutter guide (Majra Shish)
+    | 'shutter_box'              // Shutter box (Box Shish)
+    | 'shutter_slat'             // Shutter slat (Shish)
+    | 'panel'                    // Panel / Filler (Hachwa)
+    | 'architrave'               // Standalone architrave (Bar)
     | 'threshold'                // Threshold profile
     | 'sill'                     // Sill profile
     | 'head'                     // Head profile
     | 'jamb'                     // Jamb profile
-    | 'corner_cleat'             // Corner cleat
+    | 'corner_cleat'             // Corner cleat (Zawya)
     | 'reinforcement'            // Reinforcement profile
-    | 'gasket'                   // Gasket profile
-    | 'weather_strip';           // Weather strip
+    | 'gasket'                   // Gasket (Kawetch)
+    | 'weather_strip';           // Weather strip (Forsha)
   /** Sash inner gap for glazing fit (mm) - e.g., 40mm for ROCK 60, 50mm for JUMBO 100 */
   innerGap?: number;
   /** Maximum load capacity for hardware associated with this profile (kg) */
@@ -322,6 +390,20 @@ export interface Profile {
   userId?: string;
   createdAt?: Date;
   updatedAt?: Date;
+
+  /**
+   * Physics properties for engineering validation (Phase 4)
+   */
+  physics?: {
+    /** Moment of Inertia around X-axis (cm4) - Resistance to wind load */
+    ix: number;
+    /** Moment of Inertia around Y-axis (cm4) - Resistance to weight load */
+    iy: number;
+    /** Thermal U-value of the frame profile (W/m2K) */
+    uf?: number;
+    /** Face width of the profile (mm) used for thermal calc */
+    faceWidth?: number;
+  };
 }
 
 export interface FabricatorAccessory {
@@ -380,7 +462,14 @@ export interface TechnicalDrawing {
 export interface Accessory {
   id: string;
   name: string;
-  type: 'hinge' | 'handle' | 'lock' | 'corner_connector' | 'bracket' | 'seal' | 'screw';
+  type: 'hinge' | 'handle' | 'lock' | 'corner_connector' | 'bracket' | 'seal' | 'screw' | 'wheel' | 'friction_stay';
+  /**
+   * Egyptian Market Accessory Categories
+   * - Wheels: "Agala" (Single/Double/Jumbo)
+   * - Handles: "Okkra" (Spagnolette, Squeeze, D-Handle)
+   * - Hinges: "Mofasala" (2D/3D)
+   * - Stays: "Deraa" (Friction stay)
+   */
   compatibleProfiles: string[]; // Profile IDs
   installationMacros: MachiningMacro[];
   specifications: AccessorySpecs;
@@ -415,17 +504,52 @@ export interface AccessorySpecs {
 }
 
 /**
+ * System pack metadata – describes a branded window/door system
+ * (e.g. ROCK 60) and how it should be treated regionally.
+ */
+export interface SystemPackMeta {
+  /** Stable identifier, e.g. "rock60" */
+  id: string;
+  /** Human readable name, e.g. "ROCK 60" */
+  name: string;
+  /** Brand(s) or suppliers this pack belongs to */
+  brands: string[];
+  /** Regions where this pack is most relevant (egypt, turkey, mena, gulf, global, etc.) */
+  regions: string[];
+  /** Default stock bar length in mm for this system, if known */
+  defaultStockLengthMm?: number;
+}
+
+/**
  * System Pack for window/door systems
  */
 export interface SystemPack {
-  id: string;
-  name: string;
-  category: 'aluminum_windows' | 'aluminum_doors' | 'curtain_walls' | 'upvc_windows' | 'upvc_doors';
-  brand: string;
-  compatibleProfiles: string[];
-  compatibleAccessories: string[];
-  description: string;
-  technicalData: SystemTechnicalData;
+  /** Metadata wrapper (Gold Tier Standard) */
+  meta: SystemPackMeta;
+  /**
+   * Raw specification object that will be embedded into profile.specifications
+   * Replaces legacy top-level fields
+   */
+  windowSystemSpec: Record<string, any>;
+  
+  // Legacy fields kept for compatibility during migration
+  id?: string;
+  name?: string;
+  category?: 'aluminum_windows' | 'aluminum_doors' | 'curtain_walls' | 'upvc_windows' | 'upvc_doors';
+  brand?: string;
+  
+  compatibleProfiles?: string[];
+  compatibleAccessories?: string[];
+  description?: string;
+  technicalData?: SystemTechnicalData;
+  /** Optional Smart Draw presets used by facade tools */
+  smartDrawPreset?: any;
+  /** Optional glass sizing rules used for glazing and 2D glass optimisation. */
+  glassAllowances?: any;
+  /** Optional default grid layout to apply when this pack is selected */
+  defaultGrid?: WindowGrid;
+  /** Optional profiles array for BOM generation with accurate dimensions */
+  profiles?: Profile[];
 }
 
 /**
@@ -838,7 +962,7 @@ export interface FabricationData {
     id: string;
     supplierCode: string;    // e.g., "MACO-EC300"
     name: string;
-    category: 'hinge' | 'lock' | 'handle' | 'roller' | 'corner_key' | 'gasket';
+    category: 'hinge' | 'lock' | 'handle' | 'roller' | 'corner_key' | 'gasket' | 'hardener';
     quantity: number;
     positionSpec: string;    // "200mm from bottom, center"
     installationNotes: string[];
@@ -846,6 +970,7 @@ export interface FabricationData {
     alternatives: string[];  // Compatible alternatives
     estimatedTime: number;   // Minutes for installation
     supplierLink?: string;   // URL to purchase
+    metadata?: Record<string, any>;
   }>;
   
   // === GLAZING CALCULATIONS ===

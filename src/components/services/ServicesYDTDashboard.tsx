@@ -61,11 +61,11 @@ export function ServicesYDTDashboard() {
 
   return (
     <div className="services-ydt-dashboard space-y-6">
-      <Card className="bg-gradient-to-br from-gray-900 to-black border-orange-500/20">
+      <Card className="bg-gradient-to-br from-gray-900 to-black border-amber-500/20">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Brain className="h-5 w-5 text-orange-400" />
-            <CardTitle className="text-orange-400">Services YDT Integration</CardTitle>
+            <Brain className="h-5 w-5 text-amber-400" />
+            <CardTitle className="text-amber-400">Services YDT Integration</CardTitle>
           </div>
           <CardDescription>
             Week 1 Metrics - YDT usage in service tickets
@@ -156,7 +156,7 @@ export function ServicesYDTDashboard() {
           {/* Service Breakdown */}
           {Object.keys(metrics.callsByService).length > 0 && (
             <div className="mt-4">
-              <h4 className="text-sm font-semibold mb-2">Calls by Service</h4>
+              <h4 className="typography-h4 text-sm mb-2">Calls by Service</h4>
               <div className="space-y-1">
                 {Object.entries(metrics.callsByService).map(([service, count]) => (
                   <div key={service} className="flex items-center justify-between text-sm">
@@ -170,7 +170,7 @@ export function ServicesYDTDashboard() {
 
           {/* Recommendations */}
           <div className="mt-6 space-y-2">
-            <h4 className="text-sm font-semibold">Week 1 Recommendations</h4>
+            <h4 className="typography-h4 text-sm">Week 1 Recommendations</h4>
             
             {metrics.totalCalls === 0 && (
               <Alert>

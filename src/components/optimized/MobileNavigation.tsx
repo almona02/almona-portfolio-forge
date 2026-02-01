@@ -71,13 +71,13 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className = '' })
         
         <SheetContent 
           side="left" 
-          className="w-80 bg-gray-900 border-gray-800 p-0"
+          className="w-80 bg-gray-900 border-gray-800 p-0 card-dark"
         >
           <div className="flex flex-col h-full">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-800">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-red-500 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-sm">A</span>
                 </div>
                 <span className="text-white font-semibold text-lg">ALMONA</span>
@@ -108,7 +108,7 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className = '' })
                           transition-colors duration-200
                           touch-manipulation
                           ${isActive 
-                            ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20 text-orange-400 border border-orange-500/30' 
+                            ? 'bg-gradient-to-r from-amber-500/20 to-red-500/20 text-amber-400 border border-amber-500/30' 
                             : 'text-gray-300 hover:text-white hover:bg-gray-800'
                           }
                         `}
@@ -131,7 +131,7 @@ export const MobileNavigation = memo<MobileNavigationProps>(({ className = '' })
                 <div className="flex gap-2">
                   <Button
                     size="sm"
-                    className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                    className="flex-1 bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600"
                     asChild
                   >
                     <Link to="/quote">Get Quote</Link>

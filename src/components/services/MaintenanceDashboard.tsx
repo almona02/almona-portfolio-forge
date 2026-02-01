@@ -116,7 +116,7 @@ export const MaintenanceDashboard = withErrorBoundary(() => {
       case "pending":
         return <Clock className="h-4 w-4 text-yellow-500" />;
       case "completed":
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+        return <CheckCircle2 className="h-4 w-4  status-valid" />;
       case "overdue":
         return <AlertTriangle className="h-4 w-4 text-red-500" />;
       default:
@@ -157,7 +157,7 @@ export const MaintenanceDashboard = withErrorBoundary(() => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h3 className="font-medium">Overall Score: {healthData.overallScore}%</h3>
+                <h3 className="typography-h3 font-medium">Overall Score: {healthData.overallScore}%</h3>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 {Object.entries(healthData.components).map(([name, value]) => (
@@ -171,7 +171,7 @@ export const MaintenanceDashboard = withErrorBoundary(() => {
                 <div className="p-4 bg-yellow-900/50 rounded-lg border border-yellow-700">
                   <div className="flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-yellow-400" />
-                    <h3 className="font-bold text-yellow-400">Predicted Failure</h3>
+                    <h3 className="typography-h3 text-yellow-400">Predicted Failure</h3>
                   </div>
                   <p className="mt-2">
                     Component{' '}
@@ -220,7 +220,7 @@ export const MaintenanceDashboard = withErrorBoundary(() => {
                           {event.status}
                         </Badge>
                       </div>
-                      <h3 className="font-medium">{event.description}</h3>
+                      <h3 className="typography-h3 font-medium">{event.description}</h3>
                       <p className="text-sm text-gray-400">
                         {new Date(event.date).toLocaleDateString()} • {event.duration} hours
                       </p>

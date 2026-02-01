@@ -209,7 +209,7 @@ export const WhatsAppContact: React.FC<WhatsAppContactProps> = ({
 
                 {/* Custom Message */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Your Message</label>
+                  <label className="typography-label text-sm font-medium text-gray-700">Your Message</label>
                   <textarea
                     value={customMessage}
                     onChange={(e) => setCustomMessage(e.target.value)}

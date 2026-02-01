@@ -143,7 +143,7 @@ export function Model3DGallery({
       {/* Header with Controls */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">3D Model Gallery</h2>
+          <h2 className="typography-h2 text-white">3D Model Gallery</h2>
           <p className="text-gray-400 text-sm mt-1">
             {filteredModels.length} of {models.length} models
           </p>
@@ -243,7 +243,7 @@ export function Model3DGallery({
             >
               {viewMode === 'grid' ? (
                 <Card 
-                  className="group cursor-pointer bg-gradient-to-br from-gray-900 to-black border-gray-700 hover:border-orange-400/50 transition-all duration-300 overflow-hidden"
+                  className="group cursor-pointer bg-gradient-to-br from-gray-900 to-black border-gray-700 hover:border-amber-400/50 transition-all duration-300 overflow-hidden"
                   onClick={() => handleModelClick(model)}
                 >
                   <CardHeader className="p-0">
@@ -270,7 +270,7 @@ export function Model3DGallery({
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <Button
                           size="sm"
-                          className="bg-orange-500 hover:bg-orange-600 text-white shadow-lg"
+                          className="btn-primary"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleModelClick(model);
@@ -284,7 +284,7 @@ export function Model3DGallery({
                       {/* Badges */}
                       <div className="absolute top-2 left-2 flex flex-col gap-1">
                         {model.featured && (
-                          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 text-xs">
+                          <Badge className="bg-gradient-to-r from-amber-500 to-red-500 text-white border-0 text-xs">
                             <Star className="w-3 h-3 mr-1" />
                             Featured
                           </Badge>
@@ -346,7 +346,7 @@ export function Model3DGallery({
                 </Card>
               ) : (
                 <Card 
-                  className="group cursor-pointer bg-gradient-to-br from-gray-900 to-black border-gray-700 hover:border-orange-400/50 transition-all duration-300"
+                  className="group cursor-pointer bg-gradient-to-br from-gray-900 to-black border-gray-700 hover:border-amber-400/50 transition-all duration-300"
                   onClick={() => handleModelClick(model)}
                 >
                   <CardContent className="p-4">
@@ -380,7 +380,7 @@ export function Model3DGallery({
                           </CardTitle>
                           <div className="flex gap-1 ml-2">
                             {model.featured && (
-                              <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 text-xs">
+                              <Badge className="bg-gradient-to-r from-amber-500 to-red-500 text-white border-0 text-xs">
                                 <Star className="w-3 h-3 mr-1" />
                                 Featured
                               </Badge>
@@ -443,7 +443,7 @@ export function Model3DGallery({
           <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
             <Search className="w-8 h-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">No models found</h3>
+          <h3 className="typography-h3 text-lg text-white mb-2">No models found</h3>
           <p className="text-gray-400">
             Try adjusting your search terms or filters
           </p>
@@ -461,7 +461,7 @@ export function Model3DGallery({
             onClick={handleClosePreview}
           >
             <LazyMotionDiv
-              className="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-orange-500/20"
+              className="bg-gradient-to-br from-gray-900 to-black rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-amber-500/20"
               variants={previewVariants}
               initial="initial"
               animate="animate"
@@ -470,7 +470,7 @@ export function Model3DGallery({
             >
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">{selectedModel.name}</h2>
+                  <h2 className="typography-h2 text-white">{selectedModel.name}</h2>
                   <Button
                     variant="ghost"
                     onClick={handleClosePreview}
@@ -491,8 +491,8 @@ export function Model3DGallery({
                       />
                       {/* 3D indicator overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col items-center justify-center">
-                        <div className="w-20 h-20 rounded-full bg-orange-500/20 backdrop-blur-sm border-2 border-orange-500 flex items-center justify-center mb-4">
-                          <Eye className="w-10 h-10 text-orange-500" />
+                        <div className="btn-primary">
+                          <Eye className="w-10 h-10 text-amber-500" />
                         </div>
                         <p className="text-white font-medium text-lg">3D Model Ready</p>
                         <p className="text-gray-400 text-sm mt-1">Click "View Full Model" to interact</p>
@@ -502,7 +502,7 @@ export function Model3DGallery({
 
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-3">Description</h3>
+                      <h3 className="typography-h3 text-lg text-white mb-3">Description</h3>
                       <p className="text-gray-300 leading-relaxed">{selectedModel.description}</p>
                     </div>
 
@@ -517,7 +517,7 @@ export function Model3DGallery({
 
                     <div className="flex gap-2">
                       <Button
-                        className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+                        className="btn-primary"
                         onClick={() => handleModelClick(selectedModel)}
                       >
                         <Eye className="w-4 h-4 mr-2" />

@@ -3,7 +3,7 @@ import { AlertTriangle } from "lucide-react";
 
 const EmergencyResponse = () => (
   <div className="bg-red-900/20 p-4 rounded-lg border border-red-500/50">
-    <h3 className="flex items-center gap-2 font-bold">
+    <h3 className="typography-h3 flex items-center gap-2">
       <AlertTriangle className="h-5 w-5" />
       Emergency Support
     </h3>
@@ -30,17 +30,17 @@ const EgyptianTechnicalSupport = () => {
   return (
     <div className="bg-almona-darker/50 p-6 rounded-lg space-y-6">
       <EmergencyResponse />
-      <h2 className="text-2xl font-bold mb-6">الدعم الفني المحلي</h2>
+      <h2 className="typography-h2 mb-6">الدعم الفني المحلي</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <h3 className="text-lg font-semibold mb-4">فريق الدعم المحلي</h3>
+          <h3 className="typography-h3 text-lg mb-4">فريق الدعم المحلي</h3>
           <div className="space-y-4">
             {supportContacts.map((contact, index) => (
               <div key={index} className="border border-almona-light/20 p-4 rounded-lg">
                 <div className="font-medium">{contact.name}</div>
                 <div className="flex justify-between items-center mt-2">
-                  <a href={`tel:${contact.phone}`} className="text-orange-500 hover:underline">
+                  <a href={`tel:${contact.phone}`} className="text-amber-500 hover:underline">
                     {contact.phone}
                   </a>
                   <span className="text-sm text-gray-400">{contact.hours}</span>
@@ -55,7 +55,7 @@ const EgyptianTechnicalSupport = () => {
         </div>
         
         <div>
-          <h3 className="text-lg font-semibold mb-4">التغطية بالمحافظات</h3>
+          <h3 className="typography-h3 text-lg mb-4">التغطية بالمحافظات</h3>
           <div className="flex flex-wrap gap-2">
             {governorates.map(gov => (
               <Button key={gov} variant="outline" className="border-egyptian-blue text-egyptian-blue">
@@ -65,7 +65,7 @@ const EgyptianTechnicalSupport = () => {
           </div>
           
           <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-4">مراكز الصيانة</h3>
+            <h3 className="typography-h3 text-lg mb-4">مراكز الصيانة</h3>
             <ul className="space-y-2">
               <li className="flex justify-between">
                 <span>مدينة 6 أكتوبر</span>

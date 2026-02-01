@@ -9,9 +9,10 @@
  * This is the technical contract that makes "YDT First" enforceable.
  */
 
-import { YDTEnforcementService } from './YDTEnforcementService';
-import { YDTCoreService } from './YDTCoreService';
 import type { YDTIntelligenceResponse } from './YDTCoreService';
+import { YDTCoreService } from './YDTCoreService';
+import { YDTEnforcementService } from './YDTEnforcementService';
+import { YDTPerformanceMonitor } from './YDTPerformanceMonitor';
 
 export enum DecisionTier {
   STRATEGIC = 'strategic', // Tier 1: YDT mandatory
@@ -51,6 +52,7 @@ export interface TierViolationMetrics {
 export class IntelligenceGate {
   private static enforcer = YDTEnforcementService.getInstance();
   private static ydt = YDTCoreService.getInstance();
+  private static performanceMonitor = YDTPerformanceMonitor.getInstance();
   private static violationMetrics: TierViolationMetrics = {
     tierViolationCount: 0,
     ydtCalledInDeterministicPath: 0,
@@ -83,7 +85,7 @@ export class IntelligenceGate {
       return result.data;
     } catch (error) {
       // Log tier violation
-      this.recordViolation('strategic', operation, error);
+      this.recordViolation(DecisionTier.STRATEGIC, operation, error);
       throw error;
     }
   }
@@ -123,7 +125,7 @@ export class IntelligenceGate {
       return await mlMethod(inputs, ydtContext);
     } catch (error) {
       // Log execution failure
-      this.recordViolation('execution', operation, error);
+      this.recordViolation(DecisionTier.EXECUTION, operation, error);
       throw error;
     }
   }

@@ -79,7 +79,7 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl bg-almona-dark border-almona-light/20 text-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-amber-300">
+          <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-amber-300">
             {t('trainingPage.enroll')}
           </DialogTitle>
           <DialogDescription className="text-gray-400">
@@ -89,27 +89,27 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium">{t('trainingPage.form.name')}</label>
+              <label className="typography-label text-sm font-medium">{t('trainingPage.form.name')}</label>
               <Input {...register('name')} className="mt-1 bg-almona-dark/50" />
               {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name.message}</p>}
             </div>
             <div>
-              <label className="text-sm font-medium">{t('trainingPage.form.email')}</label>
+              <label className="typography-label text-sm font-medium">{t('trainingPage.form.email')}</label>
               <Input {...register('email')} className="mt-1 bg-almona-dark/50" />
               {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>}
             </div>
             <div>
-              <label className="text-sm font-medium">{t('trainingPage.form.company')}</label>
+              <label className="typography-label text-sm font-medium">{t('trainingPage.form.company')}</label>
               <Input {...register('company')} className="mt-1 bg-almona-dark/50" />
             </div>
             <div>
-              <label className="text-sm font-medium">{t('trainingPage.form.phone')}</label>
+              <label className="typography-label text-sm font-medium">{t('trainingPage.form.phone')}</label>
               <Input {...register('phone')} className="mt-1 bg-almona-dark/50" />
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium">{t('trainingPage.form.program')}</label>
+              <label className="typography-label text-sm font-medium">{t('trainingPage.form.program')}</label>
               <select {...register('program')} className="mt-1 w-full bg-almona-dark/50 border border-almona-light/20 rounded px-2 py-2 text-sm">
                 <option value="">{t('trainingPage.form.selectProgram')}</option>
                 {trainingLevels.map(p => <option key={p.level} value={p.level}>{p.title}</option>)}
@@ -117,14 +117,14 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
               {errors.program && <p className="text-xs text-red-400 mt-1">{errors.program.message}</p>}
             </div>
             <div>
-              <label className="text-sm font-medium">{t('trainingPage.form.material')}</label>
+              <label className="typography-label text-sm font-medium">{t('trainingPage.form.material')}</label>
               <select {...register('material')} className="mt-1 w-full bg-almona-dark/50 border border-almona-light/20 rounded px-2 py-2 text-sm">
                 <option value="aluminium">{t('trainingPage.material.aluminium')}</option>
                 <option value="upvc">{t('trainingPage.material.upvc')}</option>
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className="text-sm font-medium flex items-center gap-2">{t('trainingPage.form.startDate')} <Badge variant="outline" className="border-orange-400/40 text-orange-300">{cohorts.length}</Badge></label>
+              <label className="typography-label text-sm font-medium flex items-center gap-2">{t('trainingPage.form.startDate')} <Badge variant="outline" className="border-amber-400/40 text-amber-300">{cohorts.length}</Badge></label>
               <select {...register('cohortId')} className="mt-1 w-full bg-almona-dark/50 border border-almona-light/20 rounded px-2 py-2 text-sm">
                 <option value="">{t('trainingPage.form.flexible')}</option>
                 {cohorts.map(c => (
@@ -133,13 +133,13 @@ export const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ open, onOpenCh
               </select>
             </div>
             <div className="md:col-span-2">
-              <label className="text-sm font-medium">{t('trainingPage.form.notes')}</label>
+              <label className="typography-label text-sm font-medium">{t('trainingPage.form.notes')}</label>
               <Textarea rows={4} {...register('notes')} className="mt-1 bg-almona-dark/50" />
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={()=>onOpenChange(false)} className="border-almona-light/20">{t('trainingPage.form.cancel')}</Button>
-            <Button disabled={isSubmitting} type="submit" className="bg-gradient-to-r from-orange-500 to-amber-400 text-black font-semibold">{isSubmitting? t('trainingPage.form.submitting'): t('trainingPage.form.submit')}</Button>
+            <Button disabled={isSubmitting} type="submit" className="btn-primary-gradient">{isSubmitting? t('trainingPage.form.submitting'): t('trainingPage.form.submit')}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -124,7 +124,7 @@ const onSubmit = async (data: FormData) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="inquiryType">Inquiry Type *</Label>
+          <Label htmlFor="inquiryType" className="typography-label">Inquiry Type *</Label>
           <Select 
             onValueChange={(value) => setValue('inquiryType', value)}
             defaultValue="technical"
@@ -143,7 +143,7 @@ const onSubmit = async (data: FormData) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="machineSerial">Machine Serial Number</Label>
+          <Label htmlFor="machineSerial" className="typography-label">Machine Serial Number</Label>
           <div className="relative">
             <Input
               id="machineSerial"
@@ -155,7 +155,7 @@ const onSubmit = async (data: FormData) => {
               <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin" />
             )}
             {serialValid === true && (
-              <Check className="absolute right-3 top-3 h-4 w-4 text-green-500" />
+              <Check className="absolute right-3 top-3 h-4 w-4  status-valid" />
             )}
             {serialValid === false && (
               <AlertTriangle className="absolute right-3 top-3 h-4 w-4 text-red-500" />
@@ -173,7 +173,7 @@ const onSubmit = async (data: FormData) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="name">Full Name *</Label>
+          <Label htmlFor="name" className="typography-label">Full Name *</Label>
           <Input
             id="name"
             placeholder="Your name"
@@ -183,7 +183,7 @@ const onSubmit = async (data: FormData) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email">Email *</Label>
+          <Label htmlFor="email" className="typography-label">Email *</Label>
           <Input
             id="email"
             type="email"
@@ -202,7 +202,7 @@ const onSubmit = async (data: FormData) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="phone">Phone Number *</Label>
+          <Label htmlFor="phone" className="typography-label">Phone Number *</Label>
           <Input
             id="phone"
             type="tel"
@@ -213,7 +213,7 @@ const onSubmit = async (data: FormData) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="company">Company</Label>
+          <Label htmlFor="company" className="typography-label">Company</Label>
           <Input
             id="company"
             placeholder="Your company name"
@@ -223,7 +223,7 @@ const onSubmit = async (data: FormData) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="message">Message *</Label>
+        <Label htmlFor="message" className="typography-label">Message *</Label>
         <textarea
           id="message"
           rows={4}
@@ -235,7 +235,7 @@ const onSubmit = async (data: FormData) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="attachments">Attachments (Technical Docs, Photos)</Label>
+        <Label htmlFor="attachments" className="typography-label">Attachments (Technical Docs, Photos)</Label>
         <Input
           id="attachments"
           type="file"

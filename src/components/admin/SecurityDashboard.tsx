@@ -72,7 +72,7 @@ export function SecurityDashboard() {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'CRITICAL': return 'bg-red-500';
-      case 'ERROR': return 'bg-orange-500';
+      case 'ERROR': return 'bg-amber-500';
       case 'WARNING': return 'bg-yellow-500';
       default: return 'bg-blue-500';
     }
@@ -104,7 +104,7 @@ export function SecurityDashboard() {
             <CardTitle className="text-sm font-medium">Rate Limits</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{stats.rateLimits}</div>
+            <div className="text-2xl font-bold text-amber-600">{stats.rateLimits}</div>
           </CardContent>
         </Card>
         

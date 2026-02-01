@@ -91,7 +91,7 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
 
   if (!selectedProfile) {
     return (
-      <Alert className="bg-gray-900/60 border-gray-800 text-sm text-gray-200">
+      <Alert className="bg-gray-900/60 border-gray-800 text-sm text-gray-200 card-dark">
         <AlertDescription>No profile selected. Import a DXF first.</AlertDescription>
       </Alert>
     );
@@ -117,13 +117,13 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
 
             {selectedHardware.length > 0 && (
               <div className="mt-6 space-y-2">
-                <h4 className="font-medium text-sm">Selected Hardware</h4>
+                <h4 className="typography-h4 font-medium text-sm">Selected Hardware</h4>
                 {selectedHardware.map((hw) => {
                   const vr = validationResults[hw.id];
                   return (
                     <div
                       key={hw.id}
-                      className="flex items-center justify-between p-3 border rounded bg-gray-900/40 border-gray-800"
+                      className="flex items-center justify-between p-3 border rounded bg-gray-900/40 border-gray-800 card-dark"
                     >
                       <div>
                         <div className="font-medium text-white">{hw.name}</div>
@@ -133,7 +133,7 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
                       </div>
                       <div className="flex items-center gap-2">
                         {vr?.isValid ? (
-                          <CheckCircle className="h-5 w-5 text-green-500" />
+                          <CheckCircle className="h-5 w-5  status-valid" />
                         ) : (
                           <AlertCircle className="h-5 w-5 text-red-500" />
                         )}
@@ -240,7 +240,7 @@ export const HardwareLinker: React.FC<HardwareLinkerProps> = ({
               {selectedHardware.map((hw) => {
                 const vr = validationResults[hw.id];
                 return (
-                  <div key={hw.id} className="p-3 border rounded bg-gray-900/30 border-gray-800">
+                  <div key={hw.id} className="p-3 border rounded bg-gray-900/30 border-gray-800 card-dark">
                     <div className="font-medium text-white">{hw.name}</div>
                     {vr?.errors.length ? (
                       <div className="mt-1 text-sm text-red-400">

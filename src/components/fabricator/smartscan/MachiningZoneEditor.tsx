@@ -222,7 +222,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
 
   if (!selectedProfile) {
     return (
-      <Alert className="bg-gray-900/60 border-gray-800">
+      <Alert className="bg-gray-900/60 border-gray-800 card-dark">
         <AlertDescription className="text-sm text-gray-200">
           Select a profile in the Import tab to define machining zones.
         </AlertDescription>
@@ -235,7 +235,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
       {/* Machine Selection */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Label className="text-sm">Target CNC Machine</Label>
+          <Label className="typography-label text-sm">Target CNC Machine</Label>
           <Select value={selectedMachine} onValueChange={setSelectedMachine}>
             <SelectTrigger className="w-[200px] bg-gray-800 border-gray-700">
               <SelectValue />
@@ -273,7 +273,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
 
         <TabsContent value="zones" className="mt-4 space-y-4">
           {/* Profile Preview with Zones */}
-          <Card className="bg-gray-900/60 border-gray-800">
+          <Card className="bg-gray-900/60 border-gray-800 card-dark">
             <CardHeader>
               <CardTitle className="text-sm">Profile Cross-Section: {selectedProfile.name}</CardTitle>
               <CardDescription className="text-xs">
@@ -367,14 +367,14 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
           {/* Zone List */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-sm">Defined Zones ({zones.length})</Label>
+              <Label className="typography-label text-sm">Defined Zones ({zones.length})</Label>
               <Button onClick={() => handleAddZone()} size="sm" variant="outline" className="bg-green-600/20 border-green-500 hover:bg-green-600/30">
                 <Plus className="h-3 w-3 mr-1" />
                 Add Zone
               </Button>
             </div>
             {zones.length === 0 ? (
-              <Alert className="bg-gray-900/60 border-gray-800">
+              <Alert className="bg-gray-900/60 border-gray-800 card-dark">
                 <AlertDescription className="text-xs text-gray-400">
                   No machining zones defined. Click "Add Zone" or use "Auto-Suggest" to add zones based on linked hardware.
                 </AlertDescription>
@@ -430,14 +430,14 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
 
           {/* Zone Editor */}
           {selectedZone && (
-            <Card className="bg-gray-900/60 border-gray-800">
+            <Card className="bg-gray-900/60 border-gray-800 card-dark">
               <CardHeader>
                 <CardTitle className="text-sm">Edit Zone: {selectedZone.name}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs">Zone Name</Label>
+                    <Label className="typography-label text-xs">Zone Name</Label>
                     <Input
                       value={selectedZone.name}
                       onChange={(e) => handleUpdateZone(selectedZone.id, { name: e.target.value })}
@@ -445,7 +445,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
                     />
                   </div>
                   <div>
-                    <Label className="text-xs">Zone Type</Label>
+                    <Label className="typography-label text-xs">Zone Type</Label>
                     <Select
                       value={selectedZone.type}
                       onValueChange={(val) => handleUpdateZone(selectedZone.id, { type: val as MachiningZone['type'] })}
@@ -465,7 +465,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs">X Position (mm)</Label>
+                    <Label className="typography-label text-xs">X Position (mm)</Label>
                     <Input
                       type="number"
                       value={selectedZone.position.x}
@@ -478,7 +478,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
                     />
                   </div>
                   <div>
-                    <Label className="text-xs">Y Position (mm)</Label>
+                    <Label className="typography-label text-xs">Y Position (mm)</Label>
                     <Input
                       type="number"
                       value={selectedZone.position.y}
@@ -493,7 +493,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <Label className="text-xs">Width (mm)</Label>
+                    <Label className="typography-label text-xs">Width (mm)</Label>
                     <Input
                       type="number"
                       value={selectedZone.dimensions.width}
@@ -506,7 +506,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
                     />
                   </div>
                   <div>
-                    <Label className="text-xs">Depth (mm)</Label>
+                    <Label className="typography-label text-xs">Depth (mm)</Label>
                     <Input
                       type="number"
                       value={selectedZone.dimensions.depth}
@@ -520,7 +520,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
                   </div>
                   {(selectedZone.type === 'slot' || selectedZone.type === 'groove') && (
                     <div>
-                      <Label className="text-xs">Length (mm)</Label>
+                      <Label className="typography-label text-xs">Length (mm)</Label>
                       <Input
                         type="number"
                         value={selectedZone.dimensions.length || 0}
@@ -535,7 +535,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
                   )}
                 </div>
                 <div>
-                  <Label className="text-xs">Machining Macro</Label>
+                  <Label className="typography-label text-xs">Machining Macro</Label>
                   <Select
                     value={selectedZone.macro || ''}
                     onValueChange={(val) => handleUpdateZone(selectedZone.id, { macro: val })}
@@ -563,7 +563,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
         </TabsContent>
 
         <TabsContent value="suggestions" className="mt-4">
-          <Card className="bg-gray-900/60 border-gray-800">
+          <Card className="bg-gray-900/60 border-gray-800 card-dark">
             <CardHeader>
               <CardTitle className="text-sm">Auto-Suggest Zones from Hardware</CardTitle>
               <CardDescription className="text-xs">
@@ -572,7 +572,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
             </CardHeader>
             <CardContent className="space-y-3">
               {suggestedZones.length === 0 ? (
-                <Alert className="bg-gray-900/60 border-gray-800">
+                <Alert className="bg-gray-900/60 border-gray-800 card-dark">
                   <AlertDescription className="text-sm text-gray-200">
                     No hardware-linked machining suggestions available. Link hardware in the Hardware tab first.
                   </AlertDescription>
@@ -588,7 +588,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
                     const hardware = linkedHardware.find((hw) => hw.id === suggested.hardwareId);
                     const macro = suggested.macro ? MACHINING_MACROS[suggested.macro] : null;
                     return (
-                      <Card key={suggested.id} className="bg-gray-900/60 border-gray-800">
+                      <Card key={suggested.id} className="bg-gray-900/60 border-gray-800 card-dark">
                         <CardContent className="p-3">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
@@ -624,7 +624,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
         </TabsContent>
 
         <TabsContent value="preview" className="mt-4">
-          <Card className="bg-gray-900/60 border-gray-800">
+          <Card className="bg-gray-900/60 border-gray-800 card-dark">
             <CardHeader>
               <CardTitle className="text-sm">G-Code Preview</CardTitle>
               <CardDescription className="text-xs">
@@ -637,7 +637,7 @@ export const MachiningZoneEditor: React.FC<MachiningZoneEditorProps> = ({
                   {gCodePreview}
                 </pre>
               ) : (
-                <Alert className="bg-gray-900/60 border-gray-800">
+                <Alert className="bg-gray-900/60 border-gray-800 card-dark">
                   <AlertDescription className="text-sm text-gray-200">
                     Click "Generate G-Code" to preview the CNC program for defined zones.
                   </AlertDescription>

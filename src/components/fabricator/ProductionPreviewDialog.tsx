@@ -203,7 +203,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
       <DialogContent className="sm:max-w-4xl bg-gray-900 text-white border-gray-700 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
-            <AlertTriangle className="h-6 w-6 text-orange-400" /> Final Safety Check
+            <AlertTriangle className="h-6 w-6 text-amber-400" /> Final Safety Check
           </DialogTitle>
           <DialogDescription className="text-gray-400">
             Review your cuts carefully. This is your final safety check to protect your materials and money.
@@ -231,15 +231,15 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
               <p className="text-[10px] text-green-400/60 mt-1">Unique types</p>
             </div>
             
-            <div className="relative p-4 bg-gradient-to-br from-orange-500/10 to-orange-600/5 rounded-lg border border-orange-500/30 shadow-lg hover:shadow-orange-500/20 transition-all duration-300 group">
-              <div className="absolute top-2 right-2 w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
-              <p className="text-xs font-semibold text-orange-300/80 uppercase tracking-wider mb-2">Material Length</p>
-              <p className="text-3xl font-bold text-orange-400 group-hover:text-orange-300 transition-colors">
+            <div className="btn-primary-gradient">
+              <div className="absolute top-2 right-2 w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
+              <p className="text-xs font-semibold text-amber-300/80 uppercase tracking-wider mb-2">Material Length</p>
+              <p className="text-3xl font-bold text-amber-400 group-hover:text-amber-300 transition-colors">
                 {summary.totalMaterialLength > 0 
                   ? `${(summary.totalMaterialLength / 1000).toFixed(2)}m`
                   : '0m'}
               </p>
-              <p className="text-[10px] text-orange-400/60 mt-1">
+              <p className="text-[10px] text-amber-400/60 mt-1">
                 {summary.totalMaterialLength > 0 
                   ? `${summary.totalMaterialLength.toLocaleString()}mm`
                   : 'No material'}
@@ -265,7 +265,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-700/50">
                 <p className="text-xs text-gray-400 mb-1">Efficiency</p>
-                <p className="text-xl font-bold text-emerald-400">
+                <p className="text-xl font-bold status-valid">
                   {optimizationResult.nestingEfficiency?.toFixed(1) || '0'}%
                 </p>
               </div>
@@ -318,7 +318,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
                   variant="outline"
                   size="sm"
                   onClick={handleAdjustCalibration}
-                  className="mt-2 border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                  className="btn-primary"
                 >
                   <Settings className="h-4 w-4 mr-1" />
                   Adjust Calibration
@@ -396,7 +396,7 @@ export const ProductionPreviewDialog: React.FC<ProductionPreviewDialogProps> = (
               <Button
                 variant="outline"
                 onClick={handleAdjustCalibration}
-                className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                className="btn-primary"
               >
                 <Settings className="h-4 w-4 mr-1" />
                 Adjust Calibration

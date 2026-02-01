@@ -33,22 +33,22 @@ import {
   CheckCircle2,
   Edit,
   Gauge,
+  GaugeCircle,
   Layers,
   Plus,
   Settings,
   Sparkles,
   Trash2,
   Wrench,
-  Zap,
-  GaugeCircle
+  Zap
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { CalibrationWizard } from './CalibrationWizard';
 import { ProfileDefinitionWizard } from './ProfileDefinitionWizard';
-import { ProfileTuningStudio } from './ProfileTuningStudio';
 import { UnsavedChangesDialog } from './UnsavedChangesDialog';
+import { ProfileTuningStudio } from './tuning/ProfileTuningStudio';
 
 interface SystemPackProfile {
   id: string;
@@ -81,7 +81,7 @@ export const SystemPackTuningStudio: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const systemPackId = searchParams.get('systemPackId');
-  
+
   const [systemPack, setSystemPack] = useState<SystemPack | null>(null);
   const [selectedProfileIndex, setSelectedProfileIndex] = useState<number>(0);
   const [tunedProfiles, setTunedProfiles] = useState<Set<string>>(new Set());
@@ -128,7 +128,7 @@ export const SystemPackTuningStudio: React.FC = () => {
       if (stored) {
         const pack = JSON.parse(stored);
         setSystemPack(pack);
-        
+
         // Initialize tuned profiles
         const tuned = new Set<string>();
         pack.profiles?.forEach((p: SystemPackProfile) => {
@@ -142,8 +142,8 @@ export const SystemPackTuningStudio: React.FC = () => {
 
       // Try original system pack from SYSTEM_PACKS or EGYPTIAN_UPVC_SYSTEMS
       const originalPack = SYSTEM_PACKS.find((p: any) => p.meta?.id === systemPackId) ||
-                          EGYPTIAN_UPVC_SYSTEMS.find((p: any) => p.meta?.id === systemPackId);
-      
+        EGYPTIAN_UPVC_SYSTEMS.find((p: any) => p.meta?.id === systemPackId);
+
       if (originalPack) {
         // Convert to SystemPack format
         const packMeta = (originalPack as any).meta || {};
@@ -196,7 +196,7 @@ export const SystemPackTuningStudio: React.FC = () => {
     } else if (packProfile.material === 'wood') {
       material = 'wood';
     }
-    
+
     // Map profile type to Profile's profileRole
     const typeMap: Record<string, Profile['profileRole']> = {
       'frame': 'frame',
@@ -206,7 +206,7 @@ export const SystemPackTuningStudio: React.FC = () => {
       'bead': 'glazing_bead',
     };
     const profileRole = typeMap[packProfile.type] || 'frame';
-    
+
     return {
       id: packProfile.id,
       name: packProfile.name,
@@ -244,7 +244,7 @@ export const SystemPackTuningStudio: React.FC = () => {
       setShowSwitchProfileDialog(true);
       return;
     }
-    
+
     const profileForTuning = convertToProfile(profile);
     setTuningProfile(profileForTuning);
     setHasUnsavedChanges(false); // Reset for new profile
@@ -264,7 +264,7 @@ export const SystemPackTuningStudio: React.FC = () => {
     if (hasChanges) {
       setHasUnsavedChanges(true);
     }
-    
+
     // If profile was updated, refresh the system pack data
     if (tuningProfile && userId) {
       try {
@@ -309,14 +309,14 @@ export const SystemPackTuningStudio: React.FC = () => {
           localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
           setSystemPack(updatedPack);
 
-        const tuned = new Set<string>();
+          const tuned = new Set<string>();
           updatedPack.profiles?.forEach((p: SystemPackProfile) => {
-          if (p.tuningStatus === 'tuned') {
-            tuned.add(p.id);
-          }
-        });
-        setTunedProfiles(tuned);
-      }
+            if (p.tuningStatus === 'tuned') {
+              tuned.add(p.id);
+            }
+          });
+          setTunedProfiles(tuned);
+        }
       } catch (err) {
         console.error('Error refreshing system pack after tuning close:', err);
       }
@@ -358,7 +358,7 @@ export const SystemPackTuningStudio: React.FC = () => {
 
   const handleAddProfile = (profile: Profile) => {
     if (!systemPack || !systemPackId) return;
-    
+
     const newProfile: SystemPackProfile = {
       id: profile.id || `profile_${Date.now()}`,
       name: profile.name,
@@ -372,13 +372,13 @@ export const SystemPackTuningStudio: React.FC = () => {
       micronConfig: profile.specifications,
       tuningStatus: 'untuned',
     };
-    
+
     const updatedPack: SystemPack = {
       ...systemPack,
       profiles: [...systemPack.profiles, newProfile],
       updatedAt: new Date().toISOString(),
     };
-    
+
     localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
     setSystemPack(updatedPack);
     setShowProfileWizard(false);
@@ -387,30 +387,30 @@ export const SystemPackTuningStudio: React.FC = () => {
 
   const handleEditProfile = (profile: Profile) => {
     if (!systemPack || !systemPackId || !editingProfile) return;
-    
+
     const updatedProfiles = systemPack.profiles.map(p =>
       p.id === editingProfile.id
         ? {
-            ...p,
-            name: profile.name,
-            type: (profile.profileRole || profile.type || p.type) as SystemPackProfile['type'],
-            material: profile.material || p.material,
-            unitWeight: profile.unitWeight ?? p.unitWeight,
-            barLength: profile.barLength ?? p.barLength,
-            width: profile.width ?? p.width,
-            height: profile.height ?? p.height,
-            thickness: profile.thickness ?? p.thickness,
-            micronConfig: profile.specifications || p.micronConfig,
-          }
+          ...p,
+          name: profile.name,
+          type: (profile.profileRole || profile.type || p.type) as SystemPackProfile['type'],
+          material: profile.material || p.material,
+          unitWeight: profile.unitWeight ?? p.unitWeight,
+          barLength: profile.barLength ?? p.barLength,
+          width: profile.width ?? p.width,
+          height: profile.height ?? p.height,
+          thickness: profile.thickness ?? p.thickness,
+          micronConfig: profile.specifications || p.micronConfig,
+        }
         : p
     );
-    
+
     const updatedPack: SystemPack = {
       ...systemPack,
       profiles: updatedProfiles,
       updatedAt: new Date().toISOString(),
     };
-    
+
     localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
     setSystemPack(updatedPack);
     setEditingProfile(null);
@@ -420,20 +420,20 @@ export const SystemPackTuningStudio: React.FC = () => {
 
   const handleDeleteProfile = () => {
     if (!systemPack || !systemPackId || !deletingProfile) return;
-    
+
     const updatedProfiles = systemPack.profiles.filter(p => p.id !== deletingProfile.id);
     const updatedPack: SystemPack = {
       ...systemPack,
       profiles: updatedProfiles,
       updatedAt: new Date().toISOString(),
     };
-    
+
     localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
     setSystemPack(updatedPack);
     setDeletingProfile(null);
     setShowDeleteConfirm(false);
     setHasUnsavedChanges(true);
-    
+
     // Remove from tuned profiles if it was tuned
     setTunedProfiles(prev => {
       const next = new Set(prev);
@@ -444,10 +444,10 @@ export const SystemPackTuningStudio: React.FC = () => {
 
   const handleProfileTuned = (profileId: string) => {
     setTunedProfiles(prev => new Set([...prev, profileId]));
-    
+
     // Update system pack in localStorage
     if (systemPack) {
-      const updatedProfiles = systemPack.profiles.map(p => 
+      const updatedProfiles = systemPack.profiles.map(p =>
         p.id === profileId ? { ...p, tuningStatus: 'tuned' as const } : p
       );
       const allTuned = updatedProfiles.every(p => p.tuningStatus === 'tuned');
@@ -456,10 +456,10 @@ export const SystemPackTuningStudio: React.FC = () => {
         profiles: updatedProfiles,
         tuningStatus: allTuned ? 'tuned' : 'in_progress',
       };
-      
+
       localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
       setSystemPack(updatedPack);
-      
+
       // Dispatch event for other components
       window.dispatchEvent(new CustomEvent('customProfileAdded', { detail: updatedPack }));
     }
@@ -467,37 +467,37 @@ export const SystemPackTuningStudio: React.FC = () => {
 
   const handleMarkAllTuned = () => {
     if (!systemPack) return;
-    
+
     const updatedProfiles = systemPack.profiles.map(p => ({
       ...p,
       tuningStatus: 'tuned' as const,
     }));
-    
+
     const updatedPack = {
       ...systemPack,
       profiles: updatedProfiles,
       tuningStatus: 'tuned' as const,
       tunedAt: new Date().toISOString(),
     };
-    
+
     localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
     localStorage.setItem(`system-pack-${systemPackId}`, JSON.stringify(updatedPack));
     setSystemPack(updatedPack);
     setTunedProfiles(new Set(updatedProfiles.map(p => p.id)));
-    
+
     window.dispatchEvent(new CustomEvent('customProfileAdded', { detail: updatedPack }));
-    window.dispatchEvent(new CustomEvent('systemPackTuned', { 
-      detail: { 
+    window.dispatchEvent(new CustomEvent('systemPackTuned', {
+      detail: {
         systemPackId: systemPackId,
         systemPackName: systemPack.name,
-        tuned: true 
-      } 
+        tuned: true
+      }
     }));
   };
 
   const handleSaveAndReturn = () => {
     if (!systemPack) return;
-    
+
     // Mark all as tuned if not already
     if (!allProfilesTuned) {
       handleMarkAllTuned();
@@ -509,13 +509,13 @@ export const SystemPackTuningStudio: React.FC = () => {
       try {
         const data = JSON.parse(returnUrl);
         sessionStorage.removeItem('tuning_return_url');
-        navigate(data.url, { 
-          state: { 
+        navigate(data.url, {
+          state: {
             systemPackId: systemPackId,
             systemTuned: true,
             systemTunedMessage: `System "${systemPack.name}" has been tuned and is ready to use with all profiles configured.`,
-            ...data.params 
-          } 
+            ...data.params
+          }
         });
       } catch {
         navigate('/fabricator/system-packs', {
@@ -559,20 +559,20 @@ export const SystemPackTuningStudio: React.FC = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Card className="bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-slate-700/50 shadow-2xl shadow-orange-500/5">
+          <Card className="bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-slate-900/95 border-slate-700/50 shadow-2xl shadow-amber-500/5">
             <CardHeader className="pb-4">
               <div className="flex items-start justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500 via-amber-400 to-orange-600 shadow-lg shadow-orange-500/40">
+                    <div className="btn-primary-gradient">
                       <Settings className="h-6 w-6 text-white" />
                     </div>
                     <div>
                       <div className="flex items-center gap-3 mb-1">
-                        <CardTitle className="text-3xl font-bold bg-gradient-to-r from-orange-400 via-amber-300 to-orange-500 bg-clip-text text-transparent">
+                        <CardTitle className="text-3xl font-bold bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 bg-clip-text text-transparent">
                           System Pack Tuning Studio
                         </CardTitle>
-                        <Badge className="bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-orange-500/40 text-orange-300 px-3 py-1">
+                        <Badge className="bg-gradient-to-r from-amber-500/20 to-amber-500/20 border-amber-500/40 text-amber-300 px-3 py-1">
                           <Sparkles className="h-3 w-3 mr-1" />
                           PRO
                         </Badge>
@@ -590,7 +590,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                     e.stopPropagation();
                     handleExit();
                   }}
-                  className="border-slate-600 bg-slate-800/50 text-slate-200 hover:bg-slate-700/50 relative z-10"
+                  className="btn-secondary"
                   data-testid="system-pack-tuning-back-button"
                   type="button"
                 >
@@ -633,11 +633,11 @@ export const SystemPackTuningStudio: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="bg-slate-800/50 border-slate-700/50">
+          <Card className="bg-slate-800/50 border-slate-700 /50 card-dark">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-1">{systemPack.name}</h3>
+                  <h3 className="typography-h3 text-white mb-1">{systemPack.name}</h3>
                   <p className="text-slate-400 text-sm">{systemPack.manufacturer} • {systemPack.region.toUpperCase()}</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -648,11 +648,11 @@ export const SystemPackTuningStudio: React.FC = () => {
                     onClick={async (e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      
+
                       try {
                         // Clear editing profile first
                         setEditingProfile(null);
-                        
+
                         // Ensure userId is available before opening wizard
                         if (!userId) {
                           const { data: { session }, error } = await supabase.auth.getSession();
@@ -692,7 +692,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                       variant={viewMode === 'cards' ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setViewMode('cards')}
-                      className={viewMode === 'cards' ? 'bg-orange-600' : ''}
+                      className={viewMode === 'cards' ? 'bg-amber-600' : ''}
                     >
                       <Layers className="h-4 w-4 mr-2" />
                       Cards
@@ -701,7 +701,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                       variant={viewMode === 'tabs' ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setViewMode('tabs')}
-                      className={viewMode === 'tabs' ? 'bg-orange-600' : ''}
+                      className={viewMode === 'tabs' ? 'bg-amber-600' : ''}
                     >
                       <Settings className="h-4 w-4 mr-2" />
                       Tabs
@@ -717,27 +717,24 @@ export const SystemPackTuningStudio: React.FC = () => {
                     const isTuned = tunedProfiles.has(profile.id);
                     const profileIcon = profile.type === 'frame' ? Layers : BoxSelect;
                     const IconComponent = profileIcon;
-                    
+
                     return (
-                      <Card 
+                      <Card
                         key={profile.id}
-                        className={`bg-slate-900/50 border-slate-700/50 hover:border-orange-500/50 transition-colors ${
-                          isTuned ? 'ring-2 ring-green-500/30' : ''
-                        }`}
+                        className={`bg-slate-900/50 border-slate-700/50 hover:border-amber-500/50 transition-colors ${isTuned ? 'ring-2 ring-green-500/30' : ''
+                          }`}
                       >
                         <CardHeader>
                           <div className="flex items-start justify-between">
                             <div className="flex items-center gap-3">
-                              <div className={`p-2 rounded-lg ${
-                                profile.type === 'frame' ? 'bg-blue-500/20' : 
-                                profile.type === 'sash' ? 'bg-green-500/20' : 
-                                'bg-purple-500/20'
-                              }`}>
-                                <IconComponent className={`h-5 w-5 ${
-                                  profile.type === 'frame' ? 'text-blue-400' : 
-                                  profile.type === 'sash' ? 'text-green-400' : 
-                                  'text-purple-400'
-                                }`} />
+                              <div className={`p-2 rounded-lg ${profile.type === 'frame' ? 'bg-blue-500/20' :
+                                profile.type === 'sash' ? 'bg-green-500/20' :
+                                  'bg-purple-500/20'
+                                }`}>
+                                <IconComponent className={`h-5 w-5 ${profile.type === 'frame' ? 'text-blue-400' :
+                                  profile.type === 'sash' ? 'text-green-400' :
+                                    'text-purple-400'
+                                  }`} />
                               </div>
                               <div>
                                 <CardTitle className="text-base text-white capitalize">
@@ -768,16 +765,16 @@ export const SystemPackTuningStudio: React.FC = () => {
                               <div>Bar Length: {profile.barLength} mm</div>
                             )}
                           </div>
-                          
+
                           <div className="flex gap-2">
-                          <Button
-                            onClick={() => handleOpenTuning(profile)}
+                            <Button
+                              onClick={() => handleOpenTuning(profile)}
                               className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                            size="sm"
-                          >
-                            <Wrench className="h-4 w-4 mr-2" />
+                              size="sm"
+                            >
+                              <Wrench className="h-4 w-4 mr-2" />
                               Tune
-                          </Button>
+                            </Button>
                             <Button
                               onClick={() => {
                                 setCalibrationProfile(profile);
@@ -785,7 +782,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                               }}
                               variant="outline"
                               size="sm"
-                              className="border-orange-500/50 text-orange-300 hover:bg-orange-500/10"
+                              className="btn-primary"
                               title="Calibrate cutting parameters"
                             >
                               <GaugeCircle className="h-4 w-4" />
@@ -797,7 +794,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                               }}
                               variant="outline"
                               size="sm"
-                              className="border-slate-600 text-slate-300 hover:bg-slate-700/50"
+                              className="btn-secondary"
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -813,7 +810,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
-                          
+
                           {!isTuned && (
                             <Button
                               onClick={() => handleProfileTuned(profile.id)}
@@ -835,115 +832,115 @@ export const SystemPackTuningStudio: React.FC = () => {
               {/* Profile Tabs View (Existing) */}
               {viewMode === 'tabs' && (
                 <Tabs value={selectedProfileIndex.toString()} onValueChange={(v) => setSelectedProfileIndex(Number(v))}>
-                <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-2 bg-slate-900/50">
-                  {systemPack.profiles.map((profile, index) => (
-                    <TabsTrigger
-                      key={profile.id}
-                      value={index.toString()}
-                      className="data-[state=active]:bg-orange-500/20 data-[state=active]:text-orange-300 data-[state=active]:border-orange-500/40"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="capitalize">{profile.type}</span>
-                        {tunedProfiles.has(profile.id) && (
-                          <CheckCircle2 className="h-4 w-4 text-green-400" />
-                        )}
-                      </div>
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-
-                {systemPack.profiles.map((profile, index) => (
-                  <TabsContent key={profile.id} value={index.toString()} className="mt-6">
-                    <Card className="bg-slate-900/50 border-slate-700/50">
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <CardTitle className="text-xl text-white capitalize">
-                              {profile.type} Profile: {profile.name}
-                            </CardTitle>
-                            <CardDescription className="text-slate-400 mt-1">
-                              {profile.material} • {profile.unitWeight ? `${profile.unitWeight} kg/m` : 'Weight not set'}
-                              {profile.width && profile.height && ` • ${profile.width} × ${profile.height} mm`}
-                            </CardDescription>
-                          </div>
-                          {tunedProfiles.has(profile.id) ? (
-                            <Badge className="bg-green-500/20 text-green-300 border-green-500/40">
-                              <CheckCircle2 className="h-4 w-4 mr-1" />
-                              Tuned
-                            </Badge>
-                          ) : (
-                            <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40">
-                              Needs Tuning
-                            </Badge>
+                  <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 gap-2 bg-slate-900/50">
+                    {systemPack.profiles.map((profile, index) => (
+                      <TabsTrigger
+                        key={profile.id}
+                        value={index.toString()}
+                        className="btn-primary"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="capitalize">{profile.type}</span>
+                          {tunedProfiles.has(profile.id) && (
+                            <CheckCircle2 className="h-4 w-4 text-green-400" />
                           )}
                         </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-4">
-                          <Alert className="bg-blue-500/10 border-blue-500/30">
-                            <Gauge className="h-4 w-4 text-blue-400" />
-                            <AlertDescription className="text-blue-300">
-                              Configure cutting rules, machining zones, and calibration for this profile. 
-                              Mark as "Tuned" when ready.
-                            </AlertDescription>
-                          </Alert>
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
 
-                          {/* Profile Tuning Interface */}
+                  {systemPack.profiles.map((profile, index) => (
+                    <TabsContent key={profile.id} value={index.toString()} className="mt-6">
+                      <Card className="bg-slate-900/50 border-slate-700/50">
+                        <CardHeader>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <CardTitle className="text-xl text-white capitalize">
+                                {profile.type} Profile: {profile.name}
+                              </CardTitle>
+                              <CardDescription className="text-slate-400 mt-1">
+                                {profile.material} • {profile.unitWeight ? `${profile.unitWeight} kg/m` : 'Weight not set'}
+                                {profile.width && profile.height && ` • ${profile.width} × ${profile.height} mm`}
+                              </CardDescription>
+                            </div>
+                            {tunedProfiles.has(profile.id) ? (
+                              <Badge className="bg-green-500/20 text-green-300 border-green-500/40">
+                                <CheckCircle2 className="h-4 w-4 mr-1" />
+                                Tuned
+                              </Badge>
+                            ) : (
+                              <Badge className="btn-primary">
+                                Needs Tuning
+                              </Badge>
+                            )}
+                          </div>
+                        </CardHeader>
+                        <CardContent>
                           <div className="space-y-4">
-                            <div className="border border-slate-700/50 rounded-lg p-4 bg-slate-800/30">
-                              <p className="text-sm text-slate-400 mb-4">
-                                Configure cutting rules, machining zones, and calibration for this profile:
-                              </p>
-                              <ul className="text-sm text-slate-300 space-y-2 mb-4">
-                                <li className="flex items-center gap-2">
-                                  <span className="text-orange-400">•</span>
-                                  <span>Cutting rules (kerf: {profile.micronConfig?.sawKerf || 4.5}mm, bar length: {profile.barLength || 6500}mm)</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                  <span className="text-orange-400">•</span>
-                                  <span>Machining zones (slots, holes, milling operations)</span>
-                                </li>
-                                <li className="flex items-center gap-2">
-                                  <span className="text-orange-400">•</span>
-                                  <span>Calibration data (cut tolerances, assembly tolerances)</span>
-                                </li>
-                              </ul>
-                              
-                              <div className="flex gap-2">
-                                <Button
-                                  onClick={() => handleOpenTuning(profile)}
-                                  className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                                >
-                                  <Wrench className="h-4 w-4 mr-2" />
-                                  Open Tuning Studio
-                                </Button>
-                                <Button
-                                  onClick={() => handleProfileTuned(profile.id)}
-                                  disabled={tunedProfiles.has(profile.id)}
-                                  variant="outline"
-                                  className="border-green-500/40 text-green-300 hover:bg-green-500/10"
-                                >
-                                  {tunedProfiles.has(profile.id) ? (
-                                    <>
-                                      <CheckCircle2 className="h-4 w-4 mr-2" />
-                                      Tuned
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Zap className="h-4 w-4 mr-2" />
-                                      Mark as Tuned
-                                    </>
-                                  )}
-                                </Button>
+                            <Alert className="bg-blue-500/10 border-blue-500/30">
+                              <Gauge className="h-4 w-4 text-blue-400" />
+                              <AlertDescription className="text-blue-300">
+                                Configure cutting rules, machining zones, and calibration for this profile.
+                                Mark as "Tuned" when ready.
+                              </AlertDescription>
+                            </Alert>
+
+                            {/* Profile Tuning Interface */}
+                            <div className="space-y-4">
+                              <div className="border border-slate-700/50 rounded-lg p-4 bg-slate-800 /30 card-dark">
+                                <p className="text-sm text-slate-400 mb-4">
+                                  Configure cutting rules, machining zones, and calibration for this profile:
+                                </p>
+                                <ul className="text-sm text-slate-300 space-y-2 mb-4">
+                                  <li className="flex items-center gap-2">
+                                    <span className="text-amber-400">•</span>
+                                    <span>Cutting rules (kerf: {profile.micronConfig?.sawKerf || 4.5}mm, bar length: {profile.barLength || 6500}mm)</span>
+                                  </li>
+                                  <li className="flex items-center gap-2">
+                                    <span className="text-amber-400">•</span>
+                                    <span>Machining zones (slots, holes, milling operations)</span>
+                                  </li>
+                                  <li className="flex items-center gap-2">
+                                    <span className="text-amber-400">•</span>
+                                    <span>Calibration data (cut tolerances, assembly tolerances)</span>
+                                  </li>
+                                </ul>
+
+                                <div className="flex gap-2">
+                                  <Button
+                                    onClick={() => handleOpenTuning(profile)}
+                                    className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                                  >
+                                    <Wrench className="h-4 w-4 mr-2" />
+                                    Open Tuning Studio
+                                  </Button>
+                                  <Button
+                                    onClick={() => handleProfileTuned(profile.id)}
+                                    disabled={tunedProfiles.has(profile.id)}
+                                    variant="outline"
+                                    className="border-green-500/40 text-green-300 hover:bg-green-500/10"
+                                  >
+                                    {tunedProfiles.has(profile.id) ? (
+                                      <>
+                                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                                        Tuned
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Zap className="h-4 w-4 mr-2" />
+                                        Mark as Tuned
+                                      </>
+                                    )}
+                                  </Button>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                ))}
-              </Tabs>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                  ))}
+                </Tabs>
               )}
             </CardContent>
           </Card>
@@ -965,7 +962,7 @@ export const SystemPackTuningStudio: React.FC = () => {
                 </AlertDescription>
               </Alert>
             ) : (
-              <Alert className="bg-amber-500/10 border-amber-500/30">
+              <Alert className="btn-primary">
                 <AlertTriangle className="h-4 w-4 text-amber-400" />
                 <AlertDescription className="text-amber-300">
                   Tune all profiles ({tunedProfiles.size}/{systemPack.profiles.length} complete) before proceeding to design.
@@ -978,7 +975,7 @@ export const SystemPackTuningStudio: React.FC = () => {
               variant="outline"
               onClick={handleMarkAllTuned}
               disabled={allProfilesTuned}
-              className="border-slate-600 bg-slate-800/50 text-slate-200 hover:bg-slate-700/50"
+              className="btn-secondary"
             >
               <CheckCircle2 className="h-4 w-4 mr-2" />
               Mark All as Tuned
@@ -998,7 +995,7 @@ export const SystemPackTuningStudio: React.FC = () => {
               disabled={!allProfilesTuned}
               variant="outline"
               size="lg"
-              className="h-12 px-8 text-base border-slate-600 bg-slate-800/50 text-slate-200 hover:bg-slate-700/50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-secondary"
             >
               Start New Measurement
               <ArrowRight className="h-5 w-5 ml-2" />
@@ -1059,9 +1056,9 @@ export const SystemPackTuningStudio: React.FC = () => {
                       return;
                     }
 
-                    if (profilesByName && profilesByName.length > 0 && profilesByName[0]) {
-                      updatedProfileData = profilesByName[0];
-                      console.log('✅ Found profile by name:', updatedProfileData.id);
+                    if (profilesByName && (profilesByName as any[]).length > 0 && (profilesByName as any[])[0] && (profilesByName as any[])[0].id) {
+                      updatedProfileData = (profilesByName as any[])[0];
+                      console.log('✅ Found profile by name:', (updatedProfileData as any).id);
                     } else {
                       console.error('❌ Profile not found by name either');
                       return;
@@ -1078,18 +1075,18 @@ export const SystemPackTuningStudio: React.FC = () => {
                 }
 
                 // Type assertion: we've confirmed updatedProfileData is not null
-                const profileData = updatedProfileData as NonNullable<typeof updatedProfileData>;
+                const profileData = updatedProfileData as any;
 
                 // Update the system pack with the fresh database data
                 // Note: The profile ID may have changed from a static ID (like "KATRA-S120-FRAME") to a UUID
                 const updatedProfiles = systemPack.profiles.map(p => {
                   // Match by the original tuningProfile ID or by name if ID changed
-                  if (p.id === tuningProfile.id || (p.name === tuningProfile.name && p.id !== profileData.id)) {
-                    console.log('🔄 Updating system pack profile:', { oldId: p.id, newId: profileData.id, name: p.name });
+                  if (p.id === tuningProfile.id || (p.name === tuningProfile.name && p.id !== profileData?.id)) {
+                    console.log('🔄 Updating system pack profile:', { oldId: p.id, newId: profileData?.id, name: p.name });
                     return {
                       ...p,
                       // Update the ID to the database UUID
-                      id: profileData.id,
+                      id: profileData?.id || p.id,
                       // Update basic properties
                       width: profileData.width ?? p.width,
                       height: profileData.height ?? p.height,
@@ -1103,14 +1100,14 @@ export const SystemPackTuningStudio: React.FC = () => {
                   return p;
                 });
 
-              const updatedPack = {
-                ...systemPack,
-                profiles: updatedProfiles,
-              };
+                const updatedPack = {
+                  ...systemPack,
+                  profiles: updatedProfiles,
+                };
 
                 // Save to localStorage and update state
-              localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
-              setSystemPack(updatedPack);
+                localStorage.setItem(`custom-profile-${systemPackId}`, JSON.stringify(updatedPack));
+                setSystemPack(updatedPack);
 
                 // Update tuned profiles set
                 const tuned = new Set<string>();
@@ -1175,7 +1172,7 @@ export const SystemPackTuningStudio: React.FC = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700">
+            <AlertDialogCancel className="btn-secondary">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -1209,34 +1206,34 @@ export const SystemPackTuningStudio: React.FC = () => {
                   // Update profile immediately with calibration data
                   try {
                     // Update the profile in the system pack
-                    const updatedProfiles = systemPack.profiles.map(p => 
+                    const updatedProfiles = systemPack.profiles.map(p =>
                       p.id === calibrationProfile.id
                         ? {
-                            ...p,
-                            specifications: {
-                              ...p.specifications,
-                              calibration: calibration,
-                              lastCalibrated: new Date().toISOString(),
-                            }
+                          ...p,
+                          specifications: {
+                            ...p.specifications,
+                            calibration: calibration,
+                            lastCalibrated: new Date().toISOString(),
                           }
+                        }
                         : p
                     );
-                    
+
                     const updatedPack = {
                       ...systemPack,
                       profiles: updatedProfiles,
                     };
-                    
+
                     setSystemPack(updatedPack);
-                    
+
                     // Save to localStorage
                     localStorage.setItem(`custom-profile-${systemPack.id}`, JSON.stringify(updatedPack));
-                    
+
                     // Update Supabase if profile exists there
                     if (userId) {
                       const profileToUpdate = convertToProfile(calibrationProfile);
-                      const { error } = await supabase
-                        .from('profiles')
+                      const { error } = await (supabase as any)
+                        .from('fabricator_profiles')
                         .update({
                           specifications: {
                             ...(profileToUpdate.specifications || {}),
@@ -1245,12 +1242,12 @@ export const SystemPackTuningStudio: React.FC = () => {
                           }
                         })
                         .eq('id', calibrationProfile.id);
-                      
+
                       if (error) {
                         console.error('Error updating profile calibration:', error);
                       }
                     }
-                    
+
                     toast.success('Calibration saved and applied immediately');
                     setShowCalibrationDialog(false);
                     setCalibrationProfile(null);
@@ -1262,7 +1259,7 @@ export const SystemPackTuningStudio: React.FC = () => {
               />
             </div>
             <AlertDialogFooter>
-              <AlertDialogCancel className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700">
+              <AlertDialogCancel className="btn-secondary">
                 Close
               </AlertDialogCancel>
             </AlertDialogFooter>

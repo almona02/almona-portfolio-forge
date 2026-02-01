@@ -26,17 +26,17 @@ import { Progress } from '@/shared/ui/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import {
-    AlertCircle,
-    AlertTriangle,
-    CheckCircle,
-    Download,
-    FileSpreadsheet,
-    Plus,
-    RefreshCw,
-    Save,
-    TrendingDown,
-    TrendingUp,
-    Upload,
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle,
+  Download,
+  FileSpreadsheet,
+  Plus,
+  RefreshCw,
+  Save,
+  TrendingDown,
+  TrendingUp,
+  Upload,
 } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -346,7 +346,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Pricing Configuration</h2>
+          <h2 className="typography-h2 text-white">Pricing Configuration</h2>
           <p className="text-gray-400 mt-1">Manage pricing settings, markups, and regional variations</p>
         </div>
         <div className="flex gap-2">
@@ -440,7 +440,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
               {/* Exchange Rates Display */}
               {Object.keys(exchangeRates).length > 0 && (
                 <div className="p-4 bg-gray-900/50 rounded-lg">
-                  <Label className="mb-2 block">Current Exchange Rates</Label>
+                  <Label className="typography-label mb-2 block">Current Exchange Rates</Label>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     {Object.entries(exchangeRates).map(([pair, rate]) => (
                       <div key={pair} className="flex justify-between">
@@ -510,7 +510,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
               </div>
 
               <div className="border-t border-gray-700 pt-4">
-                <h3 className="text-lg font-semibold mb-4">Tax & Discount Settings</h3>
+                <h3 className="typography-h3 text-lg mb-4">Tax & Discount Settings</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Default Tax Rate (%)</Label>
@@ -551,7 +551,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
               </div>
 
               <div className="border-t border-gray-700 pt-4">
-                <h3 className="text-lg font-semibold mb-4">Material-Specific Markups</h3>
+                <h3 className="typography-h3 text-lg mb-4">Material-Specific Markups</h3>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label>Aluminum Markup (%)</Label>
@@ -584,7 +584,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
               </div>
 
               <div className="border-t border-gray-700 pt-4">
-                <h3 className="text-lg font-semibold mb-4">Rounding Settings</h3>
+                <h3 className="typography-h3 text-lg mb-4">Rounding Settings</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Rounding Method</Label>
@@ -742,7 +742,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
             <CardContent className="space-y-4">
               <div className="border-2 border-dashed border-gray-700 rounded-lg p-8 text-center">
                 <FileSpreadsheet className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <Label htmlFor="bulk-import-file" className="cursor-pointer">
+                <Label htmlFor="bulk-import-file" className="typography-label cursor-pointer">
                   <Input
                     ref={fileInputRef}
                     id="bulk-import-file"
@@ -793,7 +793,7 @@ export const PricingConfiguration: React.FC<PricingConfigurationProps> = ({
               <div className="space-y-2">
                 {alerts.length === 0 ? (
                   <div className="text-center py-8 text-gray-400">
-                    <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-500" />
+                    <CheckCircle className="h-12 w-12 mx-auto mb-4  status-valid" />
                     No alerts found
                   </div>
                 ) : (

@@ -60,9 +60,9 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg bg-almona-darker border-almona-light">
-      <h3 className="text-xl font-semibold text-gradient-orange">{t('reviews.write_review')}</h3>
+      <h3 className="typography-h3 text-gradient-orange">{t('reviews.write_review')}</h3>
       <div>
-        <Label htmlFor="reviewerName">{t('reviews.your_name')}</Label>
+        <Label htmlFor="reviewerName" className="typography-label">{t('reviews.your_name')}</Label>
         <Input
           id="reviewerName"
           value={reviewerName}
@@ -87,7 +87,7 @@ export const ReviewForm: React.FC<ReviewFormProps> = ({
         </div>
       </div>
       <div>
-        <Label htmlFor="comment">{t('reviews.your_comment')}</Label>
+        <Label htmlFor="comment" className="typography-label">{t('reviews.your_comment')}</Label>
         <Textarea
           id="comment"
           value={comment}

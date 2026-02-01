@@ -336,7 +336,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
       <CardContent className="space-y-6">
         {/* Document Type Selection */}
         <div className="space-y-2">
-          <Label className="text-gray-300">
+          <Label className="typography-label text-gray-300">
             {t('turkish.compliance.documentType', 'Belge Türü')}
           </Label>
             <Select value={selectedDocument} onValueChange={setSelectedDocument}>
@@ -359,12 +359,12 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
 
         {/* Company Information */}
         <div className="space-y-3">
-          <h4 className="text-white font-medium">
+          <h4 className="typography-h4 text-white font-medium">
             {t('turkish.compliance.companyInfo', 'Firma Bilgileri')}
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="companyName" className="text-gray-300 text-sm">
+              <Label htmlFor="companyName" className="typography-label text-gray-300 text-sm">
                 {t('turkish.compliance.companyName', 'Firma Adı')}
               </Label>
               <Input
@@ -375,7 +375,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
               />
             </div>
             <div>
-              <Label htmlFor="companyTaxNumber" className="text-gray-300 text-sm">
+              <Label htmlFor="companyTaxNumber" className="typography-label text-gray-300 text-sm">
                 {t('turkish.compliance.taxNumber', 'Vergi Numarası')}
               </Label>
               <Input
@@ -386,7 +386,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
               />
             </div>
             <div className="md:col-span-2">
-              <Label htmlFor="companyAddress" className="text-gray-300 text-sm">
+              <Label htmlFor="companyAddress" className="typography-label text-gray-300 text-sm">
                 {t('turkish.compliance.address', 'Adres')}
               </Label>
               <Textarea
@@ -404,12 +404,12 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
 
         {/* Customer Information */}
         <div className="space-y-3">
-          <h4 className="text-white font-medium">
+          <h4 className="typography-h4 text-white font-medium">
             {t('turkish.compliance.customerInfo', 'Müşteri Bilgileri')}
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="customerName" className="text-gray-300 text-sm">
+              <Label htmlFor="customerName" className="typography-label text-gray-300 text-sm">
                 {t('turkish.compliance.customerName', 'Müşteri Adı')}
               </Label>
               <Input
@@ -420,7 +420,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
               />
             </div>
             <div>
-              <Label htmlFor="customerTaxNumber" className="text-gray-300 text-sm">
+              <Label htmlFor="customerTaxNumber" className="typography-label text-gray-300 text-sm">
                 {t('turkish.compliance.taxNumber', 'Vergi Numarası')}
               </Label>
               <Input
@@ -431,7 +431,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
               />
             </div>
             <div className="md:col-span-2">
-              <Label htmlFor="customerAddress" className="text-gray-300 text-sm">
+              <Label htmlFor="customerAddress" className="typography-label text-gray-300 text-sm">
                 {t('turkish.compliance.address', 'Adres')}
               </Label>
               <Textarea
@@ -450,13 +450,13 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
         {/* Products */}
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <h4 className="text-white font-medium">
+            <h4 className="typography-h4 text-white font-medium">
               {t('turkish.compliance.products', 'Ürünler')}
             </h4>
             <Button
               onClick={addProduct}
               size="sm"
-              className="bg-orange-500 hover:bg-orange-600 text-white"
+              className="btn-primary"
             >
               {t('turkish.compliance.addProduct', 'Ürün Ekle')}
             </Button>
@@ -466,7 +466,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
             <div key={product.id} className="p-3 bg-gray-800/50 rounded border border-gray-700">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <Label className="text-gray-300 text-sm">
+                  <Label className="typography-label text-gray-300 text-sm">
                     {t('turkish.compliance.productName', 'Ürün Adı')}
                   </Label>
                   <Input
@@ -476,7 +476,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300 text-sm">
+                  <Label className="typography-label text-gray-300 text-sm">
                     {t('turkish.compliance.quantity', 'Miktar')}
                   </Label>
                   <Input
@@ -487,7 +487,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
                   />
                 </div>
                 <div>
-                  <Label className="text-gray-300 text-sm">
+                  <Label className="typography-label text-gray-300 text-sm">
                     {t('turkish.compliance.unitPrice', 'Birim Fiyat')}
                   </Label>
                   <Input
@@ -499,7 +499,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
                 </div>
               </div>
               <div className="mt-2 flex justify-between items-center">
-                <span className="text-orange-400 font-medium">
+                <span className="text-amber-400 font-medium">
                   {t('turkish.compliance.total', 'Toplam')}: {(product.quantity * product.unitPrice).toLocaleString('tr-TR')}₺
                 </span>
                 <Button
@@ -520,7 +520,7 @@ export const TurkishComplianceDocs: React.FC<TurkishComplianceDocsProps> = ({
           <Button
             onClick={generateDocument}
             disabled={!customerInfo.name || products.length === 0}
-            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+            className="btn-primary"
           >
             {t('turkish.compliance.generate', 'Belge Oluştur')}
           </Button>
