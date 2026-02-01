@@ -186,7 +186,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
         {/* Critical Alerts */}
         {criticalAlerts.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold flex items-center gap-2">
+            <h3 className="typography-h3 text-sm flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-destructive" />
               Critical Alerts
             </h3>
@@ -206,7 +206,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       title="مفيد"
                       data-feedback-id={`alert_${idx}`}
                     >
-                      <ThumbsUp className="h-3 w-3 text-green-500" />
+                      <ThumbsUp className="h-3 w-3  status-valid" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -237,8 +237,8 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
         {/* High Priority Alerts */}
         {highAlerts.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-orange-500" />
+            <h3 className="typography-h3 text-sm flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-500" />
               Important Updates
             </h3>
             {highAlerts.slice(0, 3).map((alert, idx) => (
@@ -257,7 +257,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
                       data-feedback-id={`high_alert_${idx}`}
                       disabled={feedbackSubmitting.has(`high_alert_${idx}`)}
                     >
-                      <ThumbsUp className="h-3 w-3 text-green-500" />
+                      <ThumbsUp className="h-3 w-3  status-valid" />
                     </Button>
                     <Button
                       variant="ghost"
@@ -285,7 +285,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
         {/* Price Updates */}
         {brief.price_updates && brief.price_updates.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold flex items-center gap-2">
+            <h3 className="typography-h3 text-sm flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
               Price Updates
             </h3>
@@ -322,7 +322,7 @@ export const MorningBriefWidget: React.FC<MorningBriefWidgetProps> = ({
         {/* Technology News */}
         {brief.tech_news && brief.tech_news.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold flex items-center gap-2">
+            <h3 className="typography-h3 text-sm flex items-center gap-2">
               <Lightbulb className="h-4 w-4" />
               Technology News
             </h3>

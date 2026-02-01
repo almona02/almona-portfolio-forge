@@ -309,7 +309,7 @@ export const SalesAcceleration: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <TrendingUp className="h-8 w-8 text-orange-600" />
+              <TrendingUp className="h-8 w-8 text-amber-600" />
               <div>
                 <p className="text-sm text-muted-foreground">Warm Leads</p>
                 <p className="text-2xl font-bold">{leads.filter(l => l.qualification === 'warm').length}</p>
@@ -354,7 +354,7 @@ export const SalesAcceleration: React.FC = () => {
                     <Users className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">{lead.companyName}</h3>
+                    <h3 className="typography-h3">{lead.companyName}</h3>
                     <p className="text-sm text-muted-foreground">{lead.contactPerson} • {lead.industry}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge variant="outline">{lead.region}</Badge>
@@ -382,7 +382,7 @@ export const SalesAcceleration: React.FC = () => {
                 <div className="mt-4 pt-4 border-t">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
-                      <h4 className="font-medium mb-2">AI Insights</h4>
+                      <h4 className="typography-h4 font-medium mb-2">AI Insights</h4>
                       <div className="space-y-1">
                         {lead.insights.map((insight, index) => (
                           <div key={index} className="flex items-start gap-2">
@@ -394,7 +394,7 @@ export const SalesAcceleration: React.FC = () => {
                     </div>
                     
                     <div>
-                      <h4 className="font-medium mb-2">AI Recommendations</h4>
+                      <h4 className="typography-h4 font-medium mb-2">AI Recommendations</h4>
                       <div className="space-y-1">
                         {lead.aiRecommendations.map((rec, index) => (
                           <div key={index} className="flex items-start gap-2">
@@ -468,7 +468,7 @@ export const SalesAcceleration: React.FC = () => {
                   <TypeIcon className="h-6 w-6 text-blue-600 mt-1" />
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold">{insight.title}</h3>
+                      <h3 className="typography-h3">{insight.title}</h3>
                       <Badge variant="outline" className="text-xs">
                         {insight.confidence}% confidence
                       </Badge>
@@ -538,7 +538,7 @@ export const SalesAcceleration: React.FC = () => {
           
           {aiResponse && (
             <div className="p-4 border rounded-lg bg-blue-50">
-              <h4 className="font-medium mb-2 flex items-center gap-2">
+              <h4 className="typography-h4 font-medium mb-2 flex items-center gap-2">
                 <Brain className="h-4 w-4" />
                 AI Response
               </h4>
@@ -592,7 +592,7 @@ export const SalesAcceleration: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+          <h2 className="typography-h2 tracking-tight flex items-center gap-2">
             <Brain className="h-8 w-8 text-purple-600" />
             AI Sales Acceleration
           </h2>

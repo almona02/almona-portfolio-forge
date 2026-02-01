@@ -1,27 +1,53 @@
 // src/components/fabricator/drafting/utils/snapUtils.ts
 import type { Rectangle, Point } from '../types/drafting';
+import { normalizeCoordinate, roundToPrecision } from './precisionUtils';
 
 /**
- * Snap a rectangle to the grid
- * Constitutional: Deterministic, no ML
+ * Default snap spacing (backward compatible)
  */
-export function snapToGrid(rect: Rectangle, gridSpacing: number = 5): Rectangle {
+export const DEFAULT_SNAP_SPACING = 5; // mm
+
+/**
+ * Snap spacing options (competitive with fenestration software)
+ */
+export const SNAP_SPACING_OPTIONS = [
+  1,   // 1mm - fine precision
+  2,   // 2mm - medium-fine precision
+  5,   // 5mm - default (backward compatible)
+  10,  // 10mm - coarse precision
+] as const;
+
+export type SnapSpacingOption = typeof SNAP_SPACING_OPTIONS[number] | number; // Allow custom spacing
+
+/**
+ * Snap a rectangle to the grid with configurable spacing
+ * Constitutional: Deterministic, no ML
+ * Precision: Uses precision utilities to maintain 0.01mm precision
+ */
+export function snapToGrid(rect: Rectangle, gridSpacing: number = DEFAULT_SNAP_SPACING): Rectangle {
+  // Ensure grid spacing is at least 0.01mm (standard precision)
+  const safeSpacing = Math.max(0.01, gridSpacing);
+  
   return {
     ...rect,
-    x: Math.round(rect.x / gridSpacing) * gridSpacing,
-    y: Math.round(rect.y / gridSpacing) * gridSpacing,
-    width: Math.round(rect.width / gridSpacing) * gridSpacing,
-    height: Math.round(rect.height / gridSpacing) * gridSpacing,
+    x: normalizeCoordinate(Math.round(rect.x / safeSpacing) * safeSpacing),
+    y: normalizeCoordinate(Math.round(rect.y / safeSpacing) * safeSpacing),
+    width: roundToPrecision(Math.round(rect.width / safeSpacing) * safeSpacing),
+    height: roundToPrecision(Math.round(rect.height / safeSpacing) * safeSpacing),
   };
 }
 
 /**
- * Snap a point to the grid
+ * Snap a point to the grid with configurable spacing
+ * Precision: Uses precision utilities to maintain 0.01mm precision
  */
-export function snapPointToGrid(point: Point, gridSpacing: number = 5): Point {
+export function snapPointToGrid(point: Point, gridSpacing: number = DEFAULT_SNAP_SPACING): Point {
+  // Ensure grid spacing is at least 0.01mm (standard precision)
+  const safeSpacing = Math.max(0.01, gridSpacing);
+  
   return {
-    x: Math.round(point.x / gridSpacing) * gridSpacing,
-    y: Math.round(point.y / gridSpacing) * gridSpacing,
+    x: normalizeCoordinate(Math.round(point.x / safeSpacing) * safeSpacing),
+    y: normalizeCoordinate(Math.round(point.y / safeSpacing) * safeSpacing),
   };
 }
 

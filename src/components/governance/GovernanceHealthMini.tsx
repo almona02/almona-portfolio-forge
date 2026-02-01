@@ -88,7 +88,7 @@ export function GovernanceHealthMini() {
           fontSize: '14px', 
           fontWeight: 600,
           color: '#212529'
-        }}>
+        }} className="typography-h3">
           Constitutional AI Health
         </h3>
         <div style={{

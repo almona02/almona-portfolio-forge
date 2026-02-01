@@ -275,7 +275,7 @@ const Products = function ProductsPage() {
     };
   }, [enhancedMachines]);
 
-  const handleSelectMachine = (machine: Machine, selected: boolean) => {
+  const handleSelectMachine = useCallback((machine: Machine, selected: boolean) => {
     if (selected) {
       if (selectedMachines.length >= 5) {
         toast({
@@ -289,40 +289,70 @@ const Products = function ProductsPage() {
     } else {
       setSelectedMachines((prev) => prev.filter((m) => m.id !== machine.id));
     }
-  };
+  }, [selectedMachines.length, toast, t]);
 
-  const handleRemoveMachine = (machineId: string) => {
+  const handleRemoveMachine = useCallback((machineId: string) => {
     setSelectedMachines((prev) => prev.filter((m) => m.id !== machineId));
-  };
+  }, []);
 
-  const handleClearSelection = () => {
+  const handleClearSelection = useCallback(() => {
     setSelectedMachines([]);
-  };
+  }, []);
 
-  const _handleSaveComparison = () => {
+  const _handleSaveComparison = useCallback(() => {
     saveComparison(selectedMachines);
     toast({
       title: t('comparison.saved'),
       description: t('comparison.savedDescription'),
     });
-  };
+  }, [selectedMachines, toast, t]);
 
   useEffect(() => {
     document.title = t('page.title');
   }, [t]);
 
-  const handleQuoteRequest = (machine: Machine) => {
+  const handleQuoteRequest = useCallback((machine: Machine) => {
     setSelectedProduct(machine);
     setShowQuoteDialog(true);
-  };
+  }, []);
 
-  const handle3DView = (machine: Machine) => {
+  const handle3DView = useCallback((machine: Machine) => {
     setSelectedMachineFor3D(machine);
     setShow3DModel(true);
-  };
+  }, []);
+  
+  const handleQuickPreview = useCallback((machine: Machine) => {
+    setQuickViewProduct(machine);
+  }, []);
+  
+  const handleClose3DModel = useCallback(() => {
+    setShow3DModel(false);
+    // Clear selection after a brief delay to allow animation
+    setTimeout(() => setSelectedMachineFor3D(null), 300);
+  }, []);
+  
+  const handleCloseQuickView = useCallback(() => {
+    setQuickViewProduct(null);
+  }, []);
+  
+  const handleWizardOpen = useCallback(() => {
+    setWizardOpen(true);
+  }, []);
+  
+  const handleConfiguratorOpen = useCallback(() => {
+    setShowConfigurator(true);
+  }, []);
+  
+  const handleConfiguratorClose = useCallback(() => {
+    setShowConfigurator(false);
+  }, []);
+  
+  const handleTourToggle = useCallback(() => {
+    setIsTourPlaying(prev => !prev);
+  }, []);
 
-  // Industry 4.0 Features
-  const industry40Features = [
+  // Industry 4.0 Features - memoized to prevent recreation on every render
+  const industry40Features = useMemo(() => [
     {
       icon: "🤖",
       title: t('industry40.features.aiSearch.title'),
@@ -345,7 +375,7 @@ const Products = function ProductsPage() {
       icon: "⚡",
       title: t('industry40.features.automation.title'),
       description: t('industry40.features.automation.description'),
-      color: "text-orange-400"
+      color: "text-amber-400"
     },
     {
       icon: "🌐",
@@ -359,7 +389,7 @@ const Products = function ProductsPage() {
       description: t('industry40.features.blockchain.description'),
       color: "text-red-400"
     }
-  ];
+  ], [t]);
 
   // Customer testimonials
   const _testimonials = [
@@ -389,18 +419,18 @@ const Products = function ProductsPage() {
     }
   ];
 
-  // Certifications
-  const certifications = [
+  // Certifications - memoized to prevent recreation on every render
+  const certifications = useMemo(() => [
     { name: "ISO 9001", description: t('certifications.iso9001') },
     { name: "CE Mark", description: t('certifications.ceMark') },
     { name: "Industry 4.0", description: t('certifications.industry40') },
     { name: "Energy Star", description: t('certifications.energyStar') },
     { name: "RoHS", description: t('certifications.rohs') },
     { name: "UL Listed", description: t('certifications.ulListed') }
-  ];
+  ], [t]);
 
-  // FAQ data
-  const faqs = [
+  // FAQ data - memoized to prevent recreation on every render
+  const faqs = useMemo(() => [
     {
       question: t('faq.industry40.question'),
       answer: t('faq.industry40.answer')
@@ -417,7 +447,7 @@ const Products = function ProductsPage() {
       question: t('faq.customization.question'),
       answer: t('faq.customization.answer')
     }
-  ];
+  ], [t]);
 
   const location = useLocation();
   const currentUrl = `https://www.almona02.com${location.pathname}${location.search}`;
@@ -467,7 +497,7 @@ const Products = function ProductsPage() {
           <div
             className="relative z-10 fade-in-up"
           >
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+            <h1 className="typography-h1 md:text-6xl mb-6">
               <span className="text-gradient-orange">{t('hero.title')}</span>
               <br />
               <span className="text-white">{t('hero.subtitle')}</span>
@@ -485,7 +515,7 @@ const Products = function ProductsPage() {
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className={`text-2xl mb-2 ${feature.color}`}>{feature.icon}</div>
-                  <h3 className="text-sm font-semibold text-white mb-1">{feature.title}</h3>
+                  <h3 className="typography-h3 text-sm text-white mb-1">{feature.title}</h3>
                   <p className="text-xs text-gray-400 leading-tight">{feature.description}</p>
                 </div>
               ))}
@@ -493,22 +523,22 @@ const Products = function ProductsPage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
-                onClick={() => setWizardOpen(true)}
+                onClick={handleWizardOpen}
                 aria-label={t('hero.aiWizard')}
                 title={t('hero.aiWizard')}
-                className="bg-orange-600 hover:bg-orange-700 text-white px-7 py-3 text-lg font-semibold shadow-md hover:shadow-lg transition-colors"
+                className="btn-primary"
               >
                 {t('hero.aiWizard')}
               </Button>
               <Button
-                onClick={() => setShowConfigurator(true)}
+                onClick={handleConfiguratorOpen}
                 className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 {t('hero.liveConfigurator')}
               </Button>
               <Button
                 variant="outline"
-                className="border-orange-500/50 text-orange-400 hover:bg-orange-500/10 px-8 py-3 text-lg font-semibold"
+                className="btn-primary"
               >
                 {t('hero.viewAnalytics')}
               </Button>
@@ -517,7 +547,7 @@ const Products = function ProductsPage() {
 
           {/* Animated Background Elements */}
           <div className="absolute inset-0 -z-10">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
+            <div className="btn-primary"></div>
             <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl animate-bounce"></div>
           </div>
@@ -540,8 +570,8 @@ const Products = function ProductsPage() {
             <div className="text-3xl font-bold text-purple-400 mb-2">24/7</div>
             <div className="text-sm text-gray-300">{t('industry40.stats.monitoring')}</div>
           </div>
-          <div className="text-center bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-lg p-6">
-            <div className="text-3xl font-bold text-orange-400 mb-2">AI</div>
+          <div className="btn-primary-gradient">
+            <div className="text-3xl font-bold text-amber-400 mb-2">AI</div>
             <div className="text-sm text-gray-300">{t('industry40.stats.powered')}</div>
           </div>
         </div>
@@ -553,7 +583,7 @@ const Products = function ProductsPage() {
           className="mb-16 fade-in-up"
           style={{ animationDelay: '0.5s' }}
         >
-          <h2 className="text-2xl font-bold text-center mb-8">
+          <h2 className="typography-h2 text-center mb-8">
             <span className="text-gradient-orange">{t('certifications.title')}</span>
           </h2>
           <div className="flex flex-wrap justify-center gap-4">
@@ -572,7 +602,7 @@ const Products = function ProductsPage() {
 
         {/* Existing Products page content */}
         <div className="mb-12 text-center">
-          <h2 className="text-3xl font-bold mb-4">
+          <h2 className="typography-h2 mb-4">
             <span className="text-gradient-orange">{t('machines.title')}</span>
           </h2>
           <p className="text-gray-400 max-w-3xl mx-auto">
@@ -622,7 +652,7 @@ const Products = function ProductsPage() {
                     <div className="text-sm text-gray-300">
                       {t('machines.showing', { count: enhancedMachines.length, total: totalCount })}
                       {(filters.searchTerm || filters.category !== 'all') && (
-                        <span className="text-orange-400 ml-2">{t('machines.filtered')}</span>
+                        <span className="text-amber-400 ml-2">{t('machines.filtered')}</span>
                       )}
                     </div>
                     {(filters.searchTerm || filters.category !== 'all') && (
@@ -630,7 +660,7 @@ const Products = function ProductsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={handleClearFilters}
-                        className="text-orange-400 hover:text-orange-300 hover:bg-orange-500/10"
+                        className="btn-primary"
                       >
                         {t('machines.clearFilters')}
                       </Button>
@@ -653,12 +683,12 @@ const Products = function ProductsPage() {
               {/* Machine listings with responsive virtualization */}
               {isLoadingMore ? (
                 <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
                   <p className="text-gray-400">{t('machines.loading') || 'Loading machines...'}</p>
                 </div>
               ) : enhancedMachines.length === 0 ? (
                 <div className="text-center py-12">
-                  <h3 className="text-xl font-medium mb-2">
+                  <h3 className="typography-h3 font-medium mb-2">
                     {t('machines.noMachines.title')}
                   </h3>
                   <p className="text-gray-400">
@@ -681,7 +711,7 @@ const Products = function ProductsPage() {
                       onSelectMachine={handleSelectMachine}
                       onQuoteRequest={handleQuoteRequest}
                       on3DView={handle3DView}
-                      onQuickPreview={(machine) => setQuickViewProduct(machine)}
+                      onQuickPreview={handleQuickPreview}
                       hasMore={hasMore}
                       onLoadMore={loadMore}
                       isLoading={isLoadingMore}
@@ -696,7 +726,7 @@ const Products = function ProductsPage() {
                       onSelectMachine={handleSelectMachine}
                       onQuoteRequest={handleQuoteRequest}
                       on3DView={handle3DView}
-                      onQuickPreview={(machine) => setQuickViewProduct(machine)}
+                      onQuickPreview={handleQuickPreview}
                       hasMore={hasMore}
                       onLoadMore={loadMore}
                       isLoading={isLoadingMore}
@@ -716,7 +746,7 @@ const Products = function ProductsPage() {
           className="bg-gradient-to-r from-gray-900/50 to-gray-800/50 border border-gray-700/50 rounded-lg p-8 mb-12 fade-in-up"
           style={{ animationDelay: '0.5s' }}
         >
-          <h2 className="text-3xl font-bold mb-6 text-center">
+          <h2 className="typography-h2 mb-6 text-center">
             <span className="text-gradient-orange">{t('technology.title')}</span>
           </h2>
 
@@ -725,7 +755,7 @@ const Products = function ProductsPage() {
               <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🤖</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-blue-400">{t('technology.aiRecommendations.title')}</h3>
+              <h3 className="typography-h3 mb-2 text-blue-400">{t('technology.aiRecommendations.title')}</h3>
               <p className="text-gray-400">
                 {t('technology.aiRecommendations.description')}
               </p>
@@ -735,7 +765,7 @@ const Products = function ProductsPage() {
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">📡</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-green-400">{t('technology.iotConnectivity.title')}</h3>
+              <h3 className="typography-h3 mb-2 text-green-400">{t('technology.iotConnectivity.title')}</h3>
               <p className="text-gray-400">
                 {t('technology.iotConnectivity.description')}
               </p>
@@ -745,7 +775,7 @@ const Products = function ProductsPage() {
               <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🎯</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-purple-400">{t('technology.digitalTwins.title')}</h3>
+              <h3 className="typography-h3 mb-2 text-purple-400">{t('technology.digitalTwins.title')}</h3>
               <p className="text-gray-400">
                 {t('technology.digitalTwins.description')}
               </p>
@@ -758,7 +788,7 @@ const Products = function ProductsPage() {
           className="mb-12 fade-in-up"
           style={{ animationDelay: '0.6s' }}
         >
-          <h2 className="text-3xl font-bold text-center mb-8">
+          <h2 className="typography-h2 text-center mb-8">
             <span className="text-gradient-orange">{t('faq.title')}</span>
           </h2>
           <div className="max-w-4xl mx-auto space-y-4">
@@ -768,7 +798,7 @@ const Products = function ProductsPage() {
                 className="bg-gray-800/30 border border-gray-700/50 rounded-lg p-6 hover:bg-gray-800/50 transition-all duration-300 fade-in-up"
                 style={{ animationDelay: `${0.7 + index * 0.1}s` }}
               >
-                <h3 className="text-lg font-semibold text-white mb-2">{faq.question}</h3>
+                <h3 className="typography-h3 text-lg text-white mb-2">{faq.question}</h3>
                 <p className="text-gray-400">{faq.answer}</p>
               </div>
             ))}
@@ -777,10 +807,10 @@ const Products = function ProductsPage() {
 
         {/* Newsletter Signup */}
         <div
-          className="mb-12 bg-gradient-to-r from-orange-500/10 to-blue-500/10 border border-orange-500/20 rounded-lg p-8 text-center fade-in-up"
+          className="mb-12 bg-gradient-to-r from-amber-500/10 to-blue-500/10 border border-amber-500/20 rounded-lg p-8 text-center fade-in-up"
           style={{ animationDelay: '0.7s' }}
         >
-          <h2 className="text-2xl font-bold mb-4">
+          <h2 className="typography-h2 mb-4">
             <span className="text-gradient-orange">{t('newsletter.title')}</span>
           </h2>
           <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
@@ -794,7 +824,7 @@ const Products = function ProductsPage() {
             />
             <Button
               onClick={() => setShowNewsletter(true)}
-              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+              className="btn-primary-gradient"
             >
               {t('newsletter.subscribe')}
             </Button>
@@ -805,17 +835,17 @@ const Products = function ProductsPage() {
         <div className="bg-almona-darker/60 border border-gray-800 rounded-xl p-6 sm:p-8 mb-12 fade-in-up">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-center">
             <div className="space-y-3">
-              <h2 className="text-2xl sm:text-3xl font-bold text-gradient-orange">{t('whyChoose.title')}</h2>
+              <h2 className="typography-h2 sm:text-3xl text-gradient-orange">{t('whyChoose.title')}</h2>
               <p className="text-gray-300 leading-relaxed">
                 {t('whyChoose.description')}
               </p>
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="text-xs border-orange-400/60 text-orange-300">{t('whyChoose.badges.industry40')}</Badge>
-                <Badge variant="outline" className="text-xs border-orange-400/60 text-orange-300">{t('whyChoose.badges.digitalQA')}</Badge>
-                <Badge variant="outline" className="text-xs border-orange-400/60 text-orange-300">{t('whyChoose.badges.ceCertified')}</Badge>
+                <Badge variant="outline" className="text-xs border-amber-400/60 text-amber-300">{t('whyChoose.badges.industry40')}</Badge>
+                <Badge variant="outline" className="text-xs border-amber-400/60 text-amber-300">{t('whyChoose.badges.digitalQA')}</Badge>
+                <Badge variant="outline" className="text-xs border-amber-400/60 text-amber-300">{t('whyChoose.badges.ceCertified')}</Badge>
               </div>
               <div className="flex gap-3 pt-2">
-                <Button asChild className="bg-gradient-orange hover:bg-orange-600 text-white">
+                <Button asChild className="btn-primary">
                   <a href="https://youtu.be/Q0i1AOCOUgo?si=boDqL2T7eFgtny4w" target="_blank" rel="noreferrer">
                     {t('whyChoose.factoryTour')}
                   </a>
@@ -824,7 +854,7 @@ const Products = function ProductsPage() {
             </div>
 
             <div className="relative group overflow-hidden rounded-xl border border-gray-800 bg-slate-900/40 aspect-video">
-              <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/10 via-transparent to-blue-500/10 opacity-80 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/10 via-transparent to-blue-500/10 opacity-80 pointer-events-none" />
               {!isTourPlaying ? (
                 <>
                   <img
@@ -835,11 +865,11 @@ const Products = function ProductsPage() {
                   />
                   <button
                     type="button"
-                    onClick={() => setIsTourPlaying(true)}
+                    onClick={handleTourToggle}
                     className="absolute inset-0 flex items-center justify-center"
                     aria-label="Play factory tour inline"
                   >
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/65 border border-orange-400/50 text-white text-sm backdrop-blur">
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/65 border text-white text-sm card-glass-dark">
                       <Eye className="h-4 w-4" />
                       Play Tour
                     </div>
@@ -856,7 +886,7 @@ const Products = function ProductsPage() {
                   />
                   <button
                     type="button"
-                    onClick={() => setIsTourPlaying(false)}
+                    onClick={handleTourToggle}
                     className="absolute top-3 right-3 inline-flex items-center justify-center h-9 w-9 rounded-full bg-white/90 text-slate-800 shadow-md shadow-black/20 ring-1 ring-white/70 hover:bg-white"
                     aria-label="Close factory tour video"
                   >
@@ -869,12 +899,12 @@ const Products = function ProductsPage() {
         </div>
 
         <div className="bg-almona-darker/50 p-8 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">
+          <h2 className="typography-h2 mb-4">
             {t('whyChoose.title')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <h3 className="text-lg font-semibold mb-2 text-gradient-orange">
+              <h3 className="typography-h3 text-lg mb-2 text-gradient-orange">
                 <Badge variant="outline" className="mr-2">
                   1
                 </Badge>
@@ -885,7 +915,7 @@ const Products = function ProductsPage() {
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2 text-gradient-orange">
+              <h3 className="typography-h3 text-lg mb-2 text-gradient-orange">
                 <Badge variant="outline" className="mr-2">
                   2
                 </Badge>
@@ -896,7 +926,7 @@ const Products = function ProductsPage() {
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2 text-gradient-orange">
+              <h3 className="typography-h3 text-lg mb-2 text-gradient-orange">
                 <Badge variant="outline" className="mr-2">
                   3
                 </Badge>
@@ -915,7 +945,7 @@ const Products = function ProductsPage() {
         <ProductQuickView
           product={mapToUiMachine(quickViewProduct)}
           isOpen={!!quickViewProduct}
-          onClose={() => setQuickViewProduct(null)}
+          onClose={handleCloseQuickView}
           position="right"
         />
       )}
@@ -949,18 +979,14 @@ const Products = function ProductsPage() {
         <Suspense fallback={
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
               <p className="text-white">Loading 3D Engine...</p>
             </div>
           </div>
         }>
           <EnhancedModel3DDialog
             isOpen={show3DModel}
-            onClose={() => {
-              setShow3DModel(false);
-              // Clear selection after a brief delay to allow animation
-              setTimeout(() => setSelectedMachineFor3D(null), 300);
-            }}
+            onClose={handleClose3DModel}
             machineName={selectedMachineFor3D.name}
             modelPath={
               selectedMachineFor3D.modelPath ||
@@ -988,14 +1014,14 @@ const Products = function ProductsPage() {
       {showConfigurator && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 fade-in-up"
-          onClick={() => setShowConfigurator(false)}
+          onClick={handleConfiguratorClose}
         >
           <div
             className="bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto fade-in-up"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-center">
-              <h2 className="text-3xl font-bold mb-4">
+              <h2 className="typography-h2 mb-4">
                 <span className="text-gradient-orange">{t('configurator.title')}</span>
               </h2>
               <p className="text-gray-300 mb-8">
@@ -1015,7 +1041,7 @@ const Products = function ProductsPage() {
 
               <div className="flex gap-4 justify-center">
                 <Button
-                  onClick={() => setShowConfigurator(false)}
+                  onClick={handleConfiguratorClose}
                   variant="outline"
                   className="border-gray-600 text-gray-300 hover:bg-gray-700"
                 >
@@ -1023,10 +1049,10 @@ const Products = function ProductsPage() {
                 </Button>
                 <Button
                   onClick={() => {
-                    setShowConfigurator(false);
-                    setWizardOpen(true);
+                    handleConfiguratorClose();
+                    handleWizardOpen();
                   }}
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+                  className="btn-primary-gradient"
                 >
                   {t('configurator.tryWizard')}
                 </Button>

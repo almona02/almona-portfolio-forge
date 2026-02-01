@@ -9,7 +9,7 @@
 import { FabricatorTemplates } from '@/lib/quick/FabricatorTemplates';
 import { KeyboardShortcuts } from '@/lib/quick/KeyboardShortcuts';
 import { QuickOrderEngine, type QuickOrderParams } from '@/lib/quick/QuickOrderEngine';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('QuickOrderEngine', () => {
   let engine: QuickOrderEngine;
@@ -72,6 +72,11 @@ describe('QuickOrderEngine', () => {
         systemPackId: 'rock60',
         windowType: 'sliding_window'
       };
+
+      const now = Date.now();
+      vi.spyOn(Date, 'now')
+        .mockReturnValueOnce(now)
+        .mockReturnValueOnce(now + 1000);
 
       const result1 = await engine.createQuickOrder(params);
       const result2 = await engine.createQuickOrder(params);

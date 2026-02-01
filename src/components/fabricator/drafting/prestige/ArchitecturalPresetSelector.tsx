@@ -177,7 +177,7 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Sparkles className="w-6 h-6 text-amber-500" />
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="typography-h2 text-gray-900">
             Choose Window Design Pattern
           </h2>
         </div>
@@ -250,7 +250,7 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
                   {/* Selection Indicator */}
                   {isSelected && (
                     <div className="absolute top-4 right-4 z-10">
-                      <div className="bg-amber-500 rounded-full p-1.5 shadow-lg">
+                      <div className="btn-primary">
                         <CheckCircle2 className="w-5 h-5 text-white" />
                       </div>
                     </div>
@@ -278,7 +278,7 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
 
                     {/* Title & Description */}
                     <div className="mb-4">
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      <h3 className="typography-h3 text-lg text-gray-900 mb-2">
                         {preset.title}
                       </h3>
                       <p className="text-sm text-gray-600 leading-relaxed">
@@ -295,7 +295,7 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
                       )}>
                         {details.narrative && (
                           <div>
-                            <h4 className="text-xs font-semibold text-amber-900 mb-1">Design Narrative</h4>
+                            <h4 className="typography-h4 text-xs text-amber-900 mb-1">Design Narrative</h4>
                             <p className="text-xs text-amber-800">{details.narrative}</p>
                           </div>
                         )}
@@ -316,7 +316,7 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
 
                     {/* Applications */}
                     <div className="mb-4">
-                      <h4 className="text-xs font-semibold text-gray-700 mb-2">Applications</h4>
+                      <h4 className="typography-h4 text-xs text-gray-700 mb-2">Applications</h4>
                       <div className="flex flex-wrap gap-1.5">
                         {preset.applications.map((app, i) => (
                           <Badge 
@@ -357,11 +357,11 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
                     {/* Architectural Principles (only when showDetails = true) */}
                     {showDetails && details?.principles && details.principles.length > 0 && (
                       <div className="mb-4">
-                        <h4 className="text-xs font-semibold text-gray-700 mb-2">Design Principles</h4>
+                        <h4 className="typography-h4 text-xs text-gray-700 mb-2">Design Principles</h4>
                         <ul className="space-y-1">
                           {details.principles.map((principle, i) => (
                             <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
-                              <div className="w-1 h-1 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
+                              <div className="btn-primary" />
                               <span>{principle}</span>
                             </li>
                           ))}
@@ -372,11 +372,11 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
                     {/* Testimonials (only when showDetails = true) */}
                     {showDetails && details?.testimonials && details.testimonials.length > 0 && (
                       <div className="mb-4">
-                        <h4 className="text-xs font-semibold text-gray-700 mb-2">Authority Proof</h4>
+                        <h4 className="typography-h4 text-xs text-gray-700 mb-2">Authority Proof</h4>
                         <ul className="space-y-1">
                           {details.testimonials.map((testimonial, i) => (
                             <li key={i} className="text-xs text-gray-600 flex items-start gap-2">
-                              <div className="w-1 h-1 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
+                              <div className="btn-primary" />
                               <span>{testimonial}</span>
                             </li>
                           ))}
@@ -387,7 +387,7 @@ export const ArchitecturalPresetSelector: React.FC<ArchitecturalPresetSelectorPr
                     {/* Certifications (only when showDetails = true) */}
                     {showDetails && details?.certifications && details.certifications.length > 0 && (
                       <div className="mb-4">
-                        <h4 className="text-xs font-semibold text-gray-700 mb-2">Certifications</h4>
+                        <h4 className="typography-h4 text-xs text-gray-700 mb-2">Certifications</h4>
                         <div className="flex flex-wrap gap-1.5">
                           {details.certifications.map((cert, i) => (
                             <Badge 

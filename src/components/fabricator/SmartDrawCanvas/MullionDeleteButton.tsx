@@ -5,7 +5,7 @@
  * Constitutional: Pure UI component, no ML/AI.
  */
 
-import React from 'react';
+// Removed unused React import - using new JSX transform
 
 export interface MullionDeleteButtonProps {
   mullionId: string;

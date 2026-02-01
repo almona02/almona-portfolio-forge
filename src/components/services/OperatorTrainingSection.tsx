@@ -170,11 +170,11 @@ export const OperatorTrainingSection = () => {
     <div className="space-y-12">
       {/* Material Selection */}
       <div className="text-center">
-        <h2 className="text-3xl font-bold mb-6">Fabrication Process Training</h2>
+        <h2 className="typography-h2 mb-6">Fabrication Process Training</h2>
         <div className="flex justify-center gap-4 mb-8">
           <Button
             variant={selectedMaterial === "aluminium" ? "default" : "outline"}
-            className={`px-8 py-3 text-lg ${selectedMaterial === "aluminium" ? 'bg-gradient-to-r from-orange-500 to-red-500' : ''}`}
+            className={`px-8 py-3 text-lg ${selectedMaterial === "aluminium" ? 'bg-gradient-to-r from-amber-500 to-red-500' : ''}`}
             onClick={() => setSelectedMaterial("aluminium")}
           >
             Aluminium Fabrication
@@ -197,8 +197,8 @@ export const OperatorTrainingSection = () => {
       
       {/* Fabrication Stages */}
       <div>
-        <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <Factory className="h-6 w-6 text-orange-500" />
+        <h3 className="typography-h3 mb-6 flex items-center gap-2">
+          <Factory className="h-6 w-6 text-amber-500" />
           Key Fabrication Stages
         </h3>
         
@@ -211,8 +211,8 @@ export const OperatorTrainingSection = () => {
       
       {/* Training Levels */}
       <div>
-        <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
-          <GraduationCap className="h-6 w-6 text-orange-500" />
+        <h3 className="typography-h3 mb-6 flex items-center gap-2">
+          <GraduationCap className="h-6 w-6 text-amber-500" />
           Training Programs
         </h3>
         
@@ -232,7 +232,7 @@ export const OperatorTrainingSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <div>
             <Badge className="mb-4 bg-egyptian-blue">Egypt Market Special</Badge>
-            <h3 className="text-2xl font-bold mb-4">
+            <h3 className="typography-h3 mb-4">
               Tailored for Egyptian Fabricators
             </h3>
             <p className="text-gray-400 mb-6">
@@ -240,25 +240,25 @@ export const OperatorTrainingSection = () => {
             </p>
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
-                <span className="text-orange-500">✓</span>
+                <span className="text-amber-500">✓</span>
                 <span>Dust and sand protection techniques</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-orange-500">✓</span>
+                <span className="text-amber-500">✓</span>
                 <span>High-temperature performance optimization</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-orange-500">✓</span>
+                <span className="text-amber-500">✓</span>
                 <span>Local material sourcing strategies</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-orange-500">✓</span>
+                <span className="text-amber-500">✓</span>
                 <span>Arabic-language training materials</span>
               </li>
             </ul>
           </div>
           <div className="bg-almona-dark rounded-lg p-6 border border-almona-light/20">
-            <h4 className="text-xl font-bold mb-4">Egyptian Market Advantages</h4>
+            <h4 className="typography-h4 mb-4">Egyptian Market Advantages</h4>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-egyptian-blue/20 rounded-lg">

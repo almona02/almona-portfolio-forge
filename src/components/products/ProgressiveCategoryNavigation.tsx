@@ -82,7 +82,7 @@ const ProgressiveCategoryNavigation: React.FC<ProgressiveCategoryNavigationProps
             flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all duration-200
             ${level === 0 ? 'font-medium' : 'font-normal'}
             ${selected 
-              ? 'bg-orange-500/20 border border-orange-500/30 text-orange-400' 
+              ? 'bg-amber-500/20 border border-amber-500/30 text-amber-400' 
               : hovered 
                 ? 'bg-gray-700/50 border border-gray-600/30 text-gray-200' 
                 : 'text-gray-300 hover:text-gray-100'
@@ -159,7 +159,7 @@ const ProgressiveCategoryNavigation: React.FC<ProgressiveCategoryNavigationProps
   return (
     <div className={`bg-gray-800/50 rounded-lg border border-gray-700/50 ${className}`}>
       <div className="p-4 border-b border-gray-700/50">
-        <h3 className="text-lg font-semibold text-white">Product Categories</h3>
+        <h3 className="typography-h3 text-lg text-white">Product Categories</h3>
         <p className="text-sm text-gray-400 mt-1">
           Browse by category to find the right equipment
         </p>

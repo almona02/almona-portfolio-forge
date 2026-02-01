@@ -83,7 +83,7 @@ export const PresetIntelligencePanel: React.FC<PresetIntelligencePanelProps> = (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
         <Lightbulb className="w-6 h-6 text-amber-500" />
-        <h2 className="text-2xl font-bold text-gray-900">Apply Project Intelligence</h2>
+        <h2 className="typography-h2 text-gray-900">Apply Project Intelligence</h2>
       </div>
 
       {/* Matching Recommendations */}
@@ -120,7 +120,7 @@ export const PresetIntelligencePanel: React.FC<PresetIntelligencePanelProps> = (
               {/* Selection Indicator */}
               {isSelected && (
                 <div className="absolute top-4 right-4 z-10">
-                  <div className="bg-amber-500 rounded-full p-1.5 shadow-lg">
+                  <div className="btn-primary">
                     <CheckCircle2 className="w-5 h-5 text-white" />
                   </div>
                 </div>
@@ -146,7 +146,7 @@ export const PresetIntelligencePanel: React.FC<PresetIntelligencePanelProps> = (
 
                 {/* Header */}
                 <div className="mb-4">
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  <h3 className="typography-h3 text-lg text-gray-900 mb-2">
                     {preset.title}
                   </h3>
                   <p className="text-xs text-gray-600 leading-relaxed">
@@ -156,7 +156,7 @@ export const PresetIntelligencePanel: React.FC<PresetIntelligencePanelProps> = (
 
                 {/* Applications */}
                 <div className="mb-4">
-                  <h4 className="text-xs font-semibold text-gray-700 mb-2">Applications</h4>
+                  <h4 className="typography-h4 text-xs text-gray-700 mb-2">Applications</h4>
                   <div className="flex flex-wrap gap-1.5">
                     {preset.applications.map((app, i) => (
                       <Badge 

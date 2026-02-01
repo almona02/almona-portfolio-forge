@@ -1,5 +1,4 @@
  
-import type { Config } from "tailwindcss";
 import tailwindRtl from "tailwindcss-rtl";
 
 export default {
@@ -112,6 +111,14 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				almona: {
+					// Dark Gold Prestige Theme - Amber/Gold accents
+					amber: {
+						light: "#fcd34d",    // Amber 300
+						DEFAULT: "#fbbf24",   // Amber 400 (Primary prestige accent)
+						dark: "#f59e0b",       // Amber 500
+						darker: "#d97706"     // Amber 600
+					},
+					// Legacy orange (deprecated - use amber instead)
 					orange: {
 						light: "#FF8C00",
 						DEFAULT: "#FF5F1F",
@@ -128,7 +135,29 @@ export default {
 						DEFAULT: "#121212",
 						dark: "#0A0A0A"
 					},
-				}
+				},
+				// Semantic Color System (WCAG 2.1 AA)
+				'bg-primary': 'rgb(var(--color-bg-primary) / <alpha-value>)',
+				'bg-secondary': 'rgb(var(--color-bg-secondary) / <alpha-value>)',
+				'bg-card': 'rgb(var(--color-bg-card) / <alpha-value>)',
+				'text-primary': 'rgb(var(--color-text-primary) / <alpha-value>)',
+				'text-secondary': 'rgb(var(--color-text-secondary) / <alpha-value>)',
+				'text-tertiary': 'rgb(var(--color-text-tertiary) / <alpha-value>)',
+				'text-helper': 'rgb(var(--color-text-helper) / <alpha-value>)',
+				'border-primary': 'rgb(var(--color-border-primary) / <alpha-value>)',
+				'border-accent': 'rgb(var(--color-border-accent) / <alpha-value>)',
+				'status-success': 'rgb(var(--color-status-success) / <alpha-value>)',
+				'status-warning': 'rgb(var(--color-status-warning) / <alpha-value>)',
+				'status-error': 'rgb(var(--color-status-error) / <alpha-value>)',
+				'status-info': 'rgb(var(--color-status-info) / <alpha-value>)',
+			},
+			boxShadow: {
+				xs: 'var(--shadow-xs)',
+				sm: 'var(--shadow-sm)',
+				md: 'var(--shadow-md)',
+				lg: 'var(--shadow-lg)',
+				xl: 'var(--shadow-xl)',
+				'2xl': 'var(--shadow-xl)', // Fallback to xl for now
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -176,6 +205,11 @@ export default {
 			backgroundImage: {
 				'gradient-orange': 'linear-gradient(90deg, #FF5F1F 0%, #FF8C00 100%)',
 				'gradient-dark': 'linear-gradient(180deg, #1A1A1A 0%, #0A0A0A 100%)',
+				// Dark Gold Prestige Gradients
+				'gradient-gold': 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+				'gradient-gold-dark': 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+				'gradient-gold-light': 'linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%)',
+				'gradient-cyan-gold': 'linear-gradient(135deg, #22d3ee 0%, #fbbf24 100%)',
 			}
 		}
 	},

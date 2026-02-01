@@ -4,18 +4,18 @@
  * Automatically selects the best algorithm: Greedy, Linear Programming, or Genetic
  */
 
-import { 
-  CuttingPlan, 
-  Cut, 
-  Profile, 
-  OptimizationResult,
-  AdaptiveSolverConfig,
-  WindowComponent 
+import { calibrationManager } from '@/lib/calibration/CalibrationManager';
+import {
+    AdaptiveSolverConfig,
+    Cut,
+    CuttingPlan,
+    OptimizationResult,
+    Profile,
+    WindowComponent
 } from '@/types/fabricator';
+import { GeneticOptimizer } from './geneticOptimization';
 import { GreedyHeuristic } from './greedyHeuristic';
 import { LinearProgrammingOptimizer } from './linearProgramming';
-import { GeneticOptimizer } from './geneticOptimization';
-import { calibrationManager } from '@/lib/calibration/CalibrationManager';
 
 export interface JobComplexity {
   totalCuts: number;
@@ -46,12 +46,26 @@ export class AdaptiveSolver {
   async solve(job: CuttingJob, profiles: Profile[]): Promise<OptimizationResult> {
     const startTime = performance.now();
 
+    // INPUT VALIDATION
+    if (!job.components || job.components.length === 0) {
+      throw new Error('Invalid job: No components provided');
+    }
+    if (!profiles || profiles.length === 0) {
+      throw new Error('Invalid job: No profiles provided');
+    }
+
     try {
       // Analyze job complexity
       const complexity = this.analyzeComplexity(job, profiles);
 
       // Select algorithm based on complexity and config
-      const algorithm = this.selectAlgorithm(complexity);
+      let algorithm = this.selectAlgorithm(complexity);
+      
+      // SAFEGUARD: For extremely large datasets, force greedy to avoid memory issues/timeouts
+      if (complexity.totalCuts > 2000) {
+        console.warn(`Massive dataset detected (${complexity.totalCuts} cuts). Forcing greedy algorithm for performance.`);
+        algorithm = 'greedy';
+      }
 
       // Execute optimization
       const cuttingPlan = await this.executeOptimization(
@@ -321,6 +335,10 @@ export class AdaptiveSolver {
       0
     );
 
+    const laborCost = totalMaterialCost * 0.3;
+    const glazingCost = totalMaterialCost * 0.4;
+    const hardwareCost = 0; // Hardware cost calculated by HardwareCalculator, not here
+
     return {
       materialUsage: totalMaterialCost,
       wastePercentage,
@@ -329,10 +347,10 @@ export class AdaptiveSolver {
       nestingEfficiency,
       costBreakdown: {
         materialCost: totalMaterialCost,
-        laborCost: totalMaterialCost * 0.3,
-        hardwareCost: 0, // Will be calculated separately
-        glazingCost: totalMaterialCost * 0.4,
-        totalCost: 0, // Will be calculated after hardware cost
+        laborCost,
+        hardwareCost,
+        glazingCost,
+        totalCost: totalMaterialCost + laborCost + hardwareCost + glazingCost,
       },
     };
   }

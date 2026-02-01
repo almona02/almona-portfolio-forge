@@ -61,7 +61,7 @@ export function YDTSuggestionsPanel({
   const _getConfidenceColor = (conf: number) => {
     if (conf >= 0.8) return 'text-green-400';
     if (conf >= 0.6) return 'text-yellow-400';
-    return 'text-orange-400';
+    return 'text-amber-400';
   };
 
   const getConfidenceBadge = (conf: number) => {
@@ -87,16 +87,16 @@ export function YDTSuggestionsPanel({
 
   if (loading) {
     return (
-      <Card className="bg-gradient-to-br from-gray-900 to-black border-orange-500/20">
+      <Card className="bg-gradient-to-br from-gray-900 to-black border-amber-500/20">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-orange-400">
+          <CardTitle className="flex items-center gap-2 text-amber-400">
             <Brain className="h-5 w-5" />
             {title}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-orange-400" />
+            <Loader2 className="h-6 w-6 animate-spin text-amber-400" />
             <span className="ml-2 text-gray-400">Analyzing with YDT...</span>
           </div>
         </CardContent>
@@ -126,12 +126,12 @@ export function YDTSuggestionsPanel({
   }
 
   return (
-    <Card className="bg-gradient-to-br from-gray-900 to-black border-orange-500/20">
+    <Card className="bg-gradient-to-br from-gray-900 to-black border-amber-500/20">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Brain className="h-5 w-5 text-orange-400" />
-            <CardTitle className="text-orange-400">{title}</CardTitle>
+            <Brain className="h-5 w-5 text-amber-400" />
+            <CardTitle className="text-amber-400">{title}</CardTitle>
           </div>
           {onDismiss && (
             <Button
@@ -174,7 +174,7 @@ export function YDTSuggestionsPanel({
         {suggestions.some(s => s.type === 'assignment' && s.assignment) && (
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm font-semibold">
-              <User className="h-4 w-4 text-orange-400" />
+              <User className="h-4 w-4 text-amber-400" />
               <span>Suggested Assignment</span>
             </div>
             {suggestions
@@ -221,7 +221,7 @@ export function YDTSuggestionsPanel({
         {suggestions.some(s => s.type === 'resolution' && s.resolution) && (
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm font-semibold">
-              <Wrench className="h-4 w-4 text-orange-400" />
+              <Wrench className="h-4 w-4 text-amber-400" />
               <span>Predicted Resolution</span>
             </div>
             {suggestions
@@ -274,7 +274,7 @@ export function YDTSuggestionsPanel({
         {suggestions.some(s => s.type === 'spare_parts' && s.spareParts && s.spareParts.length > 0) && (
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm font-semibold">
-              <Package className="h-4 w-4 text-orange-400" />
+              <Package className="h-4 w-4 text-amber-400" />
               <span>Suggested Spare Parts</span>
             </div>
             {suggestions

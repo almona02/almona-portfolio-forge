@@ -22,7 +22,7 @@ const KPICard: React.FC<KPICardProps> = ({ title, value, trend, status = 'defaul
       : 'text-emerald-400';
 
   return (
-    <Card className="bg-gray-900/70 border-gray-700">
+    <Card className="bg-gray-900/70 border-gray-700 card-dark">
       <CardContent className="py-4 px-5 space-y-1">
         <div className="text-xs uppercase tracking-wide text-gray-400">{title}</div>
         <div className={`text-xl font-semibold ${color}`}>{value}</div>
@@ -33,7 +33,7 @@ const KPICard: React.FC<KPICardProps> = ({ title, value, trend, status = 'defaul
 };
 
 const MachineStatusPanel: React.FC = () => (
-  <Card className="bg-gray-900/70 border-gray-700">
+  <Card className="bg-gray-900/70 border-gray-700 card-dark">
     <CardHeader className="pb-3">
       <CardTitle className="flex items-center gap-2 text-sm">
         <Factory className="h-4 w-4 text-blue-400" />
@@ -57,16 +57,16 @@ const MachineStatusPanel: React.FC = () => (
 );
 
 const QuickActionsPanel: React.FC = () => (
-  <Card className="bg-gray-900/70 border-gray-700">
+  <Card className="bg-gray-900/70 border-gray-700 card-dark">
     <CardHeader className="pb-3">
       <CardTitle className="flex items-center gap-2 text-sm">
-        <ListChecks className="h-4 w-4 text-emerald-400" />
+        <ListChecks className="h-4 w-4 status-valid" />
         Quick Actions
       </CardTitle>
     </CardHeader>
     <CardContent className="space-y-2">
       <Link to="/fabricator-workflow">
-        <Button className="w-full mb-2 bg-orange-500 hover:bg-orange-600 text-xs">
+        <Button className="btn-primary">
           Start New Fabrication Job
         </Button>
       </Link>

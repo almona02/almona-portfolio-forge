@@ -4,7 +4,7 @@
  * Maps database roles to strategic personas without UI changes.
  */
 
-export type StrategicPersona = 'operator' | 'supervisor' | 'manager' | 'inspector';
+export type StrategicPersona = 'operator' | 'fabricator' | 'accountant' | 'owner' | 'supervisor' | 'manager' | 'inspector';
 
 export interface PersonaPermissions {
   canEditDesign: boolean;
@@ -31,8 +31,23 @@ export interface PersonaResolution {
   visibleTabs: string[];
   permissions: PersonaPermissions;
   confidence: 'high' | 'medium' | 'low';
-  source: 'database' | 'fallback' | 'cache';
+  source: 'database' | 'fallback' | 'cache' | 'url_override'; // Add url_override for testing
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

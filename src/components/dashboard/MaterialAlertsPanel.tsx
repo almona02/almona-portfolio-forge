@@ -13,7 +13,7 @@ const MaterialAlertsPanel: React.FC = () => {
   );
 
   return (
-    <Card className="bg-gray-900/70 border-gray-700">
+    <Card className="bg-gray-900/70 border-gray-700 card-dark">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-sm">
           <AlertTriangle className="h-4 w-4 text-yellow-400" />

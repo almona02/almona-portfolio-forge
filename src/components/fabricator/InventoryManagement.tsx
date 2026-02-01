@@ -19,7 +19,7 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({
       <Card className="bg-gray-700/50 border-gray-600">
         <CardContent className="p-8 text-center">
           <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No Inventory Data</h3>
+          <h3 className="typography-h3 text-lg mb-2">No Inventory Data</h3>
           <p className="text-gray-400">
             Inventory data is not available. Please refresh the page or contact support.
           </p>
@@ -90,7 +90,7 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({
       <Card className="bg-gray-700/50 border-gray-600">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5 text-orange-400" />
+            <Package className="h-5 w-5 text-amber-400" />
             Profile Inventory
           </CardTitle>
         </CardHeader>
@@ -104,7 +104,7 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({
                 <div key={profile.id} className="p-4 bg-gray-800 rounded-lg">
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <h4 className="font-semibold">{profile.name}</h4>
+                      <h4 className="typography-h4">{profile.name}</h4>
                       <p className="text-sm text-gray-400">
                         {profile.material} • {profile.width}mm • {profile.color}
                       </p>

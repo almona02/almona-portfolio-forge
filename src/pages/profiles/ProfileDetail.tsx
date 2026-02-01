@@ -43,7 +43,7 @@ const ProfileDetail: React.FC = () => {
   if (!profile) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <h1 className="text-3xl font-bold mb-4">Profile Not Found</h1>
+        <h1 className="typography-h1 mb-4">Profile Not Found</h1>
         <p className="mb-4">The profile you are looking for does not exist.</p>
         <Link to="/products/profiles" className="text-blue-600 underline">
           Back to Profiles
@@ -54,7 +54,7 @@ const ProfileDetail: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-4xl font-bold mb-4">{profile.name}</h1>
+      <h1 className="typography-h1 mb-4">{profile.name}</h1>
       <img
         src={profile.imageUrl}
         alt={profile.name}
@@ -81,7 +81,7 @@ const ProfileDetail: React.FC = () => {
       </Link>
 
       <div className="mt-12">
-        <h2 className="text-3xl font-bold mb-6 text-gradient-orange">
+        <h2 className="typography-h2 mb-6 text-gradient-orange">
           {t("reviews.section_title")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

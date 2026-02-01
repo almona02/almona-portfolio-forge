@@ -98,7 +98,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium">Feedback: {feature}</h3>
+                <h3 className="typography-h3 text-lg font-medium">Feedback: {feature}</h3>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -110,7 +110,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
               <div className="space-y-4">
                 {/* Rating */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="typography-label block text-sm font-medium text-gray-700 mb-2">
                     How would you rate this feature?
                   </label>
                   <div className="flex space-x-2">
@@ -132,7 +132,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
                 
                 {/* Comments */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="typography-label block text-sm font-medium text-gray-700 mb-2">
                     Comments (optional)
                   </label>
                   <textarea
@@ -146,12 +146,12 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
                 
                 {/* Issues */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="typography-label block text-sm font-medium text-gray-700 mb-2">
                     Did you encounter any issues?
                   </label>
                   <div className="space-y-2">
                     {['Slow performance', 'Inaccurate visualization', 'Missing features', 'Bugs/Errors'].map((issue) => (
-                      <label key={issue} className="flex items-center">
+                      <label key={issue} className="typography-label flex items-center">
                         <input
                           type="checkbox"
                           checked={issues.includes(issue)}
@@ -172,7 +172,7 @@ export const FeedbackWidget: React.FC<FeedbackWidgetProps> = ({ feature, context
                 
                 {/* Suggestions */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="typography-label block text-sm font-medium text-gray-700 mb-2">
                     Suggestions for improvement
                   </label>
                   <textarea

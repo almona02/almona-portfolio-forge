@@ -132,10 +132,10 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
 
   if (!optimizedProjects.length) {
     return (
-      <Card className="bg-gray-900/70 border-gray-800">
+      <Card className="bg-gray-900/70 border-gray-800 card-dark">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Factory className="h-5 w-5 text-orange-400" />
+            <Factory className="h-5 w-5 text-amber-400" />
             Mass Production Mode
           </CardTitle>
           <CardDescription className="text-sm text-gray-400">
@@ -155,12 +155,12 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="bg-gray-900/80 border-gray-800 shadow-xl">
+      <Card className="bg-gray-900/80 border-gray-800 shadow-xl card-dark">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-4">
             <div className="pt-1">
               <CardTitle className="flex items-center gap-2 text-xl font-semibold">
-                <Sparkles className="h-5 w-5 text-orange-400" />
+                <Sparkles className="h-5 w-5 text-amber-400" />
                 Mass Production Optimizer
               </CardTitle>
               <CardDescription className="text-sm text-gray-300 mt-1">
@@ -196,9 +196,9 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                     <X className="h-4 w-4" />
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="bg-gray-900 border-orange-500/30">
+                <AlertDialogContent className="bg-gray-900 border-amber-500/30">
                   <AlertDialogHeader>
-                    <AlertDialogTitle className="text-orange-400">Exit Mass Production?</AlertDialogTitle>
+                    <AlertDialogTitle className="text-amber-400">Exit Mass Production?</AlertDialogTitle>
                     <AlertDialogDescription>
                       You have unsaved optimization batches. Leaving now will discard the current queue configuration.
                     </AlertDialogDescription>
@@ -232,10 +232,10 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
         {/* Project selection list */}
-        <Card className="bg-gray-900/70 border-gray-800 xl:col-span-2">
+        <Card className="bg-gray-900/70 border-gray-800 xl:col-span-2 card-dark">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-              <Layers className="h-4 w-4 text-orange-400" />
+              <Layers className="h-4 w-4 text-amber-400" />
               Optimized Jobs ({optimizedProjects.length})
             </CardTitle>
             <CardDescription className="text-xs text-gray-400">
@@ -257,7 +257,7 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                     onClick={() => toggleProject(project.id)}
                     className={`w-full text-left p-3 rounded-lg border transition-colors ${
                       isSelected
-                        ? 'border-orange-500 bg-orange-500/10'
+                        ? 'border-amber-500 bg-amber-500/10'
                         : 'border-gray-700 bg-gray-900/40 hover:border-gray-500'
                     }`}
                   >
@@ -266,7 +266,7 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                         <div
                           className={`h-4 w-4 rounded-sm border ${
                             isSelected
-                              ? 'bg-orange-500 border-orange-400'
+                              ? 'bg-amber-500 border-amber-400'
                               : 'border-gray-500 bg-gray-900'
                           }`}
                         />
@@ -315,7 +315,7 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
                 size="sm"
                 onClick={handleRun}
                 disabled={isRunning || selectedIds.length === 0}
-                className="bg-orange-500 hover:bg-orange-600 text-xs"
+                className="btn-primary"
               >
                 {isRunning ? (
                   <>
@@ -335,10 +335,10 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
 
         {/* Options & results */}
         <div className="space-y-4">
-          <Card className="bg-gray-900/70 border-gray-800">
+          <Card className="bg-gray-900/70 border-gray-800 card-dark">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-                <Factory className="h-4 w-4 text-orange-400" />
+                <Factory className="h-4 w-4 text-amber-400" />
                 Optimization Settings
               </CardTitle>
             </CardHeader>
@@ -408,10 +408,10 @@ export const MassProductionDashboard: React.FC<MassProductionDashboardProps> = (
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900/70 border-gray-800">
+          <Card className="bg-gray-900/70 border-gray-800 card-dark">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold">
-                <BarChart3 className="h-4 w-4 text-orange-400" />
+                <BarChart3 className="h-4 w-4 text-amber-400" />
                 Optimization Result
               </CardTitle>
             </CardHeader>

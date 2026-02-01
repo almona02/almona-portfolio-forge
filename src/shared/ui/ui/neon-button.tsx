@@ -11,7 +11,7 @@ const neonButtonVariants = cva(
         default:
           "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-[0_0_20px_rgba(6,182,212,0.5)] hover:shadow-[0_0_30px_rgba(6,182,212,0.8)] border border-cyan-400/50 hover:border-cyan-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-cyan-400/20 before:to-blue-400/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
         orange:
-          "bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-[0_0_20px_rgba(249,115,22,0.5)] hover:shadow-[0_0_30px_rgba(249,115,22,0.8)] border border-orange-400/50 hover:border-orange-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-orange-400/20 before:to-red-400/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
+          "bg-gradient-to-r from-amber-500 to-red-500 text-white shadow-[0_0_20px_rgba(249,115,22,0.5)] hover:shadow-[0_0_30px_rgba(249,115,22,0.8)] border border-amber-400/50 hover:border-amber-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-amber-400/20 before:to-red-400/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
         egyptian:
           "bg-gradient-to-r from-yellow-500 to-amber-500 text-black shadow-[0_0_20px_rgba(245,158,11,0.5)] hover:shadow-[0_0_30px_rgba(245,158,11,0.8)] border border-yellow-400/50 hover:border-yellow-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-yellow-400/20 before:to-amber-400/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300",
         ar:

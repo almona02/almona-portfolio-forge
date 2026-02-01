@@ -225,16 +225,16 @@ export const ContextualTooltips: React.FC<ContextualTooltipsProps> = ({
               className
             )}
           >
-            <Card className="w-80 shadow-xl border-orange-500/50">
+            <Card className="w-80 shadow-xl border-amber-500/50">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0 mt-0.5">
-                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                      <Lightbulb className="h-4 w-4 text-orange-600" />
+                    <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                      <Lightbulb className="h-4 w-4 text-amber-600" />
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-sm mb-1">{activeTooltip.title}</h4>
+                    <h4 className="typography-h4 text-sm mb-1">{activeTooltip.title}</h4>
                     <p className="text-xs text-gray-600 mb-3">{activeTooltip.description}</p>
                     <div className="flex items-center gap-2">
                       <Button

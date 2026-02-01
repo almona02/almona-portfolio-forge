@@ -1,0 +1,32 @@
+version: "1.0.0"
+domain: "ticket_assignment"
+deterministic: true
+
+rules:
+  RULE-ASSIGN-001:
+    name: "Technical Ticket Assignment"
+    condition: "ticket.type == 'technical' AND machine.category == 'YILMAZ'"
+    action: "assign_to = technicians.filter(certified_for_machine).order_by(load_asc).first()"
+    rationale: "Certified technician with lowest current load"
+    audit_trail_required: true
+
+  RULE-ASSIGN-002:
+    name: "Warranty Ticket Assignment"
+    condition: "ticket.type == 'warranty' AND customer.tier == 'premium'"
+    action: "assign_to = senior_technicians.filter(available).first()"
+    rationale: "Premium customer warranty gets senior technician"
+    audit_trail_required: true
+
+  RULE-ASSIGN-003:
+    name: "Language Preference Routing"
+    condition: "customer.language_preference != null"
+    action: "assign_to = technicians.filter(language_match).order_by(rating_desc).first()"
+    rationale: "Match technician language to customer preference"
+    audit_trail_required: true
+
+  RULE-ASSIGN-004:
+    name: "Geographic Proximity"
+    condition: "customer.location != null AND emergency == true"
+    action: "assign_to = technicians.filter(near_location).order_by(distance_asc).first()"
+    rationale: "Emergency tickets prioritize geographic proximity"
+    audit_trail_required: true

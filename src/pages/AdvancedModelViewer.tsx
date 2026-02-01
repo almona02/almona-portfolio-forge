@@ -1,38 +1,38 @@
-import React, { Suspense, useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Button } from '@/shared/ui/ui/button';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Slider } from '@/shared/ui/ui/slider';
-import { Switch } from '@/shared/ui/ui/switch';
-import { Label } from '@/shared/ui/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
-import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
-import {
-  Grid3X3,
-  List,
-  Eye,
-  Download,
-  Share2,
-  Star,
-  Ruler,
-  RotateCcw,
-  Smartphone,
-  Monitor,
-  Move3D,
-  Settings,
-  Users,
-  GitCompare,
-  Info,
-  Zap
-} from 'lucide-react';
 import { LazyEnhancedGLBViewer } from '@/components/3d-model/LazyGLBViewer';
 import { ModelMeasurementTool } from '@/components/3d-model/ModelMeasurementTool';
+import '@/components/3d-model/SwiftXR.css';
+import { withErrorBoundary } from "@/hocs/withErrorBoundary";
+import { useToast } from '@/hooks/useToast';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Label } from '@/shared/ui/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
+import { Slider } from '@/shared/ui/ui/slider';
+import { Switch } from '@/shared/ui/ui/switch';
+import { Tabs, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import { motion } from 'framer-motion';
+import {
+    Download,
+    Eye,
+    GitCompare,
+    Grid3X3,
+    Info,
+    List,
+    Monitor,
+    Move3D,
+    RotateCcw,
+    Ruler,
+    Settings,
+    Share2,
+    Smartphone,
+    Star,
+    Users,
+    Zap
+} from 'lucide-react';
+import React, { Suspense, useCallback, useState } from 'react';
 // Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)
 const Collaborative3DViewer = React.lazy(() => import('@/components/3d-model/Collaborative3DViewer').then(module => ({ default: module.Collaborative3DViewer })));
-import { useToast } from '@/hooks/useToast';
-import { withErrorBoundary } from "@/hocs/withErrorBoundary";
-import '@/components/3d-model/SwiftXR.css';
 
 import modelsData from '@/data/models.json';
 
@@ -133,7 +133,7 @@ export function AdvancedModelViewer() {
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
     >
-      <Card className="group cursor-pointer bg-gradient-to-br from-gray-900 to-black border-gray-700 hover:border-orange-400/50 transition-all duration-300 overflow-hidden">
+      <Card className="group cursor-pointer bg-gradient-to-br from-gray-900 to-black border-gray-700 hover:border-amber-400/50 transition-all duration-300 overflow-hidden">
         <CardHeader className="p-0">
           <div className="relative aspect-square overflow-hidden">
             <img
@@ -148,7 +148,7 @@ export function AdvancedModelViewer() {
               </div>
             </div>
             {model.featured && (
-              <Badge className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0">
+              <Badge className="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-red-500 text-white border-0">
                 <Star className="w-3 h-3 mr-1" />
                 Featured
               </Badge>
@@ -177,7 +177,7 @@ export function AdvancedModelViewer() {
               <>
                 <Button
                   size="sm"
-                  className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+                  className="btn-primary"
                   onClick={() => handleModelSelect(model)}
                 >
                   <Eye className="w-4 h-4 mr-1" />
@@ -228,8 +228,8 @@ export function AdvancedModelViewer() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+          <h1 className="typography-h1 md:text-5xl mb-4">
+            <span className="bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent">
               Advanced 3D Model Viewer
             </span>
           </h1>
@@ -248,19 +248,19 @@ export function AdvancedModelViewer() {
         >
           <Tabs value={viewerMode} onValueChange={(value: any) => setViewerMode(value)} className="w-full max-w-2xl">
             <TabsList className="grid w-full grid-cols-4 bg-gray-800">
-              <TabsTrigger value="single" className="text-white data-[state=active]:bg-orange-500">
+              <TabsTrigger value="single" className="btn-primary">
                 <Eye className="w-4 h-4 mr-2" />
                 Single View
               </TabsTrigger>
-              <TabsTrigger value="gallery" className="text-white data-[state=active]:bg-orange-500">
+              <TabsTrigger value="gallery" className="btn-primary">
                 <Grid3X3 className="w-4 h-4 mr-2" />
                 Gallery
               </TabsTrigger>
-              <TabsTrigger value="compare" className="text-white data-[state=active]:bg-orange-500">
+              <TabsTrigger value="compare" className="btn-primary">
                   <GitCompare className="w-4 h-4 mr-2" />
                 Compare
               </TabsTrigger>
-              <TabsTrigger value="collaborate" className="text-white data-[state=active]:bg-orange-500">
+              <TabsTrigger value="collaborate" className="btn-primary">
                 <Users className="w-4 h-4 mr-2" />
                 Collaborate
               </TabsTrigger>
@@ -276,14 +276,14 @@ export function AdvancedModelViewer() {
             <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Settings className="w-5 h-5 text-orange-500" />
+                  <Settings className="w-5 h-5 text-amber-500" />
                   Viewer Settings
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Scale Control */}
                 <div>
-                  <Label htmlFor="scale" className="text-gray-300">
+                  <Label htmlFor="scale" className="typography-label text-gray-300">
                     Scale: {viewerSettings.scale.toFixed(1)}x
                   </Label>
                   <Slider
@@ -299,7 +299,7 @@ export function AdvancedModelViewer() {
 
                 {/* Auto Rotate */}
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="autoRotate" className="text-gray-300">Auto Rotate</Label>
+                  <Label htmlFor="autoRotate" className="typography-label text-gray-300">Auto Rotate</Label>
                   <Switch
                     id="autoRotate"
                     checked={viewerSettings.autoRotate}
@@ -310,7 +310,7 @@ export function AdvancedModelViewer() {
                 {/* Auto Rotate Speed */}
                 {viewerSettings.autoRotate && (
                   <div>
-                    <Label htmlFor="rotateSpeed" className="text-gray-300">
+                    <Label htmlFor="rotateSpeed" className="typography-label text-gray-300">
                       Speed: {viewerSettings.autoRotateSpeed.toFixed(1)}x
                     </Label>
                     <Slider
@@ -327,7 +327,7 @@ export function AdvancedModelViewer() {
 
                 {/* Background Color */}
                 <div>
-                  <Label className="text-gray-300">Background</Label>
+                  <Label className="typography-label text-gray-300">Background</Label>
                   <Select
                     value={viewerSettings.backgroundColor}
                     onValueChange={(value) => setViewerSettings(prev => ({ ...prev, backgroundColor: value }))}
@@ -346,7 +346,7 @@ export function AdvancedModelViewer() {
 
                 {/* Lighting */}
                 <div>
-                  <Label className="text-gray-300">Lighting</Label>
+                  <Label className="typography-label text-gray-300">Lighting</Label>
                   <Select
                     value={viewerSettings.lighting}
                     onValueChange={(value: any) => setViewerSettings(prev => ({ ...prev, lighting: value }))}
@@ -364,7 +364,7 @@ export function AdvancedModelViewer() {
 
                 {/* Quality */}
                 <div>
-                  <Label className="text-gray-300">Quality</Label>
+                  <Label className="typography-label text-gray-300">Quality</Label>
                   <Select
                     value={viewerSettings.quality}
                     onValueChange={(value: any) => setViewerSettings(prev => ({ ...prev, quality: value }))}
@@ -395,7 +395,7 @@ export function AdvancedModelViewer() {
             <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-orange-500" />
+                  <Zap className="w-5 h-5 text-amber-500" />
                   Tools
                 </CardTitle>
               </CardHeader>
@@ -447,13 +447,13 @@ export function AdvancedModelViewer() {
               <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
-                    <Info className="w-5 h-5 text-orange-500" />
+                    <Info className="w-5 h-5 text-amber-500" />
                     Model Info
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
-                    <h4 className="text-white font-semibold">{selectedModel.name}</h4>
+                    <h4 className="typography-h4 text-white">{selectedModel.name}</h4>
                     <p className="text-gray-400 text-sm mt-1">{selectedModel.description}</p>
                   </div>
 
@@ -549,7 +549,7 @@ export function AdvancedModelViewer() {
                 transition={{ duration: 0.5 }}
               >
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-white">Model Gallery</h2>
+                  <h2 className="typography-h2 text-white">Model Gallery</h2>
                   <div className="flex gap-2">
                     <Button
                       size="sm"
@@ -651,7 +651,7 @@ export function AdvancedModelViewer() {
                 <Card className="bg-gradient-to-br from-gray-900 to-black border-gray-700">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
-                      <Users className="w-5 h-5 text-orange-500" />
+                      <Users className="w-5 h-5 text-amber-500" />
                       Collaborative 3D Viewer
                     </CardTitle>
                     <CardDescription className="text-gray-400">
@@ -663,7 +663,7 @@ export function AdvancedModelViewer() {
                       <Suspense fallback={
                         <div className="flex items-center justify-center h-96 bg-gray-900 rounded-lg">
                           <div className="text-center">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
                             <p className="text-white">Loading 3D Collaboration Engine...</p>
                           </div>
                         </div>

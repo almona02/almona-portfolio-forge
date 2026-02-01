@@ -58,7 +58,7 @@ export const MaterialGallery: React.FC<MaterialGalleryProps> = ({
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
         <Sparkles className="w-6 h-6 text-amber-500" />
-        <h2 className="text-2xl font-bold text-gray-900">Choose Your Foundation</h2>
+        <h2 className="typography-h2 text-gray-900">Choose Your Foundation</h2>
         {recommendedFor && (
           <Badge variant="outline" className="ml-auto">
             Recommended for: {recommendedFor}
@@ -85,7 +85,7 @@ export const MaterialGallery: React.FC<MaterialGalleryProps> = ({
               {/* Selection Indicator */}
               {isSelected && (
                 <div className="absolute top-4 right-4 z-10">
-                  <div className="bg-amber-500 rounded-full p-1.5 shadow-lg">
+                  <div className="btn-primary">
                     <CheckCircle2 className="w-5 h-5 text-white" />
                   </div>
                 </div>
@@ -110,7 +110,7 @@ export const MaterialGallery: React.FC<MaterialGalleryProps> = ({
               <CardContent className="p-6">
                 {/* Header */}
                 <div className="mb-4">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <h3 className="typography-h3 text-gray-900 mb-2">
                     {material.title}
                   </h3>
                   <p className="text-sm text-gray-600">
@@ -127,11 +127,11 @@ export const MaterialGallery: React.FC<MaterialGalleryProps> = ({
 
                 {/* Features */}
                 <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Key Features</h4>
+                  <h4 className="typography-h4 text-sm text-gray-700 mb-2">Key Features</h4>
                   <ul className="space-y-1">
                     {material.features.map((feature, i) => (
                       <li key={i} className="text-sm text-gray-600 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                        <div className="btn-primary" />
                         {feature}
                       </li>
                     ))}
@@ -140,7 +140,7 @@ export const MaterialGallery: React.FC<MaterialGalleryProps> = ({
 
                 {/* Applications */}
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Ideal For</h4>
+                  <h4 className="typography-h4 text-sm text-gray-700 mb-2">Ideal For</h4>
                   <div className="flex flex-wrap gap-2">
                     {material.applications.map((app, i) => (
                       <Badge 

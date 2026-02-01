@@ -126,7 +126,7 @@ export const ClientFeedbackForm: React.FC<ClientFeedbackFormProps> = ({
       <Card className="bg-gray-800/50 border-gray-700">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-orange-400" />
+            <MessageSquare className="h-5 w-5 text-amber-400" />
             Add Feedback
           </CardTitle>
         </CardHeader>
@@ -231,7 +231,7 @@ export const ClientFeedbackForm: React.FC<ClientFeedbackFormProps> = ({
 
           <Button
             onClick={handleSubmit}
-            className="w-full bg-orange-500 hover:bg-orange-600"
+            className="btn-primary"
             disabled={!comment.trim()}
           >
             <Send className="h-4 w-4 mr-2" />

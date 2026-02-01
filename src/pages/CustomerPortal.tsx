@@ -223,7 +223,7 @@ const CustomerPortal = () => {
                   <User className="h-8 w-8 text-almona-orange" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold">{t('portal.welcome_back')}, {stableDisplayEmail || user?.email}</h1>
+                  <h1 className="typography-h1">{t('portal.welcome_back')}, {stableDisplayEmail || user?.email}</h1>
                   <p className="text-gray-400">{t('portal.manage_description')}</p>
                 </div>
               </div>
@@ -256,7 +256,7 @@ const CustomerPortal = () => {
               >
                 {/* <MachineHealthDashboard /> */}
                 <div className="bg-almona-darker p-6 rounded-lg border border-almona-light/20">
-                  <h3 className="text-lg font-semibold mb-4">{t('portal.machine_health_dashboard')}</h3>
+                  <h3 className="typography-h3 text-lg mb-4">{t('portal.machine_health_dashboard')}</h3>
                   <p className="text-almona-light/70">{t('portal.health_monitoring_coming_soon')}</p>
                 </div>
               </motion.div>
@@ -350,7 +350,7 @@ const CustomerPortal = () => {
                     className="text-center py-16 border-2 border-dashed border-almona-light/20 rounded-lg bg-almona-dark/40"
                   >
                     <Package className="h-16 w-16 text-gray-500 mx-auto mb-4 opacity-60" />
-                    <h3 className="text-lg font-medium text-gray-400 mb-2">{t('portal.no_machines_registered')}</h3>
+                    <h3 className="typography-h3 text-lg font-medium text-gray-400 mb-2">{t('portal.no_machines_registered')}</h3>
                     <p className="text-gray-500 mb-6">{t('portal.register_first_machine')}</p>
                     <Button 
                       className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
@@ -386,7 +386,7 @@ const CustomerPortal = () => {
                   </Button>
                 </motion.div>
                 <motion.div variants={itemVariants} className="mt-4">
-                  <h3 className="text-lg font-semibold mb-2 text-almona-orange">{t('portal.find_your_quotes')}</h3>
+                  <h3 className="typography-h3 text-lg mb-2 text-almona-orange">{t('portal.find_your_quotes')}</h3>
                   <p className="text-sm text-gray-400 mb-3">{t('portal.quote_search_description')}</p>
                   <QuoteTwinSearchPanel onSelect={(quoteId) => navigate(`/portal/quotes/${quoteId}`)} />
                 </motion.div>
@@ -415,7 +415,7 @@ const CustomerPortal = () => {
                     className="text-center py-16 border-2 border-dashed border-almona-light/20 rounded-lg bg-almona-dark/40"
                   >
                     <FileText className="h-16 w-16 text-gray-500 mx-auto mb-4 opacity-60" />
-                    <h3 className="text-lg font-medium text-gray-400 mb-2">{t('portal.no_tickets_found')}</h3>
+                    <h3 className="typography-h3 text-lg font-medium text-gray-400 mb-2">{t('portal.no_tickets_found')}</h3>
                     <p className="text-gray-500 mb-6">{t('portal.create_first_ticket')}</p>
                     <Button 
                       className="bg-gradient-orange hover:bg-almona-orange-dark text-white"
@@ -483,7 +483,7 @@ const CustomerPortal = () => {
                     className="text-center py-16 border-2 border-dashed border-almona-light/20 rounded-lg bg-almona-dark/40"
                   >
                     <FileText className="h-16 w-16 text-gray-500 mx-auto mb-4 opacity-60" />
-                    <h3 className="text-lg font-medium text-gray-400 mb-2">{t('portal.no_documents_available')}</h3>
+                    <h3 className="typography-h3 text-lg font-medium text-gray-400 mb-2">{t('portal.no_documents_available')}</h3>
                     <p className="text-gray-500">{t('portal.documents_description')}</p>
                   </motion.div>
                 )}
@@ -550,7 +550,7 @@ const CustomerPortal = () => {
       <div className="fixed bottom-20 left-6 z-40 md:hidden">
         <Button
           onClick={() => setIsMobileTicketOpen(true)}
-          className="rounded-full w-14 h-14 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg"
+          className="rounded-full w-14 h-14 bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600 shadow-lg"
           size="lg"
         >
           <Plus className="h-6 w-6" />

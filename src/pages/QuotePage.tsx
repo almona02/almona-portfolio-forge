@@ -25,7 +25,7 @@ const QuotePage = () => {
   return (
     <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 py-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gradient-orange">Your Quote Request</h1>
+          <h1 className="typography-h1 md:text-5xl mb-6 text-gradient-orange">Your Quote Request</h1>
 
           {quoteItems.length === 0 ? (
             <p className="text-xl text-gray-400">Your quote basket is empty.</p>
@@ -50,7 +50,7 @@ const QuotePage = () => {
                           <div className="flex items-center gap-4">
                             <img src={item.product.image_urls?.[0] || '/placeholder.png'} alt={item.product.name_en} className="w-20 h-20 object-cover rounded-md" />
                             <div>
-                              <h3 className="font-semibold">{item.product.name_en}</h3>
+                              <h3 className="typography-h3">{item.product.name_en}</h3>
                               <p className="text-sm text-gray-400">{item.product.price ? `${item.product.price.toLocaleString()} EGP` : 'Price on request'}</p>
                             </div>
                           </div>
@@ -80,19 +80,19 @@ const QuotePage = () => {
                   <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                       <div>
-                        <Label htmlFor="name">Full Name</Label>
+                        <Label htmlFor="name" className="typography-label">Full Name</Label>
                         <Input id="name" type="text" required className="bg-almona-dark border-almona-light" />
                       </div>
                       <div>
-                        <Label htmlFor="email">Email Address</Label>
+                        <Label htmlFor="email" className="typography-label">Email Address</Label>
                         <Input id="email" type="email" required className="bg-almona-dark border-almona-light" />
                       </div>
                       <div>
-                        <Label htmlFor="phone">Phone Number</Label>
+                        <Label htmlFor="phone" className="typography-label">Phone Number</Label>
                         <Input id="phone" type="tel" required className="bg-almona-dark border-almona-light" />
                       </div>
                       <div>
-                        <Label htmlFor="company">Company (Optional)</Label>
+                        <Label htmlFor="company" className="typography-label">Company (Optional)</Label>
                         <Input id="company" type="text" className="bg-almona-dark border-almona-light" />
                       </div>
                       <div className="text-2xl font-bold text-right border-t border-almona-light pt-4">

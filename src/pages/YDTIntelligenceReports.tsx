@@ -83,7 +83,7 @@ export const YDTIntelligenceReports: React.FC = () => {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="text-center space-y-2">
-        <h1 className="text-4xl font-bold">YDT Intelligence Reports</h1>
+        <h1 className="typography-h1">YDT Intelligence Reports</h1>
         <p className="text-gray-500">
           تقارير استخبارات السوق (منتج منفصل)
         </p>
@@ -108,7 +108,7 @@ export const YDTIntelligenceReports: React.FC = () => {
               <ul className="space-y-2">
                 {report.features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <Check className="w-5 h-5  flex-shrink-0 mt-0.5 status-valid" />
                     <span className="text-sm">{feature}</span>
                   </li>
                 ))}

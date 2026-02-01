@@ -42,9 +42,9 @@ const CONSEQUENCE_COLORS: Record<ConsequenceType, { bg: string; border: string; 
     text: 'text-red-300',
   },
   compliance: {
-    bg: 'bg-orange-950/90',
-    border: 'border-orange-500/50',
-    text: 'text-orange-300',
+    bg: 'bg-amber-950/90',
+    border: 'border-amber-500/50',
+    text: 'text-amber-300',
   },
   material: {
     bg: 'bg-yellow-950/90',
@@ -207,6 +207,21 @@ export const ConsequenceAlert: React.FC<ConsequenceAlertProps> = ({
     </div>
   );
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

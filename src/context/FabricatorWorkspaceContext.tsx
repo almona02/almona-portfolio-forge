@@ -1,17 +1,18 @@
 import React, {
   createContext,
   useContext,
-  useReducer,
   useEffect,
+  useReducer,
   type ReactNode,
 } from 'react';
 
+import type { ConstitutionalMetadata } from '@/lib/constitutional/PositionStateSyncService';
 import type {
+  DraftInvoice,
+  DraftQuote,
+  MeasurementData,
   Profile,
   WindowUnit,
-  MeasurementData,
-  DraftQuote,
-  DraftInvoice,
 } from '@/types/fabricator';
 
 type WorkspaceTabId = 'customers' | 'inventory' | 'projects' | 'profiles' | 'commercial';
@@ -44,6 +45,30 @@ export interface FabricatorWorkspaceState {
   // Snapshots
   snapshots: WorkspaceSnapshot[];
   currentSnapshotId: string | null;
+
+  // Constitutional: Position draft states (AICS-001 §9.3)
+  projectDraftStates: Record<string, {  // key = pose ID (WindowUnit.id)
+    smartdraw?: {
+      state: any;
+      metadata: ConstitutionalMetadata;
+    };
+    drafting?: {
+      state: any;
+      metadata: ConstitutionalMetadata;
+    };
+  }>;
+
+  // Constitutional: Audit trail
+  constitutionalAudit: ConstitutionalAuditEntry[];
+}
+
+export interface ConstitutionalAuditEntry {
+  timestamp: string;
+  poseId: string;
+  operation: string;
+  hash: string;
+  tier: string;
+  compliance: string;
 }
 
 type FabricatorWorkspaceAction =
@@ -57,6 +82,7 @@ type FabricatorWorkspaceAction =
   | { type: 'REMOVE_DRAFT_INVOICE'; payload: string }
   | { type: 'SET_OPTIMIZATION_RESULT'; payload: any | null }
   | { type: 'UPDATE_PROJECT_COMPONENTS'; payload: any[] }
+  | { type: 'UPDATE_PROJECT_GRID'; payload: any }
   | { type: 'UPDATE_PROFILE_EDIT'; payload: { profileId: string; edits: Partial<Profile> } }
   | { type: 'UPDATE_INVENTORY_EDIT'; payload: { key: string; value: any } }
   | { type: 'CLEAR_PROFILE_EDIT'; payload: { profileId: string } }
@@ -67,7 +93,11 @@ type FabricatorWorkspaceAction =
   | { type: 'SET_ACTIVE_TAB'; payload: WorkspaceTabId }
   | { type: 'SET_GLOBAL_SEARCH'; payload: string }
   | { type: 'HYDRATE_FROM_STORAGE'; payload: FabricatorWorkspaceState }
-  | { type: 'MARK_SAVED'; payload: string };
+  | { type: 'MARK_SAVED'; payload: string }
+  // Constitutional actions (AICS-001 §9.3)
+  | { type: 'UPDATE_POSE_DRAFT_STATE'; payload: { poseId: string; mode: 'smartdraw' | 'drafting'; state: any; metadata: ConstitutionalMetadata } }
+  | { type: 'CLEAR_POSE_DRAFT_STATE'; payload: { poseId: string; mode?: 'smartdraw' | 'drafting' } }
+  | { type: 'APPEND_CONSTITUTIONAL_AUDIT'; payload: ConstitutionalAuditEntry };
 
 const initialState: FabricatorWorkspaceState = {
   currentProject: null,
@@ -82,6 +112,8 @@ const initialState: FabricatorWorkspaceState = {
   globalSearchQuery: '',
   snapshots: [],
   currentSnapshotId: null,
+  projectDraftStates: {},
+  constitutionalAudit: [],
 };
 
 const STORAGE_KEY = 'fabricator-workspace-v1';
@@ -91,8 +123,8 @@ const FabricatorWorkspaceContext = createContext<{
   dispatch: React.Dispatch<FabricatorWorkspaceAction>;
 }>({
   state: initialState,
-   
-  dispatch: () => {},
+
+  dispatch: () => { },
 });
 
 const workspaceReducer = (
@@ -137,23 +169,34 @@ const workspaceReducer = (
     case 'SET_OPTIMIZATION_RESULT':
       return state.currentProject
         ? {
-            ...state,
-            currentProject: {
-              ...state.currentProject,
-              optimization: action.payload,
-            },
-          }
+          ...state,
+          currentProject: {
+            ...state.currentProject,
+            optimization: action.payload,
+          },
+        }
         : state;
     case 'UPDATE_PROJECT_COMPONENTS':
       return state.currentProject
         ? {
-            ...state,
-            currentProject: {
-              ...state.currentProject,
-              components: action.payload,
-              updatedAt: new Date(),
-            },
-          }
+          ...state,
+          currentProject: {
+            ...state.currentProject,
+            components: action.payload,
+            updatedAt: new Date(),
+          },
+        }
+        : state;
+    case 'UPDATE_PROJECT_GRID':
+      return state.currentProject
+        ? {
+          ...state,
+          currentProject: {
+            ...state.currentProject,
+            grid: action.payload,
+            updatedAt: new Date(),
+          },
+        }
         : state;
     case 'UPDATE_PROFILE_EDIT': {
       const { profileId, edits } = action.payload;
@@ -233,6 +276,49 @@ const workspaceReducer = (
           state.currentSnapshotId === action.payload.id ? null : state.currentSnapshotId,
       };
     }
+    // Constitutional actions (AICS-001 §9.3)
+    case 'UPDATE_POSE_DRAFT_STATE': {
+      const { poseId, mode, state: draftState, metadata } = action.payload;
+      return {
+        ...state,
+        projectDraftStates: {
+          ...state.projectDraftStates,
+          [poseId]: {
+            ...state.projectDraftStates[poseId],
+            [mode]: { state: draftState, metadata }
+          }
+        }
+      };
+    }
+    case 'CLEAR_POSE_DRAFT_STATE': {
+      const { poseId, mode } = action.payload;
+      const existing = { ...state.projectDraftStates[poseId] };
+
+      if (mode) {
+        delete existing[mode];
+      }
+
+      const updated = { ...state.projectDraftStates };
+      if (!mode || (Object.keys(existing).length === 0)) {
+        delete updated[poseId];
+      } else {
+        updated[poseId] = existing;
+      }
+
+      return {
+        ...state,
+        projectDraftStates: updated
+      };
+    }
+    case 'APPEND_CONSTITUTIONAL_AUDIT': {
+      return {
+        ...state,
+        constitutionalAudit: [
+          ...state.constitutionalAudit,
+          action.payload
+        ]
+      };
+    }
     default:
       return state;
   }
@@ -266,7 +352,7 @@ export const FabricatorWorkspaceProvider: React.FC<{ children: ReactNode }> = ({
       .catch((error) => {
         console.warn('Failed to load fabricator workspace from sync service:', error);
       });
-     
+
   }, []);
 
   // Persist workspace to Supabase (with localStorage fallback) using debounced save
@@ -278,7 +364,7 @@ export const FabricatorWorkspaceProvider: React.FC<{ children: ReactNode }> = ({
     void import('@/lib/workspace/WorkspaceSyncService')
       .then(({ WorkspaceSyncService }) => {
         serviceInstance = new WorkspaceSyncService(STORAGE_KEY);
-        
+
         // Use debounced save method (3-second delay built-in)
         serviceInstance.saveWorkspaceSnapshotDebounced(state, 3000)
           .then((result: any) => {

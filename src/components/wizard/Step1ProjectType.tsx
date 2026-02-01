@@ -23,7 +23,7 @@ export const Step1ProjectType: React.FC<Step1ProjectTypeProps> = ({
 }) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">What type of project is this?</h3>
+      <h3 className="typography-h3 text-lg">What type of project is this?</h3>
       <div className="grid grid-cols-3 gap-4">
         <Card
           className={`cursor-pointer transition-all ${

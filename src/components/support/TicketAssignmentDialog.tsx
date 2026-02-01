@@ -105,7 +105,7 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
                 ticket.priority === 'urgent' || ticket.priority === 'critical' 
                   ? 'text-red-600' 
                   : ticket.priority === 'high' 
-                  ? 'text-orange-600' 
+                  ? 'text-amber-600' 
                   : 'text-blue-600'
               }`}>
                 {ticket.priority}
@@ -120,7 +120,7 @@ export const TicketAssignmentDialog: React.FC<TicketAssignmentDialogProps> = ({
 
           {/* Assignee Selection */}
           <div className="space-y-2">
-            <Label htmlFor="assignee">Assign to</Label>
+            <Label htmlFor="assignee" className="typography-label">Assign to</Label>
             <Select
               value={selectedAssignee}
               onValueChange={setSelectedAssignee}

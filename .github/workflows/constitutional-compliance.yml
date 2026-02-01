@@ -1,0 +1,234 @@
+# Constitutional Compliance CI/CD Guardrail
+# AICS-001 §5.10.2 Enforcement
+# Authority: CONSTITUTIONAL_EMERGENCY-20260119-001
+
+name: Constitutional Compliance Check
+
+on:
+  push:
+    branches: [main, develop, feature/**]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  constitutional-compliance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      # CRITICAL: Scan for ML/AI imports in Tier 0 components
+      - name: 🚨 Scan for ML/AI Contamination (AICS-001 §5.10.2)
+        id: ml-scan
+        run: |
+          echo "🔍 Scanning Tier 0 components for ML/AI imports..."
+
+          # Define forbidden ML/AI libraries
+          FORBIDDEN_IMPORTS=(
+            "tensorflow"
+            "pytorch"
+            "torch"
+            "scikit-learn"
+            "sklearn"
+            "keras"
+            "transformers"
+            "openai"
+            "anthropic"
+            "@tensorflow"
+            "@pytorch"
+            "ml-kit"
+            "brain.js"
+            "synaptic"
+            "neataptic"
+          )
+
+          # Scan Tier 0 components (drafting system)
+          TIER_0_PATHS=(
+            "src/components/fabricator/drafting"
+            "src/components/fabricator/EngineeringBay.tsx"
+          )
+
+          VIOLATIONS_FOUND=0
+
+          for path in "${TIER_0_PATHS[@]}"; do
+            if [ -e "$path" ]; then
+              for lib in "${FORBIDDEN_IMPORTS[@]}"; do
+                if grep -r "from ['\"]$lib" "$path" 2>/dev/null || \
+                   grep -r "import.*$lib" "$path" 2>/dev/null || \
+                   grep -r "require(['\"]$lib" "$path" 2>/dev/null; then
+                  echo "❌ CONSTITUTIONAL VIOLATION: ML/AI import '$lib' found in Tier 0 component: $path"
+                  VIOLATIONS_FOUND=$((VIOLATIONS_FOUND + 1))
+                fi
+              done
+            fi
+          done
+
+          if [ $VIOLATIONS_FOUND -gt 0 ]; then
+            echo "🚨 CONSTITUTIONAL COMPLIANCE FAILURE: $VIOLATIONS_FOUND ML/AI import violations detected"
+            echo "violations=$VIOLATIONS_FOUND" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "✅ No ML/AI contamination detected in Tier 0 components"
+            echo "violations=0" >> $GITHUB_OUTPUT
+          fi
+
+      # Run constitutional compliance tests
+      - name: 🧪 Run Constitutional Compliance Tests
+        id: constitutional-tests
+        run: |
+          echo "🧪 Running constitutional compliance test suite..."
+          npm run test:constitutional || {
+            echo "❌ Constitutional compliance tests failed"
+            exit 1
+          }
+
+      # Verify Tier 0 purity
+      - name: 🔒 Verify Tier 0 Purity
+        id: tier-purity
+        run: |
+          echo "🔒 Verifying Tier 0 boundary enforcement..."
+
+          # Check for forbidden execution logic in drafting components
+          FORBIDDEN_TERMS=(
+            "generateBOM"
+            "optimizeCutList"
+            "selectProfile"
+            "calculateWaste"
+            "AlgorithmPredictor"
+            "selectAlgorithm"
+          )
+
+          VIOLATIONS=0
+
+          for term in "${FORBIDDEN_TERMS[@]}"; do
+            if grep -r "$term" "src/components/fabricator/drafting" 2>/dev/null; then
+              echo "❌ Tier 0 violation: '$term' found in drafting components"
+              VIOLATIONS=$((VIOLATIONS + 1))
+            fi
+          done
+
+          if [ $VIOLATIONS -gt 0 ]; then
+            echo "🚨 Tier 0 purity violation detected"
+            exit 1
+          else
+            echo "✅ Tier 0 purity verified"
+          fi
+
+      # Verify audit trail integrity
+      - name: 📝 Verify Audit Trail Integrity
+        id: audit-trail
+        run: |
+          echo "📝 Verifying constitutional audit trail..."
+          npm run test:constitutional:audit-trail || {
+            echo "❌ Audit trail integrity check failed"
+            exit 1
+          }
+
+      # Run deterministic behavior tests
+      - name: 🎯 Verify Deterministic Behavior
+        id: deterministic
+        run: |
+          echo "🎯 Verifying deterministic guarantees..."
+          npm run test:constitutional:deterministic || {
+            echo "❌ Deterministic behavior verification failed"
+            exit 1
+          }
+
+      # Generate compliance report
+      - name: 📊 Generate Compliance Report
+        if: always()
+        run: |
+          echo "📊 Generating constitutional compliance report..."
+
+          cat > compliance-report.md << EOF
+          # Constitutional Compliance Report
+          **Date:** $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          **Commit:** ${{ github.sha }}
+          **Branch:** ${{ github.ref_name }}
+
+          ## Compliance Status
+
+          | Check | Status | Details |
+          |-------|--------|---------|
+          | ML/AI Contamination | ${{ steps.ml-scan.outcome == 'success' && '✅ PASS' || '❌ FAIL' }} | Violations: ${{ steps.ml-scan.outputs.violations || 'N/A' }} |
+          | Constitutional Tests | ${{ steps.constitutional-tests.outcome == 'success' && '✅ PASS' || '❌ FAIL' }} | Test suite execution |
+          | Tier 0 Purity | ${{ steps.tier-purity.outcome == 'success' && '✅ PASS' || '❌ FAIL' }} | Boundary enforcement |
+          | Audit Trail | ${{ steps.audit-trail.outcome == 'success' && '✅ PASS' || '❌ FAIL' }} | Integrity verification |
+          | Deterministic Behavior | ${{ steps.deterministic.outcome == 'success' && '✅ PASS' || '❌ FAIL' }} | Guarantee verification |
+
+          ## AICS-001 Compliance
+
+          - §5.10.2 (No ML/AI): ${{ steps.ml-scan.outcome == 'success' && '✅ COMPLIANT' || '❌ NON-COMPLIANT' }}
+          - §7.4 (Audit Trail): ${{ steps.audit-trail.outcome == 'success' && '✅ COMPLIANT' || '❌ NON-COMPLIANT' }}
+          - §7.5 (Deterministic): ${{ steps.deterministic.outcome == 'success' && '✅ COMPLIANT' || '❌ NON-COMPLIANT' }}
+
+          **Overall Status:** ${{ job.status == 'success' && '✅ CONSTITUTIONAL COMPLIANCE VERIFIED' || '🚨 CONSTITUTIONAL VIOLATIONS DETECTED' }}
+          EOF
+
+          cat compliance-report.md
+
+      - name: Upload Compliance Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: constitutional-compliance-report
+          path: compliance-report.md
+          retention-days: 90
+
+      # Block deployment if non-compliant
+      - name: 🚫 Block Deployment on Violations
+        if: failure()
+        run: |
+          echo "🚨 CONSTITUTIONAL COMPLIANCE FAILURE DETECTED"
+          echo "Deployment blocked per AICS-001 §4.6 Constitutional Override"
+          echo "Review compliance-report.md for details"
+          exit 1
+
+  # Block drafting feature PRs without tests
+  drafting-test-coverage:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.changed_files, 'src/components/fabricator/drafting')
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: 🧪 Verify Test Coverage for Drafting Changes
+        run: |
+          echo "🧪 Checking test coverage for drafting component changes..."
+
+          # Run tests with coverage
+          npm run test:coverage -- --testPathPattern=drafting
+
+          # Check if coverage meets minimum threshold
+          COVERAGE=$(npm run test:coverage:json | jq '.total.lines.pct')
+
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "❌ Test coverage below 80% threshold: $COVERAGE%"
+            echo "🚫 Drafting feature changes require 80% test coverage"
+            exit 1
+          else
+            echo "✅ Test coverage meets threshold: $COVERAGE%"
+          fi

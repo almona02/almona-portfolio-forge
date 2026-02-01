@@ -1,0 +1,196 @@
+/**
+ * Fabricator Theme System
+ * 
+ * CSS variables for dark and light themes with WCAG AAA contrast compliance.
+ * Part of Phase 2: Dark/Light Theme & Zoom Presets implementation.
+ * 
+ * Usage: Apply data-theme="dark" or data-theme="light" to root element.
+ * Components use CSS variables for all colors to enable instant theme switching.
+ */
+
+/* ============================================================================
+   DARK THEME (Default)
+   ============================================================================ */
+
+:root[data-theme="dark"],
+:root:not([data-theme]) {
+  /* Background Colors */
+  --fabricator-bg: #0a0a0a;
+  --fabricator-bg-secondary: #111111;
+  --fabricator-bg-tertiary: #1a1a1a;
+  --fabricator-bg-glass: rgba(10, 10, 10, 0.85);
+  --fabricator-bg-glass-light: rgba(17, 17, 17, 0.75);
+  
+  /* Text Colors */
+  --fabricator-text: #e5e7eb;
+  --fabricator-text-secondary: #d1d5db;
+  --fabricator-text-muted: #9ca3af;
+  --fabricator-text-accent: #f59e0b;
+  --fabricator-text-inverse: #0a0a0a;
+  
+  /* Border Colors */
+  --fabricator-border: rgba(245, 158, 11, 0.2);
+  --fabricator-border-subtle: rgba(245, 158, 11, 0.1);
+  --fabricator-border-accent: rgba(245, 158, 11, 0.3);
+  --fabricator-border-strong: rgba(245, 158, 11, 0.4);
+  
+  /* Amber Accent Colors */
+  --fabricator-amber-50: #fffbeb;
+  --fabricator-amber-100: #fef3c7;
+  --fabricator-amber-200: #fde68a;
+  --fabricator-amber-300: #fcd34d;
+  --fabricator-amber-400: #fbbf24;
+  --fabricator-amber-500: #f59e0b;
+  --fabricator-amber-600: #d97706;
+  --fabricator-amber-700: #b45309;
+  --fabricator-amber-800: #92400e;
+  --fabricator-amber-900: #78350f;
+  --fabricator-amber-950: #451a03;
+  
+  /* Shadow/Glow Effects */
+  --fabricator-shadow-subtle: 0 1px 2px rgba(245, 158, 11, 0.05);
+  --fabricator-shadow-card: 0 4px 6px rgba(245, 158, 11, 0.1);
+  --fabricator-shadow-elevated: 0 10px 15px rgba(245, 158, 11, 0.15);
+  --fabricator-glow-subtle: 0 0 10px rgba(245, 158, 11, 0.2);
+  --fabricator-glow-strong: 0 0 20px rgba(245, 158, 11, 0.3);
+  --fabricator-glow-premium: 0 0 30px rgba(245, 158, 11, 0.25);
+  
+  /* Status Colors */
+  --fabricator-status-success: #10b981;
+  --fabricator-status-warning: #f59e0b;
+  --fabricator-status-error: #ef4444;
+  --fabricator-status-info: #3b82f6;
+}
+
+/* ============================================================================
+   LIGHT THEME
+   ============================================================================ */
+
+:root[data-theme="light"] {
+  /* Background Colors */
+  --fabricator-bg: #f8f9fa;
+  --fabricator-bg-secondary: #ffffff;
+  --fabricator-bg-tertiary: #f1f3f5;
+  --fabricator-bg-glass: rgba(248, 249, 250, 0.95);
+  --fabricator-bg-glass-light: rgba(255, 255, 255, 0.9);
+  
+  /* Text Colors (WCAG AAA: 7:1+ contrast) */
+  --fabricator-text: #1f2937;
+  --fabricator-text-secondary: #374151;
+  --fabricator-text-muted: #6b7280;
+  --fabricator-text-accent: #b45309;
+  --fabricator-text-inverse: #ffffff;
+  
+  /* Border Colors (adjusted for light background) */
+  --fabricator-border: rgba(180, 83, 9, 0.25);
+  --fabricator-border-subtle: rgba(180, 83, 9, 0.15);
+  --fabricator-border-accent: rgba(180, 83, 9, 0.35);
+  --fabricator-border-strong: rgba(180, 83, 9, 0.5);
+  
+  /* Amber Accent Colors (darker variants for light theme) */
+  --fabricator-amber-50: #78350f;
+  --fabricator-amber-100: #92400e;
+  --fabricator-amber-200: #b45309;
+  --fabricator-amber-300: #d97706;
+  --fabricator-amber-400: #f59e0b;
+  --fabricator-amber-500: #d97706;
+  --fabricator-amber-600: #b45309;
+  --fabricator-amber-700: #92400e;
+  --fabricator-amber-800: #78350f;
+  --fabricator-amber-900: #451a03;
+  --fabricator-amber-950: #292524;
+  
+  /* Shadow/Glow Effects (lighter, more subtle for light theme) */
+  --fabricator-shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --fabricator-shadow-card: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --fabricator-shadow-elevated: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --fabricator-glow-subtle: 0 0 8px rgba(217, 119, 6, 0.15);
+  --fabricator-glow-strong: 0 0 15px rgba(217, 119, 6, 0.2);
+  --fabricator-glow-premium: 0 0 20px rgba(217, 119, 6, 0.18);
+  
+  /* Status Colors (adjusted for light background) */
+  --fabricator-status-success: #059669;
+  --fabricator-status-warning: #d97706;
+  --fabricator-status-error: #dc2626;
+  --fabricator-status-info: #2563eb;
+}
+
+/* ============================================================================
+   CARD STYLES (Theme-aware)
+   ============================================================================ */
+
+.card-glass-dark,
+.card-glass-light {
+  background: var(--fabricator-bg-glass);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--fabricator-border);
+  box-shadow: var(--fabricator-shadow-card);
+}
+
+.card-dark,
+.card-light {
+  background: var(--fabricator-bg-secondary);
+  border: 1px solid var(--fabricator-border);
+  box-shadow: var(--fabricator-shadow-subtle);
+}
+
+/* Theme-specific card classes (for explicit control) */
+[data-theme="dark"] .card-glass-dark,
+:root:not([data-theme]) .card-glass-dark {
+  background: rgba(10, 10, 10, 0.85);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+[data-theme="light"] .card-glass-light {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(180, 83, 9, 0.25);
+}
+
+[data-theme="dark"] .card-dark,
+:root:not([data-theme]) .card-dark {
+  background: #111111;
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+[data-theme="light"] .card-light {
+  background: #ffffff;
+  border-color: rgba(180, 83, 9, 0.25);
+}
+
+/* ============================================================================
+   TEXT SHADOW UTILITIES (Theme-aware)
+   ============================================================================ */
+
+.text-shadow-glow-subtle {
+  text-shadow: var(--fabricator-glow-subtle);
+}
+
+.text-shadow-glow-strong {
+  text-shadow: var(--fabricator-glow-strong);
+}
+
+/* ============================================================================
+   BUTTON VARIANTS (Theme-aware)
+   ============================================================================ */
+
+.btn-primary-gradient {
+  background: linear-gradient(135deg, var(--fabricator-amber-600), var(--fabricator-amber-500));
+  color: var(--fabricator-text-inverse);
+  border-color: var(--fabricator-amber-600);
+}
+
+.btn-primary-gradient:hover {
+  background: linear-gradient(135deg, var(--fabricator-amber-500), var(--fabricator-amber-400));
+  box-shadow: var(--fabricator-glow-subtle);
+}
+
+.btn-secondary {
+  background: var(--fabricator-bg-secondary);
+  color: var(--fabricator-text);
+  border-color: var(--fabricator-border);
+}
+
+.btn-secondary:hover {
+  background: var(--fabricator-bg-tertiary);
+  border-color: var(--fabricator-border-accent);
+}

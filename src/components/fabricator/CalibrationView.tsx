@@ -271,7 +271,7 @@ export const CalibrationView: React.FC<CalibrationViewProps> = ({
 
                   {/* Actual Input - Mobile-Optimized */}
                   <div className="flex-1 sm:flex-initial">
-                    <label className="block text-xs text-gray-500 mb-2">Actual (mm)</label>
+                    <label className="typography-label block text-xs text-gray-500 mb-2">Actual (mm)</label>
                     <Input
                       type="number"
                       step="0.1"

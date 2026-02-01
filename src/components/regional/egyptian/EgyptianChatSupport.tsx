@@ -80,7 +80,7 @@ export const EgyptianChatSupport: React.FC = () => {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-              <MessageCircle className="w-4 h-4 text-green-500" />
+              <MessageCircle className="w-4 h-4  status-valid" />
               دعم العملاء - مصر
             </CardTitle>
             <Button
@@ -97,15 +97,15 @@ export const EgyptianChatSupport: React.FC = () => {
           {/* Contact Info */}
           <div className="mb-3 p-2 bg-gray-50 dark:bg-gray-800 rounded text-xs">
             <div className="flex items-center gap-2 mb-1">
-              <Phone className="w-3 h-3 text-green-500" />
+              <Phone className="w-3 h-3  status-valid" />
               <span>+20 2 1234 5678</span>
             </div>
             <div className="flex items-center gap-2 mb-1">
-              <Mail className="w-3 h-3 text-green-500" />
+              <Mail className="w-3 h-3  status-valid" />
               <span>support@almona-eg.com</span>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="w-3 h-3 text-green-500" />
+              <Clock className="w-3 h-3  status-valid" />
               <span>9:00 AM - 6:00 PM (GMT+2)</span>
             </div>
           </div>

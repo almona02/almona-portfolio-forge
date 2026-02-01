@@ -182,7 +182,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
   const getPackageColor = (packageId: string) => {
     switch (packageId) {
       case 'basic': return 'from-green-500 to-emerald-600';
-      case 'professional': return 'from-yellow-500 to-orange-600';
+      case 'professional': return 'from-yellow-500 to-amber-600';
       case 'enterprise': return 'from-red-500 to-pink-600';
       default: return 'from-gray-500 to-gray-600';
     }
@@ -196,11 +196,11 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
         animate={{ opacity: 1, y: 0 }}
         className="text-center"
       >
-        <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 rounded-full bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-orange-500/20">
-          <Calculator className="h-6 w-6 text-orange-400" />
-          <span className="text-orange-400 font-semibold">{t('services.smart_package_calculator')}</span>
+        <div className="inline-flex items-center gap-3 mb-4 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500/10 to-purple-500/10 border border-amber-500/20">
+          <Calculator className="h-6 w-6 text-amber-400" />
+          <span className="text-amber-400 font-semibold">{t('services.smart_package_calculator')}</span>
         </div>
-        <h2 className="text-3xl font-bold text-white mb-4">
+        <h2 className="typography-h2 text-white mb-4">
           {t('services.find_perfect_package')}
         </h2>
         <p className="text-xl text-gray-400 max-w-2xl mx-auto">
@@ -215,12 +215,12 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="bg-slate-800/50 backdrop-blur-sm border border-white/10">
+          <Card className="bg-slate-800/50 -sm border border-white/10 card-glass-dark card-dark">
             <CardHeader className="pb-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
                   <CardTitle className="text-2xl text-white leading-tight flex items-center gap-2">
-                    <Calculator className="h-5 w-5 text-orange-300" />
+                    <Calculator className="h-5 w-5 text-amber-300" />
                     {t('services.business_information')}
                   </CardTitle>
                   <p className="text-sm text-slate-300/80">
@@ -232,7 +232,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
             <CardContent className="space-y-6">
               {/* Machine Count */}
               <div className="space-y-3">
-                <Label className="text-white font-medium">{t('services.number_of_machines')}</Label>
+                <Label className="typography-label text-white font-medium">{t('services.number_of_machines')}</Label>
                 <div className="space-y-4">
                   <div className="relative">
                     <Slider
@@ -244,7 +244,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
                       className="w-full"
                     />
                     <div className="flex items-center justify-between text-sm text-gray-400 mt-2">
-                      <span className="font-semibold text-orange-400 bg-orange-400/10 px-3 py-1 rounded-full">
+                      <span className="font-semibold text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full">
                         {inputs.machineCount} {language === 'ar' ? 'ماكينة' : 'machines'}
                       </span>
                       <span className="text-xs text-slate-400">
@@ -257,25 +257,25 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
 
               {/* Business Size */}
               <div className="space-y-3">
-                <Label className="text-white font-medium">{t('services.business_size')}</Label>
+                <Label className="typography-label text-white font-medium">{t('services.business_size')}</Label>
                 <Select value={inputs.businessSize} onValueChange={(value) => handleInputChange('businessSize', value)}>
-                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-700/70 focus:ring-2 focus:ring-orange-500/50 transition-all duration-200">
+                  <SelectTrigger className="btn-secondary">
                     <SelectValue placeholder="Select business size" />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-600">
-                    <SelectItem value="small" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                    <SelectItem value="small" className="btn-secondary">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-green-400"></div>
                         {t('services.small_workshop')}
                       </div>
                     </SelectItem>
-                    <SelectItem value="medium" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                    <SelectItem value="medium" className="btn-secondary">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
                         {t('services.medium_factory')}
                       </div>
                     </SelectItem>
-                    <SelectItem value="large" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                    <SelectItem value="large" className="btn-secondary">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-red-400"></div>
                         {t('services.large_facility')}
@@ -287,25 +287,25 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
 
               {/* Production Volume */}
               <div className="space-y-3">
-                <Label className="text-white font-medium">{t('services.production_volume')}</Label>
+                <Label className="typography-label text-white font-medium">{t('services.production_volume')}</Label>
                 <Select value={inputs.productionVolume} onValueChange={(value) => handleInputChange('productionVolume', value)}>
-                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-700/70 focus:ring-2 focus:ring-orange-500/50 transition-all duration-200">
+                  <SelectTrigger className="btn-secondary">
                     <SelectValue placeholder="Select production volume" />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-600">
-                    <SelectItem value="low" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                    <SelectItem value="low" className="btn-secondary">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-blue-400"></div>
                         {t('services.low_production')}
                       </div>
                     </SelectItem>
-                    <SelectItem value="medium" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                    <SelectItem value="medium" className="btn-secondary">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+                        <div className="w-2 h-2 rounded-full bg-amber-400"></div>
                         {t('services.medium_production')}
                       </div>
                     </SelectItem>
-                    <SelectItem value="high" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                    <SelectItem value="high" className="btn-secondary">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-red-400"></div>
                         {t('services.high_production')}
@@ -317,25 +317,25 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
 
               {/* Support Urgency */}
               <div className="space-y-3">
-                <Label className="text-white font-medium">{t('services.support_urgency')}</Label>
+                <Label className="typography-label text-white font-medium">{t('services.support_urgency')}</Label>
                 <Select value={inputs.urgency} onValueChange={(value) => handleInputChange('urgency', value)}>
-                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-700/70 focus:ring-2 focus:ring-orange-500/50 transition-all duration-200">
+                  <SelectTrigger className="btn-secondary">
                     <SelectValue placeholder="Select support urgency" />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-600">
-                    <SelectItem value="standard" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                    <SelectItem value="standard" className="btn-secondary">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-green-400"></div>
                         {t('services.standard_response')}
                       </div>
                     </SelectItem>
-                    <SelectItem value="priority" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                    <SelectItem value="priority" className="btn-secondary">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
                         {t('services.priority_response')}
                       </div>
                     </SelectItem>
-                    <SelectItem value="critical" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                    <SelectItem value="critical" className="btn-secondary">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-red-400"></div>
                         {t('services.critical_response')}
@@ -347,25 +347,25 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
 
               {/* Location */}
               <div className="space-y-3">
-                <Label className="text-white font-medium">{t('services.location')}</Label>
+                <Label className="typography-label text-white font-medium">{t('services.location')}</Label>
                 <Select value={inputs.location} onValueChange={(value) => handleInputChange('location', value)}>
-                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-700/70 focus:ring-2 focus:ring-orange-500/50 transition-all duration-200">
+                  <SelectTrigger className="btn-secondary">
                     <SelectValue placeholder="Select location" />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-600">
-                    <SelectItem value="cairo" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                    <SelectItem value="cairo" className="btn-secondary">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+                        <div className="w-2 h-2 rounded-full bg-amber-400"></div>
                         {t('services.cairo_giza')}
                       </div>
                     </SelectItem>
-                    <SelectItem value="alexandria" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                    <SelectItem value="alexandria" className="btn-secondary">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-blue-400"></div>
                         {t('services.alexandria')}
                       </div>
                     </SelectItem>
-                    <SelectItem value="other" className="text-white hover:bg-slate-700 focus:bg-slate-700">
+                    <SelectItem value="other" className="btn-secondary">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-gray-400"></div>
                         {t('services.other_governorates')}
@@ -378,7 +378,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
               <div className="space-y-3 pt-2">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-slate-400">
                   <span className="flex items-center gap-1 text-slate-300/80">
-                    <Sparkles className="h-4 w-4 text-orange-300" />
+                    <Sparkles className="h-4 w-4 text-amber-300" />
                     Executive concierge available on request.
                   </span>
                   <span className="text-slate-400">
@@ -388,7 +388,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
                 <Button 
                   onClick={handleCalculate}
                   disabled={isCalculating}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600 text-white font-semibold py-3 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {isCalculating ? (
                     <>
@@ -414,7 +414,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
           transition={{ delay: 0.2 }}
         >
           {recommendation ? (
-            <Card className="bg-slate-800/50 backdrop-blur-sm border border-white/10">
+            <Card className="bg-slate-800/50 -sm border border-white/10 card-glass-dark card-dark">
               <CardHeader className="space-y-3 pb-4 border-b border-white/5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1">
@@ -442,7 +442,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
                   <div className="flex items-center gap-3 mb-4">
                     {getPackageIcon(recommendation.packageId)}
                     <div>
-                      <h3 className="text-2xl font-bold capitalize">{recommendation.packageId} Care</h3>
+                      <h3 className="typography-h3 capitalize">{recommendation.packageId} Care</h3>
                       <p className="text-white/80">{t(`packages.${recommendation.packageId}.description`)}</p>
                     </div>
                   </div>
@@ -468,7 +468,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
                       </div>
                     </div>
                     <div className="rounded-lg bg-black/10 border border-white/10 p-3 flex items-start gap-2">
-                      <Gauge className="h-4 w-4 text-orange-200 mt-0.5" />
+                      <Gauge className="h-4 w-4 text-amber-200 mt-0.5" />
                       <div>
                         <p className="text-xs text-white/70">Reliability</p>
                         <p className="font-semibold">99.5% monitored availability</p>
@@ -486,7 +486,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
 
                 {/* Reasoning */}
                 <div className="space-y-3">
-                  <h4 className="text-lg font-semibold text-white">Why This Package?</h4>
+                  <h4 className="typography-h4 text-white">Why This Package?</h4>
                   <ul className="space-y-2">
                     {recommendation.reasoning.map((reason, index) => (
                       <li key={index} className="flex items-start gap-2 text-gray-300">
@@ -527,7 +527,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
                     trackDesign('package_selected');
                     onPackageRecommend?.(recommendation.packageId, recommendation.estimatedPrice);
                   }}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3"
+                  className="w-full bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600 text-white font-semibold py-3"
                 >
                   Select {recommendation.packageId.charAt(0).toUpperCase() + recommendation.packageId.slice(1)} Care
                 </Button>
@@ -537,7 +537,7 @@ export const PackageCalculator: React.FC<PackageCalculatorProps> = ({
               </CardContent>
             </Card>
           ) : (
-            <Card className="bg-slate-800/50 backdrop-blur-sm border border-white/10">
+            <Card className="bg-slate-800/50 -sm border border-white/10 card-glass-dark card-dark">
               <CardContent className="flex items-center justify-center h-96">
                 <div className="text-center text-gray-400">
                   <Calculator className="h-12 w-12 mx-auto mb-4 opacity-50" />

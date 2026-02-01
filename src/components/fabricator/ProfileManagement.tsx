@@ -15,24 +15,25 @@
 import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import {
-    JUMBO100_SYSTEM_PACK,
-    JUMBO100_WINDOW_SYSTEM_SPEC,
-    ROCK60_SYSTEM_PACK,
-    ROCK60_WINDOW_SYSTEM_TEMPLATE,
-    SYSTEM_PACKS,
+  JUMBO100_SYSTEM_PACK,
+  JUMBO100_WINDOW_SYSTEM_SPEC,
+  ROCK60_SYSTEM_PACK,
+  ROCK60_WINDOW_SYSTEM_TEMPLATE,
+  SYSTEM_PACKS,
 } from '@/data/systemPacks';
 import { parseProfileFromDXF } from '@/lib/imports/ProfileDXFImporter';
+import { trackError } from '@/lib/performance-monitoring';
 import { supabase } from '@/lib/supabase';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from '@/shared/ui/ui/alert-dialog';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
@@ -44,25 +45,25 @@ import { Progress } from '@/shared/ui/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Accessory, MachiningMacro, Profile, SystemPack } from '@/types/fabricator';
 import {
-    AlertCircle,
-    AlertTriangle,
-    CheckCircle,
-    ChevronDown,
-    Download,
-    Edit2,
-    FileText,
-    GaugeCircle,
-    Package,
-    Plus,
-    RefreshCw,
-    Ruler,
-    Save,
-    Search,
-    Settings,
-    Shield,
-    Sparkles,
-    Trash2,
-    Upload,
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle,
+  ChevronDown,
+  Download,
+  Edit2,
+  FileText,
+  GaugeCircle,
+  Package,
+  Plus,
+  RefreshCw,
+  Ruler,
+  Save,
+  Search,
+  Settings,
+  Shield,
+  Sparkles,
+  Trash2,
+  Upload,
 } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -71,7 +72,8 @@ import { AccessoryManagement } from './AccessoryManagement';
 import { CalibrationWizard } from './CalibrationWizard';
 import { ProfileDefinitionWizard } from './ProfileDefinitionWizard';
 import { ProfileDetailCard } from './ProfileDetailCard';
-import { ProfileTuningStudio } from './ProfileTuningStudio';
+import { VirtualizedProfileList } from './VirtualizedProfileList';
+import { ProfileTuningStudio } from './tuning/ProfileTuningStudio';
 
 // Material-specific color presets
 const MATERIAL_COLORS: Record<string, string[]> = {
@@ -128,6 +130,15 @@ interface ProfileManagementProps {
   initialTuningProfileId?: string;
 }
 
+// ✅ TYPE SAFETY: Filter state interface
+interface ProfileFilterState {
+  material: string;
+  region: string;
+  category: string;
+  systemPack: string;
+  tuning: 'all' | 'tuned' | 'in_progress' | 'untuned';
+}
+
 export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   onProfilesUpdate,
   userId,
@@ -147,10 +158,11 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   const [success, setSuccess] = useState(false);
   const { state: workspaceState, dispatch } = useFabricatorWorkspace();
   const searchTerm = workspaceState.globalSearchQuery || '';
-  const [materialFilter, setMaterialFilter] = useState<string>('all');
-  const [regionFilter, setRegionFilter] = useState<string>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [systemPackFilter, setSystemPackFilter] = useState<string>('all');
+  // ✅ TYPE SAFETY: Filter state with explicit types
+  const [materialFilter, setMaterialFilter] = useState<ProfileFilterState['material']>('all');
+  const [regionFilter, setRegionFilter] = useState<ProfileFilterState['region']>('all');
+  const [categoryFilter, setCategoryFilter] = useState<ProfileFilterState['category']>('all');
+  const [systemPackFilter, setSystemPackFilter] = useState<ProfileFilterState['systemPack']>('all');
   const [_subscription, _setSubscription] = useState<any>(null);
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
   const [isUploadingPreview, setIsUploadingPreview] = useState<string | null>(null);
@@ -215,9 +227,9 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     setAccessories(updatedAccessories.map((acc) => ({
       id: acc.id,
       name: acc.name,
-      type: acc.type === 'corner' ? 'corner_connector' : 
-            acc.type === 'other' ? 'bracket' : 
-            acc.type as 'hinge' | 'handle' | 'lock' | 'corner_connector' | 'bracket' | 'seal' | 'screw',
+      type: acc.type === 'corner' ? 'corner_connector' :
+        acc.type === 'other' ? 'bracket' :
+          acc.type as 'hinge' | 'handle' | 'lock' | 'corner_connector' | 'bracket' | 'seal' | 'screw',
       compatibleProfiles: [],
       installationMacros: [],
       specifications: acc.specifications || {},
@@ -287,7 +299,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
       toast.success('DXF imported. Please review the detected values before saving.');
     } catch (err) {
-      console.error('Error importing DXF profile:', err);
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileManagement', 'import_dxf', error.message);
       toast.error('Failed to import profile from DXF');
     } finally {
       // Reset input so the same file can be re-selected if needed
@@ -307,29 +320,29 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
     try {
       setLoading(true);
-      
+
       // Check session validity
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       if (sessionError || !session) {
         throw new Error('Session expired. Please log in again.');
       }
-      
+
       // Use untyped Supabase client here to avoid friction with generated types
-       
+
       const db = supabase as any;
-      
+
       // Add timeout wrapper
       const queryPromise = db
         .from('fabricator_profiles')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
-      
+
       // Add timeout (30 seconds)
-      const timeoutPromise = new Promise((_, reject) => 
+      const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Query timeout: Request took too long')), 30000)
       );
-      
+
       const { data, error: fetchError } = await Promise.race([queryPromise, timeoutPromise]) as any;
 
       if (fetchError) {
@@ -351,7 +364,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       );
 
       const profilesToSeed: any[] = [];
-      
+
       if (!hasRock60Template) {
         profilesToSeed.push({
           user_id: userId,
@@ -409,7 +422,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           .insert(profilesToSeed);
 
         if (seedError) {
-          console.error('Error seeding template profiles:', seedError);
+          trackError('ProfileManagement', 'seed_template_profiles', String(seedError));
         } else {
           // Reload once after seeding all templates
           const { data: reloaded, error: reloadError } = await db
@@ -419,7 +432,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             .order('created_at', { ascending: false });
 
           if (reloadError) {
-            console.error('Error reloading profiles after seeding:', reloadError);
+            trackError('ProfileManagement', 'reload_after_seeding', String(reloadError));
           } else if (reloaded) {
             rows = reloaded;
           }
@@ -470,10 +483,11 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       }
       setHasLoadedOnce(true);
     } catch (err) {
-      console.error('Error loading profiles:', err);
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileManagement', 'load_profiles', error.message);
       const errorMessage = err instanceof Error ? err.message : 'Failed to load profiles';
       setError(errorMessage);
-      
+
       // Don't show toast for auth errors (handled at page level)
       if (!errorMessage.includes('Session expired') && !errorMessage.includes('Authentication failed')) {
         toast.error('Failed to load profiles');
@@ -492,7 +506,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   useEffect(() => {
     if (!userId) return;
 
-     
+
     const db = supabase as any;
     const channel = db
       .channel(`fabricator_profiles_changes_${userId}`)
@@ -505,7 +519,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           filter: `user_id=eq.${userId}`,
         },
         (payload: any) => {
-          console.log('Profile change detected:', payload);
+          // Development-only logging for real-time subscription
+          if (import.meta.env.DEV) {
+            console.debug('[ProfileManagement] Profile change detected:', payload);
+          }
           // Use ref to avoid dependency on loadProfiles
           loadProfilesRef.current();
         }
@@ -603,10 +620,10 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         const material = p.material?.toLowerCase() || '';
         const width = p.width?.toString() || '';
         const height = p.height?.toString() || '';
-        const code = (p.specifications as any)?.supplierCode?.toLowerCase() || 
-                     (p.specifications as any)?.internalCode?.toLowerCase() || '';
+        const code = (p.specifications as any)?.supplierCode?.toLowerCase() ||
+          (p.specifications as any)?.internalCode?.toLowerCase() || '';
         const role = (p.specifications as any)?.profileRole?.toLowerCase() || '';
-        
+
         return (
           name.includes(query) ||
           supplier.includes(query) ||
@@ -664,7 +681,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     try {
       setIsUploadingPreview(profile.id);
       const path = `${userId}/${profile.id}/${Date.now()}-${file.name}`;
-       
+
       const storage = (supabase as unknown as { storage: any }).storage.from('profile-previews');
       const { error } = await storage.upload(path, file, { upsert: true });
       if (error) throw error;
@@ -676,7 +693,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         previewImageUrl: url,
       };
 
-       
+
       const db = supabase as any;
       const { error: updateError } = await db
         .from('fabricator_profiles')
@@ -689,7 +706,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       await loadProfiles();
       toast.success('Profile preview image uploaded');
     } catch (err) {
-      console.error('Error uploading profile preview image:', err);
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileManagement', 'upload_preview_image', error.message);
       toast.error('Failed to upload profile preview image');
     } finally {
       setIsUploadingPreview(null);
@@ -736,7 +754,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         effectiveCostPerMeter = (specs as any).costPerKg * formData.weightPerMeter;
       }
 
-       
+
       const db = supabase as any;
       const { error: insertError } = await db
         .from('fabricator_profiles')
@@ -769,9 +787,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       toast.success(t('profileManagement.profileSavedSuccess', 'Profile saved successfully'));
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
-      console.error('Error adding profile:', err);
-       
       const detailedError = (err as any)?.message || (err as any)?.details || (err as any)?.error_description || 'Unknown error';
+      trackError('ProfileManagement', 'add_profile', detailedError);
       setError(detailedError);
       toast.error(`Error saving profile: ${detailedError}`);
     } finally {
@@ -809,7 +826,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         effectiveCostPerMeter = (specs as any).costPerKg * formData.weightPerMeter;
       }
 
-       
+
       const db = supabase as any;
       const { error: updateError } = await db
         .from('fabricator_profiles')
@@ -842,7 +859,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       toast.success(t('profileManagement.profileUpdatedSuccess', 'Profile updated successfully'));
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
-      console.error('Error updating profile:', err);
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileManagement', 'update_profile', error.message);
       setError(err instanceof Error ? err.message : t('profileManagement.errorUpdatingProfile', 'Error updating profile'));
       toast.error(t('profileManagement.errorUpdatingProfile', 'Error updating profile'));
     } finally {
@@ -870,13 +888,14 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
       await loadProfiles();
       toast.success(
-        t('profileManagement.profileDeletedSuccess', 'Profile "{name}" deleted successfully', { 
-          name: profileToDelete.name 
+        t('profileManagement.profileDeletedSuccess', 'Profile "{name}" deleted successfully', {
+          name: profileToDelete.name
         })
       );
       setProfileToDelete(null);
     } catch (err) {
-      console.error('Error deleting profile:', err);
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileManagement', 'delete_profile', error.message);
       toast.error(t('profileManagement.errorDeletingProfile', 'Error deleting profile'));
     } finally {
       setIsDeleting(false);
@@ -888,7 +907,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
     const specs = profile.specifications || {};
     const packIds = profile.systemPackIds || (specs.systemPackIds as string[]) || [];
     const firstPackId = packIds.length > 0 ? packIds[0] : 'custom';
-    
+
     setSelectedSystemPackId(firstPackId);
     setFormData({
       name: profile.name,
@@ -1049,18 +1068,18 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       const imported: Profile[] = Array.isArray(raw)
         ? raw
         : Array.isArray((raw as any)?.profiles)
-        ? (raw as any).profiles
-        : (() => {
+          ? (raw as any).profiles
+          : (() => {
             throw new Error('Invalid JSON format. Expected an array of profiles or { "profiles": [...] }.');
           })();
-      
+
       if (!Array.isArray(imported)) {
         throw new Error('Invalid JSON format. Expected an array of profiles.');
       }
 
       // Validate and import profiles
       const validProfiles = imported.filter((p) => p.name && p.material);
-      
+
       if (validProfiles.length === 0) {
         throw new Error('No valid profiles found in file');
       }
@@ -1094,7 +1113,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
         },
       }));
 
-       
+
       const db = supabase as any;
       const { error: insertError } = await db
         .from('fabricator_profiles')
@@ -1105,7 +1124,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       await loadProfiles();
       toast.success(`Imported ${validProfiles.length} profiles`);
     } catch (err) {
-      console.error('Error importing profiles:', err);
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileManagement', 'import_profiles', error.message);
       const message =
         err instanceof Error ? err.message : 'Failed to import profiles';
       toast.error(message);
@@ -1116,140 +1136,9 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
   };
 
   // Bulk system import function
-  const _handleImportSystemPack = async (systemPack: SystemPack) => {
-    if (!userId) return;
 
-    try {
-      setLoading(true);
 
-      // Import all profiles from the system pack
-      const profilesToImport = await fetchProfilesForSystemPack(systemPack.id);
 
-      // Import all accessories from the system pack
-      const accessoriesToImport = await fetchAccessoriesForSystemPack(systemPack.id);
-
-      // Batch insert profiles
-      const profileInserts = profilesToImport.map((profile) => ({
-        user_id: userId,
-        name: profile.name,
-        material: profile.material,
-        width: profile.width || 50,
-        height: profile.height,
-        thickness: profile.thickness,
-        color: profile.color || '#C0C0C0',
-        cost_per_meter: profile.costPerMeter || 0,
-        cutting_allowance: profile.cuttingAllowance || 3,
-        stock_quantity: profile.stockQuantity || 0,
-        min_stock_level: profile.minStockLevel || 0,
-        max_stock_level: profile.maxStockLevel,
-        supplier: profile.supplier || '',
-        system_brand: profile.systemBrand || systemPack.brand,
-        grain_direction: profile.grainDirection,
-        specifications: {
-          ...(profile.specifications || {}),
-          systemPackIds: [systemPack.id],
-          category: profile.category,
-          systemType: profile.systemType,
-          profileRole: profile.profileRole,
-          compatibleAccessories: profile.compatibleAccessories || [],
-          machiningMacros: profile.machiningMacros || [],
-          technicalDrawings: profile.technicalDrawings || [],
-        },
-      }));
-
-      // Batch insert accessories
-      const accessoryInserts = accessoriesToImport.map((accessory) => ({
-        user_id: userId,
-        name: accessory.name,
-        type: accessory.type,
-        category: accessory.category || '',
-        unit_price: accessory.unitPrice || 0,
-        base_cost: accessory.baseCost || 0,
-        markup_percentage: accessory.markupPercentage || 0,
-        supplier: accessory.supplier,
-        sku: accessory.sku,
-        description: accessory.description,
-        compatible_materials: accessory.compatibleMaterials || [],
-        region: accessory.region || [],
-        image_url: accessory.imageUrl || accessory.images?.[0],
-        specifications: accessory.specifications || {},
-      }));
-
-       
-      const db = supabase as any;
-
-      if (profileInserts.length > 0) {
-        const { error: profileError } = await db
-          .from('fabricator_profiles')
-          .insert(profileInserts);
-
-        if (profileError) throw profileError;
-      }
-
-      if (accessoryInserts.length > 0) {
-        const { error: accessoryError } = await db
-          .from('fabricator_accessories')
-          .insert(accessoryInserts);
-
-        if (accessoryError) throw accessoryError;
-      }
-
-      // Reload data
-      await loadProfiles();
-      // Reload accessories if we have an accessory update handler
-      if (showAccessoryManager) {
-        // Trigger accessory reload
-        const { data: accessoryData } = await db
-          .from('fabricator_accessories')
-          .select('*')
-          .eq('user_id', userId);
-        if (accessoryData) {
-          setAccessories(accessoryData.map((acc: any) => ({
-            id: acc.id,
-            name: acc.name,
-            type: acc.type as any,
-            compatibleProfiles: [],
-            installationMacros: [],
-            specifications: acc.specifications || {},
-            images: acc.image_url ? [acc.image_url] : [],
-            category: acc.category,
-            unitPrice: acc.unit_price,
-            baseCost: acc.base_cost,
-            markupPercentage: acc.markup_percentage,
-            supplier: acc.supplier,
-            sku: acc.sku,
-            description: acc.description,
-            compatibleMaterials: acc.compatible_materials || [],
-            region: acc.region || [],
-            imageUrl: acc.image_url,
-            userId: acc.user_id,
-            createdAt: acc.created_at ? new Date(acc.created_at) : undefined,
-            updatedAt: acc.updated_at ? new Date(acc.updated_at) : undefined,
-          })));
-        }
-      }
-
-      toast.success(`Imported ${systemPack.name} with ${profilesToImport.length} profiles and ${accessoriesToImport.length} accessories`);
-    } catch (err) {
-      console.error('Error importing system pack:', err);
-      toast.error('Failed to import system pack');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Helper functions for fetching system pack data
-  const fetchProfilesForSystemPack = async (_systemPackId: string): Promise<Profile[]> => {
-    // In a real implementation, this would fetch from a system pack database or API
-    // For now, return empty array - this should be implemented based on your data source
-    return [];
-  };
-
-  const fetchAccessoriesForSystemPack = async (_systemPackId: string): Promise<Accessory[]> => {
-    // In a real implementation, this would fetch from a system pack database or API
-    // For now, return empty array - this should be implemented based on your data source
-    return [];
-  };
 
   const handleBulkUpdate = async (field: 'costPerMeter' | 'stockQuantity', value: number) => {
     if (!userId || filteredProfiles.length === 0) return;
@@ -1263,7 +1152,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       }));
 
       for (const update of updates) {
-         
+
         const db = supabase as any;
         const { error } = await db
           .from('fabricator_profiles')
@@ -1277,7 +1166,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       await loadProfiles();
       toast.success(`Updated ${updates.length} profiles`);
     } catch (err) {
-      console.error('Error bulk updating:', err);
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileManagement', 'bulk_update', error.message);
       toast.error('Failed to bulk update profiles');
     } finally {
       setSaving(false);
@@ -1286,8 +1176,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
   const getStockStatus = (profile: Profile) => {
     if (profile.stockQuantity <= 0) return 'out';
-    const percentage = profile.minStockLevel > 0 
-      ? (profile.stockQuantity / profile.minStockLevel) * 100 
+    const percentage = profile.minStockLevel > 0
+      ? (profile.stockQuantity / profile.minStockLevel) * 100
       : 100;
     if (percentage < 50) return 'low';
     if (percentage < 80) return 'medium';
@@ -1345,12 +1235,12 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
       )}
 
       {/* Tuning & System Overview */}
-      <Card className="bg-gray-900/70 border-gray-700">
+      <Card className="bg-gray-900/70 border-gray-700 card-dark">
         <CardContent className="py-4 px-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500/15 border border-orange-400/60">
-                <Sparkles className="h-5 w-5 text-orange-300" />
+              <div className="btn-primary">
+                <Sparkles className="h-5 w-5 text-amber-300" />
               </div>
               <div>
                 <p className="text-xs uppercase tracking-wide text-gray-400">
@@ -1364,7 +1254,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
               <div className="px-3 py-2 rounded-md bg-gray-800/70 border border-gray-700">
                 <p className="text-[10px] uppercase text-gray-400">Tuned</p>
-                <p className="text-sm font-semibold text-emerald-400">
+                <p className="text-sm font-semibold status-valid">
                   {tuningStats.tuned}
                   <span className="text-[11px] text-gray-500 ml-1">
                     ({tuningStats.total > 0 ? Math.round((tuningStats.tuned / tuningStats.total) * 100) : 0}
@@ -1407,7 +1297,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
             <CardHeader className="cursor-pointer hover:bg-gray-800/70 transition-colors">
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5 text-orange-400" />
+                  <Package className="h-5 w-5 text-amber-400" />
                   {t('profileManagement.title', 'Profile Management')} ({profiles.length})
                 </CardTitle>
                 <div className="flex items-center gap-2">
@@ -1430,7 +1320,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       <Download className="h-4 w-4 mr-2" />
                       {t('profileManagement.exportProfiles', 'Export Profiles')} CSV
                     </Button>
-                    <label>
+                    <Label>
                       <Button variant="outline" size="sm" asChild>
                         <span>
                           <Upload className="h-4 w-4 mr-2" />
@@ -1443,16 +1333,15 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                         onChange={handleImportJSON}
                         className="hidden"
                       />
-                    </label>
+                    </Label>
                     <Button variant="outline" size="sm" onClick={loadProfiles}>
                       <RefreshCw className="h-4 w-4 mr-2" />
                       {t('profileManagement.refreshProfiles', 'Refresh Profiles')}
                     </Button>
                   </div>
-                  <ChevronDown 
-                    className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
-                      isProfileManagementOpen ? 'rotate-180' : ''
-                    }`} 
+                  <ChevronDown
+                    className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isProfileManagementOpen ? 'rotate-180' : ''
+                      }`}
                   />
                 </div>
               </div>
@@ -1462,823 +1351,812 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
 
         <CollapsibleContent>
 
-      {/* Filters */}
-      <Card className="bg-gray-800/50 border-gray-700">
-        <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-            {/* Category Filter */}
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Material Category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="aluminum_windows">Aluminum Windows</SelectItem>
-                <SelectItem value="aluminum_doors">Aluminum Doors</SelectItem>
-                <SelectItem value="curtain_walls">Curtain Walls</SelectItem>
-                <SelectItem value="upvc_windows">UPVC Windows</SelectItem>
-                <SelectItem value="upvc_doors">UPVC Doors</SelectItem>
-                <SelectItem value="accessories">Accessories</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* System Pack Filter */}
-            <Select value={systemPackFilter} onValueChange={setSystemPackFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="System Pack" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Systems</SelectItem>
-                {getSystemPacksForCategory(categoryFilter).map((pack) => (
-                  <SelectItem key={pack.id} value={pack.id}>
-                    {pack.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder={t('profileManagement.searchProfiles', 'Search Profiles')}
-                value={searchTerm}
-                onChange={(e) => dispatch({ type: 'SET_GLOBAL_SEARCH', payload: e.target.value })}
-                className="pl-10"
-              />
-            </div>
-
-            {/* Material Filter */}
-            <Select value={materialFilter} onValueChange={setMaterialFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('profileManagement.filterByMaterial', 'Filter by Material')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('profileManagement.all', 'All')}</SelectItem>
-                <SelectItem value="aluminum">{t('profileManagement.aluminum', 'Aluminum')}</SelectItem>
-                <SelectItem value="upvc">{t('profileManagement.upvc', 'UPVC')}</SelectItem>
-                <SelectItem value="wood">{t('profileManagement.wood', 'Wood')}</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Region Filter */}
-            <Select value={regionFilter} onValueChange={setRegionFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('profileManagement.filterByRegion', 'Filter by Region')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('profileManagement.all', 'All')}</SelectItem>
-                <SelectItem value="turkey">{t('profileManagement.turkey', 'Turkey')}</SelectItem>
-                <SelectItem value="egypt">{t('profileManagement.egypt', 'Egypt')}</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Tuning Status Filter */}
-            <Select value={tuningFilter} onValueChange={(v) => setTuningFilter(v as any)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Tuning Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Tuning States</SelectItem>
-                <SelectItem value="tuned">Tuned</SelectItem>
-                <SelectItem value="in_progress">Tuning in Progress</SelectItem>
-                <SelectItem value="untuned">Not Tuned</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          {/* Bulk Operations */}
-          {filteredProfiles.length > 0 && (
-            <div className="flex gap-2 mt-4">
-              <Input
-                type="number"
-                placeholder={t('profileManagement.bulkCost', 'Bulk cost')}
-                className="flex-1"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    const value = parseFloat(e.currentTarget.value);
-                    if (!isNaN(value)) {
-                      handleBulkUpdate('costPerMeter', value);
-                      e.currentTarget.value = '';
-                    }
-                  }
-                }}
-              />
-              <Input
-                type="number"
-                placeholder={t('profileManagement.bulkStock', 'Bulk stock')}
-                className="flex-1"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    const value = parseFloat(e.currentTarget.value);
-                    if (!isNaN(value)) {
-                      handleBulkUpdate('stockQuantity', value);
-                      e.currentTarget.value = '';
-                    }
-                  }
-                }}
-              />
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Profile Form - Collapsible */}
-      <Collapsible open={isProfileFormOpen} onOpenChange={setIsProfileFormOpen}>
-        <Card className="bg-gray-800/50 border-gray-700">
-          <CollapsibleTrigger asChild>
-            <CardHeader className="cursor-pointer hover:bg-gray-800/70 transition-colors">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  {editingId ? <Edit2 className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
-                  {editingId ? t('profileManagement.updateProfile', 'Update Profile') : t('profileManagement.addNewProfile', 'Add New Profile')}
-                </CardTitle>
-                <ChevronDown 
-                  className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
-                    isProfileFormOpen ? 'rotate-180' : ''
-                  }`} 
-                />
-              </div>
-            </CardHeader>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="space-y-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs text-gray-400">
-              You can also start a new profile from a DXF file exported from your CAD system.
-            </p>
-            <label>
-              <Button variant="outline" size="sm" asChild>
-                <span>
-                  <Upload className="h-4 w-4 mr-2" />
-                  {t('profileManagement.importDxf', 'Import DXF')}
-                </span>
-              </Button>
-              <input
-                type="file"
-                accept=".dxf"
-                onChange={handleImportDXF}
-                className="hidden"
-              />
-            </label>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>{t('profileManagement.name', 'Name')} *</Label>
-              <Input
-                value={formData.name || ''}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Yilmaz 50mm Aluminum"
-              />
-            </div>
-            <div>
-              <Label>{t('profileManagement.material', 'Material')} *</Label>
-              <Select
-                value={formData.material}
-                onValueChange={(value) => {
-                  setFormData({
-                    ...formData,
-                    material: value as 'aluminum' | 'upvc' | 'wood',
-                    color: MATERIAL_COLORS[value]?.[0] || '#C0C0C0',
-                  });
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="aluminum">{t('profileManagement.aluminum', 'Aluminum')}</SelectItem>
-                  <SelectItem value="upvc">{t('profileManagement.upvc', 'UPVC')}</SelectItem>
-                  <SelectItem value="wood">{t('profileManagement.wood', 'Wood')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Category</Label>
-              <Select
-                value={formData.category || 'window'}
-                onValueChange={(value) => setFormData({ ...formData, category: value as Profile['category'] })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="window">Window</SelectItem>
-                  <SelectItem value="door">Door</SelectItem>
-                  <SelectItem value="curtain_wall">Curtain Wall</SelectItem>
-                  <SelectItem value="structural">Structural</SelectItem>
-                  <SelectItem value="accessory">Accessory</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>System Type</Label>
-              <Select
-                value={formData.systemType || 'casement'}
-                onValueChange={(value) => setFormData({ ...formData, systemType: value as Profile['systemType'] })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="casement">Casement</SelectItem>
-                  <SelectItem value="sliding">Sliding</SelectItem>
-                  <SelectItem value="tilt_turn">Tilt & Turn</SelectItem>
-                  <SelectItem value="fixed">Fixed</SelectItem>
-                  <SelectItem value="facade">Facade</SelectItem>
-                  <SelectItem value="commercial">Commercial</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>{t('profileManagement.widthMm', 'Width (mm)')}</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={formData.width || 50}
-                onChange={(e) => setFormData({ ...formData, width: parseFloat(e.target.value) || 50 })}
-              />
-            </div>
-            <div>
-              <Label>{t('profileManagement.heightMm', 'Height (mm)')}</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={formData.height || 25}
-                onChange={(e) => setFormData({ ...formData, height: parseFloat(e.target.value) || 25 })}
-              />
-            </div>
-            <div>
-              <Label>{t('profileManagement.thicknessMm', 'Thickness (mm)')}</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={formData.thickness || 1.4}
-                onChange={(e) => setFormData({ ...formData, thickness: parseFloat(e.target.value) || 1.4 })}
-              />
-            </div>
-            <div>
-              <Label>{t('profileManagement.color', 'Color')}</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="color"
-                  value={formData.color || '#C0C0C0'}
-                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                  className="w-20 h-10"
-                />
-                <div className="flex gap-1 flex-1">
-                  {getMaterialColors().map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      className="w-8 h-8 rounded border-2 border-gray-600 hover:border-orange-400"
-                      style={{ backgroundColor: color }}
-                      onClick={() => setFormData({ ...formData, color })}
-                      title={color}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div>
-              <Label>{t('profileManagement.costPerMeter', 'Cost Per Meter')} ($)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                value={formData.costPerMeter || 0}
-                onChange={(e) => setFormData({ ...formData, costPerMeter: parseFloat(e.target.value) || 0 })}
-              />
-            </div>
-            {formData.material === 'aluminum' && (
-              <div>
-                <Label>Cost per Kg (Aluminum)</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={(formData.specifications as any)?.costPerKg ?? ''}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      specifications: {
-                        ...(formData.specifications || {}),
-                        costPerKg: e.target.value ? parseFloat(e.target.value) : undefined,
-                      },
-                    })
-                  }
-                  placeholder="e.g., 6.50"
-                />
-              </div>
-            )}
-            <div>
-              <Label>{t('profileManagement.weightPerMeter', 'Weight Per Meter')} (kg/m) – Aluminum</Label>
-              <Input
-                type="number"
-                step="0.001"
-                value={formData.weightPerMeter ?? ''}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    weightPerMeter: e.target.value ? parseFloat(e.target.value) : undefined,
-                  })
-                }
-                placeholder="e.g., 1.250"
-              />
-            </div>
-            <div>
-              <Label>{t('profileManagement.cuttingAllowance', 'Cutting Allowance')} (mm)</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={formData.cuttingAllowance || 3}
-                onChange={(e) => setFormData({ ...formData, cuttingAllowance: parseFloat(e.target.value) || 3 })}
-              />
-            </div>
-            <div>
-              <Label>{t('profileManagement.stockQuantity', 'Stock Quantity')} (m)</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={formData.stockQuantity || 0}
-                onChange={(e) => setFormData({ ...formData, stockQuantity: parseFloat(e.target.value) || 0 })}
-              />
-            </div>
-            <div>
-              <Label>{t('profileManagement.minStockLevel', 'Minimum Stock Level')} (m)</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={formData.minStockLevel || 0}
-                onChange={(e) => setFormData({ ...formData, minStockLevel: parseFloat(e.target.value) || 0 })}
-              />
-            </div>
-            <div>
-              <Label>{t('profileManagement.maxStockLevel', 'Maximum Stock Level')} (m)</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={formData.maxStockLevel || 1000}
-                onChange={(e) => setFormData({ ...formData, maxStockLevel: parseFloat(e.target.value) || 1000 })}
-              />
-            </div>
-            <div>
-              <Label>{t('profileManagement.supplier', 'Supplier')}</Label>
-              <Input
-                value={formData.supplier || ''}
-                onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
-                placeholder={t('profileManagement.supplier', 'Supplier')}
-              />
-            </div>
-            <div>
-              <Label>Profile Role in System</Label>
-              <Select
-                value={(formData.specifications as any)?.profileRole || 'frame'}
-                onValueChange={(value) =>
-                  setFormData({
-                    ...formData,
-                    specifications: {
-                      ...(formData.specifications || {}),
-                      profileRole: value,
-                    },
-                  })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="frame">Frame</SelectItem>
-                  <SelectItem value="sash">Sash</SelectItem>
-                  <SelectItem value="mullion">Mullion / Transom</SelectItem>
-                  <SelectItem value="glazing_bead">Glazing Bead</SelectItem>
-                  <SelectItem value="interlock">Interlock</SelectItem>
-                  <SelectItem value="accessory">Accessory Profile</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>{t('profileManagement.supplierCode', 'Supplier Code')}</Label>
-              <Input
-                value={(formData.specifications as any)?.supplierCode || ''}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    specifications: {
-                      ...(formData.specifications || {}),
-                      supplierCode: e.target.value,
-                    },
-                  })
-                }
-                placeholder="e.g., ALS-PS-50"
-              />
-            </div>
-            <div>
-              <Label>{t('profileManagement.internalCode', 'Internal Code')}</Label>
-              <Input
-                value={(formData.specifications as any)?.internalCode || ''}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    specifications: {
-                      ...(formData.specifications || {}),
-                      internalCode: e.target.value,
-                    },
-                  })
-                }
-                placeholder="Factory code (ERP)"
-              />
-            </div>
-            <div>
-              <Label>System Pack *</Label>
-              <Select
-                value={selectedSystemPackId}
-                onValueChange={(value) => {
-                  setSelectedSystemPackId(value);
-                  if (value === 'custom') {
-                    // Custom system - user will enter manually
-                    setFormData({
-                      ...formData,
-                      systemPackIds: [],
-                      systemBrand: formData.systemBrand || 'Standard',
-                    });
-                  } else {
-                    // Find the selected system pack
-                    const selectedPack = SYSTEM_PACKS.find(p => p.meta.id === value);
-                    if (selectedPack) {
-                      setFormData({
-                        ...formData,
-                        systemPackIds: [selectedPack.meta.id],
-                        systemBrand: selectedPack.meta.brands[0] || selectedPack.meta.name,
-                        specifications: {
-                          ...(formData.specifications || {}),
-                          window_system: selectedPack.meta.name,
-                          systemPackId: selectedPack.meta.id,
-                        },
-                      });
-                    }
-                  }
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select system pack or Custom" />
-                </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
-                  <SelectItem value="custom">
-                    Custom / Other
-                  </SelectItem>
-                  {SYSTEM_PACKS.map((pack) => (
-                    <SelectItem key={pack.meta.id} value={pack.meta.id}>
-                      {pack.meta.name} ({pack.meta.brands[0] || 'Generic'})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-gray-400 mt-1">
-                {selectedSystemPackId === 'custom' 
-                  ? 'You can manually enter system details below'
-                  : 'System details will be auto-filled'}
-              </p>
-            </div>
-            <div>
-              <Label>{t('profileManagement.systemBrand', 'System Brand')}</Label>
-              <Select
-                value={formData.systemBrand || 'Standard'}
-                onValueChange={(value) => setFormData({ ...formData, systemBrand: value })}
-                disabled={selectedSystemPackId !== 'custom'}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Standard">Standard</SelectItem>
-                  <SelectItem value="Yilmaz">Yilmaz</SelectItem>
-                  <SelectItem value="Kale">Kale</SelectItem>
-                  <SelectItem value="Profilma">Profilma</SelectItem>
-                  <SelectItem value="Alumil">Alumil</SelectItem>
-                  <SelectItem value="Salam">Salam</SelectItem>
-                  <SelectItem value="Kastamonu">Kastamonu</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-              {selectedSystemPackId !== 'custom' && (
-                <p className="text-xs text-gray-400 mt-1">
-                  Auto-filled from selected system pack
-                </p>
-              )}
-            </div>
-            {(formData.material === 'wood' || formData.material === 'upvc') && (
-              <div>
-                <Label>{t('profileManagement.grainDirection', 'Grain Direction')}</Label>
-                <Select
-                  value={formData.grainDirection || 'none'}
-                  onValueChange={(value) =>
-                    setFormData({
-                      ...formData,
-                      grainDirection: value === 'none' ? null : (value as 'horizontal' | 'vertical'),
-                    })
-                  }
-                >
+          {/* Filters */}
+          <Card className="bg-gray-800/50 border-gray-700">
+            <CardContent className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                {/* Category Filter */}
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Material Category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">{t('profileManagement.none', '—')}</SelectItem>
-                    <SelectItem value="horizontal">Horizontal</SelectItem>
-                    <SelectItem value="vertical">Vertical</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="aluminum_windows">Aluminum Windows</SelectItem>
+                    <SelectItem value="aluminum_doors">Aluminum Doors</SelectItem>
+                    <SelectItem value="curtain_walls">Curtain Walls</SelectItem>
+                    <SelectItem value="upvc_windows">UPVC Windows</SelectItem>
+                    <SelectItem value="upvc_doors">UPVC Doors</SelectItem>
+                    <SelectItem value="accessories">Accessories</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* System Pack Filter */}
+                <Select value={systemPackFilter} onValueChange={setSystemPackFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="System Pack" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Systems</SelectItem>
+                    {getSystemPacksForCategory(categoryFilter).map((pack) => (
+                      <SelectItem key={pack.id} value={pack.id}>
+                        {pack.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder={t('profileManagement.searchProfiles', 'Search Profiles')}
+                    value={searchTerm}
+                    onChange={(e) => dispatch({ type: 'SET_GLOBAL_SEARCH', payload: e.target.value })}
+                    className="pl-10"
+                  />
+                </div>
+
+                {/* Material Filter */}
+                <Select value={materialFilter} onValueChange={setMaterialFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('profileManagement.filterByMaterial', 'Filter by Material')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('profileManagement.all', 'All')}</SelectItem>
+                    <SelectItem value="aluminum">{t('profileManagement.aluminum', 'Aluminum')}</SelectItem>
+                    <SelectItem value="upvc">{t('profileManagement.upvc', 'UPVC')}</SelectItem>
+                    <SelectItem value="wood">{t('profileManagement.wood', 'Wood')}</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Region Filter */}
+                <Select value={regionFilter} onValueChange={setRegionFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('profileManagement.filterByRegion', 'Filter by Region')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('profileManagement.all', 'All')}</SelectItem>
+                    <SelectItem value="turkey">{t('profileManagement.turkey', 'Turkey')}</SelectItem>
+                    <SelectItem value="egypt">{t('profileManagement.egypt', 'Egypt')}</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Tuning Status Filter */}
+                <Select value={tuningFilter} onValueChange={(v) => setTuningFilter(v as any)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tuning Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Tuning States</SelectItem>
+                    <SelectItem value="tuned">Tuned</SelectItem>
+                    <SelectItem value="in_progress">Tuning in Progress</SelectItem>
+                    <SelectItem value="untuned">Not Tuned</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-            )}
-            <div>
-              <Label>{t('profileManagement.series', 'Series')}</Label>
-              <Input
-                value={(formData.specifications as any)?.series || ''}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    specifications: {
-                      ...(formData.specifications || {}),
-                      series: e.target.value,
-                    },
-                  })
-                }
-                placeholder="e.g., PS Jumbo, 70 Series"
-              />
-            </div>
-            <div>
-              <Label>{t('profileManagement.year', 'Year')}</Label>
-              <Input
-                type="number"
-                value={(formData.specifications as any)?.year || ''}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    specifications: {
-                      ...(formData.specifications || {}),
-                      year: e.target.value,
-                    },
-                  })
-                }
-                placeholder="e.g., 2025"
-              />
-            </div>
-            <div>
-              <Label>Glazing Thickness Min (mm)</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={(formData.specifications as any)?.glazingMinMm || ''}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    specifications: {
-                      ...(formData.specifications || {}),
-                      glazingMinMm: e.target.value ? parseFloat(e.target.value) : undefined,
-                    },
-                  })
-                }
-                placeholder="e.g., 18"
-              />
-            </div>
-            <div>
-              <Label>Glazing Thickness Max (mm)</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={(formData.specifications as any)?.glazingMaxMm || ''}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    specifications: {
-                      ...(formData.specifications || {}),
-                      glazingMaxMm: e.target.value ? parseFloat(e.target.value) : undefined,
-                    },
-                  })
-                }
-                placeholder="e.g., 32"
-              />
-            </div>
-            <div>
-              <Label>Extra Cutting Allowance for Border Frames (mm)</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={(formData.specifications as any)?.borderExtraAllowanceMm ?? ''}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    specifications: {
-                      ...(formData.specifications || {}),
-                      borderExtraAllowanceMm: e.target.value ? parseFloat(e.target.value) : undefined,
-                    },
-                  })
-                }
-                placeholder="Default 5mm when frame has 5 cm border"
-              />
-            </div>
-          </div>
-
-          {/* Machining Macros Section */}
-          <div className="col-span-2 border-t border-gray-700 pt-4 mt-2">
-            <Label>Machining Macros (Router/Pantograph Operations)</Label>
-            <p className="text-xs text-gray-400 mb-2">
-              Define machining operations required for accessory installation
-            </p>
-
-            <div className="space-y-3">
-              {formData.machiningMacros?.map((macro, index) => (
-                <div key={macro.id} className="p-3 bg-gray-700 rounded space-y-2">
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      placeholder="Operation name"
-                      value={macro.name}
-                      onChange={(e) => updateMacro(index, 'name', e.target.value)}
-                    />
-                    <Select
-                      value={macro.operation}
-                      onValueChange={(value) => updateMacro(index, 'operation', value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="slot">Slot</SelectItem>
-                        <SelectItem value="pocket">Pocket</SelectItem>
-                        <SelectItem value="drill">Drill</SelectItem>
-                        <SelectItem value="counterbore">Counterbore</SelectItem>
-                        <SelectItem value="contour">Contour</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2">
-                    <Input
-                      type="number"
-                      step="0.1"
-                      placeholder="Width (mm)"
-                      value={macro.dimensions.width}
-                      onChange={(e) => updateMacroDimension(index, 'width', parseFloat(e.target.value) || 0)}
-                    />
-                    <Input
-                      type="number"
-                      step="0.1"
-                      placeholder="Height (mm)"
-                      value={macro.dimensions.height}
-                      onChange={(e) => updateMacroDimension(index, 'height', parseFloat(e.target.value) || 0)}
-                    />
-                    <Input
-                      type="number"
-                      step="0.1"
-                      placeholder="Depth (mm)"
-                      value={macro.dimensions.depth}
-                      onChange={(e) => updateMacroDimension(index, 'depth', parseFloat(e.target.value) || 0)}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      type="number"
-                      step="0.1"
-                      placeholder="Position X (mm)"
-                      value={macro.position.x}
-                      onChange={(e) => updateMacro(index, 'position', { ...macro.position, x: parseFloat(e.target.value) || 0 })}
-                    />
-                    <Input
-                      type="number"
-                      step="0.1"
-                      placeholder="Position Y (mm)"
-                      value={macro.position.y}
-                      onChange={(e) => updateMacro(index, 'position', { ...macro.position, y: parseFloat(e.target.value) || 0 })}
-                    />
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removeMacro(index)}
-                    className="text-red-400"
-                  >
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    Remove Macro
-                  </Button>
+              {/* Bulk Operations */}
+              {filteredProfiles.length > 0 && (
+                <div className="flex gap-2 mt-4">
+                  <Input
+                    type="number"
+                    placeholder={t('profileManagement.bulkCost', 'Bulk cost')}
+                    className="flex-1"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const value = parseFloat(e.currentTarget.value);
+                        if (!isNaN(value)) {
+                          handleBulkUpdate('costPerMeter', value);
+                          e.currentTarget.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <Input
+                    type="number"
+                    placeholder={t('profileManagement.bulkStock', 'Bulk stock')}
+                    className="flex-1"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const value = parseFloat(e.currentTarget.value);
+                        if (!isNaN(value)) {
+                          handleBulkUpdate('stockQuantity', value);
+                          e.currentTarget.value = '';
+                        }
+                      }
+                    }}
+                  />
                 </div>
-              ))}
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={addNewMacro}
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Add Machining Operation
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex gap-2">
-            {editingId ? (
-              <>
-                <Button
-                  onClick={handleUpdateProfile}
-                  disabled={saving}
-                  className="bg-orange-500 hover:bg-orange-600"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {saving ? t('profileManagement.uploading', 'Uploading...') : t('profileManagement.updateProfile', 'Update Profile')}
-                </Button>
-                <Button variant="outline" onClick={resetForm}>
-                  {t('profileManagement.cancel', 'Cancel')}
-                </Button>
-              </>
-            ) : (
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleAddProfile}
-                  disabled={saving}
-                  className="bg-orange-500 hover:bg-orange-600"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  {saving ? t('inventory.adding', 'Adding...') : t('inventory.add_profile', 'Add Profile')}
-                </Button>
-                <Button
-                  onClick={() => setShowProfileDefinitionWizard(true)}
-                  variant="outline"
-                  className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Define from Data Sheet
-                </Button>
-              </div>
-            )}
-          </div>
+              )}
             </CardContent>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
+          </Card>
 
-      {/* Accessory Management Section */}
-      <Card className="bg-gray-800/50 border-gray-700">
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5 text-green-400" />
-              Accessory Library ({accessories.length})
-            </CardTitle>
-            <Button
-              variant="outline"
-              type="button"
-              onClick={() => setShowAccessoryManager(!showAccessoryManager)}
-            >
-              {showAccessoryManager ? 'Hide' : 'Manage Accessories'}
-            </Button>
-          </div>
-        </CardHeader>
+          {/* Profile Form - Collapsible */}
+          <Collapsible open={isProfileFormOpen} onOpenChange={setIsProfileFormOpen}>
+            <Card className="bg-gray-800/50 border-gray-700">
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-gray-800/70 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                      {editingId ? <Edit2 className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+                      {editingId ? t('profileManagement.updateProfile', 'Update Profile') : t('profileManagement.addNewProfile', 'Add New Profile')}
+                    </CardTitle>
+                    <ChevronDown
+                      className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isProfileFormOpen ? 'rotate-180' : ''
+                        }`}
+                    />
+                  </div>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs text-gray-400">
+                      You can also start a new profile from a DXF file exported from your CAD system.
+                    </p>
+                    <Label>
+                      <Button variant="outline" size="sm" asChild>
+                        <span>
+                          <Upload className="h-4 w-4 mr-2" />
+                          {t('profileManagement.importDxf', 'Import DXF')}
+                        </span>
+                      </Button>
+                      <input
+                        type="file"
+                        accept=".dxf"
+                        onChange={handleImportDXF}
+                        className="hidden"
+                      />
+                    </Label>
+                  </div>
 
-        {showAccessoryManager && (
-          <CardContent>
-            <AccessoryManagement
-              profiles={profiles}
-              onAccessoriesUpdate={handleAccessoriesUpdate}
-              userId={userId}
-            />
-          </CardContent>
-        )}
-      </Card>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>{t('profileManagement.name', 'Name')} *</Label>
+                      <Input
+                        value={formData.name || ''}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="e.g., Yilmaz 50mm Aluminum"
+                      />
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.material', 'Material')} *</Label>
+                      <Select
+                        value={formData.material}
+                        onValueChange={(value) => {
+                          setFormData({
+                            ...formData,
+                            material: value as 'aluminum' | 'upvc' | 'wood',
+                            color: MATERIAL_COLORS[value]?.[0] || '#C0C0C0',
+                          });
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="aluminum">{t('profileManagement.aluminum', 'Aluminum')}</SelectItem>
+                          <SelectItem value="upvc">{t('profileManagement.upvc', 'UPVC')}</SelectItem>
+                          <SelectItem value="wood">{t('profileManagement.wood', 'Wood')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Category</Label>
+                      <Select
+                        value={formData.category || 'window'}
+                        onValueChange={(value) => setFormData({ ...formData, category: value as Profile['category'] })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="window">Window</SelectItem>
+                          <SelectItem value="door">Door</SelectItem>
+                          <SelectItem value="curtain_wall">Curtain Wall</SelectItem>
+                          <SelectItem value="structural">Structural</SelectItem>
+                          <SelectItem value="accessory">Accessory</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>System Type</Label>
+                      <Select
+                        value={formData.systemType || 'casement'}
+                        onValueChange={(value) => setFormData({ ...formData, systemType: value as Profile['systemType'] })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="casement">Casement</SelectItem>
+                          <SelectItem value="sliding">Sliding</SelectItem>
+                          <SelectItem value="tilt_turn">Tilt & Turn</SelectItem>
+                          <SelectItem value="fixed">Fixed</SelectItem>
+                          <SelectItem value="facade">Facade</SelectItem>
+                          <SelectItem value="commercial">Commercial</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.widthMm', 'Width (mm)')}</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={formData.width || 50}
+                        onChange={(e) => setFormData({ ...formData, width: parseFloat(e.target.value) || 50 })}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.heightMm', 'Height (mm)')}</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={formData.height || 25}
+                        onChange={(e) => setFormData({ ...formData, height: parseFloat(e.target.value) || 25 })}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.thicknessMm', 'Thickness (mm)')}</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={formData.thickness || 1.4}
+                        onChange={(e) => setFormData({ ...formData, thickness: parseFloat(e.target.value) || 1.4 })}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.color', 'Color')}</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          type="color"
+                          value={formData.color || '#C0C0C0'}
+                          onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                          className="w-20 h-10"
+                        />
+                        <div className="flex gap-1 flex-1">
+                          {getMaterialColors().map((color) => (
+                            <button
+                              key={color}
+                              type="button"
+                              className="w-8 h-8 rounded border-2 border-gray-600 hover:border-amber-400"
+                              style={{ backgroundColor: color }}
+                              onClick={() => setFormData({ ...formData, color })}
+                              title={color}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.costPerMeter', 'Cost Per Meter')} ($)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={formData.costPerMeter || 0}
+                        onChange={(e) => setFormData({ ...formData, costPerMeter: parseFloat(e.target.value) || 0 })}
+                      />
+                    </div>
+                    {formData.material === 'aluminum' && (
+                      <div>
+                        <Label>Cost per Kg (Aluminum)</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={(formData.specifications as any)?.costPerKg ?? ''}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              specifications: {
+                                ...(formData.specifications || {}),
+                                costPerKg: e.target.value ? parseFloat(e.target.value) : undefined,
+                              },
+                            })
+                          }
+                          placeholder="e.g., 6.50"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <Label>{t('profileManagement.weightPerMeter', 'Weight Per Meter')} (kg/m) – Aluminum</Label>
+                      <Input
+                        type="number"
+                        step="0.001"
+                        value={formData.weightPerMeter ?? ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            weightPerMeter: e.target.value ? parseFloat(e.target.value) : undefined,
+                          })
+                        }
+                        placeholder="e.g., 1.250"
+                      />
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.cuttingAllowance', 'Cutting Allowance')} (mm)</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={formData.cuttingAllowance || 3}
+                        onChange={(e) => setFormData({ ...formData, cuttingAllowance: parseFloat(e.target.value) || 3 })}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.stockQuantity', 'Stock Quantity')} (m)</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={formData.stockQuantity || 0}
+                        onChange={(e) => setFormData({ ...formData, stockQuantity: parseFloat(e.target.value) || 0 })}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.minStockLevel', 'Minimum Stock Level')} (m)</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={formData.minStockLevel || 0}
+                        onChange={(e) => setFormData({ ...formData, minStockLevel: parseFloat(e.target.value) || 0 })}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.maxStockLevel', 'Maximum Stock Level')} (m)</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={formData.maxStockLevel || 1000}
+                        onChange={(e) => setFormData({ ...formData, maxStockLevel: parseFloat(e.target.value) || 1000 })}
+                      />
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.supplier', 'Supplier')}</Label>
+                      <Input
+                        value={formData.supplier || ''}
+                        onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
+                        placeholder={t('profileManagement.supplier', 'Supplier')}
+                      />
+                    </div>
+                    <div>
+                      <Label>Profile Role in System</Label>
+                      <Select
+                        value={(formData.specifications as any)?.profileRole || 'frame'}
+                        onValueChange={(value) =>
+                          setFormData({
+                            ...formData,
+                            specifications: {
+                              ...(formData.specifications || {}),
+                              profileRole: value,
+                            },
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="frame">Frame</SelectItem>
+                          <SelectItem value="sash">Sash</SelectItem>
+                          <SelectItem value="mullion">Mullion / Transom</SelectItem>
+                          <SelectItem value="glazing_bead">Glazing Bead</SelectItem>
+                          <SelectItem value="interlock">Interlock</SelectItem>
+                          <SelectItem value="accessory">Accessory Profile</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.supplierCode', 'Supplier Code')}</Label>
+                      <Input
+                        value={(formData.specifications as any)?.supplierCode || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            specifications: {
+                              ...(formData.specifications || {}),
+                              supplierCode: e.target.value,
+                            },
+                          })
+                        }
+                        placeholder="e.g., ALS-PS-50"
+                      />
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.internalCode', 'Internal Code')}</Label>
+                      <Input
+                        value={(formData.specifications as any)?.internalCode || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            specifications: {
+                              ...(formData.specifications || {}),
+                              internalCode: e.target.value,
+                            },
+                          })
+                        }
+                        placeholder="Factory code (ERP)"
+                      />
+                    </div>
+                    <div>
+                      <Label>System Pack *</Label>
+                      <Select
+                        value={selectedSystemPackId}
+                        onValueChange={(value) => {
+                          setSelectedSystemPackId(value);
+                          if (value === 'custom') {
+                            // Custom system - user will enter manually
+                            setFormData({
+                              ...formData,
+                              systemPackIds: [],
+                              systemBrand: formData.systemBrand || 'Standard',
+                            });
+                          } else {
+                            // Find the selected system pack
+                            const selectedPack = SYSTEM_PACKS.find(p => p.meta.id === value);
+                            if (selectedPack) {
+                              setFormData({
+                                ...formData,
+                                systemPackIds: [selectedPack.meta.id],
+                                systemBrand: selectedPack.meta.brands[0] || selectedPack.meta.name,
+                                specifications: {
+                                  ...(formData.specifications || {}),
+                                  window_system: selectedPack.meta.name,
+                                  systemPackId: selectedPack.meta.id,
+                                },
+                              });
+                            }
+                          }
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select system pack or Custom" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[300px]">
+                          <SelectItem value="custom">
+                            Custom / Other
+                          </SelectItem>
+                          {SYSTEM_PACKS.map((pack) => (
+                            <SelectItem key={pack.meta.id} value={pack.meta.id}>
+                              {pack.meta.name} ({pack.meta.brands[0] || 'Generic'})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-gray-400 mt-1">
+                        {selectedSystemPackId === 'custom'
+                          ? 'You can manually enter system details below'
+                          : 'System details will be auto-filled'}
+                      </p>
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.systemBrand', 'System Brand')}</Label>
+                      <Select
+                        value={formData.systemBrand || 'Standard'}
+                        onValueChange={(value) => setFormData({ ...formData, systemBrand: value })}
+                        disabled={selectedSystemPackId !== 'custom'}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Standard">Standard</SelectItem>
+                          <SelectItem value="Yilmaz">Yilmaz</SelectItem>
+                          <SelectItem value="Kale">Kale</SelectItem>
+                          <SelectItem value="Profilma">Profilma</SelectItem>
+                          <SelectItem value="Alumil">Alumil</SelectItem>
+                          <SelectItem value="Salam">Salam</SelectItem>
+                          <SelectItem value="Kastamonu">Kastamonu</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {selectedSystemPackId !== 'custom' && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Auto-filled from selected system pack
+                        </p>
+                      )}
+                    </div>
+                    {(formData.material === 'wood' || formData.material === 'upvc') && (
+                      <div>
+                        <Label>{t('profileManagement.grainDirection', 'Grain Direction')}</Label>
+                        <Select
+                          value={formData.grainDirection || 'none'}
+                          onValueChange={(value) =>
+                            setFormData({
+                              ...formData,
+                              grainDirection: value === 'none' ? null : (value as 'horizontal' | 'vertical'),
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">{t('profileManagement.none', '—')}</SelectItem>
+                            <SelectItem value="horizontal">Horizontal</SelectItem>
+                            <SelectItem value="vertical">Vertical</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    <div>
+                      <Label>{t('profileManagement.series', 'Series')}</Label>
+                      <Input
+                        value={(formData.specifications as any)?.series || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            specifications: {
+                              ...(formData.specifications || {}),
+                              series: e.target.value,
+                            },
+                          })
+                        }
+                        placeholder="e.g., PS Jumbo, 70 Series"
+                      />
+                    </div>
+                    <div>
+                      <Label>{t('profileManagement.year', 'Year')}</Label>
+                      <Input
+                        type="number"
+                        value={(formData.specifications as any)?.year || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            specifications: {
+                              ...(formData.specifications || {}),
+                              year: e.target.value,
+                            },
+                          })
+                        }
+                        placeholder="e.g., 2025"
+                      />
+                    </div>
+                    <div>
+                      <Label>Glazing Thickness Min (mm)</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={(formData.specifications as any)?.glazingMinMm || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            specifications: {
+                              ...(formData.specifications || {}),
+                              glazingMinMm: e.target.value ? parseFloat(e.target.value) : undefined,
+                            },
+                          })
+                        }
+                        placeholder="e.g., 18"
+                      />
+                    </div>
+                    <div>
+                      <Label>Glazing Thickness Max (mm)</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={(formData.specifications as any)?.glazingMaxMm || ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            specifications: {
+                              ...(formData.specifications || {}),
+                              glazingMaxMm: e.target.value ? parseFloat(e.target.value) : undefined,
+                            },
+                          })
+                        }
+                        placeholder="e.g., 32"
+                      />
+                    </div>
+                    <div>
+                      <Label>Extra Cutting Allowance for Border Frames (mm)</Label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={(formData.specifications as any)?.borderExtraAllowanceMm ?? ''}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            specifications: {
+                              ...(formData.specifications || {}),
+                              borderExtraAllowanceMm: e.target.value ? parseFloat(e.target.value) : undefined,
+                            },
+                          })
+                        }
+                        placeholder="Default 5mm when frame has 5 cm border"
+                      />
+                    </div>
+                  </div>
 
-      {/* Profiles List */}
-      <Card className="bg-gray-800/50 border-gray-700">
-        <CardHeader>
-          <CardTitle>{t('profileManagement.title', 'Profile Management')} ({filteredProfiles.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {filteredProfiles.length === 0 ? (
-              <div className="text-center py-8 text-gray-400">
-                <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>{t('profileManagement.errorLoadingProfiles', 'No profiles found. Add your first profile to get started.')}</p>
+                  {/* Machining Macros Section */}
+                  <div className="col-span-2 border-t border-gray-700 pt-4 mt-2">
+                    <Label>Machining Macros (Router/Pantograph Operations)</Label>
+                    <p className="text-xs text-gray-400 mb-2">
+                      Define machining operations required for accessory installation
+                    </p>
+
+                    <div className="space-y-3">
+                      {formData.machiningMacros?.map((macro, index) => (
+                        <div key={macro.id} className="p-3 bg-gray-700 rounded space-y-2">
+                          <div className="grid grid-cols-2 gap-2">
+                            <Input
+                              placeholder="Operation name"
+                              value={macro.name}
+                              onChange={(e) => updateMacro(index, 'name', e.target.value)}
+                            />
+                            <Select
+                              value={macro.operation}
+                              onValueChange={(value) => updateMacro(index, 'operation', value)}
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="slot">Slot</SelectItem>
+                                <SelectItem value="pocket">Pocket</SelectItem>
+                                <SelectItem value="drill">Drill</SelectItem>
+                                <SelectItem value="counterbore">Counterbore</SelectItem>
+                                <SelectItem value="contour">Contour</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-2">
+                            <Input
+                              type="number"
+                              step="0.1"
+                              placeholder="Width (mm)"
+                              value={macro.dimensions.width}
+                              onChange={(e) => updateMacroDimension(index, 'width', parseFloat(e.target.value) || 0)}
+                            />
+                            <Input
+                              type="number"
+                              step="0.1"
+                              placeholder="Height (mm)"
+                              value={macro.dimensions.height}
+                              onChange={(e) => updateMacroDimension(index, 'height', parseFloat(e.target.value) || 0)}
+                            />
+                            <Input
+                              type="number"
+                              step="0.1"
+                              placeholder="Depth (mm)"
+                              value={macro.dimensions.depth}
+                              onChange={(e) => updateMacroDimension(index, 'depth', parseFloat(e.target.value) || 0)}
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            <Input
+                              type="number"
+                              step="0.1"
+                              placeholder="Position X (mm)"
+                              value={macro.position.x}
+                              onChange={(e) => updateMacro(index, 'position', { ...macro.position, x: parseFloat(e.target.value) || 0 })}
+                            />
+                            <Input
+                              type="number"
+                              step="0.1"
+                              placeholder="Position Y (mm)"
+                              value={macro.position.y}
+                              onChange={(e) => updateMacro(index, 'position', { ...macro.position, y: parseFloat(e.target.value) || 0 })}
+                            />
+                          </div>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeMacro(index)}
+                            className="text-red-400"
+                          >
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Remove Macro
+                          </Button>
+                        </div>
+                      ))}
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={addNewMacro}
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Machining Operation
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    {editingId ? (
+                      <>
+                        <Button
+                          onClick={handleUpdateProfile}
+                          disabled={saving}
+                          className="btn-primary"
+                        >
+                          <Save className="h-4 w-4 mr-2" />
+                          {saving ? t('profileManagement.uploading', 'Uploading...') : t('profileManagement.updateProfile', 'Update Profile')}
+                        </Button>
+                        <Button variant="outline" onClick={resetForm}>
+                          {t('profileManagement.cancel', 'Cancel')}
+                        </Button>
+                      </>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={handleAddProfile}
+                          disabled={saving}
+                          className="btn-primary"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          {saving ? t('inventory.adding', 'Adding...') : t('inventory.add_profile', 'Add Profile')}
+                        </Button>
+                        <Button
+                          onClick={() => setShowProfileDefinitionWizard(true)}
+                          variant="outline"
+                          className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10"
+                        >
+                          <FileText className="h-4 w-4 mr-2" />
+                          Define from Data Sheet
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
+
+          {/* Accessory Management Section */}
+          <Card className="bg-gray-800/50 border-gray-700">
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-green-400" />
+                  Accessory Library ({accessories.length})
+                </CardTitle>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => setShowAccessoryManager(!showAccessoryManager)}
+                >
+                  {showAccessoryManager ? 'Hide' : 'Manage Accessories'}
+                </Button>
               </div>
-            ) : (
-              filteredProfiles.map((profile) => {
-                const status = getStockStatus(profile);
-                const tuningStatus = getTuningStatus(profile);
-                const stockPercentage =
-                  profile.minStockLevel > 0 && profile.stockQuantity !== undefined && profile.minStockLevel !== undefined
-                    ? Math.min(((profile.stockQuantity ?? 0) / profile.minStockLevel) * 100, 100)
-                    : (profile.stockQuantity !== undefined && profile.stockQuantity > 0 ? 100 : 0);
-                const specs = profile.specifications || {};
+            </CardHeader>
 
-                // Show detail card if selected, otherwise show compact view
-                if (selectedProfileForDetail?.id === profile.id) {
-                  return (
-                    <div key={profile.id} className="mb-4">
+            {showAccessoryManager && (
+              <CardContent>
+                <AccessoryManagement
+                  profiles={profiles}
+                  onAccessoriesUpdate={handleAccessoriesUpdate}
+                  userId={userId}
+                />
+              </CardContent>
+            )}
+          </Card>
+
+          {/* Profiles List */}
+          <Card className="bg-gray-800/50 border-gray-700">
+            <CardHeader>
+              <CardTitle>{t('profileManagement.title', 'Profile Management')} ({filteredProfiles.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {filteredProfiles.length === 0 ? (
+                <div className="text-center py-8 text-gray-400">
+                  <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>{t('profileManagement.errorLoadingProfiles', 'No profiles found. Add your first profile to get started.')}</p>
+                </div>
+              ) : (
+                <>
+                  {/* ✅ PERFORMANCE: Render detail view separately (outside virtualization) */}
+                  {selectedProfileForDetail && (
+                    <div className="mb-4">
                       <ProfileDetailCard
-                        profile={profile}
+                        profile={selectedProfileForDetail}
                         accessories={accessories}
                         onEdit={handleEditProfile}
                         onMachiningPreview={(macro) => {
                           toast.info(`Previewing machining operation: ${macro.name}`);
                         }}
                       />
-                          <Button
+                      <Button
                         variant="outline"
                         size="sm"
                         className="mt-2"
@@ -2287,199 +2165,213 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                         Show Compact View
                       </Button>
                     </div>
-                  );
-                }
+                  )}
 
-                return (
-                  <div key={profile.id} className="p-4 bg-gray-700 rounded-lg">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          {/* Profile Thumbnail */}
-                          {profile.thumbnailUrl && (
-                            <img 
-                              src={profile.thumbnailUrl} 
-                              alt={profile.name}
-                              className="w-10 h-10 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = 'none';
-                              }}
-                            />
-                          )}
-                          <h4 className="font-semibold">{profile.name}</h4>
-                          <Badge variant="outline">{profile.material}</Badge>
-                          {profile.systemBrand && (
-                            <Badge variant="outline" className="bg-blue-500/20 text-blue-400">
-                              {profile.systemBrand}
-                            </Badge>
-                          )}
-                          <Badge
-                            variant="outline"
-                            className={`${getStatusColor(status)} border-current`}
-                          >
-                            {getStockStatusLabel(status)}
-                          </Badge>
-                          <Badge
-                            variant="outline"
-                            className={
-                              tuningStatus === 'tuned'
-                                ? 'border-emerald-400 text-emerald-300'
-                                : tuningStatus === 'in_progress'
-                                ? 'border-blue-400 text-blue-300'
-                                : 'border-yellow-400 text-yellow-300'
-                            }
-                          >
-                            {tuningStatus === 'tuned'
-                              ? 'Tuned'
-                              : tuningStatus === 'in_progress'
-                              ? 'Tuning'
-                              : 'Untuned'}
-                          </Badge>
-                        </div>
-                        <div className="grid grid-cols-4 gap-4 text-sm text-gray-400">
-                          <div>
-                            {t('profileManagement.dimensions', 'Dimensions')}: {profile.width}mm × {profile.height || 'N/A'}mm
+                  {/* ✅ PERFORMANCE: Virtualized list for large profile lists */}
+                  <VirtualizedProfileList
+                    profiles={filteredProfiles.filter(p => p.id !== selectedProfileForDetail?.id)}
+                    containerHeight={600}
+                    itemHeight={200}
+                    renderProfile={(profile, _index) => {
+                      const status = getStockStatus(profile);
+                      const tuningStatus = getTuningStatus(profile);
+                      const stockPercentage =
+                        profile.minStockLevel > 0 && profile.stockQuantity !== undefined && profile.minStockLevel !== undefined
+                          ? Math.min(((profile.stockQuantity ?? 0) / profile.minStockLevel) * 100, 100)
+                          : (profile.stockQuantity !== undefined && profile.stockQuantity > 0 ? 100 : 0);
+                      const specs = profile.specifications || {};
+
+                      return (
+                        <div className="p-4 bg-gray-700 rounded-lg mb-3">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                {/* Profile Thumbnail */}
+                                {profile.thumbnailUrl && (
+                                  <img
+                                    src={profile.thumbnailUrl}
+                                    alt={profile.name}
+                                    className="w-10 h-10 rounded border border-gray-700 object-contain bg-white/5 flex-shrink-0"
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).style.display = 'none';
+                                    }}
+                                  />
+                                )}
+                                <h4 className="typography-h4">{profile.name}</h4>
+                                <Badge variant="outline">{profile.material}</Badge>
+                                {profile.systemBrand && (
+                                  <Badge variant="outline" className="bg-blue-500/20 text-blue-400">
+                                    {profile.systemBrand}
+                                  </Badge>
+                                )}
+                                <Badge
+                                  variant="outline"
+                                  className={`${getStatusColor(status)} border-current`}
+                                >
+                                  {getStockStatusLabel(status)}
+                                </Badge>
+                                <Badge
+                                  variant="outline"
+                                  className={
+                                    tuningStatus === 'tuned'
+                                      ? 'border-emerald-400 text-emerald-300'
+                                      : tuningStatus === 'in_progress'
+                                        ? 'border-blue-400 text-blue-300'
+                                        : 'border-yellow-400 text-yellow-300'
+                                  }
+                                >
+                                  {tuningStatus === 'tuned'
+                                    ? 'Tuned'
+                                    : tuningStatus === 'in_progress'
+                                      ? 'Tuning'
+                                      : 'Untuned'}
+                                </Badge>
+                              </div>
+                              <div className="grid grid-cols-4 gap-4 text-sm text-gray-400">
+                                <div>
+                                  {t('profileManagement.dimensions', 'Dimensions')}: {profile.width}mm × {profile.height || 'N/A'}mm
+                                </div>
+                                <div>{t('profileManagement.cost', 'Cost')}: ${(profile.costPerMeter ?? 0).toFixed(2)}/m</div>
+                                <div>{t('profileManagement.stock', 'Stock')}: {profile.stockQuantity}m</div>
+                                <div>{t('profileManagement.supplier', 'Supplier')}: {profile.supplier || t('profileManagement.none', '—')}</div>
+                              </div>
+                              <div className="grid grid-cols-4 gap-4 text-xs text-gray-400 mt-2">
+                                <div>
+                                  {t('profileManagement.twinCode', 'Twin Code')}:
+                                  <span className="ml-1 font-mono">
+                                    {(specs.internalCode as string) || profile.id.slice(0, 8)}/
+                                    {(specs.supplierCode as string) || t('profileManagement.none', '—')}
+                                  </span>
+                                </div>
+                                <div>{t('profileManagement.series', 'Series')}: {(specs.series as string) || t('profileManagement.none', '—')}</div>
+                                <div>{t('profileManagement.year', 'Year')}: {(specs.year as string) || t('profileManagement.none', '—')}</div>
+                                <div>
+                                  {t('profileManagement.dxf', 'DXF')}:
+                                  <span className="ml-1">
+                                    {specs.dxfImported ? t('profileManagement.imported', 'Imported') : t('profileManagement.none', '—')}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-gray-500">Tuning:</span>
+                                  <span
+                                    className={
+                                      tuningStatus === 'tuned'
+                                        ? 'text-emerald-300'
+                                        : tuningStatus === 'in_progress'
+                                          ? 'text-blue-300'
+                                          : 'text-yellow-300'
+                                    }
+                                  >
+                                    {tuningStatus === 'tuned'
+                                      ? 'Full profile tuned'
+                                      : tuningStatus === 'in_progress'
+                                        ? 'Partially tuned'
+                                        : 'Not tuned yet'}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="mt-2">
+                                <div className="flex justify-between text-xs mb-1">
+                                  <span>{t('profileManagement.stockLevel', 'Stock Level')}</span>
+                                  <span>{(stockPercentage ?? 0).toFixed(0)}%</span>
+                                </div>
+                                <Progress value={stockPercentage ?? 0} className="h-2" />
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-2 ml-4">
+                              {/* Show thumbnail from Supabase if available, otherwise fallback to previewImageUrl */}
+                              {(profile.thumbnailUrl || specs.previewImageUrl) && (
+                                <img
+                                  src={profile.thumbnailUrl || (specs.previewImageUrl as string)}
+                                  alt={profile.name}
+                                  className="w-24 h-24 rounded border border-gray-600 object-contain bg-white/5"
+                                  onError={(e) => {
+                                    // Fallback to previewImageUrl if thumbnail fails
+                                    if (profile.thumbnailUrl && specs.previewImageUrl) {
+                                      (e.target as HTMLImageElement).src = specs.previewImageUrl as string;
+                                    } else {
+                                      (e.target as HTMLImageElement).style.display = 'none';
+                                    }
+                                  }}
+                                />
+                              )}
+                              <div className="flex gap-2">
+                                <Label>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={isUploadingPreview === profile.id}
+                                    asChild
+                                  >
+                                    <span>
+                                      <Upload className="h-4 w-4 mr-1" />
+                                      {isUploadingPreview === profile.id ? t('profileManagement.uploading', 'Uploading...') : t('profileManagement.uploadPreview', 'Upload 2D Preview')}
+                                    </span>
+                                  </Button>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleUploadPreviewImage(e, profile)}
+                                    className="hidden"
+                                  />
+                                </Label>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setSelectedProfileForDetail(profile)}
+                                >
+                                  <FileText className="h-4 w-4" />
+                                </Button>
+                                {userId && (
+                                  <>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="btn-primary"
+                                      onClick={() => setTuningProfile(profile)}
+                                    >
+                                      Tune
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="btn-primary"
+                                      onClick={() => {
+                                        setCalibrationProfile(profile);
+                                        setShowCalibrationDialog(true);
+                                      }}
+                                      title="Calibrate cutting parameters"
+                                    >
+                                      <GaugeCircle className="h-4 w-4" />
+                                    </Button>
+                                  </>
+                                )}
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEditProfile(profile)}
+                                >
+                                  <Edit2 className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteProfile(profile)}
+                                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
                           </div>
-                          <div>{t('profileManagement.cost', 'Cost')}: ${(profile.costPerMeter ?? 0).toFixed(2)}/m</div>
-                          <div>{t('profileManagement.stock', 'Stock')}: {profile.stockQuantity}m</div>
-                          <div>{t('profileManagement.supplier', 'Supplier')}: {profile.supplier || t('profileManagement.none', '—')}</div>
                         </div>
-                        <div className="grid grid-cols-4 gap-4 text-xs text-gray-400 mt-2">
-                          <div>
-                            {t('profileManagement.twinCode', 'Twin Code')}:
-                            <span className="ml-1 font-mono">
-                              {(specs.internalCode as string) || profile.id.slice(0, 8)}/
-                              {(specs.supplierCode as string) || t('profileManagement.none', '—')}
-                            </span>
-                          </div>
-                          <div>{t('profileManagement.series', 'Series')}: {(specs.series as string) || t('profileManagement.none', '—')}</div>
-                          <div>{t('profileManagement.year', 'Year')}: {(specs.year as string) || t('profileManagement.none', '—')}</div>
-                          <div>
-                            {t('profileManagement.dxf', 'DXF')}:
-                            <span className="ml-1">
-                              {specs.dxfImported ? t('profileManagement.imported', 'Imported') : t('profileManagement.none', '—')}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-gray-500">Tuning:</span>
-                            <span
-                              className={
-                                tuningStatus === 'tuned'
-                                  ? 'text-emerald-300'
-                                  : tuningStatus === 'in_progress'
-                                  ? 'text-blue-300'
-                                  : 'text-yellow-300'
-                              }
-                            >
-                              {tuningStatus === 'tuned'
-                                ? 'Full profile tuned'
-                                : tuningStatus === 'in_progress'
-                                ? 'Partially tuned'
-                                : 'Not tuned yet'}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="mt-2">
-                          <div className="flex justify-between text-xs mb-1">
-                            <span>{t('profileManagement.stockLevel', 'Stock Level')}</span>
-                            <span>{(stockPercentage ?? 0).toFixed(0)}%</span>
-                          </div>
-                          <Progress value={stockPercentage ?? 0} className="h-2" />
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end gap-2 ml-4">
-                        {/* Show thumbnail from Supabase if available, otherwise fallback to previewImageUrl */}
-                        {(profile.thumbnailUrl || specs.previewImageUrl) && (
-                          <img
-                            src={profile.thumbnailUrl || (specs.previewImageUrl as string)}
-                            alt={profile.name}
-                            className="w-24 h-24 rounded border border-gray-600 object-contain bg-white/5"
-                            onError={(e) => {
-                              // Fallback to previewImageUrl if thumbnail fails
-                              if (profile.thumbnailUrl && specs.previewImageUrl) {
-                                (e.target as HTMLImageElement).src = specs.previewImageUrl as string;
-                              } else {
-                                (e.target as HTMLImageElement).style.display = 'none';
-                              }
-                            }}
-                          />
-                        )}
-                        <div className="flex gap-2">
-                          <label>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled={isUploadingPreview === profile.id}
-                              asChild
-                            >
-                              <span>
-                                <Upload className="h-4 w-4 mr-1" />
-                                {isUploadingPreview === profile.id ? t('profileManagement.uploading', 'Uploading...') : t('profileManagement.uploadPreview', 'Upload 2D Preview')}
-                              </span>
-                            </Button>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleUploadPreviewImage(e, profile)}
-                              className="hidden"
-                            />
-                          </label>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSelectedProfileForDetail(profile)}
-                          >
-                            <FileText className="h-4 w-4" />
-                          </Button>
-                          {userId && (
-                            <>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-orange-500/60 text-orange-300 hover:bg-orange-500/10"
-                                onClick={() => setTuningProfile(profile)}
-                              >
-                                Tune
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="border-orange-500/50 text-orange-300 hover:bg-orange-500/10"
-                                onClick={() => {
-                                  setCalibrationProfile(profile);
-                                  setShowCalibrationDialog(true);
-                                }}
-                                title="Calibrate cutting parameters"
-                              >
-                                <GaugeCircle className="h-4 w-4" />
-                              </Button>
-                            </>
-                          )}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEditProfile(profile)}
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteProfile(profile)}
-                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </CardContent>
-      </Card>
+                      );
+                    }}
+                  />
+                </>
+              )}
+            </CardContent>
+          </Card>
 
         </CollapsibleContent>
       </Collapsible>
@@ -2518,16 +2410,16 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                     }}
                   />
                 )}
-                
+
                 {/* Profile Details */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="font-semibold text-gray-100 truncate">{profileToDelete.name}</h4>
+                    <h4 className="typography-h4 text-gray-100 truncate">{profileToDelete.name}</h4>
                     <Badge variant="outline" className="border-gray-600 text-gray-300">
                       {profileToDelete.material}
                     </Badge>
                   </div>
-                  
+
                   <div className="space-y-1 text-xs text-gray-400">
                     <div className="flex items-center gap-2">
                       <Ruler className="h-3 w-3" />
@@ -2552,7 +2444,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
               </div>
 
               {/* Warning Details */}
-              <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+              <div className="btn-primary">
                 <div className="flex items-start gap-2">
                   <AlertCircle className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
                   <div className="flex-1 text-xs text-amber-200">
@@ -2572,7 +2464,7 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
           )}
 
           <AlertDialogFooter className="gap-2 sm:gap-0">
-            <AlertDialogCancel 
+            <AlertDialogCancel
               disabled={isDeleting}
               className="bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-gray-100"
             >
@@ -2656,23 +2548,23 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                         calibration
                       ]
                     };
-                    
+
                     // Update in state
-                    setProfiles(prev => prev.map(p => 
+                    setProfiles(prev => prev.map(p =>
                       p.id === calibrationProfile.id ? updatedProfile : p
                     ));
-                    
+
                     // Save to Supabase
                     const { error } = await (supabase
-                      .from('profiles') as any)
+                      .from('fabricator_profiles') as any)
                       .update({
                         specifications: updatedProfile.specifications,
                         calibrations: updatedProfile.calibrations,
                       })
                       .eq('id', calibrationProfile.id);
-                    
+
                     if (error) {
-                      console.error('Error updating profile calibration:', error);
+                      trackError('ProfileManagement', 'update_calibration', String(error));
                       toast.error('Failed to save calibration');
                     } else {
                       toast.success('Calibration saved and applied immediately');
@@ -2681,7 +2573,8 @@ export const ProfileManagement: React.FC<ProfileManagementProps> = ({
                       loadProfiles(); // Refresh to show updated data
                     }
                   } catch (error) {
-                    console.error('Error saving calibration:', error);
+                    const err = error instanceof Error ? error : new Error(String(error));
+                    trackError('ProfileManagement', 'save_calibration', err.message);
                     toast.error('Failed to save calibration');
                   }
                 }}

@@ -18,11 +18,11 @@ const LocalizationTest: React.FC = () => {
 
   return (
     <div className="p-6 bg-gray-100 rounded-lg m-4">
-      <h2 className="text-2xl font-bold mb-4">Localization Test</h2>
+      <h2 className="typography-h2 mb-4">Localization Test</h2>
       
       {/* Current Status */}
       <div className="mb-6 p-4 bg-white rounded border">
-        <h3 className="text-lg font-semibold mb-2">Current Status</h3>
+        <h3 className="typography-h3 text-lg mb-2">Current Status</h3>
         <p><strong>Language:</strong> {i18n.language}</p>
         <p><strong>Region:</strong> {regionState.region}</p>
         <p><strong>Region Language:</strong> {config?.language}</p>
@@ -32,7 +32,7 @@ const LocalizationTest: React.FC = () => {
 
       {/* Language Switcher */}
       <div className="mb-6 p-4 bg-white rounded border">
-        <h3 className="text-lg font-semibold mb-2">Language Switcher</h3>
+        <h3 className="typography-h3 text-lg mb-2">Language Switcher</h3>
         <div className="flex gap-2">
           <button
             onClick={() => handleLanguageChange('en')}
@@ -63,7 +63,7 @@ const LocalizationTest: React.FC = () => {
 
       {/* Region Switcher */}
       <div className="mb-6 p-4 bg-white rounded border">
-        <h3 className="text-lg font-semibold mb-2">Region Switcher</h3>
+        <h3 className="typography-h3 text-lg mb-2">Region Switcher</h3>
         <div className="flex gap-2">
           <button
             onClick={() => handleRegionChange('DEFAULT')}
@@ -94,7 +94,7 @@ const LocalizationTest: React.FC = () => {
 
       {/* Translation Examples */}
       <div className="mb-6 p-4 bg-white rounded border">
-        <h3 className="text-lg font-semibold mb-2">Translation Examples</h3>
+        <h3 className="typography-h3 text-lg mb-2">Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Welcome:</strong> {t('common.welcome')}</p>
           <p><strong>Products:</strong> {t('common.products')}</p>
@@ -107,7 +107,7 @@ const LocalizationTest: React.FC = () => {
 
       {/* Machine Examples */}
       <div className="mb-6 p-4 bg-white rounded border">
-        <h3 className="text-lg font-semibold mb-2">Machine Translation Examples</h3>
+        <h3 className="typography-h3 text-lg mb-2">Machine Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Title:</strong> {t('machines.title')}</p>
           <p><strong>CNC Machines:</strong> {t('machines.categories.cnc_machines')}</p>
@@ -118,7 +118,7 @@ const LocalizationTest: React.FC = () => {
 
       {/* Services Examples */}
       <div className="mb-6 p-4 bg-white rounded border">
-        <h3 className="text-lg font-semibold mb-2">Services Translation Examples</h3>
+        <h3 className="typography-h3 text-lg mb-2">Services Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Title:</strong> {t('services.title')}</p>
           <p><strong>Maintenance:</strong> {t('services.cards.maintenance.title')}</p>
@@ -129,7 +129,7 @@ const LocalizationTest: React.FC = () => {
 
       {/* Quote Examples */}
       <div className="mb-6 p-4 bg-white rounded border">
-        <h3 className="text-lg font-semibold mb-2">Quote Translation Examples</h3>
+        <h3 className="typography-h3 text-lg mb-2">Quote Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Title:</strong> {t('quotes.title')}</p>
           <p><strong>Project Details:</strong> {t('quotes.steps.project_details')}</p>
@@ -140,7 +140,7 @@ const LocalizationTest: React.FC = () => {
 
       {/* Ticket Examples */}
       <div className="mb-6 p-4 bg-white rounded border">
-        <h3 className="text-lg font-semibold mb-2">Ticket Translation Examples</h3>
+        <h3 className="typography-h3 text-lg mb-2">Ticket Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Title:</strong> {t('tickets.title')}</p>
           <p><strong>General Support:</strong> {t('tickets.types.general')}</p>
@@ -151,7 +151,7 @@ const LocalizationTest: React.FC = () => {
 
       {/* Training Examples */}
       <div className="mb-6 p-4 bg-white rounded border">
-        <h3 className="text-lg font-semibold mb-2">Training Translation Examples</h3>
+        <h3 className="typography-h3 text-lg mb-2">Training Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Title:</strong> {t('training.title')}</p>
           <p><strong>Basic Operator:</strong> {t('training.programs.basic_operator')}</p>
@@ -162,7 +162,7 @@ const LocalizationTest: React.FC = () => {
 
       {/* Geography Examples */}
       <div className="mb-6 p-4 bg-white rounded border">
-        <h3 className="text-lg font-semibold mb-2">Geography Translation Examples</h3>
+        <h3 className="typography-h3 text-lg mb-2">Geography Translation Examples</h3>
         <div className="space-y-2">
           <p><strong>Title:</strong> {t('geography.title')}</p>
           <p><strong>Industrial Zone:</strong> {t('geography.industrial_zones.industrial_zone')}</p>

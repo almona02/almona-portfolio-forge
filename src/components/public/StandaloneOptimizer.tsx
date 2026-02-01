@@ -98,7 +98,7 @@ export const StandaloneOptimizer: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white py-12 px-4">
       <div className="container mx-auto max-w-4xl space-y-6">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
+          <h1 className="typography-h1 bg-gradient-to-r from-amber-400 to-red-500 bg-clip-text text-transparent">
             Free Cutting Optimizer
           </h1>
           <p className="text-gray-400">
@@ -109,7 +109,7 @@ export const StandaloneOptimizer: React.FC = () => {
         <Card className="bg-gray-800/50 border-gray-700">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Scissors className="h-5 w-5 text-orange-400" />
+              <Scissors className="h-5 w-5 text-amber-400" />
               Enter Your Cut List
             </CardTitle>
             <CardDescription>
@@ -174,7 +174,7 @@ export const StandaloneOptimizer: React.FC = () => {
             <Button
               onClick={handleOptimize}
               disabled={optimizing || cuts.some((c) => c.length <= 0)}
-              className="w-full bg-orange-500 hover:bg-orange-600"
+              className="btn-primary"
             >
               {optimizing ? (
                 <>
@@ -199,7 +199,7 @@ export const StandaloneOptimizer: React.FC = () => {
               <Card className="bg-gray-800/50 border-gray-700">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Mail className="h-5 w-5 text-orange-400" />
+                    <Mail className="h-5 w-5 text-amber-400" />
                     Get Full Access
                   </CardTitle>
                   <CardDescription>
@@ -221,7 +221,7 @@ export const StandaloneOptimizer: React.FC = () => {
                   <Button
                     onClick={handleEmailSubmit}
                     disabled={!email || !email.includes('@')}
-                    className="w-full bg-orange-500 hover:bg-orange-600"
+                    className="btn-primary"
                   >
                     Get Full Report & Learn More
                   </Button>
@@ -239,7 +239,7 @@ export const StandaloneOptimizer: React.FC = () => {
 
             <Card className="bg-blue-500/10 border-blue-500/30">
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-2">Want More?</h3>
+                <h3 className="typography-h3 text-lg mb-2">Want More?</h3>
                 <p className="text-sm text-gray-300 mb-4">
                   Manage your entire workshop, save these results, and track remnants with
                   Fabricator Pro.

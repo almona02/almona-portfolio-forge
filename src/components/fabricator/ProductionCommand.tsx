@@ -17,16 +17,18 @@
  * - Polished UI/UX: The layout, terminology, and visual language are refined to
  *   instill a sense of confidence, precision, and command.
  */
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { WasteComparisonReport } from '@/components/analytics/WasteComparisonReport';
 import { MachineValidator } from '@/integrations/yilmaz/MachineValidator';
 import { YilmazGCodeGenerator, YilmazMachineModel } from '@/integrations/yilmaz/YilmazGCodeGenerator';
-import { calculateManualCuttingPlan, compareWaste } from '@/lib/analytics/WasteCalculator';
+import { calculateManualCuttingPlan, compareWaste, type WasteComparison } from '@/lib/analytics/WasteCalculator';
 import { ExportService } from '@/lib/exports';
 import { ALM6510ExportOptions, alm6510MDBExport } from '@/lib/exports/ALM6510MDBExport';
 import { downloadSplitPO } from '@/lib/exports/SplitPOExport';
 import { lazyExportPDF } from '@/lib/exports/lazyExportHandlers';
 import type { InstallationCostBreakdown, InstallationVariables } from '@/lib/installation/EgyptianInstallationCalculator';
 // PDFExportService is now lazy-loaded via lazyExportPDF() - see handleExportCuttingReport
+import { trackError } from '@/lib/performance-monitoring';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
@@ -36,7 +38,7 @@ import {
 } from '@/shared/ui/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/ui/tooltip';
-import { CuttingPlan, OptimizationResult, Profile, WindowUnit } from '@/types/fabricator';
+import { CuttingPlan, OptimizationResult, Profile, WindowUnit, type Cut } from '@/types/fabricator';
 import {
     AlertCircle, CheckCircle,
     Clock,
@@ -49,7 +51,7 @@ import {
     Send,
     TrendingUp
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InstallationVariablesPanel } from './InstallationVariablesPanel';
 import { ProductionPreviewDialog } from './ProductionPreviewDialog';
@@ -129,12 +131,130 @@ const StockBarVisualization: React.FC<{ plan: CuttingPlan }> = ({ plan }) => {
     );
 };
 
+/**
+ * Animated CNC Toolpath Simulation
+ * Parses G-code and visualizes the cutting head movement.
+ */
+const CNCSimulationView: React.FC<{ gcode: string; machine: string }> = ({ gcode, machine: _machine }) => {
+    const canvasRef = React.useRef<HTMLCanvasElement>(null);
+    const [progress, setProgress] = React.useState(0);
+    const [isPlaying, setIsPlaying] = React.useState(true);
+
+    React.useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // Parse simplified G-code for visualization
+        const lines = gcode.split('\n');
+        const commands = lines.map(line => {
+            const parts = line.split(' ');
+            const cmd: any = { type: parts[1] }; // N1 G0 X...
+            parts.forEach(p => {
+                if (p.startsWith('X')) cmd.x = parseFloat(p.substring(1));
+                if (p.startsWith('Y')) cmd.y = parseFloat(p.substring(1));
+                if (p.startsWith('Z')) cmd.z = parseFloat(p.substring(1));
+            });
+            return cmd;
+        }).filter(c => c.x !== undefined || c.y !== undefined); // Only move commands
+
+        let animationFrameId: number;
+        let step = 0;
+        
+        const render = () => {
+            // Clear canvas
+            ctx.fillStyle = '#0f172a'; // bg-slate-900
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Machine Bed
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1;
+            const bedY = canvas.height - 40;
+            ctx.beginPath();
+            ctx.moveTo(10, bedY);
+            ctx.lineTo(canvas.width - 10, bedY);
+            ctx.stroke();
+
+            // Draw Stock Material
+            ctx.fillStyle = '#475569';
+            ctx.fillRect(20, bedY - 30, canvas.width - 40, 30);
+
+            // Simulate Tool Head
+            if (commands.length > 0) {
+                // Scale X coordinate to canvas width (assuming 6000mm max length)
+                const scaleX = (canvas.width - 40) / 6000; 
+                
+                // Animate through commands
+                if (isPlaying) {
+                    step = (step + 1) % commands.length;
+                    setProgress(Math.floor((step / commands.length) * 100));
+                }
+                
+                const cmd = commands[step];
+                const toolX = 20 + ((cmd.x || 0) * scaleX);
+                const toolY = bedY - 30 - 20; // Float above material
+
+                // Draw Head
+                ctx.fillStyle = '#f59e0b'; // amber-500
+                ctx.beginPath();
+                ctx.arc(toolX, toolY, 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw Spindle
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(toolX, toolY);
+                ctx.lineTo(toolX, toolY - 15);
+                ctx.stroke();
+
+                // Draw "Spark" effect if cutting (Z down)
+                if ((cmd.z || 0) < 0) {
+                     ctx.fillStyle = '#fbbf24';
+                     ctx.globalAlpha = 0.5 + Math.random() * 0.5;
+                     ctx.beginPath();
+                     ctx.arc(toolX, bedY - 30, 8, 0, Math.PI * 2);
+                     ctx.fill();
+                     ctx.globalAlpha = 1.0;
+                }
+            }
+
+            animationFrameId = requestAnimationFrame(render);
+        };
+
+        render();
+        return () => cancelAnimationFrame(animationFrameId);
+    }, [gcode, isPlaying]);
+
+    return (
+        <div className="relative w-full h-full">
+            <canvas 
+                ref={canvasRef} 
+                width={600} 
+                height={256} 
+                className="w-full h-full block"
+            />
+            <div className="absolute top-2 right-2 flex gap-2">
+                 <div className="bg-black/60 text-green-400 text-xs font-mono px-2 py-1 rounded border border-green-900">
+                    {progress}%
+                </div>
+                <button 
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="bg-amber-600 text-white text-xs px-2 py-1 rounded hover:bg-amber-500 transition-colors"
+                >
+                    {isPlaying ? 'PAUSE' : 'PLAY'}
+                </button>
+            </div>
+        </div>
+    );
+};
 
 // ============================================================================
 // MAIN COMMAND CENTER COMPONENT
 // ============================================================================
 
-export const ProductionCommand: React.FC<ProductionCommandProps> = ({
+const ProductionCommandComponent: React.FC<ProductionCommandProps> = ({
     project,
     optimization,
     isGenerating,
@@ -145,7 +265,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
     const [selectedMachine, setSelectedMachine] = useState<YilmazMachineModel>('AIM-7510');
     const [isProcessing, setIsProcessing] = useState(false);
     const [gCodePreview, setGCodePreview] = useState<string | null>(null);
-    const [wasteComparison, setWasteComparison] = useState<any>(null);
+    const [wasteComparison, setWasteComparison] = useState<WasteComparison | null>(null);
     const [showProductionPreview, setShowProductionPreview] = useState(false);
     const [pendingAction, setPendingAction] = useState<'gcode' | 'report' | 'send' | 'alm6510' | 'splitpo' | null>(null);
     const [lastActionResult, setLastActionResult] = useState<{ success: boolean; message: string } | null>(null);
@@ -158,14 +278,15 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
     const [_installationVariables, setInstallationVariables] = useState<InstallationVariables | null>(null);
     const [installationBreakdown, setInstallationBreakdown] = useState<InstallationCostBreakdown | null>(null);
 
-    const availableMachines: YilmazMachineModel[] = [
+    // ✅ HARDENING: Memoize static array to prevent recreation on every render
+    const availableMachines = useMemo<YilmazMachineModel[]>(() => [
         'AIM-3410',
         'AIM-7510',
         'ALM-6510',
         'ALM-7510',
         'PIM-6509',
         'PIM-7510'
-    ];
+    ], []);
 
     // --- Effects & Logic ---
     // Calculate waste comparison when optimization is available
@@ -173,14 +294,16 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
         if (optimization && optimization.cuttingPlan.length > 0 && project) {
             try {
                 // Collect all required cuts from components
-                const requiredCuts = project.components.flatMap((comp) => {
-                    const cuts: any[] = [];
+                // ✅ HARDENING: Properly type cuts to match Cut interface
+                const requiredCuts: Cut[] = project.components.flatMap((comp) => {
+                    const cuts: Cut[] = [];
+                    const cutLength = comp.cuttingLengths[0] || comp.height; // Fallback if cuttingLengths empty
                     for (let i = 0; i < (comp.quantity || 1); i++) {
                         cuts.push({
-                            id: `${comp.id}-${i}`,
-                            profileId: comp.profile.id,
-                            length: comp.cuttingLengths[0] || comp.height, // Fallback if cuttingLengths empty
-                            quantity: 1,
+                            componentId: `${comp.id}-${i}`,
+                            length: cutLength,
+                            angle: 0, // Default angle for manual calculation
+                            waste: 0, // Will be calculated by the function
                         });
                     }
                     return cuts;
@@ -193,14 +316,16 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                 const comparison = compareWaste(manualPlan, optimization.cuttingPlan, 500); // 500 EGP per bar estimate
                 setWasteComparison(comparison);
             } catch (error) {
-                console.error('Failed to calculate waste comparison:', error);
+                const err = error instanceof Error ? error : new Error(String(error));
+                trackError('ProductionCommand', 'waste_comparison', err.message);
             }
         }
     }, [optimization, project]);
 
     // --- Internal Handlers ---
+    // ✅ HARDENING: Memoize all handlers to prevent unnecessary re-renders
     
-    const handleGenerateGCode = async () => {
+    const handleGenerateGCode = useCallback(async () => {
         if (!optimization || !project) return;
 
         try {
@@ -225,12 +350,13 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
 
             setGCodePreview(gCodeString);
         } catch (error) {
-            console.error('G-code generation error:', error);
+            const err = error instanceof Error ? error : new Error(String(error));
+            trackError('ProductionCommand', 'gcode_generation', err.message);
             throw error;
         }
-    };
+    }, [optimization, project, selectedMachine]);
 
-    const handleExportCuttingReport = async () => {
+    const handleExportCuttingReport = useCallback(async () => {
         if (!project || !optimization) return;
 
         try {
@@ -248,12 +374,13 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
         } catch (error) {
-            console.error('Report export error:', error);
+            const err = error instanceof Error ? error : new Error(String(error));
+            trackError('ProductionCommand', 'report_export', err.message);
             throw error;
         }
-    };
+    }, [project, optimization, branding]);
 
-    const handleSendToMachine = async () => {
+    const handleSendToMachine = useCallback(async () => {
         if (!gCodePreview || !project) return;
 
         try {
@@ -270,12 +397,13 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
             // Simulate success
             await new Promise(resolve => setTimeout(resolve, 2000));
         } catch (error) {
-            console.error('Machine send error:', error);
+            const err = error instanceof Error ? error : new Error(String(error));
+            trackError('ProductionCommand', 'machine_send', err.message);
             throw error;
         }
-    };
+    }, [gCodePreview, project]);
 
-    const handleDownloadALM6510MDB = async () => {
+    const handleDownloadALM6510MDB = useCallback(async () => {
         if (!project || !optimization) return;
 
         setIsGeneratingALM6510(true);
@@ -295,19 +423,20 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
             await alm6510MDBExport.downloadMDB(project, optimization, options);
             setAlm6510ExportSuccess(true);
         } catch (error) {
-            console.error('ALM 6510 MDB export error:', error);
-            setAlm6510ExportError(error instanceof Error ? error.message : 'Failed to generate ALM 6510 MDB file');
+            const err = error instanceof Error ? error : new Error(String(error));
+            trackError('ProductionCommand', 'alm6510_export', err.message);
+            setAlm6510ExportError(err.message);
         } finally {
             setIsGeneratingALM6510(false);
         }
-    };
+    }, [project, optimization]);
 
-    const confirmAndExecute = (action: 'gcode' | 'report' | 'send' | 'alm6510' | 'splitpo') => {
+    const confirmAndExecute = useCallback((action: 'gcode' | 'report' | 'send' | 'alm6510' | 'splitpo') => {
         setPendingAction(action);
         setShowProductionPreview(true);
-    };
+    }, []);
 
-    const executePendingAction = async () => {
+    const executePendingAction = useCallback(async () => {
         setLastActionResult(null);
         setIsProcessing(true);
 
@@ -343,22 +472,81 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                     break;
             }
             setLastActionResult({ success: true, message: resultMessage });
-        } catch (error: any) {
-            setLastActionResult({ success: false, message: error.message || t('production_command.unknown_error', 'An unknown error occurred.') });
+        } catch (error: unknown) {
+            const err = error instanceof Error ? error : new Error(String(error));
+            setLastActionResult({ success: false, message: err.message || t('production_command.unknown_error', 'An unknown error occurred.') });
             // Keep dialog open on error so user can see the error
         } finally {
             setIsProcessing(false);
             setPendingAction(null);
         }
-    };
+    }, [pendingAction, handleGenerateGCode, handleExportCuttingReport, handleSendToMachine, handleDownloadALM6510MDB, project, optimization, installationBreakdown, selectedMachine, t]);
+
+    // ✅ HARDENING: Memoize inline export handlers for performance
+    const handleQuickExportPDF = useCallback(async () => {
+        if (project && optimization) {
+            try {
+                const exportService = new ExportService();
+                const result = await exportService.exportProject(project, optimization, 'pdf', {
+                    includeDiagrams: true,
+                    includeQRCode: true,
+                });
+                if (result.blob) {
+                    const url = URL.createObjectURL(result.blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `cutting-list-${project.orderNumber || 'export'}.pdf`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }
+            } catch (error) {
+                const err = error instanceof Error ? error : new Error(String(error));
+                trackError('ProductionCommand', 'pdf_export', err.message);
+            }
+        }
+    }, [project, optimization]);
+
+    const handleQuickExportDXF = useCallback(async () => {
+        if (project && optimization) {
+            try {
+                const exportService = new ExportService();
+                const result = await exportService.exportProject(project, optimization, 'dxf', {
+                    includeAnnotations: true,
+                    includeQRCode: true,
+                });
+                if (result.blob) {
+                    const url = URL.createObjectURL(result.blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `cutting-list-${project.orderNumber || 'export'}.dxf`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }
+            } catch (error) {
+                const err = error instanceof Error ? error : new Error(String(error));
+                trackError('ProductionCommand', 'dxf_export', err.message);
+            }
+        }
+    }, [project, optimization]);
+
+    const handleQuickSplitPO = useCallback(() => {
+        if (project && optimization) {
+            downloadSplitPO(project, optimization, installationBreakdown || undefined);
+        }
+    }, [project, optimization, installationBreakdown]);
+
+    // ✅ HARDENING: Memoize machine selection handler
+    const handleMachineChange = useCallback((val: string) => {
+        setSelectedMachine(val as YilmazMachineModel);
+    }, []);
 
     // --- Render Logic ---
     if (isGenerating) {
         return (
             <Card className="bg-gray-700/50 border-gray-600">
                 <CardContent className="p-8 text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-400 mx-auto mb-4"></div>
-                    <h3 className="text-lg font-semibold mb-2">{t('production_command.generating_plan', 'Generating Cutting Plan')}</h3>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
+                    <h3 className="typography-h3 text-lg mb-2">{t('production_command.generating_plan', 'Generating Cutting Plan')}</h3>
                     <p className="text-gray-400">{t('production_command.ai_optimizing', 'AI is optimizing your material usage...')}</p>
                 </CardContent>
             </Card>
@@ -370,7 +558,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
             <Card className="bg-gray-700/50 border-gray-600">
                 <CardContent className="p-8 text-center">
                     <Scissors className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">{t('production_command.no_optimization', 'No Optimization Data')}</h3>
+                    <h3 className="typography-h3 text-lg mb-2">{t('production_command.no_optimization', 'No Optimization Data')}</h3>
                     <p className="text-gray-400">{t('production_command.complete_design', 'Complete the design phase to generate cutting optimization.')}</p>
                 </CardContent>
             </Card>
@@ -382,7 +570,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
             <Card className="bg-gray-800/30 border-gray-700 shadow-2xl">
                  <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
-                        <Scissors className="h-6 w-6 text-orange-400" />
+                        <Scissors className="h-6 w-6 text-amber-400" />
                         {t('production_command.title', 'Production Command Center')}
                     </CardTitle>
                     <AlertDescription className="text-gray-400">
@@ -428,8 +616,8 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
 
                 <Card className="bg-gray-700/50 border-gray-600">
                     <CardContent className="p-4 text-center">
-                        <DollarSign className="h-8 w-8 text-orange-400 mx-auto mb-2" />
-                        <div className="text-2xl font-bold text-orange-400">${optimization.costBreakdown.totalCost.toFixed(0)}</div>
+                        <DollarSign className="h-8 w-8 text-amber-400 mx-auto mb-2" />
+                        <div className="text-2xl font-bold text-amber-400">${optimization.costBreakdown.totalCost.toFixed(0)}</div>
                         <div className="text-sm text-gray-400">{t('production_command.total_cost', 'Total Cost')}</div>
                     </CardContent>
                 </Card>
@@ -456,7 +644,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                                             }}
                                         />
                                     )}
-                                    <h4 className="font-semibold text-gray-200">{plan.profile.name}</h4>
+                                    <h4 className="typography-h4 text-gray-200">{plan.profile.name}</h4>
                                 </div>
                                 <Badge variant="outline" className="font-mono text-xs">
                                     {t('production_command.utilization', '{value}% Utilization', { value: plan.utilization?.toFixed(1) })}
@@ -490,10 +678,10 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
             )}
 
             {/* --- 5. ONE-CLICK EXPORT PANEL (Egypt Pilot) --- */}
-            <Card className="bg-gradient-to-r from-orange-900/20 to-orange-800/20 border-orange-500/50" id="dispatch-section">
+            <Card className="bg-gradient-to-r from-amber-900/20 to-amber-800/20 border-amber-500/50" id="dispatch-section">
                 <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
-                        <Download className="h-5 w-5 text-orange-400" />
+                        <Download className="h-5 w-5 text-amber-400" />
                         {t('production_command.one_click_export', 'One-Click Export (Egypt Pilot)')}
                     </CardTitle>
                 </CardHeader>
@@ -501,25 +689,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                     {/* Quick Export Buttons */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <Button
-                            onClick={async () => {
-                                if (project && optimization) {
-                                    try {
-                                        const exportService = new ExportService();
-                                        const result = await exportService.exportProject(project, optimization, 'pdf', {
-                                            includeDiagrams: true,
-                                            includeQRCode: true,
-                                        });
-                                        const url = URL.createObjectURL(result.blob);
-                                        const a = document.createElement('a');
-                                        a.href = url;
-                                        a.download = `cutting-list-${project.orderNumber || 'export'}.pdf`;
-                                        a.click();
-                                        URL.revokeObjectURL(url);
-                                    } catch (error) {
-                                        console.error('PDF export failed:', error);
-                                    }
-                                }
-                            }}
+                            onClick={handleQuickExportPDF}
                             className="bg-blue-600 hover:bg-blue-700 text-white h-16 flex flex-col items-center justify-center gap-1"
                             disabled={!project || !optimization}
                         >
@@ -528,25 +698,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                             <span className="text-xs opacity-90">Cutting List</span>
                         </Button>
                         <Button
-                            onClick={async () => {
-                                if (project && optimization) {
-                                    try {
-                                        const exportService = new ExportService();
-                                        const result = await exportService.exportProject(project, optimization, 'dxf', {
-                                            includeAnnotations: true,
-                                            includeQRCode: true,
-                                        });
-                                        const url = URL.createObjectURL(result.blob);
-                                        const a = document.createElement('a');
-                                        a.href = url;
-                                        a.download = `cutting-list-${project.orderNumber || 'export'}.dxf`;
-                                        a.click();
-                                        URL.revokeObjectURL(url);
-                                    } catch (error) {
-                                        console.error('DXF export failed:', error);
-                                    }
-                                }
-                            }}
+                            onClick={handleQuickExportDXF}
                             className="bg-green-600 hover:bg-green-700 text-white h-16 flex flex-col items-center justify-center gap-1"
                             disabled={!project || !optimization}
                         >
@@ -555,12 +707,8 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                             <span className="text-xs opacity-90">CNC Ready</span>
                         </Button>
                         <Button
-                            onClick={() => {
-                                if (project && optimization) {
-                                    downloadSplitPO(project, optimization, installationBreakdown);
-                                }
-                            }}
-                            className="bg-orange-600 hover:bg-orange-700 text-white h-16 flex flex-col items-center justify-center gap-1"
+                            onClick={handleQuickSplitPO}
+                            className="btn-primary"
                             disabled={!project || !optimization}
                         >
                             <Send className="h-6 w-6" />
@@ -582,10 +730,10 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                 <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Left Side: CNC Machine Control */}
                     <div className="space-y-4">
-                        <h3 className="font-semibold text-gray-300">{t('production_command.cnc_machine_integration', 'CNC Machine Integration')}</h3>
+                        <h3 className="typography-h3 text-gray-300">{t('production_command.cnc_machine_integration', 'CNC Machine Integration')}</h3>
                         <div>
-                            <label className="text-sm font-medium text-gray-400">{t('production_command.target_machine', 'Target Yilmaz Machine:')}</label>
-                            <Select value={selectedMachine} onValueChange={(val) => setSelectedMachine(val as YilmazMachineModel)}>
+                            <label className="typography-label text-sm font-medium text-gray-400">{t('production_command.target_machine', 'Target Yilmaz Machine:')}</label>
+                            <Select value={selectedMachine} onValueChange={handleMachineChange}>
                                 <SelectTrigger className="w-full bg-gray-800 border-gray-600 text-white">
                                     <SelectValue />
                                 </SelectTrigger>
@@ -600,11 +748,14 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                         </div>
 
                         {gCodePreview && (
-                             <div>
-                                <label className="text-sm font-medium text-gray-400 mb-2 block">{t('production_command.gcode_preview', 'G-Code Preview')}</label>
-                                <pre className="p-4 bg-black/50 rounded-md text-xs text-green-300 font-mono overflow-auto max-h-48 border border-gray-700">
-                                    <code>{gCodePreview.substring(0, 1000)}...</code>
-                                </pre>
+                             <div className="space-y-2">
+                                <label className="typography-label text-sm font-medium text-gray-400 block">{t('production_command.machine_simulation', 'Machine Simulation')}</label>
+                                <div className="rounded-md overflow-hidden border border-gray-700 bg-gray-950 relative h-64">
+                                    <CNCSimulationView gcode={gCodePreview} machine={selectedMachine} />
+                                </div>
+                                <div className="text-xs text-center text-gray-500 font-mono">
+                                    {t('production_command.simulation_note', 'Visualizing tool path for {machine} controller', { machine: selectedMachine })}
+                                </div>
                             </div>
                         )}
                         
@@ -635,7 +786,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                                 onClick={() => confirmAndExecute('alm6510')}
                                 disabled={isProcessing || isGeneratingALM6510}
                                 size="lg"
-                                className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-lg"
+                                className="btn-primary-gradient"
                             >
                                 {isGeneratingALM6510 ? (
                                     <>
@@ -651,7 +802,7 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
                             </Button>
                         )}
                         
-                         <Button onClick={() => confirmAndExecute('send')} disabled={isProcessing || !gCodePreview} size="lg" className="bg-orange-600 hover:bg-orange-700 text-white shadow-lg">
+                         <Button onClick={() => confirmAndExecute('send')} disabled={isProcessing || !gCodePreview} size="lg" className="btn-primary">
                             <Send className="h-4 w-4 mr-2"/> {t('production_command.send_to_machine', 'Send Job to Machine')}
                         </Button>
                         
@@ -691,3 +842,17 @@ export const ProductionCommand: React.FC<ProductionCommandProps> = ({
         </div>
     );
 };
+
+ProductionCommandComponent.displayName = 'ProductionCommand';
+
+// ✅ HARDENING: Memoize component for performance
+const ProductionCommandMemo = memo(ProductionCommandComponent);
+
+// ✅ HARDENING: Export with error boundary for production
+export const ProductionCommand: React.FC<ProductionCommandProps> = (props) => (
+  <ErrorBoundary level="component">
+    <ProductionCommandMemo {...props} />
+  </ErrorBoundary>
+);
+
+ProductionCommand.displayName = 'ProductionCommand';

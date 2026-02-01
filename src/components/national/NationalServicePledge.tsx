@@ -8,7 +8,7 @@ export const NationalServicePledge = () => {
       icon: <TrendingUp className="h-6 w-6" />,
       title: "Economic Burden",
       desc: "Reducing material imports by 20% to protect foreign currency reserves.",
-      color: "from-orange-500 to-amber-500"
+      color: "from-amber-500 to-amber-500"
     },
     {
       icon: <Users className="h-6 w-6" />,
@@ -26,13 +26,13 @@ export const NationalServicePledge = () => {
       icon: <Shield className="h-6 w-6" />,
       title: "Public Safety",
       desc: "Enforcing Egyptian Building Codes (HBRC) in every design.",
-      color: "from-orange-400 to-orange-600"
+      color: "from-amber-400 to-amber-600"
     },
     {
       icon: <FileCheck className="h-6 w-6" />,
       title: "Formalization",
       desc: "Bridging the informal economy with simplified, tax-compliant tools.",
-      color: "from-amber-400 to-orange-500"
+      color: "from-amber-400 to-amber-500"
     },
     {
       icon: <Server className="h-6 w-6" />,
@@ -45,13 +45,13 @@ export const NationalServicePledge = () => {
   return (
     <Card className="bg-gradient-to-br from-slate-900 to-slate-950 border-slate-800 shadow-2xl overflow-hidden">
       {/* Top accent bar */}
-      <div className="h-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500" />
+      <div className="h-1 bg-gradient-to-r from-amber-500 via-amber-500 to-amber-500" />
       
       <CardHeader className="text-center border-b border-slate-800 bg-slate-900/50 pb-8 pt-10">
         <div className="flex justify-center mb-6 gap-4">
           {/* Egypt Vision 2030 Badge */}
-          <div className="h-16 w-16 bg-gradient-to-br from-orange-500/20 to-amber-500/10 border border-orange-500/30 rounded-2xl flex items-center justify-center">
-            <Target className="h-8 w-8 text-orange-400" />
+          <div className="h-16 w-16 bg-gradient-to-br from-amber-500/20 to-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center justify-center">
+            <Target className="h-8 w-8 text-amber-400" />
           </div>
           {/* Digital Egypt Badge */}
           <div className="h-16 w-16 bg-gradient-to-br from-amber-500/20 to-yellow-500/10 border border-amber-500/30 rounded-2xl flex items-center justify-center">
@@ -60,7 +60,7 @@ export const NationalServicePledge = () => {
         </div>
         <CardTitle className="text-3xl font-bold text-white mb-3">
           Our Pledge of{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-500">
             National Service
           </span>
         </CardTitle>
@@ -74,12 +74,12 @@ export const NationalServicePledge = () => {
           {pillars.map((pillar, index) => (
             <div 
               key={index} 
-              className="flex flex-col items-center text-center p-6 bg-slate-800/50 rounded-2xl border border-slate-700/50 hover:border-orange-500/30 hover:bg-slate-800/70 transition-all duration-300 group"
+              className="flex flex-col items-center text-center p-6 rounded-2xl border border-slate-700/50 hover:border-amber- 500/30 transition-all duration-300 group card-premium"
             >
               <div className={`mb-4 p-4 bg-gradient-to-br ${pillar.color} rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                 <div className="text-white">{pillar.icon}</div>
               </div>
-              <h3 className="font-bold text-white text-lg mb-2 group-hover:text-orange-400 transition-colors">
+              <h3 className="typography-h3 text-white text-lg mb-2 group-hover:text-amber-400 transition-colors">
                 {pillar.title}
               </h3>
               <p className="text-sm text-slate-400 leading-relaxed">{pillar.desc}</p>
@@ -91,7 +91,7 @@ export const NationalServicePledge = () => {
         <div className="mt-10 pt-8 border-t border-slate-800 text-center">
           <p className="text-slate-500 text-sm">
             Aligned with{' '}
-            <span className="text-orange-400 font-semibold">Egypt Vision 2030</span>
+            <span className="text-amber-400 font-semibold">Egypt Vision 2030</span>
             {' '}and{' '}
             <span className="text-amber-400 font-semibold">Digital Egypt Strategy</span>
           </p>

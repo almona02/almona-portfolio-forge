@@ -124,7 +124,7 @@ export const ClientPortalManager: React.FC<ClientPortalManagerProps> = ({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gray-900 border-gray-700">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Share2 className="h-5 w-5 text-orange-400" />
+            <Share2 className="h-5 w-5 text-amber-400" />
             Share Project with Client
           </DialogTitle>
           <DialogDescription>
@@ -185,7 +185,7 @@ export const ClientPortalManager: React.FC<ClientPortalManagerProps> = ({
                 </div>
                 <Button
                   onClick={handleCreateShare}
-                  className="w-full bg-orange-500 hover:bg-orange-600"
+                  className="btn-primary"
                 >
                   <Share2 className="h-4 w-4 mr-2" />
                   Create Share Link

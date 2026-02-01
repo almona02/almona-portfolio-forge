@@ -4,24 +4,26 @@
  * Gives users control over the "how" of production optimization
  */
 
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import { OptimizationPresets, type OptimizationStrategy } from '@/lib/optimization/OptimizationPresets';
+import { trackError } from '@/lib/performance-monitoring';
+import { supabase } from '@/lib/supabase';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Label } from '@/shared/ui/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/ui/select';
 import { Slider } from '@/shared/ui/ui/slider';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
-import { Settings, TrendingUp, Package, Clock, Info, Save } from 'lucide-react';
-import { OptimizationPresets, type OptimizationStrategy } from '@/lib/optimization/OptimizationPresets';
-import { supabase } from '@/lib/supabase';
 import type { Profile } from '@/types/fabricator';
+import { Clock, Info, Package, Save, Settings, TrendingUp } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   DEFAULT_OPTIMIZATION_PARAMS,
+  INPUT_CONSTRAINTS,
   QUERY_LIMITS,
   SLIDER_CONFIG,
-  INPUT_CONSTRAINTS,
   UI_DIMENSIONS,
 } from './optimizationEqualizerConstants';
 
@@ -30,6 +32,7 @@ interface OptimizationEqualizerProps {
   profiles?: Profile[];
   onStrategyChange?: (strategy: OptimizationStrategy) => void;
   initialStrategy?: OptimizationStrategy;
+  onComplete?: (result?: any) => void; // Navigation callback when optimization is finalized
 }
 
 interface ProfileOverride {
@@ -52,7 +55,7 @@ interface OptimizationPreferenceRow {
   updated_at: string;
 }
 
-export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React.memo(({
+const OptimizationEqualizerComponent: React.FC<OptimizationEqualizerProps> = ({
   userId,
   profiles: _profiles = [],
   onStrategyChange,
@@ -107,7 +110,8 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
         );
       }
     } catch (error) {
-      console.error('Error loading preferences:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('OptimizationEqualizer', 'load_preferences', err.message);
     }
   }, [userId]);
 
@@ -116,34 +120,39 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
     loadSavedPreferences();
   }, [loadSavedPreferences]);
 
-  // Handle preset selection
-  const handlePresetChange = (presetName: string) => {
+  // ✅ HARDENING: Memoize handlers to prevent unnecessary re-renders
+  const handlePresetChange = useCallback((presetName: string) => {
     setSelectedPreset(presetName);
     const preset = OptimizationPresets.getPreset(presetName);
     setStrategy(preset);
     onStrategyChange?.(preset);
-  };
+  }, [onStrategyChange]);
 
-  // Handle weight slider changes
-  const handleWeightChange = (field: keyof OptimizationStrategy, value: number[]) => {
-    const newStrategy = {
-      ...strategy,
-      [field]: value[0],
-    };
-    setStrategy(newStrategy);
-    setSelectedPreset('custom'); // Switch to custom when manually adjusted
-    onStrategyChange?.(newStrategy);
-  };
+  // ✅ HARDENING: Memoize weight change handler
+  const handleWeightChange = useCallback((field: keyof OptimizationStrategy, value: number[]) => {
+    setStrategy(prevStrategy => {
+      const newStrategy = {
+        ...prevStrategy,
+        [field]: value[0],
+      };
+      // Notify parent with the new strategy immediately
+      onStrategyChange?.(newStrategy);
+      return newStrategy;
+    });
+    // Switch to custom preset when manually adjusted
+    setSelectedPreset('custom');
+  }, [onStrategyChange]);
 
   // Calculate estimated impact
   const estimatedImpact = useMemo(() => {
     return OptimizationPresets.estimateImpact(strategy);
   }, [strategy]);
 
-  // Save strategy as preference
-  const handleSaveStrategy = async () => {
+  // ✅ HARDENING: Memoize save strategy handler
+  const handleSaveStrategy = useCallback(async () => {
     setIsSaving(true);
     try {
+      // ✅ HARDENING: Type assertion needed for Supabase strict typing
       const { error } = await supabase
         .from('optimization_equalizer_preferences')
         .insert({
@@ -154,51 +163,52 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
           cut_complexity_weight: strategy.cutComplexityWeight,
           production_speed_weight: strategy.productionSpeedWeight,
           is_default: false,
-        } as any);
+        } as never);
 
       if (error) throw error;
 
       await loadSavedPreferences();
     } catch (error) {
-      console.error('Error saving strategy:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('OptimizationEqualizer', 'save_strategy', err.message);
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [userId, strategy, loadSavedPreferences]);
 
-  // Set as default strategy
-  const handleSetAsDefault = async () => {
+  // ✅ HARDENING: Memoize set as default handler
+  const handleSetAsDefault = useCallback(async () => {
     setIsSaving(true);
     try {
-      // Remove default flag from all existing preferences
-      const updateQuery = (supabase
-        .from('optimization_equalizer_preferences') as any);
-      await updateQuery
-        .update({ is_default: false })
+      // ✅ HARDENING: Remove default flag from all existing preferences
+      await supabase
+        .from('optimization_equalizer_preferences')
+        .update({ is_default: false } as never)
         .eq('user_id', userId);
 
-      // Set this as default
+      // ✅ HARDENING: Set this as default with proper typing
       const { error } = await supabase
         .from('optimization_equalizer_preferences')
         .insert({
-        user_id: userId,
-        strategy_name: strategy.name || 'custom',
-        waste_reduction_weight: strategy.wasteReductionWeight,
-        remnant_usage_weight: strategy.remnantUsageWeight,
-        cut_complexity_weight: strategy.cutComplexityWeight,
-        production_speed_weight: strategy.productionSpeedWeight,
-        is_default: true,
-      } as any);
+          user_id: userId,
+          strategy_name: strategy.name || 'custom',
+          waste_reduction_weight: strategy.wasteReductionWeight,
+          remnant_usage_weight: strategy.remnantUsageWeight,
+          cut_complexity_weight: strategy.cutComplexityWeight,
+          production_speed_weight: strategy.productionSpeedWeight,
+          is_default: true,
+        } as never);
 
       if (error) throw error;
 
       await loadSavedPreferences();
     } catch (error) {
-      console.error('Error setting default:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('OptimizationEqualizer', 'set_default', err.message);
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [userId, strategy, loadSavedPreferences]);
 
   return (
     <Card className="bg-gray-800/50 border-gray-700">
@@ -213,7 +223,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
       <CardContent className="space-y-6">
         {/* Strategy Preset Selector */}
         <div>
-          <Label htmlFor="strategy-preset" className="text-gray-300 mb-2 block">
+          <Label htmlFor="strategy-preset" className="typography-label text-gray-300 mb-2 block">
             {t('optimization_equalizer.optimization_strategy', 'Optimization Strategy')}
           </Label>
           <Select value={selectedPreset} onValueChange={handlePresetChange}>
@@ -240,7 +250,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
         <div className="space-y-4">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="text-gray-300 flex items-center gap-2">
+              <Label className="typography-label text-gray-300 flex items-center gap-2">
                 <TrendingUp className={`${UI_DIMENSIONS.ICON_MEDIUM} text-green-400`} />
                 {t('optimization_equalizer.waste_reduction', 'Waste Reduction')}
               </Label>
@@ -263,7 +273,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="text-gray-300 flex items-center gap-2">
+              <Label className="typography-label text-gray-300 flex items-center gap-2">
                 <Package className={`${UI_DIMENSIONS.ICON_MEDIUM} text-blue-400`} />
                 {t('optimization_equalizer.remnant_usage', 'Remnant Usage')}
               </Label>
@@ -286,11 +296,11 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="text-gray-300 flex items-center gap-2">
-                <Settings className={`${UI_DIMENSIONS.ICON_MEDIUM} text-orange-400`} />
+              <Label className="typography-label text-gray-300 flex items-center gap-2">
+                <Settings className={`${UI_DIMENSIONS.ICON_MEDIUM} text-amber-400`} />
                 {t('optimization_equalizer.cut_complexity', 'Cut Complexity')}
               </Label>
-              <Badge variant="outline" className="text-orange-400 border-orange-500/30">
+              <Badge variant="outline" className="text-amber-400 border-amber-500/30">
                 {strategy.cutComplexityWeight}%
               </Badge>
             </div>
@@ -309,7 +319,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="text-gray-300 flex items-center gap-2">
+              <Label className="typography-label text-gray-300 flex items-center gap-2">
                 <Clock className={`${UI_DIMENSIONS.ICON_MEDIUM} text-purple-400`} />
                 {t('optimization_equalizer.production_speed', 'Production Speed')}
               </Label>
@@ -360,10 +370,10 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
 
         {/* Material Constraints */}
         <div className="p-4 bg-gray-900 rounded-lg border border-gray-700">
-          <h4 className="text-sm font-semibold text-gray-300 mb-3">{t('optimization_equalizer.material_constraints', 'Material Constraints')}</h4>
+          <h4 className="typography-h4 text-sm text-gray-300 mb-3">{t('optimization_equalizer.material_constraints', 'Material Constraints')}</h4>
           <div className="space-y-3">
             <div>
-              <Label htmlFor="min-remnant" className="text-gray-300 text-sm">
+              <Label htmlFor="min-remnant" className="typography-label text-gray-300 text-sm">
                 {t('optimization_equalizer.min_remnant_length', 'Minimum Remnant Length (mm)')}
               </Label>
               <input
@@ -380,7 +390,7 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
               </p>
             </div>
             <div>
-              <Label htmlFor="max-remnant-age" className="text-gray-300 text-sm">
+              <Label htmlFor="max-remnant-age" className="typography-label text-gray-300 text-sm">
                 {t('optimization_equalizer.max_remnant_age', 'Maximum Remnant Age (days)')}
               </Label>
               <input
@@ -422,7 +432,19 @@ export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = React
       </CardContent>
     </Card>
   );
-});
+};
+
+OptimizationEqualizerComponent.displayName = 'OptimizationEqualizer';
+
+// ✅ HARDENING: Memoize and wrap with error boundary
+const OptimizationEqualizerMemo = React.memo(OptimizationEqualizerComponent);
+
+// ✅ HARDENING: Export with error boundary for production
+export const OptimizationEqualizer: React.FC<OptimizationEqualizerProps> = (props) => (
+  <ErrorBoundary level="component">
+    <OptimizationEqualizerMemo {...props} />
+  </ErrorBoundary>
+);
 
 OptimizationEqualizer.displayName = 'OptimizationEqualizer';
 

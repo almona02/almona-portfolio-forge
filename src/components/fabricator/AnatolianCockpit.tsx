@@ -149,8 +149,8 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
         <div className="cursor-pointer hover:bg-slate-900/50 transition-colors rounded-lg p-3 border border-slate-700/50 mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Factory className="h-4 w-4 text-orange-400" />
-              <span className="text-sm font-semibold text-orange-100">
+              <Factory className="h-4 w-4 text-amber-400" />
+              <span className="text-sm font-semibold text-amber-100">
                 {t('fabricator:navbar.local_system_intelligence', 'Local System Intelligence')}
               </span>
             </div>
@@ -171,10 +171,10 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
       <CollapsibleContent>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
       {/* Market intelligence & system preference */}
-      <Card className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-slate-700/80 shadow-lg shadow-orange-900/30">
+      <Card className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border-slate-700/80 shadow-lg shadow-amber-900/30">
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-orange-100">
-            <Factory className="h-4 w-4 text-orange-400" />
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-amber-100">
+            <Factory className="h-4 w-4 text-amber-400" />
             {t('fabricator:navbar.local_system_intelligence', 'Local System Intelligence')}
           </CardTitle>
           <CardDescription className="text-xs text-slate-300/80">
@@ -195,13 +195,13 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
                   onClick={() => setActiveBrand(brand)}
                   className={`px-3 py-1.5 rounded-full border text-[11px] transition-all ${
                     isActive
-                      ? 'border-orange-400 bg-orange-500/15 text-orange-100 shadow-sm shadow-orange-500/40'
-                      : 'border-slate-700 bg-slate-900/60 text-slate-300 hover:border-orange-400/60 hover:text-orange-100'
+                      ? 'border-amber-400 bg-amber-500/15 text-amber-100 shadow-sm shadow-amber-500/40'
+                      : 'border-slate-700 bg-slate-900/60 text-slate-300 hover:border-amber-400/60 hover:text-amber-100'
                   }`}
                 >
                   {brand}
                   {projectMeta && BRANDS_BY_REGION[projectMeta.region] === brand && (
-                    <span className="ml-1 text-[9px] uppercase tracking-wide text-orange-300">
+                    <span className="ml-1 text-[9px] uppercase tracking-wide text-amber-300">
                       · suggested
                     </span>
                   )}
@@ -228,7 +228,7 @@ export const AnatolianCockpit: React.FC<AnatolianCockpitProps> = ({
                     <div className="flex items-center gap-2">
                       <Badge
                         variant="outline"
-                        className="h-5 w-5 justify-center rounded-full border-orange-500/60 bg-orange-500/15 text-[10px] font-semibold text-orange-100"
+                        className="btn-primary"
                       >
                         {index + 1}
                       </Badge>

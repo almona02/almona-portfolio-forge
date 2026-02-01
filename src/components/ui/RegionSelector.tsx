@@ -16,7 +16,7 @@ const regionConfigs = {
     name: 'Turkey',
     flag: '🇹🇷',
     currency: '₺',
-    color: 'from-red-500 to-orange-500',
+    color: 'from-red-500 to-amber-500',
     bgColor: 'bg-red-500/10',
     borderColor: 'border-red-500/30'
   },
@@ -111,7 +111,7 @@ export const RegionSelector: React.FC<RegionSelectorProps> = ({
             <div className="absolute bottom-full right-0 mb-2 w-64 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl p-4">
               <div className="flex items-center space-x-2 mb-3">
                 <Sparkles className="w-4 h-4 text-yellow-400" />
-                <h3 className="text-sm font-semibold text-white">Select Region</h3>
+                <h3 className="typography-h3 text-sm text-white">Select Region</h3>
               </div>
               
               <div className="space-y-2">

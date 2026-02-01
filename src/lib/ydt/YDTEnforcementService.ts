@@ -9,6 +9,7 @@
  */
 
 import { YDTCoreService } from './YDTCoreService';
+import { YDTPerformanceMonitor } from './YDTPerformanceMonitor';
 
 export interface YDTMandatoryConfig {
   mode: 'mandatory' | 'degraded' | 'bypass';
@@ -35,6 +36,7 @@ export class YDTEnforcementService {
   private lastFailureTime: number = 0;
   private readonly maxFailures = 5;
   private readonly resetTimeout = 60000; // 1 minute
+  private performanceMonitor = YDTPerformanceMonitor.getInstance();
 
   constructor(config: YDTMandatoryConfig) {
     this.config = config;
@@ -91,6 +93,15 @@ export class YDTEnforcementService {
         confidence: response.confidence || 0.85
       });
 
+      // Record performance metrics
+      this.performanceMonitor.recordCall({
+        operation,
+        responseTime,
+        timestamp: Date.now(),
+        cached: false,
+        success: true,
+      });
+
       return {
         ...response,
         source: 'ydt_live',
@@ -98,9 +109,20 @@ export class YDTEnforcementService {
         cached: false
       };
 
-    } catch {
+    } catch (error) {
       // Failure - update circuit breaker
       this.handleFailure();
+
+      // Record failed call
+      const responseTime = Date.now() - startTime;
+      this.performanceMonitor.recordCall({
+        operation,
+        responseTime,
+        timestamp: Date.now(),
+        cached: false,
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      });
 
       // Return fallback
       return this.getFallbackResponse(operation, inputs, cacheKey, startTime);
@@ -233,6 +255,15 @@ export class YDTEnforcementService {
       const cached = this.cache.get(cacheKey);
       if (cached && Date.now() - cached.timestamp < 24 * 60 * 60 * 1000) {
         // Cache hit (within 24 hours)
+        // Record cache hit performance
+        this.performanceMonitor.recordCall({
+          operation,
+          responseTime,
+          timestamp: Date.now(),
+          cached: true,
+          success: true,
+        });
+
         return {
           data: cached.response,
           confidence: Math.max(0.85, cached.confidence * 0.9), // Slightly lower confidence
@@ -299,6 +330,7 @@ export class YDTEnforcementService {
 
     if (this.failureCount >= this.maxFailures) {
       this.state = 'open';
+      this.performanceMonitor.recordCircuitBreakerTrip();
       console.warn('Circuit breaker OPENED after', this.failureCount, 'failures');
       
       // Auto-reset after timeout
@@ -395,11 +427,19 @@ export class YDTEnforcementService {
   }
 }
 
-// Default configuration
+// Default configuration - Optimized for ≤150ms P95 latency
 export const DEFAULT_YDT_CONFIG: YDTMandatoryConfig = {
   mode: 'mandatory',
   fallbackStrategy: 'cached',
-  timeoutMs: 150,
+  timeoutMs: 150, // P95 target: ≤150ms
   retryCount: 2
+};
+
+// Performance-optimized configuration (aggressive caching)
+export const PERFORMANCE_YDT_CONFIG: YDTMandatoryConfig = {
+  mode: 'mandatory',
+  fallbackStrategy: 'cached', // Prefer cache for speed
+  timeoutMs: 120, // Stricter timeout for better P95
+  retryCount: 1 // Single retry for speed
 };
 

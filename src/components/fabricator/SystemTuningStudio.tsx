@@ -78,7 +78,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         <DialogHeader className="flex flex-row items-center justify-between">
           <div>
             <DialogTitle className="flex items-center gap-2">
-              <Badge variant="outline" className="border-orange-500 text-orange-300 bg-orange-500/10">
+              <Badge variant="outline" className="btn-primary">
                 System Tuning Studio
               </Badge>
               <span className="text-sm text-gray-400">Import → Tag → Hardware → Machining → Review</span>
@@ -121,7 +121,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </TabsList>
 
         <TabsContent value="import" className="mt-4">
-          <Card className="bg-gray-900/60 border-gray-800">
+          <Card className="bg-gray-900/60 border-gray-800 card-dark">
             <CardHeader>
               <CardTitle className="text-base">DXF Import</CardTitle>
               <CardDescription>Upload supplier DXF/DWG. We’ll extract basic dims and preview.</CardDescription>
@@ -145,7 +145,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </TabsContent>
 
         <TabsContent value="roles" className="mt-4">
-          <Card className="bg-gray-900/60 border-gray-800">
+          <Card className="bg-gray-900/60 border-gray-800 card-dark">
             <CardHeader>
               <CardTitle className="text-base">Role Tagging</CardTitle>
               <CardDescription>Assign Frame, Sash, Mullion, Transom, Screen Adapter, etc.</CardDescription>
@@ -161,7 +161,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </TabsContent>
 
         <TabsContent value="hardware" className="mt-4">
-          <Card className="bg-gray-900/60 border-gray-800">
+          <Card className="bg-gray-900/60 border-gray-800 card-dark">
             <CardHeader>
               <CardTitle className="text-base">Hardware Linking</CardTitle>
               <CardDescription>Link hinges, locks, rollers; validate compatibility.</CardDescription>
@@ -177,7 +177,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </TabsContent>
 
         <TabsContent value="machining" className="mt-4">
-          <Card className="bg-gray-900/60 border-gray-800">
+          <Card className="bg-gray-900/60 border-gray-800 card-dark">
             <CardHeader>
               <CardTitle className="text-base">Machining Zones</CardTitle>
               <CardDescription>Define hinge slots and lock pockets with safe offsets.</CardDescription>
@@ -194,7 +194,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
         </TabsContent>
 
         <TabsContent value="review" className="mt-4">
-          <Card className="bg-gray-900/60 border-gray-800">
+          <Card className="bg-gray-900/60 border-gray-800 card-dark">
             <CardHeader>
               <CardTitle className="text-base">Review & Save</CardTitle>
               <CardDescription>Confirm roles and readiness before saving as a system pack.</CardDescription>
@@ -208,7 +208,7 @@ export const SystemTuningStudio: React.FC<SystemTuningStudioProps> = ({
               {importedProfiles.map((p) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between rounded border border-gray-800 bg-gray-900/50 px-3 py-2 text-sm"
+                  className="flex items-center justify-between rounded border border-gray-800 bg-gray-900 /50 px-3 py-2 text-sm card-dark"
                 >
                   <div>
                     <div className="font-semibold text-white">{p.name || p.fileName}</div>

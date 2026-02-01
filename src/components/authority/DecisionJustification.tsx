@@ -58,7 +58,7 @@ export const DecisionJustification: React.FC<DecisionJustificationProps> = ({
   const confidenceColor = 
     data.confidence >= 80 ? 'bg-green-500/20 text-green-300 border-green-500/50' :
     data.confidence >= 60 ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50' :
-    'bg-orange-500/20 text-orange-300 border-orange-500/50';
+    'bg-amber-500/20 text-amber-300 border-amber-500/50';
 
   const sourceConfig = {
     system: { label: 'System', icon: CheckCircle2, color: 'text-blue-400' },
@@ -171,11 +171,11 @@ export const DecisionJustification: React.FC<DecisionJustificationProps> = ({
                         </ul>
                       </div>
                       <div>
-                        <p className="text-orange-400 font-medium mb-1">Cons</p>
+                        <p className="text-amber-400 font-medium mb-1">Cons</p>
                         <ul className="space-y-1 text-gray-300">
                           {alt.cons.map((con, cIdx) => (
                             <li key={cIdx} className="flex items-start gap-1">
-                              <span className="text-orange-400 mt-0.5">•</span>
+                              <span className="text-amber-400 mt-0.5">•</span>
                               <span>{con}</span>
                             </li>
                           ))}
@@ -192,6 +192,21 @@ export const DecisionJustification: React.FC<DecisionJustificationProps> = ({
     </Card>
   );
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

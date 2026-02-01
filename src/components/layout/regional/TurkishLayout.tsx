@@ -3,13 +3,13 @@
  * Layout optimized for Turkish market with KDV calculations and local features
  */
 
-import React from 'react';
-import { useLocation } from 'react-router-dom';
 import { RegionalMarketConfig, RegionCode } from '@/config/regionalConfig';
+import { isRTL } from '@/lib/i18n';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import ConditionalNavbar from '../ConditionalNavbar';
 import Footer from '../Footer';
-import { useTranslation } from 'react-i18next';
-import { isRTL } from '@/lib/i18n';
 
 interface TurkishLayoutProps {
   children: React.ReactNode;
@@ -27,7 +27,7 @@ export const TurkishLayout: React.FC<TurkishLayoutProps> = ({
   const { i18n } = useTranslation();
   const location = useLocation();
   const isFabricatorRoute = location.pathname.startsWith('/fabricator') || location.pathname.startsWith('/fabricator-workflow');
-  const rtl = isRTL(i18n.language);
+  const _rtl = isRTL(i18n.language);
   
   return (
     <div className="min-h-screen bg-almona-dark text-white">
@@ -35,16 +35,8 @@ export const TurkishLayout: React.FC<TurkishLayoutProps> = ({
       <ConditionalNavbar />
       
       {/* Main content */}
-      <div 
-        className={`relative transition-all duration-300 ${isFabricatorRoute ? 'ms-[var(--sidebar-width,320px)]' : ''}`}
-        style={
-          isFabricatorRoute
-            ? rtl
-              ? { marginRight: 'var(--sidebar-width, 320px)' }
-              : { marginLeft: 'var(--sidebar-width, 320px)' }
-            : {}
-        }
-      >
+      {/* Note: For fabricator routes, MasterLayout handles its own layout with flexbox, so no margin needed */}
+      <div className="relative transition-all duration-300">
         {children}
       </div>
 

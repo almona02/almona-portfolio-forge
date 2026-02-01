@@ -77,7 +77,7 @@ export const EquipmentRecommender: React.FC<EquipmentRecommenderProps> = ({
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t('recommendations.title')}</h2>
+      <h2 className="typography-h2">{t('recommendations.title')}</h2>
       {recommendations.map((rec, index) => (
         <Card key={rec.machine.id} className={`relative ${index === 0 ? 'border-2 border-primary' : ''}`}>
           {index === 0 && (

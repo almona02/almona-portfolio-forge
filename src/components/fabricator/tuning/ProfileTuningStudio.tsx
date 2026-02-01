@@ -1,0 +1,2493 @@
+/**
+ * Profile Tuning Studio
+ * ----------------------------------------------------------------------------
+ * Prestige-grade cockpit for tuning a single profile:
+ * - Shows tuning status and key metadata
+ * - Embeds CalibrationWizard for K-factor / cutting calibration
+ * - Embeds MachiningZoneEditor for machining zones
+ * - Marks profile as "tuned" in specifications for quick scanning
+ */
+
+import ErrorBoundary from '@/components/ErrorBoundary';
+import { trackError } from '@/lib/performance-monitoring';
+import { supabase } from '@/lib/supabase';
+import type { ProfileScanResult } from '@/services/scanApi';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
+import { Button } from '@/shared/ui/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/ui/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
+import type { Profile } from '@/types/fabricator';
+import {
+  Activity,
+  AlertCircle,
+  AlertTriangle,
+  ArrowLeft,
+  CheckCircle2,
+  Droplets,
+  Ruler,
+  Scan,
+  Settings,
+  Shield,
+  Sparkles,
+  Wallet,
+  Wand2,
+  Wrench,
+} from 'lucide-react';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
+import { toast } from 'sonner';
+import { CalibrationWizard } from '../CalibrationWizard';
+import { UnsavedChangesDialog } from '../UnsavedChangesDialog';
+import { ProfileIconGenerator, type ProfileIconHandle } from '../assets/ProfileIconGenerator';
+import {
+  DEFAULT_GEOMETRY_CONFIG,
+  STORAGE_CONSTANTS,
+  TIMEOUT_CONSTANTS,
+  UI_DIMENSIONS,
+  VALIDATION_PATTERNS,
+} from '../profileTuningStudioConstants';
+import { DXFProfileImporter, type ImportedProfile } from '../smartscan/DXFProfileImporter';
+import { MachiningZoneEditor, type MachiningZone } from '../smartscan/MachiningZoneEditor';
+import { ProfileScannerUploader } from '../smartscan/ProfileScannerUploader';
+import SmartScanUploader from '../smartscan/SmartScanUploader';
+import './ProfileTuningStudio.css';
+
+interface ProfileTuningStudioProps {
+  profile: Profile;
+  userId: string;
+  onClose: (hasChanges?: boolean) => void;
+  onProfileUpdated?: () => void;
+}
+
+type TuningStatus = 'untuned' | 'in_progress' | 'tuned';
+
+type GeometryConfig = {
+  archetype: string;
+  wallThicknessMm: number;
+  glazingPocketDepthMm: number;
+  glazingPocketWidthMm: number;
+  thermalBreakWidthMm: number;
+  flangeWidthMm: number;
+  webOffsetMm: number;
+  source?: string;
+  svgPath?: string;
+  scannedWidth?: number;
+  scannedHeight?: number;
+  thumbnailOffsetX?: number;
+  thumbnailOffsetY?: number;
+};
+
+const ProfileTuningStudioComponent: React.FC<ProfileTuningStudioProps> = ({
+  profile,
+  userId,
+  onClose,
+  onProfileUpdated,
+}) => {
+  const { t } = useTranslation('fabricator');
+  const location = useLocation();
+
+
+  // Helper function to map profile role to allowed DXF importer role
+  const mapProfileRoleToDXFRole = (role: string | undefined): 'frame' | 'sash' | 'mullion' | 'transom' | 'bead' | 'interlock' | 'accessory' => {
+    if (role === 'frame' || role === 'sash' || role === 'mullion' || role === 'transom' || role === 'bead' || role === 'interlock' || role === 'accessory') {
+      return role;
+    }
+    // Map extended roles to base roles
+    if (role?.startsWith('frame') || role === 'architrave' || role === 'threshold' || role === 'sill' || role === 'head' || role === 'jamb') {
+      return 'frame';
+    }
+    if (role?.startsWith('sash') || role === 'screen_sash') {
+      return 'sash';
+    }
+    if (role?.startsWith('glazing_bead')) {
+      return 'bead';
+    }
+    if (role === 'mullion_false' || role === 'transom' || role === 'reinforcement' || role === 'corner_cleat') {
+      return role === 'transom' ? 'transom' : 'mullion';
+    }
+    return 'frame'; // Default fallback
+  };
+
+  // Helper function to map system type to allowed window type
+  const mapSystemTypeToWindowType = (systemType: string | undefined): 'sliding' | 'casement' | 'tilt_turn' | 'fixed' | 'sliding_door' => {
+    if (systemType === 'sliding' || systemType === 'casement' || systemType === 'tilt_turn' || systemType === 'fixed' || systemType === 'sliding_door') {
+      return systemType;
+    }
+    // Map other types to closest match
+    if (systemType === 'commercial' || systemType === 'facade') {
+      return 'fixed';
+    }
+    return 'sliding'; // Default fallback
+  };
+  const [importedProfileData, setImportedProfileData] = useState<ImportedProfile | null>(null);
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<
+    | 'calibration'
+    | 'cutting-rules'
+    | 'glazing'
+    | 'geometry'
+    | 'smartscan'
+    | 'structural'
+    | 'hardware'
+    | 'cost-erp'
+    | 'machining'
+    | 'summary'
+  >('calibration');
+  const [savingStatus, setSavingStatus] = useState(false);
+  const [showImportBanner, setShowImportBanner] = useState(false);
+  const [zones, setZones] = useState<MachiningZone[]>(
+    ((profile.specifications as any)?.machiningZones as MachiningZone[]) || []
+  );
+  const [geometryConfig, setGeometryConfig] = useState<GeometryConfig>(() => {
+    const geo = (profile.specifications as any)?.geometryConfig || {};
+    return {
+      archetype: geo.archetype || DEFAULT_GEOMETRY_CONFIG.DEFAULT_ARCHETYPE,
+      wallThicknessMm: geo.wallThicknessMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_WALL_THICKNESS_MM,
+      glazingPocketDepthMm: geo.glazingPocketDepthMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_GLAZING_POCKET_DEPTH_MM,
+      glazingPocketWidthMm: geo.glazingPocketWidthMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_GLAZING_POCKET_WIDTH_MM,
+      thermalBreakWidthMm: geo.thermalBreakWidthMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_THERMAL_BREAK_WIDTH_MM,
+      flangeWidthMm: geo.flangeWidthMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_FLANGE_WIDTH_MM,
+      webOffsetMm: geo.webOffsetMm ?? DEFAULT_GEOMETRY_CONFIG.DEFAULT_WEB_OFFSET_MM,
+      source: geo.source,
+      svgPath: geo.svgPath,
+      scannedWidth: geo.scannedWidth,
+      scannedHeight: geo.scannedHeight,
+    };
+  });
+  const [scanResult, setScanResult] = useState<ProfileScanResult | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [authToken, setAuthToken] = useState('');
+  const profileIconRef = useRef<ProfileIconHandle>(null);
+  const [isDirty, setIsDirty] = useState(false);
+  const dirtyInitRef = useRef(false);
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
+
+  const specs = profile.specifications || {};
+
+  const startScan = async () => {
+    try {
+      const { data } = await (supabase as any).auth.getSession();
+      const token = data?.session?.access_token || '';
+      if (!token) {
+        toast.error('Unable to start scan (missing auth token)');
+        return;
+      }
+      setAuthToken(token);
+      setIsScanning(true);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileTuningStudio', 'start_scan', error.message);
+      toast.error('Unable to start scan');
+    }
+  };
+
+  const handleScanSuccess = (result: ProfileScanResult) => {
+    setScanResult(result);
+    setGeometryConfig((prev) => ({
+      ...prev,
+      source: 'scan',
+      svgPath: result.svgPath,
+      scannedWidth: result.dimensions.width_mm ?? result.dimensions.width_px,
+      scannedHeight: result.dimensions.height_mm ?? result.dimensions.height_px,
+    }));
+    setIsScanning(false);
+    toast.success('Scan imported into geometry');
+  };
+
+  const [cuttingConfig, setCuttingConfig] = useState({
+    borderExtraAllowanceMm: (specs as any)?.borderExtraAllowanceMm ?? '',
+    preferredBarLengthMm: (specs as any)?.preferredBarLengthMm ?? '',
+    minOffcutMm: (specs as any)?.minOffcutMm ?? '',
+    roundToNearestMm: (specs as any)?.roundToNearestMm ?? '',
+    cornerTechnology: ((specs as any)?.cornerTechnology as string) || 'crimped',
+    miter45JointAllowanceMm: (specs as any)?.miter45JointAllowanceMm ?? '',
+    butt90JointAllowanceMm: (specs as any)?.butt90JointAllowanceMm ?? '',
+    tJointAllowanceMm: (specs as any)?.tJointAllowanceMm ?? '',
+    mullionJointAllowanceMm: (specs as any)?.mullionJointAllowanceMm ?? '',
+  });
+
+  const [glazingConfig, setGlazingConfig] = useState({
+    glazingMinMm: (specs as any)?.glazingMinMm ?? '',
+    glazingMaxMm: (specs as any)?.glazingMaxMm ?? '',
+    gasketCompressionTargetMm: (specs as any)?.gasketCompressionTargetMm ?? '',
+    allowedGlassPackagesText: Array.isArray((specs as any)?.allowedGlassPackages)
+      ? ((specs as any).allowedGlassPackages as string[]).join(', ')
+      : '',
+  });
+
+  const [structuralConfig, setStructuralConfig] = useState({
+    maxFrameSpanMm: (specs as any)?.maxFrameSpanMm ?? '',
+    maxMullionSpanMm: (specs as any)?.maxMullionSpanMm ?? '',
+    maxSashWidthMm: (specs as any)?.maxSashWidthMm ?? '',
+    maxSashHeightMm: (specs as any)?.maxSashHeightMm ?? '',
+    maxSashWeightKg: (specs as any)?.maxSashWeightKg ?? '',
+    maxUnitWidthMm: (specs as any)?.maxUnitWidthMm ?? '',
+    maxUnitHeightMm: (specs as any)?.maxUnitHeightMm ?? '',
+    structuralNotes: (specs as any)?.structuralNotes ?? '',
+    physicsStiffnessClass:
+      ((specs as any)?.physicsStiffnessClass as string) || 'standard',
+  });
+
+  const [hardwareConfig, setHardwareConfig] = useState({
+    primaryHingeFamily: (specs as any)?.primaryHingeFamily ?? '',
+    primaryLockFamily: (specs as any)?.primaryLockFamily ?? '',
+    preferredHandleFamily: (specs as any)?.preferredHandleFamily ?? '',
+    hardwarePackTagsText: Array.isArray((specs as any)?.hardwarePackTags)
+      ? ((specs as any).hardwarePackTags as string[]).join(', ')
+      : '',
+  });
+
+  const [costConfig, setCostConfig] = useState({
+    aluminumPricePerKg: (specs as any)?.aluminumPricePerKg ?? '',
+    machiningCostPerOp: (specs as any)?.machiningCostPerOp ?? '',
+    coatingCostPerSqm: (specs as any)?.coatingCostPerSqm ?? '',
+    scrapCostPerKg: (specs as any)?.scrapCostPerKg ?? '',
+    erpItemCode: (specs as any)?.erpItemCode ?? '',
+    warehouseLocation: (specs as any)?.warehouseLocation ?? '',
+  });
+
+  const [qaConfig, _setQaConfig] = useState({
+    cutToleranceMm: (specs as any)?.cutToleranceMm ?? '',
+    assemblyToleranceMm: (specs as any)?.assemblyToleranceMm ?? '',
+    qaNotes: (specs as any)?.qaNotes ?? '',
+  });
+
+  const systemPackId =
+    profile.systemPackIds?.[0] ||
+    (profile.specifications as any)?.systemPackId ||
+    'generic';
+
+  const uploadThumbnailFromCapture = async (): Promise<string | null> => {
+    try {
+      const dataUrl = await profileIconRef.current?.capture();
+      if (!dataUrl) return null;
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const fileName = `${userId}/${profile.id}-${Date.now()}.png`;
+      const { error } = await (supabase as any)
+        .storage
+        .from('profile-thumbnails')
+        .upload(fileName, blob, { cacheControl: String(STORAGE_CONSTANTS.CACHE_CONTROL_DURATION_SECONDS), upsert: true });
+      if (error) throw error;
+      const { data } = (supabase as any).storage.from('profile-thumbnails').getPublicUrl(fileName);
+      return data.publicUrl;
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileTuningStudio', 'thumbnail_upload', error.message);
+      return null;
+    }
+  };
+
+  const tuningStatus: TuningStatus = useMemo(() => {
+    const specs = profile.specifications || {};
+    const raw = (specs as any).tuningStatus as TuningStatus | undefined;
+    if (raw === 'tuned' || raw === 'in_progress' || raw === 'untuned') return raw;
+    // Heuristic: if any calibration or machining macros exist, mark as in_progress
+    if ((profile.calibrations && profile.calibrations.length > 0) || profile.machiningMacros?.length) {
+      return 'in_progress';
+    }
+    return 'untuned';
+  }, [profile]);
+
+  const statusBadge = useMemo(() => {
+    switch (tuningStatus) {
+      case 'tuned':
+        return (
+          <Badge className="status-badge-tuned flex items-center gap-1">
+            <CheckCircle2 className={UI_DIMENSIONS.BADGE_ICON} />
+            {t('profile_tuning_studio.status.tuned', 'Tuned for Production')}
+          </Badge>
+        );
+      case 'in_progress':
+        return (
+          <Badge className="status-badge-in-progress flex items-center gap-1">
+            <Sparkles className={UI_DIMENSIONS.BADGE_ICON} />
+            {t('profile_tuning_studio.status.in_progress', 'Tuning in Progress')}
+          </Badge>
+        );
+      default:
+        return (
+          <Badge className="status-badge-untuned flex items-center gap-1">
+            <AlertTriangle className={UI_DIMENSIONS.BADGE_ICON} />
+            {t('profile_tuning_studio.status.untuned', 'Not Tuned Yet')}
+          </Badge>
+        );
+    }
+  }, [tuningStatus, t]);
+
+  useEffect(() => {
+    if (location.state && (location.state as any).highlightGeometry) {
+      setActiveTab('geometry');
+      setShowImportBanner(true);
+      const timer = setTimeout(() => setShowImportBanner(false), TIMEOUT_CONSTANTS.IMPORT_BANNER_TIMEOUT_MS);
+      // Clear the state so it doesn't persist across refresh/navigation
+      window.history.replaceState({}, document.title);
+      return () => clearTimeout(timer);
+    }
+  }, [location.state]);
+
+  // Track unsaved changes across core config slices
+  useEffect(() => {
+    if (!dirtyInitRef.current) {
+      dirtyInitRef.current = true;
+      return;
+    }
+    setIsDirty(true);
+  }, [
+    geometryConfig,
+    cuttingConfig,
+    glazingConfig,
+    structuralConfig,
+    hardwareConfig,
+    costConfig,
+    qaConfig,
+    zones,
+    systemPackId,
+  ]);
+
+  // Prestige warning on tab close/refresh when dirty
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (!isDirty) return;
+      e.preventDefault();
+      // Prestige message for browser's native confirmation dialog
+      e.returnValue = 'You have unsaved changes in Profile Tuning Studio. Are you sure you want to leave? All unsaved tuning data will be permanently lost.';
+      return e.returnValue;
+    };
+    if (isDirty) window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isDirty]);
+
+
+  // Simple save function that saves all current changes
+  const saveAllChanges = async () => {
+    try {
+      setSavingStatus(true);
+
+      // Check authentication and profile validity
+      if (!userId) {
+        throw new Error('User not authenticated. Please log in again.');
+      }
+
+      if (!profile?.id) {
+        throw new Error('Profile data is invalid. Please refresh and try again.');
+      }
+
+      const db = supabase as unknown as { from: (table: string) => any };
+
+      // Collect all current changes into specifications first
+      const nextSpecs = {
+        ...(profile.specifications || {}),
+        // Geometry config
+        geometryConfig: geometryConfig,
+        // Machining zones
+        machiningZones: zones,
+        // Cutting config
+        borderExtraAllowanceMm: cuttingConfig.borderExtraAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.borderExtraAllowanceMm as any)
+          : undefined,
+        preferredBarLengthMm: cuttingConfig.preferredBarLengthMm !== ''
+          ? parseFloat(cuttingConfig.preferredBarLengthMm as any)
+          : undefined,
+        minOffcutMm: cuttingConfig.minOffcutMm !== ''
+          ? parseFloat(cuttingConfig.minOffcutMm as any)
+          : undefined,
+        roundToNearestMm: cuttingConfig.roundToNearestMm !== ''
+          ? parseFloat(cuttingConfig.roundToNearestMm as any)
+          : undefined,
+        cornerTechnology: cuttingConfig.cornerTechnology,
+        miter45JointAllowanceMm: cuttingConfig.miter45JointAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.miter45JointAllowanceMm as any)
+          : undefined,
+        butt90JointAllowanceMm: cuttingConfig.butt90JointAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.butt90JointAllowanceMm as any)
+          : undefined,
+        tJointAllowanceMm: cuttingConfig.tJointAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.tJointAllowanceMm as any)
+          : undefined,
+        mullionJointAllowanceMm: cuttingConfig.mullionJointAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.mullionJointAllowanceMm as any)
+          : undefined,
+        // Glazing config
+        glazingMinMm: glazingConfig.glazingMinMm !== ''
+          ? parseFloat(glazingConfig.glazingMinMm as any)
+          : undefined,
+        glazingMaxMm: glazingConfig.glazingMaxMm !== ''
+          ? parseFloat(glazingConfig.glazingMaxMm as any)
+          : undefined,
+        gasketCompressionTargetMm: glazingConfig.gasketCompressionTargetMm !== ''
+          ? parseFloat(glazingConfig.gasketCompressionTargetMm as any)
+          : undefined,
+        allowedGlassPackages: glazingConfig.allowedGlassPackagesText
+          ? glazingConfig.allowedGlassPackagesText.split(',').map(s => s.trim()).filter(Boolean)
+          : undefined,
+        // Structural config
+        maxFrameSpanMm: structuralConfig.maxFrameSpanMm !== ''
+          ? parseFloat(structuralConfig.maxFrameSpanMm as any)
+          : undefined,
+        maxMullionSpanMm: structuralConfig.maxMullionSpanMm !== ''
+          ? parseFloat(structuralConfig.maxMullionSpanMm as any)
+          : undefined,
+        maxSashWidthMm: structuralConfig.maxSashWidthMm !== ''
+          ? parseFloat(structuralConfig.maxSashWidthMm as any)
+          : undefined,
+        maxSashHeightMm: structuralConfig.maxSashHeightMm !== ''
+          ? parseFloat(structuralConfig.maxSashHeightMm as any)
+          : undefined,
+        maxSashWeightKg: structuralConfig.maxSashWeightKg !== ''
+          ? parseFloat(structuralConfig.maxSashWeightKg as any)
+          : undefined,
+        maxUnitWidthMm: structuralConfig.maxUnitWidthMm !== ''
+          ? parseFloat(structuralConfig.maxUnitWidthMm as any)
+          : undefined,
+        maxUnitHeightMm: structuralConfig.maxUnitHeightMm !== ''
+          ? parseFloat(structuralConfig.maxUnitHeightMm as any)
+          : undefined,
+        structuralNotes: structuralConfig.structuralNotes,
+        physicsStiffnessClass: structuralConfig.physicsStiffnessClass,
+        // Hardware config
+        primaryHingeFamily: hardwareConfig.primaryHingeFamily,
+        primaryLockFamily: hardwareConfig.primaryLockFamily,
+        preferredHandleFamily: hardwareConfig.preferredHandleFamily,
+        hardwarePackTags: hardwareConfig.hardwarePackTagsText
+          ? hardwareConfig.hardwarePackTagsText.split(',').map(s => s.trim()).filter(Boolean)
+          : undefined,
+        // Cost config
+        aluminumPricePerKg: costConfig.aluminumPricePerKg !== ''
+          ? parseFloat(costConfig.aluminumPricePerKg as any)
+          : undefined,
+        machiningCostPerOp: costConfig.machiningCostPerOp !== ''
+          ? parseFloat(costConfig.machiningCostPerOp as any)
+          : undefined,
+        coatingCostPerSqm: costConfig.coatingCostPerSqm !== ''
+          ? parseFloat(costConfig.coatingCostPerSqm as any)
+          : undefined,
+        scrapCostPerKg: costConfig.scrapCostPerKg !== ''
+          ? parseFloat(costConfig.scrapCostPerKg as any)
+          : undefined,
+        erpItemCode: costConfig.erpItemCode,
+        warehouseLocation: costConfig.warehouseLocation,
+        // QA config
+        cutToleranceMm: qaConfig.cutToleranceMm !== ''
+          ? parseFloat(qaConfig.cutToleranceMm as any)
+          : undefined,
+        assemblyToleranceMm: qaConfig.assemblyToleranceMm !== ''
+          ? parseFloat(qaConfig.assemblyToleranceMm as any)
+          : undefined,
+        qaNotes: qaConfig.qaNotes,
+      };
+
+      // Check if this is a static profile that needs to be inserted first
+      const isUUID = VALIDATION_PATTERNS.UUID_PATTERN.test(profile.id);
+
+      if (!isUUID) {
+        // Check if profile already exists in database (by name and user_id)
+        const { data: existingProfile, error: checkError } = await db
+          .from('fabricator_profiles')
+          .select('id')
+          .eq('name', profile.name)
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (checkError) {
+          trackError('ProfileTuningStudio', 'check_existing_profile', checkError.message);
+          throw new Error(`Failed to check existing profile: ${checkError.message}`);
+        }
+
+        if (existingProfile) {
+          // Update the profile ID to the database UUID
+          profile.id = existingProfile.id;
+        } else {
+          // Insert the profile first to get a UUID
+          const { data: insertedProfile, error: insertError } = await db
+            .from('fabricator_profiles')
+            .insert({
+              user_id: userId,
+              name: profile.name,
+              material: profile.material,
+              width: profile.width,
+              height: profile.height || profile.width,
+              thickness: profile.thickness,
+              specifications: nextSpecs, // Include specs on insert
+            })
+            .select('id')
+            .single();
+
+          if (insertError) {
+            trackError('ProfileTuningStudio', 'insert_profile', insertError.message);
+            throw new Error(`Failed to create profile: ${insertError.message}`);
+          }
+
+          // Update profile ID for future operations
+          profile.id = insertedProfile.id;
+          return true; // Successfully inserted, no need to update
+        }
+      }
+
+      const { error } = await db
+        .from('fabricator_profiles')
+        .update({ specifications: nextSpecs })
+        .eq('id', profile.id)
+        .eq('user_id', userId);
+
+      if (error) {
+        trackError('ProfileTuningStudio', 'update_profile', error.message);
+        throw error;
+      }
+      toast.success('All changes saved');
+      onProfileUpdated?.();
+      setIsDirty(false);
+      return true;
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      const errorMessage = error.message || 'Unknown error';
+      trackError('ProfileTuningStudio', 'save_all_changes', errorMessage);
+      toast.error(`Failed to save changes: ${errorMessage}`);
+      return false;
+    } finally {
+      setSavingStatus(false);
+    }
+  };
+
+  // SIMPLE: Back button with prestige confirmation for unsaved changes
+  const handleBackButton = () => {
+    if (isDirty && tuningStatus !== 'tuned') {
+      // Show prestigious confirmation dialog for untuned packs with changes
+      setShowUnsavedDialog(true);
+    } else {
+      // No changes or already tuned - just close the component
+      // The parent component will handle navigation back
+      onClose(false);
+    }
+  };
+
+  // Handle saving all changes and then closing
+  const handleSaveAndBack = async () => {
+    setShowUnsavedDialog(false);
+    const saved = await saveAllChanges();
+    if (saved) {
+      onClose(false); // Let parent handle navigation
+    }
+  };
+
+  // Handle leaving without saving
+  const handleLeaveWithoutSaving = () => {
+    setShowUnsavedDialog(false);
+    onClose(false); // Let parent handle navigation
+  };
+
+
+  const markAsTuned = async () => {
+    try {
+      setSavingStatus(true);
+
+      // Debug: Check authentication and environment (only in development)
+      if (import.meta.env.DEV) {
+        // Use proper error tracking instead of console.log
+        const debugInfo = {
+          environment: import.meta.env.DEV ? 'Development' : 'Production',
+          userId: userId,
+          profileId: profile.id,
+          isUUID: VALIDATION_PATTERNS.UUID_PATTERN.test(profile.id),
+          hasSupabaseUrl: !!import.meta.env.VITE_SUPABASE_URL,
+          hasSupabaseKey: !!import.meta.env.VITE_SUPABASE_ANON_KEY,
+        };
+        // Only log in development mode
+        if (import.meta.env.DEV) {
+          // Development-only debug logging
+          console.debug('Mark as Tuned Debug Info:', debugInfo);
+        }
+      }
+
+      const db = supabase as unknown as { from: (table: string) => any };
+
+      // Check authentication
+      if (!userId) {
+        throw new Error('User not authenticated. Please log in again.');
+      }
+
+      // Check if this is a static profile that needs to be inserted first
+      const isUUID = VALIDATION_PATTERNS.UUID_PATTERN.test(profile.id);
+
+      let profileIdToUse = profile.id;
+
+      if (!isUUID) {
+        // Check if profile already exists in database (by name and user_id)
+        const { data: existingProfile, error: checkError } = await db
+          .from('fabricator_profiles')
+          .select('id')
+          .eq('name', profile.name)
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (checkError) {
+          trackError('ProfileTuningStudio', 'check_existing_profile_tuned', checkError.message);
+          throw new Error(`Failed to check existing profile: ${checkError.message}`);
+        }
+
+        if (existingProfile) {
+          profileIdToUse = existingProfile.id;
+          // Update the profile ID for future operations
+          profile.id = existingProfile.id;
+        } else {
+          // Insert the profile first to get a UUID
+          const { data: insertedProfile, error: insertError } = await db
+            .from('fabricator_profiles')
+            .insert({
+              user_id: userId,
+              name: profile.name,
+              material: profile.material,
+              width: profile.width,
+              height: profile.height || profile.width,
+              thickness: profile.thickness,
+              specifications: {
+                ...(profile.specifications || {}),
+                tuningStatus: 'tuned',
+              }, // Include tuning status immediately
+            })
+            .select('id')
+            .single();
+
+          if (insertError) {
+            trackError('ProfileTuningStudio', 'insert_profile_tuned', insertError.message);
+            throw new Error(`Failed to create profile: ${insertError.message}`);
+          }
+
+          // Update profile ID for future operations
+          profile.id = insertedProfile.id;
+          profileIdToUse = insertedProfile.id;
+
+          toast.success(`Profile "${profile.name}" created and marked as tuned`);
+          onProfileUpdated?.();
+          setIsDirty(false);
+          return; // Successfully inserted, no need for separate update
+        }
+      }
+
+      // Update the profile with tuning status
+      const nextSpecs = {
+        ...(profile.specifications || {}),
+        tuningStatus: 'tuned',
+      };
+
+      const { error } = await db
+        .from('fabricator_profiles')
+        .update({ specifications: nextSpecs })
+        .eq('id', profileIdToUse)
+        .eq('user_id', userId);
+
+      if (error) {
+        trackError('ProfileTuningStudio', 'mark_as_tuned', error.message);
+        throw error;
+      }
+
+      toast.success(`Profile "${profile.name}" marked as tuned`);
+      onProfileUpdated?.();
+      setIsDirty(false);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      const errorMessage = error.message || 'Unknown error';
+      trackError('ProfileTuningStudio', 'mark_as_tuned_error', errorMessage);
+      toast.error(`Failed to mark profile as tuned: ${errorMessage}`);
+    } finally {
+      setSavingStatus(false);
+    }
+  };
+
+
+
+  const saveCuttingConfig = async () => {
+    try {
+      setSavingStatus(true);
+      const db = supabase as unknown as { from: (table: string) => any };
+      const nextSpecs = {
+        ...(profile.specifications || {}),
+        borderExtraAllowanceMm: cuttingConfig.borderExtraAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.borderExtraAllowanceMm as any)
+          : undefined,
+        preferredBarLengthMm: cuttingConfig.preferredBarLengthMm !== ''
+          ? parseFloat(cuttingConfig.preferredBarLengthMm as any)
+          : undefined,
+        minOffcutMm: cuttingConfig.minOffcutMm !== ''
+          ? parseFloat(cuttingConfig.minOffcutMm as any)
+          : undefined,
+        roundToNearestMm: cuttingConfig.roundToNearestMm !== ''
+          ? parseFloat(cuttingConfig.roundToNearestMm as any)
+          : undefined,
+        cornerTechnology: cuttingConfig.cornerTechnology,
+        miter45JointAllowanceMm: cuttingConfig.miter45JointAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.miter45JointAllowanceMm as any)
+          : undefined,
+        butt90JointAllowanceMm: cuttingConfig.butt90JointAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.butt90JointAllowanceMm as any)
+          : undefined,
+        tJointAllowanceMm: cuttingConfig.tJointAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.tJointAllowanceMm as any)
+          : undefined,
+        mullionJointAllowanceMm: cuttingConfig.mullionJointAllowanceMm !== ''
+          ? parseFloat(cuttingConfig.mullionJointAllowanceMm as any)
+          : undefined,
+      };
+
+      const { error } = await db
+        .from('fabricator_profiles')
+        .update({ specifications: nextSpecs })
+        .eq('id', profile.id)
+        .eq('user_id', userId);
+
+      if (error) {
+        trackError('ProfileTuningStudio', 'save_cutting_config', error.message);
+        throw error;
+      }
+      toast.success('Cutting & joint rules saved');
+      onProfileUpdated?.();
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileTuningStudio', 'save_cutting_config_error', error.message);
+      toast.error('Failed to save cutting rules');
+    } finally {
+      setSavingStatus(false);
+    }
+  };
+
+  const saveGlazingConfig = async () => {
+    try {
+      setSavingStatus(true);
+      const db = supabase as unknown as { from: (table: string) => any };
+      const allowedGlassPackages =
+        glazingConfig.allowedGlassPackagesText
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+      const nextSpecs = {
+        ...(profile.specifications || {}),
+        glazingMinMm: glazingConfig.glazingMinMm !== ''
+          ? parseFloat(glazingConfig.glazingMinMm as any)
+          : undefined,
+        glazingMaxMm: glazingConfig.glazingMaxMm !== ''
+          ? parseFloat(glazingConfig.glazingMaxMm as any)
+          : undefined,
+        gasketCompressionTargetMm: glazingConfig.gasketCompressionTargetMm !== ''
+          ? parseFloat(glazingConfig.gasketCompressionTargetMm as any)
+          : undefined,
+        allowedGlassPackages,
+      };
+
+      const { error } = await db
+        .from('fabricator_profiles')
+        .update({ specifications: nextSpecs })
+        .eq('id', profile.id)
+        .eq('user_id', userId);
+
+      if (error) {
+        trackError('ProfileTuningStudio', 'save_glazing_config', error.message);
+        throw error;
+      }
+      toast.success('Glazing & seal rules saved');
+      onProfileUpdated?.();
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileTuningStudio', 'save_glazing_config_error', error.message);
+      toast.error('Failed to save glazing & seal rules');
+    } finally {
+      setSavingStatus(false);
+    }
+  };
+
+  const saveStructuralConfig = async () => {
+    try {
+      setSavingStatus(true);
+      const db = supabase as unknown as { from: (table: string) => any };
+      const nextSpecs = {
+        ...(profile.specifications || {}),
+        maxFrameSpanMm:
+          structuralConfig.maxFrameSpanMm !== ''
+            ? parseFloat(structuralConfig.maxFrameSpanMm as any)
+            : undefined,
+        maxMullionSpanMm:
+          structuralConfig.maxMullionSpanMm !== ''
+            ? parseFloat(structuralConfig.maxMullionSpanMm as any)
+            : undefined,
+        maxSashWidthMm:
+          structuralConfig.maxSashWidthMm !== ''
+            ? parseFloat(structuralConfig.maxSashWidthMm as any)
+            : undefined,
+        maxSashHeightMm:
+          structuralConfig.maxSashHeightMm !== ''
+            ? parseFloat(structuralConfig.maxSashHeightMm as any)
+            : undefined,
+        maxSashWeightKg:
+          structuralConfig.maxSashWeightKg !== ''
+            ? parseFloat(structuralConfig.maxSashWeightKg as any)
+            : undefined,
+        maxUnitWidthMm:
+          structuralConfig.maxUnitWidthMm !== ''
+            ? parseFloat(structuralConfig.maxUnitWidthMm as any)
+            : undefined,
+        maxUnitHeightMm:
+          structuralConfig.maxUnitHeightMm !== ''
+            ? parseFloat(structuralConfig.maxUnitHeightMm as any)
+            : undefined,
+        structuralNotes: structuralConfig.structuralNotes || undefined,
+        physicsStiffnessClass: structuralConfig.physicsStiffnessClass,
+      };
+
+      const { error } = await db
+        .from('fabricator_profiles')
+        .update({ specifications: nextSpecs })
+        .eq('id', profile.id)
+        .eq('user_id', userId);
+
+      if (error) {
+        trackError('ProfileTuningStudio', 'save_structural_config', error.message);
+        throw error;
+      }
+      toast.success('Structural & span limits saved');
+      onProfileUpdated?.();
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileTuningStudio', 'save_structural_config_error', error.message);
+      toast.error('Failed to save structural rules');
+    } finally {
+      setSavingStatus(false);
+    }
+  };
+
+  const saveHardwareConfig = async () => {
+    try {
+      setSavingStatus(true);
+      const db = supabase as unknown as { from: (table: string) => any };
+
+      const hardwarePackTags =
+        hardwareConfig.hardwarePackTagsText
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+      const nextSpecs = {
+        ...(profile.specifications || {}),
+        primaryHingeFamily: hardwareConfig.primaryHingeFamily || undefined,
+        primaryLockFamily: hardwareConfig.primaryLockFamily || undefined,
+        preferredHandleFamily: hardwareConfig.preferredHandleFamily || undefined,
+        hardwarePackTags,
+      };
+
+      const { error } = await db
+        .from('fabricator_profiles')
+        .update({ specifications: nextSpecs })
+        .eq('id', profile.id)
+        .eq('user_id', userId);
+
+      if (error) {
+        trackError('ProfileTuningStudio', 'save_hardware_config', error.message);
+        throw error;
+      }
+      toast.success('Hardware presets saved');
+      onProfileUpdated?.();
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileTuningStudio', 'save_hardware_config_error', error.message);
+      toast.error('Failed to save hardware presets');
+    } finally {
+      setSavingStatus(false);
+    }
+  };
+
+  const saveCostConfig = async () => {
+    try {
+      setSavingStatus(true);
+      const db = supabase as unknown as { from: (table: string) => any };
+      const nextSpecs = {
+        ...(profile.specifications || {}),
+        aluminumPricePerKg:
+          costConfig.aluminumPricePerKg !== ''
+            ? parseFloat(costConfig.aluminumPricePerKg as any)
+            : undefined,
+        machiningCostPerOp:
+          costConfig.machiningCostPerOp !== ''
+            ? parseFloat(costConfig.machiningCostPerOp as any)
+            : undefined,
+        coatingCostPerSqm:
+          costConfig.coatingCostPerSqm !== ''
+            ? parseFloat(costConfig.coatingCostPerSqm as any)
+            : undefined,
+        scrapCostPerKg:
+          costConfig.scrapCostPerKg !== ''
+            ? parseFloat(costConfig.scrapCostPerKg as any)
+            : undefined,
+        erpItemCode: costConfig.erpItemCode || undefined,
+        warehouseLocation: costConfig.warehouseLocation || undefined,
+      };
+
+      const { error } = await db
+        .from('fabricator_profiles')
+        .update({ specifications: nextSpecs })
+        .eq('id', profile.id)
+        .eq('user_id', userId);
+
+      if (error) {
+        trackError('ProfileTuningStudio', 'save_cost_config', error.message);
+        throw error;
+      }
+      toast.success('Cost & ERP mapping saved');
+      onProfileUpdated?.();
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileTuningStudio', 'save_cost_config_error', error.message);
+      toast.error('Failed to save cost & ERP data');
+    } finally {
+      setSavingStatus(false);
+    }
+  };
+
+  const saveQaConfig = async () => {
+    try {
+      setSavingStatus(true);
+      const db = supabase as unknown as { from: (table: string) => any };
+      const nextSpecs = {
+        ...(profile.specifications || {}),
+        cutToleranceMm:
+          qaConfig.cutToleranceMm !== ''
+            ? parseFloat(qaConfig.cutToleranceMm as any)
+            : undefined,
+        assemblyToleranceMm:
+          qaConfig.assemblyToleranceMm !== ''
+            ? parseFloat(qaConfig.assemblyToleranceMm as any)
+            : undefined,
+        qaNotes: qaConfig.qaNotes || undefined,
+      };
+
+      const { error } = await db
+        .from('fabricator_profiles')
+        .update({ specifications: nextSpecs })
+        .eq('id', profile.id)
+        .eq('user_id', userId);
+
+      if (error) {
+        trackError('ProfileTuningStudio', 'save_qa_config', error.message);
+        throw error;
+      }
+      toast.success('QA tolerances saved');
+      onProfileUpdated?.();
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      trackError('ProfileTuningStudio', 'save_qa_config_error', error.message);
+      toast.error('Failed to save QA tolerances');
+    } finally {
+      setSavingStatus(false);
+    }
+  };
+
+  return (
+    <div
+      className="profile-tuning-studio fixed inset-0 z-[200] bg-black/70 backdrop-blur-xl flex items-start justify-center p-4 sm:p-6 overflow-y-auto"
+      onClick={(e) => {
+        // Close on backdrop click - only if no unsaved changes
+        if (e.target === e.currentTarget) {
+          if (isDirty && tuningStatus !== 'tuned') {
+            setShowUnsavedDialog(true);
+          } else {
+            onClose(false);
+          }
+        }
+      }}
+    >
+      <div
+        className={`w-full ${UI_DIMENSIONS.STUDIO_MAX_WIDTH} ${UI_DIMENSIONS.STUDIO_MAX_HEIGHT} overflow-y-auto rounded-lg card-glass-dark relative z-10`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Card className="bg-transparent border-none h-full flex flex-col">
+          <CardHeader className="border-b border-amber-500/30 pb-3">
+            <div className="flex items-center justify-between gap-4">
+              {/* Left side: Back button */}
+              <div className="flex items-center">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleBackButton}
+                  className="btn-secondary-dark relative z-10"
+                  data-testid="profile-tuning-back-button"
+                  type="button"
+                >
+                  <ArrowLeft className={`${UI_DIMENSIONS.ICON_MEDIUM} mr-1`} />
+                  {t('profile_tuning_studio.actions.back', 'Back')}
+                </Button>
+              </div>
+
+              {/* Center: Title and description */}
+              <div className="flex items-start gap-3 flex-1 justify-center">
+                <div className="btn-primary">
+                  <Sparkles className={`${UI_DIMENSIONS.ICON_LARGE} text-amber-300`} />
+                </div>
+                <div className="text-center">
+                  <CardTitle className="text-lg md:text-xl flex items-center gap-2 justify-center">
+                    {t('profile_tuning_studio.title', 'Profile Tuning Studio')}
+                    {statusBadge}
+                  </CardTitle>
+                  <CardDescription className="text-xs md:text-sm text-amber-300/90 mt-1">
+                    {profile.name} • {profile.material.toUpperCase()} •{' '}
+                    {profile.width}×{profile.height ?? profile.width}mm{' '}
+                    {profile.systemBrand && <>• {profile.systemBrand}</>}
+                  </CardDescription>
+                </div>
+              </div>
+
+              {/* Right side: Mark as Tuned button */}
+              <div className="flex items-center">
+                <Button
+                  size="sm"
+                  onClick={markAsTuned}
+                  disabled={savingStatus || tuningStatus === 'tuned'}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  <CheckCircle2 className={`${UI_DIMENSIONS.ICON_MEDIUM} mr-1`} />
+                  {tuningStatus === 'tuned'
+                    ? t('profile_tuning_studio.actions.already_tuned', 'Already Tuned')
+                    : t('profile_tuning_studio.actions.mark_as_tuned', 'Mark as Tuned')}
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="flex-1 overflow-y-auto p-4 md:p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
+              {/* Left column: Overview & status */}
+              <div className="space-y-4 lg:col-span-1">
+                <Card className="card-glass-dark">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2 tracking-[0.02em] uppercase">
+                      <Settings className="h-4 w-4 text-amber-400" />
+                      {t('profile_tuning_studio.overview.title', 'Tuning Overview')}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-xs text-gray-300">
+                    <p>
+                      <span className="font-semibold text-gray-200">{t('profile_tuning_studio.overview.role', 'Role')}:</span>{' '}
+                      {profile.profileRole || (profile.specifications as any)?.profileRole || 'Frame'}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-gray-200">{t('profile_tuning_studio.overview.system_pack', 'System Pack')}:</span>{' '}
+                      {systemPackId}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-gray-200">{t('profile_tuning_studio.overview.twin_code', 'Twin Code')}:</span>{' '}
+                      {(profile.specifications as any)?.internalCode || profile.id.slice(0, 8)}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-gray-200">{t('profile_tuning_studio.overview.supplier_code', 'Supplier Code')}:</span>{' '}
+                      {(profile.specifications as any)?.supplierCode || '—'}
+                    </p>
+                    <p className="mt-2 text-[11px] text-gray-400">
+                      {t('profile_tuning_studio.overview.description', 'Use the tabs on the right to calibrate cutting (K-factors), define machining zones, and validate production accuracy. Once you are confident, mark this profile as tuned.')}
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Alert className="bg-amber-900/20 text-xs text-amber-100 -sm card-glass-dark">
+                  <AlertDescription className="flex gap-2">
+                    <Wand2 className="h-4 w-4 mt-0.5 text-amber-300" />
+                    <span>
+                      {t('profile_tuning_studio.alert.message', 'Tuning is per-profile and per-system. Repeat the process for each critical frame/sash profile in your ROCK 60, JUMBO 100, or Caluminium packs to reach Titanium‑grade reliability.')}
+                    </span>
+                  </AlertDescription>
+                </Alert>
+              </div>
+
+              {/* Right columns: Tabs with embedded tools */}
+              <div className="lg:col-span-2 h-full">
+                <Tabs
+                  value={activeTab}
+                  onValueChange={(val) => setActiveTab(val as typeof activeTab)}
+                  className="h-full flex flex-col"
+                >
+                  <TabsList className="flex flex-wrap h-auto p-2 gap-1 card-dark mb-3 w-full justify-center shadow-glow-strong">
+                    <TabsTrigger value="calibration" className="text-xs flex items-center gap-1 min-w-[110px]">
+                      <Ruler className="h-3 w-3" />
+                      {t('profile_tuning_studio.tabs.calibration', 'Live Calibration')}
+                    </TabsTrigger>
+                    <TabsTrigger value="cutting-rules" className="text-xs flex items-center gap-1 min-w-[110px]">
+                      <Settings className="h-3 w-3" />
+                      {t('profile_tuning_studio.tabs.cutting_rules', 'Cutting Rules')}
+                    </TabsTrigger>
+                    <TabsTrigger value="glazing" className="text-xs flex items-center gap-1 min-w-[110px]">
+                      <Droplets className="h-3 w-3" />
+                      {t('profile_tuning_studio.tabs.glazing', 'Glazing & Seals')}
+                    </TabsTrigger>
+                    <TabsTrigger value="geometry" className="text-xs flex items-center gap-1 min-w-[110px]">
+                      <Sparkles className="h-3 w-3" />
+                      {t('profile_tuning_studio.tabs.geometry', 'Geometry & Shape')}
+                    </TabsTrigger>
+                    <TabsTrigger value="smartscan" className="text-xs flex items-center gap-1 min-w-[110px]">
+                      <Scan className="h-3 w-3" />
+                      {t('profile_tuning_studio.tabs.smartscan', 'SmartScan')}
+                    </TabsTrigger>
+                    <TabsTrigger value="structural" className="text-xs flex items-center gap-1 min-w-[110px]">
+                      <Shield className="h-3 w-3" />
+                      {t('profile_tuning_studio.tabs.structural', 'Structural')}
+                    </TabsTrigger>
+                    <TabsTrigger value="hardware" className="text-xs flex items-center gap-1 min-w-[110px]">
+                      <Wrench className="h-3 w-3" />
+                      {t('profile_tuning_studio.tabs.hardware', 'Hardware')}
+                    </TabsTrigger>
+                    <TabsTrigger value="cost-erp" className="text-xs flex items-center gap-1 min-w-[110px]">
+                      <Wallet className="h-3 w-3" />
+                      {t('profile_tuning_studio.tabs.cost_erp', 'Cost & ERP')}
+                    </TabsTrigger>
+                    <TabsTrigger value="machining" className="text-xs flex items-center gap-1 min-w-[110px]">
+                      <Settings className="h-3 w-3" />
+                      {t('profile_tuning_studio.tabs.machining', 'Machining Zones')}
+                    </TabsTrigger>
+                    <TabsTrigger value="summary" className="text-xs flex items-center gap-1 min-w-[110px]">
+                      <Sparkles className="h-3 w-3" />
+                      {t('profile_tuning_studio.tabs.summary', 'Tuning Summary')}
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <div className="flex-1 min-h-0 overflow-y-auto rounded-xl card-dark p-3 shadow-glow-strong">
+                    <TabsContent value="calibration" className="mt-0">
+                      <CalibrationWizard
+                        profile={profile}
+                        systemPackId={systemPackId}
+                        userId={userId}
+                      />
+                    </TabsContent>
+
+                    <TabsContent value="cutting-rules" className="mt-0 space-y-4">
+                      <Card className="bg-gray-900/80 border-gray-700 card-dark">
+                        <CardHeader>
+                          <CardTitle className="text-sm flex items-center gap-2">
+                            <Settings className="h-4 w-4 text-amber-400" />
+                            {t('profile_tuning_studio.cutting_rules.title', 'Cutting, Joints & Scrap Policy')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4 text-xs text-gray-200">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <p className="text-[11px] text-gray-400">
+                                {t('profile_tuning_studio.cutting_rules.joint_allowance_desc', 'Joint allowances are extra mm applied at each corner or joint before optimization. Use positive values to intentionally overshoot and let assembly trim; use 0 for "exact math".')}
+                              </p>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.cutting_rules.miter45_joint', '45° Miter Joint (+mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={cuttingConfig.miter45JointAllowanceMm}
+                                    onChange={(e) =>
+                                      setCuttingConfig((prev) => ({
+                                        ...prev,
+                                        miter45JointAllowanceMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.cutting_rules.butt90_joint', '90° Butt Joint (+mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={cuttingConfig.butt90JointAllowanceMm}
+                                    onChange={(e) =>
+                                      setCuttingConfig((prev) => ({
+                                        ...prev,
+                                        butt90JointAllowanceMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.cutting_rules.t_joint', 'T‑Joint Allowance (+mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={cuttingConfig.tJointAllowanceMm}
+                                    onChange={(e) =>
+                                      setCuttingConfig((prev) => ({
+                                        ...prev,
+                                        tJointAllowanceMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.cutting_rules.mullion_joint', 'Mullion/Transom Joint (+mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={cuttingConfig.mullionJointAllowanceMm}
+                                    onChange={(e) =>
+                                      setCuttingConfig((prev) => ({
+                                        ...prev,
+                                        mullionJointAllowanceMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div className="space-y-3">
+                              <div>
+                                <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                  {t('profile_tuning_studio.cutting_rules.border_allowance', 'Extra Allowance for Border Frames (mm)')}
+                                </label>
+                                <input
+                                  type="number"
+                                  step="0.1"
+                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                  value={cuttingConfig.borderExtraAllowanceMm}
+                                  onChange={(e) =>
+                                    setCuttingConfig((prev) => ({
+                                      ...prev,
+                                      borderExtraAllowanceMm: e.target.value,
+                                    }))
+                                  }
+                                />
+                                <p className="mt-1 text-[11px] text-gray-400">
+                                  {t('profile_tuning_studio.cutting_rules.border_allowance_desc', 'Used when frame has external borders (e.g. +5mm for plaster tolerance).')}
+                                </p>
+                              </div>
+                              <div className="grid grid-cols-3 gap-3">
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.cutting_rules.preferred_bar_length', 'Preferred Bar Length (mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={cuttingConfig.preferredBarLengthMm}
+                                    onChange={(e) =>
+                                      setCuttingConfig((prev) => ({
+                                        ...prev,
+                                        preferredBarLengthMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.cutting_rules.min_offcut', 'Min Usable Offcut (mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={cuttingConfig.minOffcutMm}
+                                    onChange={(e) =>
+                                      setCuttingConfig((prev) => ({
+                                        ...prev,
+                                        minOffcutMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.cutting_rules.round_cuts', 'Round Cuts to (mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={cuttingConfig.roundToNearestMm}
+                                    onChange={(e) =>
+                                      setCuttingConfig((prev) => ({
+                                        ...prev,
+                                        roundToNearestMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                  {t('profile_tuning_studio.cutting_rules.corner_technology', 'Corner Technology')}
+                                </label>
+                                <select
+                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-100 [&>option]:bg-gray-900 [&>option]:text-gray-100"
+                                  value={cuttingConfig.cornerTechnology}
+                                  onChange={(e) =>
+                                    setCuttingConfig((prev) => ({
+                                      ...prev,
+                                      cornerTechnology: e.target.value,
+                                    }))
+                                  }
+                                >
+                                  <option value="crimped">{t('profile_tuning_studio.cutting_rules.corner_tech_options.crimped', 'Crimped Corner')}</option>
+                                  <option value="cleated">{t('profile_tuning_studio.cutting_rules.corner_tech_options.cleated', 'Cleated')}</option>
+                                  <option value="welded">{t('profile_tuning_studio.cutting_rules.corner_tech_options.welded', 'Welded (PVC/Steel)')}</option>
+                                  <option value="cut_only">{t('profile_tuning_studio.cutting_rules.corner_tech_options.cut_only', 'Cut‑Only / Manual Assembly')}</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex justify-end">
+                            <Button
+                              size="sm"
+                              onClick={saveCuttingConfig}
+                              disabled={savingStatus}
+                              className="btn-primary-gradient font-bold"
+                            >
+                              {t('profile_tuning_studio.cutting_rules.save', 'Save Cutting Rules')}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="structural" className="mt-0 space-y-4">
+                      <Card className="bg-gray-900/80 border-gray-700 card-dark">
+                        <CardHeader>
+                          <CardTitle className="text-sm flex items-center gap-2">
+                            <Shield className="h-4 w-4 text-teal-300" />
+                            {t('profile_tuning_studio.structural.title', 'Structural Limits & Physics Class')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4 text-xs text-gray-200">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-3">
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.structural.max_frame_span', 'Max Frame Span (mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={structuralConfig.maxFrameSpanMm}
+                                    onChange={(e) =>
+                                      setStructuralConfig((prev) => ({
+                                        ...prev,
+                                        maxFrameSpanMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.structural.max_mullion_span', 'Max Mullion Span (mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={structuralConfig.maxMullionSpanMm}
+                                    onChange={(e) =>
+                                      setStructuralConfig((prev) => ({
+                                        ...prev,
+                                        maxMullionSpanMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.structural.max_unit_width', 'Max Unit Width (mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={structuralConfig.maxUnitWidthMm}
+                                    onChange={(e) =>
+                                      setStructuralConfig((prev) => ({
+                                        ...prev,
+                                        maxUnitWidthMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.structural.max_unit_height', 'Max Unit Height (mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={structuralConfig.maxUnitHeightMm}
+                                    onChange={(e) =>
+                                      setStructuralConfig((prev) => ({
+                                        ...prev,
+                                        maxUnitHeightMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                              </div>
+                              <p className="text-[11px] text-gray-400">
+                                {t('profile_tuning_studio.structural.limits_desc', 'These limits are used to warn when a window or frame dimension exceeds the safe span for this profile (based on supplier tables or your own experience).')}
+                              </p>
+                            </div>
+                            <div className="space-y-3">
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.structural.max_sash_width', 'Max Sash Width (mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={structuralConfig.maxSashWidthMm}
+                                    onChange={(e) =>
+                                      setStructuralConfig((prev) => ({
+                                        ...prev,
+                                        maxSashWidthMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.structural.max_sash_height', 'Max Sash Height (mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={structuralConfig.maxSashHeightMm}
+                                    onChange={(e) =>
+                                      setStructuralConfig((prev) => ({
+                                        ...prev,
+                                        maxSashHeightMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.structural.max_sash_weight', 'Max Sash Weight (kg)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={structuralConfig.maxSashWeightKg}
+                                    onChange={(e) =>
+                                      setStructuralConfig((prev) => ({
+                                        ...prev,
+                                        maxSashWeightKg: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.structural.physics_stiffness', 'Physics Stiffness Class')}
+                                  </label>
+                                  <select
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs text-gray-100 [&>option]:bg-gray-900 [&>option]:text-gray-100"
+                                    value={structuralConfig.physicsStiffnessClass}
+                                    onChange={(e) =>
+                                      setStructuralConfig((prev) => ({
+                                        ...prev,
+                                        physicsStiffnessClass: e.target.value,
+                                      }))
+                                    }
+                                  >
+                                    <option value="standard">{t('profile_tuning_studio.structural.stiffness_options.standard', 'Standard')}</option>
+                                    <option value="stiff">{t('profile_tuning_studio.structural.stiffness_options.stiff', 'Stiff / Heavy Duty')}</option>
+                                    <option value="flexible">{t('profile_tuning_studio.structural.stiffness_options.flexible', 'Flexible / Light')}</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div>
+                                <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                  {t('profile_tuning_studio.structural.structural_notes', 'Structural Notes')}
+                                </label>
+                                <textarea
+                                  rows={3}
+                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                  placeholder={t('profile_tuning_studio.structural.structural_notes_placeholder', 'e.g. Balcony door use only with reinforcement; wind zone C not recommended.')}
+                                  value={structuralConfig.structuralNotes}
+                                  onChange={(e) =>
+                                    setStructuralConfig((prev) => ({
+                                      ...prev,
+                                      structuralNotes: e.target.value,
+                                    }))
+                                  }
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex justify-end">
+                            <Button
+                              size="sm"
+                              onClick={saveStructuralConfig}
+                              disabled={savingStatus}
+                              className="bg-teal-500 hover:bg-teal-600 text-white"
+                            >
+                              {t('profile_tuning_studio.structural.save', 'Save Structural Rules')}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="hardware" className="mt-0 space-y-4">
+                      <Card className="bg-gray-900/80 border-gray-700 card-dark">
+                        <CardHeader>
+                          <CardTitle className="text-sm flex items-center gap-2">
+                            <Wrench className="h-4 w-4 text-amber-300" />
+                            {t('profile_tuning_studio.hardware.title', 'Hardware Families & Packs')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4 text-xs text-gray-200">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-3">
+                              <div>
+                                <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                  {t('profile_tuning_studio.hardware.primary_hinge', 'Primary Hinge Family')}
+                                </label>
+                                <input
+                                  type="text"
+                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                  placeholder={t('profile_tuning_studio.hardware.primary_hinge_placeholder', 'e.g. Roto NT, GU, generic')}
+                                  value={hardwareConfig.primaryHingeFamily}
+                                  onChange={(e) =>
+                                    setHardwareConfig((prev) => ({
+                                      ...prev,
+                                      primaryHingeFamily: e.target.value,
+                                    }))
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                  {t('profile_tuning_studio.hardware.primary_lock', 'Primary Lock Family')}
+                                </label>
+                                <input
+                                  type="text"
+                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                  placeholder={t('profile_tuning_studio.hardware.primary_lock_placeholder', 'e.g. multipoint A, sliding lock B')}
+                                  value={hardwareConfig.primaryLockFamily}
+                                  onChange={(e) =>
+                                    setHardwareConfig((prev) => ({
+                                      ...prev,
+                                      primaryLockFamily: e.target.value,
+                                    }))
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="space-y-3">
+                              <div>
+                                <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                  {t('profile_tuning_studio.hardware.preferred_handle', 'Preferred Handle Family')}
+                                </label>
+                                <input
+                                  type="text"
+                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                  placeholder={t('profile_tuning_studio.hardware.preferred_handle_placeholder', 'e.g. Alumil series X, generic lever')}
+                                  value={hardwareConfig.preferredHandleFamily}
+                                  onChange={(e) =>
+                                    setHardwareConfig((prev) => ({
+                                      ...prev,
+                                      preferredHandleFamily: e.target.value,
+                                    }))
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                  {t('profile_tuning_studio.hardware.hardware_pack_tags', 'Hardware Pack Tags (comma‑separated)')}
+                                </label>
+                                <input
+                                  type="text"
+                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                  placeholder={t('profile_tuning_studio.hardware.hardware_pack_placeholder', 'e.g. bathroom_turn, balcony_slider, jumbo_door')}
+                                  value={hardwareConfig.hardwarePackTagsText}
+                                  onChange={(e) =>
+                                    setHardwareConfig((prev) => ({
+                                      ...prev,
+                                      hardwarePackTagsText: e.target.value,
+                                    }))
+                                  }
+                                />
+                                <p className="mt-1 text-[11px] text-gray-400">
+                                  {t('profile_tuning_studio.hardware.hardware_pack_desc', 'These tags will later map to predefined hardware & machining packs (hinges, locks, screws) for this profile.')}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex justify-end">
+                            <Button
+                              size="sm"
+                              onClick={saveHardwareConfig}
+                              disabled={savingStatus}
+                              className="btn-primary"
+                            >
+                              {t('profile_tuning_studio.hardware.save', 'Save Hardware Presets')}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="cost-erp" className="mt-0 space-y-4">
+                      <Card className="bg-gray-900/80 border-gray-700 card-dark">
+                        <CardHeader>
+                          <CardTitle className="text-sm flex items-center gap-2">
+                            <Wallet className="h-4 w-4 text-lime-300" />
+                            {t('profile_tuning_studio.cost_erp.title', 'Cost Model & ERP Mapping')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4 text-xs text-gray-200">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-3">
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.cost_erp.aluminum_price', 'Aluminum Price (per kg)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.01"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={costConfig.aluminumPricePerKg}
+                                    onChange={(e) =>
+                                      setCostConfig((prev) => ({
+                                        ...prev,
+                                        aluminumPricePerKg: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.cost_erp.machining_cost', 'Machining Cost / Operation')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.01"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={costConfig.machiningCostPerOp}
+                                    onChange={(e) =>
+                                      setCostConfig((prev) => ({
+                                        ...prev,
+                                        machiningCostPerOp: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.cost_erp.coating_cost', 'Coating Cost / m²')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.01"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={costConfig.coatingCostPerSqm}
+                                    onChange={(e) =>
+                                      setCostConfig((prev) => ({
+                                        ...prev,
+                                        coatingCostPerSqm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.cost_erp.scrap_cost', 'Scrap Cost / kg')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.01"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={costConfig.scrapCostPerKg}
+                                    onChange={(e) =>
+                                      setCostConfig((prev) => ({
+                                        ...prev,
+                                        scrapCostPerKg: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                              </div>
+                              <p className="text-[11px] text-gray-400">
+                                {t('profile_tuning_studio.cost_erp.cost_desc', 'These fields let the optimizer and reports estimate true production cost per meter for this profile, including coatings and machining.')}
+                              </p>
+                            </div>
+                            <div className="space-y-3">
+                              <div>
+                                <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                  {t('profile_tuning_studio.cost_erp.erp_item_code', 'ERP Item Code')}
+                                </label>
+                                <input
+                                  type="text"
+                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                  placeholder={t('profile_tuning_studio.cost_erp.erp_item_placeholder', 'e.g. ERP-ALU-6001')}
+                                  value={costConfig.erpItemCode}
+                                  onChange={(e) =>
+                                    setCostConfig((prev) => ({
+                                      ...prev,
+                                      erpItemCode: e.target.value,
+                                    }))
+                                  }
+                                />
+                              </div>
+                              <div>
+                                <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                  {t('profile_tuning_studio.cost_erp.warehouse_location', 'Warehouse Location')}
+                                </label>
+                                <input
+                                  type="text"
+                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                  placeholder={t('profile_tuning_studio.cost_erp.warehouse_placeholder', 'e.g. Rack A3, Level 2')}
+                                  value={costConfig.warehouseLocation}
+                                  onChange={(e) =>
+                                    setCostConfig((prev) => ({
+                                      ...prev,
+                                      warehouseLocation: e.target.value,
+                                    }))
+                                  }
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex justify-end">
+                            <Button
+                              size="sm"
+                              onClick={saveCostConfig}
+                              disabled={savingStatus}
+                              className="bg-lime-500 hover:bg-lime-600 text-white"
+                            >
+                              {t('profile_tuning_studio.cost_erp.save', 'Save Cost & ERP')}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="glazing" className="mt-0 space-y-4">
+                      <Card className="bg-gray-900/80 border-gray-700 card-dark">
+                        <CardHeader>
+                          <CardTitle className="text-sm flex items-center gap-2">
+                            <Droplets className="h-4 w-4 text-blue-300" />
+                            {t('profile_tuning_studio.glazing.title', 'Glazing Thickness, Gaskets & Packages')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4 text-xs text-gray-200">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-3">
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.glazing.glazing_min', 'Glazing Min (mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={glazingConfig.glazingMinMm}
+                                    onChange={(e) =>
+                                      setGlazingConfig((prev) => ({
+                                        ...prev,
+                                        glazingMinMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div>
+                                  <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                    {t('profile_tuning_studio.glazing.glazing_max', 'Glazing Max (mm)')}
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.1"
+                                    className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                    value={glazingConfig.glazingMaxMm}
+                                    onChange={(e) =>
+                                      setGlazingConfig((prev) => ({
+                                        ...prev,
+                                        glazingMaxMm: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                              </div>
+                              <p className="text-[11px] text-gray-400">
+                                {t('profile_tuning_studio.glazing.glazing_limits_desc', 'These limits are used to validate glass packages and prevent impossible glazing combinations for this profile (e.g. too thick IGU for the bead).')}
+                              </p>
+                            </div>
+                            <div className="space-y-3">
+                              <div>
+                                <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                  {t('profile_tuning_studio.glazing.gasket_compression', 'Target Gasket Compression (mm)')}
+                                </label>
+                                <input
+                                  type="number"
+                                  step="0.1"
+                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                  value={glazingConfig.gasketCompressionTargetMm}
+                                  onChange={(e) =>
+                                    setGlazingConfig((prev) => ({
+                                      ...prev,
+                                      gasketCompressionTargetMm: e.target.value,
+                                    }))
+                                  }
+                                />
+                                <p className="mt-1 text-[11px] text-gray-400">
+                                  {t('profile_tuning_studio.glazing.gasket_compression_desc', 'Typical values are 1.5–2.0mm for good sealing without crushing the gasket.')}
+                                </p>
+                              </div>
+                              <div>
+                                <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                  {t('profile_tuning_studio.glazing.allowed_glass_packages', 'Allowed Glass Packages (comma‑separated)')}
+                                </label>
+                                <input
+                                  type="text"
+                                  className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                  placeholder="e.g. 4-16-4, 6-16-6, laminated 33.1, single 6"
+                                  value={glazingConfig.allowedGlassPackagesText}
+                                  onChange={(e) =>
+                                    setGlazingConfig((prev) => ({
+                                      ...prev,
+                                      allowedGlassPackagesText: e.target.value,
+                                    }))
+                                  }
+                                />
+                                <p className="mt-1 text-[11px] text-gray-400">
+                                  {t('profile_tuning_studio.glazing.allowed_glass_desc', 'Used by the design engine to propose only compatible glass structures for this profile.')}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex justify-end">
+                            <Button
+                              size="sm"
+                              onClick={saveGlazingConfig}
+                              disabled={savingStatus}
+                              className="bg-blue-500 hover:bg-blue-600 text-white"
+                            >
+                              {t('profile_tuning_studio.glazing.save', 'Save Glazing Rules')}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="geometry" className="mt-0 space-y-4">
+                      {activeTab === "geometry" && showImportBanner && (
+                        <div className="mb-4 p-4 bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/30 rounded-xl">
+                          <div className="flex items-center gap-3">
+                            <AlertCircle className="w-5 h-5 flex-shrink-0 status-valid" />
+                            <div className="flex-1">
+                              <h4 className="typography-h4 text-green-400">{t('profile_tuning_studio.geometry.import_banner.title', 'SmartScan Import Ready')}</h4>
+                              <p className="text-sm text-zinc-400 mt-1">
+                                {t('profile_tuning_studio.geometry.import_banner.message', 'Your scanned profile has been imported. Review the geometry below and adjust as needed. The vector has been saved as the profile\'s geometry configuration.')}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => setShowImportBanner(false)}
+                              className="text-zinc-500 hover:text-zinc-300 p-1"
+                              aria-label="Dismiss import banner"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <Card className="bg-gray-900/80 border-gray-700 card-dark">
+                        <CardHeader>
+                          <CardTitle className="text-sm flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-purple-300" />
+                            {t('profile_tuning_studio.geometry.title', 'Geometry & Shape')}
+                          </CardTitle>
+                          <CardDescription className="text-xs text-gray-400">
+                            {t('profile_tuning_studio.geometry.description', 'Define archetype and key dimensions for procedural thumbnails (no CAD required).')}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4 text-xs text-gray-200">
+                          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                            <div className="text-[11px] text-gray-400">
+                              {t('profile_tuning_studio.geometry.scan_prompt', 'Have a catalog photo? Run SmartScan to ingest the profile outline and dimensions.')}
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={startScan}
+                                disabled={savingStatus}
+                                className="bg-purple-500 hover:bg-purple-600 text-white"
+                              >
+                                {t('profile_tuning_studio.geometry.scan_button', 'Scan from Catalog Drawing')}
+                              </Button>
+                              {isScanning && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => setIsScanning(false)}
+                                  className="text-gray-200"
+                                >
+                                  {t('profile_tuning_studio.geometry.cancel', 'Cancel')}
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+
+                          {isScanning && (
+                            <div className="border border-gray-700 rounded-lg p-3 bg-gray-950/80">
+                              <ProfileScannerUploader
+                                authToken={authToken}
+                                onScanSuccess={handleScanSuccess}
+                              />
+                            </div>
+                          )}
+
+                          {scanResult && (
+                            <div className="border border-gray-800 rounded-lg p-3 bg-gray-950/60">
+                              <div className="flex flex-col md:flex-row gap-4">
+                                <div className="w-32 h-32 border border-gray-700 rounded bg-gray-900 p-2">
+                                  <svg
+                                    viewBox={`${scanResult.bbox?.x || 0} ${scanResult.bbox?.y || 0} ${scanResult.bbox?.width || 100} ${scanResult.bbox?.height || 100}`}
+                                    preserveAspectRatio="xMidYMid meet"
+                                    className="w-full h-full"
+                                  >
+                                    <path d={scanResult.svgPath} fill="currentColor" />
+                                  </svg>
+                                </div>
+                                <div className="text-[11px] space-y-1">
+                                  <div className="text-gray-300 font-semibold">Last scan</div>
+                                  <div>Width: {scanResult.dimensions.width_px} px</div>
+                                  <div>Height: {scanResult.dimensions.height_px} px</div>
+                                  <div>Vectorizer: {scanResult.vectorizer}</div>
+                                  {scanResult.storage?.svg_url && (
+                                    <div>
+                                      SVG:{" "}
+                                      <a
+                                        href={scanResult.storage.svg_url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-blue-300 underline"
+                                      >
+                                        View asset
+                                      </a>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div className="md:col-span-3">
+                              <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                {t('profile_tuning_studio.geometry.archetype', 'Archetype')}
+                              </label>
+                              <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                                {['hollow_box', 'open_c', 'thermal_break', 'z_shape', 't_shape'].map((type) => (
+                                  <button
+                                    key={type}
+                                    type="button"
+                                    onClick={() => setGeometryConfig((prev) => ({ ...prev, archetype: type }))}
+                                    className={`p-2 rounded border text-center text-xs transition-all ${geometryConfig.archetype === type
+                                      ? 'bg-purple-500/20 border-purple-500 text-purple-200'
+                                      : 'bg-gray-950 border-gray-800 text-gray-400 hover:border-gray-600'
+                                      }`}
+                                  >
+                                    <span>{t(`profile_tuning_studio.geometry.archetype_options.${type}`, type.replace('_', ' '))}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                {t('profile_tuning_studio.geometry.wall_thickness', 'Wall Thickness (mm)')}
+                              </label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                value={geometryConfig.wallThicknessMm}
+                                onChange={(e) =>
+                                  setGeometryConfig((prev) => ({
+                                    ...prev,
+                                    wallThicknessMm: parseFloat(e.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div>
+                              <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                {t('profile_tuning_studio.geometry.glazing_pocket_depth', 'Glazing Pocket Depth (mm)')}
+                              </label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                value={geometryConfig.glazingPocketDepthMm}
+                                onChange={(e) =>
+                                  setGeometryConfig((prev) => ({
+                                    ...prev,
+                                    glazingPocketDepthMm: parseFloat(e.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div>
+                              <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                {t('profile_tuning_studio.geometry.glazing_pocket_width', 'Glazing Pocket Width (mm)')}
+                              </label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                value={geometryConfig.glazingPocketWidthMm}
+                                onChange={(e) =>
+                                  setGeometryConfig((prev) => ({
+                                    ...prev,
+                                    glazingPocketWidthMm: parseFloat(e.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div>
+                              <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                {t('profile_tuning_studio.geometry.thermal_break_width', 'Thermal Break Width (mm)')}
+                              </label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                value={geometryConfig.thermalBreakWidthMm}
+                                onChange={(e) =>
+                                  setGeometryConfig((prev) => ({
+                                    ...prev,
+                                    thermalBreakWidthMm: parseFloat(e.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div>
+                              <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                {t('profile_tuning_studio.geometry.flange_width', 'Flange Width (mm)')}
+                              </label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                value={geometryConfig.flangeWidthMm}
+                                onChange={(e) =>
+                                  setGeometryConfig((prev) => ({
+                                    ...prev,
+                                    flangeWidthMm: parseFloat(e.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+
+                            <div>
+                              <label className="typography-label block mb-1 text-[11px] text-gray-300">
+                                {t('profile_tuning_studio.geometry.web_offset', 'Web Offset (mm)')}
+                              </label>
+                              <input
+                                type="number"
+                                step="0.1"
+                                className="w-full rounded border border-gray-700 bg-gray-950 px-2 py-1 text-xs"
+                                value={geometryConfig.webOffsetMm}
+                                onChange={(e) =>
+                                  setGeometryConfig((prev) => ({
+                                    ...prev,
+                                    webOffsetMm: parseFloat(e.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
+                            <div className="md:col-span-2">
+                              <h4 className="typography-h4 typography-label text-gray-300 mb-1">{t('profile_tuning_studio.geometry.thumbnail_preview', 'Thumbnail Preview & Editor')}</h4>
+                              <div className="border border-gray-700 rounded-lg p-3 bg-gray-950 relative overflow-hidden" style={{ minHeight: '300px' }}>
+                                {/* SVG Preview from DXF if available */}
+                                {importedProfileData?.svgPreview && (
+                                  <div
+                                    className="absolute inset-0 flex items-center justify-center bg-white/5 p-4 cursor-move"
+                                    style={{
+                                      transform: `translate(${geometryConfig.thumbnailOffsetX || 0}px, ${geometryConfig.thumbnailOffsetY || 0}px)`,
+                                      transition: 'transform 0.1s ease-out'
+                                    }}
+                                    onMouseDown={(e) => {
+                                      const startX = e.clientX - (geometryConfig.thumbnailOffsetX || 0);
+                                      const startY = e.clientY - (geometryConfig.thumbnailOffsetY || 0);
+                                      const handleMove = (moveEvent: MouseEvent) => {
+                                        setGeometryConfig(prev => ({
+                                          ...prev,
+                                          thumbnailOffsetX: moveEvent.clientX - startX,
+                                          thumbnailOffsetY: moveEvent.clientY - startY,
+                                        }));
+                                      };
+                                      const handleUp = () => {
+                                        document.removeEventListener('mousemove', handleMove);
+                                        document.removeEventListener('mouseup', handleUp);
+                                      };
+                                      document.addEventListener('mousemove', handleMove);
+                                      document.addEventListener('mouseup', handleUp);
+                                    }}
+                                  >
+                                    <div
+                                      className="max-w-full max-h-full"
+                                      dangerouslySetInnerHTML={{ __html: importedProfileData.svgPreview }}
+                                    />
+                                  </div>
+                                )}
+
+                                {/* Fallback to ProfileIconGenerator if no SVG */}
+                                {!importedProfileData?.svgPreview && (
+                                  <div className="flex flex-col items-center justify-center h-full">
+                                    <ProfileIconGenerator
+                                      ref={profileIconRef}
+                                      widthMm={profile.width}
+                                      heightMm={profile.height || profile.width}
+                                      wallThicknessMm={geometryConfig.wallThicknessMm}
+                                      glazingPocketDepthMm={geometryConfig.glazingPocketDepthMm}
+                                      glazingPocketWidthMm={geometryConfig.glazingPocketWidthMm}
+                                      flangeWidthMm={geometryConfig.flangeWidthMm}
+                                      className="w-48 h-48"
+                                    />
+                                  </div>
+                                )}
+
+                                <p className="text-[10px] text-gray-500 mt-2 text-center absolute bottom-2 left-0 right-0">
+                                  {importedProfileData?.svgPreview
+                                    ? 'Drag to position thumbnail. Click "Save Geometry" to capture.'
+                                    : t('profile_tuning_studio.geometry.preview_updates', 'Preview updates with geometry settings.')}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="md:col-span-1">
+                              <h4 className="typography-h4 typography-label text-gray-300 mb-1">Thumbnail Controls</h4>
+                              <div className="space-y-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setGeometryConfig(prev => ({ ...prev, thumbnailOffsetX: 0, thumbnailOffsetY: 0 }))}
+                                  className="w-full text-xs"
+                                >
+                                  Reset Position
+                                </Button>
+                                <p className="text-[10px] text-gray-500">
+                                  Position: X: {geometryConfig.thumbnailOffsetX || 0}, Y: {geometryConfig.thumbnailOffsetY || 0}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-end">
+                            <Button
+                              size="sm"
+                              onClick={async () => {
+                                try {
+                                  setSavingStatus(true);
+
+                                  // Capture thumbnail from SVG preview if available, otherwise from ProfileIconGenerator
+                                  let thumbnailUrl: string | null = null;
+                                  if (importedProfileData?.svgPreview) {
+                                    // Capture from SVG preview with current position
+                                    const svgElement = document.querySelector('.border-gray-700 svg') as SVGElement;
+                                    if (svgElement) {
+                                      const svgData = new XMLSerializer().serializeToString(svgElement);
+                                      const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
+                                      const canvas = document.createElement('canvas');
+                                      const ctx = canvas.getContext('2d');
+                                      const img = new Image();
+                                      const url = URL.createObjectURL(svgBlob);
+
+                                      await new Promise((resolve, reject) => {
+                                        img.onload = () => {
+                                          canvas.width = 200;
+                                          canvas.height = 200;
+                                          ctx?.drawImage(img, 0, 0, 200, 200);
+                                          canvas.toBlob((blob) => {
+                                            if (blob) {
+                                              const fileName = `${userId}/${profile.id}-${Date.now()}.png`;
+                                              (supabase as any).storage
+                                                .from('profile-thumbnails')
+                                                .upload(fileName, blob, { cacheControl: '3600', upsert: true })
+                                                .then(({ data: _urlData }: any) => {
+                                                  const { data } = (supabase as any).storage.from('profile-thumbnails').getPublicUrl(fileName);
+                                                  thumbnailUrl = data.publicUrl;
+                                                  resolve(null);
+                                                })
+                                                .catch(reject);
+                                            } else {
+                                              resolve(null);
+                                            }
+                                          }, 'image/png');
+                                          URL.revokeObjectURL(url);
+                                        };
+                                        img.onerror = reject;
+                                        img.src = url;
+                                      });
+                                    }
+                                  } else {
+                                    // Fallback to ProfileIconGenerator capture
+                                    thumbnailUrl = await uploadThumbnailFromCapture();
+                                  }
+
+                                  const nextSpecs = {
+                                    ...(profile.specifications || {}),
+                                    geometryConfig,
+                                  };
+
+                                  const { error } = await (supabase as any)
+                                    .from('fabricator_profiles')
+                                    .update({
+                                      specifications: nextSpecs,
+                                      thumbnail_url: thumbnailUrl || (profile as any).thumbnail_url || null,
+                                    })
+                                    .eq('id', profile.id)
+                                    .eq('user_id', userId);
+                                  if (error) throw error;
+
+                                  if (thumbnailUrl) {
+                                    (profile as any).thumbnail_url = thumbnailUrl;
+                                    (profile as any).thumbnailUrl = thumbnailUrl;
+                                  }
+
+                                  toast.success('Geometry saved and thumbnail updated');
+                                  setIsDirty(false);
+                                  onProfileUpdated?.();
+                                } catch (err) {
+                                  const error = err instanceof Error ? err : new Error(String(err));
+                                  trackError('ProfileTuningStudio', 'save_geometry_config', error.message);
+                                  toast.error('Failed to save geometry/thumbnail');
+                                } finally {
+                                  setSavingStatus(false);
+                                }
+                              }}
+                              disabled={savingStatus}
+                              className="bg-purple-500 hover:bg-purple-600 text-white"
+                            >
+                              {t('profile_tuning_studio.geometry.save', 'Save Geometry')}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="smartscan" className="mt-0 space-y-4">
+                      {/* DXF Direct Import - Synchronous, no Celery required - SHOW FIRST */}
+                      {/* Always visible - no conditions */}
+                      <Card className="bg-green-900/20 border-green-500/50 shadow-premium border-2">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-base flex items-center gap-2 text-green-400 font-semibold">
+                            <Ruler className="h-5 w-5 text-green-400" />
+                            {t('profile_tuning_studio.dxf_import.title', 'DXF/DWG Direct Import')}
+                            <Badge variant="outline" className="ml-2 border-green-500/50 text-green-400 text-xs bg-green-900/30">
+                              Recommended for DXF
+                            </Badge>
+                          </CardTitle>
+                          <CardDescription className="text-sm text-gray-300 mt-2">
+                            {t('profile_tuning_studio.dxf_import.description', 'Upload DXF or DWG files for instant parsing. Extracts dimensions and generates SVG preview immediately. No Celery/Redis required.')}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <DXFProfileImporter
+                            onImported={(profiles: ImportedProfile[]) => {
+                              if (profiles.length > 0) {
+                                const firstProfile = profiles[0];
+                                setSelectedProfileId(firstProfile.id);
+                                setImportedProfileData(firstProfile);
+
+                                const dimsText = firstProfile.widthMm && firstProfile.heightMm
+                                  ? `${firstProfile.widthMm} × ${firstProfile.heightMm} mm`
+                                  : 'dimensions pending';
+                                toast.success(
+                                  t('profile_tuning_studio.dxf_import.success',
+                                    `Imported ${profiles.length} profile(s). ${dimsText}`,
+                                    { count: profiles.length, width: firstProfile.widthMm, height: firstProfile.heightMm }
+                                  )
+                                );
+
+                                // Auto-configuration is handled by DXFProfileImporter component
+                                // No additional action needed here
+                              }
+                            }}
+                            selectedProfileId={selectedProfileId}
+                            onSelectProfile={(id) => {
+                              setSelectedProfileId(id);
+                            }}
+                            userId={userId}
+                            defaultRole={mapProfileRoleToDXFRole(profile.profileRole)}
+                            defaultWindowType={mapSystemTypeToWindowType(profile.systemType)}
+                            defaultSystemPack={profile.systemBrand}
+                            enableAutoConfig={true}
+                            onProfileSaved={(_profileId) => {
+                              toast.success(t('profile_tuning_studio.dxf_import.saved', 'Profile saved to library with auto-configuration'));
+                              onProfileUpdated?.();
+                            }}
+                          />
+                        </CardContent>
+                      </Card>
+
+                      {/* SmartScan - For images/PDFs - Async, requires Celery */}
+                      <Card className="bg-slate-900/60 backdrop-blur-sm border-amber-500/20 shadow-lg shadow-amber-500/5">
+                        <CardHeader>
+                          <CardTitle className="text-sm flex items-center gap-2 text-white font-semibold tracking-wide uppercase">
+                            <Scan className="h-4 w-4 text-amber-400" />
+                            {t('profile_tuning_studio.smartscan.title', 'SmartScan (Images & PDFs)')}
+                            <Badge variant="outline" className="ml-2 border-amber-500/50 text-amber-400 text-xs bg-amber-500/10">
+                              AI-Powered
+                            </Badge>
+                          </CardTitle>
+                          <CardDescription className="text-xs text-zinc-400 mt-2">
+                            {t('profile_tuning_studio.smartscan.description', 'Upload catalog images or PDFs. SmartScan will vectorize and extract dimensions automatically. Requires async processing.')}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <SmartScanUploader />
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="machining" className="mt-0">
+                      <MachiningZoneEditor
+                        profiles={[{
+                          id: profile.id,
+                          fileName: profile.name,
+                          name: profile.name,
+                          widthMm: profile.width,
+                          heightMm: profile.height || profile.width,
+                        }]}
+                        selectedProfileId={profile.id}
+                        onZonesChange={setZones}
+                      />
+                    </TabsContent>
+
+                    <TabsContent value="summary" className="mt-0 space-y-4">
+                      <Card className="bg-gray-900/80 border-gray-700 card-dark">
+                        <CardHeader>
+                          <CardTitle className="text-sm flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 status-valid" />
+                            {t('profile_tuning_studio.summary.title', 'Tuning Status & Confidence')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-2 text-xs text-gray-300">
+                          <p>
+                            {t('profile_tuning_studio.summary.current_status', 'Current status')}: <span className="font-semibold">{tuningStatus}</span>
+                          </p>
+                          <p>
+                            {t('profile_tuning_studio.summary.description', 'This panel will surface calibration analytics and test results (cut deviations, confidence scores) as they accumulate over real jobs.')}
+                          </p>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="bg-gray-900/80 border-gray-700 card-dark">
+                        <CardHeader>
+                          <CardTitle className="text-sm flex items-center gap-2">
+                            <Activity className="h-4 w-4 text-sky-300" />
+                            {t('profile_tuning_studio.summary.qa_tolerances', 'QA Tolerances')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3 text-xs text-gray-300">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                              <span className="block text-[11px] text-gray-400 mb-1">
+                                {t('profile_tuning_studio.summary.cut_tolerance', 'Cut Tolerance (±mm)')}
+                              </span>
+                              <span className="font-semibold">
+                                {qaConfig.cutToleranceMm || '—'}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="block text-[11px] text-gray-400 mb-1">
+                                {t('profile_tuning_studio.summary.assembly_tolerance', 'Assembly Tolerance (±mm)')}
+                              </span>
+                              <span className="font-semibold">
+                                {qaConfig.assemblyToleranceMm || '—'}
+                              </span>
+                            </div>
+                            <div>
+                              <span className="block text-[11px] text-gray-400 mb-1">
+                                {t('profile_tuning_studio.summary.qa_notes', 'Notes')}
+                              </span>
+                              <span className="font-semibold">
+                                {qaConfig.qaNotes || t('profile_tuning_studio.summary.no_qa_notes', 'No QA notes yet')}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex justify-end">
+                            <Button
+                              size="sm"
+                              onClick={saveQaConfig}
+                              disabled={savingStatus}
+                              className="bg-sky-500 hover:bg-sky-600 text-white"
+                            >
+                              {t('profile_tuning_studio.summary.edit_qa', 'Edit & Save QA Tolerances')}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                  </div>
+                </Tabs>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Prestige Unsaved Changes Dialog - Only for untuned packs */}
+      <UnsavedChangesDialog
+        open={showUnsavedDialog}
+        onOpenChange={setShowUnsavedDialog}
+        onConfirm={handleLeaveWithoutSaving}
+        onSave={handleSaveAndBack}
+        showSaveOption={true}
+        isSaving={savingStatus}
+        context={`Profile Tuning Studio - ${profile.name}`}
+        title="⚡ Save Your Tuning Progress"
+        description="You've made important tuning adjustments to this profile. Would you like to save your work before returning to the system pack?"
+      />
+    </div>
+  );
+};
+
+ProfileTuningStudioComponent.displayName = 'ProfileTuningStudio';
+
+// ✅ HARDENING: Memoize component for performance
+const ProfileTuningStudioMemo = memo(ProfileTuningStudioComponent);
+
+// ✅ HARDENING: Export with error boundary for production
+export const ProfileTuningStudio: React.FC<ProfileTuningStudioProps> = (props) => (
+  <ErrorBoundary level="component">
+    <ProfileTuningStudioMemo {...props} />
+  </ErrorBoundary>
+);
+
+ProfileTuningStudio.displayName = 'ProfileTuningStudio';
+
+export default ProfileTuningStudio;
+
+
+

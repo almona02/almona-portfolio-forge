@@ -181,7 +181,7 @@ export const Register = () => {
                     >
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-3">
-                          <Label htmlFor="name" className="text-almona-light">Full Name</Label>
+                          <Label htmlFor="name" className="typography-label text-almona-light">Full Name</Label>
                           <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70" />
                             <Input 
@@ -202,7 +202,7 @@ export const Register = () => {
                           )}
                         </div>
                         <div className="space-y-3">
-                          <Label htmlFor="email" className="text-almona-light">Email Address</Label>
+                          <Label htmlFor="email" className="typography-label text-almona-light">Email Address</Label>
                           <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70" />
                             <Input 
@@ -226,7 +226,7 @@ export const Register = () => {
                       </div>
 
                       <div className="space-y-3">
-                        <Label htmlFor="phone" className="text-almona-light">Phone Number</Label>
+                        <Label htmlFor="phone" className="typography-label text-almona-light">Phone Number</Label>
                         <div className="relative">
                           <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70" />
                           <Input 
@@ -273,7 +273,7 @@ export const Register = () => {
                     >
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-3">
-                          <Label htmlFor="password" className="text-almona-light">Password</Label>
+                          <Label htmlFor="password" className="typography-label text-almona-light">Password</Label>
                           <div className="relative">
                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70" />
                             <Input 
@@ -295,7 +295,7 @@ export const Register = () => {
                           )}
                         </div>
                         <div className="space-y-3">
-                          <Label htmlFor="confirmPassword" className="text-almona-light">Confirm Password</Label>
+                          <Label htmlFor="confirmPassword" className="typography-label text-almona-light">Confirm Password</Label>
                           <div className="relative">
                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70" />
                             <Input 
@@ -319,7 +319,7 @@ export const Register = () => {
                       </div>
 
                       <div className="space-y-3">
-                        <Label htmlFor="company" className="text-almona-light">Company Name (Optional)</Label>
+                        <Label htmlFor="company" className="typography-label text-almona-light">Company Name (Optional)</Label>
                         <div className="relative">
                           <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-almona-light/70" />
                           <Input 
@@ -362,7 +362,7 @@ export const Register = () => {
                     >
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-3">
-                          <Label htmlFor="workshopLocation" className="text-almona-light">Workshop Location</Label>
+                          <Label htmlFor="workshopLocation" className="typography-label text-almona-light">Workshop Location</Label>
                           <motion.div 
                             className="relative"
                             animate={selectedLocation ? { scale: [1, 1.02, 1] } : {}}
@@ -460,7 +460,7 @@ export const Register = () => {
                       </div>
 
                       <div className="space-y-3">
-                        <Label className="text-almona-light">Industry Sector</Label>
+                        <Label className="typography-label text-almona-light">Industry Sector</Label>
                         <div className="flex space-x-4 justify-center pt-2">
                           <motion.button 
                             type="button" 

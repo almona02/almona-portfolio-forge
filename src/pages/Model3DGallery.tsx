@@ -13,7 +13,7 @@ import {
     Settings,
     Star
 } from 'lucide-react';
-import React, { Suspense, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 // Lazy load heavy 3D components to reduce initial bundle size (~2.2MB saved)
 const EnhancedModel3DDialog = React.lazy(() => import('@/components/3d-model/EnhancedModel3DDialog').then(module => ({ default: module.EnhancedModel3DDialog })));
@@ -30,12 +30,13 @@ export default function Model3DGalleryPage() {
   const swiftxrRef = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
 
-  const handleModelSelect = (model: any) => {
+  // Memoize handlers to prevent unnecessary re-renders
+  const handleModelSelect = useCallback((model: any) => {
     setSelectedModel(model);
     setShow3DDialog(true);
-  };
+  }, []);
 
-  const handleModelDownload = (model: any) => {
+  const handleModelDownload = useCallback((model: any) => {
     // Simulate download
     const link = document.createElement('a');
     link.href = model.modelPath;
@@ -48,9 +49,9 @@ export default function Model3DGalleryPage() {
       title: "Download Started",
       description: `Downloading ${model.name}...`,
     });
-  };
+  }, [toast]);
 
-  const handleModelShare = (model: any) => {
+  const handleModelShare = useCallback((model: any) => {
     const shareData = {
       title: `${model.name} - 3D Model`,
       text: `Check out this 3D model of ${model.name}`,
@@ -66,19 +67,31 @@ export default function Model3DGalleryPage() {
         description: "Model link copied to clipboard",
       });
     }
-  };
+  }, [toast]);
 
-  const handleMeasurementAdd = (measurement: any) => {
+  const handleMeasurementAdd = useCallback((measurement: any) => {
     console.log('Measurement added:', measurement);
-  };
+  }, []);
 
-  const handleMeasurementRemove = (measurementId: string) => {
+  const handleMeasurementRemove = useCallback((measurementId: string) => {
     console.log('Measurement removed:', measurementId);
-  };
+  }, []);
 
-  const handleMeasurementExport = (measurements: any[]) => {
+  const handleMeasurementExport = useCallback((measurements: any[]) => {
     console.log('Measurements exported:', measurements);
-  };
+  }, []);
+
+  const handleClose3DDialog = useCallback(() => {
+    setShow3DDialog(false);
+    setSelectedModel(null);
+  }, []);
+
+  const handleToggleMeasurementTool = useCallback(() => {
+    setShowMeasurementTool(prev => !prev);
+  }, []);
+
+  // Memoize featured models count
+  const featuredCount = useMemo(() => modelsData.filter(m => m.featured).length, []);
 
   // Center the SwiftXR section when navigating via hash from CTAs
   useEffect(() => {
@@ -100,8 +113,8 @@ export default function Model3DGalleryPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+          <h1 className="typography-h1 md:text-5xl mb-4">
+            <span className="bg-gradient-to-r from-amber-500 to-red-500 bg-clip-text text-transparent">
               3D Model Gallery
             </span>
           </h1>
@@ -117,12 +130,12 @@ export default function Model3DGalleryPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 hover:border-orange-400/50 transition-all duration-300">
+              <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 hover:border-amber-400/50 transition-all duration-300">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Eye className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Interactive 3D Viewing</h3>
+                  <h3 className="typography-h3 text-lg text-white mb-2">Interactive 3D Viewing</h3>
                   <p className="text-gray-400 text-sm">
                     Rotate, zoom, and explore models with smooth controls and realistic lighting
                   </p>
@@ -135,12 +148,12 @@ export default function Model3DGalleryPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 hover:border-orange-400/50 transition-all duration-300">
+              <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 hover:border-amber-400/50 transition-all duration-300">
                 <CardContent className="p-6 text-center">
-                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Ruler className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Precision Measurements</h3>
+                  <h3 className="typography-h3 text-lg text-white mb-2">Precision Measurements</h3>
                   <p className="text-gray-400 text-sm">
                     Measure distances, angles, and dimensions with professional-grade tools
                   </p>
@@ -153,12 +166,12 @@ export default function Model3DGalleryPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 hover:border-orange-400/50 transition-all duration-300">
+              <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700 hover:border-amber-400/50 transition-all duration-300">
                 <CardContent className="p-6 text-center">
                   <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Move3D className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">AR Integration</h3>
+                  <h3 className="typography-h3 text-lg text-white mb-2">AR Integration</h3>
                   <p className="text-gray-400 text-sm">
                     View models in augmented reality on supported devices
                   </p>
@@ -176,9 +189,9 @@ export default function Model3DGalleryPage() {
           transition={{ delay: 0.5 }}
         >
           <div className="flex items-center gap-4">
-            <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0">
+            <Badge className="bg-gradient-to-r from-amber-500 to-red-500 text-white border-0">
               <Star className="w-3 h-3 mr-1" />
-              {modelsData.filter(m => m.featured).length} Featured
+              {featuredCount} Featured
             </Badge>
             <Badge variant="secondary" className="bg-gray-800 text-gray-300">
               {modelsData.length} 3D Models Available
@@ -189,7 +202,7 @@ export default function Model3DGalleryPage() {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => setShowMeasurementTool(!showMeasurementTool)}
+              onClick={handleToggleMeasurementTool}
               className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white"
             >
               <Ruler className="w-4 h-4 mr-2" />
@@ -228,17 +241,14 @@ export default function Model3DGalleryPage() {
           <Suspense fallback={
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
                 <p className="text-white">Loading 3D Engine...</p>
               </div>
             </div>
           }>
             <EnhancedModel3DDialog
               isOpen={show3DDialog}
-              onClose={() => {
-                setShow3DDialog(false);
-                setSelectedModel(null);
-              }}
+              onClose={handleClose3DDialog}
               machineName={selectedModel.name}
               modelPath={selectedModel.modelPath}
               machineData={{
@@ -254,15 +264,15 @@ export default function Model3DGalleryPage() {
         {/* Measurement Tool */}
         <ModelMeasurementTool
           isVisible={showMeasurementTool}
-          onToggle={() => setShowMeasurementTool(!showMeasurementTool)}
+          onToggle={handleToggleMeasurementTool}
           onMeasurementAdd={handleMeasurementAdd}
           onMeasurementRemove={handleMeasurementRemove}
           onMeasurementExport={handleMeasurementExport}
-          modelDimensions={selectedModel?.dimensions ? {
+          modelDimensions={useMemo(() => selectedModel?.dimensions ? {
             length: parseFloat(selectedModel.dimensions.length),
             width: parseFloat(selectedModel.dimensions.width),
             height: parseFloat(selectedModel.dimensions.height)
-          } : undefined}
+          } : undefined, [selectedModel])}
           unit={measurementUnit}
           onUnitChange={setMeasurementUnit}
           onAutoRotateToggle={setAutoRotateEnabled}
@@ -282,7 +292,7 @@ export default function Model3DGalleryPage() {
           <Card className="bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
-                <Move3D className="w-5 h-5 text-orange-500" />
+                <Move3D className="w-5 h-5 text-amber-500" />
                 Yilmaz AR
               </CardTitle>
             </CardHeader>

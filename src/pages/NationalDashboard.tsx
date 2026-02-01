@@ -39,40 +39,40 @@ const NationalDashboard: React.FC = () => {
         <div className="relative overflow-hidden border-b border-slate-800">
           {/* Background decorative elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
+            <div className="btn-primary" />
+            <div className="btn-primary" />
           </div>
 
           <div className="container mx-auto px-4 py-12 relative z-10">
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
               <div>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="p-3 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-lg shadow-orange-500/20">
+                  <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-500 rounded-xl shadow-lg shadow-amber-500/20">
                     <Target className="h-8 w-8 text-white" />
                   </div>
                   <div>
-                    <span className="inline-block px-3 py-1 bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-semibold rounded-full mb-1">
+                    <span className="btn-primary">
                       🇪🇬 GOVERNMENT PORTAL
                     </span>
-                    <h1 className="text-3xl md:text-4xl font-bold text-white">
+                    <h1 className="typography-h1 md:text-4xl text-white">
                       National Service Dashboard
                     </h1>
                   </div>
                 </div>
                 <p className="text-slate-400 text-lg max-w-2xl">
-                  Strategic overview of Almona's contribution to <span className="text-orange-400 font-semibold">Egypt Vision 2030</span> and national industrial digitization initiatives.
+                  Strategic overview of Almona's contribution to <span className="text-amber-400 font-semibold">Egypt Vision 2030</span> and national industrial digitization initiatives.
                 </p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button 
                   variant="outline" 
-                  className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
+                  className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white card-dark"
                 >
                   <Calendar className="h-4 w-4 mr-2" />
                   Q4 2024 Report
                 </Button>
-                <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg shadow-orange-500/25">
+                <Button className="btn-primary-gradient">
                   <Download className="h-4 w-4 mr-2" />
                   Export PDF
                 </Button>
@@ -89,10 +89,10 @@ const NationalDashboard: React.FC = () => {
               ].map((stat, index) => (
                 <div 
                   key={index}
-                  className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 hover:border-orange-500/30 transition-colors"
+                  className="border border-slate-700/50 rounded-xl p-4 hover:border-amber- 500/30 transition-colors card-premium"
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <stat.icon className="h-4 w-4 text-orange-400" />
+                    <stat.icon className="h-4 w-4 text-amber-400" />
                     <span className="text-xs text-slate-500 uppercase tracking-wide">{stat.label}</span>
                   </div>
                   <div className="text-2xl font-bold text-white">{stat.value}</div>
@@ -106,28 +106,28 @@ const NationalDashboard: React.FC = () => {
         {/* Main Dashboard Content */}
         <div className="container mx-auto px-4 py-8">
           <Tabs defaultValue="overview" className="space-y-8">
-            <TabsList className="bg-slate-800/50 border border-slate-700/50 p-1">
+            <TabsList className="bg-slate-800/50 border border-slate-700 /50 p-1 card-dark">
               <TabsTrigger 
                 value="overview" 
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-amber-500 data-[state=active]:text-white"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-500 data-[state=active]:text-white"
               >
                 Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="impact"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-amber-500 data-[state=active]:text-white"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-500 data-[state=active]:text-white"
               >
                 National Impact
               </TabsTrigger>
               <TabsTrigger 
                 value="compliance"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-amber-500 data-[state=active]:text-white"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-500 data-[state=active]:text-white"
               >
                 Compliance
               </TabsTrigger>
               <TabsTrigger 
                 value="pledge"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-amber-500 data-[state=active]:text-white"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-500 data-[state=active]:text-white"
               >
                 Our Pledge
               </TabsTrigger>
@@ -172,9 +172,9 @@ const NationalDashboard: React.FC = () => {
                 <BuildingCodeValidator />
                 
                 {/* Compliance Stats */}
-                <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-orange-400" />
+                <div className="bg-slate-800/50 border border-slate-700 /50 rounded-xl p-6 card-dark">
+                  <h3 className="typography-h3 text-white mb-4 flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-amber-400" />
                     Compliance Summary
                   </h3>
                   <div className="space-y-4">
@@ -209,7 +209,7 @@ const NationalDashboard: React.FC = () => {
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-500">
               <div className="flex items-center gap-2">
                 <span>Aligned with</span>
-                <span className="text-orange-400 font-semibold">Egypt Vision 2030</span>
+                <span className="text-amber-400 font-semibold">Egypt Vision 2030</span>
                 <span>•</span>
                 <span className="text-amber-400 font-semibold">Digital Egypt Strategy</span>
               </div>

@@ -83,7 +83,7 @@ export const QuoteRequestPage: React.FC = () => {
       <main className="flex-grow pt-24">
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto bg-almona-darker rounded-xl p-8 border border-almona-light/20">
-            <h1 className="text-3xl font-bold mb-2 text-gradient-orange">
+            <h1 className="typography-h1 mb-2 text-gradient-orange">
               Request a Custom Quote
             </h1>
             <p className="text-gray-400 mb-8">

@@ -6,10 +6,15 @@
  * - Glazing (by type and size)
  * - Labor (by region and skill level)
  * 
+ * Enhanced to use system_pricing when available (from SystemPricingService)
+ * Falls back to constants if system_pricing not configured (backward compatibility)
+ * 
  * @since Phase 2: Preset-Aware BOM System (Week 13)
+ * @enhanced Pricing Tuning Studio - Gold Tier Enhancement
  */
 
 import type { FabricationData } from '@/types/fabricator';
+import type { SystemPricingState } from '@/types/pricing';
 import {
     GLAZING_PRICES_EGP_PER_M2,
     GLAZING_TYPE_THRESHOLDS,
@@ -18,6 +23,15 @@ import {
     LOCATION_MULTIPLIERS,
     TIME_CONVERSION,
 } from './egyptianPricingConstants';
+
+/**
+ * Optional system pricing context for enhanced pricing calculations
+ */
+export interface SystemPricingContext {
+  systemPricing?: SystemPricingState;
+  systemName?: string;
+  profileId?: string;
+}
 
 /**
  * EgyptianPricingEngine - Egyptian market pricing engine
@@ -32,6 +46,10 @@ export class EgyptianPricingEngine {
     'roller': HARDWARE_PRICES_EGP.ROLLER,
     'corner_key': HARDWARE_PRICES_EGP.CORNER_KEY,
     'gasket': HARDWARE_PRICES_EGP.GASKET_PER_METER,
+    'shutter_winder': HARDWARE_PRICES_EGP.SHUTTER_WINDER,
+    'shutter_strap': HARDWARE_PRICES_EGP.SHUTTER_STRAP,
+    'shutter_motor': HARDWARE_PRICES_EGP.SHUTTER_MOTOR,
+    'screen_roller': HARDWARE_PRICES_EGP.SCREEN_ROLLER,
     'other': HARDWARE_PRICES_EGP.OTHER,
   };
 
@@ -52,15 +70,44 @@ export class EgyptianPricingEngine {
 
   /**
    * Calculate hardware cost
+   * Enhanced to use system_pricing when available
    */
   async calculateHardwareCost(
     hardware: FabricationData['hardware'],
-    location?: string
+    location?: string,
+    systemPricingContext?: SystemPricingContext
   ): Promise<number> {
     let totalCost = 0;
 
+    // Check if system_pricing is available
+    const systemPricing = systemPricingContext?.systemPricing;
+
     hardware.forEach(item => {
-      const basePrice = this.HARDWARE_PRICES[item.category] || this.HARDWARE_PRICES['other'];
+      let basePrice: number;
+
+      // Try to use system_pricing hardware prices if available
+      if (systemPricing?.hardware) {
+        // Map hardware category/code to system_pricing keys
+        // Hardware codes from system_pricing are like '0253', '0707', 'KIT 10451'
+        // We need to map from category to code
+        const hardwareCodeMap: Record<string, string> = {
+          'hinge': '0253',
+          'handle': '0707',
+          'lock': 'KIT 10451',
+        };
+
+        const hardwareCode = hardwareCodeMap[item.category] || item.supplierCode;
+        if (hardwareCode && systemPricing.hardware[hardwareCode]) {
+          basePrice = systemPricing.hardware[hardwareCode];
+        } else {
+          // Fallback to constants
+          basePrice = this.HARDWARE_PRICES[item.category] || this.HARDWARE_PRICES['other'];
+        }
+      } else {
+        // Use constants (backward compatibility)
+        basePrice = this.HARDWARE_PRICES[item.category] || this.HARDWARE_PRICES['other'];
+      }
+
       const locationMultiplier = this.getLocationMultiplier(location);
       totalCost += basePrice * item.quantity * locationMultiplier;
     });
@@ -70,12 +117,17 @@ export class EgyptianPricingEngine {
 
   /**
    * Calculate glazing cost
+   * Enhanced to use system_pricing when available
    */
   async calculateGlazingCost(
     glazing: FabricationData['glazing'],
-    location?: string
+    location?: string,
+    systemPricingContext?: SystemPricingContext
   ): Promise<number> {
     let totalCost = 0;
+
+    // Check if system_pricing is available
+    const systemPricing = systemPricingContext?.systemPricing;
 
     glazing.forEach(pane => {
       const glazingType = pane.dimensions.thickness <= GLAZING_TYPE_THRESHOLDS.SINGLE_MAX_THICKNESS_MM
@@ -83,7 +135,23 @@ export class EgyptianPricingEngine {
         : pane.dimensions.thickness <= GLAZING_TYPE_THRESHOLDS.DOUBLE_MAX_THICKNESS_MM
         ? 'double'
         : 'triple';
-      const pricePerM2 = this.GLAZING_PRICES[glazingType] || this.GLAZING_PRICES['double'];
+
+      let pricePerM2: number;
+
+      // Try to use system_pricing glazing types if available
+      if (systemPricing?.glazingTypes && systemPricing.glazingTypes.length > 0) {
+        const glazingTypeData = systemPricing.glazingTypes.find((gt) => gt.id === glazingType);
+        if (glazingTypeData && glazingTypeData.pricePerSquareMeter > 0) {
+          pricePerM2 = glazingTypeData.pricePerSquareMeter;
+        } else {
+          // Fallback to constants
+          pricePerM2 = this.GLAZING_PRICES[glazingType] || this.GLAZING_PRICES['double'];
+        }
+      } else {
+        // Use constants (backward compatibility)
+        pricePerM2 = this.GLAZING_PRICES[glazingType] || this.GLAZING_PRICES['double'];
+      }
+
       const area = (pane.dimensions.width * pane.dimensions.height) / 1_000_000; // m²
       const locationMultiplier = this.getLocationMultiplier(location);
       totalCost += area * pricePerM2 * locationMultiplier;

@@ -1,0 +1,24 @@
+# ALMONA Constitutional Development Rules
+
+## CONSTITUTIONAL CONSTRAINTS (AICS-001)
+1. NO ML/AI in execution paths (Tier 3)
+2. ALL adaptive intelligence must use IntelligenceGate
+3. Deterministic constraints are NON-NEGOTIABLE
+4. Human validation required for all outputs
+
+## DEVELOPMENT RULES
+1. Check AICS-001 before implementing ANY feature
+2. Use AlgorithmSelector.ts for ALL algorithm selection
+3. Add constitutional tests to GuaranteeVerification.test.ts
+4. Document ALL changes with AICS-001 section references
+
+## FEATURE VERIFICATION COMMANDS
+- /@agent verify AICS-001 [section] - Check implementation status
+- /@agent analyze feature [name] - Analyze feature completeness
+- /@agent check-constraints - Verify Tier 3 compliance
+
+## FILES TO ALWAYS CHECK
+1. src/lib/fabricator/AlgorithmSelector.ts
+2. src/tests/constitutional/GuaranteeVerification.test.ts
+3. src/lib/ydt/IntelligenceGate.ts
+4. src/components/fabricator/drafting/DraftingWorkbench.tsx

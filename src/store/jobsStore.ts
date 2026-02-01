@@ -1,3 +1,4 @@
+import { ConnectivityFactory } from '@/lib/connectivity/ConnectivityGateway';
 import { supabase } from '@/lib/supabase';
 import type { Database } from '@/types/database';
 import type { WindowUnit } from '@/types/fabricator';
@@ -13,6 +14,8 @@ interface JobsState {
   addOrUpdateJob: (job: WindowUnit) => void;
   deleteJob: (jobId: string) => void;
   loadJobs: () => Promise<void>;
+  bulkUpdateJobs: (jobIds: string[], updates: Partial<WindowUnit>) => Promise<void>;
+  bulkDeleteJobs: (jobIds: string[]) => Promise<void>;
 }
 
 export const useJobsStore = create<JobsState>((set, get) => ({
@@ -105,14 +108,12 @@ export const useJobsStore = create<JobsState>((set, get) => ({
         }
 
         if (projError || !upsertedProjects || upsertedProjects.length === 0) {
-          // Only log if it's not a permission/RLS error (403, 404 are expected)
           const status = (projError as any)?.status || (projError as any)?.code;
           const isExpectedError = status === 403 || status === 404 || 
                                   (projError as any)?.code === 'PGRST116' ||
                                   (projError as any)?.message?.includes('permission') ||
                                   (projError as any)?.message?.includes('RLS');
           if (!isExpectedError && process.env.NODE_ENV === 'development') {
-             
             console.warn('Failed to upsert fabricator project for job sync:', projError);
           }
           return;
@@ -120,19 +121,15 @@ export const useJobsStore = create<JobsState>((set, get) => ({
 
         const project = upsertedProjects[0];
         
-        // Ensure project.id is a valid UUID (from database)
         if (!project || !project.id || typeof project.id !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(project.id)) {
           console.warn('Invalid project ID returned from database:', project);
           return;
         }
 
-        // Check if position already exists by id (if valid UUID) or by project/order/pos combination
         const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(job.id);
-        
         let existingPosition = null;
         
         if (isValidUUID) {
-          // Try to find by id first
           const { data } = await supabase
             .from('fabricator_positions')
             .select('id')
@@ -141,7 +138,6 @@ export const useJobsStore = create<JobsState>((set, get) => ({
           existingPosition = data;
         }
         
-        // If not found by id, try to find by project/order/pos combination
         if (!existingPosition) {
           const { data } = await supabase
             .from('fabricator_positions')
@@ -173,14 +169,12 @@ export const useJobsStore = create<JobsState>((set, get) => ({
         let posError = null;
 
         if (existingPosition) {
-          // Update existing position
           const { error } = await (supabase
             .from('fabricator_positions') as any)
             .update(positionPayload)
             .eq('id', existingPosition.id);
           posError = error;
         } else {
-          // Insert new position - include id only if it's a valid UUID
           const insertPayload: FabricatorPositionInsert = {
             ...positionPayload,
             ...(isValidUUID ? { id: job.id } : {}),
@@ -192,19 +186,39 @@ export const useJobsStore = create<JobsState>((set, get) => ({
         }
 
         if (posError) {
-          // Only log if it's not a permission/RLS error (403, 404 are expected)
           const status = (posError as any)?.status || (posError as any)?.code;
           const isExpectedError = status === 403 || status === 404 || 
                                   (posError as any)?.code === 'PGRST116' ||
                                   (posError as any)?.message?.includes('permission') ||
                                   (posError as any)?.message?.includes('RLS');
           if (!isExpectedError && process.env.NODE_ENV === 'development') {
-             
             console.warn('Failed to upsert fabricator position for job sync:', posError);
           }
         }
+
+        // ------------------------------------------------------------------
+        // ERP SYNC (Fire-and-forget)
+        // ------------------------------------------------------------------
+        try {
+            // TODO: Get config from settings store
+            const erpConfig = { 
+                id: 'default', 
+                name: 'Default ERP', 
+                type: 'ERP' as const, 
+                provider: 'odoo' as const, 
+                isEnabled: false // Disabled by default until configured
+            }; 
+            
+            if (erpConfig.isEnabled) {
+                const adapter = ConnectivityFactory.getAdapter(erpConfig);
+                await adapter.connect();
+                await adapter.syncOrder(job);
+            }
+        } catch (erpErr) {
+            console.warn('ERP Sync failed:', erpErr);
+        }
+
       } catch (err) {
-         
         console.error('Error syncing job to Supabase:', err);
       }
     })();
@@ -214,6 +228,74 @@ export const useJobsStore = create<JobsState>((set, get) => ({
     const { jobs } = get();
     const filtered = jobs.filter((job) => job.id !== jobId);
     set({ jobs: filtered });
+    
+    // Fire-and-forget Supabase delete
+    void (async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if(!user) return;
+            await supabase.from('fabricator_positions').delete().eq('id', jobId).eq('owner_user_id', user.id);
+        } catch (e) {
+            console.error(e);
+        }
+    })();
+  },
+
+  bulkUpdateJobs: async (jobIds, updates) => {
+    const { jobs } = get();
+    const updatedJobs = jobs.map((job) =>
+      jobIds.includes(job.id) ? { ...job, ...updates, updatedAt: new Date() } : job
+    );
+    set({ jobs: updatedJobs });
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const dbUpdates: any = {};
+      
+      if (updates.status) dbUpdates.status = updates.status;
+      if (updates.color) dbUpdates.color = updates.color;
+      if (updates.systemPackId) dbUpdates.system_pack_id = updates.systemPackId;
+      if (updates.glazing) dbUpdates.glazing = updates.glazing;
+
+      if (Object.keys(dbUpdates).length === 0) return;
+
+      const { error } = await supabase
+        .from('fabricator_positions')
+        .update(dbUpdates)
+        .in('id', jobIds)
+        .eq('owner_user_id', user.id);
+
+      if (error) {
+        console.error('Failed to bulk update jobs in Supabase:', error);
+      }
+    } catch (err) {
+      console.error('Error in bulkUpdateJobs:', err);
+    }
+  },
+
+  bulkDeleteJobs: async (jobIds) => {
+    const { jobs } = get();
+    const remainingJobs = jobs.filter((job) => !jobIds.includes(job.id));
+    set({ jobs: remainingJobs, selectedJobId: null });
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('fabricator_positions')
+        .delete()
+        .in('id', jobIds)
+        .eq('owner_user_id', user.id);
+
+      if (error) {
+        console.error('Failed to bulk delete jobs in Supabase:', error);
+      }
+    } catch (err) {
+      console.error('Error in bulkDeleteJobs:', err);
+    }
   },
 
   loadJobs: async () => {
@@ -248,12 +330,10 @@ export const useJobsStore = create<JobsState>((set, get) => ({
         ]);
 
       if (projError) {
-         
-        console.error('Failed to load fabricator projects:', projError);
+        console.error('Failed to load fabricator projects:', projError as any);
       }
       if (posError) {
-         
-        console.error('Failed to load fabricator positions:', posError);
+        console.error('Failed to load fabricator positions:', posError as any);
       }
 
       const projectById = new Map<string, FabricatorProjectRow>();
@@ -268,7 +348,7 @@ export const useJobsStore = create<JobsState>((set, get) => ({
           orderNumber: row.order_number,
           posNumber: row.pos_number,
           type: row.type,
-          components: [],
+          components: [], // Loaded separately or not stored in fast list
           overallWidth: row.overall_width_mm,
           overallHeight: row.overall_height_mm,
           color: row.color,
@@ -283,6 +363,7 @@ export const useJobsStore = create<JobsState>((set, get) => ({
           systemPackId: row.system_pack_id || p?.system_pack_id,
           quantity: row.quantity || 1,
           positionMeta: (row.position_meta as any) || undefined,
+          grid: (row.grid as any) || undefined, 
         };
       });
 
@@ -294,4 +375,9 @@ export const useJobsStore = create<JobsState>((set, get) => ({
   },
 }));
 
-
+// [DEV/E2E] Expose store for testing
+if (import.meta.env.DEV) {
+  if (typeof window !== 'undefined') {
+    (window as any).jobsStore = useJobsStore;
+  }
+}

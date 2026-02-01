@@ -58,13 +58,13 @@ export const OptimizedProductCard = memo<OptimizedProductCardProps>(({
     : machine.description;
 
   return (
-    <Card className={`group relative transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/20 ${
-      isSelected ? 'ring-2 ring-orange-500 bg-orange-500/5' : 'hover:bg-gray-800/50'
+    <Card className={`group relative transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/20 ${
+      isSelected ? 'ring-2 ring-amber-500 bg-amber-500/5' : 'hover:bg-gray-800/50'
     }`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h3 className="font-semibold text-lg leading-tight mb-2 line-clamp-2">
+            <h3 className="typography-h3 text-lg leading-tight mb-2 line-clamp-2">
               {machine.name}
             </h3>
             <div className="flex flex-wrap gap-1 mb-2">
@@ -74,7 +74,7 @@ export const OptimizedProductCard = memo<OptimizedProductCardProps>(({
                 </Badge>
               ))}
               {machine.featured && (
-                <Badge variant="default" className="text-xs bg-orange-500">
+                <Badge variant="default" className="btn-primary">
                   Featured
                 </Badge>
               )}
@@ -104,7 +104,7 @@ export const OptimizedProductCard = memo<OptimizedProductCardProps>(({
             {machine.description.length > 120 && (
               <button
                 onClick={() => setShowFullDescription(!showFullDescription)}
-                className="ml-1 text-orange-400 hover:text-orange-300 text-xs"
+                className="ml-1 text-amber-400 hover:text-amber-300 text-xs"
               >
                 {showFullDescription ? 'Show less' : 'Show more'}
               </button>
@@ -135,7 +135,7 @@ export const OptimizedProductCard = memo<OptimizedProductCardProps>(({
       <CardFooter className="pt-3 flex flex-wrap gap-2">
         <Button
           onClick={handleQuoteRequest}
-          className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+          className="flex-1 bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600"
           size="sm"
         >
           Request Quote

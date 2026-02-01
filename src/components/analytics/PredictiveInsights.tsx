@@ -335,7 +335,7 @@ export const PredictiveInsights: React.FC = () => {
             {selectedPrediction?.id === prediction.id && (
               <div className="mt-4 pt-4 border-t space-y-4">
                 <div>
-                  <h4 className="font-medium mb-2">Key Factors</h4>
+                  <h4 className="typography-h4 font-medium mb-2">Key Factors</h4>
                   <div className="space-y-1">
                     {prediction.factors.map((factor, index) => (
                       <div key={index} className="flex items-start gap-2">
@@ -347,7 +347,7 @@ export const PredictiveInsights: React.FC = () => {
                 </div>
 
                 <div>
-                  <h4 className="font-medium mb-2">Recommendations</h4>
+                  <h4 className="typography-h4 font-medium mb-2">Recommendations</h4>
                   <div className="space-y-1">
                     {prediction.recommendations.map((rec, index) => (
                       <div key={index} className="flex items-start gap-2">
@@ -573,7 +573,7 @@ export const PredictiveInsights: React.FC = () => {
               
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <h4 className="font-medium mb-2">Risk Metrics</h4>
+                  <h4 className="typography-h4 font-medium mb-2">Risk Metrics</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Probability:</span>
@@ -597,7 +597,7 @@ export const PredictiveInsights: React.FC = () => {
                 </div>
 
                 <div>
-                  <h4 className="font-medium mb-2">Mitigation Strategies</h4>
+                  <h4 className="typography-h4 font-medium mb-2">Mitigation Strategies</h4>
                   <div className="space-y-1">
                     {risk.mitigation.map((strategy, idx) => (
                       <div key={idx} className="flex items-start gap-2">
@@ -635,7 +635,7 @@ export const PredictiveInsights: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+          <h2 className="typography-h2 tracking-tight flex items-center gap-2">
             <Brain className="h-8 w-8 text-purple-600" />
             Predictive Insights
           </h2>

@@ -39,14 +39,14 @@ const EgyptianIndustrialZones = ({ interactive = false }: EgyptianIndustrialZone
       {interactive && selectedZone && (
         <div className="absolute inset-0 bg-almona-dark/90 flex items-center justify-center p-6">
           <div className="bg-almona-darker p-6 rounded-lg max-w-md">
-            <h3 className="text-xl font-bold mb-4">
+            <h3 className="typography-h3 mb-4">
               {industrialZones.find(z => z.id === selectedZone)?.name}
             </h3>
             <p className="mb-4">
               Technical support available 24/7 for all registered machines in this zone.
             </p>
             <button 
-              className="text-orange-500 hover:underline"
+              className="text-amber-500 hover:underline"
               onClick={() => setSelectedZone("")}
             >
               Close

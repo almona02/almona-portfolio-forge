@@ -1,0 +1,95 @@
+﻿
+> vite_react_shadcn_ts@0.0.5 lint
+> eslint "src" --ext ts,tsx
+
+
+C:\projects\almona-portfolio-forge\src\components\constitutional\ConstitutionalHealthDashboard.tsx
+  31:21  warning  'setMetrics' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\drafting\components\Ruler.tsx
+  154:21  error  'size' is never reassigned. Use 'const' instead  prefer-const
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\drafting\hooks\useCanvasEvents.ts
+  146:3  warning  'arcStartAngle' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  583:6  warning  React Hook useCallback has unnecessary dependencies: 'boxSelectEnd', 'boxSelectStart', 'isBoxSelecting', 'isDrawing', 'isPanning', 'isRotating', 'selectedMaterial', and 'selectedSystemPackId'. Either exclude them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\drafting\layers\OverlayLayer.tsx
+  57:3  warning  'arcRadius' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\drafting\utils\geometryUtils.ts
+  446:9  warning  'center' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\fabricator\physics\CrossSectionGenerator.tsx
+  93:8  warning  React Hook useMemo has an unnecessary dependency: 'glassThickness'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\components\services\SmartMaintenanceTab.tsx
+  63:17  warning  'setTasks' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\components\ui\loading\Prestige3DLoader.tsx
+  289:5  error  'interval' is never reassigned. Use 'const' instead  prefer-const
+
+C:\projects\almona-portfolio-forge\src\lib\3d\detailComponents\Fasteners.ts
+  130:5   warning  'quality' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  146:30  warning  'i' is defined but never used. Allowed unused args must match /^_/u                 @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\3d\detailComponents\WeatherSeals.ts
+  97:9  error  'segments' is never reassigned. Use 'const' instead  prefer-const
+
+C:\projects\almona-portfolio-forge\src\lib\3d\goldTierLighting.ts
+  195:52  warning  'index' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\connectivity\ConnectivityGateway.ts
+  43:36  warning  'level' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  81:21  warning  'orderData' is defined but never used. Allowed unused args must match /^_/u       @typescript-eslint/no-unused-vars
+  86:22  warning  'sku' is defined but never used. Allowed unused args must match /^_/u             @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\exports\BIMExporter.ts
+  18:13  error  'ifcData' is never reassigned. Use 'const' instead  prefer-const
+
+C:\projects\almona-portfolio-forge\src\lib\fabricator\goldTier\__tests__\ApexEngineV6.test.ts
+  74:11  warning  't0' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+  76:11  warning  't1' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+  78:11  warning  't2' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+  80:11  warning  't3' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+
+C:\projects\almona-portfolio-forge\src\lib\input\KeyboardManager.ts
+  195:11  error  'candidates' is never reassigned. Use 'const' instead  prefer-const
+
+C:\projects\almona-portfolio-forge\src\modules\reporting\useCompanyBranding.ts
+  90:6  warning  React Hook useEffect has missing dependencies: 'branding' and 'user'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\pages\QualityControlPage.tsx
+  113:6  warning  React Hook useEffect has a missing dependency: 'handleVerify'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\projects\almona-portfolio-forge\src\tests\integration\SupabaseIntegration.test.ts
+   33:13  warning  'qualityResult' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u   @typescript-eslint/no-unused-vars
+   47:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+   57:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+   69:13  warning  'event' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u           @typescript-eslint/no-unused-vars
+   80:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+   90:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  110:13  warning  'deliveryRecord' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u  @typescript-eslint/no-unused-vars
+  123:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  132:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  142:13  warning  'event' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u           @typescript-eslint/no-unused-vars
+  150:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  170:13  warning  'remnant' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u         @typescript-eslint/no-unused-vars
+  181:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  191:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  203:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  213:13  warning  'event' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u           @typescript-eslint/no-unused-vars
+  224:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  236:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  248:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  259:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  272:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  283:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  303:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  332:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  342:15  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  401:13  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u            @typescript-eslint/no-unused-vars
+  408:21  warning  'session' is assigned a value but never used. Allowed unused vars must match /^_|^vi$|^mock/u         @typescript-eslint/no-unused-vars
+
+Γ£û 51 problems (5 errors, 46 warnings)
+  4 errors and 0 warnings potentially fixable with the `--fix` option.
+

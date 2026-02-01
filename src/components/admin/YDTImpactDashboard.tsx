@@ -66,7 +66,7 @@ export const YDTImpactDashboard: React.FC = () => {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">YDT Intelligence Impact Dashboard</h1>
+        <h1 className="typography-h1">YDT Intelligence Impact Dashboard</h1>
       </div>
 
       {/* Key Metrics Grid */}
@@ -152,7 +152,7 @@ export const YDTImpactDashboard: React.FC = () => {
           <CardContent>
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold mb-2">Trending Window Styles (Cairo)</h3>
+                <h3 className="typography-h3 mb-2">Trending Window Styles (Cairo)</h3>
                 {insights.trendingStyles && insights.trendingStyles.length > 0 ? (
                   <ul className="list-disc list-inside space-y-1">
                     {insights.trendingStyles.map((style: any, index: number) => (

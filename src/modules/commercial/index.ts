@@ -3,8 +3,9 @@
  * Exports all commercial functionality
  */
 
-export * from './QuotingEngine';
 export * from './CRMIntegration';
-export * from './ProjectManagement';
 export * from './CostAnalysis';
+export * from './ERPBridge';
+export * from './ProjectManagement';
+export * from './QuotingEngine';
 

@@ -38,7 +38,7 @@ export const WorkspaceSnapshotManager: React.FC = () => {
           />
           <Button
             size="sm"
-            className="h-8 px-3 text-xs bg-slate-800 hover:bg-slate-700"
+            className="btn-secondary"
             onClick={handleSave}
           >
             Save Snapshot
@@ -59,7 +59,7 @@ export const WorkspaceSnapshotManager: React.FC = () => {
         />
         <Button
           size="sm"
-          className="h-8 px-3 text-xs bg-slate-800 hover:bg-slate-700"
+          className="btn-secondary"
           onClick={handleSave}
         >
           Save Snapshot

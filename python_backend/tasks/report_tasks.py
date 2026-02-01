@@ -498,3 +498,169 @@ def generate_daily_reports(self):
             meta={"error": str(e), "failed_at": datetime.utcnow().isoformat()}
         )
         raise
+
+
+@celery_app.task(bind=True, name="generate_report_job_file", max_retries=2)
+def generate_report_job_file(self, job_id: str):
+    """
+    Generate report file from template and data (Phase 4 implementation).
+    
+    Processes a report generation job:
+    1. Loads job from database
+    2. Loads template if template_id provided
+    3. Generates file (PDF/Excel/CSV) based on format
+    4. Uploads to Supabase Storage
+    5. Updates job status and download URL
+    
+    Args:
+        job_id: Report generation job ID (UUID string)
+    """
+    from uuid import UUID
+    from datetime import datetime, timezone, timedelta
+    from apis.v2.repositories.report_generation_repository import (
+        ReportGenerationRepository
+    )
+    from apis.v2.repositories.report_templates_repository import (
+        ReportTemplatesRepository
+    )
+    from apis.v2.utils.storage_service import upload_report_file
+    from apis.v2.utils.csv_generator import generate_csv_from_data
+    from apis.v2.utils.excel_generator import generate_excel_from_data
+    from apis.v2.utils.pdf_generator import generate_pdf_from_data
+
+    start_time = time.time()
+    job_uuid = UUID(job_id)
+
+    try:
+        # Get service role client for database operations
+        supabase_client_wrapper = get_enhanced_supabase_client()
+        supabase = supabase_client_wrapper.client
+
+        # Create repositories
+        job_repo = ReportGenerationRepository(supabase)
+        template_repo = ReportTemplatesRepository(supabase)
+
+        # Load job
+        job = job_repo.get_job_by_id(job_uuid, user_id=None)
+        if not job:
+            raise ValueError(f"Report generation job not found: {job_id}")
+
+        # Update status to processing
+        started_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        job_repo.update_job_fields(
+            job_uuid,
+            {
+                "status": "processing",
+                "started_at": started_at,
+            }
+        )
+
+        # Extract job data
+        template_id_str = job.get("template_id")
+        report_type = job.get("report_type", "")
+        report_data = job.get("report_data", {})
+        format_str = job.get("format", "pdf")
+
+        # Load template if provided
+        template_schema = None
+        if template_id_str:
+            try:
+                template_uuid = UUID(template_id_str)
+                template = template_repo.get_template_by_id(
+                    template_uuid, user_id=None
+                )
+                if template:
+                    template_schema = template.get("template_schema", {})
+            except (ValueError, Exception) as e:
+                logger.warning(f"Failed to load template {template_id_str}: {e}")
+
+        # Generate file based on format
+        # For now, use simple data table layout (template schema parsing TBD)
+        # Extract data array from report_data if available
+        data_array = report_data.get("data", [])
+        if not data_array and isinstance(report_data, dict):
+            # Fallback: convert report_data dict to list format
+            data_array = [report_data]
+
+        file_bytes: bytes
+        content_type: str
+        file_extension: str
+
+        if format_str == "csv":
+            file_bytes = generate_csv_from_data(data_array)
+            content_type = "text/csv"
+            file_extension = "csv"
+        elif format_str == "excel":
+            file_bytes = generate_excel_from_data(data_array)
+            content_type = (
+                "application/vnd.openxmlformats-officedocument."
+                "spreadsheetml.sheet"
+            )
+            file_extension = "xlsx"
+        elif format_str == "pdf":
+            file_bytes = generate_pdf_from_data(data_array)
+            content_type = "application/pdf"
+            file_extension = "pdf"
+        else:
+            raise ValueError(f"Unsupported format: {format_str}")
+
+        # Upload to Supabase Storage
+        file_path = f"reports/{job_id}.{file_extension}"
+        expires_in = 604800  # 7 days
+        signed_url, expires_at_iso = upload_report_file(
+            supabase, file_bytes, file_path, content_type, expires_in
+        )
+
+        # Calculate generation time
+        generation_time_ms = int((time.time() - start_time) * 1000)
+
+        # Update job status to completed
+        completed_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        job_repo.update_job_fields(
+            job_uuid,
+            {
+                "status": "completed",
+                "completed_at": completed_at,
+                "download_url": signed_url,
+                "download_expires_at": expires_at_iso,
+                "file_size_bytes": len(file_bytes),
+                "generation_time_ms": generation_time_ms,
+            }
+        )
+
+        logger.info(
+            f"Report generation job {job_id} completed successfully "
+            f"in {generation_time_ms}ms"
+        )
+
+        return {
+            "job_id": job_id,
+            "status": "completed",
+            "download_url": signed_url,
+            "file_size_bytes": len(file_bytes),
+        }
+
+    except Exception as e:
+        error_message = str(e)
+        logger.error(f"Report generation job {job_id} failed: {error_message}")
+
+        # Update job status to failed
+        try:
+            supabase_client_wrapper = get_enhanced_supabase_client()
+            supabase = supabase_client_wrapper.client
+            job_repo = ReportGenerationRepository(supabase)
+            job_repo.update_job_fields(
+                job_uuid,
+                {
+                    "status": "failed",
+                    "error_message": error_message[:500],  # Limit length
+                }
+            )
+        except Exception as update_error:
+            logger.error(f"Failed to update job status to failed: {update_error}")
+
+        # Retry on transient errors
+        if self.request.retries < self.max_retries:
+            raise self.retry(exc=e, countdown=60)  # Retry after 60 seconds
+
+        raise

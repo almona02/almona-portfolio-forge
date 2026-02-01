@@ -77,8 +77,8 @@ export const MobileOptimizedGrid = memo<MobileOptimizedGridProps>(({
             className={`
               w-full max-w-sm
               px-6 py-3
-              bg-gradient-to-r from-orange-500 to-red-500
-              hover:from-orange-600 hover:to-red-600
+              bg-gradient-to-r from-amber-500 to-red-500
+              hover:from-amber-600 hover:to-red-600
               disabled:from-gray-500 disabled:to-gray-600
               text-white font-medium
               rounded-lg

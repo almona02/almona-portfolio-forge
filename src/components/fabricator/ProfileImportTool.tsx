@@ -11,24 +11,24 @@ import { Separator } from '@/shared/ui/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import type { Profile } from '@/types/fabricator';
 import {
-  Brain,
-  CheckCircle2,
-  DollarSign,
-  FileCode,
-  FileText,
-  History,
-  Image,
-  Lightbulb,
-  Loader2,
-  Package,
-  Scale,
-  Settings,
-  Sparkles,
-  Target,
-  TrendingUp,
-  Upload,
-  X,
-  Zap,
+    Brain,
+    CheckCircle2,
+    DollarSign,
+    FileCode,
+    FileText,
+    History,
+    Image,
+    Lightbulb,
+    Loader2,
+    Package,
+    Scale,
+    Settings,
+    Sparkles,
+    Target,
+    TrendingUp,
+    Upload,
+    X,
+    Zap,
 } from 'lucide-react';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -131,7 +131,7 @@ const getFileTypeColor = (type: SupportedFileType): string => {
     dxf: 'bg-blue-500/10 text-blue-300 border-blue-500/40',
     dwg: 'bg-purple-500/10 text-purple-300 border-purple-500/40',
     svg: 'bg-green-500/10 text-green-300 border-green-500/40',
-    png: 'bg-orange-500/10 text-orange-300 border-orange-500/40',
+    png: 'bg-amber-500/10 text-amber-300 border-amber-500/40',
     jpg: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/40',
   };
   return colors[type] || 'bg-gray-500/10 text-gray-300 border-gray-500/40';
@@ -385,6 +385,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
         if (pdfjsLib && pdfjsLib.getDocument) {
           // Bundle worker locally for production (offline PWA support)
           // Use CDN only in development
+          // Note: Worker file is resolved at runtime, not build time (expected behavior)
           const pdfWorkerPath = import.meta.env.PROD
             ? new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).href
             : `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version || '3.11.174'}/pdf.worker.min.js`;
@@ -1084,14 +1085,14 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
         {/* Import Tab */}
         <TabsContent value="import" className="space-y-4">
           {/* File Upload Zone */}
-          <Card className="bg-gray-900/60 border-gray-700">
+          <Card className="bg-gray-900/60 border-gray-700 card-dark">
             <CardContent className="pt-6">
               <div
                 className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-blue-500/50 transition-colors cursor-pointer"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-sm font-medium mb-2">{t('profile_import_tool.upload.title', 'Drop files here or click to upload')}</h3>
+                <h3 className="typography-h3 text-sm font-medium mb-2">{t('profile_import_tool.upload.title', 'Drop files here or click to upload')}</h3>
                 <p className="text-xs text-gray-400 mb-4">
                   {t('profile_import_tool.upload.description', 'Supports DXF, DWG, SVG, PDF, PNG, JPG')}
                 </p>
@@ -1137,7 +1138,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
 
           {/* Extracted Profiles List */}
           {extractedProfiles.length > 0 && (
-            <Card className="bg-gray-900/60 border-gray-700">
+            <Card className="bg-gray-900/60 border-gray-700 card-dark">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm flex items-center gap-2">
@@ -1183,7 +1184,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <h4 className="text-sm font-semibold truncate">{profile.name}</h4>
+                              <h4 className="typography-h4 text-sm truncate">{profile.name}</h4>
                               <Badge
                                 variant="outline"
                                 className={`text-[10px] ${getFileTypeColor(profile.source)}`}
@@ -1287,7 +1288,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
 
         {/* K-Factor AI Tab */}
         <TabsContent value="kfactor" className="space-y-4">
-          <Card className="bg-gray-900/60 border-gray-700">
+          <Card className="bg-gray-900/60 border-gray-700 card-dark">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Brain className="h-4 w-4 text-purple-400" />
@@ -1350,7 +1351,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                 </div>
                 <div className="p-3 bg-gray-800 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <History className="h-4 w-4 text-orange-400" />
+                    <History className="h-4 w-4 text-amber-400" />
                     <span className="text-xs font-medium">{t('profile_import_tool.kfactor.features.collective.title', 'Collective Learning')}</span>
                   </div>
                   <p className="text-[10px] text-gray-400">
@@ -1394,7 +1395,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
 
         {/* Settings Tab */}
         <TabsContent value="settings" className="space-y-4">
-          <Card className="bg-gray-900/60 border-gray-700">
+          <Card className="bg-gray-900/60 border-gray-700 card-dark">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <DollarSign className="h-4 w-4 text-green-400" />
@@ -1404,7 +1405,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
             <CardContent className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs">{t('profile_import_tool.settings.pricing.aluminum_price', 'Aluminum Price / Kg')}</Label>
+                  <Label className="typography-label text-xs">{t('profile_import_tool.settings.pricing.aluminum_price', 'Aluminum Price / Kg')}</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -1417,7 +1418,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">{t('profile_import_tool.settings.pricing.markup', 'Markup (%)')}</Label>
+                  <Label className="typography-label text-xs">{t('profile_import_tool.settings.pricing.markup', 'Markup (%)')}</Label>
                   <Input
                     type="number"
                     step="0.1"
@@ -1443,7 +1444,7 @@ export const ProfileImportTool: React.FC<ProfileImportToolProps> = ({
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-900/60 border-gray-700">
+          <Card className="bg-gray-900/60 border-gray-700 card-dark">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Settings className="h-4 w-4 text-blue-400" />

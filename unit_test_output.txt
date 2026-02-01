@@ -1,0 +1,35 @@
+[33m[7m[33m Vitest [33m[27m "deps.inline" is deprecated. If you rely on vite-node directly, use "server.deps.inline" instead. Otherwise, consider using "deps.optimizer.web.include"[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/projects/almona-portfolio-forge[39m
+
+ [31m❯[39m tests/unit/MaintenanceRulesEngine.test.ts [2m([22m[2m4 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 8[2mms[22m[39m
+   [32m✓[39m MaintenanceRulesEngine[2m > [22mshould return 100 score for a brand new machine[32m 1[2mms[22m[39m
+   [32m✓[39m MaintenanceRulesEngine[2m > [22mshould degrade score when maintenance is approaching (480/500 hours)[32m 0[2mms[22m[39m
+[31m   [31m×[31m MaintenanceRulesEngine[2m > [22mshould trigger critical warning for sensor alerts[39m[32m 5[2mms[22m[39m
+[31m     → expected 'critical' to be 'warning' // Object.is equality[39m
+   [32m✓[39m MaintenanceRulesEngine[2m > [22mshould handle annual service overdue[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/MaintenanceRulesEngine.test.ts[2m > [22mMaintenanceRulesEngine[2m > [22mshould trigger critical warning for sensor alerts
+[31m[1mAssertionError[22m: expected 'critical' to be 'warning' // Object.is equality[39m
+
+Expected: [32m"warning"[39m
+Received: [31m"critical"[39m
+
+[36m [2m❯[22m tests/unit/MaintenanceRulesEngine.test.ts:[2m48:31[22m[39m
+    [90m 46| [39m        [90m// 100 - 25 = 75[39m
+    [90m 47| [39m        [34mexpect[39m(result[33m.[39mscore)[33m.[39m[34mtoBe[39m([34m75[39m)[33m;[39m
+    [90m 48| [39m        expect(result.status).toBe('warning'); // < 90 is good, but 75…
+    [90m   | [39m                              [31m^[39m
+    [90m 49| [39m        [90m// Wait, WARNING_THRESHOLD is 70. 75 is "good" or "warning"?[39m
+    [90m 50| [39m        // Logic: <= 70 is warning. < 90 is good. So 75 is 'good' but …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 02:42:44
+[2m   Duration [22m 1.43s[2m (transform 104ms, setup 249ms, collect 14ms, tests 8ms, environment 461ms, prepare 115ms)[22m
+

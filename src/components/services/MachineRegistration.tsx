@@ -203,29 +203,29 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                     <div className="h-64 bg-gradient-to-br from-almona-dark to-almona-darker rounded-lg flex flex-col items-center justify-center border border-almona-light/20">
                       {qrScanning ? (
                         <LazyMotionDiv animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
-                          <QrCodeIcon className="w-16 h-16 text-orange-500" />
+                          <QrCodeIcon className="w-16 h-16 text-amber-500" />
                         </LazyMotionDiv>
                       ) : (
                         <Camera className="w-16 h-16 text-gray-400 mb-2" />
                       )}
                       <p className="text-gray-400 text-center">{qrScanning ? "Scanning QR code..." : "Point camera at machine QR code"}</p>
                     </div>
-                    <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500" onClick={handleScanQR} disabled={qrScanning}>
+                    <Button className="w-full bg-gradient-to-r from-amber-500 to-red-500" onClick={handleScanQR} disabled={qrScanning}>
                       {qrScanning ? "Scanning..." : "Scan QR Code"}
                     </Button>
                   </LazyMotionDiv>
 
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="serialNumber">Serial Number</Label>
+                      <Label htmlFor="serialNumber" className="typography-label">Serial Number</Label>
                       <Input id="serialNumber" placeholder="Enter machine serial number" value={machine.serialNumber} onChange={(e) => setMachine({ ...machine, serialNumber: e.target.value })} className="bg-almona-darker/50 border-almona-light/20" />
                     </div>
                     <div>
-                      <Label htmlFor="model">Model</Label>
+                      <Label htmlFor="model" className="typography-label">Model</Label>
                       <Input id="model" placeholder="Enter machine model" value={machine.model} onChange={(e) => setMachine({ ...machine, model: e.target.value })} className="bg-almona-darker/50 border-almona-light/20" />
                     </div>
                     <div>
-                      <Label htmlFor="photos">Upload Photos</Label>
+                      <Label htmlFor="photos" className="typography-label">Upload Photos</Label>
                       <div className="flex items-center gap-2">
                         <Input id="photos" type="file" multiple accept="image/*" onChange={handleFileUpload} className="hidden" />
                         <Button onClick={() => document.getElementById('photos')?.click()} className="w-full border border-gray-300">
@@ -257,15 +257,15 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="serialNumber">Serial Number</Label>
+                    <Label htmlFor="serialNumber" className="typography-label">Serial Number</Label>
                     <Input id="serialNumber" value={machine.serialNumber} readOnly className="bg-almona-darker/30 border-almona-light/20" />
                   </div>
                   <div>
-                    <Label htmlFor="model">Model</Label>
+                    <Label htmlFor="model" className="typography-label">Model</Label>
                     <Input id="model" value={machine.model} readOnly className="bg-almona-darker/30 border-almona-light/20" />
                   </div>
                   <div>
-                    <Label htmlFor="installationDate">Installation Date</Label>
+                    <Label htmlFor="installationDate" className="typography-label">Installation Date</Label>
                     <Input id="installationDate" type="date" value={machine.installationDate} onChange={(e) => setMachine({ ...machine, installationDate: e.target.value })} className="bg-almona-darker/50 border-almona-light/20" />
                   </div>
                   <div>
@@ -284,17 +284,17 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                 </div>
 
                 <LazyMotionDiv className="mt-6" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                  <h3 className="text-xl font-bold mb-4">Warranty Extension Options</h3>
+                  <h3 className="typography-h3 mb-4">Warranty Extension Options</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {warrantyExtensions.map((option, index) => (
-                      <LazyMotionDiv key={option.months} className="border border-almona-light/20 rounded-lg p-4 hover:border-orange-500/50 transition-colors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} whileHover={{ scale: 1.02 }}>
-                        <h4 className="font-bold text-lg">{option.months} Months</h4>
-                        <p className="text-2xl font-bold text-orange-500">{option.price} EGP</p>
+                      <LazyMotionDiv key={option.months} className="border border-almona-light/20 rounded-lg p-4 hover:border-amber-500/50 transition-colors" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} whileHover={{ scale: 1.02 }}>
+                        <h4 className="typography-h4">{option.months} Months</h4>
+                        <p className="text-2xl font-bold text-amber-500">{option.price} EGP</p>
                         {option.egyptOnly && <Badge className="mb-2 bg-blue-500/20 text-blue-300">Egypt Only</Badge>}
                         <ul className="text-sm text-gray-400 space-y-1 mt-2">
                           {option.features.map((feature, i) => (
                             <li key={i} className="flex items-start">
-                              <CheckCircle2 className="h-3 w-3 text-green-500 mr-1 mt-0.5" />
+                              <CheckCircle2 className="h-3 w-3  mr-1 mt-0.5 status-valid" />
                               {feature}
                             </li>
                           ))}
@@ -307,7 +307,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
 
                 <div className="flex justify-between mt-6">
                   <Button onClick={() => setStep("scan")} className="border border-gray-300">Back</Button>
-                  <Button onClick={generateDigitalTwin} disabled={!machine.installationDate || isProcessing} className="bg-gradient-to-r from-orange-500 to-red-500">
+                  <Button onClick={generateDigitalTwin} disabled={!machine.installationDate || isProcessing} className="bg-gradient-to-r from-amber-500 to-red-500">
                     {isProcessing ? "Processing..." : "Generate Digital Twin"}
                     <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -330,14 +330,14 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                     <CardHeader><CardTitle className="text-lg">Machine Information</CardTitle></CardHeader>
                     <CardContent>
                       <div className="space-y-3">
-                        <div><p className="text-sm text-gray-400">Serial Number</p><p className="font-mono text-orange-500">{machine.serialNumber}</p></div>
+                        <div><p className="text-sm text-gray-400">Serial Number</p><p className="font-mono text-amber-500">{machine.serialNumber}</p></div>
                         <div><p className="text-sm text-gray-400">Model</p><p className="font-bold">{machine.model}</p></div>
                         <div><p className="text-sm text-gray-400">Installation Date</p><p>{machine.installationDate ? new Date(machine.installationDate).toLocaleDateString() : 'N/A'}</p></div>
                         {machine.digitalTwinId && (
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm text-gray-400">Digital Twin ID</p>
-                              <p className="font-mono text-green-500">{machine.digitalTwinId}</p>
+                              <p className="font-mono  status-valid">{machine.digitalTwinId}</p>
                             </div>
                             <Button
                               variant="ghost"
@@ -346,7 +346,7 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                               onClick={() => twinClipboard.copyToClipboard(machine.digitalTwinId!, 'digital twin code')}
                             >
                               {twinClipboard.copiedText === machine.digitalTwinId ? (
-                                <Check className="h-4 w-4 text-green-500" />
+                                <Check className="h-4 w-4  status-valid" />
                               ) : (
                                 <Copy className="h-4 w-4" />
                               )}
@@ -362,15 +362,15 @@ export const MachineRegistrationEnhanced = withErrorBoundary(() => {
                     <CardContent>
                       <ul className="space-y-3">
                         <motion.li className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
-                          <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
+                          <CheckCircle2 className="h-5 w-5  mr-2 mt-0.5 status-valid" />
                           <div><p className="font-medium">Machine Registered</p><p className="text-sm text-gray-400">Added to your fleet</p></div>
                         </motion.li>
                         <motion.li className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                          <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
+                          <CheckCircle2 className="h-5 w-5  mr-2 mt-0.5 status-valid" />
                           <div><p className="font-medium">Digital Twin Created</p><p className="text-sm text-gray-400">Virtual representation ready</p></div>
                         </motion.li>
                         <motion.li className="flex items-start" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
-                          <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 mt-0.5" />
+                          <CheckCircle2 className="h-5 w-5  mr-2 mt-0.5 status-valid" />
                           <div><p className="font-medium">Warranty Activated</p><p className="text-sm text-gray-400">Coverage starts immediately</p></div>
                         </motion.li>
                       </ul>

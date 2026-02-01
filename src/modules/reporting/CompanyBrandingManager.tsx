@@ -82,7 +82,7 @@ export const CompanyBrandingManager: React.FC<CompanyBrandingManagerProps> = ({
       <Card className="bg-gray-800/50 border-gray-700">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Palette className="h-5 w-5 text-orange-400" />
+            <Palette className="h-5 w-5 text-amber-400" />
             Company Branding Settings
           </CardTitle>
         </CardHeader>
@@ -104,7 +104,7 @@ export const CompanyBrandingManager: React.FC<CompanyBrandingManagerProps> = ({
                   className="hidden"
                   id="logo-upload"
                 />
-                <Label htmlFor="logo-upload">
+                <Label htmlFor="logo-upload" className="typography-label">
                   <Button variant="outline" asChild>
                     <span>
                       <Upload className="h-4 w-4 mr-2" />
@@ -216,7 +216,7 @@ export const CompanyBrandingManager: React.FC<CompanyBrandingManagerProps> = ({
 
           {/* Preview */}
           <div className="p-4 bg-gray-700 rounded-lg border border-gray-600">
-            <Label className="mb-2 block">Preview</Label>
+            <Label className="typography-label mb-2 block">Preview</Label>
             <div className="space-y-2">
               {logoPreview && (
                 <div className="flex items-center gap-2">
@@ -246,7 +246,7 @@ export const CompanyBrandingManager: React.FC<CompanyBrandingManagerProps> = ({
           </div>
 
           <div className="flex justify-end">
-            <Button onClick={handleSave} className="bg-orange-500 hover:bg-orange-600">
+            <Button onClick={handleSave} className="btn-primary">
               <Save className="h-4 w-4 mr-2" />
               Save Branding Settings
             </Button>

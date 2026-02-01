@@ -10,14 +10,14 @@ const FabricatorBrandingSettings: React.FC = () => {
       <div className="container mx-auto px-4 md:px-8 space-y-8">
         {/* Prestige header */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-          <Card className="lg:col-span-2 bg-gray-900/70 border-gray-700 shadow-2xl shadow-orange-500/10">
+          <Card className="lg:col-span-2 bg-gray-900/70 border-gray-700 shadow-2xl shadow-amber-500/10 card-dark">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-3 text-2xl md:text-3xl">
-                <div className="p-2.5 rounded-xl bg-gradient-to-br from-orange-500 via-amber-400 to-sky-400 shadow-lg shadow-orange-500/40">
+                <div className="p-2.5 rounded-xl bg-gradient-to-br from-amber-500 via-amber-400 to-sky-400 shadow-lg shadow-amber-500/40">
                   <Palette className="h-6 w-6 text-slate-950" />
                 </div>
                 <div className="space-y-1">
-                  <span className="block text-sm font-semibold tracking-[0.25em] text-orange-300/80 uppercase">
+                  <span className="block text-sm font-semibold tracking-[0.25em] text-amber-300/80 uppercase">
                     Fabricator Pro
                   </span>
                   <span>Company Branding & Reports Identity</span>
@@ -32,10 +32,10 @@ const FabricatorBrandingSettings: React.FC = () => {
           </Card>
 
           <div className="space-y-3">
-            <Card className="bg-gray-900/70 border-gray-700">
+            <Card className="bg-gray-900/70 border-gray-700 card-dark">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-sm">
-                  <Factory className="h-4 w-4 text-orange-400" />
+                  <Factory className="h-4 w-4 text-amber-400" />
                   Brand Impact
                 </CardTitle>
               </CardHeader>
@@ -56,7 +56,7 @@ const FabricatorBrandingSettings: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-900/70 border-gray-700">
+            <Card className="bg-gray-900/70 border-gray-700 card-dark">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-sm">
                   <ShieldCheck className="h-4 w-4 text-sky-400" />

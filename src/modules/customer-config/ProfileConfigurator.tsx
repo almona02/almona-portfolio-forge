@@ -340,7 +340,7 @@ export const ProfileConfigurator: React.FC<ProfileConfiguratorProps> = ({
           <div className="flex gap-2">
             {editingId ? (
               <>
-                <Button onClick={handleUpdateProfile} className="bg-orange-500 hover:bg-orange-600">
+                <Button onClick={handleUpdateProfile} className="btn-primary">
                   <Save className="h-4 w-4 mr-2" />
                   Update Profile
                 </Button>
@@ -349,7 +349,7 @@ export const ProfileConfigurator: React.FC<ProfileConfiguratorProps> = ({
                 </Button>
               </>
             ) : (
-              <Button onClick={handleAddProfile} className="bg-orange-500 hover:bg-orange-600">
+              <Button onClick={handleAddProfile} className="btn-primary">
                 <Plus className="h-4 w-4 mr-2" />
                 {t('inventory.add_profile', 'Add Profile')}
               </Button>
@@ -376,7 +376,7 @@ export const ProfileConfigurator: React.FC<ProfileConfiguratorProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h4 className="font-semibold">{profile.name}</h4>
+                      <h4 className="typography-h4">{profile.name}</h4>
                       <Badge variant="outline">{profile.material}</Badge>
                       {profile.region && <Badge variant="outline">{profile.region}</Badge>}
                       {profile.brand && <Badge variant="outline">{profile.brand}</Badge>}

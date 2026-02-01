@@ -119,8 +119,8 @@ export const SystemPackManagement: React.FC = () => {
           className="flex items-center justify-between"
         >
           <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <Package className="h-8 w-8 text-orange-400" />
+            <h1 className="typography-h1 text-white flex items-center gap-3">
+              <Package className="h-8 w-8 text-amber-400" />
               System Pack Management
             </h1>
             <p className="text-sm text-gray-400 mt-2">
@@ -130,7 +130,7 @@ export const SystemPackManagement: React.FC = () => {
         </LazyMotionDiv>
 
         {/* Filters */}
-        <Card className="bg-gray-900/60 border-gray-700">
+        <Card className="bg-gray-900/60 border-gray-700 card-dark">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
@@ -147,7 +147,7 @@ export const SystemPackManagement: React.FC = () => {
                   variant={filterType === 'all' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setFilterType('all')}
-                  className={filterType === 'all' ? 'bg-orange-600' : ''}
+                  className={filterType === 'all' ? 'bg-amber-600' : ''}
                 >
                   All ({allSystems.length})
                 </Button>
@@ -190,7 +190,7 @@ export const SystemPackManagement: React.FC = () => {
             return (
               <Card 
                 key={system.meta.id} 
-                className={`bg-gray-900/60 border-gray-700 hover:border-orange-500/50 transition-colors ${
+                className={`bg-gray-900/60 border-gray-700 hover:border-amber-500/50 transition-colors ${
                   tuningStatus.isTuned ? 'ring-2 ring-green-500/30' : ''
                 }`}
               >

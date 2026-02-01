@@ -121,7 +121,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       
       <CardHeader className="pt-4 pb-2 px-4">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-white hover:text-almona-orange transition-colors">
+          <h3 className="typography-h3 text-lg text-white hover:text-almona-orange transition-colors">
             {title}
           </h3>
           {/* Inline play trigger removed; use overlay only */}

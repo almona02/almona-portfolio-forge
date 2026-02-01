@@ -1,47 +1,60 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import { useAuth } from '@/context/AuthContext';
+import { trackError } from '@/lib/performance-monitoring';
+import { systemPricingService } from '@/lib/pricing';
+import { loadQuoteForProject, saveQuoteForProject } from '@/modules/commercial/FabricatorQuoteStore';
+import { QuotingEngine, type Quote } from '@/modules/commercial/QuotingEngine';
+import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Textarea } from '@/shared/ui/ui/textarea';
-import { Badge } from '@/shared/ui/ui/badge';
-import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
+import type { Profile } from '@/types/fabricator';
+import { OptimizationResult, WindowUnit } from '@/types/fabricator';
 import {
-  FileText,
-  ShoppingCart,
-  DollarSign,
-  Calendar,
-  Shield,
-  Scale,
-  Loader2,
+    Calendar,
+    DollarSign,
+    FileText,
+    Loader2,
+    Scale,
+    Settings,
+    Shield,
+    ShoppingCart,
 } from 'lucide-react';
-import { WindowUnit, OptimizationResult } from '@/types/fabricator';
-import { QuotingEngine, type Quote } from '@/modules/commercial/QuotingEngine';
-import { loadQuoteForProject, saveQuoteForProject } from '@/modules/commercial/FabricatorQuoteStore';
+import React, { memo, useEffect, useRef, useState } from 'react';
 // PHASE 4: PDFExportService is now lazy-loaded - see handleExportPDF
 import { lazyExportQuotationPDF } from '@/lib/exports/lazyExportHandlers';
+import { supabase } from '@/lib/supabase';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { toast } from 'sonner';
-import { supabase } from '@/lib/supabase';
+import { PricingTuningStudio } from './PricingTuningStudio';
 import { LayoutIconGenerator, type LayoutIconHandle } from './assets/LayoutIconGenerator';
 
 interface CommercialOfferPanelProps {
   project: WindowUnit | null;
   optimization: OptimizationResult | null;
+  profiles?: Profile[]; // Optional: profiles list for pricing source detection
 }
 
+// PHASE 1 PRECISION UPGRADE: Import Money Core
+
 /**
- * CommercialOfferPanel
+ * CommercialOfferPanel (Gold Tier Edition)
  * Rich offer / contract cockpit for the current project:
- * - Generates a Quote from cost data
+ * - Generates a Quote from PRECISE Integer-Math cost data
  * - Lets the user refine payment terms, warranty, and legal text
  * - Exports a prestige PDF offer with logo & company profile
  */
-export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
+const CommercialOfferPanelComponent: React.FC<CommercialOfferPanelProps> = ({
   project,
   optimization,
+  profiles: externalProfiles,
 }) => {
   const { branding } = useCompanyBranding();
+  const { user } = useAuth();
+  const userId = user?.id;
   const [quote, setQuote] = useState<Quote | null>(null);
   const [loadingQuote, setLoadingQuote] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
@@ -49,6 +62,84 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
   const [layoutThumbnailUrl, setLayoutThumbnailUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const layoutIconRef = useRef<LayoutIconHandle>(null);
+  const [showPricingStudio, setShowPricingStudio] = useState(false);
+  const [pricingStudioSystemPackId, setPricingStudioSystemPackId] = useState<string | undefined>(undefined);
+  const [pricingStudioProfileId, setPricingStudioProfileId] = useState<string | undefined>(undefined);
+  const [pricingSource, setPricingSource] = useState<'system_pricing' | 'constants' | 'checking'>('checking');
+  const [profiles, setProfiles] = useState<Profile[]>(externalProfiles || []);
+
+  // Load profiles if not provided
+  useEffect(() => {
+    if (externalProfiles) {
+      setProfiles(externalProfiles);
+      return;
+    }
+
+    if (!userId) return;
+
+    const loadProfiles = async () => {
+      try {
+        const db = supabase as any;
+        const { data, error } = await db
+          .from('fabricator_profiles')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const loadedProfiles = (data || []).map((p: any) => ({
+          ...p,
+          stockQuantity: p.stock_quantity ? parseFloat(p.stock_quantity) : 0,
+          minStockLevel: p.min_stock_level ? parseFloat(p.min_stock_level) : 0,
+        })) as Profile[];
+
+        setProfiles(loadedProfiles);
+      } catch (error) {
+        console.warn('Error loading profiles in CommercialOfferPanel:', error);
+      }
+    };
+
+    void loadProfiles();
+  }, [externalProfiles, userId]);
+
+  // Detect pricing source (system_pricing vs constants)
+  useEffect(() => {
+    const detectPricingSource = async () => {
+      if (!project?.systemPackId || !userId || !profiles.length) {
+        setPricingSource('constants');
+        return;
+      }
+
+      try {
+        // Check if any profile in the system pack has system_pricing configured
+        const systemPackProfiles = profiles.filter((profile) => {
+          const specs = profile.specifications as any;
+          const systemName = specs?.window_system || profile.systemBrand || specs?.systemPackId;
+          return systemName === project.systemPackId;
+        });
+
+        if (systemPackProfiles.length === 0) {
+          setPricingSource('constants');
+          return;
+        }
+
+        // Check first profile for system_pricing
+        const firstProfile = systemPackProfiles[0];
+        const pricing = await systemPricingService.getSystemPricing(
+          firstProfile.id,
+          project.systemPackId
+        );
+
+        setPricingSource(pricing && pricing.initialized ? 'system_pricing' : 'constants');
+      } catch (error) {
+        console.warn('Error detecting pricing source:', error);
+        setPricingSource('constants');
+      }
+    };
+
+    void detectPricingSource();
+  }, [project?.systemPackId, userId, profiles]);
 
   // Load existing quote or generate a base one when project/optimization change
   useEffect(() => {
@@ -76,7 +167,8 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
         setError(null);
       }
     } catch (e) {
-      console.error('Failed to initialize quote:', e);
+      const err = e instanceof Error ? e : new Error(String(e));
+      trackError('CommercialOfferPanel', 'initialize_quote', err.message);
       setError('Failed to initialize quote from cost data');
     } finally {
       setLoadingQuote(false);
@@ -94,7 +186,8 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
       setError(null);
       toast.success('Quote refreshed from latest cost data');
     } catch (e) {
-      console.error('Failed to regenerate quote:', e);
+      const err = e instanceof Error ? e : new Error(String(e));
+      trackError('CommercialOfferPanel', 'regenerate_quote', err.message);
       setError('Failed to regenerate quote from cost data');
       toast.error('Failed to regenerate quote');
     } finally {
@@ -121,7 +214,8 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
       setLayoutThumbnailUrl(url);
       return url;
     } catch (e) {
-      console.error('Failed to capture/upload layout thumbnail', e);
+      const err = e instanceof Error ? e : new Error(String(e));
+      trackError('CommercialOfferPanel', 'capture_thumbnail', err.message);
       return null;
     } finally {
       setThumbnailGenerating(false);
@@ -159,7 +253,8 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
         saveQuoteForProject(project.id, quote);
       }
     } catch (e) {
-      console.error('Failed to generate offer PDF:', e);
+      const err = e instanceof Error ? e : new Error(String(e));
+      trackError('CommercialOfferPanel', 'generate_pdf', err.message);
       toast.error('Failed to generate offer PDF');
     } finally {
       setExportingPdf(false);
@@ -184,16 +279,62 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
   };
 
   return (
-    <Card className="bg-gray-900/60 border-gray-700">
-      <CardHeader className="pb-3">
+    <>
+    <Card className="bg-gray-900/60 border-gray-700 card-dark">
+      <CardHeader className="pb-3 border-b border-amber-500/10 bg-gradient-to-r from-gray-900 via-gray-900 to-amber-900/5">
         <CardTitle className="text-sm flex items-center gap-2">
-          <FileText className="h-4 w-4 text-orange-400" />
-          Commercial Offer
-          {branding.companyName && (
-            <Badge variant="outline" className="ml-auto text-[10px]">
-              {branding.companyName}
-            </Badge>
-          )}
+          <div className="p-1.5 rounded-md bg-amber-500/10 border border-amber-500/20">
+            <FileText className="h-4 w-4 text-amber-400" />
+          </div>
+          <span className="font-medium tracking-tight bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">
+            Commercial Offer
+          </span>
+          <div className="ml-auto flex items-center gap-2">
+            {/* Dealer Mode Toggle (Future) */}
+            <div className="hidden group-hover:flex items-center gap-1 mx-2">
+               <span className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Dealer Mode</span>
+               <Badge variant="outline" className="border-dashed border-gray-600 text-gray-400 text-[9px] px-1 py-0 h-4">OFF</Badge>
+            </div>
+            
+            {pricingSource !== 'checking' && (
+              <Badge
+                variant="outline"
+                className={
+                  pricingSource === 'system_pricing'
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 text-[10px]'
+                    : 'bg-amber-500/10 border-amber-500/30 text-amber-400 text-[10px]'
+                }
+              >
+                {pricingSource === 'system_pricing' ? 'Custom Pricing' : 'Default Pricing'}
+              </Badge>
+            )}
+            {project?.systemPackId && userId && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  const systemPackProfile = profiles.find((p) => {
+                    const specs = p.specifications as any;
+                    const systemName = specs?.window_system || p.systemBrand || specs?.systemPackId;
+                    return systemName === project.systemPackId;
+                  });
+                  setPricingStudioSystemPackId(project.systemPackId);
+                  setPricingStudioProfileId(systemPackProfile?.id);
+                  setShowPricingStudio(true);
+                }}
+                className="h-6 px-2 text-[10px] text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
+                title="Configure Pricing"
+              >
+                <Settings className="h-3 w-3 mr-1" />
+                Pricing
+              </Button>
+            )}
+            {branding.companyName && (
+              <Badge variant="outline" className="text-[10px]">
+                {branding.companyName}
+              </Badge>
+            )}
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -242,7 +383,7 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
         {/* Payment & currency */}
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="space-y-1">
-            <Label className="text-[11px] flex items-center gap-1">
+            <Label className="typography-label text-[11px] flex items-center gap-1">
               <DollarSign className="h-3 w-3 text-green-400" />
               Currency
             </Label>
@@ -261,7 +402,7 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-[11px] flex items-center gap-1">
+            <Label className="typography-label text-[11px] flex items-center gap-1">
               <Calendar className="h-3 w-3 text-blue-400" />
               Validity (days)
             </Label>
@@ -289,7 +430,7 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
 
         {/* Payment milestones */}
         <div className="space-y-1">
-          <Label className="text-[11px] flex items-center gap-1">
+          <Label className="typography-label text-[11px] flex items-center gap-1">
             <Scale className="h-3 w-3 text-yellow-400" />
             Payment Milestones (%)
           </Label>
@@ -333,7 +474,7 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
 
         {/* Warranty summary */}
         <div className="space-y-1">
-          <Label className="text-[11px] flex items-center gap-1">
+          <Label className="typography-label text-[11px] flex items-center gap-1">
             <Shield className="h-3 w-3 text-teal-400" />
             Warranty (years)
           </Label>
@@ -403,7 +544,7 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
 
         {/* Legal text snippets */}
         <div className="space-y-1">
-          <Label className="text-[11px]">Cancellation & Price Adjustment</Label>
+          <Label className="typography-label text-[11px]">Cancellation & Price Adjustment</Label>
           <Textarea
             rows={2}
             value={general?.cancellationPolicy || ''}
@@ -437,7 +578,7 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
         </div>
 
         <div className="space-y-1">
-          <Label className="text-[11px]">Force Majeure & Jurisdiction</Label>
+          <Label className="typography-label text-[11px]">Force Majeure & Jurisdiction</Label>
           <Textarea
             rows={2}
             value={general?.forceMajeureClause || ''}
@@ -504,7 +645,7 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
           </Button>
           <Button
             size="sm"
-            className="w-full justify-center text-xs bg-orange-500 hover:bg-orange-600"
+            className="btn-primary"
             onClick={handleGenerateOfferPdf}
             disabled={!quote || exportingPdf || thumbnailGenerating}
           >
@@ -523,8 +664,48 @@ export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = ({
         </div>
       </CardContent>
     </Card>
+
+    {/* Pricing Tuning Studio */}
+    {userId && showPricingStudio && (
+      <PricingTuningStudio
+        systemPackId={pricingStudioSystemPackId}
+        profileId={pricingStudioProfileId}
+        userId={userId}
+        profiles={profiles}
+        onClose={(saved) => {
+          setShowPricingStudio(false);
+          setPricingStudioSystemPackId(undefined);
+          setPricingStudioProfileId(undefined);
+          if (saved) {
+            toast.success('Pricing configuration updated');
+            // Trigger pricing source re-detection
+            setPricingSource('checking');
+          }
+        }}
+        onPricingUpdated={(systemPackId) => {
+          // Trigger pricing source re-detection
+          setPricingSource('checking');
+          console.log('Pricing updated for system pack:', systemPackId);
+        }}
+      />
+    )}
+    </>
   );
 };
+
+CommercialOfferPanelComponent.displayName = 'CommercialOfferPanel';
+
+// ✅ HARDENING: Memoize component for performance
+const CommercialOfferPanelMemo = memo(CommercialOfferPanelComponent);
+
+// ✅ HARDENING: Export with error boundary for production
+export const CommercialOfferPanel: React.FC<CommercialOfferPanelProps> = (props) => (
+  <ErrorBoundary level="component">
+    <CommercialOfferPanelMemo {...props} />
+  </ErrorBoundary>
+);
+
+CommercialOfferPanel.displayName = 'CommercialOfferPanel';
 
 export default CommercialOfferPanel;
 

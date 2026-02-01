@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import React, { memo, useCallback, useState } from 'react';
 import { Button } from '@/shared/ui/ui/button';
 import { X } from 'lucide-react';
 import { track } from '@/lib/analytics';
@@ -8,11 +9,12 @@ interface FeedbackButtonProps {
   jobId?: string;
 }
 
-export const FeedbackButton: React.FC<FeedbackButtonProps> = ({ jobId }) => {
+const FeedbackButtonComponent: React.FC<FeedbackButtonProps> = ({ jobId }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
 
-  const handleSubmit = () => {
+  // ✅ PERFORMANCE: Memoize handler to prevent unnecessary re-renders
+  const handleSubmit = useCallback(() => {
     if (!message.trim()) {
       toast.error('Please add a short note before sending feedback.');
       return;
@@ -27,7 +29,7 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({ jobId }) => {
     toast.success('Feedback sent. Thank you!');
     setMessage('');
     setIsOpen(false);
-  };
+  }, [jobId, message]);
 
   return (
     <>
@@ -35,7 +37,7 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({ jobId }) => {
         <Button
           variant="outline"
           size="sm"
-          className="bg-orange-500 hover:bg-orange-600 border-orange-400 text-xs"
+          className="btn-primary"
           onClick={() => setIsOpen(true)}
         >
           💡 Found an issue?
@@ -46,7 +48,7 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({ jobId }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="w-full max-w-md bg-gray-900 border border-gray-700 rounded-xl p-4 shadow-2xl">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-gray-100">
+              <h2 className="typography-h2 text-sm font-semibold text-gray-100">
                 Fabricator Pro Feedback
               </h2>
               <button
@@ -63,7 +65,7 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({ jobId }) => {
             </p>
 
             <textarea
-              className="w-full h-28 rounded-md bg-gray-800 border border-gray-700 text-xs text-gray-100 p-2 focus:outline-none focus:ring-2 focus:ring-orange-500/60 focus:border-orange-500/60 resize-none"
+              className="w-full h-28 rounded-md bg-gray-800 border border-gray-700 text-xs text-gray-100 p-2 focus:outline-none focus:ring-2 focus:ring-amber-500/60 resize-none card-premium"
               placeholder="Example: When I tried to move a job from design to optimization, I wasn't sure which button to use..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -80,7 +82,7 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({ jobId }) => {
               </Button>
               <Button
                 size="sm"
-                className="bg-orange-500 hover:bg-orange-600 text-xs"
+                className="btn-primary"
                 onClick={handleSubmit}
               >
                 Send Feedback
@@ -92,6 +94,20 @@ export const FeedbackButton: React.FC<FeedbackButtonProps> = ({ jobId }) => {
     </>
   );
 };
+
+FeedbackButtonComponent.displayName = 'FeedbackButton';
+
+// ✅ HARDENING: Memoize component for performance
+const FeedbackButtonMemo = memo(FeedbackButtonComponent);
+
+// ✅ HARDENING: Export with error boundary for production
+export const FeedbackButton: React.FC<FeedbackButtonProps> = (props) => (
+  <ErrorBoundary level="component">
+    <FeedbackButtonMemo {...props} />
+  </ErrorBoundary>
+);
+
+FeedbackButton.displayName = 'FeedbackButton';
 
 export default FeedbackButton;
 

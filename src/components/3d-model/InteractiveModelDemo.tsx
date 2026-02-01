@@ -127,7 +127,7 @@ export const InteractiveModelDemo: React.FC<InteractiveModelDemoProps> = ({
             <CardTitle className="text-white flex items-center justify-between">
               <span>{t('3d.interactive.title', 'Interactive 3D Model')}</span>
               <div className="flex items-center space-x-2">
-                <Badge variant="outline" className="text-orange-400 border-orange-400">
+                <Badge variant="outline" className="text-amber-400 border-amber-400">
                   {regionState.region}
                 </Badge>
                 <Button
@@ -182,7 +182,7 @@ export const InteractiveModelDemo: React.FC<InteractiveModelDemoProps> = ({
                     <Badge
                       key={part.id}
                       variant="secondary"
-                      className="text-xs bg-orange-500/20 text-orange-300 border-orange-500/30"
+                      className="btn-primary"
                     >
                       {i18n.language === 'tr' ? part.nameTr || part.name : 
                        i18n.language === 'ar' ? part.nameAr || part.name : 
@@ -216,7 +216,7 @@ export const InteractiveModelDemo: React.FC<InteractiveModelDemoProps> = ({
           <CardContent className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-300">
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                <div className="btn-primary"></div>
                 <span>{t('3d.instructions.click', 'Click on parts to select/deselect')}</span>
               </div>
               <div className="flex items-center space-x-2">

@@ -71,7 +71,16 @@ export class SubscriptionManager {
         .eq('status', 'active')
         .single();
 
+      // Handle "not found" error gracefully (PGRST116 = no rows returned)
       if (error && error.code !== 'PGRST116') {
+        // Handle permission errors (403, 406) gracefully
+        if (error.code === 'PGRST301' || error.code === '42501' || error.message?.includes('403') || error.message?.includes('406')) {
+          // User doesn't have access to subscriptions table - return free tier
+          if (import.meta.env.DEV) {
+            console.warn('Subscription access denied, using free tier:', error.message);
+          }
+          return this.getFreeSubscriptionFallback(userId);
+        }
         throw error;
       }
 
@@ -81,19 +90,28 @@ export class SubscriptionManager {
 
       // Create free subscription if none exists
       return await this.createFreeSubscription(userId);
-    } catch (error) {
-      console.error('Failed to get subscription:', error);
-      // Return free subscription as fallback
-      return {
-        id: `free-${userId}`,
-        userId,
-        planType: 'free',
-        projectsUsed: 0,
-        projectsLimit: PLAN_LIMITS.free.projectsLimit,
-        status: 'active',
-        createdAt: new Date(),
-      };
+    } catch (error: any) {
+      // Handle all errors gracefully - return free subscription
+      if (import.meta.env.DEV) {
+        console.warn('Failed to get subscription, using free tier:', error?.message || error);
+      }
+      return this.getFreeSubscriptionFallback(userId);
     }
+  }
+
+  /**
+   * Get free subscription fallback (used when DB access fails)
+   */
+  private getFreeSubscriptionFallback(userId: string): Subscription {
+    return {
+      id: `free-${userId}`,
+      userId,
+      planType: 'free',
+      projectsUsed: 0,
+      projectsLimit: PLAN_LIMITS.free.projectsLimit,
+      status: 'active',
+      createdAt: new Date(),
+    };
   }
 
   /**
@@ -113,12 +131,24 @@ export class SubscriptionManager {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        // Handle permission/access errors gracefully
+        if (error.code === 'PGRST301' || error.code === '42501' || error.message?.includes('403') || error.message?.includes('406') || error.message?.includes('400')) {
+          if (import.meta.env.DEV) {
+            console.warn('Cannot create subscription (access denied), using free tier fallback:', error.message);
+          }
+          return this.getFreeSubscriptionFallback(userId);
+        }
+        throw error;
+      }
 
       return this.mapSubscriptionFromDb(data);
-    } catch (error) {
-      console.error('Failed to create free subscription:', error);
-      throw error;
+    } catch (error: any) {
+      // Return free subscription fallback instead of throwing
+      if (import.meta.env.DEV) {
+        console.warn('Failed to create free subscription, using fallback:', error?.message || error);
+      }
+      return this.getFreeSubscriptionFallback(userId);
     }
   }
 
@@ -149,6 +179,11 @@ export class SubscriptionManager {
     try {
       const subscription = await this.getSubscription(userId);
 
+      // Skip update if using fallback subscription (no DB access)
+      if (subscription.id.startsWith('free-') && !subscription.id.includes('-')) {
+        return; // Using fallback, skip DB update
+      }
+
       const { error } = await supabase
         .from('subscriptions')
         .update({
@@ -156,9 +191,21 @@ export class SubscriptionManager {
         })
         .eq('id', subscription.id);
 
-      if (error) throw error;
-    } catch (error) {
-      console.error('Failed to increment project count:', error);
+      if (error) {
+        // Handle permission errors gracefully
+        if (error.code === 'PGRST301' || error.code === '42501' || error.message?.includes('403') || error.message?.includes('406')) {
+          if (import.meta.env.DEV) {
+            console.warn('Cannot update subscription (access denied), skipping:', error.message);
+          }
+          return;
+        }
+        throw error;
+      }
+    } catch (error: any) {
+      // Silently fail - project count increment is non-critical
+      if (import.meta.env.DEV) {
+        console.warn('Failed to increment project count (non-critical):', error?.message || error);
+      }
     }
   }
 

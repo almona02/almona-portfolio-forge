@@ -262,8 +262,8 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
         className="text-center mb-8"
       >
         <div className="flex items-center justify-center gap-3 mb-4">
-          <Truck className="h-12 w-12 text-orange-400" />
-          <h1 className="text-4xl md:text-5xl font-bold">
+          <Truck className="h-12 w-12 text-amber-400" />
+          <h1 className="typography-h1 md:text-5xl">
             <span className="text-gradient-orange">Nile Logistics Calculator</span>
           </h1>
         </div>
@@ -275,7 +275,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
           <Card className="bg-gray-800/50 border-gray-700">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-orange-400">4</div>
+              <div className="text-2xl font-bold text-amber-400">4</div>
               <div className="text-sm text-gray-400">Shipping Methods</div>
             </CardContent>
           </Card>
@@ -315,14 +315,14 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Calculator className="h-6 w-6 text-orange-400" />
+                  <Calculator className="h-6 w-6 text-amber-400" />
                   Shipping Cost Calculator
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Shipping Method Selection */}
                 <div>
-                  <label className="block text-sm font-medium mb-3">Shipping Method</label>
+                  <label className="typography-label block text-sm font-medium mb-3">Shipping Method</label>
                   <div className="grid grid-cols-2 gap-3">
                     {shippingOptions.map((option) => (
                       <LazyMotionDiv
@@ -346,7 +346,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                 {/* Origin and Destination */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Origin Port</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Origin Port</label>
                     <select
                       value={fromPort}
                       onChange={(e) => setFromPort(e.target.value)}
@@ -360,7 +360,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Destination</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Destination</label>
                     <select
                       value={toDestination}
                       onChange={(e) => setToDestination(e.target.value)}
@@ -377,7 +377,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
 
                 {/* Weight and Dimensions */}
                 <div>
-                  <label className="block text-sm font-medium mb-2">Weight (kg)</label>
+                  <label className="typography-label block text-sm font-medium mb-2">Weight (kg)</label>
                   <Input
                     type="number"
                     value={weight}
@@ -387,10 +387,10 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-3">Dimensions (cm)</label>
+                  <label className="typography-label block text-sm font-medium mb-3">Dimensions (cm)</label>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="block text-xs text-gray-400 mb-1">Length</label>
+                      <label className="typography-label block text-xs text-gray-400 mb-1">Length</label>
                       <Input
                         type="number"
                         value={dimensions.length}
@@ -399,7 +399,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-400 mb-1">Width</label>
+                      <label className="typography-label block text-xs text-gray-400 mb-1">Width</label>
                       <Input
                         type="number"
                         value={dimensions.width}
@@ -408,7 +408,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-400 mb-1">Height</label>
+                      <label className="typography-label block text-xs text-gray-400 mb-1">Height</label>
                       <Input
                         type="number"
                         value={dimensions.height}
@@ -427,9 +427,9 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                       id="insurance"
                       checked={insurance}
                       onChange={(e) => setInsurance(e.target.checked)}
-                      className="rounded border-gray-600 bg-gray-700 text-orange-500 focus:ring-orange-500"
+                      className="rounded border-gray-600 bg-gray-700 text-amber-500 focus:ring-amber-500"
                     />
-                    <label htmlFor="insurance" className="text-sm">Insurance Coverage (+20%)</label>
+                    <label htmlFor="insurance" className="typography-label text-sm">Insurance Coverage (+20%)</label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <input
@@ -437,15 +437,15 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                       id="urgent"
                       checked={urgent}
                       onChange={(e) => setUrgent(e.target.checked)}
-                      className="rounded border-gray-600 bg-gray-700 text-orange-500 focus:ring-orange-500"
+                      className="rounded border-gray-600 bg-gray-700 text-amber-500 focus:ring-amber-500"
                     />
-                    <label htmlFor="urgent" className="text-sm">Urgent Delivery (+50%)</label>
+                    <label htmlFor="urgent" className="typography-label text-sm">Urgent Delivery (+50%)</label>
                   </div>
                 </div>
 
                 <Button 
                   onClick={calculateShippingCost}
-                  className="w-full bg-orange-500 hover:bg-orange-600"
+                  className="btn-primary"
                 >
                   <Calculator className="h-4 w-4 mr-2" />
                   Calculate Shipping Cost
@@ -457,15 +457,15 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-6 w-6 text-orange-400" />
+                  <DollarSign className="h-6 w-6 text-amber-400" />
                   Shipping Quote
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {calculatedCost ? (
                   <div className="space-y-4">
-                    <div className="text-center p-6 bg-orange-500/10 rounded-lg border border-orange-500/30">
-                      <h3 className="text-3xl font-bold text-orange-400 mb-2">
+                    <div className="btn-primary">
+                      <h3 className="typography-h3 text-3xl text-amber-400 mb-2">
                         {calculatedCost.toLocaleString('en-US')} EGP
                       </h3>
                       <p className="text-gray-400">
@@ -478,7 +478,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
 
                     {costBreakdown && (
                       <div className="space-y-3">
-                        <h4 className="font-semibold">Cost Breakdown:</h4>
+                        <h4 className="typography-h4">Cost Breakdown:</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span>Base Cost:</span>
@@ -524,7 +524,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                     )}
 
                     <div className="flex gap-3">
-                      <Button className="flex-1 bg-orange-500 hover:bg-orange-600">
+                      <Button className="btn-primary">
                         <Phone className="h-4 w-4 mr-2" />
                         Book Now
                       </Button>
@@ -578,7 +578,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <h4 className="font-semibold text-sm mb-2">Features:</h4>
+                        <h4 className="typography-h4 text-sm mb-2">Features:</h4>
                         <ul className="space-y-1">
                           {option.features.map((feature, index) => (
                             <li key={index} className="flex items-center gap-2 text-sm">
@@ -616,22 +616,22 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Route className="h-6 w-6 text-orange-400" />
+                  <Route className="h-6 w-6 text-amber-400" />
                   Track Your Shipment
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Tracking Number</label>
+                  <label className="typography-label block text-sm font-medium mb-2">Tracking Number</label>
                   <Input placeholder="Enter your tracking number" />
                 </div>
-                <Button className="w-full bg-orange-500 hover:bg-orange-600">
+                <Button className="btn-primary">
                   <Route className="h-4 w-4 mr-2" />
                   Track Shipment
                 </Button>
                 
                 <div className="space-y-3">
-                  <h4 className="font-semibold">Recent Shipments:</h4>
+                  <h4 className="typography-h4">Recent Shipments:</h4>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-3 bg-gray-700/50 rounded">
                       <div>
@@ -659,28 +659,28 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Phone className="h-6 w-6 text-orange-400" />
+                  <Phone className="h-6 w-6 text-amber-400" />
                   Customer Support
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 p-3 bg-gray-700/50 rounded">
-                    <Phone className="h-5 w-5 text-orange-400" />
+                    <Phone className="h-5 w-5 text-amber-400" />
                     <div>
                       <p className="font-medium">Phone Support</p>
                       <p className="text-sm text-gray-400">+20 2 2274 0000</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-gray-700/50 rounded">
-                    <Mail className="h-5 w-5 text-orange-400" />
+                    <Mail className="h-5 w-5 text-amber-400" />
                     <div>
                       <p className="font-medium">Email Support</p>
                       <p className="text-sm text-gray-400">logistics@almona.com</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-gray-700/50 rounded">
-                    <Globe className="h-5 w-5 text-orange-400" />
+                    <Globe className="h-5 w-5 text-amber-400" />
                     <div>
                       <p className="font-medium">Live Chat</p>
                       <p className="text-sm text-gray-400">Available 24/7</p>
@@ -689,12 +689,12 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
                 </div>
 
                 <div className="space-y-3">
-                  <h4 className="font-semibold">Support Hours:</h4>
+                  <h4 className="typography-h4">Support Hours:</h4>
                   <div className="text-sm space-y-1">
                     <p>Monday - Friday: 8:00 AM - 6:00 PM</p>
                     <p>Saturday: 9:00 AM - 4:00 PM</p>
                     <p>Sunday: Closed</p>
-                    <p className="text-orange-400">Emergency: 24/7</p>
+                    <p className="text-amber-400">Emergency: 24/7</p>
                   </div>
                 </div>
 
@@ -709,7 +709,7 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
           <Card className="bg-gray-800/50 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Info className="h-6 w-6 text-orange-400" />
+                <Info className="h-6 w-6 text-amber-400" />
                 Shipping Information
               </CardTitle>
             </CardHeader>
@@ -717,17 +717,17 @@ const FreightCalculator: React.FC<FreightCalculatorProps> = ({ machine }) => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center p-4 bg-gray-700/30 rounded">
                   <CheckCircle className="h-8 w-8 text-green-400 mx-auto mb-2" />
-                  <h4 className="font-semibold mb-1">Insurance Coverage</h4>
+                  <h4 className="typography-h4 mb-1">Insurance Coverage</h4>
                   <p className="text-sm text-gray-400">Full coverage up to 100,000 EGP</p>
                 </div>
                 <div className="text-center p-4 bg-gray-700/30 rounded">
                   <Route className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-                  <h4 className="font-semibold mb-1">Real-time Tracking</h4>
+                  <h4 className="typography-h4 mb-1">Real-time Tracking</h4>
                   <p className="text-sm text-gray-400">GPS tracking and status updates</p>
                 </div>
                 <div className="text-center p-4 bg-gray-700/30 rounded">
-                  <Shield className="h-8 w-8 text-orange-400 mx-auto mb-2" />
-                  <h4 className="font-semibold mb-1">Secure Handling</h4>
+                  <Shield className="h-8 w-8 text-amber-400 mx-auto mb-2" />
+                  <h4 className="typography-h4 mb-1">Secure Handling</h4>
                   <p className="text-sm text-gray-400">Professional packaging and handling</p>
                 </div>
               </div>

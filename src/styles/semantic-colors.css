@@ -1,0 +1,61 @@
+@layer base {
+  :root {
+    /* Semantic Background Colors */
+    --color-bg-primary: 15 23 42; /* slate-900 */
+    --color-bg-secondary: 30 41 59; /* slate-800 */
+    --color-bg-card: 31 41 55; /* gray-800 mostly */
+
+    /* Semantic Text Colors (WCAG AA Compliant) */
+    --color-text-primary: 255 255 255; /* white */
+    --color-text-secondary: 203 213 225; /* slate-300 - 4.73:1 on dark bg */
+    --color-text-tertiary: 148 163 184; /* slate-400 - Use only for large text */
+    --color-text-helper: 245 158 11; /* amber-500 equivalent */
+
+    /* Semantic Border Colors */
+    --color-border-primary: 51 65 85; /* gray-700 */
+    --color-border-accent: 245 158 11; /* amber-500 */
+
+    /* Status Colors (Accessible Palette) */
+    --color-status-success: 52 211 153; /* emerald-400 */
+    --color-status-warning: 251 191 36; /* amber-400 */
+    --color-status-error: 251 113 133; /* rose-400 */
+    --color-status-info: 56 189 248; /* sky-400 */
+
+    /* Layout Variables */
+    --workspace-nav-height: 4rem; /* 64px */
+    --workspace-header-height: 5rem; /* 80px */
+    --sidebar-width: 320px;
+  }
+
+  /* High Contrast Theme Support Preference */
+  @media (prefers-contrast: high) {
+    :root {
+      --color-text-secondary: 226 232 240; /* slate-200 */
+      --color-text-helper: 251 191 36; /* amber-400 */
+    }
+  }
+}
+
+/* Utility Classes map to variables */
+.bg-primary {
+  background-color: rgb(var(--color-bg-primary));
+}
+.bg-secondary {
+  background-color: rgb(var(--color-bg-secondary));
+}
+.bg-card {
+  background-color: rgb(var(--color-bg-card) / 0.3);
+}
+
+.text-primary {
+  color: rgb(var(--color-text-primary));
+}
+.text-secondary {
+  color: rgb(var(--color-text-secondary));
+}
+.text-tertiary {
+  color: rgb(var(--color-text-tertiary));
+}
+.text-helper {
+  color: rgb(var(--color-text-helper) / 0.8);
+}

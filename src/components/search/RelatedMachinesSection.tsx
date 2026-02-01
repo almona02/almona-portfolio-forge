@@ -59,12 +59,12 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
     <div className={`mt-12 ${className}`}>
       {/* Section Header */}
       <div className="flex items-center mb-6">
-        <div className="flex items-center text-orange-400 mr-4">
+        <div className="flex items-center text-amber-400 mr-4">
           {sectionIcon}
         </div>
-        <h3 className="text-xl font-semibold text-almona-light">{sectionTitle}</h3>
+        <h3 className="typography-h3 text-almona-light">{sectionTitle}</h3>
         {showTrending && (
-          <Badge className="ml-3 bg-orange-600/20 text-orange-400 border-orange-400/30">
+          <Badge className="btn-primary">
             🔥 Hot
           </Badge>
         )}
@@ -79,7 +79,7 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
           return (
             <Card 
               key={machine.id} 
-              className="bg-almona-darker border-almona-light/20 overflow-hidden hover:border-orange-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/10 group"
+              className="bg-almona-darker border-almona-light/20 overflow-hidden hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10 group"
             >
               {/* Machine Image */}
               <div className="relative h-40 overflow-hidden">
@@ -107,10 +107,10 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
 
               {/* Machine Info */}
               <CardHeader className="pb-2">
-                <CardTitle className="text-base line-clamp-2 group-hover:text-orange-400 transition-colors">
+                <CardTitle className="text-base line-clamp-2 group-hover:text-amber-400 transition-colors">
                   {machine.title}
                 </CardTitle>
-                <div className="text-orange-400 font-bold text-lg">
+                <div className="text-amber-400 font-bold text-lg">
                   {machine.price}
                 </div>
               </CardHeader>
@@ -148,7 +148,7 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
                 <Button 
                   asChild 
                   size="sm"
-                  className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                  className="btn-primary"
                 >
                   <Link 
                     to={`/used-machines/${machine.id}`}
@@ -176,7 +176,7 @@ const RelatedMachinesSection: React.FC<RelatedMachinesSectionProps> = ({
       {/* See More Link */}
       {machinesToShow.length >= 4 && (
         <div className="text-center mt-6">
-          <Button variant="outline" className="border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white">
+          <Button variant="outline" className="btn-primary">
             <Link to="/used-machines" className="flex items-center">
               See More Similar Machines
               <ArrowRight className="w-4 h-4 ml-2" />

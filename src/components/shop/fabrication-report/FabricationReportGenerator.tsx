@@ -108,11 +108,11 @@ export default function FabricationReportGenerator() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Fabrication Report Generator</h1>
+      <h1 className="typography-h1 text-2xl mb-6">Fabrication Report Generator</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div>
-          <Label htmlFor="material-type">Material Type</Label>
+          <Label htmlFor="material-type" className="typography-label">Material Type</Label>
           <Select value={materialType} onValueChange={(val: 'aluminum' | 'upvc') => setMaterialType(val)}>
             <SelectTrigger>
               <SelectValue placeholder="Select material" />
@@ -125,7 +125,7 @@ export default function FabricationReportGenerator() {
         </div>
 
         <div>
-          <Label htmlFor="profile-price">Profile Price (EGP)</Label>
+          <Label htmlFor="profile-price" className="typography-label">Profile Price (EGP)</Label>
           <Input
             type="number"
             id="profile-price"
@@ -138,7 +138,7 @@ export default function FabricationReportGenerator() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div>
-          <Label htmlFor="locks">Locks (EGP)</Label>
+          <Label htmlFor="locks" className="typography-label">Locks (EGP)</Label>
           <Input
             type="number"
             id="locks"
@@ -148,7 +148,7 @@ export default function FabricationReportGenerator() {
           />
         </div>
         <div>
-          <Label htmlFor="handles">Handles (EGP)</Label>
+          <Label htmlFor="handles" className="typography-label">Handles (EGP)</Label>
           <Input
             type="number"
             id="handles"
@@ -158,7 +158,7 @@ export default function FabricationReportGenerator() {
           />
         </div>
         <div>
-          <Label htmlFor="espanglites">Espanglites (EGP)</Label>
+          <Label htmlFor="espanglites" className="typography-label">Espanglites (EGP)</Label>
           <Input
             type="number"
             id="espanglites"
@@ -168,7 +168,7 @@ export default function FabricationReportGenerator() {
           />
         </div>
         <div>
-          <Label htmlFor="rails">Rails (EGP)</Label>
+          <Label htmlFor="rails" className="typography-label">Rails (EGP)</Label>
           <Input
             type="number"
             id="rails"
@@ -196,7 +196,7 @@ export default function FabricationReportGenerator() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div>
-          <Label htmlFor="machine-model">Machine Model</Label>
+          <Label htmlFor="machine-model" className="typography-label">Machine Model</Label>
           <Select value={machineModel} onValueChange={setMachineModel}>
             <SelectTrigger>
               <SelectValue placeholder="Select machine" />
@@ -209,7 +209,7 @@ export default function FabricationReportGenerator() {
           </Select>
         </div>
         <div>
-          <Label htmlFor="profile-length">Profile Length (meters)</Label>
+          <Label htmlFor="profile-length" className="typography-label">Profile Length (meters)</Label>
           <Input
             type="number"
             id="profile-length"
@@ -220,7 +220,7 @@ export default function FabricationReportGenerator() {
       </div>
 
       <div className="flex items-center space-x-2 mb-6">
-        <Label htmlFor="language">Language</Label>
+        <Label htmlFor="language" className="typography-label">Language</Label>
         <Select value={isArabic ? 'ar' : 'en'} onValueChange={(val) => setIsArabic(val === 'ar')}>
           <SelectTrigger className="w-[100px]">
             <SelectValue placeholder="Language" />
@@ -241,22 +241,22 @@ export default function FabricationReportGenerator() {
 
       {comparisonData && (
         <div className="mt-8 p-4 border rounded-lg">
-          <h2 className="text-xl font-bold mb-4">Machine Comparison</h2>
+          <h2 className="typography-h2 text-xl mb-4">Machine Comparison</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 bg-gray-100 rounded-lg">
-              <h3 className="font-semibold">YILMAZ KM-212</h3>
+              <h3 className="typography-h3">YILMAZ KM-212</h3>
               <p>Power: {comparisonData.yilmaz.power} kW</p>
               <p>Price: EGP {comparisonData.yilmaz.price.toLocaleString()}</p>
               <p>Cutting Time: {comparisonData.yilmaz.cuttingTime.toFixed(2)} hours</p>
             </div>
             <div className="p-4 bg-gray-100 rounded-lg">
-              <h3 className="font-semibold">Chinese Model</h3>
+              <h3 className="typography-h3">Chinese Model</h3>
               <p>Power: {comparisonData.chinese[0].power} kW</p>
               <p>Price: EGP {comparisonData.chinese[0].price.toLocaleString()}</p>
               <p>Cutting Time: {comparisonData.chinese[0].cuttingTime.toFixed(2)} hours</p>
             </div>
             <div className="p-4 bg-gray-100 rounded-lg">
-              <h3 className="font-semibold">Comparison</h3>
+              <h3 className="typography-h3">Comparison</h3>
               <p>Power Difference: +{comparisonData.powerDifference} kW</p>
               <p>Price Difference: +EGP {comparisonData.priceDifference.toLocaleString()}</p>
               <p>Time Saved: {comparisonData.timeDifference.toFixed(2)} hours</p>

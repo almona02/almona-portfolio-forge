@@ -173,7 +173,7 @@ export const TheFoundry: React.FC = () => {
           transition={{ type: 'spring', stiffness: 100, damping: 15 }}
           className="border-b-2 border-primary pb-4"
         >
-          <h1 className="text-4xl font-cairo font-bold text-primary">The Foundry</h1>
+          <h1 className="typography-h1 font-cairo text-primary">The Foundry</h1>
           <p className="text-muted-foreground mt-2">
             Master Craftsman's Tuning Studio - Calibrate for 99.8% Accuracy
           </p>
@@ -202,7 +202,7 @@ export const TheFoundry: React.FC = () => {
               <CardContent className="space-y-4">
                 <div className="border-2 border-dashed border-primary/30 rounded-lg p-8 text-center">
                   <Upload className="h-12 w-12 mx-auto mb-4 text-primary" />
-                  <Label htmlFor="dxf-upload" className="cursor-pointer">
+                  <Label htmlFor="dxf-upload" className="typography-label cursor-pointer">
                     <span className="text-primary font-semibold">Click to upload</span> or drag and drop
                   </Label>
                   <Input
@@ -247,7 +247,7 @@ export const TheFoundry: React.FC = () => {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="saw-kerf">Saw Blade Kerf (mm)</Label>
+                    <Label htmlFor="saw-kerf" className="typography-label">Saw Blade Kerf (mm)</Label>
                     <Input
                       id="saw-kerf"
                       type="number"
@@ -264,7 +264,7 @@ export const TheFoundry: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="bar-trim">Bar End Trim (mm)</Label>
+                    <Label htmlFor="bar-trim" className="typography-label">Bar End Trim (mm)</Label>
                     <Input
                       id="bar-trim"
                       type="number"
@@ -280,7 +280,7 @@ export const TheFoundry: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="extrusion-tolerance">Extrusion Tolerance (mm/m)</Label>
+                    <Label htmlFor="extrusion-tolerance" className="typography-label">Extrusion Tolerance (mm/m)</Label>
                     <Input
                       id="extrusion-tolerance"
                       type="number"
@@ -297,7 +297,7 @@ export const TheFoundry: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="transom-milling">Transom Milling Depth (mm)</Label>
+                    <Label htmlFor="transom-milling" className="typography-label">Transom Milling Depth (mm)</Label>
                     <Input
                       id="transom-milling"
                       type="number"
@@ -314,7 +314,7 @@ export const TheFoundry: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="screen-offset">Screen Adapter Offset (mm)</Label>
+                    <Label htmlFor="screen-offset" className="typography-label">Screen Adapter Offset (mm)</Label>
                     <Input
                       id="screen-offset"
                       type="number"
@@ -330,7 +330,7 @@ export const TheFoundry: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="upvc-welding">UPVC Welding Loss (mm)</Label>
+                    <Label htmlFor="upvc-welding" className="typography-label">UPVC Welding Loss (mm)</Label>
                     <Input
                       id="upvc-welding"
                       type="number"
@@ -403,7 +403,7 @@ export const TheFoundry: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="aluminum-grade">Aluminum Grade</Label>
+                    <Label htmlFor="aluminum-grade" className="typography-label">Aluminum Grade</Label>
                     <select
                       id="aluminum-grade"
                       className="w-full px-3 py-2 border rounded-md"
@@ -419,7 +419,7 @@ export const TheFoundry: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="aluminum-tolerance">Aluminum Tolerance (mm/m)</Label>
+                    <Label htmlFor="aluminum-tolerance" className="typography-label">Aluminum Tolerance (mm/m)</Label>
                     <Input
                       id="aluminum-tolerance"
                       type="number"
@@ -436,7 +436,7 @@ export const TheFoundry: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="upvc-mix">UPVC Mix</Label>
+                    <Label htmlFor="upvc-mix" className="typography-label">UPVC Mix</Label>
                     <select
                       id="upvc-mix"
                       className="w-full px-3 py-2 border rounded-md"
@@ -452,7 +452,7 @@ export const TheFoundry: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="steel-coating">Steel Coating</Label>
+                    <Label htmlFor="steel-coating" className="typography-label">Steel Coating</Label>
                     <select
                       id="steel-coating"
                       className="w-full px-3 py-2 border rounded-md"

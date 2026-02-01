@@ -15,8 +15,8 @@ export const JobColumn: React.FC<JobColumnProps> = ({ stage, title, jobs, icon: 
     <div className="bg-gray-900/80 border border-gray-700 rounded-xl p-3 flex flex-col min-h-[160px]">
       <div className="flex items-center justify-between mb-3 gap-2">
         <div className="flex items-center gap-2">
-          <Icon className="h-4 w-4 text-orange-400" />
-          <h3 className="font-semibold text-xs uppercase tracking-wide text-gray-300">
+          <Icon className="h-4 w-4 text-amber-400" />
+          <h3 className="typography-h3 text-xs text-gray-300">
             {title}
           </h3>
         </div>

@@ -152,7 +152,7 @@ export const AIDesignDemo: React.FC = () => {
 
         {suggestions.length > 0 && (
           <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-purple-300">AI Suggestions:</h4>
+            <h4 className="typography-h4 text-sm text-purple-300">AI Suggestions:</h4>
             {suggestions.map((suggestion, i) => (
               <div
                 key={i}
@@ -204,10 +204,10 @@ export const OptimizationDemo: React.FC = () => {
   };
 
   return (
-    <Card className="bg-gradient-to-br from-orange-900/20 to-orange-800/20 border-orange-500/30">
+    <Card className="bg-gradient-to-br from-amber-900/20 to-amber-800/20 border-amber-500/30">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Scissors className="h-5 w-5 text-orange-400" />
+          <Scissors className="h-5 w-5 text-amber-400" />
           Cutting Optimization Demo
         </CardTitle>
       </CardHeader>
@@ -219,7 +219,7 @@ export const OptimizationDemo: React.FC = () => {
         <Button
           onClick={handleOptimize}
           disabled={optimizing || results !== null}
-          className="w-full bg-orange-600 hover:bg-orange-700"
+          className="btn-primary"
         >
           {optimizing ? 'Optimizing...' : results ? 'Optimization Complete' : 'Run Optimization'}
         </Button>
@@ -233,18 +233,18 @@ export const OptimizationDemo: React.FC = () => {
 
         {results && (
           <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-orange-300">Optimization Results:</h4>
+            <h4 className="typography-h4 text-sm text-amber-300">Optimization Results:</h4>
             <div className="grid grid-cols-3 gap-2">
-              <div className="p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg text-center">
-                <div className="text-2xl font-bold text-orange-400">{results.wasteReduction}%</div>
+              <div className="btn-primary">
+                <div className="text-2xl font-bold text-amber-400">{results.wasteReduction}%</div>
                 <div className="text-xs text-gray-400 mt-1">Waste Reduction</div>
               </div>
-              <div className="p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg text-center">
-                <div className="text-2xl font-bold text-orange-400">{results.efficiency}%</div>
+              <div className="btn-primary">
+                <div className="text-2xl font-bold text-amber-400">{results.efficiency}%</div>
                 <div className="text-xs text-gray-400 mt-1">Efficiency</div>
               </div>
-              <div className="p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg text-center">
-                <div className="text-2xl font-bold text-orange-400">{results.cuts}</div>
+              <div className="btn-primary">
+                <div className="text-2xl font-bold text-amber-400">{results.cuts}</div>
                 <div className="text-xs text-gray-400 mt-1">Total Cuts</div>
               </div>
             </div>

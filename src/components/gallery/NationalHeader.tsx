@@ -21,7 +21,7 @@ export const NationalHeader: React.FC = () => {
               م
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold font-cairo text-white">
+              <h1 className="typography-h1 text-2xl md:text-3xl font-cairo text-white">
                 السجل القومي للأنظمة الصناعية
               </h1>
               <p className="text-yellow-100 text-sm font-cairo opacity-90">

@@ -34,7 +34,7 @@ export const TicketCard: React.FC<TicketCardProps> = ({ ticket, onOpen, selected
       <CardContent className="p-6">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h3 className="font-semibold text-lg group-hover:text-almona-orange transition-colors line-clamp-1">
+            <h3 className="typography-h3 text-lg group-hover:text-almona-orange transition-colors line-clamp-1">
               {ticket.title}
             </h3>
             <p className="text-gray-400 text-sm">#{ticket.ticket_number || ticket.id.slice(-8).toUpperCase()}</p>

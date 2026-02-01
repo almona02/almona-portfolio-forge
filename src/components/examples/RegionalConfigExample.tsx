@@ -39,11 +39,11 @@ export const RegionalConfigExample: React.FC = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Regional Configuration Example</h1>
+      <h1 className="typography-h1 text-2xl mb-6">Regional Configuration Example</h1>
       
       {/* Region Selection */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-3">Current Region</h2>
+        <h2 className="typography-h2 text-lg font-semibold mb-3">Current Region</h2>
         <div className="flex gap-2 mb-4">
           <button
             onClick={() => handleRegionChange('TR')}
@@ -86,7 +86,7 @@ export const RegionalConfigExample: React.FC = () => {
 
       {/* Currency Formatting */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-3">Currency Formatting</h2>
+        <h2 className="typography-h2 text-lg font-semibold mb-3">Currency Formatting</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-3 border rounded">
             <p className="font-medium">Price: {utils.formatCurrency(1234.56)}</p>
@@ -105,7 +105,7 @@ export const RegionalConfigExample: React.FC = () => {
 
       {/* Date Formatting */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-3">Date Formatting</h2>
+        <h2 className="typography-h2 text-lg font-semibold mb-3">Date Formatting</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-3 border rounded">
             <p className="font-medium">Date: {utils.formatDate(new Date())}</p>
@@ -120,7 +120,7 @@ export const RegionalConfigExample: React.FC = () => {
 
       {/* Business Hours */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-3">Business Information</h2>
+        <h2 className="typography-h2 text-lg font-semibold mb-3">Business Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-3 border rounded">
             <p className="font-medium">
@@ -140,7 +140,7 @@ export const RegionalConfigExample: React.FC = () => {
 
       {/* Features */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-3">Regional Features</h2>
+        <h2 className="typography-h2 text-lg font-semibold mb-3">Regional Features</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="p-3 border rounded text-center">
             <p className="font-medium">WhatsApp</p>
@@ -171,7 +171,7 @@ export const RegionalConfigExample: React.FC = () => {
 
       {/* Payment Methods */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-3">Available Payment Methods</h2>
+        <h2 className="typography-h2 text-lg font-semibold mb-3">Available Payment Methods</h2>
         <div className="flex flex-wrap gap-2">
           {utils.getPaymentMethods().map((method, index) => (
             <span key={index} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
@@ -183,7 +183,7 @@ export const RegionalConfigExample: React.FC = () => {
 
       {/* Special Occasions */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-3">Special Occasions</h2>
+        <h2 className="typography-h2 text-lg font-semibold mb-3">Special Occasions</h2>
         <div className="flex flex-wrap gap-2">
           {['New Year', 'Eid', 'Christmas'].map((occasion, index) => (
             <span key={index} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
@@ -195,16 +195,16 @@ export const RegionalConfigExample: React.FC = () => {
 
       {/* Shipping Information */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-3">Shipping Information</h2>
+        <h2 className="typography-h2 text-lg font-semibold mb-3">Shipping Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-3 border rounded">
-            <h3 className="font-medium mb-2">Domestic Shipping</h3>
+            <h3 className="typography-h3 font-medium mb-2">Domestic Shipping</h3>
             <p>Enabled: {utils.getShippingInfo('domestic').enabled ? 'Yes' : 'No'}</p>
             <p>Estimated Days: {utils.getShippingInfo('domestic').estimatedDays}</p>
             <p>Cost: {utils.formatCurrency(utils.getShippingInfo('domestic').cost)}</p>
           </div>
           <div className="p-3 border rounded">
-            <h3 className="font-medium mb-2">International Shipping</h3>
+            <h3 className="typography-h3 font-medium mb-2">International Shipping</h3>
             <p>Enabled: {utils.getShippingInfo('international').enabled ? 'Yes' : 'No'}</p>
             <p>Estimated Days: {utils.getShippingInfo('international').estimatedDays}</p>
             <p>Cost: {utils.formatCurrency(utils.getShippingInfo('international').cost)}</p>

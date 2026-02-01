@@ -1,3 +1,4 @@
+import React, { useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { CompanyTimeline } from "@/components/about/CompanyTimeline";
 import { TeamProfiles } from "@/components/about/TeamProfiles";
@@ -15,7 +16,7 @@ const About = () => {
   const isMobile = useIsMobile();
 
   const location = useLocation();
-  const currentUrl = `https://www.almona02.com${location.pathname}`;
+  const currentUrl = useMemo(() => `https://www.almona02.com${location.pathname}`, [location.pathname]);
 
   return (
     <>
@@ -77,14 +78,13 @@ const About = () => {
                 </Badge>
               </div>
               
-              <h1 
-                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-white leading-tight px-2 fade-in-up"
+              <h1 className="typography-h1 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl mb-3 sm:mb-4 md:mb-5 lg:mb-6 text-white leading-tight px-2 fade-in-up"
                 style={{
                   textShadow: '0 4px 12px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 95, 31, 0.4)',
                   animationDelay: '0.3s'
                 }}
               >
-                <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent drop-shadow-[0_3px_8px_rgba(255,95,31,0.6)]">
+                <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent drop-shadow-[0_3px_8px_rgba(255,95,31,0.6)]">
                   About Almona
                 </span>
               </h1>
@@ -167,7 +167,7 @@ const About = () => {
 
         {/* Our Story Section */}
         <div className="order-2 lg:order-1 flex flex-col justify-center pt-0 lg:pt-0 fade-in-up">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-3 sm:mb-4 md:mb-5 text-white leading-tight" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Our Story</h2>
+          <h2 className="typography-h2 text-xl sm:text-2xl md:text-3xl font-semibold mb-3 sm:mb-4 md:mb-5 text-white leading-tight" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Our Story</h2>
           <p className="text-sm sm:text-base md:text-lg mb-3 sm:mb-4 md:mb-5 text-gray-200 leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' }}>
             Founded in 1991, Almona has grown from a humble equipment importer to a
             leading industrial equipment provider in Egypt, Africa and the
@@ -207,7 +207,7 @@ const About = () => {
           >
             <Target className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-almona-orange" />
           </div>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold mb-2 sm:mb-3 md:mb-4 text-white leading-tight px-2" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Our Mission</h2>
+          <h2 className="typography-h2 text-xl sm:text-2xl md:text-3xl font-semibold mb-2 sm:mb-3 md:mb-4 text-white leading-tight px-2" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Our Mission</h2>
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-200 leading-relaxed px-2" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' }}>
             To empower Egyptian manufacturers with world-class equipment, training, and support, 
             enabling them to compete effectively in global markets and drive industrial growth 
@@ -336,7 +336,7 @@ const About = () => {
       <div 
         className="mt-8 sm:mt-10 md:mt-12 bg-gradient-to-r from-almona-orange/10 to-almona-light/10 p-5 sm:p-6 md:p-8 lg:p-10 rounded-xl sm:rounded-2xl border border-almona-orange/30 text-center fade-in-up"
       >
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 sm:mb-3 md:mb-4 leading-tight px-2" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Ready to Transform Your Business?</h2>
+        <h2 className="typography-h2 text-xl sm:text-2xl md:text-3xl text-white mb-2 sm:mb-3 md:mb-4 leading-tight px-2" style={{ textShadow: '0 2px 8px rgba(0, 0, 0, 0.8)' }}>Ready to Transform Your Business?</h2>
         <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-200 mb-3 sm:mb-4 md:mb-6 max-w-2xl mx-auto px-2 leading-relaxed" style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.6)' }}>
           Join thousands of manufacturers who trust Almona for their industrial equipment needs
         </p>

@@ -39,7 +39,7 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
       <Card className="bg-almona-darker border-almona-light">
         <CardHeader>
           <CardTitle className="text-3xl">{machine.title}</CardTitle>
-          <div className="flex justify-between items-center text-orange-400 font-bold text-xl mt-2">
+          <div className="flex justify-between items-center text-amber-400 font-bold text-xl mt-2">
             {machine.price}
             {machine.seller.verified && (
               <Badge variant="secondary" className="bg-blue-600">
@@ -64,19 +64,19 @@ const UsedMachineDetails: React.FC<UsedMachineDetailsProps> = ({ machine, onBack
               <p className="mb-4">{machine.description}</p>
               <ul className="space-y-2 text-sm">
                 <li className="flex items-center">
-                  <MapPin className="w-5 h-5 text-orange-500 mr-2" />
+                  <MapPin className="w-5 h-5 text-amber-500 mr-2" />
                   الموقع: {machine.location}
                 </li>
                 <li className="flex items-center">
-                  <Factory className="w-5 h-5 text-orange-500 mr-2" />
+                  <Factory className="w-5 h-5 text-amber-500 mr-2" />
                   البائع: {machine.seller.name}
                 </li>
                 <li className="flex items-center">
-                  <Calendar className="w-5 h-5 text-orange-500 mr-2" />
+                  <Calendar className="w-5 h-5 text-amber-500 mr-2" />
                   سنة الصنع: {machine.year}
                 </li>
                 <li className="flex items-center">
-                  <Gauge className="w-5 h-5 text-orange-500 mr-2" />
+                  <Gauge className="w-5 h-5 text-amber-500 mr-2" />
                   ساعات التشغيل: {machine.hours.toLocaleString()}
                 </li>
                 <li>

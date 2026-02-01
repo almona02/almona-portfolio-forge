@@ -11,7 +11,7 @@ const Portfolio = () => {
   return (
     <main className="flex-grow pt-20">
         <div className="container mx-auto px-4 py-12">
-          <h1 className="text-3xl font-bold mb-8">
+          <h1 className="typography-h1 mb-8">
             <span className="text-gradient-orange">Our Portfolio</span>
           </h1>
           <p className="text-gray-400 mb-8">

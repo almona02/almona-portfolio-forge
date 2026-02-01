@@ -4,10 +4,10 @@
  * labor costs, and integration with QuotingEngine
  */
 
+import { EGYPTIAN_CONFIG, TURKISH_CONFIG } from '@/config/regionalConfig';
 import { convertCurrency, formatCurrency, getExchangeRate, type ExchangeRate } from '@/lib/currencyExchange';
-import { TURKISH_CONFIG, EGYPTIAN_CONFIG } from '@/config/regionalConfig';
 import { QuotingEngine, type PricingConfig, type Quote } from '@/modules/commercial/QuotingEngine';
-import { Profile, FabricatorAccessory } from '@/types/fabricator';
+import { FabricatorAccessory, Profile } from '@/types/fabricator';
 
 export type Currency = 'TRY' | 'EGP' | 'USD' | 'EUR';
 export type Region = 'turkey' | 'egypt' | 'global';
@@ -92,6 +92,16 @@ export interface PricingConfiguration {
    * before applying markups and discounts.
    */
   metalIndex?: MetalPriceIndex;
+  /**
+   * Commercial Lock System (Sara persona - Accountant)
+   * Prevents unauthorized changes after project is quoted
+   */
+  projectStatus?: 'design' | 'quoted' | 'production';
+  isLocked?: boolean;
+  lockedBy?: string; // User ID of person who locked (accountant)
+  lockReason?: string;
+  lockedAt?: Date;
+  changeOrderId?: string; // If unlocked via change order
 }
 
 export interface PriceHistoryEntry {
@@ -559,6 +569,46 @@ export class PricingEngine {
   }
 
   /**
+   * Load system pricing from profile specifications
+   * Enhanced integration point for system_pricing support
+   * 
+   * @param profileId Profile ID to load system pricing from
+   * @param systemName Optional system pack name
+   * @returns System pricing state if found, null otherwise
+   */
+  async loadSystemPricing(
+    profileId: string,
+    _systemName?: string
+  ): Promise<any | null> {
+    if (!this.supabaseClient) {
+      console.warn('Supabase client not available for system pricing lookup');
+      return null;
+    }
+
+    try {
+      const { data, error } = await this.supabaseClient
+        .from('fabricator_profiles')
+        .select('specifications')
+        .eq('id', profileId)
+        .single();
+
+      if (error || !data) {
+        return null;
+      }
+
+      const specs = data.specifications || {};
+      
+      // Try system_pricing first (new format), fallback to rock60_pricing (legacy)
+      const pricing = specs.system_pricing || specs.rock60_pricing;
+      
+      return pricing || null;
+    } catch (error) {
+      console.error('Failed to load system pricing:', error);
+      return null;
+    }
+  }
+
+  /**
    * Load material pricing rules
    */
   async loadMaterialRules(userId: string, region?: Region): Promise<void> {
@@ -714,6 +764,118 @@ export class PricingEngine {
   updateConfiguration(updates: Partial<PricingConfiguration>): void {
     this.config = { ...this.config, ...updates };
     this.quotingEngine = new QuotingEngine(this.toQuotingEngineConfig());
+  }
+
+  // ==================== COMMERCIAL LOCK SYSTEM (Sara Persona) ====================
+
+  /**
+   * Lock project for commercial integrity
+   * Prevents any price/design changes after quote is sent to client
+   * 
+   * @param userId - Accountant/commercial user locking the project
+   * @param reason - Reason for locking (e.g., "Quoted to client on 2024-01-15")
+   */
+  lockProject(userId: string, reason: string): void {
+    this.config.projectStatus = 'quoted';
+    this.config.isLocked = true;
+    this.config.lockedBy = userId;
+    this.config.lockReason = reason;
+    this.config.lockedAt = new Date();
+    this.config.changeOrderId = undefined;
+
+    console.log(`[COMMERCIAL LOCK] Project locked by ${userId}: ${reason}`);
+  }
+
+  /**
+   * Unlock project via change order
+   * Only allowed when accountant approves a change request
+   * 
+   * @param changeOrderId - ID of approved change order
+   * @param userId - User performing the unlock (must be accountant)
+   */
+  unlockProject(changeOrderId: string, userId: string): void {
+    if (!this.config.isLocked) {
+      throw new Error('Project is not locked');
+    }
+
+    this.config.projectStatus = 'design';
+    this.config.isLocked = false;
+    this.config.changeOrderId = changeOrderId;
+    
+    console.log(
+      `[COMMERCIAL UNLOCK] Project unlocked by ${userId} via change order ${changeOrderId}`
+    );
+  }
+
+  /**
+   * Check if project can be edited
+   * Returns false if project is quoted or in production
+   * 
+   * @throws Error if attempting to edit locked project
+   */
+  canEdit(): boolean {
+    const status = this.config.projectStatus || 'design';
+    const isLocked = this.config.isLocked || false;
+
+    if (status === 'quoted' || status === 'production' || isLocked) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Assert project is editable, throw error if not
+   * Use this before any price/design update operations
+   * 
+   * @throws Error with detailed message if project is locked
+   */
+  assertCanEdit(): void {
+    if (!this.canEdit()) {
+      const status = this.config.projectStatus || 'design';
+      const lockedBy = this.config.lockedBy || 'unknown';
+      const lockReason = this.config.lockReason || 'No reason provided';
+
+      throw new Error(
+        `[COMMERCIAL LOCK] Cannot edit project. Status: ${status}, Locked by: ${lockedBy}, Reason: ${lockReason}. ` +
+        `Request a change order to make modifications.`
+      );
+    }
+  }
+
+  /**
+   * Get current project status
+   */
+  getProjectStatus(): {
+    status: 'design' | 'quoted' | 'production';
+    isLocked: boolean;
+    lockedBy?: string;
+    lockReason?: string;
+    lockedAt?: Date;
+    changeOrderId?: string;
+  } {
+    return {
+      status: this.config.projectStatus || 'design',
+      isLocked: this.config.isLocked || false,
+      lockedBy: this.config.lockedBy,
+      lockReason: this.config.lockReason,
+      lockedAt: this.config.lockedAt,
+      changeOrderId: this.config.changeOrderId,
+    };
+  }
+
+  /**
+   * Move project to production
+   * Locks project permanently (no edits allowed)
+   */
+  moveToProduction(userId: string): void {
+    this.config.projectStatus = 'production';
+    this.config.isLocked = true;
+    this.config.lockedBy = userId;
+    this.config.lockReason = 'Moved to production';
+    this.config.lockedAt = new Date();
+
+    console.log(`[COMMERCIAL LOCK] Project moved to production by ${userId}`);
   }
 }
 

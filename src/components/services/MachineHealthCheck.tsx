@@ -147,11 +147,11 @@ export const MachineHealthCheck = () => {
 
   return (
     <div className="p-4 border rounded-lg space-y-6">
-      <h2 className="text-xl font-bold">Machine Health Check</h2>
+      <h2 className="typography-h2 text-xl">Machine Health Check</h2>
       
       <div className="space-y-4">
         <div className="border p-4 rounded-lg">
-          <h3 className="font-medium mb-2">Audio Analysis</h3>
+          <h3 className="typography-h3 font-medium mb-2">Audio Analysis</h3>
           <p className="text-sm text-gray-600 mb-3">
             Record machine sound to detect blade wear and other issues
           </p>
@@ -171,7 +171,7 @@ export const MachineHealthCheck = () => {
         </div>
 
         <div className="border p-4 rounded-lg">
-          <h3 className="font-medium mb-2">Vibration Analysis</h3>
+          <h3 className="typography-h3 font-medium mb-2">Vibration Analysis</h3>
           <p className="text-sm text-gray-600 mb-3">
             Monitor machine vibration patterns for abnormalities
           </p>
@@ -192,7 +192,7 @@ export const MachineHealthCheck = () => {
 
         {dealers.length > 0 && (
           <div className="border p-4 rounded-lg">
-            <h3 className="font-medium mb-2">Recommended Spare Part Dealers</h3>
+            <h3 className="typography-h3 font-medium mb-2">Recommended Spare Part Dealers</h3>
             <div className="space-y-3">
               {dealers.map((dealer, index) => (
                 <div key={index} className="p-3 border rounded">

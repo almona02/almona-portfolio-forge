@@ -24,7 +24,7 @@ const regionConfigs = {
     compliance: ['CE Marking', 'TSE Certification', 'ISO 9001'],
     workingHours: '09:00 - 18:00',
     paymentMethods: ['Credit Card', 'Bank Transfer', 'Cash on Delivery', 'Installment'],
-    color: 'from-red-500 to-orange-500',
+    color: 'from-red-500 to-amber-500',
     bgColor: 'bg-red-500/10',
     borderColor: 'border-red-500/30'
   },
@@ -99,7 +99,7 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
         isAnimating ? "scale-105" : "scale-100"
       )}>
         {/* Animated background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-orange-600/20 rounded-2xl blur-xl animate-pulse" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-amber-600/20 rounded-2xl blur-xl animate-pulse" />
         
         <Card className="relative bg-almona-dark border-gray-700 shadow-2xl overflow-hidden">
           <CardHeader className="text-center pb-4">
@@ -124,7 +124,7 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
                   <CheckCircle className="w-16 h-16 text-green-400 mx-auto animate-bounce" />
                   <div className="absolute inset-0 bg-green-400/20 rounded-full blur-xl animate-ping" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">
+                <h3 className="typography-h3 text-white mb-2">
                   Region Selected Successfully!
                 </h3>
                 <p className="text-gray-400">
@@ -159,7 +159,7 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
                           <div className="flex items-center space-x-3">
                             <span className="text-3xl">{config.flag}</span>
                             <div>
-                              <h3 className="font-semibold text-white">{config.name}</h3>
+                              <h3 className="typography-h3 text-white">{config.name}</h3>
                               <p className="text-sm text-gray-400">{config.language}</p>
                             </div>
                           </div>
@@ -184,13 +184,13 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
 
                         {/* Working Hours */}
                         <div className="flex items-center space-x-2">
-                          <MapPin className="w-4 h-4 text-orange-400" />
+                          <MapPin className="w-4 h-4 text-amber-400" />
                           <span className="text-sm text-gray-300">{config.workingHours}</span>
                         </div>
 
                         {/* Features */}
                         <div>
-                          <h4 className="text-xs font-medium text-gray-400 mb-2">Features</h4>
+                          <h4 className="typography-h4 text-xs font-medium text-gray-400 mb-2">Features</h4>
                           <div className="flex flex-wrap gap-1">
                             {config.features.slice(0, 2).map((feature, index) => (
                               <Badge key={index} variant="secondary" className="text-xs">
@@ -202,7 +202,7 @@ export const RegionSelectionModal: React.FC<RegionSelectionModalProps> = ({
 
                         {/* Compliance */}
                         <div>
-                          <h4 className="text-xs font-medium text-gray-400 mb-2">Compliance</h4>
+                          <h4 className="typography-h4 text-xs font-medium text-gray-400 mb-2">Compliance</h4>
                           <div className="flex items-center space-x-1">
                             <Shield className="w-3 h-3 text-green-400" />
                             <span className="text-xs text-gray-300">

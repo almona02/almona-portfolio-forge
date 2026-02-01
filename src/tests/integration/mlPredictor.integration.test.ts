@@ -3,12 +3,26 @@
  * Tests ML model training, prediction accuracy, fallback mechanisms, and performance
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { RemnantUsagePredictor } from '@/lib/ml/RemnantUsagePredictor';
-import { modelTrainer } from '@/lib/ml/ModelTrainer';
 import { featureEngineer } from '@/lib/analytics/FeatureEngineer';
 import type { Remnant } from '@/lib/inventory/RemnantManager';
+import { modelTrainer } from '@/lib/ml/ModelTrainer';
 import type { RemnantFeatures } from '@/lib/ml/RemnantUsagePredictor';
+import { RemnantUsagePredictor } from '@/lib/ml/RemnantUsagePredictor';
+import { describe, expect, it, vi } from 'vitest';
+
+// Mock Supabase (Correct path used by RemnantPredictor)
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: vi.fn(() => ({
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      gte: vi.fn().mockReturnThis(),
+      lte: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockResolvedValue({ data: [], error: null }),
+    })),
+  },
+}));
 
 describe('ML Predictor Integration Tests', () => {
   let mockRemnant: Remnant;
@@ -64,7 +78,7 @@ describe('ML Predictor Integration Tests', () => {
       
       // Create a simple mock model
       const mockModel = {
-        predict: vi.fn().mockResolvedValue({
+        predict: vi.fn().mockReturnValue({
           data: async () => new Float32Array([0.75]), // 75% likelihood
           dispose: vi.fn(),
         }),
@@ -86,7 +100,7 @@ describe('ML Predictor Integration Tests', () => {
       
       // Mock model that returns low confidence scenario
       const mockModel = {
-        predict: vi.fn().mockResolvedValue({
+        predict: vi.fn().mockReturnValue({
           data: async () => new Float32Array([0.5]),
           dispose: vi.fn(),
         }),
@@ -135,16 +149,18 @@ describe('ML Predictor Integration Tests', () => {
     });
 
     it('should calculate seasonal demand correctly', async () => {
-      // Test different months
-      const janFeatures = await featureEngineer.extractRemnantFeatures({
-        ...mockRemnant,
-        createdAt: new Date(2024, 0, 15), // January
-      });
+      // Use fake timers to manipulate "now"
+      vi.useFakeTimers();
 
-      const julFeatures = await featureEngineer.extractRemnantFeatures({
-        ...mockRemnant,
-        createdAt: new Date(2024, 6, 15), // July
-      });
+      // Winter (January 15, 2024)
+      vi.setSystemTime(new Date(2024, 0, 15));
+      const janFeatures = await featureEngineer.extractRemnantFeatures(mockRemnant);
+
+      // Summer (July 15, 2024)
+      vi.setSystemTime(new Date(2024, 6, 15));
+      const julFeatures = await featureEngineer.extractRemnantFeatures(mockRemnant);
+
+      vi.useRealTimers();
 
       // Summer should have higher demand than winter
       expect(julFeatures.seasonalDemand).toBeGreaterThan(janFeatures.seasonalDemand);
@@ -152,14 +168,14 @@ describe('ML Predictor Integration Tests', () => {
   });
 
   describe('Model Training', () => {
-    it('should create model architecture', () => {
-      const model = modelTrainer.createModel();
+    it('should create model architecture', async () => {
+      const model = await modelTrainer.createModel();
 
       expect(model).toBeDefined();
       expect(model.layers.length).toBeGreaterThan(0);
     });
 
-    it('should prepare training data correctly', () => {
+    it('should prepare training data correctly', async () => {
       const trainingData = [
         {
           features: mockFeatures,
@@ -175,7 +191,7 @@ describe('ML Predictor Integration Tests', () => {
         },
       ];
 
-      const { features, labels } = (modelTrainer as any).prepareData(trainingData);
+      const { features, labels } = await (modelTrainer as any).prepareData(trainingData);
 
       expect(features).toBeDefined();
       expect(labels).toBeDefined();

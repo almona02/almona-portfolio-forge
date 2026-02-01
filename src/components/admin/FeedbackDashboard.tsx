@@ -36,7 +36,7 @@ export const FeedbackDashboard: React.FC<FeedbackDashboardProps> = ({
   return (
     <div className="min-h-screen bg-gray-950 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-gray-900 border-gray-800 card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Pilot Feedback Dashboard</CardTitle>
             <p className="text-gray-400">Analyze survey responses and feedback trends</p>

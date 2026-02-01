@@ -7,8 +7,8 @@ export const ProductionRealityPanel: React.FC<{
   return (
     <div className="mt-4 bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-xl p-4">
       <div className="flex items-center gap-2 mb-3">
-        <div className="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center">⚙️</div>
-        <h3 className="font-bold text-amber-800 font-cairo">حقائق التصنيع للورشة</h3>
+        <div className="btn-primary">⚙️</div>
+        <h3 className="typography-h3 text-amber-800 font-cairo">حقائق التصنيع للورشة</h3>
       </div>
       
       <div className="space-y-2 text-sm">

@@ -370,10 +370,10 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-4xl max-h-[95vh] overflow-y-auto bg-gray-900 border-gray-800 text-white sm:w-full">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[95vh] overflow-y-auto bg-gray-900 border-gray-800 text-white sm:w-full card-dark">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-lg">
-            <MapPin className="h-5 w-5 text-orange-400" />
+          <DialogTitle className="typography-h2 flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-amber-400" />
             Egyptian Project Wizard
           </DialogTitle>
           <DialogDescription className="text-xs text-gray-400">
@@ -391,7 +391,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
             </div>
             <Button
               variant={useEgyptianStandards ? 'default' : 'outline'}
-              className={useEgyptianStandards ? 'bg-orange-600 hover:bg-orange-500' : 'border-gray-600'}
+              className={useEgyptianStandards ? 'bg-amber-600 hover:bg-amber-500' : 'border-gray-600'}
               onClick={() => {
                 if (useEgyptianStandards) {
                   setUseEgyptianStandards(false);
@@ -409,7 +409,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
             <div className="space-y-4">
               {/* Material Selection - FIRST STEP for Egypt Pilot */}
               <div className="space-y-3">
-                <Label className="text-sm font-semibold">Material Type (Egypt Pilot)</Label>
+                <Label className="typography-label text-sm font-semibold">Material Type (Egypt Pilot)</Label>
                 <div className="grid grid-cols-2 gap-3">
                   <div 
                     className={`relative p-4 rounded-lg border cursor-pointer transition-all ${
@@ -448,7 +448,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                     <div className="text-xs text-gray-500 mb-2">Default: FoxyWin System</div>
                     <div className="text-[10px] text-gray-500">40% Market Share (Insulated)</div>
                     {materialPreference === 'upvc' && (
-                      <div className="absolute top-2 right-2 text-green-500"><Check className="h-4 w-4" /></div>
+                      <div className="absolute top-2 right-2 status-valid"><Check className="h-4 w-4" /></div>
                     )}
                   </div>
                 </div>
@@ -655,7 +655,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                           key={id}
                           onClick={() => setSelectedSystemId(id)}
                           className={`relative px-3 py-2 rounded border text-xs transition ${
-                            active ? 'border-orange-500 bg-orange-500/10 text-orange-200' : 'border-gray-700 hover:border-gray-500'
+                            active ? 'border-amber-500 bg-amber-500/10 text-amber-200' : 'border-gray-700 hover:border-gray-500'
                           }`}
                         >
                           <span>{pack.meta.name}</span>
@@ -663,7 +663,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                             <span className="ml-2 text-[10px] text-yellow-500">Needs Tuning</span>
                           )}
                           {packTuningStatus.isTuned && (
-                            <span className="ml-2 text-[10px] text-green-500">✓ Tuned</span>
+                            <span className="ml-2 text-[10px] status-valid">✓ Tuned</span>
                           )}
                           {pack.meta.id.startsWith('custom') && (
                             <span className="ml-2 text-[10px] text-amber-500">Custom</span>
@@ -727,7 +727,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
               </Alert>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                 <div className="p-3 rounded border border-gray-700 bg-gray-900/60 space-y-1">
-                  <div className="flex items-center gap-2 text-orange-300">
+                  <div className="flex items-center gap-2 text-amber-300">
                     <MapPin className="h-4 w-4" /> Location
                   </div>
                   <div>Governorate: {governorate}</div>
@@ -735,7 +735,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                   <div>Exposure: {exposure}</div>
                 </div>
                 <div className="p-3 rounded border border-gray-700 bg-gray-900/60 space-y-1">
-                  <div className="flex items-center gap-2 text-orange-300">
+                  <div className="flex items-center gap-2 text-amber-300">
                     <Ruler className="h-4 w-4" /> Constraints
                   </div>
                   <div>Floor: {floorLevel}</div>
@@ -744,12 +744,12 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
                   <div>Shape: {baseShape}</div>
                 </div>
                 <div className="p-3 rounded border border-gray-700 bg-gray-900/60 space-y-1 md:col-span-2">
-                  <div className="flex items-center gap-2 text-orange-300">
+                  <div className="flex items-center gap-2 text-amber-300">
                     <Factory className="h-4 w-4" /> System
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {recommendedSystems.map((id) => (
-                      <Badge key={id} variant="outline" className="border-orange-500 text-orange-200 bg-orange-500/10">
+                      <Badge key={id} variant="outline" className="btn-primary">
                         {SYSTEM_PACKS.find((p) => p.meta.id === id)?.meta.name || id}
                       </Badge>
                     ))}
@@ -771,7 +771,7 @@ export const EgyptianProjectWizard: React.FC<EgyptianProjectWizardProps> = ({
               Back
             </Button>
             {step < 4 ? (
-              <Button onClick={() => canNext() && setStep((s) => Math.min(4, s + 1))} disabled={!canNext()} className="bg-orange-600 hover:bg-orange-500">
+              <Button onClick={() => canNext() && setStep((s) => Math.min(4, s + 1))} disabled={!canNext()} className="btn-primary">
                 Next
               </Button>
             ) : (

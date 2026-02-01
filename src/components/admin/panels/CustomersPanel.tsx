@@ -105,11 +105,11 @@ export const CustomersPanel: React.FC = () => {
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-3 items-end">
           <div className="w-56">
-            <label className="text-xs text-muted-foreground">Search name/company/username</label>
+            <label className="typography-label text-xs text-muted-foreground">Search name/company/username</label>
             <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. Mohamed / Almona / m.ahmed" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Role</label>
+            <label className="typography-label text-xs text-muted-foreground">Role</label>
             <Select value={role} onValueChange={(v: string) => { setRole(v as UserRole | 'all'); setPage(1) }}>
               <SelectTrigger>
                 <SelectValue placeholder="All" />
@@ -125,7 +125,7 @@ export const CustomersPanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Sector</label>
+            <label className="typography-label text-xs text-muted-foreground">Sector</label>
             <Select value={sector} onValueChange={(v: string) => { setSector(v as SectorType | 'all'); setPage(1) }}>
               <SelectTrigger>
                 <SelectValue placeholder="All" />
@@ -141,11 +141,11 @@ export const CustomersPanel: React.FC = () => {
             </Select>
           </div>
           <div className="w-40">
-            <label className="text-xs text-muted-foreground">Governorate</label>
+            <label className="typography-label text-xs text-muted-foreground">Governorate</label>
             <Input value={governorate} onChange={(e) => { setGovernorate(e.target.value); setPage(1) }} placeholder="Cairo, Giza..." />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Verified</label>
+            <label className="typography-label text-xs text-muted-foreground">Verified</label>
             <Select value={verified} onValueChange={(v: string) => { setVerified(v as 'all' | 'verified' | 'unverified'); setPage(1) }}>
               <SelectTrigger>
                 <SelectValue placeholder="All" />

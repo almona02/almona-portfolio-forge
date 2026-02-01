@@ -42,7 +42,7 @@ export const CostOptimizationInsights: React.FC<CostOptimizationInsightsProps> =
 
   if (loading) {
     return (
-      <Card className="bg-gray-900 border-gray-700">
+      <Card className="bg-gray-900 border-gray-700 card-dark">
         <CardContent className="pt-6">
           <div className="text-center text-gray-500">Analyzing cost optimization...</div>
         </CardContent>
@@ -68,7 +68,7 @@ export const CostOptimizationInsights: React.FC<CostOptimizationInsightsProps> =
   };
 
   return (
-    <Card className="bg-gray-900 border-gray-700">
+    <Card className="bg-gray-900 border-gray-700 card-dark">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <TrendingDown className="h-5 w-5 text-green-400" />
@@ -90,7 +90,7 @@ export const CostOptimizationInsights: React.FC<CostOptimizationInsightsProps> =
 
         {/* Suggestions */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-gray-300">Optimization Suggestions</h4>
+          <h4 className="typography-h4 text-sm font-medium text-gray-300">Optimization Suggestions</h4>
           {analysis.suggestions.length === 0 ? (
             <div className="text-sm text-gray-500 text-center py-4">
               No optimization suggestions at this time

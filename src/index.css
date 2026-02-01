@@ -1,5 +1,13 @@
+/* ALMONA Dark Gold Prestige Design System */
+@import './styles/theme-gold.css';
+@import './styles/prestige-design-system.css';
+@import './styles/fabricator-themes.css';
+
+/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind base;
+/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind components;
+/* stylelint-disable-next-line at-rule-no-unknown */
 @tailwind utilities;
 
 :root {
@@ -100,6 +108,7 @@ html {
 }
 
 /* View Transition API - Moving Highlight Effect */
+/* stylelint-disable-next-line at-rule-no-unknown */
 @view-transition {
   navigation: auto;
 }
@@ -450,10 +459,10 @@ a[aria-label] {
   outline: none;
 }
 
-/* Enterprise Sidebar Custom Scrollbar */
+/* Enterprise Sidebar Custom Scrollbar - Prestige Theme */
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: rgb(51 65 85) transparent;
+  scrollbar-color: rgba(245, 158, 11, 0.3) transparent;
 }
 
 .scrollbar-thin::-webkit-scrollbar {
@@ -467,21 +476,30 @@ a[aria-label] {
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgb(51 65 85);
+  background: rgba(245, 158, 11, 0.3);
   border-radius: 10px;
   transition: background 0.2s ease;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgb(71 85 105);
+  background: rgba(245, 158, 11, 0.5);
 }
 
+.scrollbar-thin.scrollbar-thumb-amber-600\/30::-webkit-scrollbar-thumb {
+  background: rgba(245, 158, 11, 0.3);
+}
+
+.scrollbar-thin.scrollbar-thumb-amber-600\/30::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 158, 11, 0.5);
+}
+
+/* Legacy support for slate scrollbar */
 .scrollbar-thin.scrollbar-thumb-slate-700::-webkit-scrollbar-thumb {
-  background: rgb(51 65 85);
+  background: rgba(245, 158, 11, 0.3);
 }
 
 .scrollbar-thin.scrollbar-thumb-slate-700::-webkit-scrollbar-thumb:hover {
-  background: rgb(71 85 105);
+  background: rgba(245, 158, 11, 0.5);
 }
 
 /* Smooth sidebar transitions */

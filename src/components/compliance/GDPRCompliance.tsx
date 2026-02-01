@@ -106,7 +106,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
           <div className="flex items-start gap-4">
             <Cookie className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
             <div className="flex-1">
-              <h3 className="text-lg font-semibold mb-2">
+              <h3 className="typography-h3 text-lg mb-2">
                 {t('gdpr.cookieTitle', 'We respect your privacy')}
               </h3>
               <p className="text-gray-300 mb-4">
@@ -152,7 +152,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
           <div className="p-6">
             <div className="flex items-center gap-3 mb-6">
               <Settings className="w-6 h-6 text-blue-600" />
-              <h2 className="text-xl font-semibold">
+              <h2 className="typography-h2 text-xl font-semibold">
                 {t('gdpr.cookiePreferences', 'Cookie Preferences')}
               </h2>
             </div>
@@ -161,7 +161,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
               <div className="border-b pb-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium">{t('gdpr.necessary', 'Necessary Cookies')}</h3>
+                    <h3 className="typography-h3 font-medium">{t('gdpr.necessary', 'Necessary Cookies')}</h3>
                     <p className="text-gray-600 text-sm">
                       {t('gdpr.necessaryDesc', 'Required for the website to function properly.')}
                     </p>
@@ -178,12 +178,12 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
               <div className="border-b pb-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium">{t('gdpr.analytics', 'Analytics Cookies')}</h3>
+                    <h3 className="typography-h3 font-medium">{t('gdpr.analytics', 'Analytics Cookies')}</h3>
                     <p className="text-gray-600 text-sm">
                       {t('gdpr.analyticsDesc', 'Help us understand how visitors interact with our website.')}
                     </p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="typography-label relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       className="sr-only peer"
@@ -198,12 +198,12 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
               <div className="border-b pb-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-medium">{t('gdpr.marketing', 'Marketing Cookies')}</h3>
+                    <h3 className="typography-h3 font-medium">{t('gdpr.marketing', 'Marketing Cookies')}</h3>
                     <p className="text-gray-600 text-sm">
                       {t('gdpr.marketingDesc', 'Used to deliver personalized advertisements.')}
                     </p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                  <label className="typography-label relative inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
                       className="sr-only peer"
@@ -240,7 +240,7 @@ export const GDPRCompliance: React.FC<GDPRComplianceProps> = ({ onConsentChange 
     <div className="bg-gray-50 border rounded-lg p-6">
       <div className="flex items-center gap-3 mb-4">
         <Shield className="w-6 h-6 text-green-600" />
-        <h2 className="text-lg font-semibold">{t('gdpr.dataRights', 'Your Data Rights')}</h2>
+        <h2 className="typography-h2 text-lg font-semibold">{t('gdpr.dataRights', 'Your Data Rights')}</h2>
       </div>
       
       <p className="text-gray-600 mb-6">

@@ -221,17 +221,17 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
         <LazyMotionButton
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           aria-label="Toggle AI Smart Categories"
-          className="relative w-full flex items-center justify-between p-4 rounded-xl border border-gray-700/60 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-800/70 hover:border-orange-500/60 shadow-[0_10px_40px_rgba(0,0,0,0.35)] overflow-hidden transition-all duration-200 group"
+          className="relative w-full flex items-center justify-between p-4 rounded-xl border border-gray-700/60 bg-gradient-to-r from-gray-900/90 via-gray-900/70 to-gray-800/70 shadow-[0_10px_40px_rgba(0,0,0,0.35)] overflow-hidden transition-all duration-200 group card-premium"
           whileHover={{ scale: 1.01, y: -1 }}
           whileTap={{ scale: 0.99 }}
         >
-          <span className="absolute inset-0 bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+          <span className="btn-primary" />
           <div className="flex items-center gap-3 relative z-10">
-            <div className="h-10 w-10 rounded-lg bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-300 shadow-inner">
+            <div className="btn-primary">
               <Brain className="h-5 w-5" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[11px] uppercase tracking-[0.08em] text-orange-200">AI Smart Categories</span>
+              <span className="text-[11px] uppercase tracking-[0.08em] text-amber-200">AI Smart Categories</span>
               <span className="text-sm font-semibold text-white">
                 {selectedCategoryInfo ? `${selectedCategoryInfo.icon} ${selectedCategoryInfo.name}` : 'All Machines'}
               </span>
@@ -240,7 +240,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
           </div>
           <div className="flex flex-col items-end gap-1 relative z-10">
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="text-xs bg-orange-500/15 text-orange-200 border border-orange-400/30">
+              <Badge variant="secondary" className="btn-primary">
                 {selectedCategoryInfo ? (categoryCounts[selectedCategory] || 0) : Object.values(categoryCounts).reduce((a, b) => a + b, 0)}
               </Badge>
               <LazyMotionDiv
@@ -276,14 +276,14 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                         placeholder="AI-powered search... (e.g., 'aluminum cutting')"
                         value={searchQuery}
                         onChange={(e) => handleSearch(e.target.value)}
-                        className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-orange-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"
+                        className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"
                       />
                       {isSearching && (
                         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                           <LazyMotionDiv
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full"
+                            className="w-4 h-4 border-t-transparent rounded-full card-premium"
                           />
                         </div>
                       )}
@@ -296,7 +296,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                         animate={{ opacity: 1, height: 'auto' }}
                         className="mt-2 space-y-1"
                       >
-                        <div className="flex items-center gap-2 text-xs text-orange-400">
+                        <div className="flex items-center gap-2 text-xs text-amber-400">
                           <Sparkles className="h-3 w-3" />
                           <span>AI Suggestions</span>
                         </div>
@@ -375,7 +375,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                         className={`
                           w-full text-left p-3 rounded-lg transition-all duration-200
                           ${isSelected 
-                            ? 'bg-orange-500/30 md:bg-orange-500/20 border border-orange-500/40 md:border-orange-500/30 text-orange-400' 
+                            ? 'bg-amber-500/30 md:bg-amber-500/20 border border-amber-500/40 md:border-amber-500/30 text-amber-400' 
                             : 'text-gray-300 hover:bg-gray-700/70 md:hover:bg-gray-700/50 hover:text-white border border-transparent'
                           }
                         `}
@@ -404,7 +404,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                   <div className="mt-4 pt-4 border-t border-gray-700/50">
                     <div className="flex items-center gap-2 mb-3">
                       <Lightbulb className="h-4 w-4 text-yellow-400" />
-                      <h3 className="text-sm font-medium text-white">AI Recommendations</h3>
+                      <h3 className="typography-h3 text-sm font-medium text-white">AI Recommendations</h3>
                     </div>
                     <div className="space-y-2 max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500" style={{ scrollBehavior: 'smooth' }}>
                       {recommendations.map(machine => (
@@ -445,11 +445,11 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
               placeholder="Search machines... (e.g., 'aluminum cutting', 'UPVC welding')"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-orange-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"
+              className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 focus:ring-0 hover:bg-black/95 md:hover:bg-black/80 transition-colors"
             />
             {isSearching && (
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-500"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-500"></div>
               </div>
             )}
           </div>
@@ -500,8 +500,8 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
       {showPopular && popularCategories.length > 0 && (
         <div className="p-4 border-b border-gray-700/50">
           <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="h-4 w-4 text-orange-400" />
-            <h3 className="text-sm font-medium text-white">Popular</h3>
+            <TrendingUp className="h-4 w-4 text-amber-400" />
+            <h3 className="typography-h3 text-sm font-medium text-white">Popular</h3>
           </div>
           <div className="flex flex-wrap gap-2">
             {popularCategories.map(categoryId => {
@@ -514,7 +514,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                   variant="outline"
                   size="sm"
                   onClick={() => handleCategorySelect(categoryId)}
-                  className="text-xs border-orange-500/50 text-orange-400 hover:bg-orange-500/10"
+                  className="btn-primary"
                 >
                   {category.icon} {category.name}
                 </Button>
@@ -527,8 +527,8 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
       {/* Smart Categories */}
       <div className="p-4">
         <div className="flex items-center gap-2 mb-4">
-          <Filter className="h-4 w-4 text-orange-400" />
-          <h3 className="text-lg font-semibold text-white">Smart Categories</h3>
+          <Filter className="h-4 w-4 text-amber-400" />
+          <h3 className="typography-h3 text-lg text-white">Smart Categories</h3>
         </div>
         
         <div className="space-y-2">
@@ -543,7 +543,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
                 className={`
                   w-full text-left p-3 rounded-lg transition-all duration-200
                   ${isSelected 
-                    ? 'bg-orange-500/30 md:bg-orange-500/20 border border-orange-500/40 md:border-orange-500/30 text-orange-400' 
+                    ? 'bg-amber-500/30 md:bg-amber-500/20 border border-amber-500/40 md:border-amber-500/30 text-amber-400' 
                     : 'text-gray-300 hover:bg-gray-700/70 md:hover:bg-gray-700/50 hover:text-white border border-transparent'
                   }
                 `}
@@ -577,7 +577,7 @@ const SmartCategoryNavigation: React.FC<SmartCategoryNavigationProps> = ({
         <div className="p-4 border-t border-gray-700/50">
           <div className="flex items-center gap-2 mb-3">
             <Lightbulb className="h-4 w-4 text-yellow-400" />
-            <h3 className="text-sm font-medium text-white">Recommended</h3>
+            <h3 className="typography-h3 text-sm font-medium text-white">Recommended</h3>
           </div>
           <div className="space-y-2 max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 hover:scrollbar-thumb-gray-500" style={{ scrollBehavior: 'smooth' }}>
             {recommendations.map(machine => (

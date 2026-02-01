@@ -113,7 +113,7 @@ export const ProductHoverPreview: React.FC<ProductHoverPreviewProps> = ({
                   className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-white text-sm truncate">
+                  <h3 className="typography-h3 text-white text-sm truncate">
                     {product.name}
                   </h3>
                   <p className="text-gray-400 text-xs truncate">
@@ -132,7 +132,7 @@ export const ProductHoverPreview: React.FC<ProductHoverPreviewProps> = ({
               <div className="space-y-2">
                 {product.specifications?.slice(0, 2).map((spec, index) => (
                   <div key={index} className="flex items-center gap-2 text-xs">
-                    <Zap className="w-3 h-3 text-orange-500 flex-shrink-0" />
+                    <Zap className="w-3 h-3 text-amber-500 flex-shrink-0" />
                     <span className="text-gray-300 truncate">{spec}</span>
                   </div>
                 ))}

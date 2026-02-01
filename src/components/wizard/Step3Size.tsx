@@ -26,10 +26,10 @@ export const Step3Size: React.FC<Step3SizeProps> = ({
 }) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Window Dimensions</h3>
+      <h3 className="typography-h3 text-lg">Window Dimensions</h3>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="width">Width (mm)</Label>
+          <Label htmlFor="width" className="typography-label">Width (mm)</Label>
           <Input
             id="width"
             type="number"
@@ -41,7 +41,7 @@ export const Step3Size: React.FC<Step3SizeProps> = ({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="height">Height (mm)</Label>
+          <Label htmlFor="height" className="typography-label">Height (mm)</Label>
           <Input
             id="height"
             type="number"

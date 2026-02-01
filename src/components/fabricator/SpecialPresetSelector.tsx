@@ -162,8 +162,8 @@ export const SpecialPresetSelector: React.FC<SpecialPresetSelectorProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <Shield className="h-8 w-8 text-orange-500" />
+            <h1 className="typography-h1 text-white flex items-center gap-3">
+              <Shield className="h-8 w-8 text-amber-500" />
               Special Preset Designer
             </h1>
             <p className="text-gray-400 mt-2">
@@ -182,14 +182,14 @@ export const SpecialPresetSelector: React.FC<SpecialPresetSelectorProps> = ({
           {PRESET_OPTIONS.map((option) => (
             <Card
               key={option.id}
-              className={`bg-gray-900/50 border-gray-800 cursor-pointer transition-all hover:border-orange-500/50 ${
+              className={`bg-gray-900/50 border-gray-800 cursor-pointer transition-all hover:border-amber-500/50 ${
                 !option.available ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               onClick={() => handlePresetSelect(option.id)}
             >
               <CardHeader>
                 <div className="flex items-start justify-between">
-                  <div className="text-orange-500">{option.icon}</div>
+                  <div className="text-amber-500">{option.icon}</div>
                   {option.badge && (
                     <Badge 
                       variant="outline" 
@@ -232,10 +232,10 @@ export const SpecialPresetSelector: React.FC<SpecialPresetSelectorProps> = ({
         </div>
 
         {/* Info Section */}
-        <Card className="bg-gray-900/50 border-gray-800">
+        <Card className="bg-gray-900/50 border-gray-800 card-dark">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
-              <Thermometer className="h-5 w-5 text-orange-500" />
+              <Thermometer className="h-5 w-5 text-amber-500" />
               About Special Presets
             </CardTitle>
           </CardHeader>

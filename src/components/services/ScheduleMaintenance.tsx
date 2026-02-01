@@ -1,12 +1,14 @@
+import { supabase } from "@/lib/supabase";
+import { createTicket } from "@/lib/ticketApi";
 import { Badge } from "@/shared/ui/ui/badge";
 import { Button } from "@/shared/ui/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/ui/card";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from "@/shared/ui/ui/dialog";
 import { Input } from "@/shared/ui/ui/input";
 import { Label } from "@/shared/ui/ui/label";
@@ -16,6 +18,7 @@ import { Separator } from "@/shared/ui/ui/separator";
 import { Switch } from "@/shared/ui/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/ui/tabs";
 import { Textarea } from "@/shared/ui/ui/textarea";
+import { useToast } from "@/shared/ui/ui/use-toast";
 import { LazyAnimatePresence, LazyMotionDiv } from '@/utils/lazyMotion';
 import { AlertCircle, CheckCircle2, Cpu, Settings, Shield, Users, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -224,56 +227,56 @@ const servicePackages: ServicePackage[] = [
 ];
 
 const technicians = [
-  { 
-    id: "ahmed-hassan", 
-    name: "Ahmed Hassan", 
+  {
+    id: "ahmed-hassan",
+    name: "Ahmed Hassan",
     nameAr: "أحمد حسن",
-    specialty: "CNC Aluminum Machines", 
+    specialty: "CNC Aluminum Machines",
     specialtyAr: "ماكينات الألومنيوم CNC",
-    rating: 4.9, 
+    rating: 4.9,
     experience: "8 years",
     languages: ["Arabic", "English"],
     turkishTrained: true
   },
-  { 
-    id: "mohamed-ali", 
-    name: "Mohamed Ali", 
+  {
+    id: "mohamed-ali",
+    name: "Mohamed Ali",
     nameAr: "محمد علي",
-    specialty: "Cutting & Welding Systems", 
+    specialty: "Cutting & Welding Systems",
     specialtyAr: "أنظمة القطع واللحام",
-    rating: 4.8, 
+    rating: 4.8,
     experience: "6 years",
     languages: ["Arabic", "English"],
     turkishTrained: false
   },
-  { 
-    id: "mehmet-yilmaz", 
-    name: "Mehmet Yılmaz", 
+  {
+    id: "mehmet-yilmaz",
+    name: "Mehmet Yılmaz",
     nameAr: "محمد يلماز",
-    specialty: "Turkish Machinery Expert", 
+    specialty: "Turkish Machinery Expert",
     specialtyAr: "خبير الماكينات التركية",
-    rating: 4.95, 
+    rating: 4.95,
     experience: "12 years",
     languages: ["Turkish", "Arabic", "English"],
     turkishTrained: true
   },
-  { 
-    id: "khaled-ibrahim", 
-    name: "Khaled Ibrahim", 
+  {
+    id: "khaled-ibrahim",
+    name: "Khaled Ibrahim",
     nameAr: "خالد إبراهيم",
-    specialty: "Bending & Forming", 
+    specialty: "Bending & Forming",
     specialtyAr: "الثني والتشكيل",
-    rating: 4.7, 
+    rating: 4.7,
     experience: "5 years",
     languages: ["Arabic"],
     turkishTrained: true
   }
 ];
 
-export const ScheduleMaintenance = ({ 
-  open, 
-  onOpenChange, 
-  machineId, 
+export const ScheduleMaintenance = ({
+  open,
+  onOpenChange,
+  machineId,
   machineModel,
   machineType = "cnc"
 }: ScheduleMaintenanceProps) => {
@@ -311,7 +314,7 @@ export const ScheduleMaintenance = ({
   useEffect(() => {
     if (machineId) setValue("machineId", machineId);
     if (machineModel) setValue("machineModel", machineModel);
-    
+
     // Set industrial zones based on selected governorate
     const zonesKey = governorate.replace(/\s+/g, '_');
     setIndustrialZones(INDUSTRIAL_ZONES[zonesKey as keyof typeof INDUSTRIAL_ZONES] || []);
@@ -325,39 +328,82 @@ export const ScheduleMaintenance = ({
     { date: "2024-01-17", time: "08:30", technician: "Mohamed Ali", specialty: "Cutting Systems", languages: ["Arabic", "English"], duration: 3, rating: 4.8 },
   ];
 
-  const filteredSlots = availableSlots.filter(slot => 
+  const filteredSlots = availableSlots.filter(slot =>
     !turkishTechnician || slot.technician === "Mehmet Yılmaz"
   );
 
   const calculateTotalPrice = () => {
     let total = selectedPackage?.price || 0;
-    
+
     // Add additional service costs
     if (includeOperatorTraining) total += 1000;
     if (watch("includeSafetyInspection")) total += 500;
     if (watch("includeSoftwareUpdate")) total += 1500;
     if (watch("translationRequired")) total += 500;
-    
+
     // Apply seasonal discount
     if (selectedPackage?.seasonalDiscount) {
       total *= 0.9; // 10% discount
     }
-    
+
     return total;
   };
 
-  const onSubmit = async (_data: ScheduleFormData) => {
+  const { toast } = useToast();
+
+  const onSubmit = async (data: ScheduleFormData) => {
     setIsSubmitting(true);
-    
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Generate service ID (for future use)
-      const _serviceId = `ALM-${Date.now().toString().slice(-8)}`;
-      
+      // Map form data to CreateTicketData
+      const description = `
+**Maintenance Request**
+**Service Type:** ${data.serviceType}
+**Machine:** ${data.machineModel} (ID: ${data.machineId})
+**Preferred Slot:** ${data.preferredDate} at ${data.preferredTime}
+**Duration:** ${data.duration}
+**Technician Pref:** ${data.technicianPreference}
+**Location:** ${data.governorate}, ${data.industrialZone}
+**Company:** ${data.companyName}
+**Contact:** ${data.contactName}
+**Payment:** ${data.paymentMethod}
+
+**Options:**
+- Operator Training: ${data.includeOperatorTraining ? 'Yes' : 'No'}
+- Safety Inspection: ${data.includeSafetyInspection ? 'Yes' : 'No'}
+- Software Update: ${data.includeSoftwareUpdate ? 'Yes' : 'No'}
+- Turkish Tech: ${data.turkishTechnician ? 'Yes' : 'No'}
+- Translation: ${data.translationRequired ? 'Yes' : 'No'}
+
+**Notes:**
+${data.notes}
+      `.trim();
+
+      const user = await supabase.auth.getUser();
+      const userId = user.data.user?.id || 'guest';
+
+      await createTicket({
+        title: `Maintenance: ${data.serviceType} - ${data.companyName}`,
+        description: description,
+        type: 'maintenance',
+        priority: data.priority === 'emergency' ? 'urgent' : data.priority,
+        contact_phone: data.phone,
+        contact_email: data.email,
+        preferred_contact_method: 'phone',
+        site_location: `${data.governorate}, ${data.industrialZone}`,
+        machine_serial_number: data.machineId, // Assuming machineId is serial
+        machine_model: data.machineModel,
+        maintenance_type: data.serviceType as any
+      }, userId);
+
+      toast({
+        title: "Request Submitted",
+        description: "Your maintenance request has been successfully scheduled. Ticket created.",
+        variant: "default"
+      });
+
       setStep("confirm");
-      
+
       // Reset after 3 seconds
       setTimeout(() => {
         onOpenChange(false);
@@ -368,6 +414,11 @@ export const ScheduleMaintenance = ({
       }, 3000);
     } catch (error) {
       console.error("Schedule maintenance error:", error);
+      toast({
+        title: "Submission Failed",
+        description: "Could not create maintenance ticket. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -397,7 +448,7 @@ export const ScheduleMaintenance = ({
             >
               <DialogHeader>
                 <DialogTitle className="text-2xl font-bold flex items-center gap-2">
-                  <Settings className="h-6 w-6 text-orange-500" />
+                  <Settings className="h-6 w-6 text-amber-500" />
                   <span>جدولة صيانة ماكينات الألومنيوم</span>
                   <span className="text-gray-400">| Aluminum Machinery Maintenance Scheduling</span>
                 </DialogTitle>
@@ -417,45 +468,44 @@ export const ScheduleMaintenance = ({
                     {servicePackages.map((pkg) => (
                       <LazyMotionDiv
                         key={pkg.id}
-                        className={`relative p-6 rounded-lg border-2 transition-all duration-300 ${
-                          selectedPackage?.id === pkg.id
-                            ? "border-orange-500 bg-orange-500/10"
-                            : "border-almona-light/20 hover:border-almona-light/40"
-                        }`}
+                        className={`relative p-6 rounded-lg border-2 transition-all duration-300 ${selectedPackage?.id === pkg.id
+                          ? "border-amber-500 bg-amber-500/10"
+                          : "border-almona-light/20 hover:border-almona-light/40"
+                          }`}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setSelectedPackage(pkg)}
                       >
                         <div className="text-center">
-                          <h3 className="font-bold text-lg mb-1">{pkg.nameAr}</h3>
-                          <h4 className="font-semibold text-gray-400 mb-2">{pkg.name}</h4>
-                          
+                          <h3 className="typography-h3 text-lg mb-1">{pkg.nameAr}</h3>
+                          <h4 className="typography-h4 text-gray-400 mb-2">{pkg.name}</h4>
+
                           <p className="text-sm text-gray-400 mb-1">{pkg.descriptionAr}</p>
                           <p className="text-xs text-gray-500 mb-3">{pkg.description}</p>
-                          
-                          <p className="text-2xl font-bold text-orange-500 mb-2">
+
+                          <p className="text-2xl font-bold text-amber-500 mb-2">
                             {pkg.price.toLocaleString()} ج.م
                           </p>
                           <p className="text-sm text-gray-400 mb-4">{pkg.duration}</p>
-                          
+
                           <div className="space-y-2 text-left">
                             {pkg.featuresAr.map((feature, index) => (
                               <div key={index} className="flex items-start">
-                                <CheckCircle2 className="h-3 w-3 text-green-500 mr-1 mt-0.5 flex-shrink-0" />
+                                <CheckCircle2 className="h-3 w-3  mr-1 mt-0.5 flex-shrink-0 status-valid" />
                                 <span className="text-xs text-gray-400">
                                   {feature} {pkg.features[index] && `| ${pkg.features[index]}`}
                                 </span>
                               </div>
                             ))}
                           </div>
-                          
+
                           {pkg.turkishExpert && (
                             <Badge className="mt-3 bg-blue-500/20 text-blue-300">
                               <Shield className="h-3 w-3 mr-1" />
                               خبير تركي | Turkish Expert
                             </Badge>
                           )}
-                          
+
                           {pkg.seasonalDiscount && (
                             <Badge className="mt-2 bg-green-500/20 text-green-300">
                               <Zap className="h-3 w-3 mr-1" />
@@ -463,10 +513,10 @@ export const ScheduleMaintenance = ({
                             </Badge>
                           )}
                         </div>
-                        
+
                         {selectedPackage?.id === pkg.id && (
                           <LazyMotionDiv
-                            className="absolute inset-0 rounded-lg border-2 border-orange-500"
+                            className="absolute inset-0 rounded-lg card-premium"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                           />
@@ -498,7 +548,7 @@ export const ScheduleMaintenance = ({
                             </SelectContent>
                           </Select>
                         </div>
-                        
+
                         <div>
                           <Label>أولوية الخدمة | Priority Level</Label>
                           <Select value={priority} onValueChange={(value) => setValue("priority", value as "low" | "medium" | "high" | "emergency")}>
@@ -514,7 +564,7 @@ export const ScheduleMaintenance = ({
                           </Select>
                         </div>
                       </div>
-                      
+
                       <div>
                         <Label>نوع الماكينة | Machine Type</Label>
                         <Select {...register("machineType")}>
@@ -531,7 +581,7 @@ export const ScheduleMaintenance = ({
 
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <Label htmlFor="turkishTechnician" className="flex items-center">
+                          <Label htmlFor="turkishTechnician" className="typography-label flex items-center">
                             <Shield className="h-4 w-4 mr-2 text-blue-400" />
                             خبير تركي | Turkish Expert
                           </Label>
@@ -543,7 +593,7 @@ export const ScheduleMaintenance = ({
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <Label htmlFor="includeOperatorTraining" className="flex items-center">
+                          <Label htmlFor="includeOperatorTraining" className="typography-label flex items-center">
                             <Users className="h-4 w-4 mr-2 text-green-400" />
                             تدريب مشغل | Operator Training
                           </Label>
@@ -555,7 +605,7 @@ export const ScheduleMaintenance = ({
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <Label htmlFor="includeSafetyInspection" className="flex items-center">
+                          <Label htmlFor="includeSafetyInspection" className="typography-label flex items-center">
                             <Shield className="h-4 w-4 mr-2 text-yellow-400" />
                             فحص سلامة | Safety Inspection
                           </Label>
@@ -567,7 +617,7 @@ export const ScheduleMaintenance = ({
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <Label htmlFor="includeSoftwareUpdate" className="flex items-center">
+                          <Label htmlFor="includeSoftwareUpdate" className="typography-label flex items-center">
                             <Cpu className="h-4 w-4 mr-2 text-purple-400" />
                             تحديث برمجي | Software Update
                           </Label>
@@ -590,7 +640,7 @@ export const ScheduleMaintenance = ({
                 <Button
                   onClick={() => setStep("details")}
                   disabled={activeTab === "packages" ? !selectedPackage : false}
-                  className="bg-gradient-to-r from-orange-500 to-red-500"
+                  className="bg-gradient-to-r from-amber-500 to-red-500"
                 >
                   التالي | Continue
                 </Button>
@@ -617,7 +667,7 @@ export const ScheduleMaintenance = ({
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="companyName">اسم الشركة * | Company Name *</Label>
+                    <Label htmlFor="companyName" className="typography-label">اسم الشركة * | Company Name *</Label>
                     <Input
                       id="companyName"
                       {...register("companyName", { required: "Company name is required" })}
@@ -630,7 +680,7 @@ export const ScheduleMaintenance = ({
                   </div>
 
                   <div>
-                    <Label htmlFor="contactName">اسم المسؤول * | Contact Name *</Label>
+                    <Label htmlFor="contactName" className="typography-label">اسم المسؤول * | Contact Name *</Label>
                     <Input
                       id="contactName"
                       {...register("contactName", { required: "Contact name is required" })}
@@ -643,7 +693,7 @@ export const ScheduleMaintenance = ({
                   </div>
 
                   <div>
-                    <Label htmlFor="email">البريد الإلكتروني * | Email *</Label>
+                    <Label htmlFor="email" className="typography-label">البريد الإلكتروني * | Email *</Label>
                     <Input
                       id="email"
                       type="email"
@@ -657,11 +707,11 @@ export const ScheduleMaintenance = ({
                   </div>
 
                   <div>
-                    <Label htmlFor="phone">رقم الهاتف * | Phone *</Label>
+                    <Label htmlFor="phone" className="typography-label">رقم الهاتف * | Phone *</Label>
                     <Input
                       id="phone"
                       type="tel"
-                      {...register("phone", { 
+                      {...register("phone", {
                         required: "Phone is required",
                         pattern: {
                           value: /^01[0-2,5]{1}[0-9]{8}$/,
@@ -679,7 +729,7 @@ export const ScheduleMaintenance = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="machineId">رقم الماكينة | Machine ID</Label>
+                    <Label htmlFor="machineId" className="typography-label">رقم الماكينة | Machine ID</Label>
                     <Input
                       id="machineId"
                       {...register("machineId")}
@@ -689,7 +739,7 @@ export const ScheduleMaintenance = ({
                   </div>
 
                   <div>
-                    <Label htmlFor="machineModel">موديل الماكينة | Machine Model</Label>
+                    <Label htmlFor="machineModel" className="typography-label">موديل الماكينة | Machine Model</Label>
                     <Input
                       id="machineModel"
                       {...register("machineModel")}
@@ -699,7 +749,7 @@ export const ScheduleMaintenance = ({
                   </div>
 
                   <div>
-                    <Label htmlFor="governorate">المحافظة | Governorate</Label>
+                    <Label htmlFor="governorate" className="typography-label">المحافظة | Governorate</Label>
                     <Select value={governorate} onValueChange={(value) => setValue("governorate", value)}>
                       <SelectTrigger>
                         <SelectValue />
@@ -713,7 +763,7 @@ export const ScheduleMaintenance = ({
                   </div>
 
                   <div>
-                    <Label htmlFor="industrialZone">المنطقة الصناعية | Industrial Zone</Label>
+                    <Label htmlFor="industrialZone" className="typography-label">المنطقة الصناعية | Industrial Zone</Label>
                     <Select {...register("industrialZone")}>
                       <SelectTrigger>
                         <SelectValue placeholder="اختر المنطقة الصناعية" />
@@ -729,7 +779,7 @@ export const ScheduleMaintenance = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="technicianPreference">تفضيل الفني | Technician Preference</Label>
+                    <Label htmlFor="technicianPreference" className="typography-label">تفضيل الفني | Technician Preference</Label>
                     <Select {...register("technicianPreference")}>
                       <SelectTrigger>
                         <SelectValue placeholder="أي فني متاح" />
@@ -745,30 +795,30 @@ export const ScheduleMaintenance = ({
                   </div>
 
                   <div>
-                    <Label htmlFor="paymentMethod">طريقة الدفع | Payment Method</Label>
-                    <RadioGroup 
-                      defaultValue="cash" 
+                    <Label htmlFor="paymentMethod" className="typography-label">طريقة الدفع | Payment Method</Label>
+                    <RadioGroup
+                      defaultValue="cash"
                       onValueChange={(value) => setValue("paymentMethod", value as "cash" | "bank_transfer" | "installments")}
                       className="flex space-x-4 mt-2"
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="cash" id="cash" />
-                        <Label htmlFor="cash" className="cursor-pointer">نقدي | Cash</Label>
+                        <Label htmlFor="cash" className="typography-label cursor-pointer">نقدي | Cash</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="bank_transfer" id="bank_transfer" />
-                        <Label htmlFor="bank_transfer" className="cursor-pointer">تحويل بنكي | Bank Transfer</Label>
+                        <Label htmlFor="bank_transfer" className="typography-label cursor-pointer">تحويل بنكي | Bank Transfer</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="installments" id="installments" />
-                        <Label htmlFor="installments" className="cursor-pointer">تقسيط | Installments</Label>
+                        <Label htmlFor="installments" className="typography-label cursor-pointer">تقسيط | Installments</Label>
                       </div>
                     </RadioGroup>
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="notes">ملاحظات خاصة | Special Requirements</Label>
+                  <Label htmlFor="notes" className="typography-label">ملاحظات خاصة | Special Requirements</Label>
                   <Textarea
                     id="notes"
                     rows={3}
@@ -787,7 +837,7 @@ export const ScheduleMaintenance = ({
                   </Button>
                   <Button
                     onClick={() => setStep("schedule")}
-                    className="bg-gradient-to-r from-orange-500 to-red-500"
+                    className="bg-gradient-to-r from-amber-500 to-red-500"
                   >
                     التالي: اختيار الوقت | Next: Select Time
                   </Button>
@@ -813,16 +863,15 @@ export const ScheduleMaintenance = ({
               <div className="space-y-6 mt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="font-semibold mb-4">المواعيد المتاحة | Available Time Slots</h3>
+                    <h3 className="typography-h3 mb-4">المواعيد المتاحة | Available Time Slots</h3>
                     <div className="space-y-3">
                       {filteredSlots.map((slot, index) => (
                         <LazyMotionDiv
                           key={index}
-                          className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                            selectedSlot === slot
-                              ? "border-orange-500 bg-orange-500/10"
-                              : "border-almona-light/20 hover:border-almona-light/40"
-                          }`}
+                          className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${selectedSlot === slot
+                            ? "border-amber-500 bg-amber-500/10"
+                            : "border-almona-light/20 hover:border-almona-light/40"
+                            }`}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           onClick={() => setSelectedSlot(slot)}
@@ -831,7 +880,7 @@ export const ScheduleMaintenance = ({
                             <div>
                               <p className="font-medium">{slot.date}</p>
                               <p className="text-sm text-gray-400">{slot.time}</p>
-                              <p className="text-xs text-orange-400 mt-1">{slot.technician}</p>
+                              <p className="text-xs text-amber-400 mt-1">{slot.technician}</p>
                             </div>
                             <div className="text-right">
                               <p className="text-sm">{slot.specialty}</p>
@@ -855,7 +904,7 @@ export const ScheduleMaintenance = ({
                   </div>
 
                   <div>
-                    <h3 className="font-semibold mb-4">ملخص الخدمة | Service Summary</h3>
+                    <h3 className="typography-h3 mb-4">ملخص الخدمة | Service Summary</h3>
                     <Card className="bg-almona-darker/50 border-almona-light/20">
                       <CardContent className="pt-6">
                         <div className="space-y-3">
@@ -867,12 +916,12 @@ export const ScheduleMaintenance = ({
                               <span className="text-sm text-gray-400">{selectedPackage?.name || "Custom Service"}</span>
                             </span>
                           </div>
-                          
+
                           <div className="flex justify-between">
                             <span>الماكينة | Machine:</span>
                             <span className="font-bold">{machineModel || "غير محدد"}</span>
                           </div>
-                          
+
                           {selectedSlot && (
                             <>
                               <div className="flex justify-between">
@@ -893,9 +942,9 @@ export const ScheduleMaintenance = ({
                               </div>
                             </>
                           )}
-                          
+
                           <Separator />
-                          
+
                           {/* Additional services */}
                           {includeOperatorTraining && (
                             <div className="flex justify-between text-sm">
@@ -903,33 +952,33 @@ export const ScheduleMaintenance = ({
                               <span className="text-green-400">+1,000 ج.م</span>
                             </div>
                           )}
-                          
+
                           {watch("includeSafetyInspection") && (
                             <div className="flex justify-between text-sm">
                               <span>فحص سلامة | Safety Inspection:</span>
                               <span className="text-green-400">+500 ج.م</span>
                             </div>
                           )}
-                          
+
                           {watch("includeSoftwareUpdate") && (
                             <div className="flex justify-between text-sm">
                               <span>تحديث برمجي | Software Update:</span>
                               <span className="text-green-400">+1,500 ج.م</span>
                             </div>
                           )}
-                          
+
                           {selectedPackage?.seasonalDiscount && (
                             <div className="flex justify-between text-sm text-green-400">
                               <span>خصم موسمي | Seasonal Discount:</span>
                               <span>-10%</span>
                             </div>
                           )}
-                          
+
                           <Separator />
-                          
+
                           <div className="flex justify-between text-lg">
                             <span>الإجمالي | Total:</span>
-                            <span className="font-bold text-orange-500">
+                            <span className="font-bold text-amber-500">
                               {calculateTotalPrice().toLocaleString()} ج.م
                             </span>
                           </div>
@@ -989,7 +1038,7 @@ export const ScheduleMaintenance = ({
                   <CheckCircle2 className="h-10 w-10 text-white" />
                 </div>
               </LazyMotionDiv>
-              <h3 className="text-2xl font-bold mb-2">تم جدولة الخدمة! | Service Scheduled!</h3>
+              <h3 className="typography-h3 mb-2">تم جدولة الخدمة! | Service Scheduled!</h3>
               <p className="text-gray-400 mb-4">
                 تم جدولة خدمة الصيانة بنجاح. ستتلقى تأكيدًا عبر البريد الإلكتروني والرسائل القصيرة.
                 <br />

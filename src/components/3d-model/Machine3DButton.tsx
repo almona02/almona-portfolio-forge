@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Eye } from 'lucide-react';
 import { Model3DDialog } from './Model3DDialog';
 

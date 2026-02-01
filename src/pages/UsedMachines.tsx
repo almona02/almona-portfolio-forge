@@ -116,22 +116,22 @@ const UsedMachines = () => {
       <main className="flex-grow pt-20">
         <div id="top" className="sr-only" aria-hidden="true" />
         <div className="container mx-auto px-4 py-8">
-          <div className="mb-12 text-center bg-gradient-to-r from-orange-900 to-orange-700 py-12 px-4 rounded-xl">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+          <div className="mb-12 text-center bg-gradient-to-r from-amber-900 to-amber-700 py-12 px-4 rounded-xl">
+            <h1 className="typography-h1 md:text-5xl mb-6">
               <span className="text-white">Used Machines Marketplace</span>
             </h1>
-            <p className="text-xl text-orange-100 max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-amber-100 max-w-3xl mx-auto mb-8">
               A trusted platform for buying and selling used aluminum and uPVC machinery in Egypt.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
-                className="bg-white text-orange-700 hover:bg-orange-100"
+                className="bg-white text-amber-700 hover:bg-amber-100"
                 onClick={handleSellClick}
               >
                 Sell Your Used Machines
               </Button>
               <Button 
-                className="text-white border-white hover:bg-orange-800"
+                className="text-white border-white hover:bg-amber-800"
               >
                 Get a Free Consultation
               </Button>
@@ -149,8 +149,8 @@ const UsedMachines = () => {
               <div className="mb-8 bg-almona-darker p-6 rounded-lg border border-almona-light/20">
                 {/* Smart Search Header */}
                 <div className="flex items-center mb-4">
-                  <Brain className="w-5 h-5 text-orange-400 mr-2" />
-                  <h3 className="text-lg font-semibold text-almona-light">AI-Powered Search</h3>
+                  <Brain className="w-5 h-5 text-amber-400 mr-2" />
+                  <h3 className="typography-h3 text-lg text-almona-light">AI-Powered Search</h3>
                   {parsedQuery && (
                     <Badge className="ml-3 bg-blue-600/20 text-blue-400 border-blue-400/30">
                       {parsedQuery.intent} • {parsedQuery.urgency} priority
@@ -184,7 +184,7 @@ const UsedMachines = () => {
                   <div>
                     <Button
                       onClick={() => setShowFilters(!showFilters)}
-                      className="w-full h-11 bg-orange-600 hover:bg-orange-700"
+                      className="btn-primary"
                     >
                       <Filter className="w-4 h-4 mr-2" />
                       Advanced Filters
@@ -219,13 +219,13 @@ const UsedMachines = () => {
                     {/* Smart Results Summary */}
                     <div className="bg-almona-dark p-4 rounded-lg">
                       <div className="flex items-center mb-3">
-                        <Brain className="w-4 h-4 text-orange-400 mr-2" />
-                        <h4 className="text-sm font-medium text-almona-light">Search Results</h4>
+                        <Brain className="w-4 h-4 text-amber-400 mr-2" />
+                        <h4 className="typography-h4 text-sm font-medium text-almona-light">Search Results</h4>
                       </div>
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center justify-between">
                           <span>Machines Found:</span>
-                          <span className="text-orange-400 font-bold">{searchResults.length}</span>
+                          <span className="text-amber-400 font-bold">{searchResults.length}</span>
                         </div>
                         {searchQuery && (
                           <div className="flex items-center justify-between">
@@ -265,7 +265,7 @@ const UsedMachines = () => {
 
               {isLoading ? (
                 <div className="text-center py-12">
-                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-400 mb-4"></div>
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-amber-400 mb-4"></div>
                   <p className="text-almona-light">Searching with AI...</p>
                 </div>
               ) : searchResults.length === 0 ? (
@@ -274,7 +274,7 @@ const UsedMachines = () => {
                   <p className="text-xl text-gray-400 mb-2">No machines found matching your search.</p>
                   <p className="text-sm text-gray-500 mb-6">Try adjusting your filters or search terms</p>
                   <Button 
-                    className="mt-4 bg-orange-600 hover:bg-orange-700"
+                    className="btn-primary"
                     onClick={clearAllFilters}
                   >
                     Clear All Filters
@@ -320,25 +320,25 @@ const UsedMachines = () => {
               )}
 
               <div className="mt-16 text-center">
-                <h3 className="text-2xl font-semibold mb-6">Why Trust Almona?</h3>
+                <h3 className="typography-h3 mb-6">Why Trust Almona?</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="bg-almona-darker/50 p-6 rounded-lg border border-almona-light/20">
                     <div className="text-5xl mb-4">🔍</div>
-                    <h4 className="text-xl font-semibold mb-2">Thorough Technical Inspection</h4>
+                    <h4 className="typography-h4 mb-2">Thorough Technical Inspection</h4>
                     <p className="text-gray-400">
                       Our technical team inspects every machine before it&apos;s listed.
                     </p>
                   </div>
                   <div className="bg-almona-darker/50 p-6 rounded-lg border border-almona-light/20">
                     <div className="text-5xl mb-4">🤝</div>
-                    <h4 className="text-xl font-semibold mb-2">Secure Transaction Guarantee</h4>
+                    <h4 className="typography-h4 mb-2">Secure Transaction Guarantee</h4>
                     <p className="text-gray-400">
                       A secure payment system protects both buyer and seller until the deal is complete.
                     </p>
                   </div>
                   <div className="bg-almona-darker/50 p-6 rounded-lg border border-almona-light/20">
                     <div className="text-5xl mb-4">🚚</div>
-                    <h4 className="text-xl font-semibold mb-2">Logistical Services</h4>
+                    <h4 className="typography-h4 mb-2">Logistical Services</h4>
                     <p className="text-gray-400">
                       We arrange transportation and installation at preferential rates with our partners.
                     </p>
@@ -350,30 +350,30 @@ const UsedMachines = () => {
             <TabsContent value="sell">
               <div className="max-w-4xl mx-auto">
                 <SellUsedMachineForm />
-                <div className="bg-gradient-to-r from-orange-900 to-orange-800 p-8 rounded-xl mt-8">
-                  <h3 className="text-xl font-semibold mb-4 text-center">Benefits of Selling with Almona</h3>
+                <div className="bg-gradient-to-r from-amber-900 to-amber-800 p-8 rounded-xl mt-8">
+                  <h3 className="typography-h3 mb-4 text-center">Benefits of Selling with Almona</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-start">
-                      <div className="bg-orange-600 p-2 rounded-full mr-3 mt-1">
+                      <div className="btn-primary">
                         <span className="text-white">1</span>
                       </div>
-                      <p className="text-orange-100">
+                      <p className="text-amber-100">
                         <span className="font-bold">Free Technical Inspection:</span> Our team visits your factory to evaluate the machine.
                       </p>
                     </div>
                     <div className="flex items-start">
-                      <div className="bg-orange-600 p-2 rounded-full mr-3 mt-1">
+                      <div className="btn-primary">
                         <span className="text-white">2</span>
                       </div>
-                      <p className="text-orange-100">
+                      <p className="text-amber-100">
                         <span className="font-bold">Guaranteed Marketing:</span> We reach over 5,000 fabricators in Egypt.
                       </p>
                     </div>
                     <div className="flex items-start">
-                      <div className="bg-orange-600 p-2 rounded-full mr-3 mt-1">
+                      <div className="btn-primary">
                         <span className="text-white">3</span>
                       </div>
-                      <p className="text-orange-100">
+                      <p className="text-amber-100">
                         <span className="font-bold">Logistical Support:</span> We arrange transport and installation at preferential rates.
                       </p>
                     </div>

@@ -136,7 +136,7 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
       premium: 'bg-purple-100 text-purple-800',
       minimal: 'bg-gray-100 text-gray-800',
       'client-facing': 'bg-green-100 text-green-800',
-      workshop: 'bg-orange-100 text-orange-800',
+      workshop: 'bg-amber-100 text-amber-800',
       'multi-language': 'bg-indigo-100 text-indigo-800'
     };
     return colors[type] || 'bg-gray-100 text-gray-800';
@@ -151,7 +151,7 @@ export const TemplateGallery: React.FC<TemplateGalleryProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Template Gallery</h2>
+          <h2 className="typography-h2">Template Gallery</h2>
           <p className="text-muted-foreground">
             Manage and apply report templates for consistent formatting
           </p>
@@ -411,7 +411,7 @@ const TemplateDialog: React.FC<TemplateDialogProps> = ({
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Template Name *</Label>
+            <Label htmlFor="name" className="typography-label">Template Name *</Label>
             <Input
               id="name"
               value={name}
@@ -421,7 +421,7 @@ const TemplateDialog: React.FC<TemplateDialogProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
+            <Label htmlFor="description" className="typography-label">Description *</Label>
             <Textarea
               id="description"
               value={description}
@@ -433,7 +433,7 @@ const TemplateDialog: React.FC<TemplateDialogProps> = ({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="type">Template Type</Label>
+              <Label htmlFor="type" className="typography-label">Template Type</Label>
               <Select value={type} onValueChange={(v) => setType(v as ExportTemplate['type'])}>
                 <SelectTrigger>
                   <SelectValue />
@@ -450,7 +450,7 @@ const TemplateDialog: React.FC<TemplateDialogProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="format">Export Format</Label>
+              <Label htmlFor="format" className="typography-label">Export Format</Label>
               <Select value={format} onValueChange={(v) => setFormat(v as ExportFormat)}>
                 <SelectTrigger>
                   <SelectValue />

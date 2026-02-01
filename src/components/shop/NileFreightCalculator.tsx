@@ -22,7 +22,7 @@ const NileFreightCalculator = () => {
 
   return (
     <div className="border border-egyptian-gold p-4 rounded-lg">
-      <h3 className="font-bold text-lg mb-3">حاسبة شحن نهر النيل</h3>
+      <h3 className="typography-h3 text-lg mb-3">حاسبة شحن نهر النيل</h3>
       <Select onValueChange={(value) => setFromPort(value as 'Alexandria' | 'PortSaid' | 'Suez')} value={fromPort}>
         <SelectTrigger>
           <SelectValue placeholder="ميناء الشحن" />

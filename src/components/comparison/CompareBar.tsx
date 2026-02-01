@@ -59,7 +59,7 @@ const CompareBar: React.FC<CompareBarProps> = ({
             onClick={onCompare}
             disabled={machines.length < 2}
             aria-label="Open machine comparison"
-            className="w-full text-base sm:text-sm py-3 sm:py-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-600 text-white hover:from-orange-400 hover:to-red-500 disabled:from-gray-600 disabled:to-gray-600 shadow-lg shadow-orange-500/25 ring-1 ring-orange-400/60 hover:ring-orange-300/70 transition-all active:translate-y-[1px]"
+            className="w-full text-base sm:text-sm py-3 sm:py-2 rounded-lg bg-gradient-to-r from-amber-500 to-red-600 text-white hover:from-amber-400 hover:to-red-500 disabled:from-gray-600 disabled:to-gray-600 shadow-lg shadow-amber-500/25 ring-1 ring-amber-400/60 hover:ring-amber-300/70 transition-all active:translate-y-[1px]"
           >
             <BarChart2 size={14} className="mr-1" />
             Compare ({machines.length})

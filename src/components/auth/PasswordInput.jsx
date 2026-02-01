@@ -36,7 +36,7 @@ const PasswordInput = ({ onPasswordChange }) => {
 
   return (
     <div className="password-input">
-      <label htmlFor="password">Password</label>
+      <label htmlFor="password" className="typography-label">Password</label>
       <input
         type="password"
         id="password"

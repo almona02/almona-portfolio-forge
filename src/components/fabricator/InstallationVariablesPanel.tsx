@@ -60,7 +60,7 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
     <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Wrench className="h-5 w-5 text-orange-500" />
+          <Wrench className="h-5 w-5 text-amber-500" />
           Installation Variables
         </CardTitle>
         <CardDescription>
@@ -70,7 +70,7 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
       <CardContent className="space-y-6">
         {/* Wall Type Selection */}
         <div className="space-y-2">
-          <Label className="flex items-center gap-2">
+          <Label className="typography-label flex items-center gap-2">
             <Building2 className="h-4 w-4" />
             Wall Type
           </Label>
@@ -125,13 +125,13 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
         <div className="space-y-3 p-4 bg-gray-800/40 rounded-lg border border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-orange-500" />
-              <Label className="font-medium">Scaffolding Required</Label>
+              <Building2 className="h-4 w-4 text-amber-500" />
+              <Label className="typography-label font-medium">Scaffolding Required</Label>
             </div>
             <Checkbox
               checked={variables.scaffoldingRequired}
               onCheckedChange={(checked) => handleVariableChange('scaffoldingRequired', checked)}
-              className="border-orange-500 data-[state=checked]:bg-orange-500"
+              className="btn-primary"
             />
           </div>
           <p className="text-xs text-gray-400">
@@ -141,10 +141,10 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
           {variables.scaffoldingRequired && (
             <div className="space-y-2 mt-3">
               <div className="flex justify-between items-center">
-                <Label className="text-sm">
-                  Scaffolding Cost: <span className="text-orange-400 font-mono">{variables.scaffoldingCostPerM2} EGP/m²</span>
+                <Label className="typography-label text-sm">
+                  Scaffolding Cost: <span className="text-amber-400 font-mono">{variables.scaffoldingCostPerM2} EGP/m²</span>
                 </Label>
-                <Badge variant="outline" className="bg-orange-900/30 text-orange-400 border-orange-800">
+                <Badge variant="outline" className="bg-amber-900/30 text-amber-400 border-amber-800">
                   {breakdown ? `${(breakdown.scaffoldingCost).toFixed(0)} EGP` : '0 EGP'}
                 </Badge>
               </div>
@@ -215,7 +215,7 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
           <div className="mt-6 p-4 bg-gray-800/60 rounded-lg border border-gray-700">
             <div className="flex items-center gap-2 mb-3">
               <Calculator className="h-4 w-4 text-green-400" />
-              <Label className="font-semibold text-green-400">Installation Cost Breakdown</Label>
+              <Label className="typography-label font-semibold text-green-400">Installation Cost Breakdown</Label>
             </div>
             <div className="space-y-2 text-sm">
               {breakdown.scaffoldingCost > 0 && (
@@ -246,8 +246,8 @@ export const InstallationVariablesPanel: React.FC<InstallationVariablesPanelProp
               </div>
               <div className="h-px bg-gray-700 my-2" />
               <div className="flex justify-between font-bold text-lg">
-                <span className="text-orange-400">Total Installation</span>
-                <span className="font-mono text-orange-400">{breakdown.totalInstallationCost.toFixed(0)} EGP</span>
+                <span className="text-amber-400">Total Installation</span>
+                <span className="font-mono text-amber-400">{breakdown.totalInstallationCost.toFixed(0)} EGP</span>
               </div>
               <div className="flex justify-between text-xs text-gray-400 mt-2">
                 <span>Estimated Time</span>

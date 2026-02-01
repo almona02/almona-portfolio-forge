@@ -412,7 +412,7 @@ export const PartnerOnboarding: React.FC = () => {
                           }
                         }}
                       />
-                      <Label htmlFor={market} className="text-sm">{market}</Label>
+                      <Label htmlFor={market} className="typography-label text-sm">{market}</Label>
                     </div>
                   ))}
                 </div>
@@ -439,7 +439,7 @@ export const PartnerOnboarding: React.FC = () => {
               {application.references.map((ref, index) => (
                 <div key={index} className="p-4 border rounded-lg space-y-3">
                   <div className="flex justify-between items-center">
-                    <h4 className="font-medium">Reference #{index + 1}</h4>
+                    <h4 className="typography-h4 font-medium">Reference #{index + 1}</h4>
                     {application.references.length > 1 && (
                       <Button
                         variant="ghost"
@@ -695,7 +695,7 @@ export const PartnerOnboarding: React.FC = () => {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-3 border rounded">
             <div>
-              <h4 className="font-medium">Production API Key</h4>
+              <h4 className="typography-h4 font-medium">Production API Key</h4>
               <p className="text-sm text-muted-foreground font-mono">
                 {partner?.apiKey.slice(0, 20)}...
               </p>
@@ -742,7 +742,7 @@ export const PartnerOnboarding: React.FC = () => {
             {partner?.certifications.map((cert, index) => (
               <div key={index} className="flex items-center justify-between p-3 border rounded">
                 <div>
-                  <h4 className="font-medium">{cert.name}</h4>
+                  <h4 className="typography-h4 font-medium">{cert.name}</h4>
                   <p className="text-sm text-muted-foreground">
                     Valid until {new Date(cert.validUntil).toLocaleDateString()}
                   </p>
@@ -767,7 +767,7 @@ export const PartnerOnboarding: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+          <h2 className="typography-h2 tracking-tight flex items-center gap-2">
             <Store className="h-8 w-8 text-blue-600" />
             Partner Marketplace
           </h2>
@@ -879,13 +879,13 @@ export const PartnerOnboarding: React.FC = () => {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-2">
-                  <h4 className="font-medium">Partner Support Team</h4>
+                  <h4 className="typography-h4 font-medium">Partner Support Team</h4>
                   <p className="text-sm text-muted-foreground">partners@almona.com</p>
                   <p className="text-sm text-muted-foreground">+20 100 555 0123</p>
                 </div>
                 <Separator />
                 <div className="space-y-2">
-                  <h4 className="font-medium">Technical Support</h4>
+                  <h4 className="typography-h4 font-medium">Technical Support</h4>
                   <p className="text-sm text-muted-foreground">Available 24/7 for approved partners</p>
                 </div>
               </CardContent>

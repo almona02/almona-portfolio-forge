@@ -403,7 +403,7 @@ export const EUIndustrialStandards: React.FC = () => {
             <Separator />
 
             <div className="space-y-3">
-              <h4 className="font-medium">Standards Compliance Status</h4>
+              <h4 className="typography-h4 font-medium">Standards Compliance Status</h4>
               {complianceAssessment.currentCompliance.map((compliance, index) => {
                 const standard = EU_STANDARDS.find(s => s.id === compliance.standardId);
                 const statusColors = {
@@ -437,7 +437,7 @@ export const EUIndustrialStandards: React.FC = () => {
             <Separator />
 
             <div className="space-y-2">
-              <h4 className="font-medium">Recommended Actions</h4>
+              <h4 className="typography-h4 font-medium">Recommended Actions</h4>
               {complianceAssessment.recommendedActions.map((action, index) => (
                 <div key={index} className="flex items-start gap-2">
                   <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5" />
@@ -487,7 +487,7 @@ export const EUIndustrialStandards: React.FC = () => {
               
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <h4 className="font-medium text-sm mb-2">Requirements</h4>
+                  <h4 className="typography-h4 font-medium text-sm mb-2">Requirements</h4>
                   <ul className="text-sm space-y-1">
                     {standard.requirements.map((req, index) => (
                       <li key={index} className="flex items-start gap-2">
@@ -574,7 +574,7 @@ export const EUIndustrialStandards: React.FC = () => {
           <CardContent className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <h4 className="font-medium text-sm mb-2">Declaration of Conformity</h4>
+                <h4 className="typography-h4 font-medium text-sm mb-2">Declaration of Conformity</h4>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span>Number:</span>
@@ -596,7 +596,7 @@ export const EUIndustrialStandards: React.FC = () => {
               </div>
 
               <div>
-                <h4 className="font-medium text-sm mb-2">Applicable Standards</h4>
+                <h4 className="typography-h4 font-medium text-sm mb-2">Applicable Standards</h4>
                 <div className="space-y-1">
                   {ceMark.standards.map((standardCode, index) => (
                     <Badge key={index} variant="outline" className="mr-1 mb-1">
@@ -608,7 +608,7 @@ export const EUIndustrialStandards: React.FC = () => {
             </div>
 
             <div>
-              <h4 className="font-medium text-sm mb-2">Technical File</h4>
+              <h4 className="typography-h4 font-medium text-sm mb-2">Technical File</h4>
               <div className="flex items-center justify-between p-3 border rounded">
                 <div>
                   <span className="text-sm">
@@ -695,7 +695,7 @@ export const EUIndustrialStandards: React.FC = () => {
           <CardContent>
             <div className="space-y-3">
               <div>
-                <h4 className="font-medium text-sm">{contact.authority}</h4>
+                <h4 className="typography-h4 font-medium text-sm">{contact.authority}</h4>
                 <p className="text-sm text-muted-foreground">{contact.specialization}</p>
               </div>
               
@@ -733,7 +733,7 @@ export const EUIndustrialStandards: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+          <h2 className="typography-h2 tracking-tight flex items-center gap-2">
             <Shield className="h-8 w-8 text-blue-600" />
             EU Industrial Standards
           </h2>

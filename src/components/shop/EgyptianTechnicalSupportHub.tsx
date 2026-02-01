@@ -160,7 +160,7 @@ const EgyptianTechnicalSupportHub = () => {
       icon: <Wrench className="h-6 w-6" />,
       responseTime: '< 4 hours',
       phone: '+20 2 2274 0003',
-      color: 'bg-orange-500/20 text-orange-400 border-orange-500/30'
+      color: 'bg-amber-500/20 text-amber-400 border-amber-500/30'
     }
   ];
 
@@ -201,7 +201,7 @@ const EgyptianTechnicalSupportHub = () => {
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
       case 'critical': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      case 'high': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+      case 'high': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
       case 'medium': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
       case 'low': return 'bg-green-500/20 text-green-400 border-green-500/30';
       default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
@@ -217,8 +217,8 @@ const EgyptianTechnicalSupportHub = () => {
         className="text-center mb-8"
       >
         <div className="flex items-center justify-center gap-3 mb-4">
-          <Wrench className="h-12 w-12 text-orange-400" />
-          <h1 className="text-4xl md:text-5xl font-bold">
+          <Wrench className="h-12 w-12 text-amber-400" />
+          <h1 className="typography-h1 md:text-5xl">
             <span className="text-gradient-orange">Egyptian Technical Support Hub</span>
           </h1>
         </div>
@@ -233,7 +233,7 @@ const EgyptianTechnicalSupportHub = () => {
               <CardContent className="p-4 text-center">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   {stat.icon}
-                  <div className="text-2xl font-bold text-orange-400">{stat.value}</div>
+                  <div className="text-2xl font-bold text-amber-400">{stat.value}</div>
                 </div>
                 <div className="text-sm text-gray-400">{stat.label}</div>
               </CardContent>
@@ -296,7 +296,7 @@ const EgyptianTechnicalSupportHub = () => {
                 className="cursor-pointer"
                 onClick={() => setSelectedCenter(center)}
               >
-                <Card className="bg-gray-800/50 border-gray-700 hover:border-orange-500/50 transition-colors">
+                <Card className="bg-gray-800/50 border-gray-700 transition-colors card-premium">
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div>
@@ -319,7 +319,7 @@ const EgyptianTechnicalSupportHub = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-3">
                         <div>
-                          <h4 className="font-semibold text-sm mb-2">Services:</h4>
+                          <h4 className="typography-h4 text-sm mb-2">Services:</h4>
                           <div className="flex flex-wrap gap-1">
                             {center.services.map((service) => (
                               <Badge key={service} variant="outline" className="text-xs">
@@ -329,7 +329,7 @@ const EgyptianTechnicalSupportHub = () => {
                           </div>
                         </div>
                         <div>
-                          <h4 className="font-semibold text-sm mb-2">Specialties:</h4>
+                          <h4 className="typography-h4 text-sm mb-2">Specialties:</h4>
                           <div className="flex flex-wrap gap-1">
                             {center.specialties.map((specialty) => (
                               <Badge key={specialty} variant="outline" className="text-xs">
@@ -341,19 +341,19 @@ const EgyptianTechnicalSupportHub = () => {
                       </div>
                       <div className="space-y-3">
                         <div className="flex items-center gap-2 text-sm">
-                          <Phone className="h-4 w-4 text-orange-400" />
+                          <Phone className="h-4 w-4 text-amber-400" />
                           <span>{center.phone}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <Mail className="h-4 w-4 text-orange-400" />
+                          <Mail className="h-4 w-4 text-amber-400" />
                           <span>{center.email}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <Clock className="h-4 w-4 text-orange-400" />
+                          <Clock className="h-4 w-4 text-amber-400" />
                           <span>{center.workingHours}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <Zap className="h-4 w-4 text-orange-400" />
+                          <Zap className="h-4 w-4 text-amber-400" />
                           <span>Response: {center.responseTime}</span>
                         </div>
                       </div>
@@ -370,7 +370,7 @@ const EgyptianTechnicalSupportHub = () => {
           <Card className="bg-gray-800/50 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-orange-400" />
+                <MessageSquare className="h-6 w-6 text-amber-400" />
                 Submit Support Request
               </CardTitle>
             </CardHeader>
@@ -378,7 +378,7 @@ const EgyptianTechnicalSupportHub = () => {
               <form onSubmit={handleSupportRequestSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Full Name *</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Full Name *</label>
                     <Input
                       value={supportRequest.name}
                       onChange={(e) => setSupportRequest(prev => ({ ...prev, name: e.target.value }))}
@@ -387,7 +387,7 @@ const EgyptianTechnicalSupportHub = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Email Address *</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Email Address *</label>
                     <Input
                       type="email"
                       value={supportRequest.email}
@@ -397,7 +397,7 @@ const EgyptianTechnicalSupportHub = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Phone Number *</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Phone Number *</label>
                     <Input
                       value={supportRequest.phone}
                       onChange={(e) => setSupportRequest(prev => ({ ...prev, phone: e.target.value }))}
@@ -406,7 +406,7 @@ const EgyptianTechnicalSupportHub = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Company Name</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Company Name</label>
                     <Input
                       value={supportRequest.company}
                       onChange={(e) => setSupportRequest(prev => ({ ...prev, company: e.target.value }))}
@@ -414,7 +414,7 @@ const EgyptianTechnicalSupportHub = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Machine Model *</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Machine Model *</label>
                     <Input
                       value={supportRequest.machineModel}
                       onChange={(e) => setSupportRequest(prev => ({ ...prev, machineModel: e.target.value }))}
@@ -423,7 +423,7 @@ const EgyptianTechnicalSupportHub = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Issue Type *</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Issue Type *</label>
                     <select
                       value={supportRequest.issueType}
                       onChange={(e) => setSupportRequest(prev => ({ ...prev, issueType: e.target.value }))}
@@ -443,7 +443,7 @@ const EgyptianTechnicalSupportHub = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Issue Description *</label>
+                  <label className="typography-label block text-sm font-medium mb-2">Issue Description *</label>
                   <Textarea
                     value={supportRequest.description}
                     onChange={(e) => setSupportRequest(prev => ({ ...prev, description: e.target.value }))}
@@ -455,7 +455,7 @@ const EgyptianTechnicalSupportHub = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Urgency Level *</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Urgency Level *</label>
                     <select
                       value={supportRequest.urgency}
                       onChange={(e) => setSupportRequest(prev => ({ ...prev, urgency: e.target.value as any }))}
@@ -469,7 +469,7 @@ const EgyptianTechnicalSupportHub = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Preferred Contact Method *</label>
+                    <label className="typography-label block text-sm font-medium mb-2">Preferred Contact Method *</label>
                     <select
                       value={supportRequest.preferredContact}
                       onChange={(e) => setSupportRequest(prev => ({ ...prev, preferredContact: e.target.value as any }))}
@@ -497,7 +497,7 @@ const EgyptianTechnicalSupportHub = () => {
                   </span>
                 </div>
 
-                <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600">
+                <Button type="submit" className="btn-primary">
                   Submit Support Request
                 </Button>
               </form>
@@ -511,7 +511,7 @@ const EgyptianTechnicalSupportHub = () => {
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-6 w-6 text-orange-400" />
+                  <FileText className="h-6 w-6 text-amber-400" />
                   Documentation & Manuals
                 </CardTitle>
               </CardHeader>
@@ -552,7 +552,7 @@ const EgyptianTechnicalSupportHub = () => {
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Video className="h-6 w-6 text-orange-400" />
+                  <Video className="h-6 w-6 text-amber-400" />
                   Training Resources
                 </CardTitle>
               </CardHeader>
@@ -594,7 +594,7 @@ const EgyptianTechnicalSupportHub = () => {
           <Card className="bg-gray-800/50 border-gray-700">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-6 w-6 text-orange-400" />
+                <Shield className="h-6 w-6 text-amber-400" />
                 Service Guarantees
               </CardTitle>
             </CardHeader>
@@ -602,17 +602,17 @@ const EgyptianTechnicalSupportHub = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-gray-700/30 rounded">
                   <CheckCircle className="h-8 w-8 text-green-400 mx-auto mb-2" />
-                  <h4 className="font-semibold mb-1">Response Guarantee</h4>
+                  <h4 className="typography-h4 mb-1">Response Guarantee</h4>
                   <p className="text-sm text-gray-400">We guarantee response within our stated timeframes</p>
                 </div>
                 <div className="text-center p-4 bg-gray-700/30 rounded">
                   <Shield className="h-8 w-8 text-blue-400 mx-auto mb-2" />
-                  <h4 className="font-semibold mb-1">Quality Assurance</h4>
+                  <h4 className="typography-h4 mb-1">Quality Assurance</h4>
                   <p className="text-sm text-gray-400">All work performed by certified technicians</p>
                 </div>
                 <div className="text-center p-4 bg-gray-700/30 rounded">
-                  <Truck className="h-8 w-8 text-orange-400 mx-auto mb-2" />
-                  <h4 className="font-semibold mb-1">Parts Availability</h4>
+                  <Truck className="h-8 w-8 text-amber-400 mx-auto mb-2" />
+                  <h4 className="typography-h4 mb-1">Parts Availability</h4>
                   <p className="text-sm text-gray-400">Genuine parts available within 24-48 hours</p>
                 </div>
               </div>
@@ -637,7 +637,7 @@ const EgyptianTechnicalSupportHub = () => {
           >
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="text-xl font-bold">{selectedCenter.name}</h3>
+                <h3 className="typography-h3">{selectedCenter.name}</h3>
                 <p className="text-gray-400">{selectedCenter.nameAr}</p>
                 <p className="text-sm text-gray-500">{selectedCenter.location}</p>
               </div>
@@ -653,28 +653,28 @@ const EgyptianTechnicalSupportHub = () => {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h4 className="font-semibold mb-2">Contact Information:</h4>
+                  <h4 className="typography-h4 mb-2">Contact Information:</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-orange-400" />
+                      <Phone className="h-4 w-4 text-amber-400" />
                       <span>{selectedCenter.phone}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-orange-400" />
+                      <Mail className="h-4 w-4 text-amber-400" />
                       <span>{selectedCenter.email}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-orange-400" />
+                      <MapPin className="h-4 w-4 text-amber-400" />
                       <span>{selectedCenter.location}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-orange-400" />
+                      <Clock className="h-4 w-4 text-amber-400" />
                       <span>{selectedCenter.workingHours}</span>
                     </div>
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-2">Center Details:</h4>
+                  <h4 className="typography-h4 mb-2">Center Details:</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <Badge className={getTypeColor(selectedCenter.type)}>
@@ -686,11 +686,11 @@ const EgyptianTechnicalSupportHub = () => {
                       <span>Rating: {selectedCenter.rating}/5</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-orange-400" />
+                      <Zap className="h-4 w-4 text-amber-400" />
                       <span>Response: {selectedCenter.responseTime}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Globe className="h-4 w-4 text-orange-400" />
+                      <Globe className="h-4 w-4 text-amber-400" />
                       <span>Languages: {selectedCenter.languages.join(', ')}</span>
                     </div>
                   </div>
@@ -698,7 +698,7 @@ const EgyptianTechnicalSupportHub = () => {
               </div>
 
               <div>
-                <h4 className="font-semibold mb-2">Services Offered:</h4>
+                <h4 className="typography-h4 mb-2">Services Offered:</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedCenter.services.map((service) => (
                     <Badge key={service} variant="outline">
@@ -709,7 +709,7 @@ const EgyptianTechnicalSupportHub = () => {
               </div>
 
               <div>
-                <h4 className="font-semibold mb-2">Specialties:</h4>
+                <h4 className="typography-h4 mb-2">Specialties:</h4>
                 <div className="flex flex-wrap gap-2">
                   {selectedCenter.specialties.map((specialty) => (
                     <Badge key={specialty} variant="outline">
@@ -720,7 +720,7 @@ const EgyptianTechnicalSupportHub = () => {
               </div>
 
               <div className="flex gap-3">
-                <Button className="flex-1 bg-orange-500 hover:bg-orange-600">
+                <Button className="btn-primary">
                   <Phone className="h-4 w-4 mr-2" />
                   Call Now
                 </Button>

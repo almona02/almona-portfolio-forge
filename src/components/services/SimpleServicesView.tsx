@@ -94,14 +94,14 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
 
       {/* Premium Services Hero (top of page) */}
       <section className="py-20 px-4 relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-purple-500/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-purple-500/10" />
         <div className="relative max-w-7xl mx-auto text-center">
           <LazyMotion component="h1" 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-5xl md:text-6xl font-bold mb-6"
           >
-            <span className="bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-amber-400 via-amber-500 to-red-500 bg-clip-text text-transparent">
               {t('services.premium_services')}
             </span>
           </LazyMotion>
@@ -122,7 +122,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
           >
             {stats.map((stat, index) => (
               <div key={index} className="text-center p-6 bg-white/5 rounded-2xl backdrop-blur-sm border border-white/10">
-                <div className="flex justify-center mb-2 text-orange-400">
+                <div className="flex justify-center mb-2 text-amber-400">
                   {stat.icon}
                 </div>
                 <div className="text-3xl font-bold text-white mb-1">{stat.number}</div>
@@ -137,7 +137,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-white mb-4">
+            <h2 className="typography-h2 text-4xl text-white mb-4">
               {t('services.complete_service_catalog')}
             </h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
@@ -153,10 +153,10 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="h-full bg-slate-800/50 backdrop-blur-sm border border-white/10 hover:border-orange-500/30 transition-all duration-300">
+                <Card className="h-full border border-white/10 hover:border-amber- 500/30 transition-all duration-300 card-premium">
                   <CardHeader>
                     <div className="flex items-center space-x-3 mb-4">
-                      <div className="p-2 bg-orange-500/20 rounded-lg text-orange-400">
+                      <div className="btn-primary">
                         {category.icon}
                       </div>
                       <CardTitle className="text-xl text-white">
@@ -168,7 +168,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
                     <ul className="space-y-3">
                       {category.services.map((service, idx) => (
                         <li key={idx} className="flex items-center space-x-3 text-gray-300">
-                          <div className="w-2 h-2 bg-orange-400 rounded-full flex-shrink-0" />
+                          <div className="w-2 h-2 bg-amber-400 rounded-full flex-shrink-0" />
                           <span>{service}</span>
                         </li>
                       ))}
@@ -185,7 +185,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-white mb-4">
+            <h2 className="typography-h2 text-4xl text-white mb-4">
               {t('services.how_our_service_works')}
             </h2>
           </div>
@@ -199,10 +199,10 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
                 transition={{ delay: index * 0.1 }}
                 className="text-center p-6 bg-white/5 rounded-2xl backdrop-blur-sm border border-white/10"
               >
-                <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-r from-amber-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
                   {item.step}
                 </div>
-                <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
+                <h3 className="typography-h3 text-lg text-white mb-2">{item.title}</h3>
                 <p className="text-gray-400 text-sm">{item.description}</p>
               </LazyMotionDiv>
             ))}
@@ -234,7 +234,7 @@ export const SimpleServicesView: React.FC<SimpleServicesViewProps> = ({
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold text-white">
+            <h2 className="typography-h2 text-4xl text-white">
               {t('services.regional_service_coverage')}
             </h2>
             <p className="text-xl text-gray-400">{t('services.technician_locations_response_times')}</p>

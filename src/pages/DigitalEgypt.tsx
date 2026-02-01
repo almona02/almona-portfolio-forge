@@ -139,7 +139,7 @@ const DigitalEgypt = () => {
                 <Badge className="mb-4 bg-blue-500/20 text-blue-300 border-blue-400/50">
                   National Initiative
                 </Badge>
-                <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                <h1 className="typography-h1 md:text-6xl mb-6">
                   Fabricator Pro: A Digital Egypt Initiative
                 </h1>
                 <p className="text-xl text-blue-100 mb-8 leading-relaxed max-w-3xl mx-auto">
@@ -149,7 +149,7 @@ const DigitalEgypt = () => {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                   <Link to="/fabricator-workflow">
-                    <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white">
+                    <Button size="lg" className="btn-primary">
                       Explore Platform <ArrowRight className="ml-2 w-4 h-4" />
                     </Button>
                   </Link>
@@ -174,7 +174,7 @@ const DigitalEgypt = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                <h2 className="text-3xl font-bold mb-6 text-center">The National Challenge</h2>
+                <h2 className="typography-h2 mb-6 text-center">The National Challenge</h2>
                 <div className="prose prose-lg dark:prose-invert max-w-none">
                   <p className="text-gray-700 dark:text-gray-300 mb-4">
                     Egypt's aluminium and UPVC fabrication sector faces critical productivity challenges:
@@ -204,7 +204,7 @@ const DigitalEgypt = () => {
                 transition={{ duration: 0.6 }}
                 className="text-center mb-12"
               >
-                <h2 className="text-3xl font-bold mb-4">Alignment with Egypt Vision 2030</h2>
+                <h2 className="typography-h2 mb-4">Alignment with Egypt Vision 2030</h2>
                 <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                   Fabricator Pro directly supports Egypt's national economic transformation goals
                 </p>
@@ -243,7 +243,7 @@ const DigitalEgypt = () => {
                 transition={{ duration: 0.6 }}
                 className="text-center mb-12"
               >
-                <h3 className="text-2xl font-bold mb-4">Digital Egypt Strategy Alignment</h3>
+                <h3 className="typography-h3 mb-4">Digital Egypt Strategy Alignment</h3>
               </motion.div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -286,7 +286,7 @@ const DigitalEgypt = () => {
                 transition={{ duration: 0.6 }}
                 className="text-center mb-12"
               >
-                <h2 className="text-3xl font-bold mb-4">Proposed National Pilot Project</h2>
+                <h2 className="typography-h2 mb-4">Proposed National Pilot Project</h2>
                 <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                   A consortium-led initiative to validate Fabricator Pro's national impact
                 </p>
@@ -303,7 +303,7 @@ const DigitalEgypt = () => {
                   >
                     <Card className="text-center h-full">
                       <CardContent className="pt-6">
-                        <div className="flex justify-center mb-3 text-orange-500">
+                        <div className="flex justify-center mb-3 text-amber-500">
                           {kpi.icon}
                         </div>
                         <div className="text-3xl font-bold mb-2 text-blue-600 dark:text-blue-400">
@@ -356,7 +356,7 @@ const DigitalEgypt = () => {
                 transition={{ duration: 0.6 }}
                 className="mb-8"
               >
-                <h3 className="text-2xl font-bold mb-6">Phased Deployment Model</h3>
+                <h3 className="typography-h3 mb-6">Phased Deployment Model</h3>
                 <div className="space-y-4">
                   {pilotPhases.map((phase, index) => (
                     <Card key={index} className="border-l-4 border-l-blue-500">
@@ -389,7 +389,7 @@ const DigitalEgypt = () => {
                 transition={{ duration: 0.6 }}
                 className="text-center mb-12"
               >
-                <h2 className="text-3xl font-bold mb-4">Consortium Partners</h2>
+                <h2 className="typography-h2 mb-4">Consortium Partners</h2>
                 <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                   A collaborative approach bringing together technology, academia, industry, and government
                 </p>
@@ -409,7 +409,7 @@ const DigitalEgypt = () => {
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                           <div>
                             <Badge className="mb-2">{partner.role}</Badge>
-                            <h3 className="text-xl font-semibold mb-2">{partner.name}</h3>
+                            <h3 className="typography-h3 mb-2">{partner.name}</h3>
                             <p className="text-gray-600 dark:text-gray-400">{partner.contribution}</p>
                           </div>
                         </div>
@@ -433,7 +433,7 @@ const DigitalEgypt = () => {
                 transition={{ duration: 0.6 }}
                 className="text-center mb-12"
               >
-                <h2 className="text-3xl font-bold mb-4">Key Deliverables</h2>
+                <h2 className="typography-h2 mb-4">Key Deliverables</h2>
               </motion.div>
 
               <div className="space-y-6">
@@ -472,7 +472,7 @@ const DigitalEgypt = () => {
                 <Card>
                   <CardHeader>
                     <div className="flex items-center gap-3">
-                      <Target className="w-6 h-6 text-orange-600" />
+                      <Target className="w-6 h-6 text-amber-600" />
                       <CardTitle>Open Data Contribution</CardTitle>
                     </div>
                   </CardHeader>
@@ -499,7 +499,7 @@ const DigitalEgypt = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                <h2 className="typography-h2 md:text-4xl mb-6">
                   Ready to Transform Egypt's Manufacturing Sector?
                 </h2>
                 <p className="text-xl text-blue-100 mb-8">
@@ -508,7 +508,7 @@ const DigitalEgypt = () => {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                   <Link to="/contact">
-                    <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white">
+                    <Button size="lg" className="btn-primary">
                       Contact for Partnership <ArrowRight className="ml-2 w-4 h-4" />
                     </Button>
                   </Link>

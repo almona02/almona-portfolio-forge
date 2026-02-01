@@ -23,7 +23,7 @@ export const ProductionLabel: React.FC<ProductionLabelProps> = ({ windowUnit, on
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <Card className="w-full max-w-md bg-white text-black shadow-2xl border-none overflow-hidden print:shadow-none print:w-full print:max-w-none print:absolute print:inset-0">
         <div className="print:hidden bg-gray-100 p-3 flex justify-between items-center border-b">
-          <h3 className="font-bold text-gray-700 flex items-center gap-2">
+          <h3 className="typography-h3 text-gray-700 flex items-center gap-2">
             <QrCode className="h-4 w-4" /> Production Label Preview
           </h3>
           <div className="flex gap-2">
@@ -38,11 +38,11 @@ export const ProductionLabel: React.FC<ProductionLabelProps> = ({ windowUnit, on
           {/* Label Header */}
           <div className="flex justify-between items-start border-b-2 border-black pb-4">
             <div>
-              <h1 className="text-3xl font-black tracking-tighter">ALMONA</h1>
+              <h1 className="typography-h1 font-black tracking-tighter">ALMONA</h1>
               <p className="text-sm font-medium text-gray-600">FABRICATOR PRO</p>
             </div>
             <div className="text-right">
-              <h2 className="text-xl font-bold">{windowUnit.orderNumber}</h2>
+              <h2 className="typography-h2 text-xl">{windowUnit.orderNumber}</h2>
               <p className="text-sm font-mono">{windowUnit.posNumber}</p>
             </div>
           </div>
@@ -69,7 +69,7 @@ export const ProductionLabel: React.FC<ProductionLabelProps> = ({ windowUnit, on
 
           {/* Cut List Summary (Simplified) */}
           <div className="bg-gray-50 p-3 rounded border border-gray-200">
-             <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">Critical Cuts (Verify)</h4>
+             <h4 className="typography-h4 text-xs text-gray-500 mb-2">Critical Cuts (Verify)</h4>
              <div className="space-y-1 text-xs font-mono">
                 <div className="flex justify-between">
                    <span>Frame Width:</span>
@@ -89,7 +89,7 @@ export const ProductionLabel: React.FC<ProductionLabelProps> = ({ windowUnit, on
                <QRCodeCanvas value={feedbackUrl} size={80} />
             </div>
             <div className="flex-1">
-               <h4 className="font-bold text-sm flex items-center gap-1">
+               <h4 className="typography-h4 text-sm flex items-center gap-1">
                  <CheckCircle2 className="h-4 w-4 text-green-600" /> Quality Check
                </h4>
                <p className="text-xs text-gray-600 leading-tight mt-1">

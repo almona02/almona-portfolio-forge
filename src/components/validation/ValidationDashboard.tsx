@@ -55,7 +55,7 @@ export const ValidationDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-950 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-gray-900 border-gray-800 card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Validation Dashboard</CardTitle>
             <p className="text-gray-400">Track validation tests and calculate ROI</p>

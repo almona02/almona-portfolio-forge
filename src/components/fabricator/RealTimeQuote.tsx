@@ -10,20 +10,22 @@
  * @since Egyptian Fabrication Intelligence Enhancement
  */
 
+import ErrorBoundary from '@/components/ErrorBoundary';
 import type { ComplexShapeDesign } from '@/lib/intelligence/ComplexShapeGenerator';
 import type { InferredShape } from '@/lib/intelligence/ShapeInferenceEngine';
+import { trackError } from '@/lib/performance-monitoring';
 import { RealTimeQuoteCalculator, type RealTimeQuote as RealTimeQuoteType } from '@/lib/pricing/RealTimeQuoteCalculator';
-import { YDTPricingOracle } from '@/lib/pricing/YDTPricingOracle';
+import { YDTPricingOracle, type YDTPricingResult } from '@/lib/pricing/YDTPricingOracle';
 import { Alert, AlertDescription } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
 import { BrainIcon, InfoIcon, TrendingUpIcon } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-    LABOR_BREAKDOWN_PERCENTAGES,
-    MATERIAL_BREAKDOWN_PERCENTAGES,
-    PAYMENT_TERM_MULTIPLIERS,
-    QUOTE_CALCULATION_CONSTANTS,
+  LABOR_BREAKDOWN_PERCENTAGES,
+  MATERIAL_BREAKDOWN_PERCENTAGES,
+  PAYMENT_TERM_MULTIPLIERS,
+  QUOTE_CALCULATION_CONSTANTS,
 } from './quoteConstants';
 
 export interface RealTimeQuoteProps {
@@ -63,9 +65,10 @@ export interface RealTimeQuoteProps {
     pricingTier?: 'budget' | 'standard' | 'premium';
   };
   useYDT?: boolean; // Use YDT pricing oracle (default: true)
+  nested?: boolean; // If true, render without Card wrapper (for nested components)
 }
 
-export const RealTimeQuote: React.FC<RealTimeQuoteProps> = ({
+const RealTimeQuoteComponent: React.FC<RealTimeQuoteProps> = ({
   shape,
   dimensions,
   materials,
@@ -76,23 +79,68 @@ export const RealTimeQuote: React.FC<RealTimeQuoteProps> = ({
   egyptianFactors,
   cashFlowOptions,
   workshopContext,
-  useYDT = true
+  useYDT = true,
+  nested = false
 }) => {
   const [quote, setQuote] = useState<RealTimeQuoteType | null>(null);
-  const [ydtIntelligence, setYdtIntelligence] = useState<any>(null);
+  // ✅ HARDENING: Properly type YDT intelligence result
+  const [ydtIntelligence, setYdtIntelligence] = useState<YDTPricingResult['intelligence'] | null>(null);
   const [loading, setLoading] = useState(false);
+  
+  // ✅ HARDENING: Use ref to track quote without causing re-renders
+  const quoteRef = useRef<RealTimeQuoteType | null>(null);
   
   const calculator = useMemo(() => new RealTimeQuoteCalculator(), []);
   const ydtOracle = useMemo(() => new YDTPricingOracle(), []);
   
-  useEffect(() => {
+  // ✅ HARDENING: Memoize calculation function to prevent recreation on every render
+  const calculateWithRegularCalculator = useCallback(() => {
     if (!dimensions || !dimensions.width || !dimensions.height) {
-      setQuote(null);
-      setYdtIntelligence(null);
       return;
     }
     
-    setLoading(true);
+    calculator.calculate({
+      shape,
+      dimensions: {
+        width: dimensions.width,
+        height: dimensions.height,
+        area: (dimensions.width * dimensions.height) / QUOTE_CALCULATION_CONSTANTS.MM2_TO_M2 // m²
+      },
+      materials,
+      hardware,
+      glazing,
+      laborRates,
+      profitMargin,
+      egyptianFactors,
+      cashFlowOptions
+    }).then((calculatedQuote) => {
+      quoteRef.current = calculatedQuote;
+      setQuote(calculatedQuote);
+      setYdtIntelligence(null);
+      setLoading(false);
+    }).catch((error) => {
+      // ✅ HARDENING: Track error instead of console.error
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('RealTimeQuote', 'quote_calculation_error', err.message);
+      setLoading(false);
+      // Keep existing quote if calculation fails to prevent flashing
+    });
+  }, [calculator, shape, dimensions, materials, hardware, glazing, laborRates, profitMargin, egyptianFactors, cashFlowOptions]);
+  
+  useEffect(() => {
+    if (!dimensions || !dimensions.width || !dimensions.height) {
+      quoteRef.current = null;
+      setQuote(null);
+      setYdtIntelligence(null);
+      setLoading(false);
+      return;
+    }
+    
+    // Prevent flashing by only setting loading if we don't have a quote yet
+    setLoading((prevLoading) => {
+      // Only set loading if we don't have a quote and aren't already loading
+      return prevLoading || quoteRef.current === null;
+    });
     
     // Use YDT pricing oracle if enabled and workshop context available
     if (useYDT && workshopContext?.id && workshopContext?.location) {
@@ -137,7 +185,11 @@ export const RealTimeQuote: React.FC<RealTimeQuoteProps> = ({
             cashPrice: ydtResult.quoteCard?.paymentTerms.cash || ydtResult.breakdown.finalPrice * PAYMENT_TERM_MULTIPLIERS.CASH,
             credit30Days: ydtResult.quoteCard?.paymentTerms.credit30 || ydtResult.breakdown.finalPrice * PAYMENT_TERM_MULTIPLIERS.CREDIT_30_DAYS,
             credit90Days: ydtResult.quoteCard?.paymentTerms.credit90 || ydtResult.breakdown.finalPrice * PAYMENT_TERM_MULTIPLIERS.CREDIT_90_DAYS,
-            recommendedPaymentTerms: ydtResult.quoteCard?.paymentTerms.recommendation as any || 'cash',
+            recommendedPaymentTerms: (ydtResult.quoteCard?.paymentTerms.recommendation === 'cash' || 
+                                      ydtResult.quoteCard?.paymentTerms.recommendation === 'credit30' || 
+                                      ydtResult.quoteCard?.paymentTerms.recommendation === 'credit90')
+                                      ? ydtResult.quoteCard.paymentTerms.recommendation as 'cash' | 'credit30' | 'credit90'
+                                      : 'cash',
             recommendationReason: ydtResult.quoteCard?.paymentTerms.recommendation || 'Best price with cash payment',
             recommendationReasonArabic: ydtResult.quoteCard?.paymentTerms.recommendation === 'cash' 
               ? 'أفضل سعر مع الدفع نقداً'
@@ -146,12 +198,15 @@ export const RealTimeQuote: React.FC<RealTimeQuoteProps> = ({
               : 'مناسب للمشاريع الكبيرة',
           };
           
+          quoteRef.current = convertedQuote;
           setQuote(convertedQuote);
           setYdtIntelligence(ydtResult.intelligence);
           setLoading(false);
         })
         .catch((error) => {
-          console.error('YDT pricing error, falling back to calculator:', error);
+          // ✅ HARDENING: Track error instead of console.warn
+          const err = error instanceof Error ? error : new Error(String(error));
+          trackError('RealTimeQuote', 'ydt_pricing_error', err.message);
           // Fallback to regular calculator
           calculateWithRegularCalculator();
         });
@@ -159,36 +214,19 @@ export const RealTimeQuote: React.FC<RealTimeQuoteProps> = ({
       // Use regular calculator
       calculateWithRegularCalculator();
     }
-    
-    function calculateWithRegularCalculator() {
-      calculator.calculate({
-        shape,
-        dimensions: {
-          width: dimensions.width,
-          height: dimensions.height,
-          area: (dimensions.width * dimensions.height) / QUOTE_CALCULATION_CONSTANTS.MM2_TO_M2 // m²
-        },
-        materials,
-        hardware,
-        glazing,
-        laborRates,
-        profitMargin,
-        egyptianFactors,
-        cashFlowOptions
-      }).then((calculatedQuote) => {
-        setQuote(calculatedQuote);
-        setYdtIntelligence(null);
-        setLoading(false);
-      }).catch((error) => {
-        console.error('Quote calculation error:', error);
-        setLoading(false);
-      });
-    }
-  }, [shape, dimensions, materials, hardware, glazing, laborRates, profitMargin, egyptianFactors, cashFlowOptions, workshopContext, useYDT, calculator, ydtOracle]);
+  }, [dimensions, useYDT, workshopContext, materials, egyptianFactors, ydtOracle, calculateWithRegularCalculator]);
   
-  if (loading) {
+  // Show loading only if we don't have a quote yet (prevents flashing)
+  if (loading && !quote) {
+    if (nested) {
+      return (
+        <div className="p-4">
+          <div className="text-center text-gray-400">جاري الحساب...</div>
+        </div>
+      );
+    }
     return (
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-gray-900 border-gray-800 card-dark">
         <CardContent className="p-4">
           <div className="text-center text-gray-400">جاري الحساب...</div>
         </CardContent>
@@ -196,28 +234,29 @@ export const RealTimeQuote: React.FC<RealTimeQuoteProps> = ({
     );
   }
   
+  // Show existing quote while loading updates (prevents flashing)
   if (!quote) {
     return null;
   }
   
-  return (
-    <Card className="bg-gray-900 border-gray-800">
-      <CardHeader>
-        <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
-          {ydtIntelligence ? (
-            <BrainIcon className="w-5 h-5 text-blue-400" />
-          ) : (
-            <TrendingUpIcon className="w-5 h-5" />
-          )}
+  const content = (
+    <div className={nested ? "space-y-1.5" : "space-y-1.5 p-6"}>
+      <div className="flex items-center gap-2">
+        {ydtIntelligence ? (
+          <BrainIcon className="w-5 h-5 text-blue-400" />
+        ) : (
+          <TrendingUpIcon className="w-5 h-5 text-white" />
+        )}
+        <h3 className="typography-h3 tracking-tight text-lg text-white flex items-center gap-2">
           <span>💰 التكلفة في الوقت الحقيقي</span>
           {ydtIntelligence && (
             <Badge variant="outline" className="ml-2 bg-blue-500/20 text-blue-400 border-blue-500">
               YDT Intelligence
             </Badge>
           )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+        </h3>
+      </div>
+      <div className="space-y-4">
         {/* Material Cost Breakdown */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
@@ -418,8 +457,49 @@ export const RealTimeQuote: React.FC<RealTimeQuoteProps> = ({
             </AlertDescription>
           </Alert>
         )}
+      </div>
+    </div>
+  );
+
+  if (nested) {
+    return content;
+  }
+
+  return (
+    <Card className="bg-gray-900 border-gray-800 card-dark">
+      <CardHeader>
+        <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
+          {ydtIntelligence ? (
+            <BrainIcon className="w-5 h-5 text-blue-400" />
+          ) : (
+            <TrendingUpIcon className="w-5 h-5" />
+          )}
+          <span>💰 التكلفة في الوقت الحقيقي</span>
+          {ydtIntelligence && (
+            <Badge variant="outline" className="ml-2 bg-blue-500/20 text-blue-400 border-blue-500">
+              YDT Intelligence
+            </Badge>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {content}
       </CardContent>
     </Card>
   );
 };
+
+RealTimeQuoteComponent.displayName = 'RealTimeQuote';
+
+// ✅ HARDENING: Memoize component for performance
+const RealTimeQuoteMemo = memo(RealTimeQuoteComponent);
+
+// ✅ HARDENING: Export with error boundary for production
+export const RealTimeQuote: React.FC<RealTimeQuoteProps> = (props) => (
+  <ErrorBoundary level="component">
+    <RealTimeQuoteMemo {...props} />
+  </ErrorBoundary>
+);
+
+RealTimeQuote.displayName = 'RealTimeQuote';
 

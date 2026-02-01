@@ -5,11 +5,26 @@ from fastapi.exceptions import RequestValidationError, HTTPException
 from apis.v2.tickets import router as tickets_router
 from apis.v2.quotes import router as quotes_router
 from apis.v2.auth_fastapi import router as auth_router
-from apis.v2.part_detection_fastapi import router as part_detection_router
-from apis.v2.scan_profile import router as scan_router
+from apis.v2.bulk_operations import router as bulk_operations_router
+from apis.v2.project_activities import router as project_activities_router
+from apis.v2.project_templates import router as project_templates_router
+from apis.v2.filter_presets import router as filter_presets_router
+from apis.v2.report_templates import router as report_templates_router
+from apis.v2.reports import router as reports_router
+
+# from apis.v2.analytics import router as analytics_router
+from apis.v2.notifications import router as notifications_router
+from apis.v2.quote_templates import router as quote_templates_router
+from apis.v2.invoice_templates import router as invoice_templates_router
+from apis.v2.workflows import router as workflows_router
+from apis.v2.customers import router as customers_router
+
+# from apis.v2.part_detection_fastapi import router as part_detection_router
+# from apis.v2.scan_profile import router as scan_router
 from apis.v2.profile_import import router as profile_import_router
 from apis.fabricator_profiles import router as fabricator_router
-from apis.v2.heavy_optimization import router as heavy_optimization_router
+
+# from apis.v2.heavy_optimization import router as heavy_optimization_router
 
 # Import future intelligence router
 try:
@@ -23,7 +38,7 @@ from apis.v2.core.errors import (
     v2_validation_error_handler,
     v2_http_exception_handler,
     v2_general_exception_handler,
-    V2APIError
+    V2APIError,
 )
 
 
@@ -38,24 +53,36 @@ router = APIRouter()
 # triggers AttributeError during import in tests. Handlers are added in app.py.
 
 # Mount sub-routers under the unified v2 router
+router.include_router(auth_router, prefix="/auth", tags=["Auth"])  # token endpoints
+router.include_router(tickets_router)  # tickets already has /tickets prefix
+router.include_router(quotes_router)  # quotes already has /quotes prefix
 router.include_router(
-    auth_router, prefix="/auth", tags=["Auth"]
-)  # token endpoints
-router.include_router(tickets_router)   # tickets already has /tickets prefix
-router.include_router(quotes_router)    # quotes already has /quotes prefix
+    bulk_operations_router
+)  # bulk-operations already has /bulk-operations prefix
 router.include_router(
-    part_detection_router, prefix="/ai", tags=["AI"]
-)  # optional namespacing
-router.include_router(
-    profile_import_router
-)  # /profile-import/ingest
-router.include_router(
-    scan_router
-)  # /scan/profile
+    project_activities_router
+)  # projects/{project_id}/activities already has prefix
+router.include_router(project_templates_router)  # project-templates already has prefix
+router.include_router(filter_presets_router)  # filter-presets already has prefix
+router.include_router(report_templates_router)  # report-templates already has prefix
+router.include_router(reports_router)  # reports already has prefix
+# router.include_router(analytics_router)  # analytics already has prefix
+router.include_router(notifications_router)  # notifications already has prefix
+router.include_router(quote_templates_router)  # quote-templates already has prefix
+router.include_router(invoice_templates_router)  # invoice-templates already has prefix
+router.include_router(workflows_router)  # workflows already has prefix
+router.include_router(customers_router)  # customers already has prefix
+# router.include_router(
+#    part_detection_router, prefix="/ai", tags=["AI"]
+# )  # optional namespacing
+router.include_router(profile_import_router)  # /profile-import/ingest
+# router.include_router(
+#     scan_router
+# )  # /scan/profile
 router.include_router(fabricator_router)  # fabricator uses /fabricator prefix
-router.include_router(
-    heavy_optimization_router
-)
+# router.include_router(
+#     heavy_optimization_router
+# )
 
 # Include future intelligence router (Industry Watchdog)
 if future_intelligence_router:
@@ -64,6 +91,7 @@ if future_intelligence_router:
 # Include feedback router (for future intelligence feedback)
 try:
     from apis.v2.feedback import router as feedback_router
+
     router.include_router(feedback_router)
 except ImportError:
     pass  # Feedback router is optional
@@ -71,6 +99,7 @@ except ImportError:
 # Include scout intelligence router (human-augmented data collection)
 try:
     from apis.v2.scout_intelligence import router as scout_router
+
     router.include_router(scout_router)
 except ImportError:
     pass  # Scout router is optional
@@ -78,6 +107,7 @@ except ImportError:
 # Include YDT parser router (multi-source parsing for knowledge base)
 try:
     from apis.v2.ydt_parser import router as ydt_parser_router
+
     router.include_router(ydt_parser_router)
 except ImportError:
     pass  # YDT parser router is optional

@@ -101,14 +101,17 @@ def get_system_metrics() -> Dict[str, Any]:
     else:
         return {
             "status": "limited",
-            "note": "psutil not available - system metrics disabled",
+            "note": ("psutil not available - system metrics disabled"),
         }
 
 
 @router.get("/health")
 async def health_check():
     checks = {
-        "api": {"status": "healthy", "timestamp": datetime.utcnow().isoformat()},
+        "api": {
+            "status": "healthy",
+            "timestamp": datetime.utcnow().isoformat(),
+        },
         "ocr_service": check_ocr_service(),
         "scale_detector": check_scale_detector(),
         "system": get_system_metrics(),

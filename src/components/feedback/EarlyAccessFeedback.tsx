@@ -98,10 +98,10 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
 
   if (submitted) {
     return (
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-gray-900 border-gray-800 card-dark">
         <CardContent className="p-6 text-center">
-          <CheckCircle2 className="h-16 w-16 mx-auto mb-4 text-green-500" />
-          <h3 className="text-xl font-semibold mb-2">Thank You!</h3>
+          <CheckCircle2 className="h-16 w-16 mx-auto mb-4  status-valid" />
+          <h3 className="typography-h3 mb-2">Thank You!</h3>
           <p className="text-gray-400">Your feedback has been submitted successfully.</p>
         </CardContent>
       </Card>
@@ -111,7 +111,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
   return (
     <div className="min-h-screen bg-gray-950 p-6">
       <div className="max-w-4xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-gray-900 border-gray-800 card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Early Access Feedback</CardTitle>
             <p className="text-gray-400">Help us improve by sharing your experience</p>
@@ -133,7 +133,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Accuracy Validation</h3>
+              <h3 className="typography-h3 text-lg">Accuracy Validation</h3>
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label>BOM Accuracy (%)</Label>
@@ -172,7 +172,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Usability</h3>
+              <h3 className="typography-h3 text-lg">Usability</h3>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Ease of Use (1-5)</Label>
@@ -227,7 +227,7 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
 
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold">Issues Encountered</h3>
+                <h3 className="typography-h3 text-lg">Issues Encountered</h3>
                 <Button
                   variant="outline"
                   onClick={addIssue}
@@ -308,11 +308,11 @@ export const EarlyAccessFeedback: React.FC<EarlyAccessFeedbackProps> = ({
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="yes" id="recommend-yes" />
-                  <Label htmlFor="recommend-yes">Yes</Label>
+                  <Label htmlFor="recommend-yes" className="typography-label">Yes</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="no" id="recommend-no" />
-                  <Label htmlFor="recommend-no">No</Label>
+                  <Label htmlFor="recommend-no" className="typography-label">No</Label>
                 </div>
               </RadioGroup>
             </div>

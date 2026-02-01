@@ -59,3 +59,18 @@ expect(result.bom).toEqual(goldenMaster.expectedBOM);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

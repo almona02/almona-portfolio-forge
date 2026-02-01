@@ -51,7 +51,7 @@ const SparePartsWidget = ({ machineModel }: { machineModel: string }) => {
 
   return (
     <div className="mt-4 border-t pt-4">
-      <h4 className="font-medium mb-2">Common Spare Parts</h4>
+      <h4 className="typography-h4 font-medium mb-2">Common Spare Parts</h4>
       <div className="space-y-2">
         {parts.map(part => (
           <div key={part.id} className="flex justify-between">
@@ -78,7 +78,7 @@ export const ServiceCard = ({
   return (
     <div className={`h-full rounded-lg border-2 transition-all duration-300 hover:shadow-lg ${
       highlight 
-        ? 'border-orange-500 shadow-orange-500/20 shadow-lg' 
+        ? 'border-amber-500 shadow-amber-500/20 shadow-lg' 
         : 'border-gray-600 hover:border-gray-500'
     }`}>
       <div className="bg-almona-darker/50 p-6 flex flex-col h-full rounded-lg">
@@ -87,7 +87,7 @@ export const ServiceCard = ({
             {iconMap[icon]}
           </div>
           <div>
-            <h3 className="text-xl font-bold">{title}</h3>
+            <h3 className="typography-h3">{title}</h3>
             {egyptSpecific && (
               <Badge className="mt-1 bg-egyptian-blue">Egypt</Badge>
             )}
@@ -99,7 +99,7 @@ export const ServiceCard = ({
         <div className="space-y-3 mb-6">
           {features.map((feature, index) => (
             <div key={index} className="flex items-start gap-2">
-              <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-500" />
+              <CheckCircle2 className="h-4 w-4 mt-0.5  status-valid" />
               <span className="text-sm">{feature}</span>
             </div>
           ))}

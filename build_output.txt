@@ -1,0 +1,27 @@
+
+> vite_react_shadcn_ts@0.0.5 prebuild
+> echo 'Skipping image optimization in CI/CD' || true
+
+'Skipping image optimization in CI/CD' 
+
+> vite_react_shadcn_ts@0.0.5 build
+> vite build --mode production
+
+[36mvite v7.3.0 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 3493 modules transformed.
+[31m✗[39m Build failed in 11.82s
+[31merror during build:
+[31m[vite-plugin-pwa:build] [plugin vite-plugin-pwa:build] src/components/fabricator/drafting/canvas/DraftingCanvas3D.tsx: There was an error during the build:
+  Could not resolve "../../services/ProfileRegistry" from "src/components/fabricator/drafting/canvas/DraftingCanvas3D.tsx"
+Additionally, handling the error in the 'buildEnd' hook caused the following error:
+  Could not resolve "../../services/ProfileRegistry" from "src/components/fabricator/drafting/canvas/DraftingCanvas3D.tsx"[31m
+file: [36mC:/projects/almona-portfolio-forge/src/components/fabricator/drafting/canvas/DraftingCanvas3D.tsx[31m
+    at getRollupError (file:///C:/projects/almona-portfolio-forge/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at file:///C:/projects/almona-portfolio-forge/node_modules/rollup/dist/es/shared/node-entry.js:23390:39
+    at async catchUnfinishedHookActions (file:///C:/projects/almona-portfolio-forge/node_modules/rollup/dist/es/shared/node-entry.js:22848:16)
+    at async rollupInternal (file:///C:/projects/almona-portfolio-forge/node_modules/rollup/dist/es/shared/node-entry.js:23373:5)
+    at async buildEnvironment (file:///C:/projects/almona-portfolio-forge/node_modules/vite/dist/node/chunks/config.js:33540:12)
+    at async Object.build (file:///C:/projects/almona-portfolio-forge/node_modules/vite/dist/node/chunks/config.js:33899:19)
+    at async Object.buildApp (file:///C:/projects/almona-portfolio-forge/node_modules/vite/dist/node/chunks/config.js:33896:153)
+    at async CAC.<anonymous> (file:///C:/projects/almona-portfolio-forge/node_modules/vite/dist/node/cli.js:629:3)[39m

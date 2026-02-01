@@ -32,7 +32,7 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({
 }) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Review Your Window</h3>
+      <h3 className="typography-h3 text-lg">Review Your Window</h3>
       <Card className="bg-gray-800 border-gray-700">
         <CardContent className="p-6 space-y-4">
           <div className="flex justify-between">

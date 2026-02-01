@@ -193,8 +193,8 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-white flex items-center gap-3">
-              <Zap className="h-8 w-8 text-orange-500" />
+            <h1 className="typography-h1 text-white flex items-center gap-3">
+              <Zap className="h-8 w-8 text-amber-500" />
               Quick Order Mode
             </h1>
             <p className="text-gray-400 mt-2">
@@ -220,7 +220,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
 
         {/* Keyboard Shortcuts Help */}
         {showShortcuts && (
-          <Card className="bg-gray-900/50 border-gray-800">
+          <Card className="bg-gray-900/50 border-gray-800 card-dark">
             <CardHeader>
               <CardTitle className="text-white text-lg">Keyboard Shortcuts</CardTitle>
             </CardHeader>
@@ -245,10 +245,10 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left: Quick Parameters */}
           <div className="lg:col-span-2 space-y-6">
-            <Card className="bg-gray-900/50 border-gray-800">
+            <Card className="bg-gray-900/50 border-gray-800 card-dark">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-orange-500" />
+                  <Zap className="h-5 w-5 text-amber-500" />
                   Quick Parameters
                 </CardTitle>
                 <CardDescription className="text-gray-400">
@@ -258,7 +258,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
               <CardContent className="space-y-4">
                 {/* Template Selection */}
                 <div className="space-y-2">
-                  <Label className="text-gray-300">Template (Optional)</Label>
+                  <Label className="typography-label text-gray-300">Template (Optional)</Label>
                   <Select
                     value={selectedTemplate || ''}
                     onValueChange={(value) => {
@@ -291,7 +291,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                 {/* Dimensions */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-gray-300">Width (mm)</Label>
+                    <Label className="typography-label text-gray-300">Width (mm)</Label>
                     <Input
                       type="number"
                       value={params.dimensions.width}
@@ -304,7 +304,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-gray-300">Height (mm)</Label>
+                    <Label className="typography-label text-gray-300">Height (mm)</Label>
                     <Input
                       type="number"
                       value={params.dimensions.height}
@@ -319,7 +319,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
 
                 {/* System Pack */}
                 <div className="space-y-2">
-                  <Label className="text-gray-300">System Pack</Label>
+                  <Label className="typography-label text-gray-300">System Pack</Label>
                   <Select
                     value={params.systemPackId}
                     onValueChange={(value) => {
@@ -344,7 +344,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
 
                 {/* Window Type */}
                 <div className="space-y-2">
-                  <Label className="text-gray-300">Window Type</Label>
+                  <Label className="typography-label text-gray-300">Window Type</Label>
                   <Select
                     value={params.windowType}
                     onValueChange={(value) => setParams({ ...params, windowType: value })}
@@ -392,7 +392,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
                 <Button
                   onClick={handleCreateOrder}
                   disabled={isCreating || !params.dimensions.width || !params.dimensions.height}
-                  className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                  className="btn-primary"
                 >
                   {isCreating ? (
                     <>
@@ -413,10 +413,10 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
           {/* Right: Templates & Actions */}
           <div className="space-y-6">
             {/* Recent Templates */}
-            <Card className="bg-gray-900/50 border-gray-800">
+            <Card className="bg-gray-900/50 border-gray-800 card-dark">
               <CardHeader>
                 <CardTitle className="text-white text-lg flex items-center gap-2">
-                  <FolderOpen className="h-5 w-5 text-orange-500" />
+                  <FolderOpen className="h-5 w-5 text-amber-500" />
                   Recent Templates
                 </CardTitle>
               </CardHeader>
@@ -457,7 +457,7 @@ export const QuickOrderMode: React.FC<QuickOrderModeProps> = ({
             </Card>
 
             {/* Quick Actions */}
-            <Card className="bg-gray-900/50 border-gray-800">
+            <Card className="bg-gray-900/50 border-gray-800 card-dark">
               <CardHeader>
                 <CardTitle className="text-white text-lg">Quick Actions</CardTitle>
               </CardHeader>

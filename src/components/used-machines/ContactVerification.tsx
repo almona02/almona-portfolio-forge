@@ -20,7 +20,7 @@ const ContactVerification: React.FC<ContactVerificationProps> = ({ onComplete, o
 
   return (
     <div>
-      <h3 className="text-xl font-semibold mb-4">Seller Information</h3>
+      <h3 className="typography-h3 mb-4">Seller Information</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input name="name" placeholder="Your Name" onChange={handleChange} />
         <Input name="phone" placeholder="Phone Number" onChange={handleChange} />

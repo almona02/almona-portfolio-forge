@@ -224,7 +224,7 @@ export const ExportProgressDashboard: React.FC<ExportProgressDashboardProps> = (
 
             <TabsContent value="active" className="space-y-4">
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Active Exports</h3>
+                <h3 className="typography-h3 text-lg">Active Exports</h3>
                 {queueItems.filter(item => item.status === 'processing').length === 0 ? (
                   <p className="text-sm text-muted-foreground">No active exports</p>
                 ) : (
@@ -291,7 +291,7 @@ export const ExportProgressDashboard: React.FC<ExportProgressDashboardProps> = (
 
             <TabsContent value="queue" className="space-y-4">
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Export Queue</h3>
+                <h3 className="typography-h3 text-lg">Export Queue</h3>
                 {queueItems.filter(item => item.status === 'pending' || item.status === 'paused').length === 0 ? (
                   <p className="text-sm text-muted-foreground">Queue is empty</p>
                 ) : (
@@ -358,7 +358,7 @@ export const ExportProgressDashboard: React.FC<ExportProgressDashboardProps> = (
 
             <TabsContent value="history" className="space-y-4">
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Export History</h3>
+                <h3 className="typography-h3 text-lg">Export History</h3>
                 <p className="text-sm text-muted-foreground">
                   Recent export operations and their results
                 </p>
@@ -368,7 +368,7 @@ export const ExportProgressDashboard: React.FC<ExportProgressDashboardProps> = (
 
             <TabsContent value="analytics" className="space-y-4">
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Performance Analytics</h3>
+                <h3 className="typography-h3 text-lg">Performance Analytics</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <Card>
                     <CardHeader>

@@ -74,7 +74,10 @@ class PerformanceMonitoringService {
   private metrics: Map<string, PerformanceMetric[]> = new Map();
   private featureUsage: FeatureUsageMetric[] = [];
   private observer: PerformanceObserver | null = null;
-  private isMonitoring = false;
+  private _isMonitoring = false;
+  // Track if tables exist to avoid repeated 404 errors
+  private featureUsageTableExists: boolean | null = null;
+  private satisfactionTableExists: boolean | null = null;
 
   constructor() {
     this.sessionId = this.generateSessionId();
@@ -101,7 +104,7 @@ class PerformanceMonitoringService {
     // Network performance monitoring
     this.initializeNetworkMonitoring();
 
-    this.isMonitoring = true;
+    this._isMonitoring = true;
   }
 
   private initializeCoreWebVitals() {
@@ -186,10 +189,19 @@ class PerformanceMonitoringService {
     const originalFetch = window.fetch;
     window.fetch = async (...args) => {
       const startTime = performance.now();
+      const url = typeof args[0] === 'string' ? args[0] : (args[0] as Request | URL).toString();
+      
+      // Skip monitoring for non-critical endpoints that may not exist
+      const isNonCriticalEndpoint = url.includes('feature_usage_metrics') || url.includes('user_satisfaction_metrics');
       
       try {
         const response = await originalFetch(...args);
         const duration = performance.now() - startTime;
+        
+        // For non-critical endpoints with 404, don't record metrics or log errors
+        if (isNonCriticalEndpoint && response.status === 404) {
+          return response; // Return silently for non-critical 404s
+        }
         
         this.recordMetric('api_request', duration, 'ms', 'api', {
           url: args[0],
@@ -200,6 +212,13 @@ class PerformanceMonitoringService {
         return response;
       } catch (error) {
         const duration = performance.now() - startTime;
+        
+        // For non-critical endpoints, don't record metrics or throw errors
+        if (isNonCriticalEndpoint) {
+          // Return a mock response to prevent error propagation
+          return new Response(null, { status: 404, statusText: 'Not Found' });
+        }
+        
         this.recordMetric('api_request', duration, 'ms', 'api', {
           url: args[0],
           error: error instanceof Error ? error.message : String(error),
@@ -414,7 +433,7 @@ class PerformanceMonitoringService {
       'LCP': 2500, // 2.5s  
       'FID': 100,  // 100ms
       'CLS': 0.1   // 0.1 score
-    };
+    } as Record<string, number>;
 
     return name in criticalThresholds && value > criticalThresholds[name];
   }
@@ -470,26 +489,62 @@ class PerformanceMonitoringService {
   }
 
   private async sendFeatureUsageToDatabase(usage: FeatureUsageMetric) {
-    try {
-      await (supabase.from('feature_usage_metrics') as any).insert({
-        feature_name: usage.feature_name,
-        action: usage.action,
-        user_id: usage.user_id,
-        session_id: usage.session_id,
-        timestamp: usage.timestamp.toISOString(),
-        context: usage.context,
-        success: usage.success,
-        error_message: usage.error_message,
-        performance_data: usage.performance_data
-      });
-    } catch (error) {
-      console.warn('Failed to record feature usage:', error);
+    // Skip if we've detected the table doesn't exist
+    if (this.featureUsageTableExists === false) {
+      return;
+    }
+
+    // Defer to avoid blocking critical rendering
+    const sendAsync = async () => {
+      try {
+        const { error } = await (supabase.from('feature_usage_metrics') as any).insert({
+          feature_name: usage.feature_name,
+          action: usage.action,
+          user_id: usage.user_id,
+          session_id: usage.session_id,
+          timestamp: usage.timestamp.toISOString(),
+          context: usage.context,
+          success: usage.success,
+          error_message: usage.error_message,
+          performance_data: usage.performance_data
+        });
+        
+        if (error) {
+          // Check for 404 or table not found errors
+          if (error.code === '42P01' || error.message?.includes('does not exist') || error.message?.includes('404') || error.code === 'PGRST116') {
+            // Table doesn't exist - mark as false to skip future attempts
+            this.featureUsageTableExists = false;
+            return;
+          }
+          // For other errors, assume table exists but there was a different issue
+          this.featureUsageTableExists = true;
+        } else {
+          // Success - table exists
+          this.featureUsageTableExists = true;
+        }
+      } catch (_error) {
+        // Silently fail - table may not exist in all environments
+        // Mark as false to skip future attempts
+        this.featureUsageTableExists = false;
+      }
+    };
+    
+    // Use requestIdleCallback if available, otherwise setTimeout
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(sendAsync, { timeout: 5000 });
+    } else {
+      setTimeout(sendAsync, 0);
     }
   }
 
   private async sendSatisfactionToDatabase(satisfaction: UserSatisfactionMetric) {
+    // Skip if we've detected the table doesn't exist
+    if (this.satisfactionTableExists === false) {
+      return;
+    }
+
     try {
-      await (supabase.from('user_satisfaction_metrics') as any).insert({
+      const { error } = await (supabase.from('user_satisfaction_metrics') as any).insert({
         page: satisfaction.page,
         rating: satisfaction.rating,
         feedback: satisfaction.feedback,
@@ -497,14 +552,29 @@ class PerformanceMonitoringService {
         timestamp: satisfaction.timestamp.toISOString(),
         context: satisfaction.context
       });
-    } catch (error) {
-      console.warn('Failed to record satisfaction:', error);
+      
+      if (error) {
+        // Check for 404 or table not found errors
+        if (error.code === '42P01' || error.message?.includes('does not exist') || error.message?.includes('404') || error.code === 'PGRST116') {
+          // Table doesn't exist - mark as false to skip future attempts
+          this.satisfactionTableExists = false;
+          return;
+        }
+        // For other errors, assume table exists
+        this.satisfactionTableExists = true;
+      } else {
+        // Success - table exists
+        this.satisfactionTableExists = true;
+      }
+    } catch (_error) {
+      // Silently fail - mark as false to skip future attempts
+      this.satisfactionTableExists = false;
     }
   }
 
   // Cleanup
   public stopMonitoring() {
-    this.isMonitoring = false;
+    this._isMonitoring = false;
     if (this.observer) {
       this.observer.disconnect();
     }

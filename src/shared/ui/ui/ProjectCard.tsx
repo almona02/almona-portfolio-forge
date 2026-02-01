@@ -32,7 +32,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
       </div>
       
       <CardHeader className="pt-4 pb-2 px-4">
-        <h3 className="text-lg font-semibold text-white hover:text-almona-orange transition-colors">
+        <h3 className="typography-h3 text-lg text-white hover:text-almona-orange transition-colors">
           {project.title}
         </h3>
       </CardHeader>

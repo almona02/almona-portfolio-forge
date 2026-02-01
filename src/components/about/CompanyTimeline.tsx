@@ -205,7 +205,7 @@ export const CompanyTimeline = () => {
       <div className="flex-1">
         <ScrollArea className="h-[320px] sm:h-[420px] md:h-[460px] lg:h-[520px] pr-2 sm:pr-4 bg-almona-dark/60 rounded-lg sm:rounded-xl border border-almona-light/10 p-3 sm:p-4">
           <div className="space-y-3 sm:space-y-4">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white leading-tight">{activeMilestone.title}</h3>
+            <h3 className="typography-h3 text-lg sm:text-xl md:text-2xl text-white leading-tight">{activeMilestone.title}</h3>
             <p className="text-xs sm:text-sm md:text-base text-gray-400 leading-relaxed">{activeMilestone.description}</p>
             
             {activeMilestone.comparison && (

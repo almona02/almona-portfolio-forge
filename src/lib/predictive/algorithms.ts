@@ -1,12 +1,12 @@
-import { VibrationAnalysis, RULPrediction, SensorData } from './types';
+import { RULPrediction, SensorData, VibrationAnalysis } from './types';
 
 export class PredictiveAlgorithms {
   static performFFT(vibrationData: number[]): { frequencies: number[]; magnitudes: number[] } {
     const N = vibrationData.length;
     const frequencies = Array.from({ length: Math.floor(N / 2) }, (_, i) => i * (1000 / N));
-    const cos = (freq: number) => vibrationData.reduce((sum, x, n) => sum + x * Math.cos(2 * Math.PI * freq * n / N), 0);
-    const sin = (freq: number) => vibrationData.reduce((sum, x, n) => sum + x * Math.sin(2 * Math.PI * freq * n / N), 0);
-    const magnitudes = frequencies.map((freq) => Math.sqrt(cos(freq) ** 2 + sin(freq) ** 2));
+    const cos = (k: number) => vibrationData.reduce((sum, x, n) => sum + x * Math.cos(2 * Math.PI * k * n / N), 0);
+    const sin = (k: number) => vibrationData.reduce((sum, x, n) => sum + x * Math.sin(2 * Math.PI * k * n / N), 0);
+    const magnitudes = frequencies.map((_, k) => Math.sqrt(cos(k) ** 2 + sin(k) ** 2));
     return { frequencies, magnitudes };
   }
 

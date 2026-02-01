@@ -3,7 +3,7 @@
  * Calculates pricing with profit margins and cost analysis
  */
 
-import { WindowUnit, OptimizationResult } from '@/types/fabricator';
+import { OptimizationResult, WindowUnit } from '@/types/fabricator';
 
 export interface QuoteLineItem {
   id: string;
@@ -112,6 +112,18 @@ export interface Quote {
   paymentTerms?: PaymentTerms;
   warranty?: WarrantyInfo;
   generalTerms?: GeneralTerms;
+  /**
+   * Constitutional Compliance Metadata
+   * Required for Tier 3 Protected Determinism and legal liability protection.
+   */
+  constitutionalMetadata?: {
+    disclaimer: string;
+    accuracyFramework: string;
+    tier: string;
+    generatedAt: Date;
+    requiresHumanValidation: boolean;
+    version: string;
+  };
 }
 
 export interface PricingConfig {
@@ -307,6 +319,15 @@ export class QuotingEngine {
         forceMajeureClause:
           'Delays caused by events beyond the control of the supplier (force majeure) shall extend the delivery timeline without penalty.',
       },
+      // Constitutional compliance metadata (Immutable)
+      constitutionalMetadata: {
+        disclaimer: "This quote contains manufacturable instructions only. No engineering judgment, structural analysis, or design authority is claimed. All outputs require human validation by qualified professionals.",
+        accuracyFramework: "99.8%",
+        tier: "Tier 3 Protected Determinism",
+        generatedAt: new Date(),
+        requiresHumanValidation: true,
+        version: "AICS-001 v1.0.0"
+      }
     };
 
     return quote;

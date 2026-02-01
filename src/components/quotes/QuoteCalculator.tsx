@@ -66,7 +66,7 @@ export const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({
           <div className="border-t pt-2">
             <div className="flex justify-between font-bold">
               <span>Estimated Total:</span>
-              <span className="text-orange-500">{estimatedTotal.toLocaleString()} EGP</span>
+              <span className="text-amber-500">{estimatedTotal.toLocaleString()} EGP</span>
             </div>
           </div>
         </div>

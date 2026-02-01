@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from apis.v1 import router as v1_router
-from apis.v2 import business, assembly_intelligence
+from apis.v2 import business  # , assembly_intelligence
 from apis.v2.routers import router as v2_router
 from core.security_middleware import setup_security_middleware
 from core.middleware import (
@@ -148,7 +148,7 @@ app.include_router(v1_router, prefix="/api/v1")
 # Business intelligence endpoints (pilot)
 app.include_router(business.router)
 # Assembly intelligence endpoints
-app.include_router(assembly_intelligence.router)
+# app.include_router(assembly_intelligence.router)
 
 # Include v2 routers with /api/v2 prefix
 # Using include_router instead of mount to ensure routes are accessible

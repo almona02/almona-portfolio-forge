@@ -11,6 +11,7 @@
 
 import { FabricatorProjectSkeleton } from '@/components/ui/EnhancedLoadingStates';
 import { supabase } from '@/lib/supabase';
+import { exportAccessoryRolesToCSV } from '@/lib/csvExport';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
@@ -555,6 +556,16 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
     toast.success('Accessories exported to CSV');
   };
 
+  const handleExportRolesCSV = () => {
+    // Extract role from specifications if available, or use type as role
+    const accessoriesWithRoles = filteredAccessories.map((a) => ({
+      ...a,
+      role: (a.specifications as any)?.role || a.type || 'Not Assigned',
+    }));
+    exportAccessoryRolesToCSV(accessoriesWithRoles);
+    toast.success('Accessory roles exported to CSV');
+  };
+
   const handleImportJSON = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -649,7 +660,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
       lock: 'bg-purple-500/20 text-purple-400',
       handle: 'bg-green-500/20 text-green-400',
       seal: 'bg-yellow-500/20 text-yellow-400',
-      spacer: 'bg-orange-500/20 text-orange-400',
+      spacer: 'bg-amber-500/20 text-amber-400',
       corner: 'bg-red-500/20 text-red-400',
       other: 'bg-gray-500/20 text-gray-400',
     };
@@ -700,7 +711,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5 text-orange-400" />
+              <Package className="h-5 w-5 text-amber-400" />
               {t('accessory_management.title', { count: accessories.length, defaultValue: `Accessory Management (${accessories.length})` })}
             </CardTitle>
             <div className="flex gap-2">
@@ -722,7 +733,17 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                 <Download className="h-4 w-4 mr-2" />
                 {t('accessory_management.export_csv', 'Export CSV')}
               </Button>
-              <label>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportRolesCSV}
+                disabled={filteredAccessories.length === 0}
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3"
+              >
+                <Download className="h-4 w-4" />
+                Export Roles CSV
+              </Button>
+              <Label>
                 <Button variant="outline" size="sm" asChild>
                   <span>
                     <Upload className="h-4 w-4 mr-2" />
@@ -735,7 +756,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                   onChange={handleImportJSON}
                   className="hidden"
                 />
-              </label>
+              </Label>
               <Button variant="outline" size="sm" onClick={loadAccessories}>
                 <RefreshCw className="h-4 w-4 mr-2" />
                 {t('accessory_management.refresh', 'Refresh')}
@@ -941,7 +962,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                         });
                       }}
                     />
-                    <Label className="text-sm">{t(`accessory_management.materials.${material}`, material.charAt(0).toUpperCase() + material.slice(1))}</Label>
+                    <Label className="typography-label text-sm">{t(`accessory_management.materials.${material}`, material.charAt(0).toUpperCase() + material.slice(1))}</Label>
                   </div>
                 ))}
               </div>
@@ -963,7 +984,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                         });
                       }}
                     />
-                    <Label className="text-sm">{t(`accessory_management.regions.${region}`, region.charAt(0).toUpperCase() + region.slice(1))}</Label>
+                    <Label className="typography-label text-sm">{t(`accessory_management.regions.${region}`, region.charAt(0).toUpperCase() + region.slice(1))}</Label>
                   </div>
                 ))}
               </div>
@@ -976,7 +997,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                 <Button
                   onClick={handleUpdateAccessory}
                   disabled={saving}
-                  className="bg-orange-500 hover:bg-orange-600"
+                  className="btn-primary"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   {saving ? t('accessory_management.updating', 'Updating...') : t('accessory_management.update', 'Update Accessory')}
@@ -989,7 +1010,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
               <Button
                 onClick={handleAddAccessory}
                 disabled={saving}
-                className="bg-orange-500 hover:bg-orange-600"
+                className="btn-primary"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 {saving ? t('accessory_management.adding', 'Adding...') : t('accessory_management.add', 'Add Accessory')}
@@ -1017,7 +1038,7 @@ export const AccessoryManagement: React.FC<AccessoryManagementProps> = ({
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h4 className="font-semibold">{accessory.name}</h4>
+                        <h4 className="typography-h4">{accessory.name}</h4>
                         <Badge className={getTypeColor(accessory.type)}>{accessory.type}</Badge>
                         {accessory.category && <Badge variant="outline">{accessory.category}</Badge>}
                         {accessory.region.map((r) => (

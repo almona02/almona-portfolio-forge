@@ -134,14 +134,14 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
                   onClick={() => !submitting && setCurrentStep(index)}
                   aria-current={active ? 'step' : undefined}
                   aria-disabled={submitting}
-                  className={`group flex items-center flex-shrink-0 rounded-full border transition px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/70
-                    ${active ? 'bg-orange-600/20 border-orange-500 text-orange-300 shadow-inner' : complete ? 'bg-almona-dark/70 border-orange-800 text-orange-500' : 'bg-almona-dark/40 border-almona-light/10 text-gray-400'}
-                    ${submitting ? 'opacity-60 cursor-not-allowed' : 'hover:border-orange-500/70 hover:text-orange-300'}
+                  className={`group flex items-center flex-shrink-0 rounded-full border transition px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/70
+                    ${active ? 'bg-amber-600/20 border-amber-500 text-amber-300 shadow-inner' : complete ? 'bg-almona-dark/70 border-amber-800 text-amber-500' : 'bg-almona-dark/40 border-almona-light/10 text-gray-400'}
+                    ${submitting ? 'opacity-60 cursor-not-allowed' : 'hover:border-amber-500/70 hover:text-amber-300'}
                   `}
                 >
                   <span
                     className={`mr-2 w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition
-                      ${active ? 'bg-orange-600 text-white' : complete ? 'bg-orange-700/70 text-white' : 'bg-almona-darker text-gray-400'}
+                      ${active ? 'bg-amber-600 text-white' : complete ? 'bg-amber-700/70 text-white' : 'bg-almona-darker text-gray-400'}
                     `}
                   >
                     {complete ? '✓' : index + 1}
@@ -153,7 +153,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
               )
             })}
           </div>
-          <div className="mt-2 h-1 hidden md:flex w-full bg-gradient-to-r from-orange-700/40 via-orange-500/40 to-transparent rounded" />
+          <div className="mt-2 h-1 hidden md:flex w-full bg-gradient-to-r from-amber-700/40 via-amber-500/40 to-transparent rounded" />
         </div>
         <div className="flex items-center gap-3 self-start md:self-auto">
           {relatedServiceTicketId && (
@@ -161,7 +161,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
               Ticket {relatedServiceTicketId.slice(0,8)}…
             </Badge>
           )}
-          <Badge variant="outline" className="border-orange-500 text-orange-500">
+          <Badge variant="outline" className="border-amber-500 text-amber-500">
             {estimatedPrice ? `Est. ${estimatedPrice.toLocaleString()} EGP` : "Calculating..."}
           </Badge>
         </div>
@@ -171,19 +171,19 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
         {currentStep === 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div>
-              <label className="block text-sm font-medium mb-2">Full Name</label>
+              <label className="typography-label block text-sm font-medium mb-2">Full Name</label>
               <Input {...form.register("name", { required: true })} placeholder="Your name" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Email</label>
+              <label className="typography-label block text-sm font-medium mb-2">Email</label>
               <Input {...form.register("email", { required: true })} type="email" placeholder="Your email" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Phone Number</label>
+              <label className="typography-label block text-sm font-medium mb-2">Phone Number</label>
               <Input {...form.register("phone", { required: true })} placeholder="Your phone number" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Company (Optional)</label>
+              <label className="typography-label block text-sm font-medium mb-2">Company (Optional)</label>
               <Input {...form.register("company")} placeholder="Your company name" />
             </div>
           </div>
@@ -192,7 +192,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
         {currentStep === 1 && (
           <div className="space-y-4 sm:space-y-6">
             <div>
-              <h3 className="text-lg font-medium mb-4">Selected Items</h3>
+              <h3 className="typography-h3 text-lg font-medium mb-4">Selected Items</h3>
               {selectedProducts.length === 0 && selectedServices.length === 0 ? (
                 <p className="text-gray-400">No items selected yet</p>
               ) : (
@@ -200,7 +200,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
                   {selectedProducts.map((product) => (
                     <div key={product.id} className="flex justify-between items-center p-3 bg-almona-dark rounded">
                       <span>{product.name}</span>
-                      <Badge variant="outline" className="border-green-500 text-green-500">
+                      <Badge variant="outline" className="border-green-500  status-valid">
                         {product.price ? `${product.price.toLocaleString()} EGP` : "Price on request"}
                       </Badge>
                     </div>
@@ -218,7 +218,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Project Description</label>
+              <label className="typography-label block text-sm font-medium mb-2">Project Description</label>
               <Textarea
                 {...form.register("projectDescription", { required: true })}
                 placeholder="Describe your project, requirements, and any specific needs..."
@@ -237,7 +237,7 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
         {currentStep === 2 && (
           <div className="space-y-4 sm:space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2">Urgency</label>
+              <label className="typography-label block text-sm font-medium mb-2">Urgency</label>
               <Select onValueChange={(value) => form.setValue("urgency", value)} defaultValue="standard">
                 <SelectTrigger>
                   <SelectValue placeholder="Select urgency level" />
@@ -251,12 +251,12 @@ export const QuoteRequestStepper: React.FC<QuoteRequestStepperProps> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Delivery Location</label>
+              <label className="typography-label block text-sm font-medium mb-2">Delivery Location</label>
               <Input {...form.register("deliveryLocation")} placeholder="City, Governorate, Egypt" />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Special Requirements</label>
+              <label className="typography-label block text-sm font-medium mb-2">Special Requirements</label>
               <Textarea
                 {...form.register("specialRequirements")}
                 placeholder="Installation needs, training requirements, custom modifications..."

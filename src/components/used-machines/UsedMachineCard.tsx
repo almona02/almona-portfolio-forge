@@ -50,7 +50,7 @@ const UsedMachineCard: React.FC<UsedMachineCardProps> = ({ machine }) => {
       </div>
       <CardHeader>
         <CardTitle className="text-xl">{machine.title}</CardTitle>
-        <div className="flex justify-between items-center text-orange-400 font-bold text-lg">
+        <div className="flex justify-between items-center text-amber-400 font-bold text-lg">
           {machine.price}
           {machine.seller.verified && (
             <Badge variant="secondary" className="bg-blue-600">
@@ -63,25 +63,25 @@ const UsedMachineCard: React.FC<UsedMachineCardProps> = ({ machine }) => {
         <p className="text-gray-400 mb-4">{machine.description}</p>
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="flex items-center">
-            <MapPin className="w-4 h-4 mr-2 text-orange-500" />
+            <MapPin className="w-4 h-4 mr-2 text-amber-500" />
             <span>{machine.location}</span>
           </div>
           <div className="flex items-center">
-            <Factory className="w-4 h-4 mr-2 text-orange-500" />
+            <Factory className="w-4 h-4 mr-2 text-amber-500" />
             <span>{machine.seller.name}</span>
           </div>
           <div className="flex items-center">
-            <Calendar className="w-4 h-4 mr-2 text-orange-500" />
+            <Calendar className="w-4 h-4 mr-2 text-amber-500" />
             <span>سنة الصنع: {machine.year}</span>
           </div>
           <div className="flex items-center">
-            <Gauge className="w-4 h-4 mr-2 text-orange-500" />
+            <Gauge className="w-4 h-4 mr-2 text-amber-500" />
             <span>ساعات التشغيل: {machine.hours.toLocaleString()}</span>
           </div>
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="outline" className="border-orange-500 text-orange-500">
+        <Button variant="outline" className="border-amber-500 text-amber-500">
           طلب معاينة
         </Button>
         <Button asChild>

@@ -12,21 +12,42 @@
 
 // Real-Time Quote Calculator
 export { RealTimeQuoteCalculator } from './RealTimeQuoteCalculator';
-export type { 
-  RealTimeQuote,
-  QuoteInput,
-  EgyptianQuoteFactors
+export type {
+    EgyptianQuoteFactors, QuoteInput, RealTimeQuote
 } from './RealTimeQuoteCalculator';
 
 // Egyptian Quote Factors
 export { EgyptianQuoteFactors as EgyptianQuoteFactorsUtil } from './EgyptianQuoteFactors';
-export type { 
-  LocationFactors,
-  InstallationComplexityFactors
+export type {
+    InstallationComplexityFactors, LocationFactors
 } from './EgyptianQuoteFactors';
 
 // Existing pricing modules
-export { PricingEngine } from './PricingEngine';
 export { AluminumPricingCalculator } from './AluminumPricingCalculator';
-export { LmePricingService } from './LmePricingService';
+export { LmePricingService, lmePricingService } from './LmePricingService';
+export { PricingEngine } from './PricingEngine';
+
+// System Pricing Service
+export { SystemPricingService, systemPricingService } from './SystemPricingService';
+
+// Price History Service
+export { PriceHistoryService, priceHistoryService } from './PriceHistoryService';
+export type {
+    PriceComparison, PriceHistoryEntry,
+    PriceHistoryFilter
+} from './PriceHistoryService';
+
+// Price Validation Service
+export { PriceValidationService, priceValidationService } from './PriceValidationService';
+export type {
+    ValidationConfig,
+    ValidationResult
+} from './PriceValidationService';
+
+// Pricing Import/Export Service
+export { PricingImportExportService, pricingImportExportService } from './PricingImportExportService';
+export type {
+    ExportFormat, ExportMetadata, ImportMode,
+    ImportResult
+} from './PricingImportExportService';
 

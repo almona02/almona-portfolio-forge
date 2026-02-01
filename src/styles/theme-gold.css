@@ -1,0 +1,109 @@
+/* Gold Tier Design System Tokens */
+@layer base {
+  :root {
+    /* Gold Tier Brand Colors */
+    --gold-50: #fffbeb;
+    --gold-100: #fef3c7;
+    --gold-200: #fde68a;
+    --gold-300: #fcd34d;
+    --gold-400: #fbbf24;
+    --gold-500: #f59e0b;
+    --gold-600: #d97706;
+    --gold-700: #b45309;
+    --gold-800: #92400e;
+    --gold-900: #78350f;
+    --gold-950: #451a03;
+
+    /* Elevation / Shadows (Physical Light Model) */
+    --shadow-color: 220 3% 15%;
+    --shadow-strength: 1%;
+
+    --shadow-xs: 0 1px 2px -1px
+      hsl(var(--shadow-color) / calc(var(--shadow-strength) + 9%));
+    --shadow-sm:
+      0 3px 5px -2px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
+      0 7px 14px -5px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%));
+    --shadow-md:
+      0 -1px 3px 0 hsl(var(--shadow-color) / calc(var(--shadow-strength) + 2%)),
+      0 1px 2px -5px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 2%)),
+      0 2px 5px -5px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 4%)),
+      0 4px 12px -5px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%)),
+      0 12px 15px -5px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 7%));
+    --shadow-lg:
+      0 -2px 5px 0 hsl(var(--shadow-color) / calc(var(--shadow-strength) + 2%)),
+      0 1px 1px -2px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
+      0 2px 2px -2px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
+      0 5px 5px -2px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 4%)),
+      0 9px 9px -2px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%)),
+      0 16px 16px -2px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 6%));
+    --shadow-xl:
+      0 -1px 2px 0 hsl(var(--shadow-color) / calc(var(--shadow-strength) + 2%)),
+      0 2px 1px -2px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
+      0 5px 5px -2px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
+      0 10px 10px -2px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 4%)),
+      0 20px 20px -2px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%)),
+      0 40px 40px -2px
+        hsl(var(--shadow-color) / calc(var(--shadow-strength) + 7%));
+
+    /* Gold Glows for Dark Mode */
+    --glow-gold-sm: 0 0 10px -2px rgba(245, 158, 11, 0.3);
+    --glow-gold-md: 0 0 20px -5px rgba(245, 158, 11, 0.4);
+    --glow-gold-lg: 0 0 30px -10px rgba(245, 158, 11, 0.5);
+
+    /* Animation Timing */
+    --ease-squish-1: cubic-bezier(0.5, -0.1, 0.1, 1.5);
+    --ease-squish-2: cubic-bezier(0.5, -0.3, 0.1, 1.5);
+    --ease-squish-3: cubic-bezier(0.5, -0.5, 0.1, 1.5);
+    --ease-elastic-1: cubic-bezier(0.5, 1.25, 0, 1);
+    --ease-elastic-2: cubic-bezier(0.5, 1.5, 0, 1);
+    --ease-step-1: steps(4, end);
+  }
+
+  .dark {
+    --shadow-color: 220 40% 2%;
+    --shadow-strength: 25%;
+  }
+}
+
+/* Glassmorphism Utilities */
+.glass-gold {
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  box-shadow: var(--shadow-xl), var(--glow-gold-sm);
+}
+
+.glass-gold-hover:hover {
+  background: rgba(10, 10, 10, 0.9);
+  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow: var(--shadow-xl), var(--glow-gold-md);
+}
+
+/* Gradient Text for Headlines */
+.text-gradient-gold {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    135deg,
+    var(--gold-200),
+    var(--gold-400),
+    var(--gold-600)
+  );
+}

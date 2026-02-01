@@ -85,7 +85,7 @@ export const QuoteAIHelper: React.FC<QuoteAIHelperProps> = ({
           <div className="space-y-4">
             {suggestions.products.length > 0 && (
               <div>
-                <h4 className="text-sm font-medium mb-2">Recommended Products</h4>
+                <h4 className="typography-h4 text-sm font-medium mb-2">Recommended Products</h4>
                 <div className="flex flex-wrap gap-2">
                   {suggestions.products.map(product => (
                     <Button

@@ -37,7 +37,7 @@ const CreateTicketPage = () => {
               <CardContent className="flex items-center justify-center py-12">
                 <div className="text-center">
                   <AlertCircle className="h-12 w-12 text-almona-orange mx-auto mb-4" />
-                  <h2 className="text-xl font-semibold mb-2">Authentication Required</h2>
+                  <h2 className="typography-h2 text-xl font-semibold mb-2">Authentication Required</h2>
                   <p className="text-gray-400 mb-4">Please log in to create a support ticket</p>
                   <Link to="/login" className="text-almona-orange hover:underline">Go to Login</Link>
                 </div>

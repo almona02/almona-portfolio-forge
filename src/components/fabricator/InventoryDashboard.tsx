@@ -16,17 +16,22 @@
  * - Automatic remnant consolidation suggestions
  */
 
+import { PricingTuningStudio } from '@/components/fabricator/PricingTuningStudio';
 import { PurchaseWizard } from '@/components/fabricator/PurchaseWizard';
 import { Rock60PricingSetup } from '@/components/fabricator/Rock60PricingSetup';
+import { VirtualizedInventoryList } from '@/components/fabricator/VirtualizedInventoryList';
 import { useFabricatorWorkspace } from '@/context/FabricatorWorkspaceContext';
 import { JUMBO100_WINDOW_SYSTEM_SPEC, ROCK60_WINDOW_SYSTEM_TEMPLATE, SYSTEM_PACKS } from '@/data/systemPacks';
 import { remnantManager, type Remnant, type RemnantConsolidationSuggestion, type RemnantStatistics } from '@/lib/inventory/RemnantManager';
 import { syncStockFromMovements } from '@/lib/inventory/StockCalculator';
+import { trackError } from '@/lib/performance-monitoring';
 import { supabase } from '@/lib/supabase';
+import { cn } from '@/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/ui/alert';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Button } from '@/shared/ui/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/ui/collapsible';
 import { Input } from '@/shared/ui/ui/input';
 import { Label } from '@/shared/ui/ui/label';
 import { Progress } from '@/shared/ui/ui/progress';
@@ -35,26 +40,27 @@ import { Switch } from '@/shared/ui/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/ui/tabs';
 import { Profile, WindowUnit } from '@/types/fabricator';
 import {
-    AlertCircle,
-    AlertTriangle,
-    BarChart3,
-    Box,
-    Calendar,
-    CheckCircle,
-    DollarSign,
-    Download,
-    FileText,
-    History,
-    Info,
-    MapPin,
-    Package,
-    QrCode,
-    RefreshCw,
-    Search,
-    ShoppingCart,
-    TrendingUp,
-    Warehouse,
-    X,
+  AlertCircle,
+  AlertTriangle,
+  BarChart3,
+  Box,
+  Calendar,
+  CheckCircle,
+  ChevronDown,
+  DollarSign,
+  Download,
+  FileText,
+  History,
+  Info,
+  MapPin,
+  Package,
+  QrCode,
+  RefreshCw,
+  Search,
+  ShoppingCart,
+  TrendingUp,
+  Warehouse,
+  X,
 } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -231,6 +237,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
   const [invoiceRoleFilter, setInvoiceRoleFilter] = useState<string>('all');
   const [showPurchaseWizard, setShowPurchaseWizard] = useState(false);
   const [selectedRock60ProfileId, setSelectedRock60ProfileId] = useState<string | undefined>(undefined);
+  const [isProfileInventoryOpen, setIsProfileInventoryOpen] = useState(true);
+  const [showPricingStudio, setShowPricingStudio] = useState(false);
+  const [pricingStudioSystemPackId, setPricingStudioSystemPackId] = useState<string | undefined>(undefined);
+  const [pricingStudioProfileId, setPricingStudioProfileId] = useState<string | undefined>(undefined);
 
   const loadStockAlerts = useCallback(async () => {
     if (!userId) return;
@@ -271,7 +281,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
       setStockAlerts(alerts);
     } catch (error) {
-      console.error('Error loading stock alerts:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('InventoryDashboard', 'load_stock_alerts', err.message);
     }
   }, [userId]);
 
@@ -308,7 +319,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
       setStockMovements(movements);
     } catch (error) {
-      console.error('Error loading stock movements:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('InventoryDashboard', 'load_stock_movements', err.message);
     }
   }, [userId]);
 
@@ -338,7 +350,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
       setLocations(locs);
     } catch (error) {
-      console.error('Error loading locations:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('InventoryDashboard', 'load_locations', err.message);
     }
   }, [userId]);
 
@@ -368,7 +381,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       // Run stock‑related queries in parallel; they only depend on userId
       await Promise.all([loadStockAlerts(), loadStockMovements(), loadLocations()]);
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('InventoryDashboard', 'load_dashboard_data', err.message);
       toast.error('Failed to load inventory data');
     } finally {
       setIsLoading(false);
@@ -538,7 +552,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           }.`,
         );
       } catch (err) {
-        console.error('Error importing invoice CSV:', err);
+        const error = err instanceof Error ? err : new Error(String(err));
+        trackError('InventoryDashboard', 'import_invoice_csv', error.message);
         toast.error('Failed to import invoice CSV.');
       }
     };
@@ -612,7 +627,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       setInvoiceIsPainted(false);
       setInvoicePaintColor('');
     } catch (error) {
-      console.error('Error saving stock intake invoice:', error);
+      const err = error instanceof Error ? error : new Error(String(error));
+      trackError('InventoryDashboard', 'save_stock_intake', err.message);
       toast.error('Failed to record stock intake');
     } finally {
       setIsSavingInvoice(false);
@@ -633,7 +649,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       case 'out_of_stock':
         return 'text-red-400 border-red-500';
       case 'low':
-        return 'text-orange-400 border-orange-500';
+        return 'text-amber-400 border-amber-500';
       case 'medium':
         return 'text-yellow-400 border-yellow-500';
       case 'high':
@@ -648,7 +664,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       case 'out_of_stock':
         return 'bg-red-500/20';
       case 'low':
-        return 'bg-orange-500/20';
+        return 'bg-amber-500/20';
       case 'medium':
         return 'bg-yellow-500/20';
       case 'high':
@@ -960,7 +976,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       <Card className="bg-gray-700/50 border-gray-600">
         <CardContent className="p-8 text-center">
           <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No Inventory Data Yet</h3>
+          <h3 className="typography-h3 text-lg mb-2">No Inventory Data Yet</h3>
           <p className="text-gray-400">
             Inventory is empty. Add or import profiles in the Profile Management section above to
             see stock levels and alerts here.
@@ -979,8 +995,8 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
       {/* Header with Actions */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">{t('inventory_dashboard.title', 'Inventory Intelligence Hub')}</h2>
-          <p className="text-gray-400">{t('inventory_dashboard.description', 'Centralized inventory management with real-time analytics, remnant optimization, and AI-powered stock predictions for Turkish & Egyptian markets.')}</p>
+          <h2 className="typography-h2">{t('inventory_dashboard.title', 'Inventory Dashboard')}</h2>
+          <p className="text-gray-400">{t('inventory_dashboard.description', 'Centralized inventory management with real-time analytics, remnant optimization, and stock level monitoring for Turkish & Egyptian markets.')}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -1012,7 +1028,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
       {/* Stock Alerts Banner */}
       {stockAlerts.length > 0 && (
-        <Alert className={`border-orange-500 ${stockAlerts.some(a => a.severity === 'critical') ? 'bg-red-500/10' : 'bg-orange-500/10'}`}>
+        <Alert className={`border-amber-500 ${stockAlerts.some(a => a.severity === 'critical') ? 'bg-red-500/10' : 'bg-amber-500/10'}`}>
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>
             {stockAlerts.length} Active Stock Alert{stockAlerts.length > 1 ? 's' : ''}
@@ -1047,9 +1063,9 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-400">{t('inventory_dashboard.low_stock', 'Low Stock')}</p>
-                <p className="text-2xl font-bold text-orange-400">{lowStockCount}</p>
+                <p className="text-2xl font-bold text-amber-400">{lowStockCount}</p>
               </div>
-              <AlertTriangle className="h-8 w-8 text-orange-400 opacity-50" />
+              <AlertTriangle className="h-8 w-8 text-amber-400 opacity-50" />
             </div>
           </CardContent>
         </Card>
@@ -1131,11 +1147,11 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-400">Expiring Soon</p>
-                  <p className="text-2xl font-bold text-orange-400">
+                  <p className="text-2xl font-bold text-amber-400">
                     {remnantStats.expiringSoon}
                   </p>
                 </div>
-                <Calendar className="h-8 w-8 text-orange-400 opacity-50" />
+                <Calendar className="h-8 w-8 text-amber-400 opacity-50" />
               </div>
             </CardContent>
           </Card>
@@ -1172,22 +1188,40 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     onCheckedChange={setUseRemnantsFirst}
                   />
                   <div>
-                    <Label className="text-base font-semibold">{t('inventory_dashboard.use_remnants_first', 'Use Remnants First')}</Label>
+                    <Label className="typography-label text-base font-semibold">{t('inventory_dashboard.use_remnants_first', 'Remnant Optimization')}</Label>
                     <p className="text-sm text-gray-400">
-                      {t('inventory_dashboard.use_remnants_desc', 'Automatically match and use available remnants before cutting new stock')}
+                      {t('inventory_dashboard.use_remnants_desc', 'Prioritize matching and using available remnant stock before cutting new material')}
                     </p>
                   </div>
                 </div>
-                <Badge variant={useRemnantsFirst ? 'default' : 'outline'} className="cursor-default" title="Status indicator - use the switch above to toggle">
-                  {useRemnantsFirst ? 'Enabled' : 'Disabled'}
-                </Badge>
+                <div 
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold pointer-events-none select-none",
+                    useRemnantsFirst 
+                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" 
+                      : "bg-amber-500/10 text-amber-400/80 border-amber-500/30"
+                  )}
+                  aria-label={useRemnantsFirst ? "Remnant optimization enabled" : "Remnant optimization disabled"}
+                >
+                  {useRemnantsFirst ? (
+                    <>
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Active
+                    </>
+                  ) : (
+                    <>
+                      <div className="w-1.5 h-1.5 rounded-full bg-amber-400/60" />
+                      Inactive
+                    </>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Main inventory list and filters */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="lg:col-span-2 space-y-4 flex flex-col min-h-0">
               {/* Search and Filters */}
               <Card className="bg-gray-700/50 border-gray-600">
                 <CardContent className="p-4 space-y-3">
@@ -1250,95 +1284,112 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               </Card>
 
               {/* Inventory List */}
-              <Card className="bg-gray-700/50 border-gray-600">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Package className="h-5 w-5 text-orange-400" />
-                    Profile Inventory
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {filteredInventory.map((profile) => {
-                      const status = getStockStatus(profile);
-                      const stockPercentage = profile.minStockLevel
-                        ? Math.min((profile.stockQuantity / (profile.minStockLevel * 2)) * 100, 100)
-                        : 0;
+              <Collapsible open={isProfileInventoryOpen} onOpenChange={setIsProfileInventoryOpen}>
+                <Card className="bg-gray-700/50 border-gray-600 flex flex-col flex-1 min-h-0">
+                  <CollapsibleTrigger asChild>
+                    <CardHeader className="flex-shrink-0 cursor-pointer hover:bg-gray-800/70 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center gap-2">
+                          <Package className="h-5 w-5 text-amber-400" />
+                          Profile Inventory
+                        </CardTitle>
+                        <ChevronDown 
+                          className={cn(
+                            "h-4 w-4 text-gray-400 transition-transform duration-200",
+                            isProfileInventoryOpen && "rotate-180"
+                          )} 
+                        />
+                      </div>
+                    </CardHeader>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <CardContent className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                      {/* ✅ PERFORMANCE: Virtualized list for large inventory lists */}
+                      <VirtualizedInventoryList
+                        profiles={filteredInventory}
+                        containerHeight={1400}
+                        itemHeight={180}
+                        renderProfile={(profile, _index) => {
+                          const status = getStockStatus(profile);
+                          const stockPercentage = profile.minStockLevel
+                            ? Math.min((profile.stockQuantity / (profile.minStockLevel * 2)) * 100, 100)
+                            : 0;
 
-                      return (
-                        <div
-                          key={profile.id}
-                          className={`p-4 rounded-lg border ${getStatusColor(status)} ${getStatusBgColor(status)}`}
-                        >
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-semibold">{profile.name}</h4>
-                                <Badge variant="outline" className={getStatusColor(status)}>
-                                  <div className="flex items-center gap-1">
-                                    {getStatusIcon(status)}
-                                    {status.toUpperCase().replace('_', ' ')}
+                          return (
+                            <div
+                              className={`p-4 rounded-lg border mb-4 ${getStatusColor(status)} ${getStatusBgColor(status)}`}
+                            >
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <h4 className="typography-h4">{profile.name}</h4>
+                                    <Badge variant="outline" className={getStatusColor(status)}>
+                                      <div className="flex items-center gap-1">
+                                        {getStatusIcon(status)}
+                                        {status.toUpperCase().replace('_', ' ')}
+                                      </div>
+                                    </Badge>
                                   </div>
-                                </Badge>
+                                  <p className="text-sm text-gray-400">
+                                    {profile.material} • {profile.width}mm • {profile.color}
+                                  </p>
+                                </div>
+                                {profile.userId && locations.length > 0 && (
+                                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                                    <MapPin className="h-4 w-4" />
+                                    {locations.find(l => l.isDefault)?.name || 'Default'}
+                                  </div>
+                                )}
                               </div>
-                              <p className="text-sm text-gray-400">
-                                {profile.material} • {profile.width}mm • {profile.color}
-                              </p>
-                            </div>
-                            {profile.userId && locations.length > 0 && (
-                              <div className="flex items-center gap-2 text-sm text-gray-400">
-                                <MapPin className="h-4 w-4" />
-                                {locations.find(l => l.isDefault)?.name || 'Default'}
-                              </div>
-                            )}
-                          </div>
 
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                              <span>Stock: {profile.stockQuantity > 0 ? `${profile.stockQuantity.toFixed(2)}m` : '0m'} {profile.stockQuantity > 0 && '(from purchases)'}</span>
-                              <span>Min Level: {profile.minStockLevel || 0}m</span>
-                            </div>
-                            <Progress value={stockPercentage} className="h-2" />
-                            <div className="flex justify-between text-sm text-gray-400">
-                              <span>Cost: ${profile.costPerMeter}/m</span>
-                              <span>Supplier: {profile.supplier || 'N/A'}</span>
-                            </div>
-                            {((profile.systemBrand && SYSTEM_PACKS.some(p => p.meta.name === profile.systemBrand)) ||
-                              (profile.specifications && (profile.specifications as any).window_system) ||
-                              (profile.specifications && (profile.specifications as any).systemPackId)) && (
-                              <div className="mt-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="w-full text-xs h-7"
-                                  onClick={() => {
-                                    setSelectedRock60ProfileId(profile.id);
-                                    // Scroll to pricing panel after a short delay to allow state update
-                                    setTimeout(() => {
-                                      const pricingPanel = document.querySelector('[data-pricing-panel]');
-                                      if (pricingPanel) {
-                                        pricingPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                                        // Highlight the panel briefly
-                                        pricingPanel.classList.add('ring-2', 'ring-orange-500', 'ring-offset-2');
+                              <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span>Stock: {profile.stockQuantity > 0 ? `${profile.stockQuantity.toFixed(2)}m` : '0m'} {profile.stockQuantity > 0 && '(from purchases)'}</span>
+                                  <span>Min Level: {profile.minStockLevel || 0}m</span>
+                                </div>
+                                <Progress value={stockPercentage} className="h-2" />
+                                <div className="flex justify-between text-sm text-gray-400">
+                                  <span>Cost: ${profile.costPerMeter}/m</span>
+                                  <span>Supplier: {profile.supplier || 'N/A'}</span>
+                                </div>
+                                {((profile.systemBrand && SYSTEM_PACKS.some(p => p.meta.name === profile.systemBrand)) ||
+                                  (profile.specifications && (profile.specifications as any).window_system) ||
+                                  (profile.specifications && (profile.specifications as any).systemPackId)) && (
+                                  <div className="mt-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="w-full text-xs h-7"
+                                      onClick={() => {
+                                        setSelectedRock60ProfileId(profile.id);
+                                        // Scroll to pricing panel after a short delay to allow state update
                                         setTimeout(() => {
-                                          pricingPanel.classList.remove('ring-2', 'ring-orange-500', 'ring-offset-2');
-                                        }, 2000);
-                                      }
-                                    }, 100);
-                                  }}
-                                >
-                                  <DollarSign className="h-3 w-3 mr-1" />
-                                  Edit System Pricing
-                                </Button>
+                                          const pricingPanel = document.querySelector('[data-pricing-panel]');
+                                          if (pricingPanel) {
+                                            pricingPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                            // Highlight the panel briefly
+                                            pricingPanel.classList.add('ring-2', 'ring-amber-500', 'ring-offset-2');
+                                            setTimeout(() => {
+                                              pricingPanel.classList.remove('ring-2', 'ring-amber-500', 'ring-offset-2');
+                                            }, 2000);
+                                          }
+                                        }, 100);
+                                      }}
+                                    >
+                                      <DollarSign className="h-3 w-3 mr-1" />
+                                      Edit System Pricing
+                                    </Button>
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
+                            </div>
+                          );
+                        }}
+                      />
+                    </CardContent>
+                  </CollapsibleContent>
+                </Card>
+              </Collapsible>
             </div>
 
             {/* Customer / project inventory & ROCK 60 pricing side panel */}
@@ -1405,9 +1456,14 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               <div data-pricing-panel>
                 <Rock60PricingSetup 
                   profiles={inventory} 
-                  userId={userId}
+                  userId={userId || ''}
                   selectedProfileId={selectedRock60ProfileId}
                   onProfileChange={setSelectedRock60ProfileId}
+                  onOpenStudio={(systemPackId, profileId) => {
+                    setPricingStudioSystemPackId(systemPackId);
+                    setPricingStudioProfileId(profileId);
+                    setShowPricingStudio(true);
+                  }}
                 />
               </div>
             </div>
@@ -1478,7 +1534,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <h4 className="font-semibold">
+                            <h4 className="typography-h4">
                               {remnant.profile?.name || 'Unknown Profile'}
                             </h4>
                             <Badge variant="outline">{remnant.status}</Badge>
@@ -1549,7 +1605,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           <Card className="bg-gray-700/50 border-gray-600">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm md:text-base">
-                <FileText className="h-4 w-4 text-orange-400" />
+                <FileText className="h-4 w-4 text-amber-400" />
                 Stock Intake by Invoice
               </CardTitle>
               <CardDescription className="text-xs text-gray-400">
@@ -1561,7 +1617,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               <div className="flex justify-end mb-2">
                 <Button
                   onClick={() => setShowPurchaseWizard(true)}
-                  className="bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white border-none shadow-lg shadow-orange-500/20"
+                  className="bg-gradient-to-r from-amber-500 to-pink-600 hover:from-amber-600 hover:to-pink-700 text-white border-none shadow-lg shadow-amber-500/20"
                 >
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   Open Purchase Wizard
@@ -1570,10 +1626,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div className="md:col-span-2 space-y-2">
-                  <Label className="text-xs">Profile / Series / Pack</Label>
+                  <Label className="typography-label text-xs">Profile / Series / Pack</Label>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <Label className="text-[10px] text-gray-400">Series / Pack</Label>
+                      <Label className="typography-label text-[10px] text-gray-400">Series / Pack</Label>
                       <Select
                         value={invoiceSystemPackFilter}
                         onValueChange={setInvoiceSystemPackFilter}
@@ -1590,7 +1646,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       </Select>
                     </div>
                     <div>
-                      <Label className="text-[10px] text-gray-400">Role</Label>
+                      <Label className="typography-label text-[10px] text-gray-400">Role</Label>
                       <Select
                         value={invoiceRoleFilter}
                         onValueChange={setInvoiceRoleFilter}
@@ -1680,7 +1736,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
               )}
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-xs">Quantity *</Label>
+                  <Label className="typography-label text-xs">Quantity *</Label>
                   <div className="flex gap-2">
                     <Input
                       type="number"
@@ -1704,7 +1760,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   </div>
                 </div>
                 <div>
-                  <Label className="text-xs">Bar length (m)</Label>
+                  <Label className="typography-label text-xs">Bar length (m)</Label>
                   <Input
                     type="number"
                     min={0}
@@ -1721,7 +1777,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Invoice No.</Label>
+                  <Label className="typography-label text-xs">Invoice No.</Label>
                   <Input
                     value={invoiceNumber}
                     onChange={(e) => setInvoiceNumber(e.target.value)}
@@ -1730,7 +1786,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Supplier</Label>
+                  <Label className="typography-label text-xs">Supplier</Label>
                   <Input
                     value={invoiceSupplier}
                     onChange={(e) => setInvoiceSupplier(e.target.value)}
@@ -1739,7 +1795,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <Label className="text-xs">Painted</Label>
+                  <Label className="typography-label text-xs">Painted</Label>
                   <div className="flex items-center gap-2">
                     <Switch
                       checked={invoiceIsPainted}
@@ -1751,7 +1807,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   </div>
                   {invoiceIsPainted && (
                     <div className="mt-1">
-                      <Label className="text-[11px]">Paint color</Label>
+                      <Label className="typography-label text-[11px]">Paint color</Label>
                       <Select
                         value={invoicePaintColor}
                         onValueChange={setInvoicePaintColor}
@@ -1806,7 +1862,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                   ).
                 </div>
                 <div className="flex items-center gap-2">
-                  <label className="text-[11px]">
+                  <Label className="typography-label text-[11px]">
                     <Button
                       type="button"
                       variant="outline"
@@ -1825,10 +1881,10 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                       className="hidden"
                       onChange={handleInvoiceCsvImport}
                     />
-                  </label>
+                  </Label>
                   <Button
                     size="sm"
-                    className="bg-orange-500 hover:bg-orange-600 text-xs"
+                    className="btn-primary"
                     disabled={
                       !userId ||
                       !invoiceProfileId ||
@@ -1882,7 +1938,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
           <Card className="bg-gray-700/50 border-gray-600">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-orange-400" />
+                <AlertTriangle className="h-5 w-5 text-amber-400" />
                 Stock Alerts ({stockAlerts.length})
               </CardTitle>
             </CardHeader>
@@ -1901,7 +1957,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                         alert.severity === 'critical'
                           ? 'bg-red-500/10 border-red-500'
                           : alert.severity === 'high'
-                          ? 'bg-orange-500/10 border-orange-500'
+                          ? 'bg-amber-500/10 border-amber-500'
                           : 'bg-yellow-500/10 border-yellow-500'
                       }`}
                     >
@@ -2057,7 +2113,7 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
                     </div>
                     <div>
                       <p className="text-sm text-gray-400">Unused (90+ days)</p>
-                      <p className="text-2xl font-bold text-orange-400">
+                      <p className="text-2xl font-bold text-amber-400">
                         {remnantStats.unusedRemnants}
                       </p>
                     </div>
@@ -2082,6 +2138,28 @@ export const InventoryDashboard: React.FC<InventoryDashboardProps> = ({
             // Explicitly reload alerts to ensure they're resolved
             await loadStockAlerts();
             setShowPurchaseWizard(false);
+          }}
+        />
+      )}
+
+      {userId && showPricingStudio && (
+        <PricingTuningStudio
+          systemPackId={pricingStudioSystemPackId}
+          profileId={pricingStudioProfileId}
+          userId={userId}
+          profiles={inventory}
+          onClose={(saved) => {
+            setShowPricingStudio(false);
+            setPricingStudioSystemPackId(undefined);
+            setPricingStudioProfileId(undefined);
+            if (saved) {
+              // Refresh inventory if pricing was saved
+              // The pricing update should trigger a refresh in parent component
+            }
+          }}
+          onPricingUpdated={(systemPackId) => {
+            // Optionally refresh data when pricing is updated
+            console.log('Pricing updated for system pack:', systemPackId);
           }}
         />
       )}

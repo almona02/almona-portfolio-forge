@@ -18,7 +18,8 @@ celery_app = Celery(
         "tasks.notification_tasks",
         "tasks.report_tasks",
         "tasks.monitoring_tasks",
-        "tasks.industry_watchdog_tasks"
+        "tasks.industry_watchdog_tasks",
+        "tasks.workflow_tasks",
     ]
 )
 

@@ -202,11 +202,11 @@ export const OrdersPanel: React.FC = () => {
         </div>
         <div className="flex flex-wrap gap-3 items-end">
           <div className="w-56">
-            <label className="text-xs text-muted-foreground">Search ID</label>
+            <label className="typography-label text-xs text-muted-foreground">Search ID</label>
             <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="e.g. 8d2f..." />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Status</label>
+            <label className="typography-label text-xs text-muted-foreground">Status</label>
             <Select value={status} onValueChange={(v: string) => { setStatus(v as OrderStatus | 'all'); setPage(1) }}>
               <SelectTrigger>
                 <SelectValue placeholder="All" />
@@ -226,11 +226,11 @@ export const OrdersPanel: React.FC = () => {
             </Select>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">From</label>
+            <label className="typography-label text-xs text-muted-foreground">From</label>
             <Input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1) }} />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">To</label>
+            <label className="typography-label text-xs text-muted-foreground">To</label>
             <Input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1) }} />
           </div>
           <div className="ml-auto flex items-center gap-2">

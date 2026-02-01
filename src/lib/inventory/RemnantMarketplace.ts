@@ -120,13 +120,26 @@ export class RemnantMarketplace {
     filters: MarketplaceSearchFilters = {}
   ): Promise<MarketplaceListing[]> {
     try {
-      let query = supabase
-        .from('remnant_marketplace_listings')
-        .select(`
+      let selectString = `
+        *,
+        fabricator_profiles!inner (name, material),
+        seller:profiles!seller_id (name)
+      `;
+
+      if (filters.material) {
+        // If material filter is present, we already have !inner
+      } else {
+        // If no material filter, we can use outer join (default)
+        selectString = `
           *,
           fabricator_profiles (name, material),
-          profiles:profiles!seller_id (name)
-        `)
+          seller:profiles!seller_id (name)
+        `;
+      }
+
+      let query = supabase
+        .from('remnant_marketplace_listings')
+        .select(selectString)
         .eq('status', 'available');
 
       if (filters.profileId) {

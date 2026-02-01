@@ -35,7 +35,7 @@ export const JobBoardView: React.FC = () => {
     return (
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-100">Job Board</h2>
+          <h2 className="typography-h2 text-lg font-semibold text-gray-100">Job Board</h2>
           <span className="text-xs text-gray-400">No projects yet</span>
         </div>
 
@@ -54,7 +54,7 @@ export const JobBoardView: React.FC = () => {
           </div>
           <div className="flex flex-wrap gap-2 justify-start md:justify-end">
             <Link to="/fabricator-workflow">
-              <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-xs">
+              <Button size="sm" className="btn-primary">
                 Add first project
               </Button>
             </Link>
@@ -76,7 +76,7 @@ export const JobBoardView: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-gray-100">Job Board</h2>
+        <h2 className="typography-h2 text-lg font-semibold text-gray-100">Job Board</h2>
         <span className="text-xs text-gray-400">{jobs.length} jobs</span>
       </div>
 

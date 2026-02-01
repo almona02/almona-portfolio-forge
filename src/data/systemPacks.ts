@@ -2,32 +2,15 @@ import { CALUMINIUM_PS_PACK } from '@/data/profileSystems/egyptian/caluminium/ps
 import { PANDA_100_SYSTEM_PACK, PANDA_50_SYSTEM_PACK } from '@/data/profileSystems/egyptian/panda/panda';
 import { ANADOLU_W60_PACK } from '@/data/profileSystems/turkish/anadolu/w60';
 import {
-  ASAS_COMMERCIAL_PACK,
-  ASAS_CW100_PACK,
-  ASAS_REFD77_PACK,
-  ASAS_RESCARA_R50_PACK,
-  ASAS_RESCARA_RWT75_PACK,
+    ASAS_COMMERCIAL_PACK,
+    ASAS_CW100_PACK,
+    ASAS_REFD77_PACK,
+    ASAS_RESCARA_R50_PACK,
+    ASAS_RESCARA_RWT75_PACK,
 } from '@/data/profileSystems/turkish/asas/asasCW100';
 import { KALE_70_SLIDING_PACK, KALE_COMMERCIAL_PACK } from '@/data/profileSystems/turkish/kale/kale70';
 import { EGYPTIAN_UPVC_SYSTEMS } from '@/data/upvc-systems';
-import type { Profile, WindowGrid } from '@/types/fabricator';
-
-/**
- * System pack metadata – describes a branded window/door system
- * (e.g. ROCK 60) and how it should be treated regionally.
- */
-export interface SystemPackMeta {
-  /** Stable identifier, e.g. "rock60" */
-  id: string;
-  /** Human readable name, e.g. "ROCK 60" */
-  name: string;
-  /** Brand(s) or suppliers this pack belongs to */
-  brands: string[];
-  /** Regions where this pack is most relevant (egypt, turkey, mena, gulf, global, etc.) */
-  regions: string[];
-  /** Default stock bar length in mm for this system, if known */
-  defaultStockLengthMm?: number;
-}
+import type { SystemPack } from '@/types/fabricator';
 
 /**
  * A system pack bundles cutting rules, hardware kits and other
@@ -69,20 +52,6 @@ export interface GlassAllowanceSpec {
   maxAreaM2?: number;
   /** Optional max glazing thickness in mm. */
   maxGlazingThicknessMm?: number;
-}
-
-export interface SystemPack {
-  meta: SystemPackMeta;
-  /** Raw specification object that will be embedded into profile.specifications */
-  windowSystemSpec: Record<string, any>;
-  /** Optional Smart Draw presets used by facade tools */
-  smartDrawPreset?: SystemPackSmartDrawPreset;
-  /** Optional glass sizing rules used for glazing and 2D glass optimisation. */
-  glassAllowances?: GlassAllowanceSpec;
-  /** Optional default grid layout to apply when this pack is selected */
-  defaultGrid?: WindowGrid;
-  /** Optional profiles array for cut list generation with accurate dimensions */
-  profiles?: Profile[];
 }
 
 // ----------------------------------------------------------------------------
@@ -229,6 +198,7 @@ export const ROCK60_WINDOW_SYSTEM_TEMPLATE: Record<string, any> = {
         profile_code: 'RC 6111-8',
         new_code: '1 061 1138',
         weight_kg_m: 1.315,
+        physics: { ix: 14.5, iy: 6.2, uf: 2.4, faceWidth: 60 },
         cuts: [
           {
             purpose: 'horizontal_frame',
@@ -252,6 +222,7 @@ export const ROCK60_WINDOW_SYSTEM_TEMPLATE: Record<string, any> = {
         profile_code: 'RC 6122',
         new_code: '1 061 1300',
         weight_kg_m: 1.342,
+        physics: { ix: 16.8, iy: 7.1, uf: 2.6, faceWidth: 72 },
         cuts: [
           {
             purpose: 'horizontal_sash',
@@ -454,6 +425,7 @@ export const JUMBO100_WINDOW_SYSTEM_SPEC: Record<string, any> = {
       profile_number: '2 100 1020',
       old_profile_number: 'J 1027',
       weight_kg_per_ml: 1.504,
+      physics: { ix: 22.4, iy: 9.1, uf: 2.8, faceWidth: 74 },
       dimensions_mm: {
         A: 74.0,
         B: 32.0,
@@ -470,6 +442,7 @@ export const JUMBO100_WINDOW_SYSTEM_SPEC: Record<string, any> = {
       profile_number: '2 100 1120',
       old_profile_number: 'J 1027',
       weight_kg_per_ml: 1.768,
+      physics: { ix: 28.5, iy: 11.2, uf: 2.9, faceWidth: 90 },
       dimensions_mm: {
         A: 90.0,
         B: 32.0,

@@ -96,7 +96,7 @@ export const IndustrialProductCard = ({
               <Badge
                 key={`badge-${index}-${badge}-${title.slice(0, 10)}`}
                 variant="secondary"
-                className="bg-orange-600/90 hover:bg-orange-600 text-[10px] px-1.5 py-0.5"
+                className="btn-primary"
               >
                 {badge}
               </Badge>
@@ -136,13 +136,13 @@ export const IndustrialProductCard = ({
         )}
       </CardHeader>
       <CardContent className="p-3 sm:p-4 flex-grow flex flex-col">
-        <h3 className="text-sm sm:text-base lg:text-lg font-semibold mb-1 line-clamp-2">{title}</h3>
+        <h3 className="typography-h3 text-sm sm:text-base lg:text-lg mb-1 line-clamp-2">{title}</h3>
         <p className="text-gray-400 text-xs sm:text-sm mb-2 line-clamp-2">{description}</p>
         <div className="space-y-1 mb-3 flex-grow">
           {features.slice(0, 3).map((feature, i) => (
             <div key={`feature-${i}-${feature.slice(0, 20)}-${title.slice(0, 10)}`} className="flex items-start">
               <svg
-                className="w-3 h-3 mt-0.5 mr-1.5 text-orange-500 flex-shrink-0"
+                className="w-3 h-3 mt-0.5 mr-1.5 text-amber-500 flex-shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -161,12 +161,12 @@ export const IndustrialProductCard = ({
         {durabilityInfo && (
           <div className="mt-2 pt-2 border-t border-almona-light/20">
             <div className="flex items-center mb-1">
-              <span className="text-orange-500 font-bold text-sm mr-1">{durabilityInfo.score}/5</span>
+              <span className="text-amber-500 font-bold text-sm mr-1">{durabilityInfo.score}/5</span>
               <span className="text-gray-300 text-xs">Durability</span>
             </div>
           </div>
         )}
-        <div className="text-lg sm:text-xl font-bold text-orange-500 mt-auto">{price}</div>
+        <div className="text-lg sm:text-xl font-bold text-amber-500 mt-auto">{price}</div>
       </CardContent>
       <CardFooter className="p-3 sm:p-4 pt-0">
         <div className="flex flex-col gap-1.5 w-full">
@@ -176,7 +176,7 @@ export const IndustrialProductCard = ({
               variant={i === 0 ? "default" : "outline"}
               size="sm"
               onClick={() => handleActionClick(action.action)}
-              className={`text-xs sm:text-sm ${i === 0 ? "bg-orange-600 hover:bg-orange-700" : ""}`}
+              className={`text-xs sm:text-sm ${i === 0 ? "bg-amber-600 hover:bg-amber-700" : ""}`}
             >
               {action.label}
             </Button>

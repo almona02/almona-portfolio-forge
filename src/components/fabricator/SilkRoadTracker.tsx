@@ -283,7 +283,7 @@ export const SilkRoadTracker: React.FC<SilkRoadTrackerProps> = ({
                     <div className="flex-1 pt-2">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="font-semibold font-cairo">{node.name}</h3>
+                          <h3 className="typography-h3 font-cairo">{node.name}</h3>
                           {node.nameArabic && (
                             <p className="text-sm text-muted-foreground">{node.nameArabic}</p>
                           )}

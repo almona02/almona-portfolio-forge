@@ -70,7 +70,7 @@ const NotFound = () => {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="max-w-2xl w-full bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 text-center border border-white/20">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">Page Not Found</h2>
+          <h2 className="typography-h2 font-semibold text-gray-800 mb-2">Page Not Found</h2>
           <p className="text-gray-600 mb-6">
             The page you&apos;re looking for doesn&apos;t exist.
           </p>
@@ -111,7 +111,7 @@ const NotFound = () => {
           </Canvas>
         ) : (
           <div className="h-64 mb-6 relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg flex items-center justify-center">
-            <h1 className="text-8xl font-bold text-blue-600">404</h1>
+            <h1 className="typography-h1 text-8xl text-blue-600">404</h1>
           </div>
         )}
       </div>
@@ -138,13 +138,13 @@ const NotFound = () => {
               </Canvas>
             ) : (
               <div className="h-64 mb-6 relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg flex items-center justify-center">
-                <h1 className="text-8xl font-bold text-blue-600">404</h1>
+                <h1 className="typography-h1 text-8xl text-blue-600">404</h1>
               </div>
             )}
           </div>
 
           {/* Error Message */}
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">Lost in the Digital Space</h2>
+          <h2 className="typography-h2 font-semibold text-gray-800 mb-2">Lost in the Digital Space</h2>
           <p className="text-gray-600 mb-6">
             The page you&apos;re looking for seems to have drifted into orbit. 
             Let us guide you back to familiar territory.
@@ -183,7 +183,7 @@ const NotFound = () => {
 
           {/* Suggested Pages */}
           <div className="text-left bg-white/80 p-4 rounded-xl backdrop-blur-sm">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Recommended destinations:</h3>
+            <h3 className="typography-h3 text-sm text-gray-700 mb-3">Recommended destinations:</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {suggestedPages.map((page) => (
                 <button

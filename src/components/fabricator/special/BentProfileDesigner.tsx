@@ -58,7 +58,7 @@ export const BentProfileDesigner: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-950 p-6">
       <div className="max-w-4xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-gray-900 border-gray-800 card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Bent Profile Designer</CardTitle>
             <p className="text-gray-400">Design curved profiles for domes, arches, and custom curves</p>
@@ -66,7 +66,7 @@ export const BentProfileDesigner: React.FC = () => {
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="radius">Bend Radius (mm)</Label>
+                <Label htmlFor="radius" className="typography-label">Bend Radius (mm)</Label>
                 <Input
                   id="radius"
                   type="number"
@@ -78,7 +78,7 @@ export const BentProfileDesigner: React.FC = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="angle">Bend Angle (degrees)</Label>
+                <Label htmlFor="angle" className="typography-label">Bend Angle (degrees)</Label>
                 <Input
                   id="angle"
                   type="number"
@@ -90,7 +90,7 @@ export const BentProfileDesigner: React.FC = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="material">Material</Label>
+                <Label htmlFor="material" className="typography-label">Material</Label>
                 <Select value={material} onValueChange={(v) => setMaterial(v as 'aluminum' | 'upvc')}>
                   <SelectTrigger>
                     <SelectValue />
@@ -102,7 +102,7 @@ export const BentProfileDesigner: React.FC = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="profileWidth">Profile Width (mm)</Label>
+                <Label htmlFor="profileWidth" className="typography-label">Profile Width (mm)</Label>
                 <Input
                   id="profileWidth"
                   type="number"

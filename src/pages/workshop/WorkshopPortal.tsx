@@ -169,7 +169,7 @@ export const WorkshopPortal: React.FC = () => {
 
   return (
     <div style={{ fontFamily: 'Arial', padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1 style={{ color: '#002D62', marginBottom: '30px' }}>🛠️ Almona Workshop Portal</h1>
+      <h1 style={{ color: '#002D62', marginBottom: '30px' }} className="typography-h1">🛠️ Almona Workshop Portal</h1>
 
       {/* System Selection */}
       <Card style={{ marginBottom: '20px' }}>
@@ -247,7 +247,7 @@ export const WorkshopPortal: React.FC = () => {
                 checked={includeTransom}
                 onCheckedChange={(checked) => setIncludeTransom(checked as boolean)}
               />
-              <Label htmlFor="include-transom" style={{ cursor: 'pointer' }}>
+              <Label htmlFor="include-transom" style={{ cursor: 'pointer' }} className="typography-label">
                 Include Transom
               </Label>
             </div>
@@ -426,7 +426,7 @@ export const WorkshopPortal: React.FC = () => {
             </div>
 
             <div style={{ marginTop: '20px' }}>
-              <h4 style={{ marginBottom: '10px' }}>Bar Layout:</h4>
+              <h4 style={{ marginBottom: '10px' }} className="typography-h4">Bar Layout:</h4>
               {optimizedResult.bars.map((bar, barIndex) => (
                 <div key={bar.id} style={{ marginBottom: '15px', padding: '10px', backgroundColor: 'white', borderRadius: '4px', border: '1px solid #ddd' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>

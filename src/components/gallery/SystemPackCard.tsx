@@ -43,7 +43,7 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
 
         {/* Title */}
         <div className="mb-4 mt-2">
-          <h3 className="text-xl font-bold font-cairo text-gray-900 group-hover:text-[#003366] transition-colors">
+          <h3 className="typography-h3 font-cairo text-gray-900 group-hover:text-[#003366] transition-colors">
             {system.nameArabic}
           </h3>
           <p className="text-sm text-gray-500 font-mono">{system.name}</p>
@@ -109,8 +109,8 @@ export const SystemPackCard: React.FC<SystemPackCardProps> = ({ system }) => {
             </span>
           )}
           {system.availability === 'import' && (
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-50 text-orange-700 text-xs rounded border border-orange-200">
-              <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+            <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-700 text-xs rounded border border-amber-200">
+              <span className="btn-primary"></span>
               استيراد
             </span>
           )}

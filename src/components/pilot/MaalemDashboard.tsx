@@ -62,7 +62,7 @@ export const MaalemDashboard: React.FC = () => {
             <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></div>
           </div>
           <div>
-            <h1 className="text-2xl font-bold font-cairo">واجهة المعلم الذهبية</h1>
+            <h1 className="typography-h1 text-2xl font-cairo">واجهة المعلم الذهبية</h1>
             <p className="text-xs text-yellow-100 font-cairo">دقة إنتاجية ٩٩.٨٪ - معتمدة</p>
           </div>
         </div>
@@ -91,7 +91,7 @@ export const MaalemDashboard: React.FC = () => {
             ))}
           </div>
           <div className="mb-6">
-            <label className="block font-bold text-gray-700 mb-2">المقاسات (مم)</label>
+            <label className="typography-label block font-bold text-gray-700 mb-2">المقاسات (مم)</label>
             <div className="grid grid-cols-2 gap-3 mb-3">
               <input type="number" value={inputs.width} onChange={(e) => setInputs({...inputs, width: +e.target.value})} className="w-full p-2 text-xl font-mono text-center border rounded focus:border-[#003366]" placeholder="العرض"/>
               <input type="number" value={inputs.height} onChange={(e) => setInputs({...inputs, height: +e.target.value})} className="w-full p-2 text-xl font-mono text-center border rounded focus:border-[#003366]" placeholder="الارتفاع"/>
@@ -102,7 +102,7 @@ export const MaalemDashboard: React.FC = () => {
             </div>
           </div>
           <div className="mb-6">
-            <label className="block font-bold text-gray-700 mb-2">العدد</label>
+            <label className="typography-label block font-bold text-gray-700 mb-2">العدد</label>
             <div className="flex items-center gap-4">
               <button onClick={() => setInputs(p => ({...p, count: Math.max(1, p.count-1)}))} className="w-10 h-10 bg-gray-200 rounded font-bold">-</button>
               <span className="text-2xl font-mono font-bold">{inputs.count}</span>
@@ -125,7 +125,7 @@ export const MaalemDashboard: React.FC = () => {
 
         {/* LEFT: RESULTS */}
         <div className="w-72 bg-gradient-to-b from-white to-blue-50 border-r border-[#FFD700]/30 p-6 flex flex-col z-20 shadow-xl">
-          <h2 className="font-bold text-lg text-[#003366] mb-4">ملخص التكلفة 💰</h2>
+          <h2 className="typography-h2 text-lg text-[#003366] mb-4">ملخص التكلفة 💰</h2>
           <div className="space-y-3 text-sm flex-1">
             <div className="bg-white p-3 rounded-lg border border-blue-100">
               <div className="flex justify-between font-medium"><span>الخامات</span><span className="font-mono font-bold">{costs.material.toLocaleString('ar-EG')}</span></div>

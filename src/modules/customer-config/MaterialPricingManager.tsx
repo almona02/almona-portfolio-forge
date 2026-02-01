@@ -136,7 +136,7 @@ export const MaterialPricingManager: React.FC<MaterialPricingManagerProps> = ({
       )}
 
       <div className="flex justify-end mb-4">
-        <Button onClick={handleSave} className="bg-orange-500 hover:bg-orange-600">
+        <Button onClick={handleSave} className="btn-primary">
           <Save className="h-4 w-4 mr-2" />
           Save All Pricing
         </Button>
@@ -233,7 +233,7 @@ export const MaterialPricingManager: React.FC<MaterialPricingManagerProps> = ({
                 {/* Example Calculation */}
                 <div className="mt-4 p-3 bg-gray-700 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="h-4 w-4 text-orange-400" />
+                    <TrendingUp className="h-4 w-4 text-amber-400" />
                     <span className="text-sm font-semibold">Example Calculation (100m base)</span>
                   </div>
                   <div className="space-y-1 text-xs">
@@ -264,8 +264,8 @@ export const MaterialPricingManager: React.FC<MaterialPricingManagerProps> = ({
                       </span>
                     </div>
                     <div className="flex justify-between border-t border-gray-600 pt-1 mt-1">
-                      <span className="font-bold text-orange-400">Final Price:</span>
-                      <span className="font-bold text-orange-400">${example.finalPrice.toFixed(2)}</span>
+                      <span className="font-bold text-amber-400">Final Price:</span>
+                      <span className="font-bold text-amber-400">${example.finalPrice.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

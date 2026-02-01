@@ -119,7 +119,7 @@ export const SmartWizard: React.FC<SmartWizardProps> = ({
   return (
     <div className="min-h-screen bg-gray-950 p-6">
       <div className="max-w-2xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-gray-900 border-gray-800 card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Smart Window Wizard</CardTitle>
             <CardDescription>

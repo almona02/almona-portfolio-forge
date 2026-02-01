@@ -1,37 +1,38 @@
 import { LanguageSwitcher } from '@/components/shared/LanguageSwitcher';
+import { AlmonaNavbarLogo } from '@/components/ui/AlmonaNavbarLogo';
 import { isRTL } from '@/lib/i18n';
 import { useCompanyBranding } from '@/modules/reporting/useCompanyBranding';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/ui/tooltip';
 import { getLiveAluminumPrice } from '@/utils/marketData';
 import { AnimatePresence, motion, useSpring } from 'framer-motion';
 import {
-    Activity,
-    ArrowRight,
-    BarChart3,
-    Bell,
-    Box,
-    Boxes,
-    Brain,
-    Calculator,
-    ChevronDown,
-    ChevronLeft,
-    ChevronRight,
-    Coins,
-    Cpu,
-    Factory,
-    FileText,
-    Menu,
-    Package,
-    Ruler,
-    Scissors,
-    Search,
-    Settings,
-    Sparkles,
-    TrendingUp,
-    User,
-    Users,
-    Workflow,
-    Zap
+  Activity,
+  ArrowRight,
+  BarChart3,
+  Bell,
+  Box,
+  Boxes,
+  Brain,
+  Calculator,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Coins,
+  Cpu,
+  Factory,
+  FileText,
+  Menu,
+  Package,
+  Ruler,
+  Scissors,
+  Search,
+  Settings,
+  Sparkles,
+  TrendingUp,
+  User,
+  Users,
+  Workflow,
+  Zap
 } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -89,21 +90,21 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     };
   }, []);
 
-  // Responsive sidebar sizing
+  // Responsive sidebar sizing - Optimized for minimum space
   const sidebarConfig = useMemo(() => {
     if (viewportWidth < 640) {
-      return { mode: 'mobile' as const, collapsed: 0, expanded: 320, drawerWidth: '82vw' };
+      return { mode: 'mobile' as const, collapsed: 0, expanded: 280, drawerWidth: '82vw' };
     }
     if (viewportWidth < 768) {
-      return { mode: 'mobile' as const, collapsed: 0, expanded: 320, drawerWidth: '78vw' };
+      return { mode: 'mobile' as const, collapsed: 0, expanded: 280, drawerWidth: '78vw' };
     }
     if (viewportWidth < 1024) {
-      return { mode: 'tablet' as const, collapsed: 74, expanded: 280 };
+      return { mode: 'tablet' as const, collapsed: 74, expanded: 240 };
     }
     if (viewportWidth < 1440) {
-      return { mode: 'laptop' as const, collapsed: 78, expanded: 300 };
+      return { mode: 'laptop' as const, collapsed: 78, expanded: 260 };
     }
-    return { mode: 'desktop' as const, collapsed: 84, expanded: 320 };
+    return { mode: 'desktop' as const, collapsed: 84, expanded: 280 };
   }, [viewportWidth]);
 
   const isMobile = sidebarConfig.mode === 'mobile';
@@ -236,69 +237,120 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
     children?: NavItem[];
   };
 
+  // Unified Navigation: 4 items max (Projects, Workflow, Studio, User)
   // Gold Tier: Clean, contextual navigation inspired by Supabase design
-  // Organized by workflow stage and value - only show what's relevant
-  const fabricatorNavItems: NavItem[] = useMemo(() => [
-    {
-      id: 'workflow',
-      label: 'Workflow',
-      icon: Workflow,
-      description: 'Fabrication pipeline',
-      children: [
-        { id: 'measuring', label: 'Measuring', icon: Ruler, path: '/fabricator-workflow#measuring', badge: 'AI' },
-        { id: 'design', label: 'Design', icon: Settings, path: '/fabricator-workflow#design', badge: 'PRO' },
-        { id: 'preview3d', label: '3D Preview', icon: Box, path: '/fabricator-workflow#preview3d', badge: '3D' },
-        { id: 'optimization', label: 'Optimization', icon: Scissors, path: '/fabricator-workflow#optimization', badge: 'AI' },
-        { id: 'inventory', label: 'Inventory', icon: Package, path: '/fabricator-workflow#inventory' },
-        { id: 'production', label: 'Production', icon: Factory, path: '/fabricator-workflow#production' },
-        { id: 'quality', label: 'Quality', icon: Zap, path: '/fabricator-workflow#quality' }
-      ]
-    },
-    {
-      id: 'projects',
-      label: 'Projects',
-      icon: FileText,
-      path: '/fabricator/projects',
-      description: 'Window units & positions'
-    },
-    {
-      id: 'customers',
-      label: 'Customers',
-      icon: Users,
-      path: '/fabricator/customers',
-      description: 'Client management'
-    },
-    {
-      id: 'inventory',
-      label: 'Inventory',
-      icon: Package,
-      path: '/fabricator/inventory',
-      description: 'Stock & remnants',
-      badge: 'LIVE'
-    },
-    {
-      id: 'commercial',
-      label: 'Commercial',
-      icon: Calculator,
-      description: 'Pricing & offers',
-      children: [
-        { id: 'offers', label: 'Offers', icon: FileText, path: '/offers' },
-        { id: 'pricing', label: 'Pricing', icon: Calculator, path: '/pricing-settings' },
-        { id: 'reports', label: 'Reports', icon: BarChart3, path: '/cost-reports' }
-      ]
-    },
-    {
-      id: 'resources',
-      label: 'Resources',
-      icon: Settings,
-      description: 'System configuration',
-      children: [
-        { id: 'system-packs', label: 'System Packs', icon: Boxes, path: '/fabricator-workflow#inventory', badge: 'TUNE' },
-        { id: 'profiles', label: 'Profiles', icon: Scissors, path: '/fabricator-workflow#inventory' },
-        { id: 'machines', label: 'Machines', icon: Cpu, path: '/machines' }
-      ]
+  const fabricatorNavItems: NavItem[] = useMemo(() => {
+    // Check if unified workflow is enabled
+    const unifiedEnabled = typeof window !== 'undefined' 
+      ? localStorage.getItem('almona:unified-workflow') === 'true' || localStorage.getItem('almona:unified-workflow') === null
+      : true;
+
+    if (unifiedEnabled) {
+      // Unified 4-item navigation
+      return [
+        {
+          id: 'projects',
+          label: 'Projects',
+          icon: FileText,
+          path: '/fabricator/projects',
+          description: 'Window units & positions'
+        },
+        {
+          id: 'workflow',
+          label: 'Workflow',
+          icon: Workflow,
+          path: '/fabricator/workflow/engineering-bay',
+          description: 'Fabrication pipeline',
+          badge: 'UNIFIED'
+        },
+        {
+          id: 'studio',
+          label: 'Studio',
+          icon: Settings,
+          path: '/fabricator/studio',
+          description: 'Profile & System Pack tuning',
+          children: [
+            { id: 'profile-studio', label: 'Profile Studio', icon: Ruler, path: '/fabricator/profile-studio' },
+            { id: 'system-pack-studio', label: 'System Pack Studio', icon: Boxes, path: '/fabricator/system-pack-studio' },
+            { id: 'tuning-studio', label: 'Tuning Studio', icon: Settings, path: '/fabricator/tuning-studio' }
+          ]
+        },
+        {
+          id: 'user',
+          label: 'User',
+          icon: Users,
+          description: 'Settings & account',
+          children: [
+            { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
+            { id: 'customers', label: 'Customers', icon: Users, path: '/fabricator/customers' },
+            { id: 'inventory', label: 'Inventory', icon: Package, path: '/fabricator/inventory', badge: 'LIVE' },
+            { id: 'commercial', label: 'Commercial', icon: Calculator, path: '/offers' }
+          ]
+        }
+      ];
     }
-  ], []);
+
+    // Legacy navigation (backward compatible)
+    return [
+      {
+        id: 'workflow',
+        label: 'Workflow',
+        icon: Workflow,
+        description: 'Fabrication pipeline',
+        children: [
+          { id: 'measuring', label: 'Measuring', icon: Ruler, path: '/fabricator-workflow#measuring', badge: 'AI' },
+          { id: 'design', label: 'Design', icon: Settings, path: '/fabricator-workflow#design', badge: 'PRO' },
+          { id: 'preview3d', label: '3D Preview', icon: Box, path: '/fabricator-workflow#preview3d', badge: '3D' },
+          { id: 'optimization', label: 'Optimization', icon: Scissors, path: '/fabricator-workflow#optimization', badge: 'AI' },
+          { id: 'production', label: 'Production', icon: Factory, path: '/fabricator-workflow#production' },
+          { id: 'quality', label: 'Quality', icon: Zap, path: '/fabricator-workflow#quality' }
+        ]
+      },
+      {
+        id: 'projects',
+        label: 'Projects',
+        icon: FileText,
+        path: '/fabricator/projects',
+        description: 'Window units & positions'
+      },
+      {
+        id: 'customers',
+        label: 'Customers',
+        icon: Users,
+        path: '/fabricator/customers',
+        description: 'Client management'
+      },
+      {
+        id: 'inventory',
+        label: 'Inventory',
+        icon: Package,
+        path: '/fabricator/inventory',
+        description: 'Stock & remnants',
+        badge: 'LIVE'
+      },
+      {
+        id: 'commercial',
+        label: 'Commercial',
+        icon: Calculator,
+        description: 'Pricing & offers',
+        children: [
+          { id: 'offers', label: 'Offers', icon: FileText, path: '/offers' },
+          { id: 'pricing', label: 'Pricing', icon: Calculator, path: '/pricing-settings' },
+          { id: 'reports', label: 'Reports', icon: BarChart3, path: '/cost-reports' }
+        ]
+      },
+      {
+        id: 'resources',
+        label: 'Resources',
+        icon: Settings,
+        description: 'System configuration',
+        children: [
+          { id: 'system-packs', label: 'System Packs & Profiles', icon: Boxes, path: '/fabricator-workflow#inventory', badge: 'TUNE' },
+          { id: 'machines', label: 'Machines', icon: Cpu, path: '/machines' }
+        ]
+      }
+    ];
+  }, []);
 
   const navItemsWithoutWorkflow = useMemo(
     () => fabricatorNavItems.filter((item) => item.id !== 'workflow'),
@@ -348,7 +400,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       verified: { color: 'text-[#003366]', bg: 'bg-[#FFD700]', border: 'border-[#003366]', dot: 'bg-green-500' }, // New Gold Tier status
       optimal: { color: 'text-emerald-400', bg: 'bg-emerald-400/20', border: 'border-emerald-400/30', dot: 'bg-emerald-400' },
       running: { color: 'text-blue-400', bg: 'bg-blue-400/20', border: 'border-blue-400/30', dot: 'bg-blue-400' },
-      monitoring: { color: 'text-purple-400', bg: 'bg-purple-400/20', border: 'border-purple-400/30', dot: 'bg-purple-400' },
+      monitoring: { color: 'text-amber-400', bg: 'bg-amber-400/20', border: 'border-amber-400/30', dot: 'bg-amber-400' },
       active: { color: 'text-[#FFD700]', bg: 'bg-[#FFD700]/20', border: 'border-[#FFD700]/30', dot: 'bg-[#FFD700]' },
       pending: { color: 'text-amber-400', bg: 'bg-amber-400/20', border: 'border-amber-400/30', dot: 'bg-amber-400' }
     };
@@ -427,7 +479,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       />
 
       {/* Header - Enterprise Grade with Gold Tier */}
-      <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3.5 border-b border-slate-800/60 bg-slate-900/30 backdrop-blur-sm relative z-10">
+      <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3.5 border-b border-amber-600/30 bg-[#0f0f0f]/50 backdrop-blur-sm relative z-10">
         <motion.div
           initial={false}
           animate={{ opacity: isCollapsed ? 0 : 1, scale: isCollapsed ? 0.8 : 1 }}
@@ -455,28 +507,17 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             className="flex items-center gap-3 group relative cursor-pointer"
           >
             
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative h-10 w-10 rounded-xl bg-gradient-to-br from-[#003366] via-[#004488] to-[#FFD700] shadow-lg shadow-[#003366]/40 flex items-center justify-center overflow-hidden"
-            >
-              <Factory className="w-5 h-5 text-white z-10" />
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                animate={{ x: ['-100%', '100%'] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-              />
-            </motion.div>
+            <AlmonaNavbarLogo size={40} />
             {!isCollapsed && (
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 className="flex flex-col"
               >
-                <span className="text-xs sm:text-sm font-bold tracking-[0.15em] text-slate-100 uppercase leading-tight truncate">
+                <span className="typography-h3 text-xs sm:text-sm bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent uppercase leading-tight truncate">
                   ALMONA
                 </span>
-                <span className="text-[9px] sm:text-[10px] font-semibold text-slate-400/90 leading-tight mt-0.5 truncate">
+                <span className="text-[9px] sm:text-[10px] font-semibold text-amber-600/90 leading-tight mt-0.5 truncate">
                   {cockpitOwner} Cockpit
                 </span>
               </motion.div>
@@ -489,7 +530,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.9 }}
           onClick={handleToggle}
-          className="relative w-3 h-3 rounded-full bg-slate-700/50 hover:bg-slate-600/50 border border-slate-600/50 flex-shrink-0 flex items-center justify-center transition-colors group"
+          className="btn-secondary"
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {/* Animated toggle indicator */}
@@ -497,11 +538,11 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             className="absolute inset-0 rounded-full"
             animate={{
               backgroundColor: isCollapsed 
-                ? 'rgba(148, 163, 184, 0.3)' 
-                : 'rgba(0, 51, 102, 0.4)',
+                ? 'rgba(245, 158, 11, 0.2)' 
+                : 'rgba(245, 158, 11, 0.3)',
               borderColor: isCollapsed 
-                ? 'rgba(148, 163, 184, 0.5)' 
-                : 'rgba(255, 215, 0, 0.6)',
+                ? 'rgba(245, 158, 11, 0.4)' 
+                : 'rgba(245, 158, 11, 0.5)',
             }}
             transition={{ duration: 0.3 }}
           />
@@ -514,7 +555,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="relative z-10"
           >
-            <ChevronLeft className="w-2 h-2 text-slate-300 group-hover:text-white" />
+            <ChevronLeft className="w-2 h-2 text-amber-300 group-hover:text-amber-200" />
           </motion.div>
           {/* Pulse effect when active */}
           {!isCollapsed && (
@@ -571,16 +612,16 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mx-3 mt-3 px-4 py-2 bg-gradient-to-r from-[#003366]/30 to-[#001133]/30 border border-[#FFD700]/20 rounded-lg backdrop-blur-sm relative z-10"
+          className="mx-3 mt-3 px-4 py-2 bg-gradient-to-r from-amber-600/30 to-amber-500/30 border border-amber-500/20 rounded-lg backdrop-blur-sm relative z-10"
         >
           <div className="flex items-center justify-between text-[10px]">
-            <div className="flex items-center gap-1.5 text-blue-200">
-              <span className="text-[#FFD700]">⚡</span>
+            <div className="flex items-center gap-1.5 text-amber-300">
+              <span className="text-amber-400">⚡</span>
               <span>LME Aluminum</span>
             </div>
             <div className="flex items-center gap-1 font-mono">
-              <span className="text-white font-bold">{getLiveAluminumPrice().toLocaleString()}</span>
-              <span className="text-[#FFD700]">EGP</span>
+              <span className="text-amber-200 font-bold">{getLiveAluminumPrice().toLocaleString()}</span>
+              <span className="text-amber-400">EGP</span>
               <span className="text-green-400">▲</span>
             </div>
           </div>
@@ -593,27 +634,27 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="mx-3 mt-3 p-3 rounded-lg bg-slate-900/40 border border-slate-800/50 backdrop-blur-sm shadow-inner relative z-10"
+          className="mx-3 mt-3 p-3 rounded-lg bg-[#0f0f0f]/60 border border-amber-600/20 backdrop-blur-sm shadow-inner relative z-10 card-dark"
         >
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Activity className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-xs text-slate-400">System</span>
+                <Activity className="w-3.5 h-3.5 status-valid" />
+                <span className="text-xs text-amber-600/70">System</span>
               </div>
-              <span className="text-xs font-semibold text-emerald-400">Optimal</span>
+              <span className="text-xs font-semibold status-valid">Optimal</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-3.5 h-3.5 text-sky-400" />
-                <span className="text-xs text-slate-400">Efficiency</span>
+                <span className="text-xs text-amber-600/70">Efficiency</span>
               </div>
               <span className="text-xs font-semibold text-sky-400">92.5%</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Factory className="w-3.5 h-3.5 text-amber-400" />
-                <span className="text-xs text-slate-400">Active Jobs</span>
+                <span className="text-xs text-amber-600/70">Active Jobs</span>
               </div>
               <span className="text-xs font-semibold text-amber-400">12</span>
             </div>
@@ -622,7 +663,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       )}
 
       {/* Search - Enterprise Search Bar */}
-      <div className="px-3 mt-3 relative z-10">
+      <div className="px-3 mt-2 relative z-10">
         <AnimatePresence mode="wait">
           {showSearch && !isCollapsed ? (
             <motion.div
@@ -631,7 +672,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
               exit={{ opacity: 0, scale: 0.9 }}
               className="relative"
             >
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-600/70" />
               <input
                 type="text"
                 placeholder="Search..."
@@ -639,7 +680,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onBlur={() => !searchQuery && setShowSearch(false)}
                 autoFocus
-                className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-800/50 border border-slate-700/50 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#FFD700]/50 focus:ring-1 focus:ring-[#FFD700]/30 transition-all"
+                className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-[#0f0f0f]/60 border border-amber-600/20 text-sm text-amber-200 placeholder-amber-600/50 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/30 transition-all card-dark"
               />
             </motion.div>
           ) : (
@@ -649,14 +690,14 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setShowSearch(true)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 text-slate-400 hover:text-white transition-all group"
+                  className="btn-secondary w-full justify-start text-xs"
                 >
-                  <Search className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                  {!isCollapsed && <span className="text-sm">Search</span>}
+                  <Search className={`${isCollapsed ? 'w-5 h-5' : 'w-3.5 h-3.5'} group-hover:scale-110 transition-transform flex-shrink-0`} />
+                  {!isCollapsed && <span className="text-xs">Search</span>}
                 </motion.button>
               </TooltipTrigger>
               {isCollapsed && (
-                <TooltipContent side="right" className="bg-slate-800 border-slate-700 text-slate-100">
+                <TooltipContent side="right" className="bg-[#0f0f0f] border-amber-600/30 text-amber-200 card-dark">
                   <p>Search navigation</p>
                 </TooltipContent>
               )}
@@ -666,19 +707,71 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
       </div>
 
       {/* Navigation Content - Supabase-inspired Clean Design */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden mt-4 px-2 scrollbar-thin scrollbar-thumb-slate-700/30 scrollbar-track-transparent relative z-10 min-h-0">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden mt-4 px-2 scrollbar-thin scrollbar-thumb-amber-600/30 scrollbar-track-transparent relative z-10 min-h-0">
+        {/* Quick Actions - Enterprise Quick Access (Moved to Top) */}
+        {!isCollapsed && (
+          <div className="mb-4 pb-4 border-b border-amber-600/30">
+            <motion.button
+              whileHover={{ x: 2 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setActiveMenu(activeMenu === 'quickActions' ? null : 'quickActions')}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all mb-2 ${
+                activeMenu === 'quickActions'
+                  ? 'bg-gradient-to-r from-amber-600/15 to-amber-500/15 border border-amber-500/40 shadow-sm shadow-amber-900/10'
+                  : 'hover:bg-[#0f0f0f]/40 border border-amber-600/30'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Zap className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} ${activeMenu === 'quickActions' ? 'text-amber-400' : 'text-amber-600/70'}`} />
+                <span className={`text-sm font-medium ${activeMenu === 'quickActions' ? 'text-amber-400' : 'text-amber-300'}`}>
+                  Quick Actions
+                </span>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 text-amber-600/70 transition-transform ${activeMenu === 'quickActions' ? 'rotate-180' : ''}`}
+              />
+            </motion.button>
+            <AnimatePresence>
+              {activeMenu === 'quickActions' && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="space-y-1 overflow-hidden"
+                >
+                  {quickActions.map((action) => (
+                    <motion.button
+                      key={action.name}
+                      whileHover={{ x: 2 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        action.action();
+                        if (isMobile) setIsMobileNavOpen(false);
+                      }}
+                      className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#0f0f0f]/40 transition-all group border border-transparent hover:border-amber-600/30 w-full text-left card-dark"
+                    >
+                      <action.icon className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} text-amber-600/70 group-hover:text-amber-400 transition-colors`} />
+                      <span className="text-xs font-medium text-amber-300">{action.name}</span>
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+
         {/* Workflow Section - Supabase Style */}
         <div className="mb-6">
           <button
             onClick={() => setActiveMenu(activeMenu === 'workflow' ? null : 'workflow')}
             className={`w-full flex items-center justify-between px-2 py-1.5 rounded text-sm transition-colors ${
               activeMenu === 'workflow'
-                ? 'text-slate-200'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'text-amber-200'
+                : 'text-amber-600/70 hover:text-amber-200'
             }`}
           >
             <div className="flex items-center gap-2">
-              <Workflow className="w-4 h-4" />
+              <Workflow className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'}`} />
               {!isCollapsed && <span>Workflow</span>}
             </div>
             {!isCollapsed && (
@@ -707,14 +800,14 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       }}
                       className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-colors ${
                         isActive
-                          ? 'bg-slate-800 text-orange-400'
-                          : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
+                          ? 'bg-[#0f0f0f]/80 text-amber-400'
+                          : 'text-amber-600/70 hover:text-amber-300 hover:bg-[#0f0f0f]/50'
                       }`}
                     >
-                      <stage.icon className="w-3.5 h-3.5" />
+                      <stage.icon className={`${isCollapsed ? 'w-4 h-4' : 'w-3.5 h-3.5'}`} />
                       <span>{stage.label}</span>
                       {stage.badge && (
-                        <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400">
+                        <span className={stage.badge === 'LIVE' ? 'badge-live-bronze' : 'btn-primary'}>
                           {stage.badge}
                         </span>
                       )}
@@ -746,17 +839,17 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                   }}
                   className={`w-full flex items-center justify-between px-2 py-1.5 rounded text-sm transition-colors ${
                     isActive
-                      ? 'bg-slate-800 text-orange-400'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                      ? 'bg-[#0f0f0f]/80 text-amber-400'
+                      : 'text-amber-600/70 hover:text-amber-200 hover:bg-[#0f0f0f]/50'
                   }`}
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <item.icon className="w-4 h-4 flex-shrink-0" />
+                    <item.icon className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} flex-shrink-0`} />
                     {!isCollapsed && (
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="truncate">{item.label}</span>
                         {item.badge && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400">
+                          <span className={item.badge === 'LIVE' ? 'badge-live-bronze' : 'btn-primary'}>
                             {item.badge}
                           </span>
                         )}
@@ -791,14 +884,14 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                             }}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-colors ${
                               isChildActive
-                                ? 'bg-slate-800 text-orange-400'
-                                : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
+                                ? 'bg-[#0f0f0f]/80 text-amber-400'
+                                : 'text-amber-600/70 hover:text-amber-300 hover:bg-[#0f0f0f]/50'
                             }`}
                           >
                             <child.icon className="w-3.5 h-3.5" />
                             <span>{child.label}</span>
                             {child.badge && (
-                              <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-400">
+                              <span className={child.badge === 'LIVE' ? 'badge-live-bronze' : 'btn-primary'}>
                                 {child.badge}
                               </span>
                             )}
@@ -835,14 +928,14 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                   }}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all group ${
                     isActive
-                      ? 'bg-gradient-to-r from-[#003366]/15 to-[#004488]/15 border border-[#FFD700]/40 shadow-sm shadow-[#003366]/10'
-                      : 'hover:bg-slate-800/40 border border-transparent hover:border-slate-700/30'
+                      ? 'bg-gradient-to-r from-amber-600/15 to-amber-500/15 border border-amber-500/40 shadow-sm shadow-amber-900/10'
+                      : 'hover:bg-[#0f0f0f]/40 border border-transparent hover:border-amber-600/30'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <item.icon
-                      className={`w-4 h-4 flex-shrink-0 transition-colors ${
-                        isActive ? 'text-[#FFD700]' : 'text-slate-400 group-hover:text-white'
+                      className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} flex-shrink-0 transition-colors ${
+                        isActive ? 'text-amber-400' : 'text-amber-600/70 group-hover:text-amber-200'
                       }`}
                     />
                     {!isCollapsed && (
@@ -850,26 +943,26 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                         <div className="flex items-center gap-2">
                           <span
                             className={`text-sm font-medium truncate ${
-                              isActive ? 'text-[#FFD700]' : 'text-slate-300'
+                              isActive ? 'text-amber-400' : 'text-amber-300'
                             }`}
                           >
                             {item.label}
                           </span>
                           {item.badge && (
-                            <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#FFD700]/20 text-[#003366] border border-[#FFD700]/30">
+                            <span className={item.badge === 'LIVE' ? 'badge-live-bronze' : 'px-1.5 py-0.5 text-[9px] font-bold rounded bg-[#FFD700]/20 text-[#003366] border border-[#FFD700]/30'}>
                               {item.badge}
                             </span>
                           )}
                         </div>
                         {item.description && !isCollapsed && (
-                          <p className="text-[10px] text-slate-500 truncate mt-0.5">{item.description}</p>
+                          <p className="text-[10px] text-amber-600/70 truncate mt-0.5">{item.description}</p>
                         )}
                       </div>
                     )}
                   </div>
                   {hasChildren && !isCollapsed && (
                     <ChevronRight
-                      className={`w-4 h-4 text-slate-400 transition-transform ${
+                      className={`w-4 h-4 text-amber-600/70 transition-transform ${
                         isExpanded ? 'rotate-90' : ''
                       }`}
                     />
@@ -881,7 +974,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="mt-1 ml-4 space-y-1 overflow-hidden border-l border-slate-700/50 pl-2"
+                      className="mt-1 ml-4 space-y-1 overflow-hidden border-l border-amber-600/30 pl-2"
                     >
                       {item.children?.map((child) => {
                         const isChildActive = location.pathname === child.path;
@@ -899,14 +992,14 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                             }}
                             className={`w-full flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-all ${
                               isChildActive
-                                ? 'text-[#FFD700] bg-[#003366]/10'
-                                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                                ? 'text-amber-400 bg-amber-600/10'
+                                : 'text-amber-600/70 hover:text-amber-200 hover:bg-[#0f0f0f]/50'
                             }`}
                           >
                             <child.icon className="w-3.5 h-3.5" />
                             <span>{child.label}</span>
                             {child.badge && (
-                              <span className="ml-auto text-[9px] px-1 py-0.5 rounded bg-slate-700/50 text-slate-300">
+                              <span className={child.badge === 'LIVE' ? 'badge-live-bronze' : 'btn-secondary'}>
                                 {child.badge}
                               </span>
                             )}
@@ -923,25 +1016,25 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
 
         {/* Fabrication Modules - Enterprise Module Section (Collapsible, Hidden by Default) */}
         {!isCollapsed && (
-          <div className="mt-5 pt-5 border-t border-slate-800/60">
+          <div className="mt-5 pt-5 border-t border-amber-600/30">
             <motion.button
               whileHover={{ x: 2 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setActiveMenu(activeMenu === 'modules' ? null : 'modules')}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all mb-2 ${
                 activeMenu === 'modules'
-                  ? 'bg-gradient-to-r from-[#003366]/15 to-[#004488]/15 border border-[#FFD700]/40 shadow-sm shadow-[#003366]/10'
-                  : 'hover:bg-slate-800/40 border border-transparent hover:border-slate-700/30'
+                  ? 'bg-gradient-to-r from-amber-600/15 to-amber-500/15 border border-amber-500/40 shadow-sm shadow-amber-900/10'
+                  : 'hover:bg-[#0f0f0f]/40 border border-transparent hover:border-amber-600/30'
               }`}
             >
               <div className="flex items-center gap-3">
-                <Package className={`w-4 h-4 ${activeMenu === 'modules' ? 'text-[#FFD700]' : 'text-slate-400'}`} />
-                <span className={`text-sm font-medium ${activeMenu === 'modules' ? 'text-[#FFD700]' : 'text-slate-300'}`}>
+                <Package className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} ${activeMenu === 'modules' ? 'text-amber-400' : 'text-amber-600/70'}`} />
+                <span className={`text-sm font-medium ${activeMenu === 'modules' ? 'text-amber-400' : 'text-amber-300'}`}>
                   Modules
                 </span>
               </div>
               <ChevronDown
-                className={`w-4 h-4 text-slate-400 transition-transform ${activeMenu === 'modules' ? 'rotate-180' : ''}`}
+                className={`w-4 h-4 text-amber-600/70 transition-transform ${activeMenu === 'modules' ? 'rotate-180' : ''}`}
               />
             </motion.button>
             <AnimatePresence>
@@ -963,11 +1056,11 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                         onClick={() => {
                           if (isMobile) setIsMobileNavOpen(false);
                         }}
-                        className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800/40 transition-all group border border-transparent hover:border-slate-700/30"
+                        className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#0f0f0f]/40 transition-all group border border-transparent hover:border-amber-600/30 card-dark"
                       >
-                        <module.icon className="w-4 h-4 text-slate-400 group-hover:text-[#FFD700] transition-colors" />
+                        <module.icon className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} text-amber-600/70 group-hover:text-amber-400 transition-colors`} />
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-medium text-slate-300 truncate">{module.name}</div>
+                          <div className="text-xs font-medium text-amber-300 truncate">{module.name}</div>
                           <StatusBadge status={module.status} efficiency={module.efficiency} />
                         </div>
                       </Link>
@@ -979,76 +1072,25 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           </div>
         )}
 
-        {/* Quick Actions - Enterprise Quick Access (Collapsible, Hidden by Default) */}
-        {!isCollapsed && (
-          <div className="mt-5 pt-5 border-t border-slate-800/60">
-            <motion.button
-              whileHover={{ x: 2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setActiveMenu(activeMenu === 'quickActions' ? null : 'quickActions')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md transition-all mb-2 ${
-                activeMenu === 'quickActions'
-                  ? 'bg-gradient-to-r from-[#003366]/15 to-[#004488]/15 border border-[#FFD700]/40 shadow-sm shadow-[#003366]/10'
-                  : 'hover:bg-slate-800/40 border border-slate-700/30'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Zap className={`w-4 h-4 ${activeMenu === 'quickActions' ? 'text-[#FFD700]' : 'text-slate-400'}`} />
-                <span className={`text-sm font-medium ${activeMenu === 'quickActions' ? 'text-[#FFD700]' : 'text-slate-300'}`}>
-                  Quick Actions
-                </span>
-              </div>
-              <ChevronDown
-                className={`w-4 h-4 text-slate-400 transition-transform ${activeMenu === 'quickActions' ? 'rotate-180' : ''}`}
-              />
-            </motion.button>
-            <AnimatePresence>
-              {activeMenu === 'quickActions' && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="space-y-1 overflow-hidden"
-                >
-                  {quickActions.map((action) => (
-                    <motion.button
-                      key={action.name}
-                      whileHover={{ x: 2 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => {
-                        action.action();
-                        if (isMobile) setIsMobileNavOpen(false);
-                      }}
-                      className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800/40 transition-all group border border-transparent hover:border-slate-700/30 w-full text-left"
-                    >
-                      <action.icon className="w-4 h-4 text-slate-400 group-hover:text-[#FFD700] transition-colors" />
-                      <span className="text-xs font-medium text-slate-300">{action.name}</span>
-                    </motion.button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
       </div>
 
       {/* Footer - Enterprise Footer Section */}
-      <div className="border-t border-slate-800/60 bg-slate-900/20 backdrop-blur-sm p-3 space-y-2 relative z-10">
+      <div className="border-t border-amber-600/30 bg-[#0a0a0a]/80 backdrop-blur-sm p-2 space-y-1.5 relative z-10">
         {/* Notifications */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="relative w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 text-slate-400 hover:text-white transition-all group"
+          className="btn-secondary w-full justify-start text-xs"
         >
-          <Bell className="w-4 h-4 group-hover:scale-110 transition-transform" />
+          <Bell className={`${isCollapsed ? 'w-5 h-5' : 'w-3.5 h-3.5'} group-hover:scale-110 transition-transform flex-shrink-0`} />
           {!isCollapsed && (
             <>
-              <span className="text-sm flex-1 text-left">Notifications</span>
+              <span className="text-xs flex-1 text-left">Notifications</span>
               {notifications > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-red-500 text-white"
+                  className="px-1.5 py-0.5 text-[9px] font-bold rounded-full bg-red-500 text-white"
                 >
                   {notifications}
                 </motion.span>
@@ -1059,7 +1101,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-slate-950"
+              className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 border-2 border-[#0a0a0a]"
             />
           )}
         </motion.button>
@@ -1079,20 +1121,20 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           <motion.button
             whileTap={{ scale: 0.98 }}
             onClick={() => setActiveMenu(activeMenu === 'user' ? null : 'user')}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 transition-all group"
+            className="btn-secondary w-full"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#003366] to-[#FFD700] flex items-center justify-center flex-shrink-0">
-              <User className="w-4 h-4 text-white" />
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-600 via-amber-500 to-amber-400 flex items-center justify-center flex-shrink-0 shadow-glow-strong ring-2 ring-amber-500/30">
+              <User className="w-3.5 h-3.5 text-[#0a0a0a] font-bold" />
             </div>
             {!isCollapsed && (
               <div className="flex-1 min-w-0 text-left">
-                <div className="text-sm font-medium text-slate-300 truncate">{user?.name || 'Operator'}</div>
-                <div className="text-[10px] text-slate-500 truncate">{user?.email || 'operator@fabricator.com'}</div>
+                <div className="text-xs font-medium text-amber-300 truncate">{user?.name || 'Operator'}</div>
+                <div className="text-[9px] text-amber-600/70 truncate">{user?.email || 'operator@fabricator.com'}</div>
               </div>
             )}
             {!isCollapsed && (
               <ChevronDown
-                className={`w-4 h-4 text-slate-400 transition-transform ${
+                className={`w-3.5 h-3.5 text-amber-600/70 transition-transform flex-shrink-0 ${
                   activeMenu === 'user' ? 'rotate-180' : ''
                 }`}
               />
@@ -1104,7 +1146,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute bottom-full left-0 mb-2 w-full bg-slate-800/95 backdrop-blur-xl border border-slate-700/50 rounded-lg shadow-2xl overflow-hidden z-50"
+                className="absolute bottom-full left-0 mb-2 w-full bg-[#0f0f0f]/95 border border-amber-600/30 rounded-lg shadow-2xl overflow-hidden z-50 card-dark"
               >
                 <div className="p-2 space-y-1">
                   <button
@@ -1112,10 +1154,10 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       navigate('/fabricator/settings/branding');
                       setActiveMenu(null);
                     }}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-700/50 transition-colors text-left"
+                    className="btn-secondary"
                   >
-                    <Settings className="w-4 h-4 text-[#FFD700]" />
-                    <span className="text-sm text-slate-300">Settings</span>
+                    <Settings className={`${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'} text-amber-400`} />
+                    <span className="text-sm text-amber-300">Settings</span>
                   </button>
                   <button
                     className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-500/10 transition-colors text-left text-red-400"
@@ -1143,18 +1185,18 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="max-w-sm w-full bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl shadow-black/60 p-6 space-y-4"
+                className="max-w-sm w-full bg-[#0f0f0f] border border-amber-600/30 rounded-2xl shadow-2xl shadow-amber-900/20 p-6 space-y-4"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#003366] to-[#004488] flex items-center justify-center text-white font-bold shadow-lg shadow-[#003366]/40 border border-[#FFD700]/30">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 to-amber-500 flex items-center justify-center text-[#0a0a0a] font-bold shadow-lg shadow-amber-900/40 border border-amber-400/30">
                     !
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">
+                    <h3 className="typography-h3 text-lg text-white">
                       {t('confirmation.signOut.title', 'Confirm sign out')}
                     </h3>
-                    <p className="text-sm text-slate-400">
+                    <p className="text-sm text-amber-600/70">
                       {t('confirmation.signOut.body', 'You will be logged out of Fabricator Pro.')}
                     </p>
                   </div>
@@ -1162,7 +1204,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 <div className="flex gap-3 justify-end">
                   <button
                     onClick={() => setShowLogoutConfirm(false)}
-                    className="px-4 py-2 rounded-lg border border-slate-700 text-slate-200 hover:bg-slate-800 transition-colors"
+                    className="px-4 py-2 rounded-lg border border-amber-600/30 text-amber-200 hover:bg-[#0f0f0f]/60 transition-colors card-dark"
                   >
                     {t('confirmation.cancel', 'Cancel')}
                   </button>
@@ -1196,26 +1238,26 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="max-w-sm w-full bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl shadow-black/60 p-6 space-y-4"
+                className="max-w-sm w-full bg-[#0f0f0f] border border-amber-600/30 rounded-2xl shadow-2xl shadow-amber-900/20 p-6 space-y-4"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#003366] via-[#004488] to-[#FFD700] flex items-center justify-center text-white font-bold shadow-lg shadow-[#003366]/40">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 via-amber-500 to-amber-400 flex items-center justify-center text-[#0a0a0a] font-bold shadow-lg shadow-amber-900/40">
                     ⓘ
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">
+                    <h3 className="typography-h3 text-lg text-white">
                       {t('confirmation.home.title', 'Leave this workspace?')}
                     </h3>
-                    <p className="text-sm text-slate-400">
-                      {t('confirmation.home.body', 'You’re about to return to the home page.')}
+                    <p className="text-sm text-amber-600/70">
+                      {t('confirmation.home.body', "You're about to return to the home page.")}
                     </p>
                   </div>
                 </div>
                 <div className="flex gap-3 justify-end">
                   <button
                     onClick={() => setShowHomeConfirm(false)}
-                    className="px-4 py-2 rounded-lg border border-slate-700 text-slate-200 hover:bg-slate-800 transition-colors"
+                    className="px-4 py-2 rounded-lg border border-amber-600/30 text-amber-200 hover:bg-[#0f0f0f]/60 transition-colors card-dark"
                   >
                     {t('confirmation.home.stay', 'Stay')}
                   </button>
@@ -1225,7 +1267,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       setIsMobileNavOpen(false);
                       navigate('/');
                     }}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#003366] to-[#004488] text-white shadow-lg shadow-[#003366]/30 hover:from-[#004488] hover:to-[#003366] transition-colors border border-[#FFD700]/30"
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 text-[#0a0a0a] shadow-lg shadow-amber-900/30 hover:from-amber-500 hover:to-amber-600 transition-colors border border-amber-400/30"
                   >
                     {t('confirmation.home.leave', 'Leave')}
                   </button>
@@ -1246,7 +1288,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
           ref={sidebarRef}
           dir={isRTLMode ? 'rtl' : 'ltr'}
           style={{ width: sidebarWidth }}
-          className={`fixed ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-screen z-[200] flex flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 backdrop-blur-2xl border-${isRTLMode ? 'l' : 'r'} border-slate-800/60 shadow-2xl shadow-black/50 will-change-[width] w-full sm:w-auto`}
+          className={`fixed ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-screen z-[200] flex flex-col bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] backdrop-blur-2xl border-${isRTLMode ? 'l' : 'r'} border-amber-600/30 shadow-2xl shadow-amber-900/20 will-change-[width] w-full sm:w-auto`}
         >
           {sidebarContent}
           {/* Resize handle */}
@@ -1286,7 +1328,7 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             onClick={closeMobileNav}
           >
             <motion.div
-              className={`absolute ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-full bg-slate-950/98 ${isRTLMode ? 'border-l' : 'border-r'} border-slate-800/60 shadow-2xl shadow-black/60 flex flex-col`}
+              className={`absolute ${isRTLMode ? 'right-0' : 'left-0'} top-0 h-full bg-[#0a0a0a]/98 ${isRTLMode ? 'border-l' : 'border-r'} border-amber-600/30 shadow-2xl shadow-amber-900/20 flex flex-col`}
               style={{ width: sidebarConfig.drawerWidth || '82vw' }}
               initial={{ x: isRTLMode ? 20 : -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
@@ -1308,17 +1350,17 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             style={isRTLMode ? { right: `var(--sidebar-width, 320px)` } : { left: `var(--sidebar-width, 320px)` }}
-            className={`fixed top-20 z-[190] w-96 bg-slate-950/98 border border-slate-800/80 rounded-2xl shadow-2xl shadow-black/60 overflow-hidden backdrop-blur-xl ${isRTLMode ? 'mr-2' : 'ml-2'}`}
+            className={`fixed top-20 z-[190] w-96 bg-[#0a0a0a]/98 border border-amber-600/50 rounded-2xl shadow-2xl shadow-amber-900/20 overflow-hidden backdrop-blur-xl ${isRTLMode ? 'mr-2' : 'ml-2'}`}
           >
-            <div className="px-4 py-3 border-b border-slate-800 flex items-center gap-2">
-              <Search className="h-4 w-4 text-[#FFD700]" />
-              <span className="text-sm font-semibold text-slate-100">Search Results</span>
-              <span className="ml-auto text-[11px] text-slate-500">{filteredNavItems.length} matches</span>
+            <div className="px-4 py-3 border-b border-amber-600/30 flex items-center gap-2">
+              <Search className="h-4 w-4 text-amber-400" />
+              <span className="text-sm font-semibold text-amber-200">Search Results</span>
+              <span className="ml-auto text-[11px] text-amber-600/70">{filteredNavItems.length} matches</span>
             </div>
             <div className="max-h-80 overflow-y-auto">
               {filteredNavItems.length > 0 ? (
                 filteredNavItems.map((item) => (
-                  <div key={item.id} className="border-b border-slate-800/60 last:border-b-0">
+                  <div key={item.id} className="border-b border-amber-600/30 last:border-b-0">
                     <button
                       type="button"
                       onClick={() => {
@@ -1332,15 +1374,15 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                       <item.icon className="h-4 w-4 text-[#FFD700]" />
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold text-slate-100">{item.label}</span>
+                          <span className="text-sm font-semibold text-amber-200">{item.label}</span>
                           {item.badge && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-[#FFD700]/40 text-[#FFD700] bg-[#003366]/10 uppercase font-semibold">
+                            <span className={item.badge === 'LIVE' ? 'badge-live-bronze' : 'text-[10px] px-1.5 py-0.5 rounded-full border border-amber-400/40 text-amber-400 bg-amber-600/10 uppercase font-semibold'}>
                               {item.badge}
                             </span>
                           )}
                         </div>
                         {item.description && (
-                          <p className="text-xs text-slate-400 mt-0.5">{item.description}</p>
+                          <p className="text-xs text-amber-600/70 mt-0.5">{item.description}</p>
                         )}
                       </div>
                     </button>
@@ -1358,10 +1400,10 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                             }}
                             className="w-full text-left pl-12 pr-4 py-2 hover:bg-white/5 transition-colors flex items-center gap-3 text-xs"
                           >
-                            <child.icon className="h-3 w-3 text-slate-400" />
-                            <span className="text-slate-200">{child.label}</span>
+                            <child.icon className="h-3 w-3 text-amber-600/70" />
+                            <span className="text-amber-200">{child.label}</span>
                             {child.badge && (
-                              <span className="ml-2 text-[9px] px-1.5 py-0.5 rounded-full border border-slate-600 text-slate-300 bg-slate-800/60 uppercase">
+                              <span className={child.badge === 'LIVE' ? 'badge-live-bronze ml-2' : 'ml-2 text-[9px] px-1.5 py-0.5 rounded-full border border-amber-600/50 text-amber-300 bg-[#0f0f0f]/60 uppercase'}>
                                 {child.badge}
                               </span>
                             )}
@@ -1372,8 +1414,8 @@ const EnterpriseSidebar: React.FC<EnterpriseSidebarProps> = ({
                   </div>
                 ))
               ) : (
-                <div className="px-6 py-8 text-center text-slate-500 text-sm">
-                  No results found for "<span className="text-slate-200">{searchQuery}</span>"
+                <div className="px-6 py-8 text-center text-amber-600/70 text-sm">
+                  No results found for "<span className="text-amber-200">{searchQuery}</span>"
                 </div>
               )}
             </div>

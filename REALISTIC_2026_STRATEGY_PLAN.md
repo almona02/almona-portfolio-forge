@@ -218,34 +218,39 @@ src/lib/ydt/
 
 ## 📅 QUARTERLY EXECUTION PLAN
 
+> **📋 PRIORITY REFERENCE:** See `docs/UNIFIED_PRIORITY_MATRIX_2026.md` for unified priorities with Gold Tier Plan
+
 ### Q1 2026: YDT TRANSFORMATION (JAN-MAR)
 **Theme:** Make YDT Unavoidable  
-**Goal:** YDT becomes mandatory intelligence layer
+**Goal:** YDT becomes mandatory intelligence layer  
+**Priority Alignment:** 🔴 P0 (Critical - Blocks Revenue)
 
 #### January 2026: Foundation & Integration
 
-**Week 1-2 (Jan 1-14): YDT Core Hardening**
+**Week 1-2 (Jan 1-14): YDT Core Hardening**  
+**Priority:** 🔴 P0 - CRITICAL
 
-| Task | Owner | Success Criteria |
-|------|-------|------------------|
-| 1.1 YDT Latency Optimization | Tech Lead | P95 latency ≤150ms |
-| 1.2 Egyptian Market Rules Hard-Code | Founder + Local Expert | `egyptian_market_rules.v1.ts` deployed |
-| 1.3 YDT Response Versioning | Tech Lead | Every response has version hash |
-| 1.4 YDT Logging Infrastructure | Tech Lead | 100% of YDT calls logged |
+| Task | Owner | Success Criteria | Priority |
+|------|-------|------------------|----------|
+| 1.1 YDT Latency Optimization | Tech Lead | P95 latency ≤150ms | 🔴 P0 |
+| 1.2 Egyptian Market Rules Hard-Code | Founder + Local Expert | `egyptian_market_rules.v1.ts` deployed | 🟠 P1 |
+| 1.3 YDT Response Versioning | Tech Lead | Every response has version hash | 🟠 P1 |
+| 1.4 YDT Logging Infrastructure | Tech Lead | 100% of YDT calls logged | 🟠 P1 |
 
 **Deliverables:**
 - ✅ YDT responds in <150ms (P95)
 - ✅ Egyptian market patterns hard-coded
 - ✅ Complete audit trail for all YDT decisions
 
-**Week 3-4 (Jan 15-31): Mandatory Integration**
+**Week 3-4 (Jan 15-31): Mandatory Integration**  
+**Priority:** 🔴 P0 - CRITICAL
 
-| Task | Owner | Success Criteria |
-|------|-------|------------------|
-| 2.1 Pricing Module YDT Gate | Tech Lead | Pricing fails without YDT validation |
-| 2.2 Optimization YDT Gate | Tech Lead | Optimization requires YDT approval |
-| 2.3 Confidence Scoring System | Tech Lead | Every decision has confidence score |
-| 2.4 YDT Analytics Dashboard v0.1 | Tech Lead | Basic metrics visible |
+| Task | Owner | Success Criteria | Priority |
+|------|-------|------------------|----------|
+| 2.1 Pricing Module YDT Gate | Tech Lead | Pricing fails without YDT validation | 🔴 P0 |
+| 2.2 Optimization YDT Gate | Tech Lead | Optimization requires YDT approval | 🔴 P0 |
+| 2.3 Confidence Scoring System | Tech Lead | Every decision has confidence score | 🟠 P1 |
+| 2.4 YDT Analytics Dashboard v0.1 | Tech Lead | Basic metrics visible | 🟡 P2 |
 
 **Deliverables:**
 - ✅ Pricing module 100% YDT-dependent
@@ -286,16 +291,18 @@ src/lib/ydt/
 
 **February Success Metric:** 80% of business logic uses YDT validation
 
-#### March 2026: YDT Intelligence Reports Launch
+#### March 2026: YDT Intelligence Reports Launch  
+**Priority:** 🔴 P0 - CRITICAL (New Revenue Stream)
 
-**Week 9-10 (Mar 1-14): Product Packaging**
+**Week 9-10 (Mar 1-14): Product Packaging**  
+**Priority:** 🔴 P0 - CRITICAL
 
-| Task | Owner | Success Criteria |
-|------|-------|------------------|
-| 5.1 Cairo Monthly Intelligence Report | Founder | PDF + dashboard template |
-| 5.2 Alexandria Competitive Watch | Founder | Competitor tracking system |
-| 5.3 Material Risk Alerts | Founder | Shortage warning system |
-| 5.4 Pricing Strategy | Founder | EGP 2,500/month subscription |
+| Task | Owner | Success Criteria | Priority |
+|------|-------|------------------|----------|
+| 5.1 Cairo Monthly Intelligence Report | Founder | PDF + dashboard template | 🔴 P0 |
+| 5.2 Alexandria Competitive Watch | Founder | Competitor tracking system | 🔴 P0 |
+| 5.3 Material Risk Alerts | Founder | Shortage warning system | 🔴 P0 |
+| 5.4 Pricing Strategy | Founder | EGP 2,500/month subscription | 🔴 P0 |
 
 **Deliverables:**
 - ✅ Intelligence Report template created
@@ -329,7 +336,8 @@ src/lib/ydt/
 
 ### Q2 2026: REVENUE VALIDATION (APR-JUN)
 **Theme:** Prove YDT Intelligence Sells  
-**Goal:** $200K+ ARR from YDT Intelligence Reports
+**Goal:** $200K+ ARR from YDT Intelligence Reports  
+**Priority Alignment:** 🔴 P0 (Critical - Revenue Validation)
 
 #### April 2026: Scale YDT Intelligence Reports
 
@@ -403,7 +411,8 @@ src/lib/ydt/
 
 ### Q3 2026: VERTICAL EXPANSION (JUL-SEP)
 **Theme:** Prove Multi-Vertical Capability  
-**Goal:** Deploy and validate second vertical
+**Goal:** Deploy and validate second vertical  
+**Priority Alignment:** 🔴 P0 (Critical - Platform Proof)
 
 #### Scenario A: TMG Shield Vertical (If Go Decision)
 
@@ -797,6 +806,30 @@ By December 31, 2026, Almona Portfolio Forge will be:
 **Start Date:** January 1, 2026  
 **Review Cycle:** Weekly checkpoints, monthly reviews, quarterly gates  
 **Success Definition:** YDT mandatory, revenue validated, platform proven
+
+---
+
+## 📋 PRIORITY ALIGNMENT
+
+**🔴 P0 - CRITICAL (Q1 Must Complete):**
+- YDT Latency Optimization (Week 1-2)
+- YDT Mandatory Integration (Week 3-4)
+- Payment Processing (Week 3-4) - *Aligned with Gold Tier Plan*
+- YDT Intelligence Reports Launch (Week 9-12)
+
+**🟠 P1 - HIGH (Q1-Q2 Should Complete):**
+- Egyptian Market Rules (Week 1-2)
+- Activity Log System (Week 1-2) - *Aligned with Gold Tier Plan*
+- State Machine Framework (Week 1-2) - *Aligned with Gold Tier Plan*
+- Commercial Page Enhancement (Q2) - *Aligned with Gold Tier Plan*
+
+**🟡 P2 - MEDIUM (Q2-Q3 Nice to Have):**
+- Notification Infrastructure (Week 2)
+- Reporting Infrastructure (Week 2)
+- Workflow Builder (Q2) - *Aligned with Gold Tier Plan*
+- Customers Page Upgrade (Q2) - *Aligned with Gold Tier Plan*
+
+**See:** `docs/UNIFIED_PRIORITY_MATRIX_2026.md` for complete priority alignment
 
 ---
 

@@ -26,6 +26,24 @@ export const usePersona = (): UsePersonaResult => {
   const [error, setError] = useState<Error | null>(null);
 
   const fetchPersona = useCallback(async () => {
+    // TESTING OVERRIDE: Check for ?role= query param first
+    const urlParams = new URLSearchParams(window.location.search);
+    const roleOverride = urlParams.get('role') as PersonaResolution['persona'] | null;
+    
+    if (roleOverride && ['operator', 'fabricator', 'accountant', 'owner'].includes(roleOverride)) {
+      console.log(`[PERSONA OVERRIDE] Using URL parameter: role=${roleOverride}`);
+      const config = getPersonaConfig(roleOverride);
+      setResolution({
+        persona: roleOverride,
+        visibleTabs: [...config.visibleTabs],
+        permissions: { ...config.permissions },
+        confidence: 'high',
+        source: 'url_override', // New source type for testing
+      });
+      setIsLoading(false);
+      return;
+    }
+
     if (!user?.id) {
       // No user - default to operator
       const operatorConfig = getPersonaConfig('operator');

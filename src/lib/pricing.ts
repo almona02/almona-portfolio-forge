@@ -81,3 +81,7 @@ export function calculateBulkPrice(
   
   return basePrice * quantity;
 }
+
+// Re-export from pricing/index.ts to support imports from '@/lib/pricing'
+// This allows '@/lib/pricing' to resolve to this file while also exporting services from pricing/index.ts
+export * from './pricing/index';

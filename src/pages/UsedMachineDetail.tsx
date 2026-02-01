@@ -13,9 +13,9 @@ const UsedMachineDetailPage = () => {
   if (!machine) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-white bg-almona-dark p-4">
-        <h2 className="text-2xl mb-4">لم يتم العثور على الماكينة المطلوبة</h2>
+        <h2 className="typography-h2 mb-4">لم يتم العثور على الماكينة المطلوبة</h2>
         <button
-          className="bg-orange-700 hover:bg-orange-600 text-white px-4 py-2 rounded"
+          className="btn-primary"
           onClick={() => navigate('/used-machines')}
         >
           العودة إلى قائمة الماكينات

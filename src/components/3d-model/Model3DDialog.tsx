@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { LazyEnhancedGLBViewer } from './LazyGLBViewer';
 import { X } from 'lucide-react';
 
@@ -29,7 +29,7 @@ export function Model3DDialog({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
         <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-xl font-bold text-gray-900">{machineName} - 3D Model</h2>
+          <h2 className="typography-h2 text-xl text-gray-900">{machineName} - 3D Model</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100"
@@ -41,7 +41,7 @@ export function Model3DDialog({
         <div className="p-4">
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-              <h3 className="text-red-800 font-semibold mb-2">Error Loading Model</h3>
+              <h3 className="typography-h3 text-red-800 mb-2">Error Loading Model</h3>
               <p className="text-red-600 text-sm">{error}</p>
             </div>
           )}

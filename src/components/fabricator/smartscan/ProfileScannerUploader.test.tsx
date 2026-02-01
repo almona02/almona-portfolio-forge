@@ -1,4 +1,4 @@
-import React from "react";
+// Removed unused React import
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { ProfileScannerUploader } from "./ProfileScannerUploader";

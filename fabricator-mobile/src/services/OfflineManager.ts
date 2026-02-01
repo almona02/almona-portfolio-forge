@@ -49,6 +49,11 @@ export class OfflineManager {
    * Add operation to sync queue
    */
   async queueOperation(operation: Omit<SyncOperation, 'id' | 'timestamp' | 'retryCount' | 'status'>): Promise<string> {
+    const validTypes = ['update_remnant', 'complete_cut', 'update_job_status', 'scan_remnant'];
+    if (!validTypes.includes(operation.type)) {
+      throw new Error(`Invalid operation type: ${operation.type}`);
+    }
+
     const syncOp: SyncOperation = {
       ...operation,
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,

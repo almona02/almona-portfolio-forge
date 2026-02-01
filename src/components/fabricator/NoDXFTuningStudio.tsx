@@ -337,8 +337,8 @@ export const NoDXFTuningStudio: React.FC = () => {
           className="flex items-center justify-between"
         >
           <div>
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-              <Settings className="h-6 w-6 text-orange-400" />
+            <h1 className="typography-h1 text-2xl text-white flex items-center gap-2">
+              <Settings className="h-6 w-6 text-amber-400" />
               Tune System: {systemPack.meta.name}
             </h1>
             <p className="text-sm text-gray-400 mt-1">
@@ -390,7 +390,7 @@ export const NoDXFTuningStudio: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {profiles.map((profile) => (
-                <Card key={profile.id} className="bg-gray-900/60 border-gray-700">
+                <Card key={profile.id} className="bg-gray-900/60 border-gray-700 card-dark">
                   <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
                       {profile.role === 'frame' ? (
@@ -407,7 +407,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
-                        <Label className="text-xs">Width (mm)</Label>
+                        <Label className="typography-label text-xs">Width (mm)</Label>
                         <Input
                           type="number"
                           value={profile.width}
@@ -416,7 +416,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-xs">Height (mm)</Label>
+                        <Label className="typography-label text-xs">Height (mm)</Label>
                         <Input
                           type="number"
                           value={profile.height}
@@ -425,7 +425,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-xs">Thickness (mm)</Label>
+                        <Label className="typography-label text-xs">Thickness (mm)</Label>
                         <Input
                           type="number"
                           value={profile.thickness}
@@ -434,7 +434,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                         />
                       </div>
                       <div className="space-y-2 col-span-2">
-                        <Label className="text-xs">Profile Role (Gold-Tier Granular)</Label>
+                        <Label className="typography-label text-xs">Profile Role (Gold-Tier Granular)</Label>
                         <Select
                           value={profile.role}
                           onValueChange={(val) => handleProfileUpdate(profile.id, { role: val as any })}
@@ -491,8 +491,8 @@ export const NoDXFTuningStudio: React.FC = () => {
 
           {/* Micron Parameters Tab */}
           <TabsContent value="micron" className="space-y-4">
-            <Alert className="bg-orange-900/20 border-orange-500/50">
-              <AlertCircle className="h-4 w-4 text-orange-400" />
+            <Alert className="bg-amber-900/20 border-amber-500/50">
+              <AlertCircle className="h-4 w-4 text-amber-400" />
               <AlertDescription>
                 These parameters control 99.8% manufacturing accuracy. Used in optimization and cut list calculations.
               </AlertDescription>
@@ -500,14 +500,14 @@ export const NoDXFTuningStudio: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {profiles.map((profile) => (
-                <Card key={profile.id} className="bg-gray-900/60 border-gray-700">
+                <Card key={profile.id} className="bg-gray-900/60 border-gray-700 card-dark">
                   <CardHeader>
                     <CardTitle className="text-sm">{profile.name} - Micron Parameters</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
-                        <Label className="text-xs">Saw Kerf (mm)</Label>
+                        <Label className="typography-label text-xs">Saw Kerf (mm)</Label>
                         <Input
                           type="number"
                           step="0.1"
@@ -518,7 +518,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                         <p className="text-[10px] text-gray-500">Default: {isUPVC ? '4.5' : '4.2'}mm</p>
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-xs">Bar End Trim (mm)</Label>
+                        <Label className="typography-label text-xs">Bar End Trim (mm)</Label>
                         <Input
                           type="number"
                           value={profile.barEndTrim}
@@ -529,7 +529,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                       </div>
                       {isUPVC && (
                         <div className="space-y-2">
-                          <Label className="text-xs">Welding Loss (mm)</Label>
+                          <Label className="typography-label text-xs">Welding Loss (mm)</Label>
                           <Input
                             type="number"
                             step="0.1"
@@ -541,7 +541,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                         </div>
                       )}
                       <div className="space-y-2">
-                        <Label className="text-xs">Bar Length (mm)</Label>
+                        <Label className="typography-label text-xs">Bar Length (mm)</Label>
                         <Input
                           type="number"
                           value={profile.barLength}
@@ -553,10 +553,10 @@ export const NoDXFTuningStudio: React.FC = () => {
                     </div>
                     {isUPVC && profile.role === 'sash' && (
                       <div className="pt-2 border-t border-gray-700">
-                        <Label className="text-xs text-yellow-400 mb-2 block">Reinforcement Settings</Label>
+                        <Label className="typography-label text-xs text-yellow-400 mb-2 block">Reinforcement Settings</Label>
                         <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-2">
-                            <Label className="text-xs">Deduction (mm)</Label>
+                            <Label className="typography-label text-xs">Deduction (mm)</Label>
                             <Input
                               type="number"
                               step="0.1"
@@ -567,7 +567,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                             <p className="text-[10px] text-gray-500">Steel = Dimension - Deduction</p>
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-xs">Thickness (mm)</Label>
+                            <Label className="typography-label text-xs">Thickness (mm)</Label>
                             <Input
                               type="number"
                               step="0.1"
@@ -596,13 +596,13 @@ export const NoDXFTuningStudio: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {profiles.map((profile) => (
-                <Card key={profile.id} className="bg-gray-900/60 border-gray-700">
+                <Card key={profile.id} className="bg-gray-900/60 border-gray-700 card-dark">
                   <CardHeader>
                     <CardTitle className="text-sm">{profile.name} - Cutting Rules</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <Label className="text-xs">Cutting Allowance (mm)</Label>
+                      <Label className="typography-label text-xs">Cutting Allowance (mm)</Label>
                       <Input
                         type="number"
                         step="0.1"
@@ -622,7 +622,7 @@ export const NoDXFTuningStudio: React.FC = () => {
 
           {/* Summary Tab */}
           <TabsContent value="summary" className="space-y-4">
-            <Card className="bg-gray-900/60 border-gray-700">
+            <Card className="bg-gray-900/60 border-gray-700 card-dark">
               <CardHeader>
                 <CardTitle className="text-base">Tuning Summary</CardTitle>
                 <CardDescription>
@@ -633,7 +633,7 @@ export const NoDXFTuningStudio: React.FC = () => {
                 {profiles.map((profile) => (
                   <div key={profile.id} className="p-4 rounded border border-gray-700 bg-gray-800/40">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-semibold text-white">{profile.name}</h4>
+                      <h4 className="typography-h4 text-white">{profile.name}</h4>
                       <Badge>{profile.role.toUpperCase()}</Badge>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">

@@ -97,7 +97,7 @@ const ProfilesPage: React.FC = () => {
       // Show error and let user know they need to log in again
       return (
         <div className="space-y-6">
-          <Card className="bg-slate-800/50 border-slate-700/50">
+          <Card className="bg-slate-800/50 border-slate-700 /50 card-dark">
             <CardContent className="p-6">
               <div className="text-center py-12">
                 <p className="text-red-400 mb-4">{errorMessage}</p>
@@ -114,7 +114,7 @@ const ProfilesPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Profiles</h1>
+          <h1 className="typography-h1 text-2xl text-white">Profiles</h1>
           <p className="text-sm text-gray-400">
             {t('profiles.register_description', 'Register new profiles directly from Smart Scan or Assembly, then manage them here.')}
           </p>
@@ -122,7 +122,7 @@ const ProfilesPage: React.FC = () => {
         <div className="flex flex-wrap gap-2">
           <Button
             asChild
-            className="bg-orange-500 text-white hover:bg-orange-600"
+            className="btn-primary"
             variant="default"
           >
             <Link to="/test-scanner">{t('profiles.launch_smart_scan', 'Launch Smart Scan')}</Link>
@@ -130,14 +130,14 @@ const ProfilesPage: React.FC = () => {
           <Button
             asChild
             variant="outline"
-            className="border-orange-400 text-orange-200 hover:bg-orange-500/10"
+            className="btn-primary"
           >
             <Link to="/smart-scan-assembly">{t('profiles.assembly_scan', 'Assembly Scan')}</Link>
           </Button>
         </div>
       </div>
 
-      <Card className="bg-slate-800/50 border-slate-700/50">
+      <Card className="bg-slate-800/50 border-slate-700 /50 card-dark">
         <CardContent className="p-6">
           <Suspense fallback={<FabricatorProjectSkeleton />}>
             <ProfileManagement

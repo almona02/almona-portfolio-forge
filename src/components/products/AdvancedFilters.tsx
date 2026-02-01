@@ -64,15 +64,15 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ onFilterChange
           <div className="space-y-2">
             <div className="flex items-center">
               <Checkbox id="tag-new" onCheckedChange={(checked) => handleTagChange("new", checked as boolean)} />
-              <Label htmlFor="tag-new" className="ml-2">New</Label>
+              <Label htmlFor="tag-new" className="typography-label ml-2">New</Label>
             </div>
             <div className="flex items-center">
               <Checkbox id="tag-used" onCheckedChange={(checked) => handleTagChange("used", checked as boolean)} />
-              <Label htmlFor="tag-used" className="ml-2">Used</Label>
+              <Label htmlFor="tag-used" className="typography-label ml-2">Used</Label>
             </div>
             <div className="flex items-center">
               <Checkbox id="tag-sale" onCheckedChange={(checked) => handleTagChange("sale", checked as boolean)} />
-              <Label htmlFor="tag-sale" className="ml-2">Sale</Label>
+              <Label htmlFor="tag-sale" className="typography-label ml-2">Sale</Label>
             </div>
           </div>
         </div>

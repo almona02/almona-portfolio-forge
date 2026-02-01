@@ -1,15 +1,21 @@
-import React from 'react';
-import { WindowUnit } from '@/types/fabricator';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import { SYSTEM_PACKS } from '@/data/systemPacks';
 import { Badge } from '@/shared/ui/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/ui/card';
-import { Ruler, Calendar, Palette, Factory, MapPin } from 'lucide-react';
-import { SYSTEM_PACKS } from '@/data/systemPacks';
+import { WindowUnit } from '@/types/fabricator';
+import { Calendar, Factory, MapPin, Palette, Ruler } from 'lucide-react';
+import React, { memo, useMemo } from 'react';
 
 interface JobSummaryPanelProps {
   project: WindowUnit | null;
 }
 
-export const JobSummaryPanel: React.FC<JobSummaryPanelProps> = ({ project }) => {
+const JobSummaryPanelComponent: React.FC<JobSummaryPanelProps> = ({ project }) => {
+  // ✅ PERFORMANCE: Memoize system pack lookup
+  const systemPack = useMemo(() => {
+    if (!project?.systemPackId) return null;
+    return SYSTEM_PACKS.find((p) => p.meta.id === project.systemPackId) || null;
+  }, [project?.systemPackId]);
   if (!project) {
     return (
       <Card className="bg-gray-800 border-gray-700">
@@ -21,14 +27,12 @@ export const JobSummaryPanel: React.FC<JobSummaryPanelProps> = ({ project }) => 
   }
 
   const status = project.status || 'design';
-  const systemPack =
-    project.systemPackId && SYSTEM_PACKS.find((p) => p.meta.id === project.systemPackId);
 
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm flex items-center gap-2">
-          <Factory className="h-4 w-4 text-orange-400" />
+          <Factory className="h-4 w-4 text-amber-400" />
           Job Summary
         </CardTitle>
       </CardHeader>
@@ -92,7 +96,7 @@ export const JobSummaryPanel: React.FC<JobSummaryPanelProps> = ({ project }) => 
             )}
             {project.positionMeta && (
               <div className="flex items-start gap-2 text-[11px] text-gray-300">
-                <MapPin className="h-3 w-3 text-orange-400 mt-[2px]" />
+                <MapPin className="h-3 w-3 text-amber-400 mt-[2px]" />
                 <div className="space-y-0.5">
                   {project.positionMeta.flatNumber && (
                     <div>Flat: {project.positionMeta.flatNumber}</div>
@@ -139,7 +143,7 @@ export const JobSummaryPanel: React.FC<JobSummaryPanelProps> = ({ project }) => 
                   : status === 'design'
                   ? 'bg-blue-500/20 text-blue-400'
                   : status === 'optimized'
-                  ? 'bg-orange-500/20 text-orange-400'
+                  ? 'bg-amber-500/20 text-amber-400'
                   : 'bg-gray-700 text-gray-200'
               }`}
             >
@@ -151,6 +155,20 @@ export const JobSummaryPanel: React.FC<JobSummaryPanelProps> = ({ project }) => 
     </Card>
   );
 };
+
+JobSummaryPanelComponent.displayName = 'JobSummaryPanel';
+
+// ✅ HARDENING: Memoize component for performance
+const JobSummaryPanelMemo = memo(JobSummaryPanelComponent);
+
+// ✅ HARDENING: Export with error boundary for production
+export const JobSummaryPanel: React.FC<JobSummaryPanelProps> = (props) => (
+  <ErrorBoundary level="component">
+    <JobSummaryPanelMemo {...props} />
+  </ErrorBoundary>
+);
+
+JobSummaryPanel.displayName = 'JobSummaryPanel';
 
 export default JobSummaryPanel;
 

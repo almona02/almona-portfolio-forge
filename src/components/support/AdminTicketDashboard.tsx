@@ -171,7 +171,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
               priority === 'urgent' || priority === 'critical' 
                 ? 'border-red-500 text-red-700' 
                 : priority === 'high' 
-                ? 'border-orange-500 text-orange-700' 
+                ? 'border-amber-500 text-amber-700' 
                 : priority === 'medium'
                 ? 'border-blue-500 text-blue-700'
                 : 'border-green-500 text-green-700'
@@ -296,7 +296,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Support Tickets Dashboard</h1>
+          <h1 className="typography-h1 tracking-tight">Support Tickets Dashboard</h1>
           <p className="text-muted-foreground">
             Manage and track all support tickets across the organization
           </p>
@@ -329,7 +329,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Status</label>
+              <label className="typography-label text-sm font-medium">Status</label>
               <Select
                 value={filters.status}
                 onValueChange={(value) => setFilters(prev => ({ ...prev, status: value as TicketStatus }))}
@@ -349,7 +349,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Priority</label>
+              <label className="typography-label text-sm font-medium">Priority</label>
               <Select
                 value={filters.priority}
                 onValueChange={(value) => setFilters(prev => ({ ...prev, priority: value as TicketPriority }))}
@@ -369,7 +369,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Type</label>
+              <label className="typography-label text-sm font-medium">Type</label>
               <Select
                 value={filters.type}
                 onValueChange={(value) => setFilters(prev => ({ ...prev, type: value as TicketType }))}
@@ -392,7 +392,7 @@ export const AdminTicketDashboard: React.FC<AdminTicketDashboardProps> = ({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Assignee</label>
+              <label className="typography-label text-sm font-medium">Assignee</label>
               <Select
                 value={filters.assignee}
                 onValueChange={(value) => setFilters(prev => ({ ...prev, assignee: value }))}

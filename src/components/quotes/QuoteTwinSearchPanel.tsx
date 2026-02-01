@@ -50,7 +50,7 @@ export const QuoteTwinSearchPanel: React.FC<Props> = ({ onSelect, className }) =
                     }}
                   >
                     {quoteClipboard.copiedText === r.quote_number ? (
-                      <Check className="h-3 w-3 text-green-500" />
+                      <Check className="h-3 w-3  status-valid" />
                     ) : (
                       <Copy className="h-3 w-3" />
                     )}
@@ -71,7 +71,7 @@ export const QuoteTwinSearchPanel: React.FC<Props> = ({ onSelect, className }) =
                       }}
                     >
                       {twinClipboard.copiedText === r.digital_twin_code ? (
-                        <Check className="h-3 w-3 text-green-500" />
+                        <Check className="h-3 w-3  status-valid" />
                       ) : (
                         <Copy className="h-3 w-3" />
                       )}
@@ -79,7 +79,7 @@ export const QuoteTwinSearchPanel: React.FC<Props> = ({ onSelect, className }) =
                   )}
                 </div>
               </div>
-              <Badge variant="outline" className="border-orange-500 text-orange-400">
+              <Badge variant="outline" className="border-amber-500 text-amber-400">
                 {r.status}
               </Badge>
             </div>

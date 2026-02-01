@@ -16,14 +16,14 @@
 
     /* Linting - Gradual strict mode (Week 1 hardening) */
     "strict": true,
-    "strictNullChecks": false,  // Enable later - too many existing null checks needed
-    "noImplicitAny": false,     // Enable later - too many existing any types
+    "strictNullChecks": true,   // Phase 2: Enable strict null checks
+    "noImplicitAny": true,      // Phase 3: Enable no implicit any types
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
-    "strictPropertyInitialization": false,  // Enable later
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": false,
+    "strictPropertyInitialization": true,   // Phase 4: Enable strict property initialization
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,     // Phase 4: Enable no fallthrough cases
     
     /* Type definitions - suppress implicit type library warnings */
     "types": [],

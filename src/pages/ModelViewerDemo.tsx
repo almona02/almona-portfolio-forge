@@ -42,7 +42,7 @@ export function ModelViewerDemo() {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">3D Model Viewer Demo</h1>
+          <h1 className="typography-h1 text-gray-900 mb-2">3D Model Viewer Demo</h1>
           <p className="text-gray-600">
             Interactive 3D model viewer with full TypeScript support and performance optimizations
           </p>
@@ -85,7 +85,7 @@ export function ModelViewerDemo() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="scale">Scale: {scale.toFixed(1)}x</Label>
+                  <Label htmlFor="scale" className="typography-label">Scale: {scale.toFixed(1)}x</Label>
                   <Slider
                     id="scale"
                     min={0.1}
@@ -97,7 +97,7 @@ export function ModelViewerDemo() {
                 </div>
 
                 <div>
-                  <Label htmlFor="autoRotate">Auto Rotate</Label>
+                  <Label htmlFor="autoRotate" className="typography-label">Auto Rotate</Label>
                   <Switch
                     id="autoRotate"
                     checked={autoRotate}
@@ -107,7 +107,7 @@ export function ModelViewerDemo() {
 
                 {autoRotate && (
                   <div>
-                    <Label htmlFor="rotateSpeed">Rotation Speed: {autoRotateSpeed}</Label>
+                    <Label htmlFor="rotateSpeed" className="typography-label">Rotation Speed: {autoRotateSpeed}</Label>
                     <Slider
                       id="rotateSpeed"
                       min={0.1}
@@ -158,7 +158,7 @@ export function ModelViewerDemo() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <h4 className="font-semibold mb-2">Basic Usage</h4>
+                <h4 className="typography-h4 mb-2">Basic Usage</h4>
                 <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
                   <code>{`<EnhancedGLBViewer 
   modelPath="/models/model.glb" 
@@ -166,7 +166,7 @@ export function ModelViewerDemo() {
                 </pre>
               </div>
               <div>
-                <h4 className="font-semibold mb-2">Advanced Usage</h4>
+                <h4 className="typography-h4 mb-2">Advanced Usage</h4>
                 <pre className="bg-gray-100 p-3 rounded text-sm overflow-x-auto">
                   <code>{`<EnhancedGLBViewer 
   modelPath="/models/model.glb"

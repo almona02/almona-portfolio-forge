@@ -275,7 +275,7 @@ export const EnterpriseClientActivation: React.FC = () => {
             <Building2 className="h-8 w-8 text-blue-600" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold">{client.companyName}</h2>
+            <h2 className="typography-h2">{client.companyName}</h2>
             <p className="text-muted-foreground">{client.industry} • {client.employeeCount} employees</p>
           </div>
         </div>
@@ -334,7 +334,7 @@ export const EnterpriseClientActivation: React.FC = () => {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <Clock className="h-8 w-8 text-orange-600" />
+              <Clock className="h-8 w-8 text-amber-600" />
               <div>
                 <p className="text-sm text-muted-foreground">Timeline</p>
                 <p className="text-xl font-bold">{client.timeline}</p>
@@ -424,7 +424,7 @@ export const EnterpriseClientActivation: React.FC = () => {
         {/* Proposal Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-xl font-bold">{tier.name} Proposal</h3>
+            <h3 className="typography-h3">{tier.name} Proposal</h3>
             <p className="text-muted-foreground">Customized for {client.companyName}</p>
           </div>
           <div className="text-right">
@@ -571,7 +571,7 @@ export const EnterpriseClientActivation: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+          <h1 className="typography-h1 tracking-tight flex items-center gap-2">
             <Crown className="h-8 w-8 text-yellow-500" />
             Enterprise Client Activation
           </h1>
@@ -622,7 +622,7 @@ export const EnterpriseClientActivation: React.FC = () => {
                 {client.decisionMakers.map((contact, index) => (
                   <div key={index} className="flex items-center justify-between p-3 border rounded">
                     <div>
-                      <h4 className="font-medium">{contact.name}</h4>
+                      <h4 className="typography-h4 font-medium">{contact.name}</h4>
                       <p className="text-sm text-muted-foreground">{contact.role}</p>
                       <p className="text-sm text-muted-foreground">{contact.email}</p>
                     </div>

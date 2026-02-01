@@ -181,7 +181,7 @@ export async function sendConfirmationNotification(
  * Generate Digital Twin Code for tracking
  */
 export function generateDigitalTwinCode(
-  type: 'quote' | 'order' | 'service_ticket',
+  type: 'quote' | 'order' | 'service_ticket' | 'draft',
   userId: string,
   timestamp?: Date
 ): string {
@@ -196,7 +196,8 @@ export function generateDigitalTwinCode(
   const typePrefix = {
     'quote': 'QT',
     'order': 'OR',
-    'service_ticket': 'ST'
+    'service_ticket': 'ST',
+    'draft': 'DR'
   }[type];
   
   return `${typePrefix}-${year}${month}${day}-${suffix}`;
@@ -206,7 +207,7 @@ export function generateDigitalTwinCode(
  * Validate Digital Twin Code format
  */
 export function validateDigitalTwinCode(code: string): boolean {
-  const pattern = /^(QT|OR|ST)-\d{8}-[A-Z0-9]{8}$/;
+  const pattern = /^(QT|OR|ST|DR)-\d{8}-[A-Z0-9]{8}$/;
   return pattern.test(code);
 }
 

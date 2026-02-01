@@ -66,7 +66,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
             placeholder="Search machines..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-orange-500 placeholder:text-gray-400"
+            className="pl-10 bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500 placeholder:text-gray-400"
           />
         </div>
       </div>
@@ -84,23 +84,23 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
                 <Filter className="h-4 w-4" />
                 Filters
                 {hasActiveFilters && (
-                  <span className="w-2 h-2 bg-orange-500 rounded-full" />
+                  <span className="btn-primary" />
                 )}
               </Button>
             </SheetTrigger>
             
-            <SheetContent side="bottom" className="h-[80vh] bg-gray-900/95 md:bg-gray-900 border-gray-800 backdrop-blur-sm">
+            <SheetContent side="bottom" className="h-[80vh] bg-gray-900/95 md:bg-gray-900 border-gray-800 card-dark">
               <div className="flex flex-col h-full">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-800">
-                  <h3 className="text-lg font-semibold text-white">Filters</h3>
+                  <h3 className="typography-h3 text-lg text-white">Filters</h3>
                   <div className="flex items-center gap-2">
                     {hasActiveFilters && (
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={clearFilters}
-                        className="text-orange-400 hover:text-orange-300"
+                        className="text-amber-400 hover:text-amber-300"
                       >
                         Clear All
                       </Button>
@@ -120,11 +120,11 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
                 <div className="flex-1 p-4 space-y-6 overflow-y-auto">
                   {/* Category Filter */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="typography-label block text-sm font-medium text-gray-300 mb-2">
                       Category
                     </label>
                     <Select value={categoryFilter} onValueChange={onCategoryChange}>
-                      <SelectTrigger className="bg-black/90 md:bg-black/70 border-gray-600 focus:border-orange-500">
+                      <SelectTrigger className="bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800/95 md:bg-gray-800 border-gray-700 backdrop-blur-sm">
@@ -143,11 +143,11 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
 
                   {/* Sort Options */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="typography-label block text-sm font-medium text-gray-300 mb-2">
                       Sort By
                     </label>
                     <Select value={sortOption} onValueChange={onSortChange}>
-                      <SelectTrigger className="bg-black/90 md:bg-black/70 border-gray-600 focus:border-orange-500">
+                      <SelectTrigger className="bg-black/90 md:bg-black/70 border-gray-600 focus:border-amber-500">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-gray-800/95 md:bg-gray-800 border-gray-700 backdrop-blur-sm">
@@ -169,7 +169,7 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
                 <div className="p-4 border-t border-gray-800">
                   <Button
                     onClick={() => setIsOpen(false)}
-                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                    className="w-full bg-gradient-to-r from-amber-500 to-red-500 hover:from-amber-600 hover:to-red-600"
                   >
                     Apply Filters
                   </Button>
@@ -189,33 +189,33 @@ export const MobileFilterPanel = memo<MobileFilterPanelProps>(({
       {hasActiveFilters && (
         <div className="flex flex-wrap gap-2 mb-4">
           {searchTerm && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-orange-500/30 md:bg-orange-500/20 text-orange-400 rounded-md text-xs">
+            <div className="btn-primary">
               <span>Search: "{searchTerm}"</span>
               <button
                 onClick={() => onSearchChange('')}
-                className="hover:text-orange-300"
+                className="hover:text-amber-300"
               >
                 <X className="h-3 w-3" />
               </button>
             </div>
           )}
           {categoryFilter !== 'all' && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-orange-500/30 md:bg-orange-500/20 text-orange-400 rounded-md text-xs">
+            <div className="btn-primary">
               <span>Category: {categories.find(c => c.value === categoryFilter)?.label}</span>
               <button
                 onClick={() => onCategoryChange('all')}
-                className="hover:text-orange-300"
+                className="hover:text-amber-300"
               >
                 <X className="h-3 w-3" />
               </button>
             </div>
           )}
           {sortOption !== 'featured' && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-orange-500/30 md:bg-orange-500/20 text-orange-400 rounded-md text-xs">
+            <div className="btn-primary">
               <span>Sort: {sortOptions.find(s => s.value === sortOption)?.label}</span>
               <button
                 onClick={() => onSortChange('featured')}
-                className="hover:text-orange-300"
+                className="hover:text-amber-300"
               >
                 <X className="h-3 w-3" />
               </button>

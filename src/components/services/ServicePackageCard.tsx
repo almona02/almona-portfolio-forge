@@ -26,7 +26,7 @@ const packageColors = {
     text: 'text-green-400'
   },
   professional: {
-    gradient: 'from-yellow-500 to-orange-600',
+    gradient: 'from-yellow-500 to-amber-600',
     border: 'border-yellow-500/30',
     bg: 'bg-yellow-500/10',
     text: 'text-yellow-400'
@@ -114,7 +114,7 @@ export const ServicePackageCard: React.FC<ServicePackageCardProps> = ({
     >
       {isPopular && (
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
-          <Badge variant="custom" className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg shadow-orange-500/40 border border-white/10 inline-flex items-center">
+          <Badge variant="custom" className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white px-4 py-2 rounded-full shadow-lg shadow-amber-500/40 border border-white/10 inline-flex items-center">
             <Star className="h-3 w-3 mr-1 fill-current" />
             {t('services.most_popular')}
           </Badge>

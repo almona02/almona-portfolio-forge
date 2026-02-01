@@ -1,6 +1,6 @@
-import React from 'react';
 import { cn } from '@/lib/utils';
-import { Loader2, Globe, ArrowRight } from 'lucide-react';
+import { ArrowRight, Globe, Loader2 } from 'lucide-react';
+import React from 'react';
 
 interface PageLoadingProps {
   className?: string;
@@ -12,19 +12,19 @@ interface PageLoadingProps {
 
 const variantStyles = {
   default: {
-    container: 'bg-white dark:bg-gray-900',
-    icon: 'text-blue-600 dark:text-blue-400',
-    text: 'text-gray-700 dark:text-gray-300'
+    container: 'bg-[#0a0a0a]',
+    icon: 'text-amber-400',
+    text: 'text-amber-200'
   },
   minimal: {
     container: 'bg-transparent',
-    icon: 'text-gray-500 dark:text-gray-400',
-    text: 'text-gray-600 dark:text-gray-300'
+    icon: 'text-amber-500/70',
+    text: 'text-amber-300/80'
   },
   fullscreen: {
-    container: 'bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800',
-    icon: 'text-blue-600 dark:text-blue-400',
-    text: 'text-gray-700 dark:text-gray-300'
+    container: 'bg-gradient-to-br from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a]',
+    icon: 'text-amber-400',
+    text: 'text-amber-200'
   }
 };
 
@@ -54,23 +54,23 @@ export const PageLoading: React.FC<PageLoadingProps> = ({
           </div>
           
           <div className="text-center">
-            <h3 className={cn('text-lg font-semibold mb-2', styles.text)}>
+            <h3 className={cn('typography-h3 mb-2', styles.text)}>
               {message}
             </h3>
             
             {showProgress && (
-              <div className="w-64 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+              <div className="w-64 bg-[#0f0f0f]/80 border border-amber-600/30 rounded-full h-2 mb-2">
                 <div 
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+                  className="bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 h-2 rounded-full transition-all duration-300 ease-out shadow-glow"
                   style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
                 />
               </div>
             )}
             
             <div className="flex items-center justify-center space-x-1">
-              <div className={cn('h-1 w-1 rounded-full bg-blue-500 animate-pulse')} style={{ animationDelay: '0ms' }} />
-              <div className={cn('h-1 w-1 rounded-full bg-blue-500 animate-pulse')} style={{ animationDelay: '150ms' }} />
-              <div className={cn('h-1 w-1 rounded-full bg-blue-500 animate-pulse')} style={{ animationDelay: '300ms' }} />
+              <div className={cn('h-1 w-1 rounded-full bg-amber-400 animate-pulse')} style={{ animationDelay: '0ms' }} />
+              <div className={cn('h-1 w-1 rounded-full bg-amber-500 animate-pulse')} style={{ animationDelay: '150ms' }} />
+              <div className={cn('h-1 w-1 rounded-full bg-amber-600 animate-pulse')} style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         </div>
@@ -102,9 +102,9 @@ export const PageLoading: React.FC<PageLoadingProps> = ({
         </p>
         
         {showProgress && (
-          <div className="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-1 mt-2">
+          <div className="w-32 bg-[#0f0f0f]/80 border border-amber-600/30 rounded-full h-1 mt-2">
             <div 
-              className="bg-blue-600 h-1 rounded-full transition-all duration-300 ease-out"
+              className="bg-gradient-to-r from-amber-400 to-amber-600 h-1 rounded-full transition-all duration-300 ease-out"
               style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
             />
           </div>

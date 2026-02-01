@@ -52,22 +52,45 @@ export class DocumentationKnowledgeGraph {
       if (typeof fetch !== 'undefined') {
         fetch('/api/v2/ydt/parser/knowledge-base')
           .then((res) => {
+            // Handle 500 errors and other server errors gracefully
             if (!res.ok) {
+              // Don't throw for 404/500 - just use defaults
+              if (res.status === 404 || res.status === 500) {
+                if (import.meta.env.DEV) {
+                  console.warn(`YDT API returned ${res.status}, using default knowledge base`);
+                }
+                this.knowledgeBase = this.getDefaultKnowledgeBase();
+                return;
+              }
               throw new Error(`HTTP ${res.status}: ${res.statusText}`);
             }
             return res.json();
           })
           .then((kb) => {
+            // Only process if we got valid JSON (not already set defaults above)
             if (kb && typeof kb === 'object') {
               this.knowledgeBase = kb as YDTKnowledgeBase;
-              console.log('✅ Loaded YDT knowledge base from API');
-            } else {
-              throw new Error('Invalid knowledge base format');
+              if (import.meta.env.DEV) {
+                console.log('✅ Loaded YDT knowledge base from API');
+              }
+            } else if (kb !== undefined) {
+              // Invalid format but got response
+              if (import.meta.env.DEV) {
+                console.warn('Invalid knowledge base format, using defaults');
+              }
+              this.knowledgeBase = this.getDefaultKnowledgeBase();
             }
           })
           .catch((error) => {
-            console.warn('Could not load knowledge base from API, using defaults:', error);
-            this.knowledgeBase = this.getDefaultKnowledgeBase();
+            // Silently fail in production - API endpoint may not be available
+            // Use default knowledge base instead
+            if (import.meta.env.DEV) {
+              console.warn('Could not load knowledge base from API, using defaults:', error);
+            }
+            // Only set if not already set above
+            if (!this.knowledgeBase) {
+              this.knowledgeBase = this.getDefaultKnowledgeBase();
+            }
           });
       } else {
         // Fallback to defaults

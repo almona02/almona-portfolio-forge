@@ -472,7 +472,7 @@ export const Enhanced3DViewer = forwardRef<any, Enhanced3DViewerProps>(({
                     setWindowAnimationProgress(0);
                   }
                 }}
-                className="w-full px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded text-xs font-medium transition-colors"
+                className="btn-primary"
               >
                 {isWindowAnimating ? 'Pause' : 'Animate Window'}
               </button>

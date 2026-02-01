@@ -86,7 +86,7 @@ export const MachineTestExporter: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-950 p-6">
       <div className="max-w-4xl mx-auto">
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-gray-900 border-gray-800 card-dark">
           <CardHeader>
             <CardTitle className="text-2xl">Machine Test Exporter</CardTitle>
             <p className="text-gray-400">Generate test windows for physical validation</p>
@@ -94,7 +94,7 @@ export const MachineTestExporter: React.FC = () => {
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm text-gray-400">Machine Type</label>
+                <label className="typography-label text-sm text-gray-400">Machine Type</label>
                 <Select value={machineType} onValueChange={(v) => setMachineType(v as any)}>
                   <SelectTrigger className="bg-gray-800 border-gray-700">
                     <SelectValue />
@@ -107,7 +107,7 @@ export const MachineTestExporter: React.FC = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-gray-400">Test Window Type</label>
+                <label className="typography-label text-sm text-gray-400">Test Window Type</label>
                 <Select value={testType} onValueChange={(v) => setTestType(v as any)}>
                   <SelectTrigger className="bg-gray-800 border-gray-700">
                     <SelectValue />
@@ -149,7 +149,7 @@ export const MachineTestExporter: React.FC = () => {
             )}
 
             <div className="bg-gray-800 p-4 rounded-lg">
-              <h3 className="font-semibold mb-2">Physical Validation Checklist</h3>
+              <h3 className="typography-h3 mb-2">Physical Validation Checklist</h3>
               <ul className="text-sm text-gray-400 space-y-1">
                 <li>✓ Hinge Positions: 150mm from top/bottom (±0.5mm)</li>
                 <li>✓ Handle Height: 1100mm from bottom (±10mm)</li>

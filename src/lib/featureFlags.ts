@@ -36,6 +36,9 @@ export const FeatureFlags = {
   // Workshop Access (Beta workshops)
   WORKSHOP_BETA_ACCESS: ['workshop_alpha', 'workshop_beta'] as string[], // Workshop IDs
   
+  // Gold Tier System
+  GOLD_TIER_ENABLED: getEnvVar('VITE_GOLD_TIER_ENABLED') === 'true' || getEnvVar('NEXT_PUBLIC_GOLD_TIER_ENABLED') === 'true',
+  
   // Week 1: Opening Mechanisms & Proportional Grid
   ENABLE_OPENING_MECHANISMS: (() => {
     const viteValue = getEnvVar('VITE_ENABLE_OPENING_MECHANISMS');

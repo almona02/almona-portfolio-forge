@@ -85,7 +85,7 @@ export const ProjectCockpit: React.FC<ProjectCockpitProps> = ({
   return (
     <div className={cn('space-y-4', className)}>
       <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold text-white">What Are We Building?</h2>
+        <h2 className="typography-h2 text-white">What Are We Building?</h2>
         <p className="text-sm text-gray-400">
           Select your project type to pre-load relevant settings and system packs
         </p>
@@ -100,9 +100,9 @@ export const ProjectCockpit: React.FC<ProjectCockpitProps> = ({
             <Card
               key={type.id}
               className={cn(
-                'cursor-pointer transition-all hover:border-orange-500/50',
+                'cursor-pointer transition-all hover:border-amber-500/50',
                 isSelected
-                  ? 'border-orange-500 bg-orange-500/10'
+                  ? 'border-amber-500 bg-amber-500/10'
                   : 'bg-gray-800/50 border-gray-700 hover:bg-gray-800'
               )}
               onClick={() => onSelectType(type.id)}
@@ -112,13 +112,13 @@ export const ProjectCockpit: React.FC<ProjectCockpitProps> = ({
                   <div
                     className={cn(
                       'p-2 rounded-lg',
-                      isSelected ? 'bg-orange-500/20' : 'bg-gray-700/50'
+                      isSelected ? 'bg-amber-500/20' : 'bg-gray-700/50'
                     )}
                   >
                     <Icon
                       className={cn(
                         'h-6 w-6',
-                        isSelected ? 'text-orange-400' : 'text-gray-400'
+                        isSelected ? 'text-amber-400' : 'text-gray-400'
                       )}
                     />
                   </div>

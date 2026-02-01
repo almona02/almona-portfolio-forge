@@ -83,7 +83,7 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4 bg-almona-darker/50 p-6 rounded-lg">
-  <h3 className="text-xl font-semibold">{t('yilmazRegistration.title')}</h3>
+  <h3 className="typography-h3">{t('yilmazRegistration.title')}</h3>
       <div className="flex items-center gap-2">
         <input
           {...register('serialNumber')}
@@ -97,7 +97,7 @@ export const YilmazMachineRegistration: React.FC<Props> = ({ onSubmit }) => {
             const val = (document.querySelector('input[name="serialNumber"]') as HTMLInputElement)?.value;
             if (val) await validateSerial(val);
           }}
-          className="px-4 py-2 bg-gradient-to-r from-orange-500 to-yellow-400 rounded text-black"
+          className="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-400 rounded text-black"
         >
           {loading ? <span className="loader" /> : t('yilmazRegistration.validateButton')}
         </button>

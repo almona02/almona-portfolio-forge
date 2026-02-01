@@ -12,7 +12,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-xl font-bold text-gradient-orange mb-4">ALMONA Co.</h3>
+            <h3 className="typography-h3 text-gradient-orange mb-4">ALMONA Co.</h3>
             <p className="text-gray-400 mb-4">
               Authorized dealer of YILMAZ machines in Egypt. Company established 1991.
               Delivering quality products and services to the equipments and machinery industry.
@@ -41,7 +41,7 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
+            <h3 className="typography-h3 text-lg text-white mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/products/machines" className="text-gray-400 hover:text-almona-orange transition-colors">
@@ -68,7 +68,7 @@ const Footer = () => {
 
           {/* Services */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">Our Services</h3>
+            <h3 className="typography-h3 text-lg text-white mb-4">Our Services</h3>
             <ul className="space-y-2">
               <li className="text-gray-400 hover:text-almona-orange transition-colors">
                 <Link to="/services/sales">Machine Sales</Link>
@@ -90,7 +90,7 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">Contact Us</h3>
+            <h3 className="typography-h3 text-lg text-white mb-4">Contact Us</h3>
             <ul className="space-y-4">
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 text-almona-orange mr-2 mt-0.5" />

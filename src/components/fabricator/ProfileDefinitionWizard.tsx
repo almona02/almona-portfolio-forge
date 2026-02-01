@@ -330,7 +330,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
         {step === 1 && (
           <div className="space-y-4">
             <div>
-              <Label htmlFor="file-upload" className="text-gray-300 mb-2 block">
+              <Label htmlFor="file-upload" className="typography-label text-gray-300 mb-2 block">
                 Upload Technical Data Sheet
               </Label>
               <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
@@ -344,14 +344,13 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   }}
                   className="hidden"
                 />
-                <label
-                  htmlFor="file-upload"
-                  className="cursor-pointer flex flex-col items-center gap-2"
+                <Label htmlFor="file-upload"
+                  className="typography-label cursor-pointer flex flex-col items-center gap-2"
                 >
                   <Upload className="h-12 w-12 text-gray-400" />
                   <span className="text-gray-300">Click to upload or drag and drop</span>
                   <span className="text-sm text-gray-500">PNG, JPG, or PDF (max 10MB)</span>
-                </label>
+                </Label>
               </div>
             </div>
 
@@ -379,9 +378,9 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
         {step === 2 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-300">Profile Information</h3>
+              <h3 className="typography-h3 text-lg text-gray-300">Profile Information</h3>
               <div>
-                <Label htmlFor="profile-code" className="text-gray-300">
+                <Label htmlFor="profile-code" className="typography-label text-gray-300">
                   Profile Code *
                 </Label>
                 <Input
@@ -393,7 +392,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                 />
               </div>
               <div>
-                <Label htmlFor="system-name" className="text-gray-300">
+                <Label htmlFor="system-name" className="typography-label text-gray-300">
                   System Name *
                 </Label>
                 <Input
@@ -406,7 +405,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="width" className="text-gray-300">
+                  <Label htmlFor="width" className="typography-label text-gray-300">
                     Width (mm) *
                   </Label>
                   <Input
@@ -419,7 +418,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   />
                 </div>
                 <div>
-                  <Label htmlFor="height" className="text-gray-300">
+                  <Label htmlFor="height" className="typography-label text-gray-300">
                     Height (mm) *
                   </Label>
                   <Input
@@ -433,7 +432,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                 </div>
               </div>
               <div>
-                <Label htmlFor="material-thickness" className="text-gray-300">
+                <Label htmlFor="material-thickness" className="typography-label text-gray-300">
                   Material Thickness (mm) *
                 </Label>
                 <Input
@@ -448,7 +447,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                 />
               </div>
               <div>
-                <Label htmlFor="weight" className="text-gray-300">
+                <Label htmlFor="weight" className="typography-label text-gray-300">
                   Weight per Meter (kg/m)
                 </Label>
                 <Input
@@ -462,7 +461,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="role" className="text-gray-300">
+                  <Label htmlFor="role" className="typography-label text-gray-300">
                     Role *
                   </Label>
                   <Select
@@ -484,7 +483,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="material" className="text-gray-300">
+                  <Label htmlFor="material" className="typography-label text-gray-300">
                     Material *
                   </Label>
                   <Select
@@ -505,7 +504,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold text-gray-300 mb-4">Visual Reference</h3>
+              <h3 className="typography-h3 text-lg text-gray-300 mb-4">Visual Reference</h3>
               {uploadedImage ? (
                 <ProfileCrossSectionViewer
                   imageUrl={uploadedImage}
@@ -520,7 +519,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
             </div>
 
             <div className="lg:col-span-2">
-              <h4 className="text-sm font-semibold text-gray-200 mb-2">Thumbnail Preview</h4>
+              <h4 className="typography-h4 text-sm text-gray-200 mb-2">Thumbnail Preview</h4>
               <div className="border border-gray-700 rounded-lg p-3 bg-gray-900 flex flex-col items-center">
                 <ProfileIconGenerator
                   ref={profileIconRef}
@@ -543,7 +542,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
         {step === 3 && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-gray-300 mb-4">Initial Calibration Setup</h3>
+              <h3 className="typography-h3 text-lg text-gray-300 mb-4">Initial Calibration Setup</h3>
               <p className="text-sm text-gray-400 mb-4">
                 Set up basic cutting parameters. You can fine-tune these later in the Calibration Wizard.
               </p>
@@ -577,7 +576,7 @@ export const ProfileDefinitionWizard: React.FC<ProfileDefinitionWizardProps> = (
             />
 
             <div className="p-4 bg-gray-900 rounded border border-gray-700">
-              <h4 className="text-sm font-semibold text-gray-300 mb-2">Summary</h4>
+              <h4 className="typography-h4 text-sm text-gray-300 mb-2">Summary</h4>
               <div className="space-y-1 text-sm text-gray-400">
                 <p>
                   <span className="text-gray-500">Profile:</span> {formData.profileCode}

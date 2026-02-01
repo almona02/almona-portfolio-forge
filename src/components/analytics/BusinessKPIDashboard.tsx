@@ -217,7 +217,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Business Intelligence</h2>
+          <h2 className="typography-h2 tracking-tight">Business Intelligence</h2>
           <p className="text-muted-foreground">
             Real-time business metrics and performance analytics
           </p>
@@ -271,7 +271,7 @@ export const BusinessKPIDashboard: React.FC = React.memo(() => {
           value={`$${metrics.customers.ltv.toLocaleString()}`}
           change={15.2}
           icon={<TrendingUp className="h-4 w-4" />}
-          color="text-orange-600"
+          color="text-amber-600"
           subtitle={`${metrics.customers.retention}% retention`}
         />
       </div>
