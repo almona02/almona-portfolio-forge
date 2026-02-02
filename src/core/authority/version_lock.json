@@ -1,0 +1,35 @@
+{
+  "constitutionVersion": "1.0.0",
+  "aics001Version": "1.0.0",
+  "commitHash": "TBD",
+  "timestamp": "2026-01-07T00:00:00Z",
+  "truthDomains": {
+    "geometry": {
+      "version": "1.0.0",
+      "aics001": "Section 6.3.1"
+    },
+    "material": {
+      "version": "1.0.0",
+      "aics001": "Section 6.3.2"
+    },
+    "machine": {
+      "version": "1.0.0",
+      "aics001": "Section 6.3.3"
+    },
+    "process": {
+      "version": "1.0.0",
+      "aics001": "Section 6.3.4"
+    },
+    "certification": {
+      "version": "1.0.0",
+      "aics001": "Section 6.3.5"
+    }
+  },
+  "separationManifest": {
+    "coreAuthorityLayer": "src/core/authority/",
+    "consumptionLayer": "src/consumption/ (to be created)",
+    "principle": "AICS-001 Section 8.3 (Separation of Powers)"
+  },
+  "signature": "This directory structure is physical evidence of constitutional architecture."
+}
+

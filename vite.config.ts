@@ -288,6 +288,8 @@ export default defineConfig(({ mode }) => {
         "zlib": path.resolve(__dirname, "./src/lib/polyfills/zlib.ts"),
         // Redirect hls.js to mock (VideoTexture not used)
         "hls.js": path.resolve(__dirname, "./src/lib/mocks/hls-mock.ts"),
+        // Fix for PWA build failing to resolve version_lock.json
+        "./version_lock.json": path.resolve(__dirname, "./src/core/authority/version_lock.json"),
       },
       // Ensure CommonJS modules like 'long' are properly resolved
       conditions: ['import', 'module', 'browser', 'default'],

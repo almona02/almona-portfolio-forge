@@ -205,14 +205,14 @@ export function calculateSashArea(width: number, height: number): number {
   return (width * height) / 1_000_000; // Convert mm² to m²
 }
 
-/**
- * Determine hardener thickness category based on sash area
- */
-export function getThicknessCategory(area: number): 'small' | 'medium' | 'large' {
-  if (area < 1.5) return 'small';
-  if (area <= 2.5) return 'medium';
-  return 'large';
-}
+  /**
+   * Determine hardener thickness category based on sash area
+   */
+  export function getThicknessCategory(area: number): 'small' | 'medium' | 'large' {
+    if (area < 1.5) return 'small';
+    if (area < 2.5) return 'medium';
+    return 'large';
+  }
 
 /**
  * Validate glass thickness against standards

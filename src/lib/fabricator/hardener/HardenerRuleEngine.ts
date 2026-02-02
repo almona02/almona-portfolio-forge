@@ -145,8 +145,6 @@ export class HardenerRuleEngine {
     context: HardenerSelectionContext,
     sashArea: number
   ): typeof HARDENER_CATALOG[0] | undefined {
-    // Use find with early exit - fastest for small catalogs
-    // Order conditions from most selective to least selective for optimal performance
     return HARDENER_CATALOG.find(hardener => {
       // Material match (most selective - halves search space)
       if (hardener.material !== context.material) return false;
@@ -155,6 +153,7 @@ export class HardenerRuleEngine {
       if (!hardener.openingTypes.includes(context.openingType)) return false;
 
       // Sash area match (moderately selective)
+      // Use standard ranges with inclusive boundaries matching standards
       if (sashArea < hardener.sashArea.min || sashArea > hardener.sashArea.max) return false;
 
       // Glass thickness match (least selective, checked last)

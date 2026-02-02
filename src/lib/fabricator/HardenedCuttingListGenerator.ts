@@ -14,6 +14,7 @@ import type { SystemPack } from '@/data/systemPacks';
 import { trackAccuracyCheckpoint } from '@/lib/fabricator/AccuracyTracker';
 import type { Cut } from '@/lib/fabricator/OptimizationEngine';
 import { getBaselineTracker } from '@/lib/performance/BaselineTracker';
+import { generateCuttingListFromSystemPack } from './CuttingListGenerator';
 
 export interface CuttingListResult {
   status: 'success' | 'error' | 'mismatch';
@@ -184,10 +185,7 @@ export class HardenedCuttingListGenerator {
     height: number,
     options?: any
   ): CalculationResult {
-    // Import existing generator
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { generateCuttingListFromSystemPack } = require('./CuttingListGenerator');
-    
+    // Used imported generator
     const cuts = generateCuttingListFromSystemPack(
       systemPack.meta.id,
       width,
