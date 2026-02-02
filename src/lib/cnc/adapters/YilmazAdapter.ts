@@ -74,16 +74,17 @@ export class YilmazAdapter extends BaseCNCAdapter {
         const spindleSpeed = options?.spindleSpeed || 10000; // RPM
 
         lines.push(`M3 S${spindleSpeed}`); // Set spindle speed
-        lines.push(`G1 X${(currentX + cutLength).toFixed(this.config.precision)} Y${currentY.toFixed(this.config.precision)} F${feedRate}`); // Linear cut
+        // Cut along Y axis (Length)
+        lines.push(`G1 X${currentX.toFixed(this.config.precision)} Y${(currentY + cutLength).toFixed(this.config.precision)} F${feedRate}`); // Linear cut
         lines.push('M5'); // Spindle off
 
       // Update position
-      currentX += cutLength + 10; // Add 10mm spacing between cuts
+      currentY += cutLength + 10; // Add 10mm spacing between cuts
 
-      // Check if we need to move to next row
-      if (currentX > this.config.maxWidth - 100) {
-        currentX = 0;
-        currentY += 100; // Move to next row
+      // Check if we need to move to next column (stack along X)
+      if (currentY > this.config.maxLength - 100) {
+        currentY = 0;
+        currentX += 100; // Move to next column
       }
     }
 
@@ -263,14 +264,14 @@ export class YilmazAdapter extends BaseCNCAdapter {
    * Estimate material usage
    */
   private estimateMaterialUsage(gcode: string): number {
-    // Extract X movements to estimate material length
-    const xMatches = gcode.match(/X([\d.-]+)/g) || [];
-    let maxX = 0;
-    xMatches.forEach((match) => {
-      const x = parseFloat(match.substring(1));
-      if (x > maxX) maxX = x;
+    // Extract Y movements to estimate material length (aligned with maxLength)
+    const yMatches = gcode.match(/Y([\d.-]+)/g) || [];
+    let maxY = 0;
+    yMatches.forEach((match) => {
+      const y = parseFloat(match.substring(1));
+      if (y > maxY) maxY = y;
     });
-    return maxX;
+    return maxY;
   }
 }
 

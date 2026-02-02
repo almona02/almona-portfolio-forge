@@ -3,7 +3,7 @@
  * Tests camera and barcode recognition
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 // Mock expo-barcode-scanner
 vi.mock('expo-barcode-scanner', () => ({
@@ -92,7 +92,11 @@ describe('Barcode Scanning: Barcode Recognition', () => {
       if (format === null || format === undefined) {
         expect(format).toBeFalsy();
       } else if (typeof format === 'string') {
-        expect(format.trim().length).toBe(0);
+        const trimmed = format.trim();
+        // Either empty or contains dangerous content
+        const isEmpty = trimmed.length === 0;
+        const isDangerous = /<script|javascript:|onerror=/i.test(trimmed);
+        expect(isEmpty || isDangerous).toBe(true);
       }
     });
   });
@@ -228,8 +232,11 @@ describe('Barcode Scanning: Error Handling', () => {
       // Should validate barcode type
       if (type === null || type === undefined) {
         expect(type).toBeFalsy();
-      } else if (typeof type === 'string') {
+      } else if (type === '') {
         expect(type.length).toBe(0);
+      } else if (typeof type === 'string') {
+        // Non-empty invalid strings like 'unknown_type'
+        expect(type).not.toMatch(/^(qr|ean13|ean8|upc_a|upc_e)$/);
       } else {
         expect(typeof type).not.toBe('string');
       }

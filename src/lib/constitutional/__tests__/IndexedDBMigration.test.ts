@@ -71,7 +71,7 @@ describe('IndexedDB Migration', () => {
   });
 
   it('should load from IndexedDB if available', async () => {
-    const state = { poseId: 'test-pose', mode: 'smartdraw', state: { x: 1 } };
+    const state = { poseId: 'test-pose', mode: 'smartdraw', state: { x: 1 }, version: 1 };
     mockIdbStore.loadState.mockResolvedValue(state);
     
     const result = await (service as any).loadFromUnifiedStore('test-pose', 'smartdraw');
@@ -85,7 +85,7 @@ describe('IndexedDB Migration', () => {
   it('should fallback to localStorage if IndexedDB missing/fails', async () => {
     mockIdbStore.loadState.mockResolvedValue(null);
     
-    const state = { poseId: 'test-pose', mode: 'smartdraw', state: { x: 1 } };
+    const state = { poseId: 'test-pose', mode: 'smartdraw', state: { x: 1 }, version: 1 };
     const key = (service as any).getStorageKey('test-pose', 'smartdraw');
     localStorageMock.setItem(key, JSON.stringify(state));
     

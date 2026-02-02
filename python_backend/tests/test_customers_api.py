@@ -16,10 +16,12 @@ def client():
     # Import app here to avoid circular imports
     try:
         from python_backend.main import app
+
         return TestClient(app)
     except ImportError:
         # Fallback to apis.main if python_backend.main doesn't exist
         from apis.main import app
+
         return TestClient(app)
 
 
@@ -34,11 +36,20 @@ def mock_user():
 
 
 @pytest.fixture
-def auth_headers(mock_user):
+def auth_headers(client, mock_user):
     """Mock authentication headers."""
-    with patch('apis.v2.customers.get_current_user') as mock_get_user:
-        mock_get_user.return_value = mock_user
-        yield {"Authorization": "Bearer test-token"}
+    # Import get_current_user to override it
+    try:
+        from apis.v2.deps import get_current_user
+    except ImportError:
+        # Fallback if path is different
+        from python_backend.apis.v2.deps import get_current_user
+
+    app = client.app
+    app.dependency_overrides[get_current_user] = lambda: mock_user
+    yield {"Authorization": "Bearer test-token"}
+    # Clean up
+    app.dependency_overrides = {}
 
 
 class TestCustomerManagementAPI:
@@ -62,7 +73,7 @@ class TestCustomerManagementAPI:
             "contact_person": "John Doe",
             "email": "john@example.com",
             "phone": "+1234567890",
-            "sector": "ALUMINIUM",
+            "sector": "commercial",
         }
         response = client.post("/api/v2/customers", json=data, headers=auth_headers)
         assert response.status_code in [200, 201, 400, 500]
@@ -82,7 +93,9 @@ class TestCustomerManagementAPI:
     def test_delete_customer(self, client, auth_headers):
         """Test deleting a customer."""
         customer_id = str(uuid4())
-        response = client.delete(f"/api/v2/customers/{customer_id}", headers=auth_headers)
+        response = client.delete(
+            f"/api/v2/customers/{customer_id}", headers=auth_headers
+        )
         assert response.status_code in [200, 204, 404, 500]
 
 
@@ -99,7 +112,9 @@ class TestCustomerAnalyticsAPI:
 
     def test_get_analytics_summary(self, client, auth_headers):
         """Test getting analytics summary."""
-        response = client.get("/api/v2/customers/analytics/summary", headers=auth_headers)
+        response = client.get(
+            "/api/v2/customers/analytics/summary", headers=auth_headers
+        )
         assert response.status_code in [200, 404, 500]
 
     def test_get_purchase_history(self, client, auth_headers):
@@ -139,7 +154,9 @@ class TestTagsAPI:
             "name": "VIP",
             "color": "#FF0000",
         }
-        response = client.post("/api/v2/customers/tags", json=data, headers=auth_headers)
+        response = client.post(
+            "/api/v2/customers/tags", json=data, headers=auth_headers
+        )
         assert response.status_code in [200, 201, 400, 500]
 
     def test_update_tag(self, client, auth_headers):
@@ -157,7 +174,9 @@ class TestTagsAPI:
     def test_delete_tag(self, client, auth_headers):
         """Test deleting a tag."""
         tag_id = str(uuid4())
-        response = client.delete(f"/api/v2/customers/tags/{tag_id}", headers=auth_headers)
+        response = client.delete(
+            f"/api/v2/customers/tags/{tag_id}", headers=auth_headers
+        )
         assert response.status_code in [200, 204, 404, 500]
 
     def test_assign_tag(self, client, auth_headers):
@@ -260,7 +279,9 @@ class TestSegmentsAPI:
             "criteria": {"min_revenue": 10000},
             "is_dynamic": True,
         }
-        response = client.post("/api/v2/customers/segments", json=data, headers=auth_headers)
+        response = client.post(
+            "/api/v2/customers/segments", json=data, headers=auth_headers
+        )
         assert response.status_code in [200, 201, 400, 500]
 
     def test_update_segment(self, client, auth_headers):
@@ -320,7 +341,9 @@ class TestRemindersAPI:
             "reminder_date": "2026-12-31T00:00:00Z",
         }
         response = client.post(
-            f"/api/v2/customers/{customer_id}/reminders", json=data, headers=auth_headers
+            f"/api/v2/customers/{customer_id}/reminders",
+            json=data,
+            headers=auth_headers,
         )
         assert response.status_code in [200, 201, 404, 400, 500]
 
@@ -332,7 +355,9 @@ class TestRemindersAPI:
             "is_completed": True,
         }
         response = client.put(
-            f"/api/v2/customers/reminders/{reminder_id}", json=data, headers=auth_headers
+            f"/api/v2/customers/reminders/{reminder_id}",
+            json=data,
+            headers=auth_headers,
         )
         assert response.status_code in [200, 404, 400, 500]
 

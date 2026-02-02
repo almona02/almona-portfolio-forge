@@ -1,9 +1,39 @@
 
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OptimizedCanvasManager } from '../OptimizedCanvasManager';
 import { ProfileRegistry } from '../services/ProfileRegistry';
 
 describe('Phase 1: Material Awareness', () => {
+    
+    beforeEach(() => {
+        // Mock canvas context for tests
+        HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
+            scale: vi.fn(),
+            clearRect: vi.fn(),
+            save: vi.fn(),
+            restore: vi.fn(),
+            translate: vi.fn(),
+            beginPath: vi.fn(),
+            moveTo: vi.fn(),
+            lineTo: vi.fn(),
+            stroke: vi.fn(),
+            fill: vi.fn(),
+            arc: vi.fn(),
+            closePath: vi.fn(),
+            strokeRect: vi.fn(),
+            fillStyle: '',
+            strokeStyle: '',
+            lineWidth: 1,
+        }) as any;
+        
+        // Mock requestAnimationFrame
+        global.requestAnimationFrame = vi.fn((cb) => {
+            setTimeout(cb, 0);
+            return 1;
+        }) as any;
+        
+        global.cancelAnimationFrame = vi.fn();
+    });
     
     describe('ProfileRegistry', () => {
         it('should be a singleton', () => {

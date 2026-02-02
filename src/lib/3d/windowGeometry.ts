@@ -645,7 +645,8 @@ export function createGoldTierMiteredFrame(
         matrix: topMatrix,
         metadata: {
             type: 'top_bar',
-            hasMiter: false, // Butt joint
+            hasMiter: true,
+            miterAngle: 45,
             reinforcement: cornerReinforcement,
             hardwareMounts: [
                 { type: 'corner_plate', position: 'left_end' },
@@ -668,7 +669,8 @@ export function createGoldTierMiteredFrame(
         matrix: bottomMatrix,
         metadata: {
             type: 'bottom_bar',
-            hasMiter: false,
+            hasMiter: true,
+            miterAngle: 45,
             reinforcement: cornerReinforcement,
             drainageChannels: true,
             chambers: profile.metadata?.chambers,
@@ -689,7 +691,8 @@ export function createGoldTierMiteredFrame(
         matrix: leftMatrix,
         metadata: {
             type: 'left_bar',
-            hasMiter: false,
+            hasMiter: true,
+            miterAngle: 45,
             reinforcement: cornerReinforcement,
             hingeSide: true,
             chambers: profile.metadata?.chambers,
@@ -709,7 +712,8 @@ export function createGoldTierMiteredFrame(
         matrix: rightMatrix,
         metadata: {
             type: 'right_bar',
-            hasMiter: false,
+            hasMiter: true,
+            miterAngle: 45,
             reinforcement: cornerReinforcement,
             lockSide: true,
             chambers: profile.metadata?.chambers,
