@@ -27,6 +27,7 @@ describe('BOM Generation Functional Tests', () => {
     
     testWindowUnit = {
       id: 'test-window-1',
+      type: 'casement', // Add missing type property
       overallWidth: 1200,
       overallHeight: 1500,
       grid: {

@@ -127,7 +127,8 @@ export class HardenerSelector {
   /**
    * Map window unit type to opening type
    */
-  private mapOpeningType(windowType: string): HardenerSelectionContext['openingType'] {
+  private mapOpeningType(windowType: string | undefined): HardenerSelectionContext['openingType'] {
+    if (!windowType) return 'casement'; // Default if type is missing
     const typeLower = windowType.toLowerCase();
     if (typeLower.includes('casement')) return 'casement';
     if (typeLower.includes('tilt') || typeLower.includes('turn')) return 'tilt-turn';
