@@ -91,17 +91,39 @@ export class OptimizedCanvasManager {
     this.stopLoop();
   }
   
+  /**
+   * Safe requestAnimationFrame wrapper for test environments
+   */
+  private safeRequestAnimationFrame(callback: FrameRequestCallback): number {
+    if (typeof requestAnimationFrame !== 'undefined') {
+      return requestAnimationFrame(callback);
+    }
+    // Fallback for test environments
+    return setTimeout(callback, 16) as unknown as number;
+  }
+
+  /**
+   * Safe cancelAnimationFrame wrapper for test environments
+   */
+  private safeCancelAnimationFrame(id: number): void {
+    if (typeof cancelAnimationFrame !== 'undefined') {
+      cancelAnimationFrame(id);
+    } else {
+      clearTimeout(id);
+    }
+  }
+  
   private startLoop() {
     const loop = () => {
       this.renderLoop();
-      this.animationFrameId = requestAnimationFrame(loop);
+      this.animationFrameId = this.safeRequestAnimationFrame(loop);
     };
-    this.animationFrameId = requestAnimationFrame(loop);
+    this.animationFrameId = this.safeRequestAnimationFrame(loop);
   }
   
   private stopLoop() {
     if (this.animationFrameId !== null) {
-      cancelAnimationFrame(this.animationFrameId);
+      this.safeCancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
     }
   }

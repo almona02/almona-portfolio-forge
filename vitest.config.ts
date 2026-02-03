@@ -1,9 +1,9 @@
 /// <reference types="vitest/config" />
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import { fileURLToPath } from 'url';
-import path from 'node:path';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
+import react from '@vitejs/plugin-react';
+import path from 'node:path';
+import { fileURLToPath } from 'url';
+import { defineConfig } from 'vitest/config';
 const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
@@ -11,6 +11,10 @@ const enableStorybookBrowser = process.env.STORYBOOK_BROWSER_TESTS === '1';
 
 export default defineConfig({
   plugins: [react()],
+  // Force test environment mode for React (prevents act() errors)
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('test'),
+  },
   test: {
     globals: true,
     environment: 'jsdom',

@@ -16,6 +16,20 @@ afterEach(() => {
   cleanup();
 });
 
+// Mock requestAnimationFrame for tests (required for animations and canvas operations)
+global.requestAnimationFrame = (callback: FrameRequestCallback) => {
+  return setTimeout(callback, 0) as unknown as number;
+};
+
+global.cancelAnimationFrame = (id: number) => {
+  clearTimeout(id);
+};
+
+// Ensure React runs in test mode (not production) to avoid act() errors
+if (typeof process !== 'undefined') {
+  process.env.NODE_ENV = 'test';
+}
+
 // Provide a minimal jest compatibility shim for legacy tests using jest.* APIs
 // Vitest exposes the same API surface under vi
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
