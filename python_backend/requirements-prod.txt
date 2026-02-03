@@ -1,4 +1,4 @@
-absl-py==2.3.1
+﻿absl-py==2.3.1
 aiohappyeyeballs==2.6.1
 aiohttp==3.13.3
 aiohttp-retry==2.9.1
@@ -51,7 +51,7 @@ email_validator==2.2.0
 et_xmlfile==2.0.0
 ezdxf==1.4.3
 fastapi==0.123.8
-filelock==3.18.0
+filelock==3.20.3
 Flask==3.1.2
 flask-cors==6.0.1
 Flask-Limiter==3.13
@@ -99,7 +99,7 @@ imageio==2.37.0
 importlib_metadata==8.7.0
 iniconfig==2.1.0
 itsdangerous==2.2.0
-Jinja2==3.1.4
+Jinja2==3.1.6
 jiter==0.12.0
 joblib==1.5.2
 keras==3.13.2
@@ -144,7 +144,7 @@ packaging==25.0
 pandas==2.3.1
 passlib==1.7.4
 pdf2image==1.17.0
-pdfminer.six==20251107
+pdfminer.six==20260107
 pdfplumber==0.11.8
 piexif==1.1.3
 pillow==12.1.0
@@ -196,6 +196,7 @@ python-multipart==0.0.22
 python-socketio==5.16.0
 pytz==2025.2
 PyWavelets==1.9.0
+pywin32==311
 PyYAML==6.0.2
 pyzmq==27.1.0
 qudida==0.0.4
