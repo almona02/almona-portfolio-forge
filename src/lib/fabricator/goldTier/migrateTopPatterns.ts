@@ -18,11 +18,11 @@
 
 import { EGYPTIAN_PATTERNS, type EgyptianPattern } from '@/data/egyptian-window-patterns';
 import { SYSTEM_PACKS, type SystemPack } from '@/data/systemPacks';
-import { PatternMigrationService, type MigrationResult } from './PatternMigrationService';
-import { FenestrationSystemValidator } from './FenestrationSystemValidator';
-import { GoldTierPerformanceMonitor } from './PerformanceMonitor';
 import { logFabricatorAudit } from '@/lib/audit/fabricatorAudit';
 import type { FenestrationSystem } from '@/types/fenestration';
+import { FenestrationSystemValidator } from './FenestrationSystemValidator';
+import { PatternMigrationService, type MigrationResult } from './PatternMigrationService';
+import { GoldTierPerformanceMonitor } from './PerformanceMonitor';
 
 export interface MigrationBatchResult {
   total: number;
@@ -227,7 +227,7 @@ export async function migratePatternBatch(
   const totalTime = performance.now() - startTime;
   
   // Calculate performance metrics
-  const performance = {
+  const performanceMetrics = {
     totalTimeMs: totalTime,
     averageTimeMs: migrationTimes.length > 0
       ? migrationTimes.reduce((a, b) => a + b, 0) / migrationTimes.length
@@ -248,7 +248,7 @@ export async function migratePatternBatch(
       total: configs.length,
       successful: systems.length,
       failed: errors.length,
-      performance,
+      performance: performanceMetrics,
     },
     errorMessage: errors.length > 0 ? `${errors.length} migrations failed` : undefined,
   });
@@ -259,7 +259,7 @@ export async function migratePatternBatch(
     failed: errors.length,
     systems,
     errors,
-    performance,
+    performance: performanceMetrics,
   };
 }
 
