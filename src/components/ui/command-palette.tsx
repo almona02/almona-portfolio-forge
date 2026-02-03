@@ -16,7 +16,7 @@ export function CommandPalette() {
   React.useEffect(() => {
     // Handler for toggling the palette
     const handleToggle = () => setOpen((prev) => !prev);
-    
+
     // Shortcut handler
     const onShortcut = (e: KeyboardEvent) => {
       e.preventDefault();
@@ -29,7 +29,7 @@ export function CommandPalette() {
     // Legacy support
     const handleCustomEvent = () => setOpen(true);
     window.addEventListener('open-command-palette', handleCustomEvent);
-    
+
     return () => {
       shortcutManager.unregister('app.command-palette', onShortcut);
       window.removeEventListener('open-command-palette', handleCustomEvent);
@@ -50,7 +50,7 @@ export function CommandPalette() {
     >
       <div className="flex items-center border-b border-slate-800 px-3 h-14">
         <Search className="mr-2 h-4 w-4 shrink-0 text-amber-500" />
-        <Command.Input 
+        <Command.Input
           placeholder="Type a command or search..."
           className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-slate-500 text-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
         />
@@ -60,7 +60,7 @@ export function CommandPalette() {
           </kbd>
         </div>
       </div>
-      
+
       <Command.List className="max-h-[300px] overflow-y-auto overflow-x-hidden p-2 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
         <Command.Empty className="py-6 text-center text-sm text-slate-500">
           No results found.
@@ -110,8 +110,8 @@ export function CommandPalette() {
             System Preferences
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => shortcutManager.handleKeyDown(new KeyboardEvent('keydown', { key: '?', bubbles: true })))}>
-             <span className="mr-2 h-4 w-4 flex items-center justify-center font-bold text-slate-400">?</span>
-             Keyboard Shortcuts
+            <span className="mr-2 h-4 w-4 flex items-center justify-center font-bold text-slate-400">?</span>
+            Keyboard Shortcuts
           </CommandItem>
         </Command.Group>
       </Command.List>
@@ -133,4 +133,37 @@ function CommandItem({ children, onSelect }: { children: React.ReactNode, onSele
       {children}
     </Command.Item>
   )
+}
+
+/**
+ * Command Palette Item type for external use
+ */
+export interface CommandPaletteItem {
+  id: string;
+  label: string;
+  description?: string;
+  action: () => void;
+  keywords?: string[];
+  category?: string;
+}
+
+/**
+ * Hook for managing command palette state
+ * Exposed for testing purposes
+ */
+export function useCommandPalette() {
+  const [open, setOpen] = React.useState(false);
+  const [query, setQuery] = React.useState('');
+
+  const openPalette = React.useCallback(() => setOpen(true), []);
+  const closePalette = React.useCallback(() => setOpen(false), []);
+  const setSearchQuery = React.useCallback((q: string) => setQuery(q), []);
+
+  return {
+    open,
+    query,
+    openPalette,
+    closePalette,
+    setSearchQuery,
+  };
 }
