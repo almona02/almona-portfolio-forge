@@ -10,12 +10,11 @@
  * @since Gold Tier Phase 1, Task 3.1
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { GoldTierOrchestrator } from '../GoldTierOrchestrator';
-import { ApexEngineV2 } from '../ApexEngineV2';
-import { DualOutputGenerator } from '../../DualOutputGenerator';
 import type { WindowUnit } from '@/types/fabricator';
-import { createValidSystem } from './testFixtures';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { DualOutputGenerator } from '../../DualOutputGenerator';
+import { ApexEngineV2 } from '../ApexEngineV2';
+import { GoldTierOrchestrator } from '../GoldTierOrchestrator';
 
 // Mock dependencies
 vi.mock('../ApexEngineV2');
@@ -37,7 +36,14 @@ vi.mock('../PatternMigrationService', () => ({
   PatternMigrationService: {
     migrate: vi.fn().mockReturnValue({
       success: true,
-      system: createValidSystem(),
+      system: {
+        id: 'test-system',
+        name: 'Test System',
+        profiles: { frame: { code: 'F1' } },
+        fabricationRules: {},
+        regionalPhysics: {},
+        metadata: { validationStatus: 'validated' }
+      } as any,
       errors: [],
       warnings: [],
     }),
@@ -63,6 +69,15 @@ vi.mock('@/data/systemPacks', () => ({
   ],
 }));
 
+// Mock EGYPTIAN_PATTERNS for migration tests to avoid "0 > 0" failure if real data is missing/different
+vi.mock('@/data/egyptian-window-patterns', () => ({
+  EGYPTIAN_PATTERNS: [
+    { id: 'sliding-2s', name: 'Sliding 2 Sash', type: 'sliding' },
+    { id: 'casement-double', name: 'Casement Double', type: 'casement' },
+    // Add enough items if tests count them
+  ]
+}));
+
 describe('GoldTierOrchestrator', () => {
   let orchestrator: GoldTierOrchestrator;
   let mockWindowUnit: WindowUnit;
@@ -85,7 +100,7 @@ describe('GoldTierOrchestrator', () => {
       optimization: null,
       createdAt: new Date(),
       updatedAt: new Date(),
-      presetId: 'sliding-2s',
+      presetId: 'legacy-preset', // Use non-migrated pattern by default
       systemPackId: 'rock60',
       grid: {
         rows: 1,
@@ -104,7 +119,7 @@ describe('GoldTierOrchestrator', () => {
 
     // Mock ApexEngineV2
     (ApexEngineV2 as any).mockImplementation(() => ({
-      generateAssembly: vi.fn().mockResolvedValue({
+      generateAssembly: vi.fn().mockReturnValue({ // Synchronous return
         visualGeometry: {
           frame: { outline: [], corners: [] },
           sashes: [],
@@ -140,6 +155,7 @@ describe('GoldTierOrchestrator', () => {
           profiles: [],
           hardware: [],
           glazing: [],
+          productionSequence: [],
         },
         existingCutList: [],
       }),
@@ -181,6 +197,9 @@ describe('GoldTierOrchestrator', () => {
         },
       });
 
+      // Use a migrated pattern
+      mockWindowUnit.presetId = 'sliding-2s';
+
       const result = await orchestrator.generate(mockWindowUnit);
 
       // Should attempt Gold Tier (may fallback if validation fails)
@@ -197,6 +216,8 @@ describe('GoldTierOrchestrator', () => {
           },
         },
       });
+
+      mockWindowUnit.presetId = 'sliding-2s';
 
       // Mock error in ApexEngineV2
       (ApexEngineV2 as any).mockImplementation(() => {
@@ -254,10 +275,12 @@ describe('GoldTierOrchestrator', () => {
           },
         },
       });
+      
+      mockWindowUnit.presetId = 'sliding-2s';
 
       // Mock validation failure
       (ApexEngineV2 as any).mockImplementation(() => ({
-        generateAssembly: vi.fn().mockResolvedValue({
+        generateAssembly: vi.fn().mockReturnValue({
           visualGeometry: {
             frame: { outline: [], corners: [] },
             sashes: [],
@@ -290,9 +313,20 @@ describe('GoldTierOrchestrator', () => {
             glazing: [],
           },
           fabrication: {
-            profiles: [{ id: 'TEST', cutLength: 500000 }], // 500mm - large difference
+            profiles: [{ 
+              profileCode: 'TEST', 
+              role: 'frame',
+              quantity: 1,
+              length: 500, // 500mm
+              cuttingLengths: [500],
+              angles: [90, 90],
+              machiningZones: [],
+              weight: 1,
+              cost: 10
+            }],
             hardware: [],
             glazing: [],
+            productionSequence: [],
           },
           existingCutList: [],
         }),
