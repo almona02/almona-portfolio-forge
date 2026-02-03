@@ -1,5 +1,5 @@
 import { GestureEvent, TouchGestureManager } from '@/lib/input/TouchGestureManager';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 export interface GestureHandlers {
     onTap?: (e: GestureEvent) => void;
@@ -39,4 +39,31 @@ export function useTouchGestures<T extends HTMLElement>(handlers: GestureHandler
     }, []); // Only run once on mount
 
     return ref;
+}
+
+/**
+ * Higher-Order Component that wraps a component with touch gesture support
+ * @param Component - The component to wrap
+ * @param config - Gesture configuration (currently passed but not used in this simplified version)
+ * @param handlers - Gesture event handlers
+ */
+export function withTouchGestures<P extends object>(
+  Component: React.ComponentType<P>,
+  _config: {
+    pinchZoom: boolean;
+    twoFingerPan: boolean;
+    rotate: boolean;
+    tapSelect: boolean;
+    longPress: boolean;
+    swipe: boolean;
+    momentum: boolean;
+  },
+  handlers: GestureHandlers
+) {
+  return function WithTouchGestures(props: P) {
+    // Note: config parameter is accepted for API compatibility but not currently used
+    // Future enhancement: pass config to TouchGestureManager
+    useTouchGestures(handlers);
+    return React.createElement(Component, props);
+  };
 }
