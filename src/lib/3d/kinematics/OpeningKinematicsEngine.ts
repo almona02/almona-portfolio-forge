@@ -14,7 +14,6 @@
 
 import { Euler, Quaternion, Vector3 } from 'three';
 import { CollisionDetector } from './CollisionDetector';
-import { PhysicsSimulator } from './PhysicsSimulator';
 
 export type OpeningType = 'casement' | 'sliding' | 'tilt_turn' | 'awning' | 'fixed';
 
@@ -51,11 +50,8 @@ export interface KinematicsResult {
  */
 export class OpeningKinematicsEngine {
   private collisionDetector: CollisionDetector;
-  private physicsSimulator: PhysicsSimulator;
-
   constructor() {
     this.collisionDetector = new CollisionDetector();
-    this.physicsSimulator = new PhysicsSimulator();
   }
 
   /**
@@ -142,11 +138,8 @@ export class OpeningKinematicsEngine {
       const rotation = new Euler(0, angle, 0); // Rotate around Y axis
 
       // Calculate sash position (rotates around hinge)
-      const sashCenter = new Vector3(
-        config.windowWidth / 2,
-        0,
-        0
-      );
+      // Sash center is at (0,0,0) relative to frame center when closed
+      const sashCenter = new Vector3(0, 0, 0);
 
       // Rotate sash center around hinge
       const quaternion = new Quaternion().setFromEuler(rotation);

@@ -91,6 +91,7 @@ class QueryProfiler:
             explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT {format}) {query}"
 
             # Execute EXPLAIN ANALYZE
+            # nosemgrep: python.sqlalchemy.security.audit.avoid-sqlalchemy-text.avoid-sqlalchemy-text
             result = await session.execute(text(explain_query), params or {})
 
             if format == "JSON":

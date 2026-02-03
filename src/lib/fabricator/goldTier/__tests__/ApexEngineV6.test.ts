@@ -16,7 +16,8 @@ const mockSystem: any = {
     cutting: { miterAllowance: 0 },
     welding: { burnOff: 0 },
     assembly: { frameClearance: 5 }
-  }
+  },
+  regionalPhysics: { thermalExpansionCoefficient: 0.000023 } // Required to bypass adapter fallback
 };
 
 const mockUnit: any = {

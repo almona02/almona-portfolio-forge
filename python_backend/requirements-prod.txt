@@ -243,8 +243,8 @@ threadpoolctl==3.6.0
 tifffile==2025.9.9
 tomli==2.3.0
 tomli_w==1.2.0
-torch==2.7.1
-torchvision==0.22.1
+# torch==2.7.1
+# torchvision==0.22.1
 tqdm==4.67.1
 twilio==9.7.0
 typer-slim==0.21.1

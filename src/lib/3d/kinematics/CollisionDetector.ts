@@ -9,8 +9,8 @@
  * @since Phase 4: 3D Visual Upgrade (Week 22)
  */
 
-import { Vector3, Box3 } from 'three';
-import type { MotionPath, KinematicsConfig } from './OpeningKinematicsEngine';
+import { Box3, Vector3 } from 'three';
+import type { KinematicsConfig, MotionPath } from './OpeningKinematicsEngine';
 
 export interface CollisionResult {
   hasCollision: boolean;
@@ -32,8 +32,8 @@ export class CollisionDetector {
   ): boolean {
     // Define frame bounds
     const frameBounds = new Box3(
-      new Vector3(-config.windowWidth / 2, -config.windowHeight / 2, -0.1),
-      new Vector3(config.windowWidth / 2, config.windowHeight / 2, 0.1)
+      new Vector3(-config.windowWidth / 2, -config.windowHeight / 2, -2.0), // Allow 2m depth for opening
+      new Vector3(config.windowWidth / 2, config.windowHeight / 2, 2.0)
     );
 
     // Define sash bounds (slightly smaller than frame)

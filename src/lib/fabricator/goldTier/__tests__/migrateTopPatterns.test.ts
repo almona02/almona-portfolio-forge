@@ -6,21 +6,40 @@
  * @since Gold Tier Phase 1, Task 1.3
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import {
-  migrateTopEgyptianPatterns,
-  migrateTurkishUPVCSystems,
-  migrateGCCThermalBreakSystems,
-  migrateAllTopPatterns,
-  generateMigrationReport,
-  exportMigratedSystems,
-} from '../migrateTopPatterns';
-import { PatternMigrationService } from '../PatternMigrationService';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { FenestrationSystemValidator } from '../FenestrationSystemValidator';
+import { PatternMigrationService } from '../PatternMigrationService';
+import {
+    exportMigratedSystems,
+    generateMigrationReport,
+    migrateAllTopPatterns,
+    migrateGCCThermalBreakSystems,
+    migrateTopEgyptianPatterns,
+    migrateTurkishUPVCSystems,
+} from '../migrateTopPatterns';
 
 // Mock dependencies
 vi.mock('../PatternMigrationService');
 vi.mock('../FenestrationSystemValidator');
+vi.mock('@/data/systemPacks', () => ({
+  SYSTEM_PACKS: [
+    { meta: { id: 'rock60', name: 'ROCK 60' } },
+    { meta: { id: 'panda-50', name: 'Panda 50' } },
+    { meta: { id: 'anadolu_w60', name: 'Anadolu W60' } },
+    { meta: { id: 'kale_70_sliding', name: 'Kale 70' } },
+    { meta: { id: 'asas_cw100', name: 'Asas CW100' } },
+    { meta: { id: 'jumbo100', name: 'Jumbo 100' } },
+  ],
+}));
+vi.mock('@/data/egyptian-window-patterns', () => ({
+  EGYPTIAN_PATTERNS: [
+    { id: 'sliding-2s', name: 'Sliding 2S', region: 'EGY' },
+    { id: 'casement-double', name: 'Casement Double', region: 'EGY' },
+    { id: 'sliding-4s', name: 'Sliding 4S', region: 'EGY' },
+    { id: 'casement-2sash', name: 'Casement 2 Sash', region: 'EGY' },
+    { id: 'casement-2sash-fixed', name: 'Casement Fixed', region: 'EGY' },
+  ],
+}));
 vi.mock('../PerformanceMonitor', () => ({
   GoldTierPerformanceMonitor: {
     clear: vi.fn(),

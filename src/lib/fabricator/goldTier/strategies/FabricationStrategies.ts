@@ -75,7 +75,9 @@ export class ButtJointStrategy implements FabricationStrategy {
     // Sides are reduced by profile thickness (width of the profile face)
     // IMPORTANT: Profile dimensions in context should be used
     // Assuming profile.width is the "face width" (height) of the bar in the frame context
-    const profileThickness = (ctx.profile.width || 0) * 1000; // convert mm to microns if needed, assume profile in mm
+    // Support both direct width property and dimensions object
+    const width = (ctx.profile as any).dimensions?.width ?? ctx.profile.width ?? 0;
+    const profileThickness = width * 1000; // convert mm to microns if needed
     
     const verticalLength = ctx.height - (profileThickness * 2);
 

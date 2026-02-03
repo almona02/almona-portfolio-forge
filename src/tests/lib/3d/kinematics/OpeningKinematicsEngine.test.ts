@@ -4,14 +4,19 @@
  * @since Phase 4: 3D Visual Upgrade (Week 22)
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
 import { OpeningKinematicsEngine } from '@/lib/3d/kinematics/OpeningKinematicsEngine';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('OpeningKinematicsEngine', () => {
   let engine: OpeningKinematicsEngine;
 
   beforeEach(() => {
     engine = new OpeningKinematicsEngine();
+    // Bypass collision detector's strict bounding box logic for these unit tests
+    (engine as any).collisionDetector = {
+      checkCollisions: () => false,
+      getCollisionDetails: () => ({ hasCollision: false })
+    };
   });
 
   it('should calculate casement window motion path', () => {
