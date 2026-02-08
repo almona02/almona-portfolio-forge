@@ -22,6 +22,13 @@
 import { MemoryLeakDetector, clearMemoryLeakDetector, getMemoryLeakDetector } from '@/lib/performance/MemoryLeakDetector';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+// Polyfill URL.createObjectURL / revokeObjectURL for JSDOM/Node environment
+if (typeof URL.createObjectURL !== 'function') {
+  let urlCounter = 0;
+  URL.createObjectURL = () => `blob:test-${++urlCounter}`;
+  URL.revokeObjectURL = () => {};
+}
+
 
 describe('Memory Leak Detection - 8-Hour Simulated Workshop Session', () => {
   let detector: MemoryLeakDetector;
