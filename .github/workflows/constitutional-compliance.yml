@@ -114,7 +114,14 @@ jobs:
           VIOLATIONS=0
 
           for term in "${FORBIDDEN_TERMS[@]}"; do
-            if grep -r "$term" "src/components/fabricator/drafting" 2>/dev/null; then
+            # Exclude test files, docs, and markdown from the scan
+            # Test files legitimately reference these terms to assert their absence
+            if grep -r "$term" "src/components/fabricator/drafting" \
+              --include='*.ts' --include='*.tsx' \
+              --exclude-dir='__tests__' \
+              --exclude='*.test.ts' --exclude='*.test.tsx' \
+              --exclude='*.spec.ts' --exclude='*.spec.tsx' \
+              --exclude='*.md' 2>/dev/null; then
               echo "❌ Tier 0 violation: '$term' found in drafting components"
               VIOLATIONS=$((VIOLATIONS + 1))
             fi

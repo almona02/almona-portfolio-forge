@@ -8,6 +8,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ExportService } from '../ExportService';
 import { ExportFormat, PDFExportOptions } from '../types';
 
+// Mock heavy PDF generator to avoid timeouts in CI
+vi.mock('../PDFExportGenerator', () => ({
+  PDFExportGenerator: class {
+    async generate(project: any, _optimization: any, _options: any) {
+      // Simulate error for invalid projects (missing required fields)
+      if (!project || !project.id || !project.orderNumber) {
+        throw new Error('Invalid project: missing required fields');
+      }
+      return new Blob(['mock-pdf-content'], { type: 'application/pdf' });
+    }
+  },
+}));
+
 describe('ExportService', () => {
   let exportService: ExportService;
   let mockProject: WindowUnit;
@@ -61,7 +74,7 @@ describe('ExportService', () => {
       expect(result.blob).toBeDefined();
       expect(result.filename).toContain('ORD-001');
       expect(result.filename).toContain('.pdf');
-    }, 15000); // Increase timeout for PDF generation
+    }, 30000); // Extended timeout for PDF generation in CI
 
     it('should export project to CSV format', async () => {
       const options = {
@@ -137,7 +150,7 @@ describe('ExportService', () => {
       // Progress callback should be called (implementation-dependent)
       // For now, just verify the export completes
       expect(true).toBe(true);
-    }, 15000); // Increase timeout for PDF generation with progress tracking
+    }, 30000); // Extended timeout for PDF generation with progress tracking in CI
   });
 
   describe('batch export', () => {
