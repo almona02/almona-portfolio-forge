@@ -9,10 +9,10 @@ import os
 from pathlib import Path
 
 try:
-    import PyPDF2
-    HAS_PYPDF2 = True
+    import pypdf
+    HAS_PYPDF = True
 except ImportError:
-    HAS_PYPDF2 = False
+    HAS_PYPDF = False
 
 def verify_aim3410_extraction(pdf_path: str, extracted_data: dict) -> dict:
     """Verify AIM 3410 PDF extraction accuracy."""
@@ -31,13 +31,13 @@ def verify_aim3410_extraction(pdf_path: str, extracted_data: dict) -> dict:
         results["issues"].append("PDF file not found")
         return results
     
-    if not HAS_PYPDF2:
-        results["issues"].append("PyPDF2 not available for verification")
+    if not HAS_PYPDF:
+        results["issues"].append("pypdf not available for verification")
         return results
     
     try:
         with open(pdf_path, 'rb') as f:
-            reader = PyPDF2.PdfReader(f)
+            reader = pypdf.PdfReader(f)
             results["pages_found"] = len(reader.pages)
             
             # Check page count match
