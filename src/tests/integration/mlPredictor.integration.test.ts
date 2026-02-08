@@ -6,8 +6,8 @@
 import { featureEngineer } from '@/lib/analytics/FeatureEngineer';
 import type { Remnant } from '@/lib/inventory/RemnantManager';
 import { modelTrainer } from '@/lib/ml/ModelTrainer';
-import type { RemnantFeatures } from '@/lib/ml/RemnantUsagePredictor';
-import { RemnantUsagePredictor } from '@/lib/ml/RemnantUsagePredictor';
+import type { RemnantFeatures } from '@/future/advisory/RemnantUsagePredictor';
+import { RemnantUsagePredictor } from '@/future/advisory/RemnantUsagePredictor';
 import { describe, expect, it, vi } from 'vitest';
 
 // Mock Supabase (Correct path used by RemnantPredictor)
