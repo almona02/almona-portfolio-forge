@@ -143,9 +143,51 @@ const initializeModulePolyfill = () => {
   }
 };
 
+/**
+ * Default scroll-blocking events to passive when no explicit option is set.
+ * This eliminates "[Violation] Added non-passive event listener" warnings
+ * from third-party libraries (React, Radix UI, etc.) that don't set passive.
+ *
+ * Events that call preventDefault() inside their handler will still work —
+ * they just need to pass { passive: false } explicitly (e.g. useCanvasEvents).
+ */
+function installPassiveEventListenerDefaults() {
+  const PASSIVE_EVENTS = new Set([
+    'touchstart', 'touchmove',
+    'wheel', 'mousewheel',
+    'scroll',
+  ]);
+
+  const originalAddEventListener = EventTarget.prototype.addEventListener;
+
+  EventTarget.prototype.addEventListener = function (
+    this: EventTarget,
+    type: string,
+    listener: EventListenerOrEventListenerObject | null,
+    options?: boolean | AddEventListenerOptions,
+  ) {
+    // Only patch if the caller didn't specify passive at all
+    if (PASSIVE_EVENTS.has(type)) {
+      if (options === undefined || options === null) {
+        // No options provided → default to passive
+        options = { passive: true };
+      } else if (typeof options === 'object' && options.passive === undefined) {
+        // Object options provided but passive not set → default to passive
+        options = { ...options, passive: true };
+      }
+      // If passive is explicitly set (true or false), respect it
+    }
+
+    return originalAddEventListener.call(this, type, listener, options);
+  };
+}
+
 // Initialize polyfills globally if needed
 export function initializePolyfills() {
   if (typeof window !== 'undefined') {
+    // CRITICAL: Install passive event listener defaults FIRST (before any lib adds listeners)
+    installPassiveEventListenerDefaults();
+
     // Initialize module polyfill first (needed for CommonJS packages)
     initializeModulePolyfill();
     // Pre-load long package for TensorFlow.js compatibility

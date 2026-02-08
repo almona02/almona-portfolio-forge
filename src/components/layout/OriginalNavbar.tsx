@@ -88,7 +88,7 @@ const Navbar = ({ user, quoteItems = [], onLogout }: NavbarProps) => {
       setIsScrolled(scrolled);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 

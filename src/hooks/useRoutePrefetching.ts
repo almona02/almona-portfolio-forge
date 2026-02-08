@@ -98,7 +98,7 @@ export const useRoutePrefetching = () => {
       const prefetchHandler = () => prefetchRoute(href);
       
       link.addEventListener('mouseenter', prefetchHandler, { once: true });
-      link.addEventListener('touchstart', prefetchHandler, { once: true });
+      link.addEventListener('touchstart', prefetchHandler, { once: true, passive: true });
       link.addEventListener('focus', prefetchHandler, { once: true });
     });
   }, [prefetchRoute]);
