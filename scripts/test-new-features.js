@@ -5,11 +5,12 @@
  * Tests all newly implemented features for production readiness
  */
 
-const puppeteer = require('puppeteer');
-const axios = require('axios');
-const WebSocket = require('ws');
-const fs = require('fs').promises;
-const path = require('path');
+import axios from 'axios';
+import { promises as fs } from 'fs';
+import path from 'path';
+import puppeteer from 'puppeteer';
+import { fileURLToPath } from 'url';
+import WebSocket from 'ws';
 
 // Test configuration
 const config = {
@@ -689,8 +690,9 @@ async function main() {
 }
 
 // Run tests if script is executed directly
-if (require.main === module) {
+// Run tests if script is executed directly
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   main().catch(console.error);
 }
 
-module.exports = { TestRunner, testResults };
+export { TestRunner, testResults };

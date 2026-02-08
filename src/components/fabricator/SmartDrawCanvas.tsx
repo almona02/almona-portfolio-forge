@@ -74,6 +74,7 @@ interface SmartDrawProps {
   canRedoRef?: React.MutableRefObject<boolean>; // Expose canRedo state
   // Phase 3: Hardware integration (optional)
   onCellContextMenu?: (cellId: string, position: { x: number; y: number }, event: React.MouseEvent) => void; // Right-click context menu handler
+  readOnly?: boolean;
 }
 
 type MullionMode = 'none' | 'frame-horizontal' | 'frame-vertical' | 'sash-horizontal' | 'sash-vertical';

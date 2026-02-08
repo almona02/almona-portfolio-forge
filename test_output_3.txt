@@ -1,0 +1,599 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] › tests\e2e\project-studio-workflow.spec.ts:5:3 › Fabricator Reality Workflow - Project Studio › should support full Design-Optimize-Quote workflow
+[1A[2K[chromium] › tests\e2e\project-studio-workflow.spec.ts:5:3 › Fabricator Reality Workflow - Project Studio › should support full Design-Optimize-Quote workflow
+Navigating to /fabricator/studio/project/demo-proj-001
+
+[1A[2KBROWSER LOG: [vite] connecting...
+
+[1A[2KBROWSER LOG: [vite] connected.
+
+[1A[2KBROWSER LOG: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+
+[1A[2KBROWSER LOG: [ACCURACY_CONTRACT] Immutability verified
+
+[1A[2KBROWSER LOG: 🔧 Browser polyfills initialized for Node.js modules
+
+[1A[2KBROWSER LOG: 🔧 Development mode active
+
+[1A[2KBROWSER LOG: [PersonaIntegrity] All persona configurations valid
+
+[1A[2KNavigation status: 200
+
+[1A[2KWaiting for "Project Studio" text...
+
+[1A[2KBROWSER LOG: [Almona Egypt] Initial load completed in 15ms
+
+[1A[2KBROWSER LOG: [analytics-dev] {event: ab_testing_initialized, properties: Object, ts: 1770230451009}
+
+[1A[2KBROWSER LOG: [AuthDebug] Env Check: {isDev: true, mode: development, lsToken: true}
+
+[1A[2KBROWSER LOG: [Auth] Restoring persisted DEV session
+
+[1A[2KBROWSER LOG: [analytics-dev] {event: ab_testing_initialized, properties: Object, ts: 1770230451013}
+
+[1A[2KBROWSER LOG: [AuthDebug] Env Check: {isDev: true, mode: development, lsToken: true}
+
+[1A[2KBROWSER LOG: [Auth] Restoring persisted DEV session
+
+[1A[2KBROWSER LOG: Performance Metric: {name: TTFB, value: 5325.20000000298, rating: poor, delta: 5325.20000000298, entries: Array(1)}
+
+[1A[2KBROWSER LOG: [Performance] ⚠️ Budget exceeded for TTFB: 5325.20 > 800 (665.7% over budget)
+
+[1A[2KBROWSER LOG: Performance Metric: {name: TTFBBudgetExceeded, value: 665.7, id: TTFB-budget-alert}
+
+[1A[2KBROWSER LOG: Performance Metric: {name: TTFB, value: 5325.20000000298, rating: poor, delta: 5325.20000000298, entries: Array(1)}
+
+[1A[2KBROWSER LOG: [Performance] ⚠️ Budget exceeded for TTFB: 5325.20 > 800 (665.7% over budget)
+
+[1A[2KBROWSER LOG: Performance Metric: {name: TTFBBudgetExceeded, value: 665.7, id: TTFB-budget-alert}
+
+[1A[2KBROWSER LOG: Performance Metric: {name: FCP, value: 61520, rating: poor, delta: 61520, entries: Array(1)}
+
+[1A[2KBROWSER LOG: [Performance] ⚠️ Budget exceeded for FCP: 61520.00 > 1800 (3417.8% over budget)
+
+[1A[2KBROWSER LOG: Performance Metric: {name: FCPBudgetExceeded, value: 3417.8, id: FCP-budget-alert}
+
+[1A[2KBROWSER LOG: Performance Metric: {name: FCP, value: 61520, rating: poor, delta: 61520, entries: Array(1)}
+
+[1A[2KBROWSER LOG: [Performance] ⚠️ Budget exceeded for FCP: 61520.00 > 1800 (3417.8% over budget)
+
+[1A[2KBROWSER LOG: Performance Metric: {name: FCPBudgetExceeded, value: 3417.8, id: FCP-budget-alert}
+
+[1A[2KBROWSER LOG: ⚠️ [Performance] App: lcp = 61520.00ms
+
+[1A[2KBROWSER LOG: ✅ [Performance] App: cls = 0.00ms
+
+[1A[2KBROWSER LOG: ⚠️ [Performance] App: lcp = 61576.00ms
+
+[1A[2KBROWSER LOG: [Almona Egypt] Web Workers ready for optimization algorithms
+
+[1A[2KBROWSER LOG: ✅ [Performance] App: cls = 0.00ms
+
+[1A[2KBROWSER LOG: ⚠️ [Performance] App: lcp = 61968.00ms
+
+[1A[2KBROWSER LOG: ✅ [Performance] App: cls = 0.00ms
+
+[1A[2KBROWSER LOG: ✅ [Performance] App: cls = 0.00ms
+
+[1A[2KBROWSER LOG: [Performance] Bundle: react_jsx-dev-runtime.js?v=4b9518dc - 36.04KB (36.33KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: react.js?v=4b9518dc - 1.00KB (1.29KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: react-dom_client.js?v=4b9518dc - 1.61KB (1.90KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: react-helmet-async.js?v=92915ef4 - 31.87KB (32.16KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: zustand.js?v=fbdd59b4 - 1.49KB (1.79KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @tanstack_react-query.js?v=eb83d7d0 - 107.39KB (107.69KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @vercel_analytics_react.js?v=d8c28eeb - 5.25KB (5.54KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @vercel_speed-insights_react.js?v=522f4278 - 4.47KB (4.76KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: next-themes.js?v=46b64c31 - 4.67KB (4.96KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: react-router-dom.js?v=4b9518dc - 204.18KB (204.47KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: web-vitals.js?v=4a301abe - 8.34KB (8.63KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @supabase_supabase-js.js?v=4d57288e - 416.55KB (416.85KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: errors.json?import - 4.16KB (4.45KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: fabricator.json?import - 56.63KB (56.92KB transferred) - fabricator
+
+[1A[2KBROWSER LOG: [Performance] Bundle: home.json?import - 6.12KB (6.41KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: geography.json?import - 6.98KB (7.27KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: machines.json?import - 5.30KB (5.60KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: products.json?import - 10.62KB (10.91KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: quotes.json?import - 4.70KB (4.99KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: reports.json?import - 3.83KB (4.12KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: services.json?import - 10.91KB (11.20KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: tickets.json?import - 5.24KB (5.53KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: training.json?import - 5.45KB (5.74KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: translation.json?import - 12.10KB (12.39KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: gdpr.json?import - 1.28KB (1.57KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: errors.json?import - 2.16KB (2.45KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: geography.json?import - 3.39KB (3.69KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: machines.json?import - 4.42KB (4.71KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: products.json?import - 0.79KB (1.08KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: quotes.json?import - 3.83KB (4.12KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: services.json?import - 8.24KB (8.53KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: shop.json?import - 1.39KB (1.68KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: tickets.json?import - 4.32KB (4.62KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: training.json?import - 4.65KB (4.95KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: translation.json?import - 2.61KB (2.90KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: errors.json?import - 3.56KB (3.86KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: fabricator.json?import - 47.02KB (47.31KB transferred) - fabricator
+
+[1A[2KBROWSER LOG: [Performance] Bundle: fabricator_extended.json?import - 15.94KB (16.23KB transferred) - fabricator
+
+[1A[2KBROWSER LOG: [Performance] Bundle: geography.json?import - 5.30KB (5.59KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: home.json?import - 4.70KB (5.00KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: machines.json?import - 4.42KB (4.71KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: products.json?import - 8.05KB (8.35KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: quotes.json?import - 3.83KB (4.12KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: reports.json?import - 2.85KB (3.14KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: shop.json?import - 1.39KB (1.68KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: services.json?import - 10.02KB (10.31KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: tickets.json?import - 4.32KB (4.62KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: training.json?import - 4.65KB (4.95KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: errors.json?import - 2.16KB (2.45KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: translation.json?import - 3.87KB (4.17KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: gdpr.json?import - 1.26KB (1.55KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: geography.json?import - 3.39KB (3.69KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: machines.json?import - 4.42KB (4.71KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: products.json?import - 0.79KB (1.08KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: quotes.json?import - 3.83KB (4.12KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: services.json?import - 8.24KB (8.53KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: shop.json?import - 1.39KB (1.68KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: tickets.json?import - 4.32KB (4.62KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: training.json?import - 4.65KB (4.95KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: translation.json?import - 2.61KB (2.90KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: errors.json?import - 3.68KB (3.97KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: geography.json?import - 5.12KB (5.42KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: fabricator.json?import - 45.75KB (46.04KB transferred) - fabricator
+
+[1A[2KBROWSER LOG: [Performance] Bundle: home.json?import - 4.95KB (5.24KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: machines.json?import - 4.44KB (4.73KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: products.json?import - 8.62KB (8.91KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: quotes.json?import - 3.96KB (4.25KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: reports.json?import - 3.05KB (3.35KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: services.json?import - 9.19KB (9.48KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: tickets.json?import - 4.33KB (4.63KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: training.json?import - 4.73KB (5.03KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: translation.json?import - 12.47KB (12.77KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: i18next-browser-languagedetector.js?v=af6ede27 - 13.32KB (13.62KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: i18next.js?v=acbcc3cd - 78.64KB (78.93KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: react-i18next.js?v=b70ae6ef - 29.90KB (30.19KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: sonner.js?v=a7b0fc88 - 39.62KB (39.91KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @radix-ui_react-tooltip.js?v=f1caed62 - 23.61KB (23.90KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-45H4AZN4.js?v=5fe37be4 - 75.90KB (76.19KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-PLDDJCW6.js?v=5fe37be4 - 11.18KB (11.48KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-7DQKUHQT.js?v=5fe37be4 - 1.02KB (1.32KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-YPFF24UL.js?v=5fe37be4 - 909.42KB (909.71KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] ⚠️ Large bundle detected: chunk-YPFF24UL.js?v=5fe37be4 - 909.71KB (exceeds 500KB target)
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-GINTZ3TX.js?v=5fe37be4 - 36.37KB (36.67KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-32Z4M25C.js?v=5fe37be4 - 2.00KB (2.30KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: cmdk.js?v=02021e57 - 17.19KB (17.48KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: lucide-react.js?v=48f2929e - 784.52KB (784.81KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: framer-motion.js?v=9d105434 - 382.10KB (382.39KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-6WBQ3PW6.js?v=5fe37be4 - 1.88KB (2.17KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: class-variance-authority.js?v=2369a76f - 2.29KB (2.58KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: clsx.js?v=0a4ddec4 - 1.13KB (1.42KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: tailwind-merge.js?v=c937ba72 - 70.86KB (71.15KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-URLAEHUV.js?v=5fe37be4 - 1.25KB (1.55KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-5PNICDUU.js?v=5fe37be4 - 71.84KB (72.13KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-S4HXBTO6.js?v=5fe37be4 - 1.49KB (1.78KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-T57HZTF4.js?v=5fe37be4 - 0.76KB (1.05KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-ELBVOXYL.js?v=5fe37be4 - 10.64KB (10.93KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-W3ZRFAG7.js?v=5fe37be4 - 5.01KB (5.30KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-DVXFM7DV.js?v=5fe37be4 - 2.84KB (3.13KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-PEM7HDVK.js?v=5fe37be4 - 3.57KB (3.86KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-Z4WTTUI2.js?v=5fe37be4 - 5.92KB (6.21KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-UFJJKNOZ.js?v=5fe37be4 - 0.57KB (0.86KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-IG7DGF6F.js?v=5fe37be4 - 0.42KB (0.72KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-Y6RODPID.js?v=5fe37be4 - 1.18KB (1.47KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-U7P2NEEE.js?v=5fe37be4 - 0.61KB (0.90KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: zod.js?v=1b81f0fd - 120.38KB (120.68KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-EHLUGBD7.js?v=5fe37be4 - 17.13KB (17.42KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-3I7KGO23.js?v=5fe37be4 - 37.52KB (37.81KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: long.js?v=4b9518dc - 23.52KB (23.81KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: zustand_middleware.js?v=45dcd86d - 1.80KB (2.09KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: lz-string.js?v=fe8516d8 - 17.90KB (18.20KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-ZT337Q3J.js?v=5fe37be4 - 16.80KB (17.09KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @radix-ui_react-dropdown-menu.js?v=92265d3f - 13.56KB (13.86KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-R7QVQ6Y2.js?v=5fe37be4 - 9.60KB (9.89KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-NLZXER43.js?v=5fe37be4 - 0.67KB (0.96KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-VRYOIIP7.js?v=5fe37be4 - 7.60KB (7.89KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-C7M5YOGR.js?v=5fe37be4 - 38.30KB (38.59KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @radix-ui_react-tabs.js?v=97b2ad0d - 7.07KB (7.36KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle Summary: 116 bundles, 4158.15KB total (4192.14KB transferred)
+
+[1A[2KBROWSER LOG: Performance Metric: {name: BundleSize, value: 4192.13671875, id: bundle-size-summary}
+
+[1A[2KBROWSER LOG: [Performance] Fabricator bundles: 4 bundles, 166.50KB total
+
+[1A[2KBROWSER LOG: [Performance] Bundle: react_jsx-dev-runtime.js?v=4b9518dc - 36.04KB (36.33KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: react.js?v=4b9518dc - 1.00KB (1.29KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: react-dom_client.js?v=4b9518dc - 1.61KB (1.90KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: react-helmet-async.js?v=92915ef4 - 31.87KB (32.16KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: zustand.js?v=fbdd59b4 - 1.49KB (1.79KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @tanstack_react-query.js?v=eb83d7d0 - 107.39KB (107.69KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @vercel_analytics_react.js?v=d8c28eeb - 5.25KB (5.54KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @vercel_speed-insights_react.js?v=522f4278 - 4.47KB (4.76KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: next-themes.js?v=46b64c31 - 4.67KB (4.96KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: react-router-dom.js?v=4b9518dc - 204.18KB (204.47KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: web-vitals.js?v=4a301abe - 8.34KB (8.63KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @supabase_supabase-js.js?v=4d57288e - 416.55KB (416.85KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: errors.json?import - 4.16KB (4.45KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: fabricator.json?import - 56.63KB (56.92KB transferred) - fabricator
+
+[1A[2KBROWSER LOG: [Performance] Bundle: home.json?import - 6.12KB (6.41KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: geography.json?import - 6.98KB (7.27KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: machines.json?import - 5.30KB (5.60KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: products.json?import - 10.62KB (10.91KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: quotes.json?import - 4.70KB (4.99KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: reports.json?import - 3.83KB (4.12KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: services.json?import - 10.91KB (11.20KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: tickets.json?import - 5.24KB (5.53KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: training.json?import - 5.45KB (5.74KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: translation.json?import - 12.10KB (12.39KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: gdpr.json?import - 1.28KB (1.57KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: errors.json?import - 2.16KB (2.45KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: geography.json?import - 3.39KB (3.69KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: machines.json?import - 4.42KB (4.71KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: products.json?import - 0.79KB (1.08KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: quotes.json?import - 3.83KB (4.12KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: services.json?import - 8.24KB (8.53KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: shop.json?import - 1.39KB (1.68KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: tickets.json?import - 4.32KB (4.62KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: training.json?import - 4.65KB (4.95KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: translation.json?import - 2.61KB (2.90KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: errors.json?import - 3.56KB (3.86KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: fabricator.json?import - 47.02KB (47.31KB transferred) - fabricator
+
+[1A[2KBROWSER LOG: [Performance] Bundle: fabricator_extended.json?import - 15.94KB (16.23KB transferred) - fabricator
+
+[1A[2KBROWSER LOG: [Performance] Bundle: geography.json?import - 5.30KB (5.59KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: home.json?import - 4.70KB (5.00KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: machines.json?import - 4.42KB (4.71KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: products.json?import - 8.05KB (8.35KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: quotes.json?import - 3.83KB (4.12KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: reports.json?import - 2.85KB (3.14KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: shop.json?import - 1.39KB (1.68KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: services.json?import - 10.02KB (10.31KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: tickets.json?import - 4.32KB (4.62KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: training.json?import - 4.65KB (4.95KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: errors.json?import - 2.16KB (2.45KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: translation.json?import - 3.87KB (4.17KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: gdpr.json?import - 1.26KB (1.55KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: geography.json?import - 3.39KB (3.69KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: machines.json?import - 4.42KB (4.71KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: products.json?import - 0.79KB (1.08KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: quotes.json?import - 3.83KB (4.12KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: services.json?import - 8.24KB (8.53KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: shop.json?import - 1.39KB (1.68KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: tickets.json?import - 4.32KB (4.62KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: training.json?import - 4.65KB (4.95KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: translation.json?import - 2.61KB (2.90KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: errors.json?import - 3.68KB (3.97KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: geography.json?import - 5.12KB (5.42KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: fabricator.json?import - 45.75KB (46.04KB transferred) - fabricator
+
+[1A[2KBROWSER LOG: [Performance] Bundle: home.json?import - 4.95KB (5.24KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: machines.json?import - 4.44KB (4.73KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: products.json?import - 8.62KB (8.91KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: quotes.json?import - 3.96KB (4.25KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: reports.json?import - 3.05KB (3.35KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: services.json?import - 9.19KB (9.48KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: tickets.json?import - 4.33KB (4.63KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: training.json?import - 4.73KB (5.03KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: translation.json?import - 12.47KB (12.77KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: i18next-browser-languagedetector.js?v=af6ede27 - 13.32KB (13.62KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: i18next.js?v=acbcc3cd - 78.64KB (78.93KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: react-i18next.js?v=b70ae6ef - 29.90KB (30.19KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: sonner.js?v=a7b0fc88 - 39.62KB (39.91KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @radix-ui_react-tooltip.js?v=f1caed62 - 23.61KB (23.90KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-45H4AZN4.js?v=5fe37be4 - 75.90KB (76.19KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-PLDDJCW6.js?v=5fe37be4 - 11.18KB (11.48KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-7DQKUHQT.js?v=5fe37be4 - 1.02KB (1.32KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-YPFF24UL.js?v=5fe37be4 - 909.42KB (909.71KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] ⚠️ Large bundle detected: chunk-YPFF24UL.js?v=5fe37be4 - 909.71KB (exceeds 500KB target)
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-GINTZ3TX.js?v=5fe37be4 - 36.37KB (36.67KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-32Z4M25C.js?v=5fe37be4 - 2.00KB (2.30KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: cmdk.js?v=02021e57 - 17.19KB (17.48KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: lucide-react.js?v=48f2929e - 784.52KB (784.81KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: framer-motion.js?v=9d105434 - 382.10KB (382.39KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-6WBQ3PW6.js?v=5fe37be4 - 1.88KB (2.17KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: class-variance-authority.js?v=2369a76f - 2.29KB (2.58KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: clsx.js?v=0a4ddec4 - 1.13KB (1.42KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: tailwind-merge.js?v=c937ba72 - 70.86KB (71.15KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-URLAEHUV.js?v=5fe37be4 - 1.25KB (1.55KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-5PNICDUU.js?v=5fe37be4 - 71.84KB (72.13KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-S4HXBTO6.js?v=5fe37be4 - 1.49KB (1.78KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-T57HZTF4.js?v=5fe37be4 - 0.76KB (1.05KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-ELBVOXYL.js?v=5fe37be4 - 10.64KB (10.93KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-W3ZRFAG7.js?v=5fe37be4 - 5.01KB (5.30KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-DVXFM7DV.js?v=5fe37be4 - 2.84KB (3.13KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-PEM7HDVK.js?v=5fe37be4 - 3.57KB (3.86KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-Z4WTTUI2.js?v=5fe37be4 - 5.92KB (6.21KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-UFJJKNOZ.js?v=5fe37be4 - 0.57KB (0.86KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-IG7DGF6F.js?v=5fe37be4 - 0.42KB (0.72KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-Y6RODPID.js?v=5fe37be4 - 1.18KB (1.47KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-U7P2NEEE.js?v=5fe37be4 - 0.61KB (0.90KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: zod.js?v=1b81f0fd - 120.38KB (120.68KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-EHLUGBD7.js?v=5fe37be4 - 17.13KB (17.42KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-3I7KGO23.js?v=5fe37be4 - 37.52KB (37.81KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: long.js?v=4b9518dc - 23.52KB (23.81KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: zustand_middleware.js?v=45dcd86d - 1.80KB (2.09KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: lz-string.js?v=fe8516d8 - 17.90KB (18.20KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-ZT337Q3J.js?v=5fe37be4 - 16.80KB (17.09KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @radix-ui_react-dropdown-menu.js?v=92265d3f - 13.56KB (13.86KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-R7QVQ6Y2.js?v=5fe37be4 - 9.60KB (9.89KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-NLZXER43.js?v=5fe37be4 - 0.67KB (0.96KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-VRYOIIP7.js?v=5fe37be4 - 7.60KB (7.89KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: chunk-C7M5YOGR.js?v=5fe37be4 - 38.30KB (38.59KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle: @radix-ui_react-tabs.js?v=97b2ad0d - 7.07KB (7.36KB transferred) - chunk
+
+[1A[2KBROWSER LOG: [Performance] Bundle Summary: 116 bundles, 4158.15KB total (4192.14KB transferred)
+
+[1A[2KBROWSER LOG: Performance Metric: {name: BundleSize, value: 4192.13671875, id: bundle-size-summary}
+
+[1A[2KBROWSER LOG: [Performance] Fabricator bundles: 4 bundles, 166.50KB total
+
+[1A[2KBROWSER LOG: [Almona Egypt] Time to Interactive ~1036ms
+
+[1A[2KBROWSER LOG: The entry type 'first-contentful-paint' does not exist or isn't supported.
+
+[1A[2K  1) [chromium] › tests\e2e\project-studio-workflow.spec.ts:5:3 › Fabricator Reality Workflow - Project Studio › should support full Design-Optimize-Quote workflow 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByText(/Project Studio/i)
+    Expected: visible
+    Error: strict mode violation: getByText(/Project Studio/i) resolved to 2 elements:
+        1) <span class="text-sm font-medium">Project Studio</span> aka getByRole('link', { name: 'Navigate to Project Studio (' })
+        2) <h1 class="text-xl font-bold bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent uppercase tracking-widest">project STUDIO</h1> aka getByRole('heading', { name: 'project STUDIO' })
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 30000ms[22m
+    [2m  - waiting for getByText(/Project Studio/i)[22m
+
+
+      16 |     // 2. Verify Initial Load
+      17 |     console.log('Waiting for "Project Studio" text...');
+    > 18 |     await expect(page.getByText(/Project Studio/i)).toBeVisible({ timeout: 30000 });
+         |                                                     ^
+      19 |     console.log('Project Studio loaded.');
+      20 |
+      21 |     console.log('Waiting for "Add New Unit" button...');
+        at C:\projects\almona-portfolio-forge\tests\e2e\project-studio-workflow.spec.ts:18:53
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\project-studio-workflow-Fa-8d87c-ign-Optimize-Quote-workflow-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\project-studio-workflow-Fa-8d87c-ign-Optimize-Quote-workflow-chromium\error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › tests\e2e\project-studio-workflow.spec.ts:5:3 › Fabricator Reality Workflow - Project Studio › should support full Design-Optimize-Quote workflow 
+
+[36m  Serving HTML report at http://localhost:55749. Press Ctrl+C to quit.[39m
+^C^C

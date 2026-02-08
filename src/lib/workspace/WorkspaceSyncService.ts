@@ -1,23 +1,17 @@
-import { supabase } from '@/lib/supabase';
 import type { FabricatorWorkspaceState } from '@/context/FabricatorWorkspaceContext';
 import { quickPerformanceWins } from '@/lib/quickPerformance';
+import { supabase } from '@/lib/supabase';
 
 /**
  * WorkspaceSyncService
  * --------------------
- * Persists the Fabricator workspace state to Supabase with a robust
- * localStorage fallback, and exposes basic sync status information.
+ * Scoped to UI workspace preferences only: active tab, panel collapse state,
+ * navigation state, and other UI-only workspace state. Pose/project data
+ * persistence is handled by ConstitutionalPersistenceService (v2 canonical).
  *
- * Enhanced with:
- * - Debounced saving (3-second delay)
- * - Conflict detection and resolution
- * - Enhanced error recovery with automatic fallback
- * - Last save timestamp tracking
- *
- * Behaviour:
- * - Prefers Supabase when an authenticated user is available
- * - Falls back to localStorage transparently when Supabase/auth fails
- * - Never throws to callers – instead returns structured status objects
+ * Persists workspace UI state to Supabase (workspace_snapshots) with a robust
+ * localStorage fallback. Enhanced with debounced saving, conflict detection,
+ * and recovery. Never throws to callers – returns structured status objects.
  */
 export class WorkspaceSyncService {
   private static readonly WORKSPACE_TABLE = 'workspace_snapshots';

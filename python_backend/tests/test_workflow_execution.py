@@ -99,7 +99,7 @@ class TestActionExecutor:
     @pytest.mark.asyncio
     async def test_execute_email_action(self, action_executor):
         """Test email action execution."""
-        with patch("tasks.workflow_tasks.send_email") as mock_send_email:
+        with patch("tasks.notification_tasks.send_email") as mock_send_email:
             action_config = {
                 "action_type": "email",
                 "params": {
@@ -122,7 +122,7 @@ class TestActionExecutor:
         mock_repo.insert_notification = Mock(return_value={"id": "123"})
         
         with patch(
-            "apis.v2.services.workflow_execution_engine.NotificationsRepository",
+            "apis.v2.repositories.notifications_repository.NotificationsRepository",
             return_value=mock_repo,
         ):
             action_config = {
