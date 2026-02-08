@@ -45,10 +45,40 @@ class DummyTable:
 
         return Response(items)
 
-    def select(self, *cols):
+    def delete(self):
+        """Create a delete query builder."""
+        class DeleteQuery:
+            def __init__(self, table: DummyTable):
+                self.table = table
+                self.filters: Dict[str, Any] = {}
+
+            def eq(self, key, value):
+                self.filters[key] = value
+                return self
+
+            def execute(self):
+                rows = self.table.store.get(self.table.name, [])
+                remaining = []
+                deleted = []
+                for row in rows:
+                    if all(str(row.get(k)) == str(v) for k, v in self.filters.items()):
+                        deleted.append(row)
+                    else:
+                        remaining.append(row)
+                self.table.store[self.table.name] = remaining
+
+                class Response:
+                    def __init__(self, data):
+                        self.data = data
+
+                return Response(deleted)
+
+        return DeleteQuery(self)
+
+    def select(self, *cols, count=None, head=False):
         """Create a query builder."""
         # Handle count queries
-        if len(cols) == 2 and cols[1] == ("count", "exact"):
+        if count == "exact":
             return self._count_query()
 
         class Query:
@@ -185,7 +215,13 @@ class DummyTable:
                         for k, v in self.filters.items()
                     )
                 ]
-                return len(filtered)
+
+                class CountResponse:
+                    def __init__(self, count_val):
+                        self.count = count_val
+                        self.data = []
+
+                return CountResponse(len(filtered))
 
         return CountQuery(self)
 

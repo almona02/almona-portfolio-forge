@@ -51,13 +51,13 @@ class TestCustomerService:
             contact_person="John Doe",
             email="john@example.com",
             phone="+1234567890",
-            sector=SectorType.ALUMINIUM,
+            sector=SectorType.INDUSTRIAL,
         )
         result = service.create_customer(sample_user_id, request)
         assert result.id is not None
         assert result.name == "Test Customer"
         assert result.email == "john@example.com"
-        assert result.sector == SectorType.ALUMINIUM
+        assert result.sector == SectorType.INDUSTRIAL
 
     def test_get_customer(self, service, sample_user_id):
         """Test retrieving a customer."""
@@ -164,16 +164,14 @@ class TestCommunicationService:
         customer_id = UUID(customer.id)
 
         comm_request = CustomerCommunicationCreateRequest(
-            type=CommunicationType.email,
-            subject="Test Email",
-            message="Test message",
+            type=CommunicationType.EMAIL,
+            content="Test message",
         )
         result = service.create_communication(
             customer_id, sample_user_id, comm_request
         )
         assert result.id is not None
-        assert result.type == CommunicationType.email
-        assert result.subject == "Test Email"
+        assert result.type == CommunicationType.EMAIL
 
 
 class TestSegmentService:
@@ -208,8 +206,7 @@ class TestReminderService:
 
         reminder_request = CustomerReminderCreateRequest(
             title="Follow up",
-            description="Follow up with customer",
-            reminder_date=datetime.now(timezone.utc).isoformat(),
+            due_date=datetime.now(timezone.utc).isoformat(),
         )
         result = service.create_reminder(
             customer_id, sample_user_id, reminder_request

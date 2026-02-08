@@ -9,7 +9,7 @@ import { GreedyHeuristic } from '@/algorithms/greedyHeuristic';
 import { LinearProgrammingOptimizer } from '@/algorithms/linearProgramming';
 import { GeneticOptimizer } from '@/algorithms/geneticOptimization';
 import { RemnantManager } from '@/lib/inventory/RemnantManager';
-import { remnantMLPredictor } from '@/future/advisory/RemnantUsagePredictor';
+import { remnantMLPredictor } from '@/lib/ml/RemnantUsagePredictor';
 import type {
   WindowComponent,
   Profile,
